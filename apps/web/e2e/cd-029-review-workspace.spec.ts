@@ -78,7 +78,7 @@ test.describe("CD-029 reviewer workspace — read-only runtime", () => {
 
   async function openFirstWorkspace(page: Page): Promise<boolean> {
     await page.goto("/reviews");
-    const open = page.getByRole("link", { name: /open workspace/i }).first();
+    const open = page.getByRole("link", { name: /open review/i }).first();
     if (await open.count() === 0) {
       // The link label is localized in RTL; route ownership is stable and does
       // not weaken the read-only navigation proof.

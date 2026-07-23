@@ -12,6 +12,7 @@ import {
 } from "@/lib/planning/factory-resolver";
 import Wizard, { type WizardStrings, type GradedFactory, type DraftConfig, type DraftInfo, type InitialSelection } from "./Wizard";
 import { findDuplicateActiveVisits } from "./duplicate";
+import { IconBlocked } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -115,7 +116,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (!access.can("planning.create.single")) {
     return (
       <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-        <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked />} title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.single.unauthorized.body", "Plan one visit (SCR-WEB-120) requires the planning.create.single capability — available to business planning staff, not to inspector or admin roles.", "تخطيط زيارة واحدة (SCR-WEB-120) يتطلب صلاحية planning.create.single — متاحة لموظفي التخطيط فقط، وليس لأدوار المفتش أو المسؤول.")} />
       </Shell>
     );

@@ -1,0 +1,11 @@
+﻿field_group,source_contract,planning_use,canonical_role,guardrail
+CR/unified/name,Senaei task detail / canonical commercial_registrations,"Single search/display, list, export",Contextual/live-synced canonical,Never browser-call provider
+Licence number/type/status/investment,Senaei task detail / industrial_licenses,"Target selection, filters, detail",Contextual/master canonical,One selected licence per visit
+Plant number/state,Senaei task detail / plant mapping,Plant search and target,Contextual/master canonical,No CR-only visit when plant target required
+Address/city/region/coordinates,Senaei task detail / plant_addresses,"Map, filters, visit location",Master plus visit override,Preserve original/current/source
+Products/raw materials/machines/spares,Production-line endpoint / canonical line items,"Bulk product/activity filters, context",Canonical synced,Pagination and source freshness
+Activities/ISIC,Task detail + product activity + Industry Shared when verified,Activity filters/display,Canonical; contract-unverified if missing,Do not infer from names
+Employee/workforce,Industry Shared job/workforce/HRSD when verified,Employee-count filter/recommendation context,CONTRACT_NOT_SUPPLIED until verified,Never zero-fill
+Contacts,Industry Shared contact list when verified,Manual/notification context,Permission-sensitive,Mask and restrict
+Task list/detail,Inspection API,Downstream inspector context only,Contextual,Not Planning create authority
+Regulations/packages,Inspection API regulations + local published package versions,Package eligibility/preparation,Versioned local runtime,Zero packages allowed in Planning

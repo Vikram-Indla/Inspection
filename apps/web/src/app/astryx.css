@@ -598,7 +598,10 @@ button.ax-shell-scope { cursor: pointer; }
 
 @media (max-width: 560px) {
   .ax-pagehead__topbar { flex-wrap: wrap; }
-  .ax-shell-controls { order: 3; inline-size: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  /* flex: 0 0 100% is load-bearing: the base rule's `flex: 1` basis (0%)
+     overrides inline-size in the flex algorithm, so the controls otherwise
+     stay squeezed onto row 1 and the inner grid overflows (CD-029 leg 18). */
+  .ax-shell-controls { order: 3; flex: 0 0 100%; inline-size: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
   .ax-shell-search { grid-column: 1 / -1; inline-size: 100%; }
   .ax-shell-scope--date { justify-self: start; }
   .ax-shell-scope--region { justify-self: end; max-inline-size: 150px; }

@@ -1,0 +1,3 @@
+# Module 07 — Bulk Assignment, Eligibility and Publish
+
+Complete the pre-creation summary and partition eligible/ineligible rows; one invalid row does not block explicit eligible subset. Implement deterministic recommendation (active, region, workload, availability), evidence/warnings, override reason, automatic distribution and per-row manual assignment. Add transaction-level overlap/concurrency guard and attempted-conflict audit. Support configured type/mode/priority and zero-many packages. Atomically create one plan and unique visits/refs/assignments/notifications for accepted eligible subset.

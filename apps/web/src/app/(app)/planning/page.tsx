@@ -13,6 +13,8 @@ import CreateVisitSection, { type CreateVisitMethod } from "./CreateVisitSection
 import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
+import { formatDateTime } from "@/lib/dates";
+import { IconBlocked, IconCalendar } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +34,6 @@ const STATUS_TONE: Record<string, string> = {
   returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical",
 };
 
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const dash = (v: string | null) => (v && v.length > 0 ? v : "—");
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
@@ -104,7 +105,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   if (access.error) {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState glyph="⚠" title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
+        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
           body={tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")} />
       </Shell>
     );
@@ -112,7 +113,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   if (access.accessClass !== "business_staff" || !access.can("planning.view")) {
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState glyph="⛔" title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.home.unauthorized.body", "Visit Planning (SCR-WEB-100) is available to internal business staff. Inspector and administration accounts use their own workspaces.", "تخطيط الزيارات (SCR-WEB-100) متاح لموظفي الأعمال الداخليين. تستخدم حسابات المفتشين والإدارة مساحات عملها الخاصة.")} />
       </Shell>
     );
@@ -144,7 +145,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     if (optionError) console.error("[planning.list] option/draft read failed:", optionError.message);
     return (
       <Shell current="/planning" title={title}>
-        <EmptyState glyph="⚠" title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
+        <EmptyState icon={<IconBlocked />} title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
           body={tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")} />
       </Shell>
     );
@@ -319,7 +320,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* Canonical visit list (PLN-REQ-013) */}
       {list.rows.length === 0 ? (
-        <EmptyState glyph="🗓" title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
+        <EmptyState icon={<IconCalendar />} title={tr("plan.list.empty", "No visits match", "لا توجد زيارات مطابقة")}
           body={tr("plan.list.emptyDesc", "No visits match the current tab, search and filters. Reset to see everything in your scope.", "لا توجد زيارات مطابقة للتبويب والبحث وعوامل التصفية الحالية. أعد التعيين لعرض كل ما في نطاقك.")} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table" data-testid="planning-visit-table">
@@ -367,16 +368,16 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                 <td>{dash(row.region)}</td>
                 <td>{dash(row.city)}</td>
                 <td>{dash(row.inspectorName)}</td>
-                <td className="ax-td-num ax-numeric">{fmt(row.windowStart)}</td>
-                <td className="ax-td-num ax-numeric">{fmt(row.windowEnd)}</td>
-                <td className="ax-td-num ax-numeric">{row.executionDate ? fmt(row.executionDate) : "—"}</td>
+                <td className="ax-td-num ax-numeric">{formatDateTime(row.windowStart, locale)}</td>
+                <td className="ax-td-num ax-numeric">{formatDateTime(row.windowEnd, locale)}</td>
+                <td className="ax-td-num ax-numeric">{row.executionDate ? formatDateTime(row.executionDate, locale) : "—"}</td>
                 <td>{row.packageTitles.length > 0 ? row.packageTitles.join(", ") : "—"}</td>
                 <td>{dash(row.createdBy)}</td>
-                <td className="ax-td-num ax-numeric">{fmt(row.createdAt)}</td>
+                <td className="ax-td-num ax-numeric">{formatDateTime(row.createdAt, locale)}</td>
                 <td>{dash(row.sourceChannel)}</td>
                 <td>{dash(row.returnReason ?? (row.planningStatus === "returned" ? t("enum.returned", "returned") : null))}</td>
                 <td className="ax-numeric">{row.method === "bulk" ? dash(row.planReference) : "—"}</td>
-                <td className="ax-td-num ax-numeric">{lastUpdates[row.id] ? fmt(lastUpdates[row.id]) : "—"}</td>
+                <td className="ax-td-num ax-numeric">{lastUpdates[row.id] ? formatDateTime(lastUpdates[row.id], locale) : "—"}</td>
               </tr>
             ))}
           </tbody>
@@ -419,7 +420,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                   <td><span className="ax-lozenge ax-lozenge--info">{t(`enum.${d.method}`, d.method)}</span></td>
                   <td>{t("enum.draft", "draft")}</td>
                   <td>{d.profiles?.full_name ?? "—"}</td>
-                  <td className="ax-td-num ax-numeric">{fmt(d.created_at)}</td>
+                  <td className="ax-td-num ax-numeric">{formatDateTime(d.created_at, locale)}</td>
                   <td><a className="ax-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue →", "متابعة ←")}</a></td>
                   <td>
                     {/* M8 / PLN-CON-018 — discard is offered on OWN drafts only

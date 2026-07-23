@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { storageStatePath } from "./personas";
 
 // CD-030 / SCR-WEB-320 / P11 — Version Comparison (route-neutral compare mode
@@ -15,11 +15,22 @@ import { storageStatePath } from "./personas";
 // data is environment-dependent, so per-row classification is asserted against
 // the component's own source logic; live navigation asserts structure + a11y.
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
+// Repo-root files (supabase/migrations) resolve by walking up from cwd so the
+// spec also works from a scratch certification copy outside the repo tree.
+const REPO_FILE = (rel: string) => {
+  let dir = process.cwd();
+  for (let i = 0; i < 6; i++) {
+    const p = join(dir, rel);
+    if (existsSync(p)) return readFileSync(p, "utf8");
+    dir = dirname(dir);
+  }
+  throw new Error(`${rel} not found above ${process.cwd()}`);
+};
 const CMP = "src/app/(app)/reviews/[id]/VersionCompare.tsx";
 const PAGE = "src/app/(app)/reviews/[id]/page.tsx";
 const LOADING = "src/app/(app)/reviews/[id]/loading.tsx";
 const STALE = "src/app/(app)/reviews/[id]/stale-check.ts";
-const RBAC = "../../supabase/migrations/20260715160000_cd030_review_scope_rbac.sql";
+const RBAC = "supabase/migrations/20260715160000_cd030_review_scope_rbac.sql";
 
 // Open the first workspace from the queue; skip the test if the env has no rows.
 async function openFirstWorkspace(page: Page): Promise<boolean> {

@@ -6,6 +6,7 @@ import { getPlanningAccess } from "@/lib/planning/access";
 import ImmediateForm, { type ImmediateStrings, type ManualReasonOption, type VisitTypeOption } from "./ImmediateForm";
 import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
+import { IconBlocked } from "@/app/icons";
 
 // Distinct, sorted, non-empty string values for a field across the registered
 // factory set — same one-line pattern /planning/bulk/page.tsx uses for its
@@ -31,7 +32,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   if (!user || access.error !== null || !access.can("planning.create.immediate")) {
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
-        <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked />} title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.imm.unauthorized.body", "Create an urgent visit (SCR-WEB-130) requires the immediate-visit capability (Planner / Inspector).", "إنشاء زيارة عاجلة (SCR-WEB-130) يتطلب صلاحية الزيارة الفورية (المخطط / المفتش).")} />
       </Shell>
     );

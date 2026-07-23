@@ -1,0 +1,13 @@
+schema_version: "1.0"
+run_id: "REQ-CONSOLIDATION-2026-07-22"
+decisions:
+  - decision_id: "REQ-OD-001"
+    status: "OPEN_DECISION_REQUIRED"
+    question: "Can the approved INSPECTION_DOCS_ROOT be made readable for complete source discovery?"
+    impact: "Blocks R0 source inventory, lossless extraction, atomic requirement creation, and completeness certificate."
+    invented_value_prohibited: true
+  - decision_id: "REQ-OD-002"
+    status: "OPEN_DECISION_REQUIRED"
+    question: "Which customer source files/API packs are present under the approved root and what are their hashes?"
+    impact: "Blocks source authority classification and reconciliation."
+    invented_value_prohibited: true

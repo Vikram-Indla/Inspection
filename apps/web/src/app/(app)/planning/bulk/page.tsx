@@ -13,6 +13,7 @@ import TargetingLensClient from "./TargetingLensClient";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import WidgetBoundary from "@/components/WidgetBoundary";
 import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, FIELD_REGISTRY, type Op } from "./criteria";
+import { IconBlocked } from "@/app/icons";
 
 type FactoryForCriteria = {
   region: string | null; risk_band: string | null; activity_class: string | null; city: string | null;
@@ -44,7 +45,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (!user || !access.can("planning.create.bulk")) {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked />} title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.bulk.unauthorized.body", "Plan multiple visits (SCR-WEB-110) requires the bulk-planning capability (Planner / Reviewer).", "تخطيط زيارات متعددة (SCR-WEB-110) يتطلب صلاحية التخطيط الجماعي (المخطط / المراجع).")} />
       </Shell>
     );
@@ -79,7 +80,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[CD-021] factories read failed:", factoriesError.message, factoriesError.code);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
+        <EmptyState icon={<IconBlocked />} title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
           body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
       </Shell>
     );
@@ -107,7 +108,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[CD-021] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
+        <EmptyState icon={<IconBlocked />} title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
           body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
       </Shell>
     );

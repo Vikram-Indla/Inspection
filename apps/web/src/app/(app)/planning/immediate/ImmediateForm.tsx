@@ -20,6 +20,7 @@ import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
 import AuthorityBar, { type Chip } from "./AuthorityBar";
 import EmptyState from "@/components/EmptyState";
+import { IconMapPin } from "@/app/icons";
 
 type F = {
   id: string; name: string; factory_code: string; cr_number: string; license_number: string | null;
@@ -77,7 +78,7 @@ const normalizeMobile = (v: string) => v.replace(/[\s-]/g, "");
 let mapLoadingLabel = "Loading location map";
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
+  loading: () => <EmptyState icon={<IconMapPin />} title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
 export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, cityByRegion, hasInspectorPool, actorName, actorMode, locale, manualAllowed, visitTypes, manualReasons, strings, initialFactoryId }: {

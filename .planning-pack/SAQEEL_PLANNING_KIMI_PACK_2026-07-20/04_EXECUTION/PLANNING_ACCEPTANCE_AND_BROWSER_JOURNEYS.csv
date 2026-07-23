@@ -1,0 +1,43 @@
+﻿journey_id,journey,persona,entry,steps,expected,verification_type,status
+PLN-J-001,Planning landing,business staff,/planning,Open nav; inspect tabs/list; Create Visit,List-first landing and full status tabs,FUNCTIONAL,NOT_RUN
+PLN-J-002,Admin isolation,admin,/planning,Direct open and nav inspection,Planning denied; dashboard/admin remain,FUNCTIONAL,NOT_RUN
+PLN-J-003,Inspector isolation,inspector,/planning,Direct open,General planning denied,FUNCTIONAL,NOT_RUN
+PLN-J-004,Immediate inspector exception,inspector,/planning/immediate,Create safe immediate draft/visit,Self-assigned controlled path only,FUNCTIONAL,NOT_RUN
+PLN-J-005,Single CR one licence,business staff,Create→Single,Search CR; select target; configure; save draft; publish,Correct licence/plant visit,FUNCTIONAL,NOT_RUN
+PLN-J-006,Single CR multiple licences,business staff,Single,Search CR; switch licences; verify context; publish one,No cross-licence leakage,FUNCTIONAL,NOT_RUN
+PLN-J-007,Single licence search,business staff,Single,Exact licence search,Correct CR/plant,FUNCTIONAL,NOT_RUN
+PLN-J-008,Single plant search,business staff,Single,Exact plant search,Correct licence/CR,FUNCTIONAL,NOT_RUN
+PLN-J-009,Manual blocked permission,staff without capability,Single/Immediate,Not found; attempt manual,Blocked,FUNCTIONAL,NOT_RUN
+PLN-J-010,Manual eligible,authorized staff,Immediate,Confirm not found; required fields; pin; reason; attachment,Manual source/unverified markers stored,FUNCTIONAL,NOT_RUN
+PLN-J-011,Bulk basic AND,business staff,Bulk,Region AND sector,Correct matches,FUNCTIONAL,NOT_RUN
+PLN-J-012,Bulk OR/group,business staff,Bulk,Region AND (sector A OR B),Parentheses correct,FUNCTIONAL,NOT_RUN
+PLN-J-013,Bulk numeric/date operators,business staff,Bulk,Employee/violations/date ranges,Typed comparisons correct,FUNCTIONAL,NOT_RUN
+PLN-J-014,Bulk no criteria,business staff,Bulk,Search empty,Blocked unless unrestricted permission,FUNCTIONAL,NOT_RUN
+PLN-J-015,Bulk select all matching,business staff,Bulk,Filter; select all; confirm max,Correct persisted set,FUNCTIONAL,NOT_RUN
+PLN-J-016,Bulk eligibility partition,business staff,Bulk,Select eligible+ineligible,Reasons and counts; eligible can proceed,FUNCTIONAL,NOT_RUN
+PLN-J-017,Bulk draft resume,business staff,Bulk,Save; sign out/in; reopen,Criteria/selection/config restored,FUNCTIONAL,NOT_RUN
+PLN-J-018,Bulk distribution,business staff,Bulk review,Auto distribute then manual overrides,Assignments evidence correct,FUNCTIONAL,NOT_RUN
+PLN-J-019,Bulk concurrent conflict,two sessions,Bulk review,Publish overlapping assignments concurrently,One authoritative conflict outcome; no partial commit,FUNCTIONAL,NOT_RUN
+PLN-J-020,Optional package publish,business staff,Single/Bulk,Publish with no package,Visit published; inspector preparation requires selection,FUNCTIONAL,NOT_RUN
+PLN-J-021,Multiple package publish,business staff,Single/Bulk,Select two active versions,Both immutable refs available downstream,FUNCTIONAL,NOT_RUN
+PLN-J-022,Draft invisibility,inspector,Field pool,Create business draft; inspect pool,Draft absent,FUNCTIONAL,NOT_RUN
+PLN-J-023,Published visibility,inspector,Field pool,Publish assigned visit,Visit appears,FUNCTIONAL,NOT_RUN
+PLN-J-024,Return and republish,inspector + business staff,Field→Planning,Return reason; edit; republish,"Same IDs, history and notifications",FUNCTIONAL,NOT_RUN
+PLN-J-025,Cancellation pre-start,business staff,Visit detail,Cancel with reason,Final/read-only; pool removal,FUNCTIONAL,NOT_RUN
+PLN-J-026,Cancellation post-start blocked,business staff,Visit detail,Start journey; attempt cancel,Blocked,FUNCTIONAL,NOT_RUN
+PLN-J-027,Expiry no acknowledgement,system,scheduler,Fixture window/rule,Expired with reason/audit/notifications,FUNCTIONAL,NOT_RUN
+PLN-J-028,Expiry no execution date,system,scheduler,Fixture rule,Correct expiry,FUNCTIONAL,NOT_RUN
+PLN-J-029,Expiry no start,system,scheduler,Fixture rule,Correct expiry,FUNCTIONAL,NOT_RUN
+PLN-J-030,Expiry not completed,system,scheduler,Fixture rule,Correct expiry,FUNCTIONAL,NOT_RUN
+PLN-J-031,Duplicate final visit,business staff,Cancelled/Expired detail,Duplicate,New Draft safe fields only,FUNCTIONAL,NOT_RUN
+PLN-J-032,Planning list full search,business staff,/planning,Run each search field,Correct rows,FUNCTIONAL,NOT_RUN
+PLN-J-033,Planning list filters,business staff,/planning,Run each filter and combinations,Correct rows,FUNCTIONAL,NOT_RUN
+PLN-J-034,Filter continuity,business staff,/planning,Filter; open detail; return,State preserved,FUNCTIONAL,NOT_RUN
+PLN-J-035,Export parity,authorized staff,/planning,Filter; export,Rows equal authorized result,FUNCTIONAL,NOT_RUN
+PLN-J-036,Role grant/revoke,admin,/admin/access,Grant/revoke capability with checker,Effective access changes and audit,FUNCTIONAL,NOT_RUN
+PLN-J-037,Workflow admin,admin,/admin/workflows,Create draft rule; validate; approve,Published config governs runtime,FUNCTIONAL,NOT_RUN
+PLN-J-038,RLS negative,unauthorized/anon,direct API,Read/write planning tables/actions,Denied,FUNCTIONAL,NOT_RUN
+PLN-J-039,Provider failure isolation,business staff,Planning,Simulate one provider failure,Healthy sections remain; unavailable named,FUNCTIONAL,NOT_RUN
+PLN-J-040,Dashboard reconciliation,business staff,Planning+Dashboard+Ops,Create/return/cancel/expire,Counts reconcile,FUNCTIONAL,NOT_RUN
+PLN-J-041,Arabic RTL,all classes,all Planning routes,"Switch Arabic, desktop/narrow","Complete labels, bdi IDs, no overflow",FUNCTIONAL,NOT_RUN
+PLN-J-042,Dark/light accessibility,all classes,all Planning routes,Theme/keyboard/screen reader landmarks,No color-only state; focus visible,FUNCTIONAL,NOT_RUN

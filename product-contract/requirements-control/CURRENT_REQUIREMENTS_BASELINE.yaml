@@ -1,0 +1,10 @@
+schema_version: "1.0"
+run_id: "REQ-CONSOLIDATION-2026-07-22"
+status: "NOT_ESTABLISHED_R0_FAIL"
+canonical_baseline: null
+source_requirement_count: null
+atomic_requirement_count: null
+duplicate_count: null
+conflict_count: null
+open_decision_count: 2
+reason: "The authoritative external customer source store was unreadable; repository pointers and prior artefacts are not sufficient proof."

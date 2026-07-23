@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import { IconCalendar } from "@/app/icons";
 
 // FIX WAVE F4 — M02-017: plan drill-down listing every child visit with its
@@ -47,7 +48,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   }
   if (!plan) {
     return <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan not found")}>
-      <EmptyState glyph="∅" title={t("plan.drill.notFound", "Not in your scope or does not exist")}
+      <EmptyState icon={<IconBlocked />} title={t("plan.drill.notFound", "Not in your scope or does not exist")}
         body={t("plan.drill.notFoundDesc", "Plan visibility is RLS-enforced (plans_read — planner/ops/reviewer/auditor/leadership).")} />
     </Shell>;
   }

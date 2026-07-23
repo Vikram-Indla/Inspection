@@ -1,0 +1,20 @@
+schema_version: "1.0"
+run_id: "REQ-CONSOLIDATION-2026-07-22"
+docs_root: "/Users/vikramindla/Desktop/Inspection Documentation"
+generated_date: "2026-07-22"
+pointers:
+  - relative_path: "01_SOURCE_REQUIREMENTS/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+    sha256: null
+    file_version: null
+    authority: "A1_CUSTOMER_MANDATORY"
+    lifecycle_status: "POINTER_UNVERIFIED_EXTERNAL_READ_BLOCKED"
+    requirement_count: 478
+    sheet_count: 9
+    note: "Counts are existing repository pointer metadata, not extracted proof for this run."
+  - relative_path: "01_SOURCE_REQUIREMENTS/**"
+    sha256: null
+    file_version: null
+    authority: "A1_CUSTOMER_MANDATORY"
+    lifecycle_status: "DISCOVERY_BLOCKED_EXTERNAL_READ"
+    requirement_count: null
+    sheet_count: null

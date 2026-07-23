@@ -5,6 +5,7 @@ import { publishSingleVisit, saveSingleDraft, type PublishResult } from "./actio
 import IdentityDossier from "./IdentityDossier";
 import type { ResolvedLicence, ResolvedPortfolio } from "@/lib/planning/factory-resolver";
 import type { Locale } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
 
 // CD-022 / PLN-REQ-020..024 — a search result graded by RULE, never scored.
 // EXACT = governed identifier equality only. SIMILAR_NAME = the name matched,
@@ -288,7 +289,7 @@ export default function Wizard({
     </li>
   );
 
-  const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? new Date(l.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever;
+  const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? formatDate(l.sourceSyncedAt, locale) : strings.freshnessNever;
 
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
@@ -319,7 +320,7 @@ export default function Wizard({
         {searching && registryUnavailable && (
           <div className="ax-banner ax-banner--critical" role="alert" style={{ marginBlockStart: "var(--ax-space-150)" }}>
             <div>{strings.registryUnavailable}</div>
-            <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
+            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => router.refresh()}>{strings.retry}</button>
           </div>
         )}
         {searching && !registryUnavailable && portfolios.length === 0 && results.length === 0 && (
@@ -374,7 +375,7 @@ export default function Wizard({
                 {p.legalNameEn || p.legalName ? <> · {p.legalNameEn ?? p.legalName}</> : null}
                 {p.status ? <> · <span className="t-caption">{p.status}</span></> : null}
                 <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-50)" }}>
-                  {strings.sourceLabel}: <bdi>{p.sourceSystem ?? "—"}</bdi> · {strings.freshnessLabel}: <bdi>{p.sourceSyncedAt ? new Date(p.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever}</bdi>
+                  {strings.sourceLabel}: <bdi>{p.sourceSystem ?? "—"}</bdi> · {strings.freshnessLabel}: <bdi>{p.sourceSyncedAt ? formatDate(p.sourceSyncedAt, locale) : strings.freshnessNever}</bdi>
                 </p>
               </header>
               {p.licences.length === 0 ? (
@@ -428,7 +429,7 @@ export default function Wizard({
             {" · "}{strings.freshnessLabel}: <bdi>{licenceFreshness(selectedLicenceEntry.licence)}</bdi>
             {" · "}{strings.riskContext}: {target.riskBand ?? strings.riskUnknown}{target.riskScore != null ? ` (${target.riskScore})` : ""}
           </p>
-          <a href={`/factories/${target.factoryId}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-touch">{strings.factory360}</a>
+          <a href={`/factories/${target.factoryId}`} target="_blank" rel="noopener noreferrer" className="ax-btn ax-btn--secondary">{strings.factory360}</a>
         </div>
       )}
 
@@ -550,10 +551,10 @@ export default function Wizard({
       )}
 
       <div className="row" style={{ justifyContent: "flex-end", gap: "var(--ax-space-100)" }}>
-        <button type="button" className="btn btn-secondary btn-touch" disabled={savingDraft || !target} onClick={onSaveDraft}>
+        <button type="button" className="ax-btn ax-btn--secondary" disabled={savingDraft || !target} onClick={onSaveDraft}>
           {savingDraft ? strings.savingDraft : strings.saveDraft}
         </button>
-        <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !configUnlocked}>
+        <button className="ax-btn ax-btn--prominent" disabled={pending || !configUnlocked}>
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
         </button>
       </div>

@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { IconList } from "@/app/icons";
 
 // FIX WAVE F4 — M02-035: plan register. Every visit plan (bulk/single) with
 // method, status, creator, published_at and child-visit count; drill-down per
@@ -49,7 +50,7 @@ export default async function PlanRegister() {
         ))}
       </div>
       {plans.length === 0 ? (
-        <EmptyState glyph="▦" title={t("plan.register.empty", "No plans yet")}
+        <EmptyState icon={<IconList />} title={t("plan.register.empty", "No plans yet")}
           body={t("plan.register.emptyDesc", "Bulk and single plans appear here the moment they are created (M01-002/034).")}>
           <a className="ax-btn" href="/planning">{t("plan.register.createPlan", "Create a plan")}</a>
         </EmptyState>
