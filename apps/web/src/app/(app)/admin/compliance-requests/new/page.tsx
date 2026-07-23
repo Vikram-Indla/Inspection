@@ -15,15 +15,15 @@ export default async function NewComplianceRequest({
   return (
     <Shell current="/admin/compliance-requests" title="Create Compliance Configuration Request"
       context={<span className="badge badge-info">Draft · Revision 1</span>}>
-      <p className="t-caption"><Link className="ax-link" href="/admin/compliance-requests">← Request register</Link></p>
+      <p className="t-caption"><Link className="sq-link" href="/admin/compliance-requests">← Request register</Link></p>
       <section className="panel ccr-form-card" aria-labelledby="ccr-create-heading">
         <h3 id="ccr-create-heading">Request foundation</h3>
         <p className="t-caption">Create the governed envelope first. Components and dependencies are added in the request workspace.</p>
         <ActionForm action={createComplianceRequest} className="ccr-form" redirectOnCreate>
-          <label className="ax-field"><span className="ax-field__label">Request type</span><select className="ax-select" name="request_type" required defaultValue={requestedType}><option value="create">Create</option><option value="modify">Modify</option></select></label>
-          <label className="ax-field"><span className="ax-field__label">Title</span><input className="ax-input" name="title" required maxLength={180} defaultValue={requestedTitle} /></label>
-          <label className="ax-field ccr-span"><span className="ax-field__label">Description</span><textarea className="ax-textarea" name="description" rows={4} defaultValue={requestedDescription} /></label>
-          <label className="ax-field ccr-span"><span className="ax-field__label">Initial comments</span><textarea className="ax-textarea" name="comments" rows={3} /></label>
+          <label className="sq-field"><span className="sq-field__label">Request type</span><select className="sq-select" name="request_type" required defaultValue={requestedType}><option value="create">Create</option><option value="modify">Modify</option></select></label>
+          <label className="sq-field"><span className="sq-field__label">Title</span><input className="sq-input" name="title" required maxLength={180} defaultValue={requestedTitle} /></label>
+          <label className="sq-field ccr-span"><span className="sq-field__label">Description</span><textarea className="sq-textarea" name="description" rows={4} defaultValue={requestedDescription} /></label>
+          <label className="sq-field ccr-span"><span className="sq-field__label">Initial comments</span><textarea className="sq-textarea" name="comments" rows={3} /></label>
           <div className="ccr-span ccr-actions"><button className="btn btn-primary btn-lg btn-touch" type="submit">Create draft request</button><Link className="btn btn-secondary btn-touch" href="/admin/compliance-requests">Cancel</Link></div>
         </ActionForm>
       </section>

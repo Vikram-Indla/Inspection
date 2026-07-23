@@ -14,7 +14,7 @@ export default function ContextualAiPanel({ surface, title, description, context
     return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
   }, []);
   return (
-    <section className="panel" aria-labelledby={`${surface}-heading`} data-testid={`${surface}-panel`} style={{ padding: "var(--ax-space-300)" }}>
+    <section className="panel" aria-labelledby={`${surface}-heading`} data-testid={`${surface}-panel`} style={{ padding: "var(--space-6)" }}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
         <div>
           <h3 id={`${surface}-heading`}>{title}</h3>
@@ -22,7 +22,7 @@ export default function ContextualAiPanel({ surface, title, description, context
         </div>
         <span className="badge badge-info">{advisoryLabel}</span>
       </div>
-      <form action={offline ? undefined : action} style={{ marginBlockStart: "var(--ax-space-200)" }}>
+      <form action={offline ? undefined : action} style={{ marginBlockStart: "var(--space-4)" }}>
         <input type="hidden" name="surface" value={surface} />
         <input type="hidden" name="context" value={context} />
         <input type="hidden" name="evidence_refs" value={evidenceRefs.join(",")} />
@@ -34,8 +34,8 @@ export default function ContextualAiPanel({ surface, title, description, context
           <button className="btn btn-primary btn-touch" disabled={pending || offline}>{offline ? unavailableLabel : pending ? `${generateLabel}…` : generateLabel}</button>
         </div>
       </form>
-      {state.error && <p role="alert" className="t-caption" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-150)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}
-      {state.ok && state.text && <div className="ax-banner ax-banner--immutable" role="status" style={{ marginBlockStart: "var(--ax-space-200)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="ax-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel} →</a>}</div>}
+      {state.error && <p role="alert" className="t-caption" style={{ color: "var(--status-critical)", marginBlockStart: "var(--space-3)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}
+      {state.ok && state.text && <div className="sq-banner sq-banner--immutable" role="status" style={{ marginBlockStart: "var(--space-4)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="sq-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel} →</a>}</div>}
     </section>
   );
 }

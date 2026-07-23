@@ -49,7 +49,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     console.error(`[visits.list] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.list.title", "Visit management")}>
-        <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
   }
@@ -205,24 +205,24 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   };
   return (
     <Shell current="/visits" title={t("visit.list.title", "Visit management")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.list.context", "Filtered to your access")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("visit.list.context", "Filtered to your access")}</span>}>
       {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points.
           CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
           coordinate wiring exists, so it is shown UNAVAILABLE (disabled) and the
           authoritative list below is the working equivalent — never faked. */}
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
-        <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-          <Link className="ax-btn ax-btn--secondary" aria-current="page" href="/visits" prefetch={false}>{t("visit.views.list", "List")}</Link>
-          <Link className="ax-btn ax-btn--subtle" href="/visits/calendar" prefetch={false}>{t("visit.views.calendar", "Calendar")}</Link>
-          <Link className="ax-btn ax-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
-          <Link className="ax-btn ax-btn--subtle" href="/visits/map" prefetch={false}>{t("visit.views.map", "Map")}</Link>
+      <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
+        <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+          <Link className="sq-btn sq-btn--secondary" aria-current="page" href="/visits" prefetch={false}>{t("visit.views.list", "List")}</Link>
+          <Link className="sq-btn sq-btn--subtle" href="/visits/calendar" prefetch={false}>{t("visit.views.calendar", "Calendar")}</Link>
+          <Link className="sq-btn sq-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
+          <Link className="sq-btn sq-btn--subtle" href="/visits/map" prefetch={false}>{t("visit.views.map", "Map")}</Link>
         </div>
         {/* M8 — /planning is the accepted planning surface; the two are
             cross-linked in both directions (canonical §5/§6 reconciliation).
             The empty-state "Create a plan" link below only renders with zero
             rows, so the populated board needs its own always-visible route. */}
-        <Link className="ax-btn ax-btn--subtle" href="/planning" prefetch={false}>{t("visit.list.planningLink", "Planning — drafts and plans →")}</Link>
-        <span className="ax-caption ax-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
+        <Link className="sq-btn sq-btn--subtle" href="/planning" prefetch={false}>{t("visit.list.planningLink", "Planning — drafts and plans →")}</Link>
+        <span className="sq-caption sq-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
       {/* M10 / canonical §19 — the AI widget fails isolated; it can never
           blank the visit board. */}
@@ -232,7 +232,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       {rows.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
-          <Link className="ax-btn" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
+          <Link className="sq-btn" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}

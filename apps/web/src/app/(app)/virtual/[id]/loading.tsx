@@ -14,9 +14,9 @@ export default async function Loading() {
       <div className="panel" role="status" aria-busy="true">
         <EmptyState bare glyph="…" title={t("virtual.room.loading", "Loading session")}
           body={t("virtual.room.loadingDesc", "Reading the session state, frozen package, participants and timeline (SCR-VIR-720).")} />
-        <div className="cd-vir" aria-hidden="true" style={{ marginBlockStart: "var(--ax-space-300)" }}>
-          <SkeletonBlock blockSize={56} style={{ marginBlockEnd: "var(--ax-space-200)" }} />
-          <SkeletonBlock blockSize={180} style={{ marginBlockEnd: "var(--ax-space-200)" }} />
+        <div className="cd-vir" aria-hidden="true" style={{ marginBlockStart: "var(--space-6)" }}>
+          <SkeletonBlock blockSize={56} style={{ marginBlockEnd: "var(--space-4)" }} />
+          <SkeletonBlock blockSize={180} style={{ marginBlockEnd: "var(--space-4)" }} />
           <SkeletonBlock blockSize={120} />
         </div>
       </div>

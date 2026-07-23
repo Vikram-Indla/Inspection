@@ -72,7 +72,7 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
       g.drawImage(img, 0, 0, c.width, c.height);
       g.lineWidth = 3; g.lineCap = "round"; g.lineJoin = "round";
       // Annotation ink from the design system — never a bare color.
-      g.strokeStyle = getComputedStyle(c).getPropertyValue("--ax-color-critical").trim();
+      g.strokeStyle = getComputedStyle(c).getPropertyValue("--status-critical").trim();
       baseRef.current = img;
     };
     img.src = `data:${file.mime};base64,${file.b64}`;
@@ -111,15 +111,15 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
       closeLabel={strings.annotateCancel}
       maxWidth="700px"
       footer={<>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.annotateClear}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.annotateCancel}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
-        <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
+        <button type="button" className="sq-btn sq-btn--subtle" onClick={clear}>{strings.annotateClear}</button>
+        <button type="button" className="sq-btn sq-btn--secondary" onClick={onCancel}>{strings.annotateCancel}</button>
+        <button type="button" className="sq-btn sq-btn--secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
+        <button type="button" className="sq-btn sq-btn--prominent" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
       </>}
     >
-      <p className="ax-caption">{strings.annotateHint}</p>
+      <p className="sq-caption">{strings.annotateHint}</p>
       <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-        style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
+        style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--border-strong)", borderRadius: "var(--radius-sm)" }} />
     </Modal>
   );
 }
@@ -239,26 +239,26 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   const changeCount = updatedFields.length;                                              // M04-110
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+    <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--space-2)" }}>
         <h4>{strings.title}</h4>
-        <span className={`ax-lozenge ${changeCount ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
+        <span className={`sq-lozenge ${changeCount ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
         </span>
       </div>
-      <p className="ax-caption">{strings.hint}</p>
-      {readOnly && <div className="ax-banner ax-banner--immutable"><div>{strings.readOnly}</div></div>}
-      {checksLoadError && <div className="ax-banner ax-banner--warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
+      <p className="sq-caption">{strings.hint}</p>
+      {readOnly && <div className="sq-banner sq-banner--immutable"><div>{strings.readOnly}</div></div>}
+      {checksLoadError && <div className="sq-banner sq-banner--warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
       {failDetail !== null && (
-        <div className="ax-banner ax-banner--critical"><div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
+        <div className="sq-banner sq-banner--critical"><div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-4)" }}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
-          <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(onState)}>{strings.retry}</button>
+          <button className="sq-btn sq-btn--secondary" onClick={() => processOutbox(onState)}>{strings.retry}</button>
         </div></div>
       )}
-      {msg && <div className="ax-banner"><div>{msg}</div></div>}
+      {msg && <div className="sq-banner"><div>{msg}</div></div>}
 
       {/* M04-102/103/106 — Source vs Observed side-by-side, per field */}
-      <div className="ax-tablewrap"><table className="ax-table">
+      <div className="sq-tablewrap"><table className="sq-table">
         <thead><tr>
           <th scope="col">{strings.colField}</th><th scope="col">{strings.colSource}</th><th scope="col">{strings.colObserved}</th><th scope="col">{strings.colStatus}</th><th scope="col">{strings.colEvidence}</th>
         </tr></thead>
@@ -267,42 +267,42 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
             const c = checks[f.key];
             const isUpdated = c?.status === "updated";
             return (
-              <tr key={f.key} style={isUpdated ? { background: "var(--ax-color-surface-sunken)" } : undefined}>
+              <tr key={f.key} style={isUpdated ? { background: "var(--surface-sunken)" } : undefined}>
                 {/* M04-107 — updated-field highlighting */}
-                <td style={isUpdated ? { borderInlineStart: "4px solid var(--ax-color-warning)" } : undefined}><strong>{f.label}</strong></td>
+                <td style={isUpdated ? { borderInlineStart: "4px solid var(--status-warning)" } : undefined}><strong>{f.label}</strong></td>
                 <td>
                   <div>{f.source ?? "—"}</div>
-                  <div className="ax-caption">{strings.sourceTag}</div>
+                  <div className="sq-caption">{strings.sourceTag}</div>
                 </td>
                 <td>
-                  <input className="ax-input" style={{ minInlineSize: 140 }} disabled={readOnly}
+                  <input className="sq-input" style={{ minInlineSize: 140 }} disabled={readOnly}
                     value={observedDraft[f.key] ?? ""} placeholder={strings.observedPlaceholder}
                     onChange={e => setObservedDraft(d => ({ ...d, [f.key]: e.target.value }))}
                     onBlur={() => { const v = observedDraft[f.key] ?? ""; if (v.trim() && v.trim() !== (c?.observed_value ?? "")) persist(f, v); }} />
-                  <label className="ax-field" style={{ marginBlockStart: "var(--ax-space-100)" }}>
-                    <span className="ax-field__label">{strings.noteLabel}</span>
-                    <input className="ax-input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
+                  <label className="sq-field" style={{ marginBlockStart: "var(--space-2)" }}>
+                    <span className="sq-field__label">{strings.noteLabel}</span>
+                    <input className="sq-input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
                       onChange={e => setNotes(n => ({ ...n, [f.key]: e.target.value }))} onBlur={() => persistNote(f)} />
                   </label>
                 </td>
                 <td>
                   {!readOnly && (
-                    <button className="ax-btn ax-btn--secondary" style={{ marginBlockEnd: "var(--ax-space-100)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
+                    <button className="sq-btn sq-btn--secondary" style={{ marginBlockEnd: "var(--space-2)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
                   )}
                   <div>
                     {c
-                      ? <span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{c.status === "verified" ? strings.verified : strings.updated}</span>
-                      : <span className="ax-caption">{strings.unchecked}</span>}
+                      ? <span className={`sq-lozenge ${c.status === "verified" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{c.status === "verified" ? strings.verified : strings.updated}</span>
+                      : <span className="sq-caption">{strings.unchecked}</span>}
                   </div>
                 </td>
                 <td>
                   {!readOnly && (
-                    <label className="ax-btn ax-btn--secondary" style={{ cursor: "pointer" }}>
+                    <label className="sq-btn sq-btn--secondary" style={{ cursor: "pointer" }}>
                       {strings.evAttach}
                       <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
                     </label>
                   )}
-                  {(evCountFor[f.key] ?? 0) > 0 && <div className="ax-caption ax-numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
+                  {(evCountFor[f.key] ?? 0) > 0 && <div className="sq-caption sq-numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
                 </td>
               </tr>
             );
@@ -312,19 +312,19 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-111 / M04-190 — change review list: every Updated field with before/after + evidence */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.reviewTitle}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.reviewTitle}</h4>
         {updatedFields.length === 0
-          ? <p className="ax-caption">{strings.reviewEmpty}</p>
+          ? <p className="sq-caption">{strings.reviewEmpty}</p>
           : updatedFields.map(f => {
             const c = checks[f.key]!;
             return (
-              <div key={f.key} className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-100)" }}>
+              <div key={f.key} className="sq-banner sq-banner--warning" style={{ marginBlockEnd: "var(--space-2)" }}>
                 <div>
                   <strong>{f.label}</strong>
-                  {" · "}{strings.before}: <span className="ax-numeric">{c.source_value ?? "—"}</span>
-                  {" → "}{strings.after}: <span className="ax-numeric">{c.observed_value ?? "—"}</span>
+                  {" · "}{strings.before}: <span className="sq-numeric">{c.source_value ?? "—"}</span>
+                  {" → "}{strings.after}: <span className="sq-numeric">{c.observed_value ?? "—"}</span>
                   {(evCountFor[f.key] ?? 0) > 0 && <> · {fmt(strings.evCount, { n: evCountFor[f.key] })}</>}
-                  {c.evidence_note && <div className="ax-caption">{c.evidence_note}</div>}
+                  {c.evidence_note && <div className="sq-caption">{c.evidence_note}</div>}
                 </div>
               </div>
             );
@@ -333,23 +333,23 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-096 — license leg (issue/expiry from the synced license document) */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseTitle}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.licenseTitle}</h4>
         {license
-          ? <p className="ax-caption ax-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
-          : <p className="ax-caption">{strings.licNone}</p>}
+          ? <p className="sq-caption sq-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
+          : <p className="sq-caption">{strings.licNone}</p>}
       </div>
 
       {/* M04-098 — products & HS codes inside the execution flow (read-only, Senaei-sourced) */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.productsTitle}</h4>
-        {products.length === 0 ? <p className="ax-caption">{strings.productsEmpty}</p> : (
-          <div className="ax-tablewrap"><table className="ax-table">
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.productsTitle}</h4>
+        {products.length === 0 ? <p className="sq-caption">{strings.productsEmpty}</p> : (
+          <div className="sq-tablewrap"><table className="sq-table">
             <thead><tr><th scope="col">{strings.colProduct}</th><th scope="col">{strings.colHs}</th><th scope="col">{strings.colCapacity}</th></tr></thead>
             <tbody>{products.map((p, i) => (
               <tr key={i}>
-                <td>{p.name}{p.is_primary && <> <span className="ax-lozenge ax-lozenge--info">{strings.primaryTag}</span></>}</td>
-                <td className="ax-numeric">{p.hs_code ?? "—"}</td>
-                <td className="ax-numeric">{p.annual_capacity != null ? `${p.annual_capacity} ${p.unit ?? ""}` : "—"}</td>
+                <td>{p.name}{p.is_primary && <> <span className="sq-lozenge sq-lozenge--info">{strings.primaryTag}</span></>}</td>
+                <td className="sq-numeric">{p.hs_code ?? "—"}</td>
+                <td className="sq-numeric">{p.annual_capacity != null ? `${p.annual_capacity} ${p.unit ?? ""}` : "—"}</td>
               </tr>
             ))}</tbody>
           </table></div>
@@ -358,15 +358,15 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-099 — raw materials inside the execution flow (read-only, Senaei-sourced) */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.materialsTitle}</h4>
-        {materials.length === 0 ? <p className="ax-caption">{strings.materialsEmpty}</p> : (
-          <div className="ax-tablewrap"><table className="ax-table">
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.materialsTitle}</h4>
+        {materials.length === 0 ? <p className="sq-caption">{strings.materialsEmpty}</p> : (
+          <div className="sq-tablewrap"><table className="sq-table">
             <thead><tr><th scope="col">{strings.colMaterial}</th><th scope="col">{strings.colMatSource}</th><th scope="col">{strings.colHs}</th></tr></thead>
             <tbody>{materials.map((m, i) => (
               <tr key={i}>
                 <td>{m.name}</td>
                 <td>{m.source === "imported" ? strings.srcImported : strings.srcLocal}</td>
-                <td className="ax-numeric">{m.hs_code ?? "—"}</td>
+                <td className="sq-numeric">{m.hs_code ?? "—"}</td>
               </tr>
             ))}</tbody>
           </table></div>

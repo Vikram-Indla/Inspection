@@ -68,26 +68,26 @@ export type AddMaterialStrings = {
 export function AddDocumentForm({ factoryId, strings }: { factoryId: string; strings: AddDocumentStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addFactoryDocument, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--space-4)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-type">{strings.typeLabel}</label>
-        <select className="ax-select" name="doc_type" id="factory-doc-type" required defaultValue="license">
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-doc-type">{strings.typeLabel}</label>
+        <select className="sq-select" name="doc_type" id="factory-doc-type" required defaultValue="license">
           <option value="license">{strings.typeOptions.license}</option>
           <option value="cr">{strings.typeOptions.cr}</option>
           <option value="safety_cert">{strings.typeOptions.safety_cert}</option>
           <option value="layout">{strings.typeOptions.layout}</option>
           <option value="other">{strings.typeOptions.other}</option>
         </select></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="factory-doc-title">{strings.titleLabel}</label>
-        <input className="ax-input" name="title" id="factory-doc-title" placeholder={strings.titlePlaceholder} required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-ref">{strings.refLabel}</label>
-        <input className="ax-input numeric" name="reference_no" id="factory-doc-ref" placeholder={strings.refPlaceholder} /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-valid-from">{strings.validFrom}</label>
-        <input className="ax-input numeric" type="date" name="valid_from" id="factory-doc-valid-from" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-valid-to">{strings.validTo}</label>
-        <input className="ax-input numeric" type="date" name="valid_to" id="factory-doc-valid-to" /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor="factory-doc-title">{strings.titleLabel}</label>
+        <input className="sq-input" name="title" id="factory-doc-title" placeholder={strings.titlePlaceholder} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-doc-ref">{strings.refLabel}</label>
+        <input className="sq-input numeric" name="reference_no" id="factory-doc-ref" placeholder={strings.refPlaceholder} /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-doc-valid-from">{strings.validFrom}</label>
+        <input className="sq-input numeric" type="date" name="valid_from" id="factory-doc-valid-from" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-doc-valid-to">{strings.validTo}</label>
+        <input className="sq-input numeric" type="date" name="valid_to" id="factory-doc-valid-to" /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
@@ -97,20 +97,20 @@ export function AddDocumentForm({ factoryId, strings }: { factoryId: string; str
 export function AddRepresentativeForm({ factoryId, strings }: { factoryId: string; strings: AddRepresentativeStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addRepresentative, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--space-4)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="factory-rep-full-name">{strings.fullNameLabel}</label>
-        <input className="ax-input" name="full_name" id="factory-rep-full-name" placeholder={strings.fullNamePlaceholder} required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-rep-role">{strings.roleLabel}</label>
-        <input className="ax-input" name="role_title" id="factory-rep-role" placeholder={strings.rolePlaceholder} /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-rep-phone">{strings.phoneLabel}</label>
-        <input className="ax-input numeric" name="phone" id="factory-rep-phone" placeholder={strings.phonePlaceholder} /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-rep-email">{strings.emailLabel}</label>
-        <input className="ax-input" type="email" name="email" id="factory-rep-email" /></div>
-      <label className="ax-choice" style={{ alignSelf: "center" }}>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 180 }}><label className="sq-field__label" htmlFor="factory-rep-full-name">{strings.fullNameLabel}</label>
+        <input className="sq-input" name="full_name" id="factory-rep-full-name" placeholder={strings.fullNamePlaceholder} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-rep-role">{strings.roleLabel}</label>
+        <input className="sq-input" name="role_title" id="factory-rep-role" placeholder={strings.rolePlaceholder} /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-rep-phone">{strings.phoneLabel}</label>
+        <input className="sq-input numeric" name="phone" id="factory-rep-phone" placeholder={strings.phonePlaceholder} /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-rep-email">{strings.emailLabel}</label>
+        <input className="sq-input" type="email" name="email" id="factory-rep-email" /></div>
+      <label className="sq-choice" style={{ alignSelf: "center" }}>
         <input type="checkbox" name="is_primary" /> {strings.primaryContact}</label>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
@@ -120,20 +120,20 @@ export function AddRepresentativeForm({ factoryId, strings }: { factoryId: strin
 export function AddProductForm({ factoryId, strings }: { factoryId: string; strings: AddProductStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addFactoryProduct, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--space-4)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="factory-product-name">{strings.nameLabel}</label>
-        <input className="ax-input" name="name" id="factory-product-name" placeholder={strings.namePlaceholder} required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-product-hs">{strings.hsLabel}</label>
-        <input className="ax-input numeric" name="hs_code" id="factory-product-hs" placeholder="3920.10" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-product-unit">{strings.unitLabel}</label>
-        <input className="ax-input" name="unit" id="factory-product-unit" placeholder={strings.unitPlaceholder} /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-product-capacity">{strings.capacityLabel}</label>
-        <input className="ax-input numeric" type="number" name="annual_capacity" id="factory-product-capacity" min="0" step="0.01" /></div>
-      <label className="ax-choice" style={{ alignSelf: "center" }}>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor="factory-product-name">{strings.nameLabel}</label>
+        <input className="sq-input" name="name" id="factory-product-name" placeholder={strings.namePlaceholder} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-product-hs">{strings.hsLabel}</label>
+        <input className="sq-input numeric" name="hs_code" id="factory-product-hs" placeholder="3920.10" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-product-unit">{strings.unitLabel}</label>
+        <input className="sq-input" name="unit" id="factory-product-unit" placeholder={strings.unitPlaceholder} /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-product-capacity">{strings.capacityLabel}</label>
+        <input className="sq-input numeric" type="number" name="annual_capacity" id="factory-product-capacity" min="0" step="0.01" /></div>
+      <label className="sq-choice" style={{ alignSelf: "center" }}>
         <input type="checkbox" name="is_primary" /> {strings.primaryProduct}</label>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
@@ -143,19 +143,19 @@ export function AddProductForm({ factoryId, strings }: { factoryId: string; stri
 export function AddMaterialForm({ factoryId, strings }: { factoryId: string; strings: AddMaterialStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addFactoryMaterial, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--space-4)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="factory-material-name">{strings.nameLabel}</label>
-        <input className="ax-input" name="name" id="factory-material-name" placeholder={strings.namePlaceholder} required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-material-source">{strings.sourceLabel}</label>
-        <select className="ax-select" name="source" id="factory-material-source" required defaultValue="local">
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor="factory-material-name">{strings.nameLabel}</label>
+        <input className="sq-input" name="name" id="factory-material-name" placeholder={strings.namePlaceholder} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-material-source">{strings.sourceLabel}</label>
+        <select className="sq-select" name="source" id="factory-material-source" required defaultValue="local">
           <option value="local">{strings.sourceOptions.local}</option>
           <option value="imported">{strings.sourceOptions.imported}</option>
         </select></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="factory-material-hs">{strings.hsLabel}</label>
-        <input className="ax-input numeric" name="hs_code" id="factory-material-hs" placeholder="3901.10" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="factory-material-hs">{strings.hsLabel}</label>
+        <input className="sq-input numeric" name="hs_code" id="factory-material-hs" placeholder="3901.10" /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
@@ -165,13 +165,13 @@ export function AddMaterialForm({ factoryId, strings }: { factoryId: string; str
 export function ToggleRepActive({ repId, factoryId, active, strings }: { repId: string; factoryId: string; active: boolean; strings: ToggleRepStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(toggleRepresentativeActive, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
       <input type="hidden" name="rep_id" value={repId} />
       <input type="hidden" name="factory_id" value={factoryId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
       <button className="btn btn-ghost btn-touch" disabled={pending}>
         {pending ? strings.saving : active ? strings.deactivate : strings.reactivate}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
 }

@@ -29,19 +29,19 @@ export default function PackageTypeSelector({ name, options, value, defaultValue
     onChange?.(next);
   }
   return (
-    <div className="ax-typecards" role="radiogroup" id={id} aria-labelledby={labelledBy}>
+    <div className="sq-typecards" role="radiogroup" id={id} aria-labelledby={labelledBy}>
       {options.map(opt => (
-        <label key={opt.id} className={selected === opt.id ? "ax-typecard is-selected" : "ax-typecard"}>
+        <label key={opt.id} className={selected === opt.id ? "sq-typecard is-selected" : "sq-typecard"}>
           <input
             type="radio"
             name={name}
             value={opt.id}
-            className="ax-sr-only"
+            className="sq-sr-only"
             checked={selected === opt.id}
             onChange={() => select(opt.id)}
           />
-          <span className="ax-typecard__title">{opt.title}</span>
-          <span className="ax-typecard__meta numeric">{opt.code}</span>
+          <span className="sq-typecard__title">{opt.title}</span>
+          <span className="sq-typecard__meta numeric">{opt.code}</span>
         </label>
       ))}
     </div>

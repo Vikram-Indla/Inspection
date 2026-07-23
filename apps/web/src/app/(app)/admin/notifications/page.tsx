@@ -65,23 +65,23 @@ export default async function AdminNotifications() {
 
   const title = t("admin.notif.title", "Notification & SLA Rules");
   const context = (
-    <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+    <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
       <span className="badge badge-info">SCR-ADM-080</span>
       {rulesError ? <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.chip", "register unavailable")}</span> : null}
     </span>
   );
 
   const readOnlyBanner = roleError ? (
-    <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
+    <div className="sq-banner sq-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
   ) : !isWriter ? (
-    <div className="ax-banner" role="note">
+    <div className="sq-banner" role="note">
       <strong><IconEye size={16} /> {t("admin.notif.readonly.title", "Read-only for your role")}</strong>{" "}
       {t("admin.notif.readonly.body", "You can view configuration; creating, publishing and deactivating rules require an admin configuration role and are enforced by row-level security.")}
     </div>
   ) : null;
 
   const degradedBanner = rulesError ? (
-    <div className="ax-banner ax-banner--warning" role="alert">
+    <div className="sq-banner sq-banner--warning" role="alert">
       <strong><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.title", "The notification rule register couldn't be read.")}</strong>{" "}
       {t("admin.notif.degraded.body", "Nothing is shown as zero — the count is unknown, not empty.")}
     </div>
@@ -103,7 +103,7 @@ export default async function AdminNotifications() {
       {isWriter ? (
         <NotificationRulesManager rows={rulesError ? [] : rows} roles={roleOptions} l={l} />
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr><th scope="col">{l.colEvent}</th><th scope="col">{l.colChannel}</th><th scope="col">{l.colRecipient}</th><th scope="col">{l.colSla}</th><th scope="col">{l.colStatus}</th><th scope="col">{l.colVersion}</th></tr></thead>
           <tbody>
             {rulesError ? null : rows.map(r => (

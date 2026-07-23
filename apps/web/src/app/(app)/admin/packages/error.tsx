@@ -9,8 +9,8 @@ export default function PackageError({ error, reset }: { error: Error & { digest
     ? { title: "تعذّر عرض مكتبة الحزم", body: "لم يكتمل الطلب. لم يُفترض وجود حالة فارغة أو عدد صفري.", retry: "إعادة المحاولة" }
     : { title: "Package library couldn’t be displayed", body: "The request did not complete. No empty or zero state has been inferred.", retry: "Try again" };
   return (
-    <main className="ax-content" style={{ padding: "var(--ax-space-400)" }}>
-      <div className="ax-banner ax-banner--critical" role="alert">
+    <main className="sq-content" style={{ padding: "var(--space-8)" }}>
+      <div className="sq-banner sq-banner--critical" role="alert">
         <div>
           <h2>{copy.title}</h2>
           <p>{copy.body}</p>

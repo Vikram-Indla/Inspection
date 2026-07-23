@@ -13,10 +13,10 @@ mkdirSync(OUT, { recursive: true });
 const CHECKS = [
   { route: "/admin/localization", name: "cd018-localization", markers: [".lz-row", 'input[name="ar"]'] },
   { route: "/admin/risk", name: "cd014-risk", markers: [".rk-driver", ".rk-sum", ".rk-band"] },
-  { route: "/admin/workflows", name: "cd012-013-workflows", markers: [".ax-pagehead"] },
+  { route: "/admin/workflows", name: "cd012-013-workflows", markers: [".sq-pagehead"] },
   { route: "/admin/audit", name: "cd019-audit", markers: [".nya"] },
-  { route: "/admin/access", name: "cd017-access", markers: [".nya", ".ax-table"] },
-  { route: "/admin/gis", name: "cd015-gis", markers: [".ax-pagehead"] },
+  { route: "/admin/access", name: "cd017-access", markers: [".nya", ".sq-table"] },
+  { route: "/admin/gis", name: "cd015-gis", markers: [".sq-pagehead"] },
 ];
 
 // Non-destructive localization save round-trip: edit a row's Arabic through the
@@ -39,7 +39,7 @@ async function localizationRoundTrip(page) {
     // Wait for the server action + revalidate to actually settle, not a fixed
     // timeout: prefer the row's "saved" success lozenge, fall back to networkidle.
     await Promise.race([
-      r.locator('.ax-lozenge--success').first().waitFor({ timeout: 9000 }).catch(() => {}),
+      r.locator('.sq-lozenge--success').first().waitFor({ timeout: 9000 }).catch(() => {}),
       page.waitForLoadState("networkidle").catch(() => {}),
     ]);
     await page.waitForTimeout(1200);
@@ -60,7 +60,7 @@ async function localizationRoundTrip(page) {
   await saveRow(key, testVal);
   await goList();
   const persisted = await arOf(key);
-  const statusText = (await rowFor(key).locator(".ax-lozenge").first().innerText().catch(() => "")).trim();
+  const statusText = (await rowFor(key).locator(".sq-lozenge").first().innerText().catch(() => "")).trim();
 
   // Restore original — leaves the store as it was.
   await saveRow(key, original);
@@ -83,7 +83,7 @@ async function localizationRoundTrip(page) {
 async function workflowSoDRoundTrip(page, label) {
   const goWf = async () => {
     await page.goto(`${BASE}/admin/workflows`, { waitUntil: "domcontentloaded" });
-    await page.waitForSelector(".ax-pagehead", { timeout: 20000 });
+    await page.waitForSelector(".sq-pagehead", { timeout: 20000 });
     await page.waitForTimeout(600);
   };
   await goWf();
@@ -98,11 +98,11 @@ async function workflowSoDRoundTrip(page, label) {
   const proposeError = (await proposeForm.locator('[role="alert"]').first().innerText().catch(() => "")).trim();
 
   await goWf();
-  const card = page.locator(`.ax-surface:has(.ax-version:text-is(${JSON.stringify(label)}))`).first();
+  const card = page.locator(`.sq-surface:has(.sq-version:text-is(${JSON.stringify(label)}))`).first();
   const proposed = await card.count() > 0;
   let statusText = "", sodGuardShown = false, approveButtonPresent = null;
   if (proposed) {
-    statusText = (await card.locator(".ax-lozenge").first().innerText().catch(() => "")).trim();
+    statusText = (await card.locator(".sq-lozenge").first().innerText().catch(() => "")).trim();
     const bodyText = await card.innerText().catch(() => "");
     sodGuardShown = /distinct checker must approve/i.test(bodyText);
     approveButtonPresent = await card.locator('button:has-text("Approve & publish")').count() > 0;
@@ -139,7 +139,7 @@ async function riskWeightsRoundTrip(page) {
     const btn = page.locator('button:has-text("Save configuration")').first();
     await btn.click();
     const res = await Promise.race([
-      page.locator(".ax-lozenge--success").first().waitFor({ timeout: 9000 }).then(() => "ok").catch(() => null),
+      page.locator(".sq-lozenge--success").first().waitFor({ timeout: 9000 }).then(() => "ok").catch(() => null),
       page.locator('[role="alert"]').first().waitFor({ timeout: 9000 }).then(() => "err").catch(() => null),
     ]);
     await page.waitForLoadState("networkidle").catch(() => {});
@@ -193,7 +193,7 @@ try {
   await page.locator("#email").waitFor({ timeout: 15000 });
   await page.locator("#email").fill(ADMIN.email);
   await page.locator("#pw").fill(ADMIN.password);
-  await page.locator("form:has(#email) button.ax-btn--prominent").click();
+  await page.locator("form:has(#email) button.sq-btn--prominent").click();
   await page.waitForURL(u => !u.pathname.startsWith("/login"), { timeout: 25000 });
   // English cookie for stable English assertions, then continue.
   const origin = new URL(page.url()).origin;

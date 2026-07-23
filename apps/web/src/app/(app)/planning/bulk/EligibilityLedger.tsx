@@ -40,10 +40,10 @@ export default function EligibilityLedger({
 
   return (
     <section className="panel" aria-label={strings.heading}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-400)", alignItems: "flex-end" }}>
+      style={{ padding: "var(--space-6)", display: "flex", flexWrap: "wrap", gap: "var(--space-8)", alignItems: "flex-end" }}>
       <div>
         <span className="t-caption">{strings.denominator}</span>
-        <div className="numeric" aria-live="polite"><strong style={{ font: "var(--ax-text-title)" }}>{denominator}</strong></div>
+        <div className="numeric" aria-live="polite"><strong style={{ font: "var(--type-title)" }}>{denominator}</strong></div>
       </div>
       <div>
         <span className="t-caption">{strings.eligible}</span>
@@ -65,7 +65,7 @@ export default function EligibilityLedger({
       )}
       <div style={{ marginInlineStart: "auto" }}>
         <span className="t-caption">{strings.freshness}</span>
-        <div className="ax-freshness numeric">
+        <div className="sq-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (
             <> · <span className="badge badge-warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>

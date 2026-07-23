@@ -130,9 +130,9 @@ export const STORY_SCENE_ORDER = ["plan", "travel", "arrive", "inspect", "decide
 
 export function haloToken(t: HaloTone): string {
   switch (t) {
-    case "arrival": return "--ax-color-success";
-    case "planned": return "--ax-color-warning";
-    case "virtual": return "--ax-color-info";
-    case "route": return "--ax-color-primary";
+    case "arrival": return "--status-compliant";
+    case "planned": return "--status-warning";
+    case "virtual": return "--status-info";
+    case "route": return "--action-primary";
   }
 }

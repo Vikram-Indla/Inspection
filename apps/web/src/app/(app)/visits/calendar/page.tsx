@@ -28,7 +28,7 @@ export default async function VisitsCalendar() {
     console.error(`[visits.calendar] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.cal.title", "Visit calendar")}>
-        <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
   }
@@ -56,11 +56,11 @@ export default async function VisitsCalendar() {
   };
   return (
     <Shell current="/visits" title={t("visit.cal.title", "Visit calendar")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.cal.context", "Filtered to your access")}</span>}>
-      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-        <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
-        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("visit.cal.context", "Filtered to your access")}</span>}>
+      <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+        <a className="sq-btn sq-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
+        <a className="sq-btn sq-btn--secondary" aria-current="page" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+        <a className="sq-btn sq-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
       </div>
       <CalendarBoard visits={visits} locale={locale} strings={strings} />
     </Shell>

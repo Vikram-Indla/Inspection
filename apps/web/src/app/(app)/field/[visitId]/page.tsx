@@ -523,14 +523,14 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       <CreatedToast created={created}
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
-      <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
+      <div className="stack" style={{ gap: "var(--space-6)" }}>
         {factory360Href && <a className="btn btn-ghost btn-touch" href={factory360Href}>{t("field.start.openFactory360", "Open Factory 360")}</a>}
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
           <div className="stack" style={{ gap: 8 }}>
             <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <span className={`ax-lozenge ${physicalEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+              <span className={`sq-lozenge ${physicalEligible ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
                 {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
               <span>{dispatchSource === "official"
@@ -539,7 +539,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
               {v.execution_mode !== "virtual" && <span className="badge badge-info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
             <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <span className={`ax-lozenge ${virtualEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+              <span className={`sq-lozenge ${virtualEligible ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
                 {virtualEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
               <span>{t("field.start.virtualRule", "Virtual — requires OTP identity-verification engine configured (ENG · REF-011)")}</span>
@@ -580,7 +580,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         )}
         {factoryUnverifiedManual && (
           <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <span className="ax-lozenge ax-lozenge--warning">{unverifiedManualLabel}</span>
+            <span className="sq-lozenge sq-lozenge--warning">{unverifiedManualLabel}</span>
           </div>
         )}
         <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} preparationGated={preparationGated}

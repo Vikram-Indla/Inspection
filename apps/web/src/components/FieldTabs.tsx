@@ -37,19 +37,19 @@ export default function FieldTabs({ active, fabHref, labels }: {
   labels: FieldTabsLabels;
 }) {
   return (
-    <nav aria-label={labels.dashboard} className="ax-field-taskbar">
-      <Link href="/field" className="ax-field-taskbar__item" prefetch={false}
+    <nav aria-label={labels.dashboard} className="sq-field-taskbar">
+      <Link href="/field" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "dashboard" ? "page" : undefined}>
         <Icon d={GLYPHS.dashboard} />{labels.dashboard}
       </Link>
-      <Link href="/field#visits" className="ax-field-taskbar__item" prefetch={false}
+      <Link href="/field#visits" className="sq-field-taskbar__item" prefetch={false}
         aria-current={active === "visits" ? "page" : undefined}>
         <Icon d={GLYPHS.visits} />{labels.visits}
       </Link>
-      <Link href="/virtual" className="ax-field-taskbar__item" prefetch={false}>
+      <Link href="/virtual" className="sq-field-taskbar__item" prefetch={false}>
         <Icon d={GLYPHS.virtual} />{labels.virtual}
       </Link>
-      <Link href={fabHref} aria-label={labels.fab} className="ax-field-taskbar__primary" prefetch={false}>
+      <Link href={fabHref} aria-label={labels.fab} className="sq-field-taskbar__primary" prefetch={false}>
         <span>{labels.fab}</span><Icon d={GLYPHS.next} />
       </Link>
     </nav>

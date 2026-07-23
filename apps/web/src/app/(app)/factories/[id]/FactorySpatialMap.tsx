@@ -29,7 +29,7 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
   ];
   return (
     <div className="stack" style={{ gap: 8 }}>
-      <div style={{ blockSize: 280, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
+      <div style={{ blockSize: 280, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border-subtle)" }} dir="ltr">
         <GeoMap center={[officialLat, officialLng]} zoom={14} markers={markers} height="100%" />
       </div>
       <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>

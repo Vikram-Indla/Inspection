@@ -12,8 +12,8 @@ export default function ActionForm({ action, children, className }: {
   return (
     <form action={formAction} className={className} aria-busy={pending}>
       {children}
-      {state.error ? <p className="ax-caption" role="alert">{state.error}</p> : null}
-      {state.ok ? <p className="ax-caption" role="status">Saved.</p> : null}
+      {state.error ? <p className="sq-caption" role="alert">{state.error}</p> : null}
+      {state.ok ? <p className="sq-caption" role="status">Saved.</p> : null}
     </form>
   );
 }

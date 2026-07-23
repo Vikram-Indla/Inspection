@@ -40,9 +40,9 @@ export function atlasTokens(): AtlasTokens {
   const cs = getComputedStyle(document.documentElement);
   const g = (v: string) => cs.getPropertyValue(v).trim();
   return {
-    canvas: g("--ax-color-canvas"), primary: g("--ax-color-primary"),
-    success: g("--ax-color-success"), warning: g("--ax-color-warning"),
-    info: g("--ax-color-info"), text: g("--ax-color-text"),
+    canvas: g("--surface-canvas"), primary: g("--action-primary"),
+    success: g("--status-compliant"), warning: g("--status-warning"),
+    info: g("--status-info"), text: g("--text-primary"),
   };
 }
 

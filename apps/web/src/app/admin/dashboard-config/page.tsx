@@ -20,8 +20,8 @@ const CONFIG_DOMAINS = [
 ] as const;
 
 const statusLozenge: Record<string, string> = {
-  implemented: "ax-lozenge--success", not_configured: "ax-lozenge--warning",
-  decision_required: "ax-lozenge--warning", unavailable: "ax-lozenge--removed", deferred: "ax-lozenge--info",
+  implemented: "sq-lozenge--success", not_configured: "sq-lozenge--warning",
+  decision_required: "sq-lozenge--warning", unavailable: "sq-lozenge--removed", deferred: "sq-lozenge--info",
 };
 
 export default async function DashboardConfigPage() {
@@ -55,34 +55,34 @@ export default async function DashboardConfigPage() {
 
   return (
     <Shell current="/admin/dashboard-config" title={t("admin.dashcfg.title", "Dashboard Configuration")}
-      context={<><span className="ax-lozenge ax-lozenge--info">ADM-DASH-001..018</span><span className="ax-caption">Governed KPI catalogue &amp; policy · RLS-scoped · maker-checker</span></>}>
+      context={<><span className="sq-lozenge sq-lozenge--info">ADM-DASH-001..018</span><span className="sq-caption">Governed KPI catalogue &amp; policy · RLS-scoped · maker-checker</span></>}>
 
       {!migrationApplied ? (
-        <div className="ax-surface"><div className="ax-state" role="alert">
-          <span className="ax-state__glyph" aria-hidden="true">⚠</span>
+        <div className="sq-surface"><div className="sq-state" role="alert">
+          <span className="sq-state__glyph" aria-hidden="true">⚠</span>
           <h4>Foundation migration not yet applied</h4>
-          <p className="ax-caption">The dashboard KPI/configuration tables are not readable. Apply migration
+          <p className="sq-caption">The dashboard KPI/configuration tables are not readable. Apply migration
             <code> 20260721010000_dashboard_kpi_admin_foundation.sql</code> and reload. The catalogue below is shown from the code registry.</p>
         </div></div>
       ) : null}
 
       {/* ---- KPI catalogue (system-seeded, formula immutable to admins) ---- */}
-      <section className="ax-surface" aria-labelledby="dashcfg-catalogue">
+      <section className="sq-surface" aria-labelledby="dashcfg-catalogue">
         <h3 id="dashcfg-catalogue">KPI catalogue</h3>
-        <p className="ax-caption">Formula and metric id are system-seeded and immutable to ordinary admins; {implementedCount} of {KPI_DEFINITIONS.length} metrics have a live formula today.</p>
-        <div className="ax-tablewrap"><table className="ax-table"><caption className="ax-sr-only">Governed KPI catalogue</caption>
+        <p className="sq-caption">Formula and metric id are system-seeded and immutable to ordinary admins; {implementedCount} of {KPI_DEFINITIONS.length} metrics have a live formula today.</p>
+        <div className="sq-tablewrap"><table className="sq-table"><caption className="sq-sr-only">Governed KPI catalogue</caption>
           <thead><tr><th scope="col">Metric</th><th scope="col">Category</th><th scope="col">Unit</th><th scope="col">Owner</th><th scope="col">Delivery</th><th scope="col">Seed</th></tr></thead>
           <tbody>
             {KPI_DEFINITIONS.map((d) => {
               const seeded = kpiRows.find((k) => k.metric_key === d.metricKey);
               return (
                 <tr key={d.metricId}>
-                  <th scope="row"><strong>{d.metricId}</strong><div className="ax-caption">{d.titleEn}</div></th>
+                  <th scope="row"><strong>{d.metricId}</strong><div className="sq-caption">{d.titleEn}</div></th>
                   <td>{d.category}</td>
                   <td>{d.unit}</td>
                   <td>{d.ownerRole}</td>
-                  <td><span className={`ax-lozenge ${statusLozenge[d.implementation] ?? "ax-lozenge--default"}`}>{d.implementation}</span>
-                    {d.decisionRef ? <div className="ax-caption">{d.decisionRef}</div> : null}</td>
+                  <td><span className={`sq-lozenge ${statusLozenge[d.implementation] ?? "sq-lozenge--default"}`}>{d.implementation}</span>
+                    {d.decisionRef ? <div className="sq-caption">{d.decisionRef}</div> : null}</td>
                   <td>{seeded ? seeded.status : migrationApplied ? "—" : "n/a"}</td>
                 </tr>
               );
@@ -92,10 +92,10 @@ export default async function DashboardConfigPage() {
       </section>
 
       {/* ---- Configuration domains (published versions + effective date) ---- */}
-      <section className="ax-surface" aria-labelledby="dashcfg-domains">
+      <section className="sq-surface" aria-labelledby="dashcfg-domains">
         <h3 id="dashcfg-domains">Configuration domains</h3>
-        <p className="ax-caption">Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.</p>
-        <div className="ax-tablewrap"><table className="ax-table"><caption className="ax-sr-only">Dashboard configuration domains</caption>
+        <p className="sq-caption">Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.</p>
+        <div className="sq-tablewrap"><table className="sq-table"><caption className="sq-sr-only">Dashboard configuration domains</caption>
           <thead><tr><th scope="col">Domain</th><th scope="col">Active version</th><th scope="col">Effective from</th><th scope="col">Draft in flight</th></tr></thead>
           <tbody>
             {CONFIG_DOMAINS.map((key) => {
@@ -105,9 +105,9 @@ export default async function DashboardConfigPage() {
               return (
                 <tr key={key}>
                   <th scope="row">{key}</th>
-                  <td className="ax-numeric">{active ? `v${active.version_number}` : <span className="ax-lozenge ax-lozenge--warning">Not configured</span>}</td>
-                  <td className="ax-numeric">{active ? new Date(active.effective_from).toISOString().slice(0, 10) : "—"}</td>
-                  <td>{inFlight ? <span className={`ax-lozenge ax-lozenge--info`}>{inFlight.status} · R{inFlight.revision}</span> : "—"}</td>
+                  <td className="sq-numeric">{active ? `v${active.version_number}` : <span className="sq-lozenge sq-lozenge--warning">Not configured</span>}</td>
+                  <td className="sq-numeric">{active ? new Date(active.effective_from).toISOString().slice(0, 10) : "—"}</td>
+                  <td>{inFlight ? <span className={`sq-lozenge sq-lozenge--info`}>{inFlight.status} · R{inFlight.revision}</span> : "—"}</td>
                 </tr>
               );
             })}
@@ -116,10 +116,10 @@ export default async function DashboardConfigPage() {
       </section>
 
       {/* ---- Draft workspace (maker-checker) ---- */}
-      <section className="ax-surface" aria-labelledby="dashcfg-drafts">
+      <section className="sq-surface" aria-labelledby="dashcfg-drafts">
         <h3 id="dashcfg-drafts">Draft workspace</h3>
         {!canWrite && !canReview ? (
-          <p className="ax-caption" role="note">Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.</p>
+          <p className="sq-caption" role="note">Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.</p>
         ) : null}
 
         {canWrite ? (
@@ -132,35 +132,35 @@ export default async function DashboardConfigPage() {
               </label>
               <label>Title<input name="title" type="text" required maxLength={120} /></label>
               <label>Payload (JSON object)<textarea name="payload" rows={3} placeholder='{"expiring_soon_lead_hours": 48}' /></label>
-              <button className="ax-btn ax-btn--prominent" type="submit">Create draft</button>
+              <button className="sq-btn sq-btn--prominent" type="submit">Create draft</button>
             </fieldset>
           </ActionForm>
         ) : null}
 
         {params.length === 0 ? (
-          <p className="ax-caption" role="status">No configuration drafts in flight.</p>
+          <p className="sq-caption" role="status">No configuration drafts in flight.</p>
         ) : (
-          <div className="ax-tablewrap"><table className="ax-table"><caption className="ax-sr-only">Configuration drafts</caption>
+          <div className="sq-tablewrap"><table className="sq-table"><caption className="sq-sr-only">Configuration drafts</caption>
             <thead><tr><th scope="col">Draft</th><th scope="col">Domain</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
             <tbody>
               {params.map((p) => {
                 const isOwner = p.owner_id === userId;
                 return (
                   <tr key={p.id}>
-                    <th scope="row">{p.title}{p.return_reason ? <div className="ax-caption">Returned: {p.return_reason}</div> : null}</th>
+                    <th scope="row">{p.title}{p.return_reason ? <div className="sq-caption">Returned: {p.return_reason}</div> : null}</th>
                     <td>{p.config_key}</td>
-                    <td><span className="ax-lozenge ax-lozenge--info">{p.status} · R{p.revision}</span></td>
+                    <td><span className="sq-lozenge sq-lozenge--info">{p.status} · R{p.revision}</span></td>
                     <td className="dashcfg-actions">
                       {canWrite && isOwner && ["draft", "returned"].includes(p.status) ? (
-                        <ActionForm action={submitConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="ax-btn ax-btn--secondary" type="submit">Submit</button></ActionForm>
+                        <ActionForm action={submitConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="sq-btn sq-btn--secondary" type="submit">Submit</button></ActionForm>
                       ) : null}
                       {canReview && !isOwner && p.status === "pending_review" ? (
                         <>
-                          <ActionForm action={publishConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="ax-btn ax-btn--prominent" type="submit">Publish</button></ActionForm>
-                          <ActionForm action={returnConfigDraft}><input type="hidden" name="id" value={p.id} /><input name="reason" type="text" placeholder="Return reason" required /><button className="ax-btn" type="submit">Return</button></ActionForm>
+                          <ActionForm action={publishConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="sq-btn sq-btn--prominent" type="submit">Publish</button></ActionForm>
+                          <ActionForm action={returnConfigDraft}><input type="hidden" name="id" value={p.id} /><input name="reason" type="text" placeholder="Return reason" required /><button className="sq-btn" type="submit">Return</button></ActionForm>
                         </>
                       ) : null}
-                      {p.status === "pending_review" && isOwner ? <span className="ax-caption" role="note">Awaiting an independent reviewer (maker-checker).</span> : null}
+                      {p.status === "pending_review" && isOwner ? <span className="sq-caption" role="note">Awaiting an independent reviewer (maker-checker).</span> : null}
                     </td>
                   </tr>
                 );

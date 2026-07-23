@@ -20,24 +20,24 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
   const [state, action, pending] = useActionState<OcrActionResult, FormData>(extractAction, {});
   const shown = state.text !== undefined ? state : (row.lastExtraction ? { text: row.lastExtraction.text ?? undefined, status: row.lastExtraction.status } : {});
   return (
-    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+    <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
           <h3>{row.evidenceType} <span className="t-caption numeric">{row.capturedAt}</span></h3>
-          {row.inspectionId && <a className="ax-link t-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
+          {row.inspectionId && <a className="sq-link t-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
         </div>
         <form action={action}>
           <input type="hidden" name="evidence_id" value={row.id} />
           <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.extracting : s.extract}</button>
         </form>
       </div>
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       {shown.status === "unavailable" && <p className="t-caption">{s.unavailable}</p>}
       {shown.status === "no_text_found" && <p className="t-caption">{s.noText}</p>}
       {shown.text && (
-        <div className="panel" style={{ padding: "var(--ax-space-150)" }}>
-          <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{s.extracted}</p>
-          <pre style={{ whiteSpace: "pre-wrap", margin: 0, fontFamily: "var(--ax-font-mono, monospace)" }}>{shown.text}</pre>
+        <div className="panel" style={{ padding: "var(--space-3)" }}>
+          <p className="t-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{s.extracted}</p>
+          <pre style={{ whiteSpace: "pre-wrap", margin: 0, fontFamily: "var(--font-mono, monospace)" }}>{shown.text}</pre>
         </div>
       )}
     </div>

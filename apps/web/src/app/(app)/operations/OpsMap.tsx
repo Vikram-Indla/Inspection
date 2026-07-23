@@ -51,8 +51,8 @@ export default function OpsMap({ pins, regionPostures, strings: s }: { pins: Ops
   }));
 
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
-      <div style={{ blockSize: 380, borderRadius: "var(--ax-radius-200)", overflow: "hidden" }}>
+    <div className="stack" style={{ gap: "var(--space-3)" }}>
+      <div style={{ blockSize: 380, borderRadius: "var(--radius-sm)", overflow: "hidden" }}>
         <Suspense fallback={
           <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />
         }>
@@ -60,14 +60,14 @@ export default function OpsMap({ pins, regionPostures, strings: s }: { pins: Ops
             selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" />
         </Suspense>
       </div>
-      <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
+      <div className="row" style={{ gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
         <span className="t-caption">
           <span className="badge badge-compliant">{s.legendExecuting}</span>{" "}
           <span className="badge badge-warning">{s.legendEnRoute}</span>{" "}
           <span className="badge">{s.legendFactory}</span>
         </span>
         {selected
-          ? <a className="ax-link" href={selected.href}>{s.open} — {selected.label}</a>
+          ? <a className="sq-link" href={selected.href}>{s.open} — {selected.label}</a>
           : <span className="t-caption">{s.selectHint}</span>}
       </div>
     </div>

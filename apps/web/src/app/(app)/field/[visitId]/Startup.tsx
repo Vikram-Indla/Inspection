@@ -946,21 +946,21 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const activeCancellationPhase = !!journeySchemaAvailable && ["on_the_way", "arrived"].includes(visit.operational_state);
   const latestCorrection = corrections[0] ?? null;
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <div className="sq-stack" style={{ gap: "var(--space-6)" }}>
       {/* Phase 4B — overdue-inside-window warning (start proceeds; delay is recorded) */}
       {overdueWarning && (
-        <div className="ax-banner ax-banner--warning" role="status"><div>{strings.journeyOverdueWarning}</div></div>
+        <div className="sq-banner sq-banner--warning" role="status"><div>{strings.journeyOverdueWarning}</div></div>
       )}
       {/* Phase 4B — Operations approved the active-session cancellation: terminal, captured data preserved */}
       {cancelApproved && (
-        <div className="ax-banner ax-banner--immutable" role="status"><div>{strings.cancelApprovedCopy}</div></div>
+        <div className="sq-banner sq-banner--immutable" role="status"><div>{strings.cancelApprovedCopy}</div></div>
       )}
       {activeCancel?.status === "rejected" && (
-        <div className="ax-banner ax-banner--warning" role="status"><div>{fmt(strings.cancelRejectedCopy, { reason: activeCancel.decision_reason ?? "—" })}</div></div>
+        <div className="sq-banner sq-banner--warning" role="status"><div>{fmt(strings.cancelRejectedCopy, { reason: activeCancel.decision_reason ?? "—" })}</div></div>
       )}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
-        <div className="ax-stack" style={{ gap: 8 }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }} data-testid="field-device-readiness">
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.readiness}</h4>
+        <div className="sq-stack" style={{ gap: 8 }}>
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</div>
           <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions ? `${visit.package_versions.packages.code} · ${visit.package_versions.version_label}` : strings.packagePending} {cached && strings.packageCached}</div>
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
@@ -972,26 +972,26 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
         {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
-        <div className="ax-row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--ax-space-200)" }}>
-          <a className="ax-btn" target="_blank" rel="noopener noreferrer"
+        <div className="sq-row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--space-4)" }}>
+          <a className="sq-btn" target="_blank" rel="noopener noreferrer"
             href={`geo:${visit.dispatch_lat},${visit.dispatch_lng}?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsGeo}
           </a>
         </div>
-        <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.mapsCaption}</p>
+        <p className="sq-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.mapsCaption}</p>
         {/* F3 · M04-026 — journey progress % (travelled vs initial distance from first fix) */}
         {journeyId && progress != null && (
-          <div className="ax-stack" style={{ gap: 4, marginBlockStart: "var(--ax-space-200)" }}>
-            <div className="ax-row" style={{ justifyContent: "space-between" }}>
-              <span className="ax-caption">{strings.progressLabel}</span>
-              <span className="ax-caption ax-numeric">{progress.toFixed(0)}%</span>
+          <div className="sq-stack" style={{ gap: 4, marginBlockStart: "var(--space-4)" }}>
+            <div className="sq-row" style={{ justifyContent: "space-between" }}>
+              <span className="sq-caption">{strings.progressLabel}</span>
+              <span className="sq-caption sq-numeric">{progress.toFixed(0)}%</span>
             </div>
             <div role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}
               aria-label={strings.progressLabel}
-              style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-border)", overflow: "hidden" }}>
-              <div style={{ blockSize: "100%", inlineSize: `${progress}%`, background: "var(--ax-color-primary)", borderRadius: "inherit" }} />
+              style={{ blockSize: 8, borderRadius: "var(--radius-full)", background: "var(--border-subtle)", overflow: "hidden" }}>
+              <div style={{ blockSize: "100%", inlineSize: `${progress}%`, background: "var(--action-primary)", borderRadius: "inherit" }} />
             </div>
-            <span className="ax-caption ax-numeric">
+            <span className="sq-caption sq-numeric">
               {fmt(strings.progressCaption, { remaining: (remainingD ?? 0).toFixed(0), initial: (initialD ?? 0).toFixed(0) })}
             </span>
           </div>
@@ -1010,27 +1010,27 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         advisoryLabel={strings.aiAdvisory}
       />
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
-          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="ax-lozenge ax-lozenge--info">SB20 · ENG-08</span></h4>
-          <span className="ax-row" style={{ gap: 8, alignItems: "center" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
+          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="sq-lozenge sq-lozenge--info">SB20 · ENG-08</span></h4>
+          <span className="sq-row" style={{ gap: 8, alignItems: "center" }}>
             {/* M04-037 — live distance-to-fence readout while journey active */}
             {live && !checkedIn && (
-              <span className={`ax-lozenge ${arrivalDetected ? "ax-lozenge--success" : "ax-lozenge--info"}`}>
+              <span className={`sq-lozenge ${arrivalDetected ? "sq-lozenge--success" : "sq-lozenge--info"}`}>
                 {arrivalDetected ? strings.arrivalDetected : fmt(strings.liveDistance, { d: live.d.toFixed(0), radius: arrivalRadius })}
               </span>
             )}
             {checkin && (
-              <span className={`ax-lozenge ${checkin.inside ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+              <span className={`sq-lozenge ${checkin.inside ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
                 {fmt(checkin.inside ? strings.insideFence : strings.outsideFence, { d: checkin.d.toFixed(0) })}
               </span>
             )}
           </span>
         </div>
-        <div style={{ blockSize: 240, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
+        <div style={{ blockSize: 240, borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border-subtle)" }} dir="ltr">
           <GeoMap center={[visit.dispatch_lat, visit.dispatch_lng]} zoom={15} markers={mapMarkers} height="100%" />
         </div>
-        <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+        <p className="sq-caption" style={{ marginBlockStart: "var(--space-2)" }}>
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
         </p>
       </div>
@@ -1038,19 +1038,19 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           The correction never overwrites the planned/registered coordinates;
           both stay visible with source and capture context. */}
       {journeySchemaAvailable && latestCorrection && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="location-correction-display">
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.correctionHeading}</h4>
-          <div className="ax-grid-2">
-            <div className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
-              <span className="ax-caption">{strings.correctionOriginalLabel}</span>
-              <div className="ax-numeric">{visit.dispatch_lat.toFixed(6)}, {visit.dispatch_lng.toFixed(6)}</div>
-              <span className="ax-caption">{visit.dispatch_source === "official" ? strings.officialLabel.replace("{name}", visit.factories.name) : strings.plannedLabel.replace("{name}", visit.factories.name)}</span>
+        <div className="sq-surface" style={{ padding: "var(--space-6)" }} data-testid="location-correction-display">
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.correctionHeading}</h4>
+          <div className="sq-grid-2">
+            <div className="sq-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+              <span className="sq-caption">{strings.correctionOriginalLabel}</span>
+              <div className="sq-numeric">{visit.dispatch_lat.toFixed(6)}, {visit.dispatch_lng.toFixed(6)}</div>
+              <span className="sq-caption">{visit.dispatch_source === "official" ? strings.officialLabel.replace("{name}", visit.factories.name) : strings.plannedLabel.replace("{name}", visit.factories.name)}</span>
             </div>
-            <div className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
-              <span className="ax-caption">{strings.correctionCorrectedLabel}</span>
-              <div className="ax-numeric">{Number(latestCorrection.corrected_lat).toFixed(6)}, {Number(latestCorrection.corrected_lng).toFixed(6)}{latestCorrection.accuracy_m != null ? ` · ±${Number(latestCorrection.accuracy_m).toFixed(1)}m` : ""}</div>
-              <span className="ax-caption">{latestCorrection.reason}</span><br />
-              <span className="ax-caption ax-numeric">{fmt(strings.correctionMeta, { at: formatDateTime(latestCorrection.corrected_at, dLang), context: latestCorrection.capture_context, source: latestCorrection.source })}</span>
+            <div className="sq-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+              <span className="sq-caption">{strings.correctionCorrectedLabel}</span>
+              <div className="sq-numeric">{Number(latestCorrection.corrected_lat).toFixed(6)}, {Number(latestCorrection.corrected_lng).toFixed(6)}{latestCorrection.accuracy_m != null ? ` · ±${Number(latestCorrection.accuracy_m).toFixed(1)}m` : ""}</div>
+              <span className="sq-caption">{latestCorrection.reason}</span><br />
+              <span className="sq-caption sq-numeric">{fmt(strings.correctionMeta, { at: formatDateTime(latestCorrection.corrected_at, dLang), context: latestCorrection.capture_context, source: latestCorrection.source })}</span>
             </div>
           </div>
         </div>
@@ -1059,36 +1059,36 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           is active (also reachable from the outside-fence panel below). */}
       {journeySchemaAvailable && journeyId && !checkedIn && !cancelApproved && (
         !showCorrection ? (
-          <div className="ax-row">
-            <button className="ax-btn ax-btn--subtle" onClick={() => setShowCorrection(true)} disabled={busy}>{strings.correctionAffordance}</button>
+          <div className="sq-row">
+            <button className="sq-btn sq-btn--subtle" onClick={() => setShowCorrection(true)} disabled={busy}>{strings.correctionAffordance}</button>
           </div>
         ) : (
-          <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="location-correction-heading"
-            style={{ padding: "var(--ax-space-300)" }} data-testid="location-correction-panel">
-            <h4 id="location-correction-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.correctionHeading}</h4>
-            <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.correctionCaption}</p>
-            <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
-              <label className="ax-field"><span className="ax-field__label">{strings.correctionReason}</span>
-                <textarea className="ax-textarea" rows={2} value={correctionReason} onChange={e => setCorrectionReason(e.target.value)} placeholder={strings.correctionReasonPlaceholder} />
+          <div className="sq-surface" role="dialog" aria-modal="false" aria-labelledby="location-correction-heading"
+            style={{ padding: "var(--space-6)" }} data-testid="location-correction-panel">
+            <h4 id="location-correction-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.correctionHeading}</h4>
+            <p className="sq-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.correctionCaption}</p>
+            <div className="sq-stack" style={{ gap: "var(--space-3)" }}>
+              <label className="sq-field"><span className="sq-field__label">{strings.correctionReason}</span>
+                <textarea className="sq-textarea" rows={2} value={correctionReason} onChange={e => setCorrectionReason(e.target.value)} placeholder={strings.correctionReasonPlaceholder} />
               </label>
-              <label className="ax-field"><span className="ax-field__label">{strings.correctionEvidence}</span>
-                <input className="ax-input" type="file" accept="image/*" onChange={e => setCorrectionFile(e.target.files?.[0] ?? null)} />
+              <label className="sq-field"><span className="sq-field__label">{strings.correctionEvidence}</span>
+                <input className="sq-input" type="file" accept="image/*" onChange={e => setCorrectionFile(e.target.files?.[0] ?? null)} />
               </label>
-              <div className="ax-row" style={{ justifyContent: "flex-end", gap: 8 }}>
-                <button className="ax-btn ax-btn--subtle" onClick={() => { setShowCorrection(false); setCorrectionReason(""); setCorrectionFile(null); }}>{strings.correctionCancel}</button>
-                <button className="ax-btn ax-btn--field" onClick={submitCorrection} disabled={busy || !correctionReason.trim()}>{strings.correctionSubmit}</button>
+              <div className="sq-row" style={{ justifyContent: "flex-end", gap: 8 }}>
+                <button className="sq-btn sq-btn--subtle" onClick={() => { setShowCorrection(false); setCorrectionReason(""); setCorrectionFile(null); }}>{strings.correctionCancel}</button>
+                <button className="sq-btn sq-btn--field" onClick={submitCorrection} disabled={busy || !correctionReason.trim()}>{strings.correctionSubmit}</button>
               </div>
             </div>
           </div>
         )
       )}
       {pendingOverride && !checkedIn && (
-        <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
-          style={{ padding: "var(--ax-space-300)", borderColor: "var(--ax-color-critical)" }}>
-          <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.overrideHeading}</h4>
-          <p className="ax-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
-          <label className="ax-field"><span className="ax-field__label">{strings.overrideReasonCode}</span>
-            <select className="ax-select" value={overrideReasonKey} onChange={e => {
+        <div className="sq-surface" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
+          style={{ padding: "var(--space-6)", borderColor: "var(--status-critical)" }}>
+          <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.overrideHeading}</h4>
+          <p className="sq-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
+          <label className="sq-field"><span className="sq-field__label">{strings.overrideReasonCode}</span>
+            <select className="sq-select" value={overrideReasonKey} onChange={e => {
               setOverrideReasonKey(e.target.value);
               if (e.target.value !== "safety_security") setOverrideSafetyException(false);
             }}>
@@ -1096,60 +1096,60 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               {overrideReasons.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
             </select>
           </label>
-          <label className="ax-field"><span className="ax-field__label">{strings.overrideReason}</span>
-            <textarea className="ax-textarea" rows={2} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} />
+          <label className="sq-field"><span className="sq-field__label">{strings.overrideReason}</span>
+            <textarea className="sq-textarea" rows={2} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} />
           </label>
-          <label className="ax-field"><span className="ax-field__label">{strings.overrideEvidence}</span>
-            <input className="ax-input" type="file" accept="image/*" onChange={e => setOverrideFile(e.target.files?.[0] ?? null)} />
+          <label className="sq-field"><span className="sq-field__label">{strings.overrideEvidence}</span>
+            <input className="sq-input" type="file" accept="image/*" onChange={e => setOverrideFile(e.target.files?.[0] ?? null)} />
           </label>
-          <label className="ax-check ax-check--field">
+          <label className="sq-check sq-check--field">
             <input type="checkbox" checked={overrideSafetyException} disabled={overrideReasonKey !== "safety_security"}
               onChange={e => setOverrideSafetyException(e.target.checked)} />
             <span>{strings.overrideSafetyException}</span>
           </label>
-          <div className="ax-row" style={{ justifyContent: "flex-end", gap: 8 }}>
+          <div className="sq-row" style={{ justifyContent: "flex-end", gap: 8 }}>
             {journeySchemaAvailable && (
-              <button className="ax-btn ax-btn--subtle" onClick={() => { setPendingOverride(null); setShowCorrection(true); }}>{strings.correctionAffordance}</button>
+              <button className="sq-btn sq-btn--subtle" onClick={() => { setPendingOverride(null); setShowCorrection(true); }}>{strings.correctionAffordance}</button>
             )}
-            <button className="ax-btn ax-btn--subtle" onClick={() => { setPendingOverride(null); setOverrideReason(""); setOverrideReasonKey(""); setOverrideFile(null); setOverrideSafetyException(false); }}>{strings.overrideCancel}</button>
-            <button className="ax-btn ax-btn--danger" onClick={requestGpsOverride}
+            <button className="sq-btn sq-btn--subtle" onClick={() => { setPendingOverride(null); setOverrideReason(""); setOverrideReasonKey(""); setOverrideFile(null); setOverrideSafetyException(false); }}>{strings.overrideCancel}</button>
+            <button className="sq-btn sq-btn--danger" onClick={requestGpsOverride}
               disabled={busy || !overrideReasonKey || !overrideReason.trim() || (!overrideSafetyException && !overrideFile)}>{strings.overrideConfirm}</button>
           </div>
         </div>
       )}
       {(overrideState === "queued" || overrideState === "pending") && !checkedIn && (
-        <div className="ax-banner ax-banner--warning" role="status"><div>
+        <div className="sq-banner sq-banner--warning" role="status"><div>
           {overrideState === "queued" ? strings.overrideQueued : strings.overridePending}
-          {initialOverride?.status === "pending" && <> · <span className="ax-numeric">{formatDateTime(initialOverride.expires_at, dLang)}</span></>}
+          {initialOverride?.status === "pending" && <> · <span className="sq-numeric">{formatDateTime(initialOverride.expires_at, dLang)}</span></>}
         </div></div>
       )}
       {overrideState === "approved" && (
-        <div className="ax-banner ax-banner--success" role="status"><div>{strings.overrideApproved}</div></div>
+        <div className="sq-banner sq-banner--success" role="status"><div>{strings.overrideApproved}</div></div>
       )}
       {overrideState === "closed" && (
-        <div className="ax-banner ax-banner--critical" role="status"><div>{strings.overrideClosed}</div></div>
+        <div className="sq-banner sq-banner--critical" role="status"><div>{strings.overrideClosed}</div></div>
       )}
       {/* M04-050..054 — arrival confirmation, context cards and journey summary. */}
       {checkedIn && (
-        <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-label={strings.cardsVisitTitle}>
-          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+        <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-label={strings.cardsVisitTitle}>
+          <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
             <div>
-              <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cardsVisitTitle}</h4>
-              <p className="ax-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
+              <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.cardsVisitTitle}</h4>
+              <p className="sq-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
             </div>
-            <span className="ax-lozenge ax-lozenge--success">{strings.arrivalDetected}</span>
+            <span className="sq-lozenge sq-lozenge--success">{strings.arrivalDetected}</span>
           </div>
-          <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlock: "var(--ax-space-200)" }}>
-            <span className="ax-badge">{strings.progressLabel}: {progress == null ? "—" : `${progress.toFixed(0)}%`}</span>
-            <span className="ax-badge">{strings.lblCoords}: {checkin ? `${checkin.lat.toFixed(5)}, ${checkin.lng.toFixed(5)}` : "—"}</span>
-            <span className="ax-badge">GPS ±{checkin?.acc.toFixed(1) ?? "—"}m</span>
-            <span className="ax-badge">{strings.lblWindow}: {journeyDurationM == null ? "—" : `${journeyDurationM} min`}</span>
-            <span className="ax-badge">{Math.round(distanceTravelledM)} m travelled</span>
+          <div className="sq-row" style={{ gap: "var(--space-4)", flexWrap: "wrap", marginBlock: "var(--space-4)" }}>
+            <span className="sq-badge">{strings.progressLabel}: {progress == null ? "—" : `${progress.toFixed(0)}%`}</span>
+            <span className="sq-badge">{strings.lblCoords}: {checkin ? `${checkin.lat.toFixed(5)}, ${checkin.lng.toFixed(5)}` : "—"}</span>
+            <span className="sq-badge">GPS ±{checkin?.acc.toFixed(1) ?? "—"}m</span>
+            <span className="sq-badge">{strings.lblWindow}: {journeyDurationM == null ? "—" : `${journeyDurationM} min`}</span>
+            <span className="sq-badge">{Math.round(distanceTravelledM)} m travelled</span>
           </div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+          <div className="sq-stack" style={{ gap: "var(--space-3)" }}>
             <details open>
-              <summary style={{ cursor: "pointer", font: "var(--ax-text-body-strong)" }}>{strings.cardsFactoryTitle}</summary>
-              <dl className="ax-detail-grid" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+              <summary style={{ cursor: "pointer", font: "var(--type-body-strong)" }}>{strings.cardsFactoryTitle}</summary>
+              <dl className="sq-detail-grid" style={{ marginBlockStart: "var(--space-3)" }}>
                 <dt>{strings.lblCode}</dt><dd>{visit.factories.factory_code ?? "—"}</dd>
                 <dt>{strings.lblCity}</dt><dd>{visit.factories.city ?? "—"}</dd>
                 <dt>{strings.lblRegion}</dt><dd>{visit.factories.region ?? "—"}</dd>
@@ -1160,8 +1160,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               </dl>
             </details>
             <details open>
-              <summary style={{ cursor: "pointer", font: "var(--ax-text-body-strong)" }}>{strings.cardsVisitTitle}</summary>
-              <dl className="ax-detail-grid" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+              <summary style={{ cursor: "pointer", font: "var(--type-body-strong)" }}>{strings.cardsVisitTitle}</summary>
+              <dl className="sq-detail-grid" style={{ marginBlockStart: "var(--space-3)" }}>
                 <dt>{strings.lblType}</dt><dd>{visit.visit_type}</dd>
                 <dt>{strings.lblMode}</dt><dd>{visit.execution_mode}</dd>
                 <dt>{strings.lblWindow}</dt><dd>{formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</dd>
@@ -1173,18 +1173,18 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             </details>
           </div>
           {arrivalEventId && (
-            <div className="ax-surface" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
-              <h5 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h5>
-              <p className="ax-caption">{strings.arrivalEvidenceCaption}</p>
-              {arrivalEvidenceSaved ? <span className="ax-lozenge ax-lozenge--success">{strings.arrivalSaved}</span> : (
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
-                  <label className="ax-field"><span className="ax-field__label">{strings.arrivalPhoto}</span>
-                    <input className="ax-input" type="file" accept="image/*" onChange={e => setArrivalFile(e.target.files?.[0] ?? null)} />
+            <div className="sq-surface" style={{ padding: "var(--space-4)", marginBlockStart: "var(--space-4)" }}>
+              <h5 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.arrivalEvidenceHeading}</h5>
+              <p className="sq-caption">{strings.arrivalEvidenceCaption}</p>
+              {arrivalEvidenceSaved ? <span className="sq-lozenge sq-lozenge--success">{strings.arrivalSaved}</span> : (
+                <div className="sq-stack" style={{ gap: "var(--space-2)" }}>
+                  <label className="sq-field"><span className="sq-field__label">{strings.arrivalPhoto}</span>
+                    <input className="sq-input" type="file" accept="image/*" onChange={e => setArrivalFile(e.target.files?.[0] ?? null)} />
                   </label>
-                  <label className="ax-field"><span className="ax-field__label">{strings.arrivalComment}</span>
-                    <textarea className="ax-textarea" rows={2} value={arrivalComment} onChange={e => setArrivalComment(e.target.value)} />
+                  <label className="sq-field"><span className="sq-field__label">{strings.arrivalComment}</span>
+                    <textarea className="sq-textarea" rows={2} value={arrivalComment} onChange={e => setArrivalComment(e.target.value)} />
                   </label>
-                  <button className="ax-btn" onClick={saveArrivalEvidence} disabled={busy || (!arrivalFile && !arrivalComment.trim())}>{strings.arrivalSave}</button>
+                  <button className="sq-btn" onClick={saveArrivalEvidence} disabled={busy || (!arrivalFile && !arrivalComment.trim())}>{strings.arrivalSave}</button>
                 </div>
               )}
             </div>
@@ -1193,14 +1193,14 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       )}
       {/* M03-010 — mandatory pre-start confirmations, persisted to journey_sessions.prestart */}
       {checkedIn && !started && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.prestartHeading}</h4>
-          <div className="ax-stack" style={{ gap: 8 }}>
-            <label className="ax-check ax-check--field">
+        <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.prestartHeading}</h4>
+          <div className="sq-stack" style={{ gap: 8 }}>
+            <label className="sq-check sq-check--field">
               <input type="checkbox" checked={repPresent} onChange={e => setRepPresent(e.target.checked)} />
               <span>{strings.prestartRep}</span>
             </label>
-            <label className="ax-check ax-check--field">
+            <label className="sq-check sq-check--field">
               <input type="checkbox" checked={locConfirmed} onChange={e => setLocConfirmed(e.target.checked)} />
               <span>{strings.prestartLoc}</span>
             </label>
@@ -1210,24 +1210,24 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {/* Phase 3B — readiness gate: package download and journey start stay
           locked (never hidden) until the preparation is confirmed Ready. */}
       {preparationGated && (
-        <div className="ax-banner ax-banner--warning" role="status" data-testid="readiness-gate-reason"><div>{strings.preparationRequired}</div></div>
+        <div className="sq-banner sq-banner--warning" role="status" data-testid="readiness-gate-reason"><div>{strings.preparationRequired}</div></div>
       )}
-      <div className="ax-row">
-        <button className="ax-btn ax-btn--field" onClick={downloadPackage} disabled={cached || !!preparationGated || !visit.package_versions || cancelApproved}>{strings.step1}</button>
-        <button className="ax-btn ax-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy || !!preparationGated || cancelApproved}>{strings.step2}</button>
-        <button className="ax-btn ax-btn--field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none" || cancelApproved}>{strings.step3}</button>
+      <div className="sq-row">
+        <button className="sq-btn sq-btn--field" onClick={downloadPackage} disabled={cached || !!preparationGated || !visit.package_versions || cancelApproved}>{strings.step1}</button>
+        <button className="sq-btn sq-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy || !!preparationGated || cancelApproved}>{strings.step2}</button>
+        <button className="sq-btn sq-btn--field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none" || cancelApproved}>{strings.step3}</button>
         {started && !cancelApproved
-          ? <a className="ax-btn ax-btn--field ax-btn--prominent" href={`/field/inspection/${existing!.id}`}>{strings.resume}</a>
-          : <button className="ax-btn ax-btn--field ax-btn--prominent" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed || cancelApproved}>{strings.step4}</button>}
+          ? <a className="sq-btn sq-btn--field sq-btn--prominent" href={`/field/inspection/${existing!.id}`}>{strings.resume}</a>
+          : <button className="sq-btn sq-btn--field sq-btn--prominent" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed || cancelApproved}>{strings.step4}</button>}
       </div>
       {/* ENG-06 / FLD-GEO-005 — manual exception record while the journey is active */}
       {journeyId && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.exceptionHeading}</h4>
-          <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <input className="ax-input" style={{ flex: 1, minInlineSize: 220 }} value={exceptionNote}
+        <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.exceptionHeading}</h4>
+          <div className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <input className="sq-input" style={{ flex: 1, minInlineSize: 220 }} value={exceptionNote}
               onChange={e => setExceptionNote(e.target.value)} placeholder={strings.exceptionPlaceholder} />
-            <button className="ax-btn" onClick={reportException} disabled={busy || !exceptionNote.trim() || (!live && !checkin)}>{strings.exceptionSend}</button>
+            <button className="sq-btn" onClick={reportException} disabled={busy || !exceptionNote.trim() || (!live && !checkin)}>{strings.exceptionSend}</button>
           </div>
         </div>
       )}
@@ -1236,36 +1236,36 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           request_visit_cancellation flag flow; once on_the_way/arrived (and the
           journey schema probe passed) the request goes to Operations via
           request_active_cancellation and stays pending until decided. */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cancelHeading}</h4>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.cancelHeading}</h4>
+        <p className="sq-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.cancelCaption}</p>
         {cancelApproved ? (
-          <span className="ax-lozenge ax-lozenge--critical">{strings.cancelApprovedCopy}</span>
+          <span className="sq-lozenge sq-lozenge--critical">{strings.cancelApprovedCopy}</span>
         ) : activeCancellationPhase && activeCancel?.status === "pending" ? (
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
-            <span className="ax-lozenge ax-lozenge--warning">{strings.cancelPendingActive}</span>
-            <span className="ax-caption ax-numeric">
+          <div className="sq-stack" style={{ gap: "var(--space-2)" }}>
+            <span className="sq-lozenge sq-lozenge--warning">{strings.cancelPendingActive}</span>
+            <span className="sq-caption sq-numeric">
               {(reasons.find(r => r.key === activeCancel.reason_key)?.label ?? activeCancel.reason_key)} · {formatDateTime(activeCancel.requested_at, dLang)}
             </span>
           </div>
         ) : cancelRequested ? (
-          <span className="ax-lozenge ax-lozenge--warning">{strings.cancelRequestedChip}</span>
+          <span className="sq-lozenge sq-lozenge--warning">{strings.cancelRequestedChip}</span>
         ) : reasons.length === 0 ? (
-          <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
+          <p className="sq-caption" style={{ color: "var(--status-critical)" }}>{strings.cancelReasonsMissing}</p>
         ) : (
-          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
-            <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>
-              <select className="ax-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
+          <div className="sq-stack" style={{ gap: "var(--space-3)" }}>
+            <label className="sq-field"><span className="sq-field__label">{strings.cancelSelectReason}</span>
+              <select className="sq-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
                 <option value="">\u2014</option>
                 {reasons.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
             </label>
-            <textarea className="ax-textarea" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
-            <label className="ax-field"><span className="ax-field__label">{strings.cancelEvidenceLabel}</span>
-              <input className="ax-input" type="file" accept="image/*" onChange={e => setCancelFile(e.target.files?.[0] ?? null)} />
+            <textarea className="sq-textarea" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
+            <label className="sq-field"><span className="sq-field__label">{strings.cancelEvidenceLabel}</span>
+              <input className="sq-input" type="file" accept="image/*" onChange={e => setCancelFile(e.target.files?.[0] ?? null)} />
             </label>
-            <div className="ax-row" style={{ justifyContent: "flex-end" }}>
-              <button className="ax-btn ax-btn--danger"
+            <div className="sq-row" style={{ justifyContent: "flex-end" }}>
+              <button className="sq-btn sq-btn--danger"
                 onClick={activeCancellationPhase ? submitActiveCancellation : submitCancellation}
                 disabled={busy || !cancelReason || (activeCancellationPhase && cancelReason === "other" && !cancelComment.trim())}>{strings.cancelSubmit}</button>
             </div>
@@ -1273,21 +1273,21 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         )}
       </div>
       {/* F3 M03-006 inspector return for blocked visits (request + notify planner). */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.returnHeading}</h4>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.returnCaption}</p>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.returnHeading}</h4>
+        <p className="sq-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.returnCaption}</p>
         {returnRequested ? (
-          <span className="ax-lozenge ax-lozenge--warning">{strings.returnRequestedChip}</span>
+          <span className="sq-lozenge sq-lozenge--warning">{strings.returnRequestedChip}</span>
         ) : (
-          <div className="ax-row" style={{ gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <textarea className="ax-textarea" style={{ flex: 1, minInlineSize: 220 }} rows={2} value={returnReason}
+          <div className="sq-row" style={{ gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
+            <textarea className="sq-textarea" style={{ flex: 1, minInlineSize: 220 }} rows={2} value={returnReason}
               onChange={e => setReturnReason(e.target.value)} placeholder={strings.returnPlaceholder} />
-            <button className="ax-btn" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
+            <button className="sq-btn" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
           </div>
         )}
       </div>
-      {log.length > 0 && <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <ul className="ax-timeline">{log.map((m, i) => <li key={i}><div>{m}</div></li>)}</ul>
+      {log.length > 0 && <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <ul className="sq-timeline">{log.map((m, i) => <li key={i}><div>{m}</div></li>)}</ul>
       </div>}
     </div>
   );
