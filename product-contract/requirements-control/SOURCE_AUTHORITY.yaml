@@ -1,46 +1,17 @@
 schema_version: "1.0"
-run_id: "REQ-CONSOLIDATION-2026-07-22"
-status: "R0_FAIL"
+run_id: "REQ-CORRECTION-2026-07-22"
+status: "R0_CORRECTION_PACKAGE_READY_FOR_INDEPENDENT_ACCEPTANCE"
 repository: "/Users/vikramindla/Developer/Inspection"
-branch: "main"
-head_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
-docs_root: "/Users/vikramindla/Desktop/Inspection Documentation"
-docs_root_access: "DENIED_BY_OS_DIRECTORY_ACCESS"
-application_code_modified_by_run: false
-authorities:
-  - id: "A1_CUSTOMER_MANDATORY"
-    description: "Customer/business documentation; mandatory baseline."
-  - id: "A2_CUSTOMER_API_CONTRACT"
-    description: "Customer-supplied API and JSON contracts."
-  - id: "A3_APPROVED_CHANGE_DECISION"
-    description: "Approved change decisions only."
-  - id: "B1_RECONCILED_REQUIREMENT_ARTEFACT"
-    description: "Secondary comparison material; never proof of source extraction."
-  - id: "B2_REPOSITORY_PRODUCT_CONTRACT"
-    description: "Repository contract and governance controls."
-  - id: "C1_DESIGN_REFERENCE"
-    description: "Design reference only."
-  - id: "C2_IMPLEMENTATION_EVIDENCE"
-    description: "Implementation evidence only."
-  - id: "C3_TEST_EVIDENCE"
-    description: "Test evidence only."
-  - id: "D1_STRATEGIC_RECOMMENDATION"
-    description: "Recommendation only."
-  - id: "X1_EXCLUDED_INVALID_SOURCE"
-    description: "Invalid or fabricated source; never used for requirements."
-source_baseline:
-  expected_workbook: "Inspection_Project_Customer_Auditor_Baseline.xlsx"
-  expected_requirement_count: 478
-  expected_sheet_count: 9
-  extracted_requirement_count: null
-  extracted_sheet_count: null
-  completeness_percentage: null
-exclusion:
-  name: "MIM Inspection Consolidated Tracker and derivatives"
-  authority: "X1_EXCLUDED_INVALID_SOURCE"
-  reason: "EXCLUDED_BY_PRODUCT_OWNER — fabricated/derived information; not valid requirement authority."
-blockers:
-  - id: "R0-BLOCK-001"
-    description: "Approved external documentation root cannot be enumerated/read in this session."
-  - id: "R0-BLOCK-002"
-    description: "No lossless source extraction or bidirectional source-to-atomic reconciliation can be performed."
+isolated_worktree: "/Users/vikramindla/Inspection-R0-Recovery"
+branch: "docs/requirements-r0-recovery-20260722"
+source_root: "/Users/vikramindla/Inspection-R0-Control/approved-sources"
+manifest_root: "/Users/vikramindla/Inspection-R0-Control/manifests-corrected"
+source_file_count: 9
+source_unit_count: 7341
+atomic_requirement_count: 2263
+open_decision_count: 5
+conflict_tension_count: 2
+api_endpoint_count: 11
+api_schema_element_count: 33
+prohibited_tracker_present: false
+implementation_design_test_uat: "NOT_ASSESSED_R0"

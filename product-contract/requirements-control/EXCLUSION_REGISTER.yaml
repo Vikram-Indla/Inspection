@@ -1,15 +1,8 @@
 schema_version: "1.0"
-run_id: "REQ-CONSOLIDATION-2026-07-22"
 entries:
   - exclusion_id: "EXC-001"
-    source_name: "MIM Inspection Consolidated Tracker"
-    lineage_scope: "Every renamed, copied, exported, or derivative version whose lineage indicates this tracker."
-    authority_category: "X1_EXCLUDED_INVALID_SOURCE"
+    name: "MIM Inspection Consolidated Tracker and derivatives"
+    authority: "X1_EXCLUDED_INVALID_SOURCE"
     status: "EXCLUDED"
-    reason: "EXCLUDED_BY_PRODUCT_OWNER — fabricated/derived information; not valid requirement authority."
-    use_prohibited_for:
-      - "requirement creation"
-      - "requirement enrichment"
-      - "validation"
-      - "counting"
-      - "reconciliation"
+    reason: "EXCLUDED_BY_PRODUCT_OWNER — fabricated or derivative information; prohibited as requirement authority."
+    prohibited_uses: [creation, enrichment, counts, acceptance, gaps, design, testing, UAT]
