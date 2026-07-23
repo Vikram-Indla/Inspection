@@ -8,13 +8,13 @@
 // cancelled/expired/republished/rescheduled/assignment rows land on the visit
 // detail. Opening a row also records its read receipt.
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
-import { isNotificationUnread, notificationReadPatch } from "@/lib/notification-read";
-import { shellNotificationVisitHref } from "@/lib/shell-navigation";
+import { isNotificationUnread, notificationHref, notificationReadPatch } from "@/lib/notification-read";
 
 export type BellStrings = {
   label: string;            // accessible name for the toggle
@@ -30,26 +30,6 @@ export type BellStrings = {
   notConfigured: string;    // delivery adapter pending (honest state)
 };
 
-// M10 / PLN-REQ-009 — canonical entry points for planning events. Every
-// planning notification carries payload.visit_id (emission sites:
-// visits/[id]/actions.ts, expire_lapsed_visits 0025/0030). Returned visits
-// deep-link to the detail FOCUSED on the return block; the other planning
-// events land on the detail itself. Non-planning events have no link.
-export function notificationHref(
-  eventKey: string,
-  payload: Record<string, unknown> | null,
-  fieldOnly = false,
-): string | null {
-  const visitId = typeof payload?.visit_id === "string" ? payload.visit_id : null;
-  if (!visitId) return null;
-  let webHref: string | null = null;
-  if (eventKey === "visit_returned") webHref = `/visits/${visitId}?focus=return`;
-  if (["visit_cancelled", "visit_expired", "visit_republished", "visit_rescheduled", "assignment"].includes(eventKey)) {
-    webHref = `/visits/${visitId}`;
-  }
-  return webHref ? shellNotificationVisitHref(visitId, webHref, fieldOnly) : null;
-}
-
 type Row = {
   id: string; event_key: string; payload: Record<string, unknown> | null;
   channel: string; delivery_state: string; read_at: string | null; created_at: string;
@@ -63,7 +43,7 @@ const isUnread = (r: Row) => isNotificationUnread(r);
 // each mount. A fresh-enough cached snapshot serves remounts; the 30 s poll
 // and opening the dropdown still hit the database. Marking rows read updates
 // the cache in place so the badge never goes stale between polls.
-let snapshot: { at: number; rows: Row[]; unreadTotal: number; userId: string } | null = null;
+let snapshot: { at: number; rows: Row[]; unreadTotal: number; userId: string; visitNames: Record<string, string> } | null = null;
 const SNAPSHOT_TTL_MS = POLL_MS;
 
 function BellIcon() {
@@ -79,10 +59,13 @@ function BellIcon() {
 export default function NotificationBell({ strings, locale, fieldOnly = false }: { strings: BellStrings; locale: Locale; fieldOnly?: boolean }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
+  const [visitNames, setVisitNames] = useState<Record<string, string>>({});
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left?: number; right?: number } | null>(null);
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState("");
   const [authed, setAuthed] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const sbRef = useRef(supabaseBrowser());
 
   const load = useCallback(async (force = false) => {
@@ -94,6 +77,7 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
       setErr("");
       setRows(snapshot.rows);
       setUnreadTotal(snapshot.unreadTotal);
+      setVisitNames(snapshot.visitNames);
       return;
     }
     const [{ data, error }, { count }] = await Promise.all([
@@ -112,9 +96,21 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
     setErr("");
     const rows = (data ?? []) as Row[];
     const unreadTotal = count ?? 0;
-    snapshot = { at: Date.now(), rows, unreadTotal, userId: user.id };
+    // Payloads only carry visit_id (a raw UUID) — resolve to the real factory
+    // name in one batched follow-up query rather than showing the ID itself
+    // (same fix as the dedicated /field/notifications list page).
+    const visitIds = Array.from(new Set(rows.map(r => typeof r.payload?.visit_id === "string" ? r.payload.visit_id as string : null).filter((v): v is string => !!v)));
+    const visitNames: Record<string, string> = {};
+    if (visitIds.length) {
+      const { data: visitRows } = await sb.from("visits").select("id, factories(name)").in("id", visitIds);
+      for (const v of (visitRows ?? []) as unknown as { id: string; factories: { name: string | null } | null }[]) {
+        if (v.factories?.name) visitNames[v.id] = v.factories.name;
+      }
+    }
+    snapshot = { at: Date.now(), rows, unreadTotal, userId: user.id, visitNames };
     setRows(rows);
     setUnreadTotal(unreadTotal);
+    setVisitNames(visitNames);
   }, []);
 
   useEffect(() => {
@@ -123,11 +119,42 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
     return () => clearInterval(t);
   }, [load]);
 
-  // Light dismiss on outside click.
+  // Popover portals to document.body (see render below) so it never sits
+  // inside the sticky pagehead's compositing subtree — that reliably failed
+  // to paint the popover above later sibling content in that header
+  // (same root cause as the global search dropdown fix, DR-36/DR-51),
+  // regardless of z-index. Position is measured off the trigger and kept in
+  // sync while open.
+  useEffect(() => {
+    if (!open) return;
+    const measure = () => {
+      const rect = wrapRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const rtl = getComputedStyle(document.documentElement).direction === "rtl";
+      setPopoverPos(rtl
+        ? { top: rect.bottom + 6, left: rect.left }
+        : { top: rect.bottom + 6, right: window.innerWidth - rect.right });
+    };
+    measure();
+    window.addEventListener("scroll", measure, true);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", measure, true);
+      window.removeEventListener("resize", measure);
+    };
+  }, [open]);
+
+  // Light dismiss on outside click. The popover is portaled to document.body
+  // (see render below), so it's no longer a DOM descendant of wrapRef — a
+  // click inside the portaled popover itself must also count as "inside",
+  // or every click there (e.g. "Mark read") closes the menu before it runs.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (wrapRef.current?.contains(target)) return;
+      if (popoverRef.current?.contains(target)) return;
+      setOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
@@ -155,7 +182,9 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
   if (!authed) return null;
   const unread = Math.max(unreadTotal, rows.filter(isUnread).length);
   const detail = (p: Record<string, unknown> | null) => {
-    const cand = [p?.reason, p?.decision, p?.factory, p?.inspection_id, p?.visit_id, p?.session_id]
+    const visitId = typeof p?.visit_id === "string" ? p.visit_id : null;
+    if (visitId && visitNames[visitId]) return visitNames[visitId];
+    const cand = [p?.reason, p?.decision, p?.factory, p?.inspection_id, p?.session_id]
       .find(x => typeof x === "string" && x);
     return (cand as string | undefined) ?? "";
   };
@@ -166,9 +195,9 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
         <BellIcon />
         {unread > 0 && <span className="ax-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>
-      {open && (
-        <div className="ax-popover" role="dialog" aria-label={strings.heading}
-          style={{ position: "absolute", insetBlockStart: "calc(100% + 6px)", insetInlineEnd: 0, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+      {open && popoverPos && typeof document !== "undefined" && createPortal(
+        <div ref={popoverRef} className="ax-popover" role="dialog" aria-label={strings.heading}
+          style={{ position: "fixed", top: popoverPos.top, left: popoverPos.left, right: popoverPos.right, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between" }}>
             <strong>{strings.heading}</strong>
             {unread > 0 && <button className="ax-btn ax-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
@@ -205,7 +234,8 @@ export default function NotificationBell({ strings, locale, fieldOnly = false }:
               );
             })}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

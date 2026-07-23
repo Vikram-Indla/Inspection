@@ -32,6 +32,13 @@ export async function createFieldIncidentReport(_: FieldIncidentResult, formData
     resulting_damage: optionalText(formData, "resulting_damage"),
     incident_type: optionalText(formData, "incident_type"),
     preliminary_incident_description: optionalText(formData, "preliminary_incident_description"),
+    // O-13/IPAD-FIGMA-DELTA §2B — mid-visit incident logging anchors the
+    // report to the active visit/factory/inspection when reached in that
+    // context; the standalone route (no query params) leaves these null,
+    // same as before this change.
+    factory_id: optionalText(formData, "factory_id"),
+    visit_id: optionalText(formData, "visit_id"),
+    inspection_id: optionalText(formData, "inspection_id"),
     created_by: user.id,
   });
   if (error) {
@@ -39,6 +46,8 @@ export async function createFieldIncidentReport(_: FieldIncidentResult, formData
     return { error: locale === "ar" ? "تعذر حفظ بلاغ الحادث. لم يتم تغيير أي شيء." : `${NEUTRAL_WRITE_ERROR} Nothing was changed.` };
   }
 
+  const inspectionId = optionalText(formData, "inspection_id");
   revalidatePath("/field/incident-reports");
+  if (inspectionId) revalidatePath(`/field/inspection/${inspectionId}`);
   return { ok: true };
 }

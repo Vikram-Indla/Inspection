@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 40" width="260" height="40">
-  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" fill="none" stroke="#5980a6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(4,4) scale(1.15)"></path>
-  <path d="m9 12 2 2 4-4" fill="none" stroke="#5980a6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(4,4) scale(1.15)"></path>
-  <text x="42" y="26" font-family="Barlow Condensed, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="18" letter-spacing="1.6" fill="#1d1f20">SAQEEL</text>
-  <text x="118" y="27" font-size="19" font-weight="300" fill="#1d1f20" opacity="0.45">|</text>
-  <text x="132" y="27" font-family="IBM Plex Sans Arabic, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="21" fill="#1d1f20">صقيل</text>
+  <g transform="translate(3,3) scale(1.42)">
+    <path d="M12 2.5 4 5.5v6c0 6 3.5 9 8 10 4.5-1 8-4 8-10v-6l-8-3Z" fill="none" stroke="#0d8f63" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="m8.5 12 2.4 2.4L15.8 9" fill="none" stroke="#0d8f63" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </g>
+  <text x="46" y="26" font-family="Barlow Condensed, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="18" letter-spacing="1.6" fill="#1d1f20">SAQEEL</text>
+  <text x="122" y="27" font-size="19" font-weight="300" fill="#1d1f20" opacity="0.45">|</text>
+  <text x="136" y="27" font-family="IBM Plex Sans Arabic, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="21" fill="#1d1f20">صقيل</text>
 </svg>

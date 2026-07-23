@@ -75,11 +75,12 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
   const rows = (data ?? []) as unknown as EstablishmentRow[];
   const pageCount = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
 
-  const tabs = <FieldTabs active="visits" fabHref="/planning/immediate" labels={{
-    dashboard: tr("field.tabs.dashboard", "Dashboard", "لوحة القيادة"),
-    visits: tr("field.tabs.visits", "Visits", "الزيارات"),
-    virtual: tr("field.tabs.virtual", "Virtual", "افتراضي"),
-    fab: tr("field.establishments.createUrgent", "Create urgent visit", "إنشاء زيارة عاجلة"),
+  const tabs = <FieldTabs active="establishments" labels={{
+    home: tr("field.tabs.dashboard", "Dashboard", "لوحة القيادة"),
+    myTasks: tr("field.tabs.visits", "Visits", "الزيارات"),
+    establishments: tr("field.establishments.title", "Field establishments", "المنشآت الميدانية"),
+    notifications: tr("field.notifications.title", "Notifications", "الإشعارات"),
+    account: tr("field.account.title", "Account", "الحساب"),
   }} />;
 
   return (
@@ -120,8 +121,23 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
         </section>
 
         {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{tr("field.establishments.loadError", "Establishments are temporarily unavailable. Nothing was changed.", "المنشآت غير متاحة مؤقتًا. لم يتم تغيير أي شيء.")}</div></div>}
-        {!error && rows.length === 0 && <EmptyState glyph="∅" title={tr("field.establishments.empty", "No establishments found", "لم يتم العثور على منشآت")}
-          body={tr("field.establishments.emptyBody", "Change or clear the search filters. Only records visible through RLS can appear here.", "غيّر مرشحات البحث أو امسحها. لا تظهر هنا إلا السجلات المتاحة عبر صلاحيات الصفوف.")} />}
+        {!error && rows.length === 0 && (
+          <>
+            <EmptyState glyph="∅" title={tr("field.establishments.empty", "No establishments found", "لم يتم العثور على منشآت")}
+              body={tr("field.establishments.emptyBody", "Change or clear the search filters. Only records visible through RLS can appear here.", "غيّر مرشحات البحث أو امسحها. لا تظهر هنا إلا السجلات المتاحة عبر صلاحيات الصفوف.")} />
+            {q && (
+              <div className="ax-banner ax-banner--info" role="status">
+                <div>
+                  <strong>{tr("field.establishments.noLicensedFound", "No licensed establishment found for this search.", "لم يتم العثور على منشأة مرخّصة لهذا البحث.")}</strong>
+                  <div className="ax-caption">{tr("field.establishments.noLicensedFoundHint", "In case there is no licensed establishment, you can create a new one.", "في حال عدم وجود منشأة مرخّصة، يمكن إنشاء منشأة جديدة.")}</div>
+                </div>
+                <Link className="ax-btn ax-btn--prominent ax-btn--field" href="/planning/immediate">
+                  {tr("field.establishments.createUnregistered", "Create unregistered visit", "إنشاء زيارة لمنشأة غير مسجلة")}
+                </Link>
+              </div>
+            )}
+          </>
+        )}
 
         {!error && rows.length > 0 && (
           <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>

@@ -192,9 +192,12 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
               {s.lang === "ar" ? "التفتيش الصناعي" : "INDUSTRIAL INSPECTIONS"}
             </span>
           </span>
-          {/* the story panel (and its theme toggle) is hidden on small screens */}
-          <div className="lg-controls lg-controls--compact">
-            <ThemeToggle className="lg-iconbtn" labels={themeLabels} />
+          <div className="lg-controls lg-controls--end">
+            <a className="lg-lang lg-lang--top" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
+            {/* the story panel (and its own theme toggle) is hidden on small screens */}
+            <div className="lg-controls--compact">
+              <ThemeToggle className="lg-iconbtn" labels={themeLabels} />
+            </div>
           </div>
         </header>
 
@@ -298,10 +301,17 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
         <footer className="lg-foot">
           <span className="lg-foot__item"><IconShieldCheck /> {s.footTrust} · {s.footSecure}</span>
-          <span className="lg-foot__item">{s.securityNote}</span>
-          <div className="lg-foot__row">
-            <span className="lg-foot__copy">{s.footCopyright}</span>
-            <a className="lg-lang" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
+          {/* Ministry mark — moved down from mid-page (Figma node 370:40975
+              "Gov_Logo" ribbon sub-asset), last line of the footer. The old
+              "Saqeel — Ministry of Industry and Mineral Resources © 2026"
+              copyright line was dropped as redundant with this one; its
+              copyright year is folded in here instead of lost. */}
+          <div className="lg-foot__ministry">
+            <img className="lg-foot__ministry-mark" src="/mim-logo-mark.svg"
+              alt={s.lang === "ar" ? "وزارة الصناعة والثروة المعدنية" : "Ministry of Industry and Mineral Resources"} />
+            <span className="lg-foot__ministry-label">
+              {s.lang === "ar" ? "وزارة الصناعة والثروة المعدنية © 2026" : "Ministry of Industry and Mineral Resources © 2026"}
+            </span>
           </div>
         </footer>
       </main>

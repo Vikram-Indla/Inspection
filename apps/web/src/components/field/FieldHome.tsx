@@ -154,8 +154,13 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart, locale }: {
       )}
       <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
         {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
-        <Link href={visitHref(v)} prefetch={false} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
-          aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</Link>
+        <Link href={visitHref(v)} prefetch={false} className="ax-btn ax-btn--subtle ax-btn--icon ax-btn--field" style={{ marginInlineStart: "auto" }}
+          aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)} title={strings.openDetails}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+            style={locale === "ar" ? { transform: "scaleX(-1)" } : undefined}>
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+        </Link>
       </div>
     </div>
   );

@@ -27,7 +27,8 @@ type IncidentRow = {
 // PLAN v7 item 7 · FNS-033 / J-12. Field-only sessions cannot use the existing
 // /incident-reports route because the authenticated layout redirects every
 // non-field route. This route is additive and leaves that web route untouched.
-export default async function FieldIncidentReportsPage() {
+export default async function FieldIncidentReportsPage({ searchParams }: { searchParams: Promise<{ visit?: string; factory?: string; inspection?: string }> }) {
+  const { visit: visitId, factory: factoryId, inspection: inspectionId } = await searchParams;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -55,11 +56,12 @@ export default async function FieldIncidentReportsPage() {
     created: tr("incident.report.created", "Incident report submitted.", "تم إرسال بلاغ الحادث."),
   };
 
-  const tabs = <FieldTabs active="visits" fabHref="/field/incident-reports#new-incident" labels={{
-    dashboard: tr("field.tabs.dashboard", "Dashboard", "لوحة القيادة"),
-    visits: tr("field.tabs.visits", "Visits", "الزيارات"),
-    virtual: tr("field.tabs.virtual", "Virtual", "افتراضي"),
-    fab: tr("field.incidents.new", "New incident", "بلاغ جديد"),
+  const tabs = <FieldTabs active="home" labels={{
+    home: tr("field.tabs.dashboard", "Dashboard", "لوحة القيادة"),
+    myTasks: tr("field.tabs.visits", "Visits", "الزيارات"),
+    establishments: tr("field.establishments.title", "Field establishments", "المنشآت الميدانية"),
+    notifications: tr("field.notifications.title", "Notifications", "الإشعارات"),
+    account: tr("field.account.title", "Account", "الحساب"),
   }} />;
 
   return (
@@ -71,8 +73,10 @@ export default async function FieldIncidentReportsPage() {
           "This writes the existing incident-report record. Report Source, Incident Type, Report Time and Number of Cases remain text because their governed domains or formats are not defined.",
           "يكتب هذا النموذج في سجل بلاغات الحوادث القائم. تبقى حقول مصدر البلاغ ونوع الحادث ووقت البلاغ وعدد الحالات نصية لأن نطاقاتها أو صيغها المعتمدة غير محددة.",
         )}</div></div>
+        {visitId && <div className="ax-banner ax-banner--warning" role="status"><div>{tr("field.incidents.midVisit", "Logging for the active visit — this report will be linked to it, distinct from any violation.", "تسجيل ضمن الزيارة الحالية — سيُربط هذا البلاغ بها، وهو منفصل عن أي مخالفة.")}</div></div>}
 
-        <FieldIncidentReportForm locale={locale} strings={labels} />
+        <FieldIncidentReportForm locale={locale} strings={labels}
+          context={{ factoryId: factoryId || undefined, visitId: visitId || undefined, inspectionId: inspectionId || undefined }} />
 
         <section aria-labelledby="field-incident-history" className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
           <h2 id="field-incident-history">{tr("field.incidents.history", "Reports in your access scope", "البلاغات ضمن نطاق صلاحياتك")}</h2>

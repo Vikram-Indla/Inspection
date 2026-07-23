@@ -208,8 +208,6 @@ export default async function Field() {
   const selected = nextActionable
     ?? [...cards].filter(v => v.planning_status !== "expired").sort((a, b) => a.window_start.localeCompare(b.window_start))[0]
     ?? null;
-  const fabHref = nextActionable ? `/field/${nextActionable.id}` : "/field#visits";
-
   // Resume vs start-next href for the action bar / selected pane.
   const selectedHref = selected
     ? (selected.inspections && selected.inspections.status !== "not_started"
@@ -435,6 +433,9 @@ export default async function Field() {
           </a>
           <a className="ax-btn ax-btn--secondary ax-btn--field" href="/field/incident-reports">
             {locale === "ar" ? "بلاغات الحوادث" : t("field.incidents.title", "Incident reports")}
+          </a>
+          <a className="ax-btn ax-btn--secondary ax-btn--field" href="/virtual">
+            {locale === "ar" ? "الزيارة الافتراضية" : t("field.tabs.virtual", "Virtual")}
           </a>
         </nav>
 
@@ -662,11 +663,12 @@ export default async function Field() {
         </div>
       </div>
 
-      <FieldTabs active="dashboard" fabHref={fabHref} labels={{
-        dashboard: t("field.tabs.dashboard", "Dashboard"),
-        visits: t("field.tabs.visits", "Visits"),
-        virtual: t("field.tabs.virtual", "Virtual"),
-        fab: t("field.tabs.startNext", "Start next visit"),
+      <FieldTabs active="home" labels={{
+        home: t("field.tabs.dashboard", "Dashboard"),
+        myTasks: t("field.tabs.visits", "Visits"),
+        establishments: t("field.establishments.title", "Field establishments"),
+        notifications: t("field.notifications.title", "Notifications"),
+        account: t("field.account.title", "Account"),
       }} />
     </Shell>
   );

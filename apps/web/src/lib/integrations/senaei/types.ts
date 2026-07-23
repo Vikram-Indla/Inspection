@@ -23,6 +23,10 @@ export type ProductionLinePage = { currentPage: number; lastPage: number; perPag
 export type RegulationItem = { externalId: string; name: string | null; description: string | null; type: LabelValue | null; administrativeName: LabelValue | null; reportKind: LabelValue | null; approvalOption: LabelValue | null; rejectionOption: LabelValue | null; status: LabelValue | null; attachmentMode: LabelValue | null; entityNotification: boolean | null; appearedInSelfAssessment: boolean | null; mandatoryForInspector: boolean | null };
 export type Regulation = { externalId: string; name: string | null; number: string | null; issueDate: string | null; active: boolean | null; issuingAuthorities: LabelValue[]; items: RegulationItem[]; createdAt: string | null };
 
+// Public (no-auth) Senaei v3 inspection endpoints — chemicalcustoms.json contract.
+export type ChemicalPermit = { externalId: string; approvalNumber: string | null; requestNumber: string | null; type: LabelValue | null; decreeNumber: string | null; decreeIsn: string | null; fasahRefNumber: string | null; approvedAt: string | null; startsAt: string | null; endsAt: string | null; status: LabelValue | null; plantId: string | null; itemsCount: number | null };
+export type CustomsExemption = { externalId: string; requestNumber: string | null; type: LabelValue | null; decreeNumber: number | null; decreeIsn: number | null; approvedAt: string | null; startsAt: string | null; endsAt: string | null; status: LabelValue | null; plantId: string | null; itemsCount: number | null; productsCount: number | null };
+
 // External spellings are retained only at the wire boundary.
 export type InspectionObservationWire = { is_distrupted?: unknown; distrubtion_reason?: unknown; other_distrubtion_reason?: unknown; is_exmpted?: unknown; administrators_number?: unknown };
 export type InspectionObservation = { isDisrupted: boolean | null; disruptionReason: string | null; otherDisruptionReason: string | null; isExempted: boolean | null; administratorsNumber: number | null };

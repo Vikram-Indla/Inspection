@@ -19,12 +19,21 @@ export type FieldIncidentStrings = {
   created: string;
 };
 
-export default function FieldIncidentReportForm({ locale, strings: s }: { locale: string; strings: FieldIncidentStrings }) {
+export default function FieldIncidentReportForm({ locale, strings: s, context }: {
+  locale: string; strings: FieldIncidentStrings;
+  // O-13/IPAD-FIGMA-DELTA §2B — set when reached mid-visit (from the active
+  // inspection workspace), so the report anchors to that visit/factory/
+  // inspection instead of standing alone. Absent on the general route.
+  context?: { factoryId?: string; visitId?: string; inspectionId?: string };
+}) {
   const [state, action, pending] = useActionState<FieldIncidentResult, FormData>(createFieldIncidentReport, {});
   const fieldClass = "ax-field ax-field--field";
   return (
     <form id="new-incident" action={action} className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)" }}>
       <input type="hidden" name="locale" value={locale} />
+      {context?.factoryId && <input type="hidden" name="factory_id" value={context.factoryId} />}
+      {context?.visitId && <input type="hidden" name="visit_id" value={context.visitId} />}
+      {context?.inspectionId && <input type="hidden" name="inspection_id" value={context.inspectionId} />}
       <div className="ax-grid-2">
         <div className={fieldClass} style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="field-ir-establishment-code">{s.establishmentCode}</label><input className="ax-input" name="establishment_code" id="field-ir-establishment-code" /></div>
         <div className={fieldClass} style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="field-ir-cr">{s.commercialRegistrationNumber}</label><input className="ax-input ax-numeric" name="commercial_registration_number" id="field-ir-cr" dir="ltr" /></div>

@@ -26,11 +26,12 @@ export default async function FieldFactory360({ params, searchParams }: {
   const permissions = await resolveFactory360Permissions(sb);
 
   const tabs = (
-    <FieldTabs active="visits" fabHref="/field#visits" labels={{
-      dashboard: t("field.tabs.dashboard", "Dashboard"),
-      visits: t("field.tabs.visits", "Visits"),
-      virtual: t("field.tabs.virtual", "Virtual"),
-      fab: t("field.tabs.startNext", "Start next visit"),
+    <FieldTabs active="myTasks" labels={{
+      home: t("field.tabs.dashboard", "Dashboard"),
+      myTasks: t("field.tabs.visits", "Visits"),
+      establishments: t("field.establishments.title", "Field establishments"),
+      notifications: t("field.notifications.title", "Notifications"),
+      account: t("field.account.title", "Account"),
     }} />
   );
 
@@ -53,9 +54,10 @@ export default async function FieldFactory360({ params, searchParams }: {
 
   const {
     cr, licenses, licenseError, selected, factory, factoryId, licenseId,
-    address, lines, government, docs, officialMedia, linkedEvidence, reports, riskHistory, penalties,
+    address, lines, government, chemicalPermits, customsExemptions, chemicalPermitsError, customsExemptionsError,
+    docs, officialMedia, linkedEvidence, reports, riskHistory, penalties,
     latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance, reportCompliance,
-    approvedEnforcement, portfolioCounts, highestRiskLicense, downloadUrls, mediaUrls, observedComparison,
+    approvedEnforcement, portfolioCounts, highestRiskLicense, downloadUrls, mediaUrls, observedComparison, exportsProducts,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult,
     penaltiesResult, portfolioReportsResult, snapshotsResult, canonical,
   } = dossier;
@@ -116,7 +118,7 @@ export default async function FieldFactory360({ params, searchParams }: {
             unavailable: t("f360.offline.unavailable", "No offline snapshot cached for this license yet — open while online to cache it."),
             refreshing: t("f360.offline.refreshing", "Refreshing offline snapshot…"),
             omitted: t("f360.offline.omitted", "Sections excluded by your permissions:"),
-            gaps: t("f360.offline.gaps", "Integration gaps:"),
+            gaps: t("f360.offline.gaps", "Integration gaps ({n}) — hover for detail"),
           }} />
         </section>
 
@@ -131,6 +133,31 @@ export default async function FieldFactory360({ params, searchParams }: {
             </a>
           ))}</div> : <p className="ax-caption">{t("f360.licenses.empty", "No industrial license is mapped to this CR.")}</p>}
         </section>
+
+        {/* License-currency standing advisory — O-13/INSPECTOR-REQUIREMENTS §4:
+            a persistent banner on the pre-visit establishment screen (not a
+            one-off toast), always shown while a license is selected. */}
+        {selected && (() => {
+          const expiry = selected.expiry_date ? new Date(selected.expiry_date) : null;
+          const daysToExpiry = expiry ? Math.ceil((expiry.getTime() - Date.now()) / 86400000) : null;
+          const tone = daysToExpiry == null ? "info" : daysToExpiry < 0 ? "critical" : daysToExpiry <= 30 ? "warning" : "info";
+          return (
+            <div className={`ax-banner ax-banner--${tone}`} role="status">
+              <div>
+                <strong>{t("f360.licenseCurrency.title", "Verify license currency before you proceed")}</strong>
+                <div className="ax-caption">
+                  {daysToExpiry == null
+                    ? t("f360.licenseCurrency.noExpiry", "No expiry date on record for this license — confirm the license number and status with the establishment and report any discrepancy.")
+                    : daysToExpiry < 0
+                      ? t("f360.licenseCurrency.expired", "This license shows as expired ({date}). Confirm with the establishment and report the discrepancy if it has since been renewed.").replace("{date}", dt(selected.expiry_date))
+                      : daysToExpiry <= 30
+                        ? t("f360.licenseCurrency.expiringSoon", "This license expires in {days} day(s) ({date}). Verify the license number on site.").replace("{days}", String(daysToExpiry)).replace("{date}", dt(selected.expiry_date))
+                        : t("f360.licenseCurrency.valid", "License {number} recorded valid through {date}. Verify the number on site and report any discrepancy.").replace("{number}", selected.license_number).replace("{date}", dt(selected.expiry_date))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Field readiness quick facts */}
         <section className={`ax-surface`} aria-label={t("f360.readiness.heading", "Field readiness")}>
@@ -168,7 +195,29 @@ export default async function FieldFactory360({ params, searchParams }: {
               <div><dt>{t("f360.location", "Address")}</dt><dd>{address ? [address.address_line_1, locale === "ar" ? address.street_name_ar : address.street_name_en, locale === "ar" ? address.city_ar : address.city_en, locale === "ar" ? address.region_ar : address.region_en].filter(Boolean).join(" · ") || "—" : "—"}</dd></div>
               <div><dt>{t("common.region", "Region / city")}</dt><dd>{label(factory.region)} · {label(factory.city)}</dd></div>
               <div><dt>{t("f360.activity", "Activity")}</dt><dd>{label(factory.activity_class)}</dd></div>
+              <div><dt>{t("f360.exportsProducts", "Exports products?")}</dt><dd>{exportsProducts == null ? t("f360.exportsProducts.unknown", "Unknown") : exportsProducts ? t("common.yes", "Yes") : t("common.no", "No")}</dd></div>
             </dl> : <p className="ax-caption">{t("f360.license.unavailable", "Select a mapped industrial license to load plant facts.")}</p>}
+          </div>
+        </details>
+
+        {/* Chemical permits & customs exemptions (Senaei v3 public endpoints, chemicalcustoms.json) */}
+        <details className={`ax-surface ${styles.section}`}>
+          <summary><span>{t("f360.chemicalCustoms.heading", "Chemical permits & customs exemptions")}</span>{badge(!!chemicalPermitsError || !!customsExemptionsError, [...chemicalPermits, ...customsExemptions], !!selected?.plant_number)}</summary>
+          <div className={styles.sectionBody}>
+            {!selected?.plant_number ? <p className="ax-caption">{t("f360.chemicalCustoms.noPlant", "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number.")}</p> : <>
+              <h3>{t("f360.chemicalPermits.heading", "Chemical permits")}</h3>
+              {chemicalPermitsError ? <p className="ax-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+                : chemicalPermits.length ? <ul>{chemicalPermits.map(permit => <li key={permit.externalId}>
+                  <bdi>{text(permit.approvalNumber)}</bdi> · {label(permit.type?.label)} · <span className="ax-lozenge ax-lozenge--info">{label(permit.status?.label)}</span>
+                  <div className="ax-caption ax-numeric">{dt(permit.startsAt)} → {dt(permit.endsAt)}</div>
+                </li>)}</ul> : <p className="ax-caption">{t("f360.chemicalPermits.empty", "No chemical permits found for this plant.")}</p>}
+              <h3>{t("f360.customsExemptions.heading", "Customs exemptions")}</h3>
+              {customsExemptionsError ? <p className="ax-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+                : customsExemptions.length ? <ul>{customsExemptions.map(exemption => <li key={exemption.externalId}>
+                  <bdi>{text(exemption.decreeNumber)}</bdi> · {label(exemption.type?.label)} · <span className="ax-lozenge ax-lozenge--info">{label(exemption.status?.label)}</span>
+                  <div className="ax-caption ax-numeric">{dt(exemption.startsAt)} → {dt(exemption.endsAt)}</div>
+                </li>)}</ul> : <p className="ax-caption">{t("f360.customsExemptions.empty", "No customs exemptions found for this plant.")}</p>}
+            </>}
           </div>
         </details>
 

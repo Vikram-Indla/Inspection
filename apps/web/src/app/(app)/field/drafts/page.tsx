@@ -53,11 +53,12 @@ export default async function FieldDraftsPage() {
       factoryName: v.factories!.name,
     }));
 
-  const tabs = <FieldTabs active="dashboard" fabHref="/field#visits" labels={{
-    dashboard: t("field.tabs.dashboard", "Dashboard"),
-    visits: t("field.tabs.visits", "Visits"),
-    virtual: t("field.tabs.virtual", "Virtual"),
-    fab: t("field.tabs.startNext", "Start next visit"),
+  const tabs = <FieldTabs active="home" labels={{
+    home: t("field.tabs.dashboard", "Dashboard"),
+    myTasks: t("field.tabs.visits", "Visits"),
+    establishments: t("field.establishments.title", "Field establishments"),
+    notifications: t("field.notifications.title", "Notifications"),
+    account: t("field.account.title", "Account"),
   }} />;
 
   return (

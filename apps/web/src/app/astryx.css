@@ -643,7 +643,7 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-field-page { display: flex; flex-direction: column; gap: var(--ax-space-300); padding-block-end: 104px; }
 .ax-field-taskbar {
   position: fixed; inset-block-end: 0; inset-inline: 0; z-index: var(--ax-z-sticky);
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(180px, auto);
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch; gap: var(--ax-space-050); padding: var(--ax-space-100) max(var(--ax-space-200), env(safe-area-inset-right)) max(var(--ax-space-100), env(safe-area-inset-bottom)) max(var(--ax-space-200), env(safe-area-inset-left));
   border-block-start: 1px solid var(--ax-color-border); background: var(--ax-color-surface);
 }

@@ -151,6 +151,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     factory_id: string; visit_type: string; execution_mode: string; window_start: string; window_end: string;
     factories: { name: string; factory_code: string | null; region: string | null; city: string | null; license_number: string | null; activity_class: string | null };
   };
+  // O-13/IPAD-FIGMA-DELTA §2B — mid-visit incident logging is a distinct
+  // capability from a violation; surfaced here so it's reachable from the
+  // active visit and its outputs show in this visit's own workspace.
+  const { data: visitIncidents } = ins.visit_id
+    ? await sb.from("incident_reports").select("id, incident_type, preliminary_incident_description, created_at").eq("visit_id", ins.visit_id).order("created_at", { ascending: false })
+    : { data: [] };
+  const incidentLogHref = `/field/incident-reports?visit=${ins.visit_id ?? ""}&factory=${visitRow.factory_id}&inspection=${id}`;
   // M04-136/137 — the factory's most recent prior APPROVED inspection (read
   // granted by the 0020 prior-approved policies; absent rows hide the panel).
   const { data: prevRow } = await sb.from("inspections")
@@ -371,6 +378,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       conflict: t("field.ws.sync.conflict", "Conflict — action required"),
       failed: t("field.ws.sync.failed", "Sync failed — will retry"),
     },
+    connectivityOffline: t("field.ws.connectivity.offline", "No connection — your work is saved locally and will sync when you're back online."),
+    connectivityWeak: t("field.ws.connectivity.weak", "Weak connection detected — saves may be slower than usual."),
     answered: t("field.ws.answered", "{a}/{b} answered · autosaved locally"),
     conflictHead: t("field.ws.conflictHead", "⚠ Conflict on {code} — explicit resolution (STM-SYNC-002, no silent overwrite)"),
     thisDevice: t("field.ws.thisDevice", "This device"),
@@ -562,6 +571,26 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         readOnly={factoryReadOnly}
         strings={fvStrings}
       />
+
+      {/* O-13/IPAD-FIGMA-DELTA §2B — distinct from a violation; surfaced in
+          this visit's own outputs, not folded into the checklist. */}
+      <section className="ax-surface ax-panel" aria-labelledby="field-ws-incidents-heading" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
+        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+          <h2 id="field-ws-incidents-heading" style={{ margin: 0 }}>{t("field.ws.incidents.heading", "Incident reports for this visit")}</h2>
+          <a className="ax-btn ax-btn--secondary ax-btn--field" href={incidentLogHref}>{t("field.ws.incidents.log", "Log incident")}</a>
+        </div>
+        {(visitIncidents ?? []).length ? (
+          <ul style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            {(visitIncidents ?? []).map(row => (
+              <li key={row.id}>
+                <bdi>{row.incident_type || t("field.ws.incidents.untitled", "Incident")}</bdi>
+                {row.preliminary_incident_description ? <span className="ax-caption"> · {row.preliminary_incident_description.slice(0, 100)}</span> : null}
+              </li>
+            ))}
+          </ul>
+        ) : <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
+      </section>
+
       <Workspace
         userId={user.id}
         inspection={ins as never}

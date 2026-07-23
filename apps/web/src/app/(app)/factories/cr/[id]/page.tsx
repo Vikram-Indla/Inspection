@@ -40,8 +40,9 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
   const {
     cr, crError, licenses, licenseError, selected, factory, factoryId, licenseId,
-    address, lines, government, docs, media, officialMedia, linkedEvidence, reports, riskHistory, penalties,
-    latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance,
+    address, lines, government, chemicalPermits, customsExemptions, chemicalPermitsError, customsExemptionsError,
+    docs, media, officialMedia, linkedEvidence, reports, riskHistory, penalties,
+    latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance, exportsProducts,
     approvedEnforcement, portfolioCounts, highestRiskLicense, downloadUrls, mediaUrls,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult,
     penaltiesResult, portfolioReportsResult, snapshotsResult, canonical,
@@ -117,6 +118,27 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
           <section className={`ax-surface ${styles.panel}`} aria-labelledby="f360-license-heading">
             <div className={styles.sectionHead}><h2 id="f360-license-heading">{t("f360.license.heading", "Selected license, plant & address")}</h2>{sourceBadge(addressResult.error, address, !!selected)}</div>
+            {selected && (() => {
+              const expiry = selected.expiry_date ? new Date(selected.expiry_date) : null;
+              const daysToExpiry = expiry ? Math.ceil((expiry.getTime() - Date.now()) / 86400000) : null;
+              const tone = daysToExpiry == null ? "info" : daysToExpiry < 0 ? "critical" : daysToExpiry <= 30 ? "warning" : "info";
+              return (
+                <div className={`ax-banner ax-banner--${tone}`} role="status" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
+                  <div>
+                    <strong>{t("f360.licenseCurrency.title", "Verify license currency before you proceed")}</strong>
+                    <div className="ax-caption">
+                      {daysToExpiry == null
+                        ? t("f360.licenseCurrency.noExpiry", "No expiry date on record for this license — confirm the license number and status with the establishment and report any discrepancy.")
+                        : daysToExpiry < 0
+                          ? t("f360.licenseCurrency.expired", "This license shows as expired ({date}). Confirm with the establishment and report the discrepancy if it has since been renewed.").replace("{date}", dt(selected.expiry_date))
+                          : daysToExpiry <= 30
+                            ? t("f360.licenseCurrency.expiringSoon", "This license expires in {days} day(s) ({date}). Verify the license number on site.").replace("{days}", String(daysToExpiry)).replace("{date}", dt(selected.expiry_date))
+                            : t("f360.licenseCurrency.valid", "License {number} recorded valid through {date}. Verify the number on site and report any discrepancy.").replace("{number}", selected.license_number).replace("{date}", dt(selected.expiry_date))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             {selected && factory ? <dl className={styles.facts}>
               <div><dt>{t("f360.id.license", "Industrial license")}</dt><dd className="ax-numeric"><bdi>{selected.license_number}</bdi></dd></div>
               <div><dt>{t("f360.plant", "Plant number")}</dt><dd className="ax-numeric"><bdi>{text(selected.plant_number)}</bdi></dd></div>
@@ -126,6 +148,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
               <div><dt>{t("f360.id.licenseHolder", "License holder")}</dt><dd>{text(selected.holder_name)}</dd></div>
               <div><dt>{t("f360.location", "Address")}</dt><dd>{address ? [address.address_line_1, locale === "ar" ? address.street_name_ar : address.street_name_en, locale === "ar" ? address.city_ar : address.city_en, locale === "ar" ? address.region_ar : address.region_en].filter(Boolean).join(" · ") || "—" : "—"}</dd></div>
               <div><dt>{t("f360.coordinates", "Coordinates")}</dt><dd className="ax-numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : "—"}</bdi></dd></div>
+              <div><dt>{t("f360.exportsProducts", "Exports products?")}</dt><dd>{exportsProducts == null ? t("f360.exportsProducts.unknown", "Unknown") : exportsProducts ? t("common.yes", "Yes") : t("common.no", "No")}</dd></div>
             </dl> : <p className="ax-caption">{t("f360.license.unavailable", "Select a mapped industrial license to load plant facts.")}</p>}
           </section>
 
@@ -169,6 +192,20 @@ export default async function Factory360ByCr({ params, searchParams }: {
           <section className={`ax-surface ${styles.panel}`} aria-labelledby="f360-government-heading">
             <div className={styles.sectionHead}><h2 id="f360-government-heading">{t("f360.government.heading", "Government records")}</h2>{sourceBadge(governmentResult.error, government, !!licenseId)}</div>
             {government.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th><th scope="col">{t("f360.source", "Source")}</th></tr></thead><tbody>{government.map(row => <tr key={row.id}><td>{text(row.title ?? row.record_type)}</td><td className="ax-numeric"><bdi>{row.external_record_id}</bdi></td><td>{label(row.status)}</td><td className="ax-numeric">{dt(row.valid_from)} → {dt(row.valid_to)}</td><td>{row.source_system} · v{row.version_number}</td></tr>)}</tbody></table></div> : <p className="ax-caption">{governmentResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.government.empty", "Government-domain records are unavailable until a governed source contract supplies them.")}</p>}
+          </section>
+
+          <section className={`ax-surface ${styles.panel}`} aria-labelledby="f360-chemical-customs-heading">
+            <div className={styles.sectionHead}><h2 id="f360-chemical-customs-heading">{t("f360.chemicalCustoms.heading", "Chemical permits & customs exemptions")}</h2>{sourceBadge(!!chemicalPermitsError || !!customsExemptionsError, [...chemicalPermits, ...customsExemptions], !!selected?.plant_number)}</div>
+            {!selected?.plant_number ? <p className="ax-caption">{t("f360.chemicalCustoms.noPlant", "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number.")}</p> : <>
+              <h3>{t("f360.chemicalPermits.heading", "Chemical permits")}</h3>
+              {chemicalPermitsError ? <p className="ax-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+                : chemicalPermits.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("f360.chemicalPermits.approval", "Approval number")}</th><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{chemicalPermits.map(permit => <tr key={permit.externalId}><td className="ax-numeric"><bdi>{text(permit.approvalNumber)}</bdi></td><td>{label(permit.type?.label)}</td><td><span className="ax-lozenge ax-lozenge--info">{label(permit.status?.label)}</span></td><td className="ax-numeric">{dt(permit.startsAt)} → {dt(permit.endsAt)}</td></tr>)}</tbody></table></div>
+                : <p className="ax-caption">{t("f360.chemicalPermits.empty", "No chemical permits found for this plant.")}</p>}
+              <h3>{t("f360.customsExemptions.heading", "Customs exemptions")}</h3>
+              {customsExemptionsError ? <p className="ax-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+                : customsExemptions.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("f360.customsExemptions.decree", "Decree number")}</th><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{customsExemptions.map(exemption => <tr key={exemption.externalId}><td className="ax-numeric"><bdi>{text(exemption.decreeNumber)}</bdi></td><td>{label(exemption.type?.label)}</td><td><span className="ax-lozenge ax-lozenge--info">{label(exemption.status?.label)}</span></td><td className="ax-numeric">{dt(exemption.startsAt)} → {dt(exemption.endsAt)}</td></tr>)}</tbody></table></div>
+                : <p className="ax-caption">{t("f360.customsExemptions.empty", "No customs exemptions found for this plant.")}</p>}
+            </>}
           </section>
 
           <section className={`ax-surface ${styles.panel}`} aria-labelledby="f360-docs-heading">

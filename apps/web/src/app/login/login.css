@@ -21,28 +21,31 @@
 /* ---- credential panel -------------------------------------------------- */
 .lg-panel { display: flex; flex-direction: column; min-inline-size: 0;
   min-block-size: 100dvh;
-  padding: var(--ax-space-400) clamp(24px, 3vw, 44px);
+  padding: var(--ax-space-300) clamp(24px, 3vw, 44px);
   background: var(--ax-color-surface);
   border-inline-end: 1px solid var(--ax-color-border); }
 @media (max-width: 960px) { .lg-panel { border-inline-end: none; } }
 
 .lg-lockup { display: flex; align-items: center; gap: var(--ax-space-150); }
-.lg-lockup__mark { inline-size: 42px; block-size: 42px; color: var(--ax-color-text); flex-shrink: 0; }
+.lg-lockup__mark { inline-size: 42px; block-size: 42px; color: var(--ax-color-primary); flex-shrink: 0; }
 .lg-lockup__text { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
 .lg-lockup__names { display: flex; align-items: center; gap: var(--ax-space-100); }
-.lg-lockup__ar { font: 700 22px/1 var(--ax-font-arabic); color: var(--ax-color-text); }
+.lg-lockup__ar { font: 700 22px/1 var(--ax-font-arabic); color: var(--ax-color-primary); }
 .lg-lockup__div { inline-size: 1px; block-size: 18px; flex-shrink: 0;
   background: var(--ax-color-border-strong); }
 .lg-lockup__latin { font: 700 19px/1 var(--ax-font-sans); letter-spacing: 0.18em;
-  color: var(--ax-color-text); }
+  color: var(--ax-color-primary); }
 .lg-lockup__sub { font: 600 9px/1.2 var(--ax-font-mono); letter-spacing: 0.24em;
   color: var(--ax-color-text-secondary); }
 [dir="rtl"] .lg-lockup__sub { font-family: var(--ax-font-arabic); letter-spacing: 0; }
 
 .lg-controls { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
+/* Pushed to the far corner of the lockup row, not just trailing the wordmark
+   with a small gap. */
+.lg-controls--end { margin-inline-start: auto; }
 /* theme toggle in the lockup row exists for small screens only — on desktop
    the story panel header owns it */
-.lg-controls--compact { display: none; margin-inline-start: auto; }
+.lg-controls--compact { display: none; }
 @media (max-width: 960px) { .lg-controls--compact { display: inline-flex; } }
 
 .lg-iconbtn { display: grid; place-items: center; inline-size: 40px; block-size: 40px;
@@ -53,10 +56,30 @@
 .lg-iconbtn:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 
 .lg-center { flex: 1; display: flex; flex-direction: column; justify-content: center;
-  padding-block: var(--ax-space-300); }
+  padding-block: var(--ax-space-150); }
 
+/* Ministry attribution — last line of the footer. Same start-aligned
+   icon+text pattern as .lg-foot__item above it (was centered while the
+   trust line was left-aligned — two different alignment models in the same
+   footer read as architecturally disjointed, not just "needs polish"). */
+.lg-foot__ministry { display: inline-flex; align-items: center;
+  gap: var(--ax-space-100); }
+[dir="rtl"] .lg-foot__ministry { justify-content: flex-start; }
+/* The source SVG sets preserveAspectRatio="none" (it's designed to stretch
+   to fill its own container), so inline-size:auto can't infer a ratio from
+   it — pin the real one (330.798 x 325.207) explicitly or it distorts. Sized
+   to match the shield icon's line-height above it, not a separate scale. */
+.lg-foot__ministry-mark { display: block; block-size: 15px; aspect-ratio: 330.798 / 325.207; flex-shrink: 0; }
+.lg-foot__ministry-label { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+[dir="rtl"] .lg-foot__ministry-label { font-family: var(--ax-font-arabic); }
+
+/* Gives the form a floor — previously it sat directly on the page canvas
+   with no surface distinction between "the form" and "the page". */
 .lg-card { inline-size: 100%; display: flex; flex-direction: column;
-  gap: var(--ax-space-250); }
+  gap: var(--ax-space-250);
+  padding: var(--ax-space-300); border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface-raised);
+  border: 1px solid var(--ax-color-border); }
 [dir="rtl"] .lg-card { text-align: right; }
 .lg-card__title { margin: 0; font: var(--ax-text-title); color: var(--ax-color-text); }
 .lg-card__sub { margin: 0; margin-block-start: calc(-1 * var(--ax-space-150));
@@ -74,7 +97,10 @@
   inline-size: 36px; block-size: 36px; border: none; border-radius: var(--ax-radius-small);
   background: none; color: var(--ax-color-text-secondary); cursor: pointer; }
 .lg-pwtoggle:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-.lg-submit { inline-size: 100%; margin-block-start: var(--ax-space-050); }
+.lg-submit { inline-size: 100%; margin-block-start: var(--ax-space-050);
+  transition: box-shadow var(--ax-motion-fast), transform var(--ax-motion-fast); }
+.lg-submit:hover:not(:disabled) { box-shadow: 0 6px 16px -4px color-mix(in srgb, var(--ax-color-primary) 45%, transparent); transform: translateY(-1px); }
+.lg-submit:active:not(:disabled) { transform: translateY(0); }
 .lg-linkbtn { align-self: center; background: none; border: none; padding: 0; cursor: pointer;
   font: var(--ax-text-body-strong); color: var(--ax-color-primary-hover); }
 .lg-linkbtn:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -105,14 +131,17 @@
 .lg-foot__item { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
 [dir="rtl"] .lg-foot__item { justify-content: flex-start; }
 .lg-foot__item svg { color: var(--ax-color-success); flex-shrink: 0; }
-.lg-foot__row { display: flex; align-items: center; justify-content: space-between;
-  gap: var(--ax-space-150); }
 /* DEF-UI-001 — this is a live copyright label, not a disabled control; the
    disabled token mixes to ~2.3:1 against canvas in dark mode (fails AA). */
 .lg-foot__copy { color: var(--ax-color-text-secondary); }
 .lg-lang { font: 600 14px/20px var(--ax-font-sans); color: var(--ax-color-primary-hover);
   text-decoration: none; }
 .lg-lang:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Moved from the footer (buried next to fine print, easy to miss/mis-click)
+   to the header, same priority as the theme toggle. */
+.lg-lang--top { font: 600 13px/1 var(--ax-font-sans); padding: var(--ax-space-100) var(--ax-space-150);
+  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full); }
+.lg-lang--top:hover { border-color: var(--ax-color-primary); text-decoration: none; background: var(--ax-color-primary-tint); }
 
 /* ---- demo-access helper (evaluation only) ------------------------------- */
 .lg-demo { margin-block-start: var(--ax-space-100);
@@ -628,23 +657,19 @@
   .lg-atlas3d__dossier { inset-block: auto 8px; inset-inline: 8px; inline-size: auto; }
 }
 
-/* The atlas becomes a scroll-to story below the credential panel instead of
-   disappearing. This keeps sign-in first while preserving the approved asset
-   on tablet/mobile. */
+/* Below the split-layout breakpoint the credential panel is the only surface:
+   hide the atlas story entirely rather than stacking it below (a scrollable
+   hero under a sign-in form reads as a broken/incomplete page on phones and
+   narrow tablets, not a deliberate second screen). */
 @media (max-width: 960px) {
-  /* Below the credential panel the hero keeps its one-surface model but caps
-     its height so sign-in stays first. Frame stays inset:0 within the block. */
-  .lg-story { min-block-size: 0; block-size: min(72vh, 480px);
-    border-block-start: 1px solid var(--ax-color-atlas-border); }
-  .lg-story__head .lg-iconbtn { display: none; }
-  .lg-atlas3d__stages { overflow-x: auto; grid-template-columns: repeat(5, minmax(108px, 1fr)); }
-}
-
-@media (max-width: 600px) {
-  .lg-story { block-size: min(64vh, 380px); }
-  .lg-atlas3d__event { max-inline-size: calc(100% - 24px); }
-  .lg-atlas-image__hotspot { inline-size: 40px; block-size: 40px; }
-  .lg-atlas-image__hotspot-core { inline-size: 8px; block-size: 8px; }
+  .lg-story { display: none; }
+  /* The credential column loses its "start side of a split" reason to
+     hug the left edge once the story panel is gone — center it horizontally.
+     (align-items, not switching to grid: grid's default row-stretch would
+     shove the ministry title and the card apart since .lg-center now holds
+     two stacked children, not one.) */
+  .lg-page--split .lg-center { align-items: center; }
+  .lg-page--split .lg-card { inline-size: min(100%, 400px); }
 }
 
 /* ---- reduced motion: loop off; stepped states only ----------------------- */

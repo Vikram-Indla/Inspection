@@ -9,6 +9,7 @@ import {
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
+import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
@@ -50,6 +51,10 @@ export type WorkspaceCancellation = {
 // server-side with t() and passed as props; offline logic is untouched.
 export type WorkspaceStrings = {
   sync: { [K in SyncState]: string };
+  // O-12/IPAD-FIGMA-DELTA §2A — "في حال ان الاتصال ضعيف": a degraded-connection
+  // signal distinct from the sync chip above (which reports write/queue
+  // outcome, not network quality).
+  connectivityOffline: string; connectivityWeak: string;
   answered: string;
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
@@ -734,6 +739,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
       </div>
+      <FieldConnectivityBanner offline={strings.connectivityOffline} weak={strings.connectivityWeak} />
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
 
       {/* DEC-A — Figma wizard-shell parity as a guided presentation over the existing

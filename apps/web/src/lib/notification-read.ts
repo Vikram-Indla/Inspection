@@ -2,6 +2,7 @@
 // Shared notification read-receipt semantics. `read_at` is authoritative;
 // queued rows also retain the legacy delivery_state transition so the field
 // inbox and platform bell remain compatible.
+import { shellNotificationVisitHref } from "@/lib/shell-navigation";
 
 export type NotificationReadPatch = {
   read_at: string;
@@ -16,6 +17,28 @@ export function notificationReadPatch(deliveryState: string, readAt: string): No
 
 export function isNotificationUnread(row: { read_at: string | null; delivery_state: string }): boolean {
   return !row.read_at && row.delivery_state !== "read" && row.delivery_state !== "handled";
+}
+
+// M10 / PLN-REQ-009 — canonical entry points for planning events, usable from
+// both server and client components (unlike NotificationBell.tsx, which is a
+// "use client" module). Every planning notification carries payload.visit_id
+// (emission sites: visits/[id]/actions.ts, expire_lapsed_visits 0025/0030).
+// Returned visits deep-link to the detail FOCUSED on the return block; the
+// other planning events land on the detail itself. Non-planning events have
+// no link.
+export function notificationHref(
+  eventKey: string,
+  payload: Record<string, unknown> | null,
+  fieldOnly = false,
+): string | null {
+  const visitId = typeof payload?.visit_id === "string" ? payload.visit_id : null;
+  if (!visitId) return null;
+  let webHref: string | null = null;
+  if (eventKey === "visit_returned") webHref = `/visits/${visitId}?focus=return`;
+  if (["visit_cancelled", "visit_expired", "visit_republished", "visit_rescheduled", "assignment"].includes(eventKey)) {
+    webHref = `/visits/${visitId}`;
+  }
+  return webHref ? shellNotificationVisitHref(visitId, webHref, fieldOnly) : null;
 }
 
 export type NotificationPayloadEntry = { key: string; value: string };
