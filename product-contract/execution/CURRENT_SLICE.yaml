@@ -67,9 +67,10 @@ rollback:
 implementation:
   commit: "8343c62c"
   correction_commit: "50c95d35"
-  decision_history: "APPROVED_IN_PROGRESS -> REJECTED_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_PALETTE_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL"
-  corrections: "Replace placeholder/legacy AI icons; compact Planning card spacing; remove double focus rings and directional-link styling; fix desktop rail; use a sticky bounded Visit action form; replace unauthorized navy/hard-coded blue shell colors with the exact supplied SAQEEL graphite semantic tokens."
-  verification: "typecheck PASS; production build PASS; prior focused/protected M2 19/19 PASS; prior post-final-link 8/8 PASS; palette-corrected same-batch/protected M2 15/15 PASS; exact semantic-color comparison PASS; axe/RTL/reflow/permission negatives PASS; Web/Admin validator PASS 478/478."
+  focus_correction_commit: "31baf2f8"
+  decision_history: "APPROVED_IN_PROGRESS -> REJECTED_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_PALETTE_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_DOUBLE_BORDER_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL"
+  corrections: "Replace placeholder/legacy AI icons; compact Planning card spacing; remove directional-link styling; fix desktop rail; use a sticky bounded Visit action form; replace unauthorized navy/hard-coded blue shell colors with exact SAQEEL graphite tokens; replace stacked field border/outline with one contiguous focus stroke."
+  verification: "typecheck PASS; production build PASS; latest same-batch/protected M2 15/15 PASS; live /planning focus computed as outline none plus focus border and inset reinforcement; exact semantic-color comparison PASS; axe/RTL/reflow/permission negatives PASS; Web/Admin validator PASS 478/478."
   live_review: "Visible Codex browser on 2026-07-23 at all three review routes with planner persona and safe RLS-scoped data; no mutation performed."
 
 exit_condition: >-

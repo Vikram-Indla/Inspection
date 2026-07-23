@@ -4803,9 +4803,29 @@
       "commit_sha": "50c95d35",
       "next_task": "Stop until Product Owner reviews the exact SAQEEL palette correction; do not begin another batch.",
       "resume_prompt": "Read CURRENT_SLICE.yaml, TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md, and WEB_ADMIN_DESIGN_SYSTEM_SOURCE_MANIFEST.csv. Proceed only after an explicit permitted Product Owner decision."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-m2-batch-002-focus-rework",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002",
+      "gate": "Web/Admin human screen approval — rejected double-border rework",
+      "requirements": ["CR-001..CR-098", "No Field/iPad Phase 2 work"],
+      "acceptance_ids": ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"],
+      "screens": ["Planning header search", "Shared Web/Admin form controls"],
+      "engines": ["SAQEEL focus semantics", "authenticated shell", "governed behavior unchanged"],
+      "files_changed": ["Header search focus", "input/select/textarea focus", "single-stroke regression guard", "approval evidence"],
+      "tests": ["typecheck PASS", "production build PASS", "same-batch/protected M2 Playwright 15/15 PASS", "live computed focus-style verification PASS"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md", "visible focused /planning search review on 2026-07-23"],
+      "decisions": ["Product Owner double-border rejection accepted", "One contiguous focus stroke replaces border plus outer outline", "Current routes and backend remain unchanged"],
+      "blockers": ["Explicit Product Owner decision for corrected batch", "APPROVED FOR CUTOVER required before canonical replacement"],
+      "commit_sha": "31baf2f8",
+      "next_task": "Stop until Product Owner reviews the single-stroke focus correction.",
+      "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md. Proceed only after an explicit permitted Product Owner decision."
     }
   ],
-  "last_session": "2026-07-23-web-admin-m2-batch-002-palette-rework",
+  "last_session": "2026-07-23-web-admin-m2-batch-002-focus-rework",
   "rules": {
     "append_only": true,
     "required_fields": [

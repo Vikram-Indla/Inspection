@@ -7,7 +7,7 @@ items:
     owner: "Codex implementation and QA + Product Owner screen approval"
     blocked_by: []
     blocks: ["Next Web/Admin screen batch", "Planning-owned Visits cutover"]
-    note: "Rework commits 8343c62c and 50c95d35 correct icons, spacing, focus borders, directional links, fixed rail, sticky Visit action form, and unauthorized navy/hard-coded blue shell colors. Supplied SAQEEL semantic token comparison PASS; typecheck/build PASS; current same-batch/protected M2 15/15 PASS; validator 478/478 PASS; visible light/dark review complete. Current routes remain canonical and retained. Stop pending Product Owner decision; no Field/iPad or remote action."
+    note: "Rework commits 8343c62c, 50c95d35 and 31baf2f8 correct icons, spacing, directional links, fixed rail, sticky Visit action form, unauthorized navy/blue shell colors, and the stacked field focus border/outline. Latest typecheck/build and same-batch/protected M2 15/15 PASS; live /planning single-stroke focus verified; validator 478/478 PASS. Current routes remain canonical and retained. Stop pending Product Owner decision; no Field/iPad or remote action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
     gate: "Web/Admin human screen approval"
     priority: "P0"

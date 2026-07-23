@@ -8,6 +8,7 @@
 - Requirements: `CR-001..CR-098`; acceptance: `WA-M2-AC-001..006`, `WA-SHELL-AC-002`, `WA-SHELL-AC-013`
 - Implementation commit: `8343c62c`
 - Palette correction commit: `50c95d35`
+- Single-focus-stroke correction commit: `31baf2f8`
 
 ## Rework delivered
 
@@ -68,3 +69,14 @@ comparison passes; and the 478-row Web/Admin validator remains PASS. Visible
 Codex browser review confirmed light `#f4f3f0/#ffffff` surfaces with `#1f2328`
 graphite navigation and dark `#17191d/#1e2126` surfaces with `#131519` graphite
 navigation. Product Owner acceptance remains pending.
+
+## Product Owner double-border rejection and correction
+
+The Product Owner identified the header search as still rendering two concentric
+focus strokes. The prior zero-offset outline remained stacked with the control's
+normal border. Commit `31baf2f8` moves header search, standard inputs, selects,
+and textareas to one contiguous focus treatment: no outline, a focus-colored
+1px border, and a 1px inset reinforcement. Live computed verification on
+`/planning` confirmed `outline: none`, the focus border, and the inset stroke;
+the separated outer ring is absent. Typecheck/build and the complete same-batch
+and protected M2 suite pass 15/15.

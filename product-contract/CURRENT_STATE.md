@@ -1,5 +1,16 @@
 # Current State
 
+## 2026-07-23 UPDATE 127 — Field focus double border removed
+
+The Product Owner rejected the remaining double focus border on the Planning
+header search. Commit `31baf2f8` replaces the stacked normal border plus outer
+outline with one contiguous two-pixel treatment across header search, inputs,
+selects and textareas: focus-colored border plus inset reinforcement, with no
+outline. Live `/planning` computed-style and visual review confirmed the outer
+ring is gone. Typecheck/build and same-batch/protected M2 Playwright pass 15/15.
+Current routes remain retained; status remains
+`SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
 ## 2026-07-23 UPDATE 126 — SAQEEL palette authority corrected
 
 The Product Owner rejected the M2 navy/blue appearance and supplied `SAQEEL
