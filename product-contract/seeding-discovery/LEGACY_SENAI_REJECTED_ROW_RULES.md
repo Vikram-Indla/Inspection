@@ -1,0 +1,37 @@
+# Legacy SENAI CSV — Rejected Row Rules
+
+These rules govern which legacy SENAI rows/fields must **never** be imported directly into the canonical Inspection schema, and which require a business decision before any import is attempted. This document does not authorize any import — it defines the gate that a future, separately-approved import task would have to pass.
+
+The uploaded package contains only 12 data rows total across all 8 files (see `LEGACY_SENAI_DATA_QUALITY_REPORT.csv` finding `LG-015`). Every rule below is scoped to what was actually observed in this sample; a larger export must be re-checked against these rules, not assumed compliant.
+
+## Hard rejects — reject the field value, never import as-is
+
+1. **R-1 Placeholder text `asdf`.** Any field whose value is exactly `asdf` (or matches a placeholder pattern such as `test`, `xxx`, `lorem`, `tbd`, `dummy`) must be rejected and left null in the target, never carried through. Observed: `inspection_flows.meta.inspection_data.factory_operation_mechanism = "asdf"`.
+2. **R-2 `onsite` as a fuel type.** `used_fuel_type` values that duplicate the separate `inspection_type` field's value (observed: both `"onsite"`) must be rejected as a fuel type; this is a field-population error in the source, not real fuel-type data.
+3. **R-3 Row-level ULID reused as a UUID.** No legacy `id`/`*_id` ULID (26-character Crockford base32) may ever be written directly into a `uuid` column. Every legacy ID must pass through the `legacy_id → generated_uuid` crosswalk table before touching any canonical FK/PK.
+4. **R-4 Fabricated staff/inspector names.** No human display name may be invented and attributed to a legacy `staff_id`/`assignee_id`/`created_by`/`inspector_id` value. If no authoritative legacy staff directory is supplied, these fields import only as unresolved external references, never as a named person.
+5. **R-5 Machine-translated Arabic content presented as authoritative.** Because zero Arabic text exists anywhere in this export, no automatically translated Arabic label may be substituted and presented as the authoritative bilingual value for `regulations.name`, `inspection_regulation_items.name`, or `inspection_regulation_violations.description`/`administrative_technical_rules`.
+
+## Business-decision gates — do not import until an explicit, documented decision is recorded
+
+6. **BD-1 Perfume/sunflower-oil sector mismatch.** The `Nafhat Perfumes Factory` / sunflower-seed-oil product pairing (flow `01kvqsba1w2qrm95nj9c1n84eq`) must be quarantined from any factory-product coherence seed until a business owner confirms which side of the mismatch (factory identity or product selection) is correct in the source.
+7. **BD-2 Inactive-but-visible compliance item.** Item `01kvqs3ya5pkveztr5qa85qxv2` (`status='inactive'`, `is_visible_to_inspector='1'`) must not be imported with an assumed visibility rule; the compliance configuration owner must specify the intended lifecycle semantics first.
+8. **BD-3 Visit-report / seizure / release-seizure triple-tag conflict.** The same item's `report_kind='seizure'` plus `meta.report_types=['visit_report']` plus `meta.associated_reports=['release_seizure']` — attached to what is described as a municipal-licence paperwork violation — must not be resolved by picking one tag arbitrarily. Escalate to the regulation/report-type owner.
+9. **BD-4 Penalty amount/unit/currency/grace-period.** Penalty `01kvqs3yanvj0hp1macqjfqf99` (`amount=12`, `max_limit=13`, `frequency='daily'`, `penalty_types=['product_seizure']`) has no currency or unit anywhere in the row or schema, an unclear daily-accrual base, and a `product_seizure` penalty type attached to a licensing (not goods) violation. Do not seed or import this penalty shape until currency, unit, accrual rule and penalty-type/violation-type coherence are all confirmed by the compliance/legal owner.
+10. **BD-5 All-exactly-12 operational counts.** `shifts_number`, `technicians_number`, `administrators_number`, `production_lines_number`, and `specialized_professions_number` are all identically `12` on the one row where they are populated, while two other counts on the same row differ (`other_team_number=1`, `tools_and_equipments_number=2`). Do not import these five counts as measured operational data without confirming against the legacy source system directly (not this export) that they are genuine observations rather than a data-entry template default.
+11. **BD-6 21 unlicensed vs 2 licensed/actual products.** `un_licensed_products_number=21` against `licensed_products_number=2` / `actual_products_number=2` on the same row is an implausible ratio. Flag for business review; if confirmed accurate, treat it as a genuine compliance finding requiring its own violation record rather than routine seed data.
+12. **BD-7 Overlapping/contradictory status fields.** `inspection_flows.status` and `inspection_flows.state` disagree within the same row (e.g. `state='inspected'` with `status='pending'` on flow `01kvqsba1w2qrm95nj9c1n84eq`), and `inspection_regulations.status` is a bare integer code (`1`) with no supplied legend. Build and get sign-off on an explicit state×status→canonical-status lookup table before mapping any legacy status value; do not infer it from this 3-row sample.
+13. **BD-8 Numeric-shaped `plant_id` distinct from the ULID ID space.** `plant_id=4711206688` does not match the 26-character ULID shape used by every other legacy ID column in the same rows, implying it originates from a different upstream system. Confirm its meaning (plant number vs. separate government registry ID) with the source owner before mapping it to `plant_production_line_items` or `plant_addresses`.
+
+## Archive-only — keep as historical reference, never treat as canonical audit trail
+
+14. **AO-1 Legacy `created_at`/`updated_at` timestamps.** These reflect the legacy system's own audit trail and are internally consistent in the sample (`updated_at >= created_at` in all rows checked), but must never be written into canonical `audit_events` or presented as the canonical creation event for any imported record — they are provenance metadata only.
+15. **AO-2 Boilerplate descriptive text.** `inspection_regulation_items.geographical_location = "Resolved from the system based on context (not editable)."` is legacy UI help text baked into the data row, not a real geography value, and must not be imported as if it were a location field.
+
+## Genuine nulls — preserve, do not default
+
+16. **N-1** `inspection_flows.cr_number` (null in all 3 rows), `inspection_visits.notes`/`third_parties` (null in both rows), `inspection_regulation_violations.corrective_action`/`meta` (null in the only row), and `inspection_flow_regulation_responses.applies`/`remarks` (null in 1 of 2 rows) must be imported as genuine business nulls where the row is otherwise eligible for import — never defaulted to a fabricated value, and never coerced (e.g. null `applies` must not be cast to boolean `false`).
+
+## Sample-size caveat governing every rule above
+
+17. **SC-1** The entire uploaded package is 12 data rows across 8 files. Every count, ratio, and vocabulary observation in this document and in `LEGACY_SENAI_SOURCE_TO_TARGET_MAP.csv` / `LEGACY_SENAI_DATA_QUALITY_REPORT.csv` is confirmed only within this sample. A complete/larger legacy export must be re-run against these same rules before any rule is treated as fully validated across the whole legacy dataset.
