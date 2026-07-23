@@ -137,6 +137,8 @@ export default function ShellClient({
   const navRef = useRef<HTMLElement>(null);
   const menuRef = useRef<HTMLButtonElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+  const [accountMenuPos, setAccountMenuPos] = useState<{ top: number; left?: number; right?: number } | null>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
   const [searchRect, setSearchRect] = useState<{ top: number; left: number; width: number } | null>(null);
 
@@ -231,10 +233,38 @@ export default function ShellClient({
     };
   }, [drawerOpen]);
 
+  // Same DR-36/DR-51 sticky-pagehead compositing bug as the search dropdown
+  // and notification popover — portals to document.body instead. Position is
+  // measured off the trigger and kept in sync while open.
   useEffect(() => {
     if (!accountOpen) return;
+    const measure = () => {
+      const rect = accountRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const rtl = getComputedStyle(document.documentElement).direction === "rtl";
+      setAccountMenuPos(rtl
+        ? { top: rect.bottom + 8, left: rect.left }
+        : { top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    };
+    measure();
+    window.addEventListener("scroll", measure, true);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("scroll", measure, true);
+      window.removeEventListener("resize", measure);
+    };
+  }, [accountOpen]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+    // The menu is portaled to document.body — no longer a DOM descendant of
+    // accountRef — so a click inside the portaled menu must also count as
+    // "inside", or every click there (e.g. "Sign out") closes it first.
     const onDown = (event: MouseEvent) => {
-      if (accountRef.current && !accountRef.current.contains(event.target as Node)) setAccountOpen(false);
+      const target = event.target as Node;
+      if (accountRef.current?.contains(target)) return;
+      if (accountMenuRef.current?.contains(target)) return;
+      setAccountOpen(false);
     };
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setAccountOpen(false); };
     document.addEventListener("mousedown", onDown);
@@ -460,10 +490,16 @@ export default function ShellClient({
             </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
-              <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
+              {/* Notifications and Account are already destinations in the
+                  field bottom tab bar (FieldTabs) — showing them again here
+                  duplicated the exact same two destinations for a field-only
+                  inspector. Desktop/console personas still need them here;
+                  the sidebar/hamburger are already hidden the same way. */}
+              {!fieldOnly && <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />}
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="ai" />
               </Link>
+              {!fieldOnly && (
               <div ref={accountRef} className="ax-shell-account">
                 <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>
@@ -471,8 +507,9 @@ export default function ShellClient({
                   <span className="ax-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
                   <svg className="ax-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
-                {accountOpen && (
-                  <div className="ax-shell-account__menu" role="dialog" aria-label={strings.account}>
+                {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
+                  <div ref={accountMenuRef} className="ax-shell-account__menu ax-shell-account__menu--portal" role="dialog" aria-label={strings.account}
+                    style={{ top: accountMenuPos.top, left: accountMenuPos.left, right: accountMenuPos.right }}>
                     <strong>{email}</strong>
                     <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
                     {/* /locale and /signout are route handlers (cookie/session
@@ -482,9 +519,11 @@ export default function ShellClient({
                       {fieldOnly ? strings.fieldSettings : strings.profileSettings}
                     </Link>
                     <a href="/signout">{strings.signOut}</a>
-                  </div>
+                  </div>,
+                  document.body,
                 )}
               </div>
+              )}
             </div>
           </div>
         </header>

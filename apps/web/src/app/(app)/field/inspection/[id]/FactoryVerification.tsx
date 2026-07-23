@@ -11,6 +11,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { localForUser, processOutbox, sha256b64, type OutboxOp, type SyncState } from "@/lib/offline";
 import Modal from "@/components/Modal";
+import styles from "./factory-verification.module.css";
 
 type QueuedEvidence = Extract<OutboxOp, { kind: "evidence" }>;
 type CheckState = { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null };
@@ -35,6 +36,36 @@ export type FactoryVerificationStrings = {
   licenseTitle: string; licRef: string; licIssue: string; licExpiry: string; licNone: string;
   productsTitle: string; productsEmpty: string; colProduct: string; colHs: string; colCapacity: string; primaryTag: string;
   materialsTitle: string; materialsEmpty: string; colMaterial: string; colMatSource: string; srcLocal: string; srcImported: string;
+  // SAQEEL Field Establishment File — Factory-360 snapshot + section chrome.
+  snapshotTitle: string; snapshotAdvisory: string; riskScore: string; riskUnknown: string;
+  drafts: string; pendingSync: string; licensesDocs: string;
+  incidentTitle: string; incidentDesc: string; incidentLog: string;
+  inspectionItems: string;
+  // Pending-integration scaffolding (design structure, not yet wired to a
+  // governed source; captured values are NOT persisted).
+  pendingIntegration: string; pendingCaption: string; selectPlaceholder: string;
+  estDataTitle: string;
+  spatialAuth: string; spatialAuthModon: string; optOther: string;
+  energyType: string; energyGas: string; energyElectricity: string;
+  estStatus: string; estStatusProduction: string; estStatusClosed: string;
+  prodStatus: string; prodContinuous: string; prodNonContinuous: string;
+  closureJustification: string; closureJustificationPh: string;
+  closingAuthority: string; authCivilDefense: string; authMunicipality: string; authModon: string;
+  exportsProducts: string; optYes: string; optNo: string;
+  contactsTitle: string; contactLabel: string; contactDelete: string; addContact: string;
+  cName: string; cTitle: string; cId: string; cMobile: string; cEmail: string;
+  workforceTitle: string; machinesTitle: string; spareTitle: string;
+  shift1: string; shift2: string; shift3: string; totalLabel: string; workerUnit: string;
+  itemCheck1: string; itemCheck2: string; itemCheck3: string;
+  categoryPending: string;
+  // Presentational workflow step (Factory-360 header).
+  stepBadge: string;
+  // Factory-360 violation history — no governed factory-scoped source yet.
+  violationHistory: string; violationHistoryPending: string;
+  // Standalone visit-notes scaffold (no governed visit-note binding yet).
+  visitNotesTitle: string; visitNoteLabel: string; visitNotePlaceholder: string;
+  // Workforce roster scaffold (no governed shift/type-count source).
+  workerTypeLabel: string; workerTypePh: string; addWorkerRow: string; grandTotal: string; rosterEmpty: string;
 };
 
 const fmt = (s: string, vars: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m));
@@ -72,7 +103,7 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
       g.drawImage(img, 0, 0, c.width, c.height);
       g.lineWidth = 3; g.lineCap = "round"; g.lineJoin = "round";
       // Annotation ink from the design system — never a bare color.
-      g.strokeStyle = getComputedStyle(c).getPropertyValue("--ax-color-critical").trim();
+      g.strokeStyle = getComputedStyle(c).getPropertyValue("--status-critical").trim();
       baseRef.current = img;
     };
     img.src = `data:${file.mime};base64,${file.b64}`;
@@ -111,20 +142,19 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
       closeLabel={strings.annotateCancel}
       maxWidth="700px"
       footer={<>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.annotateClear}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.annotateCancel}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
-        <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
+        <button type="button" className="btn btn-ghost" onClick={clear}>{strings.annotateClear}</button>
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>{strings.annotateCancel}</button>
+        <button type="button" className="btn btn-secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
+        <button type="button" className="btn btn-primary" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
       </>}
     >
-      <p className="ax-caption">{strings.annotateHint}</p>
-      <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-        style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
+      <p className="t-caption">{strings.annotateHint}</p>
+      <canvas ref={canvasRef} className={styles.canvas} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up} />
     </Modal>
   );
 }
 
-export default function FactoryVerification({ inspectionId, fields, license, products, materials, initialChecks, checksLoadError, serverFieldEvidence, evidenceLimits, readOnly, strings, userId }: {
+export default function FactoryVerification({ inspectionId, fields, license, products, materials, initialChecks, checksLoadError, serverFieldEvidence, evidenceLimits, readOnly, strings, userId, riskScore, riskBand, riskBandLabel, incidentHref }: {
   inspectionId: string;
   userId: string;
   fields: FactoryField[];
@@ -137,6 +167,12 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   evidenceLimits: EvidenceLimits;
   readOnly: boolean;
   strings: FactoryVerificationStrings;
+  // Factory-360 snapshot — governed risk leg (Health≠Risk: no health score).
+  riskScore: number | null;
+  riskBand: string | null;
+  riskBandLabel: string | null;
+  // Mid-visit incident logging routes to the real incident-reports screen.
+  incidentHref: string;
 }) {
   const local = useMemo(() => localForUser(userId), [userId]);
   const [checks, setChecks] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c])) as Record<string, CheckState>);
@@ -147,6 +183,26 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   const [msg, setMsg] = useState(null as string | null);
   const [failDetail, setFailDetail] = useState(null as string | null);
   const [annotating, setAnnotating] = useState(null as null | { field: string; name: string; mime: string; b64: string });
+  // Inspection-items category selector. Products/materials are REAL (Senaei);
+  // workforce/machines/spare are pending-integration scaffolding.
+  const [cat, setCat] = useState<"workforce" | "materials" | "products" | "machines" | "spare">(products.length ? "products" : materials.length ? "materials" : "workforce");
+  // ── Pending-integration scaffolding state — captured in-memory ONLY. None of
+  // this persists to the outbox or DB; it is design structure awaiting a
+  // governed source/API. Not a Senaei write-back (FND-007). ──
+  const [estForm, setEstForm] = useState({ spatialAuth: "", energyType: "", estStatus: "", prodStatus: "", closureJustification: "", closingAuthority: "" });
+  const [exportsProducts, setExportsProducts] = useState<null | boolean>(null);
+  const [contactList, setContactList] = useState<{ name: string; title: string; id: string; mobile: string; email: string }[]>([]);
+  // Workforce roster scaffold — inspector-added worker-type rows × 3 shifts.
+  // No governed count source: nothing is pre-filled and nothing persists.
+  const [roster, setRoster] = useState<{ type: string; s1: string; s2: string; s3: string }[]>([]);
+  const [visitNote, setVisitNote] = useState("");
+  const [itemChecks, setItemChecks] = useState<Record<string, boolean>>({});
+  const setEst = (k: keyof typeof estForm, v: string) => setEstForm(f => ({ ...f, [k]: v }));
+  const rowTotal = (r: { s1: string; s2: string; s3: string }) => [r.s1, r.s2, r.s3].reduce((sum, v) => sum + (Number(v) || 0), 0);
+  const grandTotal = roster.reduce((sum, r) => sum + rowTotal(r), 0);
+  // Real offline counters for the Factory-360 snapshot (never fabricated).
+  const [draftCount, setDraftCount] = useState(0);
+  const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const checksRef = useRef(checks); checksRef.current = checks;
   const notesRef = useRef(notes); notesRef.current = notes;
 
@@ -163,7 +219,11 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
   const refreshQueued = async () => {
     const ops = await local.peekAll();
-    setQueuedEv(ops.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.inspection_id === inspectionId && o.linked_type === "factory_field"));
+    const mine = ops.filter(o => "inspection_id" in o && o.inspection_id === inspectionId);
+    setPendingSyncCount(mine.length);                                          // real outbox depth for this inspection
+    setQueuedEv(mine.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.linked_type === "factory_field"));
+    const drafts = await local.getDrafts(inspectionId);                        // real durable-draft count (M04-114)
+    setDraftCount(drafts.length);
   };
   useEffect(() => { refreshQueued(); const iv = setInterval(refreshQueued, 8000); return () => clearInterval(iv); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [inspectionId]);
 
@@ -239,28 +299,108 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
   const updatedFields = fields.filter(f => checks[f.key]?.status === "updated");
   const changeCount = updatedFields.length;                                              // M04-110
+  // Risk band → DS badge tone (honest reflection of the saved band; no invention).
+  const bandVariant = riskBand === "high" ? "badge-critical" : riskBand === "medium" ? "badge-warning" : riskBand === "low" ? "badge-compliant" : "badge-outline";
+  // Per-item checkbox scaffolding (PENDING INTEGRATION — ungoverned check list,
+  // in-memory toggle only, never persisted).
+  const checkLabels = [strings.itemCheck1, strings.itemCheck2, strings.itemCheck3];
+  const toggleCheck = (key: string) => setItemChecks(m => ({ ...m, [key]: !m[key] }));
+  const renderChecks = (prefix: string) => (
+    <div className={styles.checkRow}>
+      {checkLabels.map((label, i) => {
+        const key = `${prefix}:${i}`;
+        const on = !!itemChecks[key];
+        return (
+          <button type="button" key={key} className={styles.check} aria-pressed={on} onClick={() => toggleCheck(key)} disabled={readOnly}>
+            <span className={`${styles.checkBox} ${on ? styles.checkBoxOn : ""}`} aria-hidden="true">
+              {on && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className={styles.checkMark}><path d="m5 12 5 5 9-10" /></svg>}
+            </span>
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+    <div className={styles.wrap}>
+      {/* Factory-360 snapshot — governed risk leg + real offline counters + the
+          synced industrial-license document (M04-096). Health Score is omitted:
+          it has no governed source and Health ≠ Risk. */}
+      <section className={styles.card}>
+        <h4 className={styles.cardH}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.hIcon} aria-hidden="true"><path d="M2 21h20" /><path d="M4 21V9l6 4V9l6 4V5l4 2v14" /></svg>
+          {strings.snapshotTitle}
+          <span className="grow" />
+          {/* Presentational workflow step (design parity) + advisory tone. */}
+          <span className="badge badge-info">{strings.stepBadge}</span>
+          <span className="badge badge-info">{strings.snapshotAdvisory}</span>
+        </h4>
+        <div className={styles.statRow}>
+          <div className={styles.stat}>
+            <div className={`id-code ${styles.statVal}`}>{riskScore ?? "—"}</div>
+            <div className="t-caption">{strings.riskScore}</div>
+            <span className={`badge ${bandVariant} ${styles.statBadge}`}>{riskBandLabel ?? strings.riskUnknown}</span>
+          </div>
+          <div className={styles.stat}>
+            <div className={`id-code ${styles.statVal}`}>{draftCount}</div>
+            <div className="t-caption">{strings.drafts}</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={`id-code ${styles.statVal}`}>{pendingSyncCount}</div>
+            <div className="t-caption">{strings.pendingSync}</div>
+          </div>
+        </div>
+        {/* Violation history — PENDING INTEGRATION. No governed factory-scoped
+            violation-history source exists (violations/findings are inspection-
+            scoped with no status/date and RLS-limited to this inspection). Kept
+            as a badged, empty scaffold — never fabricated rows. */}
+        <div className={styles.subHead}>
+          <span className={styles.subLabel}>{strings.violationHistory}</span>
+          <span className="grow" />
+          <span className="badge badge-outline">{strings.pendingIntegration}</span>
+        </div>
+        <div className="empty">
+          <div className="empty-title">{strings.violationHistoryPending}</div>
+        </div>
+        <div className={styles.subLabel}>{strings.licensesDocs}</div>
+        {license ? (
+          <div className={styles.licRow}>
+            <span className={styles.licIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
+            </span>
+            <span className={styles.licBody}>
+              <span className={styles.licTitle}>{strings.licenseTitle}</span>
+              <span className="t-caption id-code">{license.reference_no ?? "—"} · {strings.licIssue} {license.valid_from ?? "—"} · {strings.licExpiry} {license.valid_to ?? "—"}</span>
+            </span>
+          </div>
+        ) : <p className="t-caption">{strings.licNone}</p>}
+      </section>
+
+      {/* Establishment data — the accepted Source-vs-Observed verification model
+          (M04-102/103/106) presented inside the design's card. NOT replaced with
+          the design's plain dropdowns: source value (Senaei) vs observed value,
+          verify/observed-input/note/evidence and the derived status are intact. */}
+      <section className={styles.card}>
+      <div className={styles.headerRow}>
         <h4>{strings.title}</h4>
-        <span className={`ax-lozenge ${changeCount ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
+        <span className={`badge ${changeCount ? "badge-warning" : "badge-compliant"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
         </span>
       </div>
-      <p className="ax-caption">{strings.hint}</p>
-      {readOnly && <div className="ax-banner ax-banner--immutable"><div>{strings.readOnly}</div></div>}
-      {checksLoadError && <div className="ax-banner ax-banner--warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
+      <p className="t-caption">{strings.hint}</p>
+      {readOnly && <div className="alert alert-immutable"><div>{strings.readOnly}</div></div>}
+      {checksLoadError && <div className="alert alert-warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
       {failDetail !== null && (
-        <div className="ax-banner ax-banner--critical"><div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
+        <div className="alert alert-critical"><div className={styles.bannerRow}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
-          <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(userId, onState)}>{strings.retry}</button>
+          <button className="btn btn-secondary" onClick={() => processOutbox(userId, onState)}>{strings.retry}</button>
         </div></div>
       )}
-      {msg && <div className="ax-banner"><div>{msg}</div></div>}
+      {msg && <div className="alert alert-info"><div>{msg}</div></div>}
 
       {/* M04-102/103/106 — Source vs Observed side-by-side, per field */}
-      <div className="ax-tablewrap"><table className="ax-table">
+      <div className="table-wrap"><table className="table">
         <thead><tr>
           <th scope="col">{strings.colField}</th><th scope="col">{strings.colSource}</th><th scope="col">{strings.colObserved}</th><th scope="col">{strings.colStatus}</th><th scope="col">{strings.colEvidence}</th>
         </tr></thead>
@@ -269,42 +409,42 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
             const c = checks[f.key];
             const isUpdated = c?.status === "updated";
             return (
-              <tr key={f.key} style={isUpdated ? { background: "var(--ax-color-surface-sunken)" } : undefined}>
+              <tr key={f.key} className={isUpdated ? styles.rowUpdated : undefined}>
                 {/* M04-107 — updated-field highlighting */}
-                <td style={isUpdated ? { borderInlineStart: "4px solid var(--ax-color-warning)" } : undefined}><strong>{f.label}</strong></td>
+                <td className={isUpdated ? styles.cellUpdated : undefined}><strong>{f.label}</strong></td>
                 <td>
                   <div>{f.source ?? "—"}</div>
-                  <div className="ax-caption">{strings.sourceTag}</div>
+                  <div className="t-caption">{strings.sourceTag}</div>
                 </td>
                 <td>
-                  <input className="ax-input" style={{ minInlineSize: 140 }} disabled={readOnly}
+                  <input className={`input ${styles.observedInput}`} disabled={readOnly}
                     value={observedDraft[f.key] ?? ""} placeholder={strings.observedPlaceholder}
                     onChange={e => setObservedDraft(d => ({ ...d, [f.key]: e.target.value }))}
                     onBlur={() => { const v = observedDraft[f.key] ?? ""; if (v.trim() && v.trim() !== (c?.observed_value ?? "")) persist(f, v); }} />
-                  <label className="ax-field" style={{ marginBlockStart: "var(--ax-space-100)" }}>
-                    <span className="ax-field__label">{strings.noteLabel}</span>
-                    <input className="ax-input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
+                  <label className={`field ${styles.noteField}`}>
+                    <span className={styles.fieldLabel}>{strings.noteLabel}</span>
+                    <input className="input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
                       onChange={e => setNotes(n => ({ ...n, [f.key]: e.target.value }))} onBlur={() => persistNote(f)} />
                   </label>
                 </td>
                 <td>
                   {!readOnly && (
-                    <button className="ax-btn ax-btn--secondary" style={{ marginBlockEnd: "var(--ax-space-100)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
+                    <button className={`btn btn-secondary ${styles.verifyBtn}`} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
                   )}
                   <div>
                     {c
-                      ? <span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{c.status === "verified" ? strings.verified : strings.updated}</span>
-                      : <span className="ax-caption">{strings.unchecked}</span>}
+                      ? <span className={`badge ${c.status === "verified" ? "badge-compliant" : "badge-warning"}`}>{c.status === "verified" ? strings.verified : strings.updated}</span>
+                      : <span className="t-caption">{strings.unchecked}</span>}
                   </div>
                 </td>
                 <td>
                   {!readOnly && (
-                    <label className="ax-btn ax-btn--secondary" style={{ cursor: "pointer" }}>
+                    <label className="btn btn-secondary" style={{ cursor: "pointer" }}>
                       {strings.evAttach}
                       <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
                     </label>
                   )}
-                  {(evCountFor[f.key] ?? 0) > 0 && <div className="ax-caption ax-numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
+                  {(evCountFor[f.key] ?? 0) > 0 && <div className="t-caption">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
                 </td>
               </tr>
             );
@@ -313,67 +453,275 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       </table></div>
 
       {/* M04-111 / M04-190 — change review list: every Updated field with before/after + evidence */}
-      <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.reviewTitle}</h4>
+      <div className={styles.section}>
+        <h4>{strings.reviewTitle}</h4>
         {updatedFields.length === 0
-          ? <p className="ax-caption">{strings.reviewEmpty}</p>
+          ? <p className="t-caption">{strings.reviewEmpty}</p>
           : updatedFields.map(f => {
             const c = checks[f.key]!;
             return (
-              <div key={f.key} className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-100)" }}>
+              <div key={f.key} className={`alert alert-warning ${styles.reviewItem}`}>
                 <div>
                   <strong>{f.label}</strong>
-                  {" · "}{strings.before}: <span className="ax-numeric">{c.source_value ?? "—"}</span>
-                  {" → "}{strings.after}: <span className="ax-numeric">{c.observed_value ?? "—"}</span>
+                  {" · "}{strings.before}: <span className="id-code">{c.source_value ?? "—"}</span>
+                  {" → "}{strings.after}: <span className="id-code">{c.observed_value ?? "—"}</span>
                   {(evCountFor[f.key] ?? 0) > 0 && <> · {fmt(strings.evCount, { n: evCountFor[f.key] })}</>}
-                  {c.evidence_note && <div className="ax-caption">{c.evidence_note}</div>}
+                  {c.evidence_note && <div className="t-caption">{c.evidence_note}</div>}
                 </div>
               </div>
             );
           })}
       </div>
+      </section>
 
-      {/* M04-096 — license leg (issue/expiry from the synced license document) */}
-      <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseTitle}</h4>
-        {license
-          ? <p className="ax-caption ax-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
-          : <p className="ax-caption">{strings.licNone}</p>}
-      </div>
+      {/* Establishment data — design form structure PENDING INTEGRATION. These
+          attributes have no governed source/lookup yet, so nothing here is
+          persisted; option lists are the design's placeholders, not a governed
+          lookup. Kept ADDITIVE to the real source-vs-observed model above. */}
+      <section className={styles.card}>
+        <h4 className={styles.cardH}>
+          {strings.estDataTitle}
+          <span className="grow" />
+          <span className="badge badge-outline">{strings.pendingIntegration}</span>
+        </h4>
+        <p className="t-caption">{strings.pendingCaption}</p>
+        <div className={styles.formCol}>
+          <label className={styles.fld}>
+            <span>{strings.spatialAuth}</span>
+            <select className="select" value={estForm.spatialAuth} onChange={e => setEst("spatialAuth", e.target.value)} disabled={readOnly}>
+              <option value="">{strings.selectPlaceholder}</option>
+              <option value="modon">{strings.spatialAuthModon}</option>
+              <option value="other">{strings.optOther}</option>
+            </select>
+          </label>
+          <label className={styles.fld}>
+            <span>{strings.energyType}</span>
+            <select className="select" value={estForm.energyType} onChange={e => setEst("energyType", e.target.value)} disabled={readOnly}>
+              <option value="">{strings.selectPlaceholder}</option>
+              <option value="natural_gas">{strings.energyGas}</option>
+              <option value="electricity">{strings.energyElectricity}</option>
+            </select>
+          </label>
+          <label className={styles.fld}>
+            <span>{strings.estStatus}</span>
+            <select className="select" value={estForm.estStatus} onChange={e => setEst("estStatus", e.target.value)} disabled={readOnly}>
+              <option value="">{strings.selectPlaceholder}</option>
+              <option value="production">{strings.estStatusProduction}</option>
+              <option value="closed">{strings.estStatusClosed}</option>
+            </select>
+          </label>
+          <label className={styles.fld}>
+            <span>{strings.prodStatus}</span>
+            <select className="select" value={estForm.prodStatus} onChange={e => setEst("prodStatus", e.target.value)} disabled={readOnly}>
+              <option value="">{strings.selectPlaceholder}</option>
+              <option value="continuous">{strings.prodContinuous}</option>
+              <option value="non_continuous">{strings.prodNonContinuous}</option>
+            </select>
+          </label>
+          <div className={styles.fldRow}>
+            <label className={styles.fld}>
+              <span>{strings.closureJustification}</span>
+              <input className="input" value={estForm.closureJustification} placeholder={strings.closureJustificationPh} onChange={e => setEst("closureJustification", e.target.value)} disabled={readOnly} />
+            </label>
+            <label className={styles.fld}>
+              <span>{strings.closingAuthority}</span>
+              <select className="select" value={estForm.closingAuthority} onChange={e => setEst("closingAuthority", e.target.value)} disabled={readOnly}>
+                <option value="">{strings.selectPlaceholder}</option>
+                <option value="civil_defense">{strings.authCivilDefense}</option>
+                <option value="municipality">{strings.authMunicipality}</option>
+                <option value="modon">{strings.authModon}</option>
+              </select>
+            </label>
+          </div>
+          <div className={styles.exportsRow}>
+            <span className={styles.exportsLabel}>{strings.exportsProducts}</span>
+            <div className={styles.chipRow}>
+              <button type="button" className={styles.chip} aria-pressed={exportsProducts === true} onClick={() => setExportsProducts(true)} disabled={readOnly}>{strings.optYes}</button>
+              <button type="button" className={styles.chip} aria-pressed={exportsProducts === false} onClick={() => setExportsProducts(false)} disabled={readOnly}>{strings.optNo}</button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* M04-098 — products & HS codes inside the execution flow (read-only, Senaei-sourced) */}
-      <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.productsTitle}</h4>
-        {products.length === 0 ? <p className="ax-caption">{strings.productsEmpty}</p> : (
-          <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr><th scope="col">{strings.colProduct}</th><th scope="col">{strings.colHs}</th><th scope="col">{strings.colCapacity}</th></tr></thead>
-            <tbody>{products.map((p, i) => (
-              <tr key={i}>
-                <td>{p.name}{p.is_primary && <> <span className="ax-lozenge ax-lozenge--info">{strings.primaryTag}</span></>}</td>
-                <td className="ax-numeric">{p.hs_code ?? "—"}</td>
-                <td className="ax-numeric">{p.annual_capacity != null ? `${p.annual_capacity} ${p.unit ?? ""}` : "—"}</td>
-              </tr>
-            ))}</tbody>
-          </table></div>
+      {/* Incident logging — a distinct capability from a violation (O-13). The
+          action links to the REAL incident-reports route with this visit's
+          context; no fake inline form. */}
+      <section className={styles.card}>
+        <h4 className={`${styles.cardH} ${styles.cardHFlush}`}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.hIcon} aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+          {strings.incidentTitle}
+          <span className="grow" />
+          <a className="btn btn-secondary btn-sm" href={incidentHref}>{strings.incidentLog}</a>
+        </h4>
+        <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.incidentDesc}</p>
+      </section>
+
+      {/* Contacts — inspection-captured contact scaffolding, PENDING INTEGRATION.
+          Editable UI only; it does NOT write back to Senaei/source data
+          (FND-007) and is not persisted anywhere yet. */}
+      <section className={styles.card}>
+        <h4 className={styles.cardH}>
+          {strings.contactsTitle}
+          <span className="grow" />
+          <span className="badge badge-outline">{strings.pendingIntegration}</span>
+        </h4>
+        <p className="t-caption">{strings.pendingCaption}</p>
+        <div className={styles.formCol}>
+          {contactList.map((c, i) => (
+            <div key={i} className={styles.contactCard}>
+              <div className={styles.contactHead}>
+                <span className="badge badge-outline">{strings.contactLabel} {i + 1}</span>
+                <span className="grow" />
+                {!readOnly && (
+                  <button type="button" className="btn btn-ghost btn-icon btn-sm" aria-label={strings.contactDelete} onClick={() => setContactList(list => list.filter((_, j) => j !== i))}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.trashIcon} aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" /></svg>
+                  </button>
+                )}
+              </div>
+              <div className={styles.fldRow}>
+                <label className={styles.fld}><span>{strings.cName}</span><input className="input" value={c.name} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, name: e.target.value } : x))} disabled={readOnly} /></label>
+                <label className={styles.fld}><span>{strings.cTitle}</span><input className="input" value={c.title} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} disabled={readOnly} /></label>
+              </div>
+              <div className={styles.fldRow} style={{ marginBlockStart: "var(--space-2)" }}>
+                <label className={styles.fld}><span>{strings.cId}</span><input className="input id-code" value={c.id} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, id: e.target.value } : x))} disabled={readOnly} /></label>
+                <label className={styles.fld}><span>{strings.cMobile}</span><input className="input id-code" value={c.mobile} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, mobile: e.target.value } : x))} disabled={readOnly} /></label>
+              </div>
+              <label className={styles.fld} style={{ marginBlockStart: "var(--space-2)" }}><span>{strings.cEmail}</span><input className="input" dir="ltr" value={c.email} onChange={e => setContactList(list => list.map((x, j) => j === i ? { ...x, email: e.target.value } : x))} disabled={readOnly} /></label>
+            </div>
+          ))}
+          {!readOnly && (
+            <button type="button" className="btn btn-secondary btn-block" onClick={() => setContactList(list => [...list, { name: "", title: "", id: "", mobile: "", email: "" }])}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={styles.hIcon} aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+              {strings.addContact}
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* Inspection items — category chips. Products (M04-098) and Raw materials
+          (M04-099) show REAL Senaei-sourced identity data. Workforce/Machines/
+          Spare-parts categories and the per-item checkboxes are PENDING
+          INTEGRATION scaffolding (design structure, ungoverned option/check
+          lists, nothing persisted). */}
+      <section className={styles.card}>
+        <h4 className={styles.cardH}>
+          {strings.inspectionItems}
+          <span className="grow" />
+          <span className="badge badge-outline">{strings.pendingIntegration}</span>
+        </h4>
+        <p className="t-caption">{strings.pendingCaption}</p>
+        <div className={styles.chipRow}>
+          <button type="button" className={styles.chip} aria-pressed={cat === "workforce"} onClick={() => setCat("workforce")}>{strings.workforceTitle}</button>
+          <button type="button" className={styles.chip} aria-pressed={cat === "materials"} onClick={() => setCat("materials")}>{strings.materialsTitle}</button>
+          <button type="button" className={styles.chip} aria-pressed={cat === "products"} onClick={() => setCat("products")}>{strings.productsTitle}</button>
+          <button type="button" className={styles.chip} aria-pressed={cat === "machines"} onClick={() => setCat("machines")}>{strings.machinesTitle}</button>
+          <button type="button" className={styles.chip} aria-pressed={cat === "spare"} onClick={() => setCat("spare")}>{strings.spareTitle}</button>
+        </div>
+
+        {cat === "workforce" && (
+          // Workforce roster — PENDING INTEGRATION (whole block). No governed
+          // shift/worker-type count source exists, so nothing is pre-filled and
+          // nothing persists; the grand total is derived only from what the
+          // inspector types here. No registered/diff comparison is invented.
+          <div className={styles.formCol}>
+            {roster.length === 0 && <p className="t-caption">{strings.rosterEmpty}</p>}
+            {roster.map((r, i) => (
+              <div key={i} className={styles.itemCard}>
+                <div className={styles.contactHead}>
+                  <label className={`${styles.fld} ${styles.rosterType}`}>
+                    <span>{strings.workerTypeLabel}</span>
+                    <input className="input" value={r.type} placeholder={strings.workerTypePh} onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, type: e.target.value } : x))} disabled={readOnly} />
+                  </label>
+                  {!readOnly && (
+                    <button type="button" className="btn btn-ghost btn-icon btn-sm" aria-label={strings.contactDelete} onClick={() => setRoster(list => list.filter((_, j) => j !== i))}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.trashIcon} aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" /></svg>
+                    </button>
+                  )}
+                </div>
+                <div className={styles.shiftGrid}>
+                  <label className={styles.fld}><span>{strings.shift1}</span><input className="input id-code" value={r.s1} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s1: e.target.value } : x))} disabled={readOnly} style={{ textAlign: "center" }} /></label>
+                  <label className={styles.fld}><span>{strings.shift2}</span><input className="input id-code" value={r.s2} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s2: e.target.value } : x))} disabled={readOnly} style={{ textAlign: "center" }} /></label>
+                  <label className={styles.fld}><span>{strings.shift3}</span><input className="input id-code" value={r.s3} inputMode="numeric" onChange={e => setRoster(list => list.map((x, j) => j === i ? { ...x, s3: e.target.value } : x))} disabled={readOnly} style={{ textAlign: "center" }} /></label>
+                </div>
+                <div className={styles.shiftTotal}>{strings.totalLabel}: <strong>{rowTotal(r)}</strong> {strings.workerUnit}</div>
+              </div>
+            ))}
+            {!readOnly && (
+              <button type="button" className="btn btn-secondary btn-block" onClick={() => setRoster(list => [...list, { type: "", s1: "", s2: "", s3: "" }])}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={styles.hIcon} aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                {strings.addWorkerRow}
+              </button>
+            )}
+            {roster.length > 0 && (
+              <div className={styles.rosterFoot}>
+                <span>{strings.grandTotal}</span>
+                <strong className="id-code">{grandTotal}</strong>
+                <span className="t-caption">{strings.workerUnit}</span>
+              </div>
+            )}
+          </div>
         )}
-      </div>
 
-      {/* M04-099 — raw materials inside the execution flow (read-only, Senaei-sourced) */}
-      <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.materialsTitle}</h4>
-        {materials.length === 0 ? <p className="ax-caption">{strings.materialsEmpty}</p> : (
-          <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr><th scope="col">{strings.colMaterial}</th><th scope="col">{strings.colMatSource}</th><th scope="col">{strings.colHs}</th></tr></thead>
-            <tbody>{materials.map((m, i) => (
-              <tr key={i}>
-                <td>{m.name}</td>
-                <td>{m.source === "imported" ? strings.srcImported : strings.srcLocal}</td>
-                <td className="ax-numeric">{m.hs_code ?? "—"}</td>
-              </tr>
-            ))}</tbody>
-          </table></div>
+        {cat === "products" && (
+          products.length === 0 ? <p className="t-caption">{strings.productsEmpty}</p> : (
+            <div className={styles.itemList}>
+              {products.map((p, i) => (
+                <div key={i} className={styles.itemCard}>
+                  <div className={styles.itemHead}>
+                    <div className={styles.itemMain}>
+                      <div className={styles.itemTitle}>{p.name}{p.is_primary && <> <span className="badge badge-info">{strings.primaryTag}</span></>}</div>
+                      <div className="t-caption id-code">{strings.colHs}: {p.hs_code ?? "—"}</div>
+                    </div>
+                    {p.annual_capacity != null && <span className="badge badge-outline">{p.annual_capacity} {p.unit ?? ""}</span>}
+                  </div>
+                  {renderChecks(`products:${i}`)}
+                </div>
+              ))}
+            </div>
+          )
         )}
-      </div>
+
+        {cat === "materials" && (
+          materials.length === 0 ? <p className="t-caption">{strings.materialsEmpty}</p> : (
+            <div className={styles.itemList}>
+              {materials.map((m, i) => (
+                <div key={i} className={styles.itemCard}>
+                  <div className={styles.itemHead}>
+                    <div className={styles.itemMain}>
+                      <div className={styles.itemTitle}>{m.name}</div>
+                      <div className="t-caption id-code">{strings.colHs}: {m.hs_code ?? "—"}</div>
+                    </div>
+                    <span className="badge badge-outline">{m.source === "imported" ? strings.srcImported : strings.srcLocal}</span>
+                  </div>
+                  {renderChecks(`materials:${i}`)}
+                </div>
+              ))}
+            </div>
+          )
+        )}
+
+        {(cat === "machines" || cat === "spare") && (
+          <div className="empty">
+            <div className="empty-title">{strings.categoryPending}</div>
+          </div>
+        )}
+      </section>
+
+      {/* Visit notes — PENDING INTEGRATION. There is no governed visit/inspection
+          note binding or offline op yet, so this free text is held in memory only
+          and is NOT saved (badged so nothing reads as persisted). */}
+      <section className={styles.card}>
+        <h4 className={styles.cardH}>
+          {strings.visitNotesTitle}
+          <span className="grow" />
+          <span className="badge badge-outline">{strings.pendingIntegration}</span>
+        </h4>
+        <p className="t-caption">{strings.pendingCaption}</p>
+        <label className={styles.fld}>
+          <span>{strings.visitNoteLabel}</span>
+          <textarea className={`input ${styles.notesArea}`} rows={3} value={visitNote} placeholder={strings.visitNotePlaceholder} onChange={e => setVisitNote(e.target.value)} disabled={readOnly} />
+        </label>
+      </section>
 
       {annotating && <AnnotateModal file={annotating} strings={strings} onDone={finishAnnotation} onCancel={() => setAnnotating(null)} />}
     </div>

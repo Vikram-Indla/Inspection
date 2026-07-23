@@ -5,6 +5,7 @@
 // immutable version and survives offline queueing unchanged.
 import { useEffect, useRef, useState } from "react";
 import Modal from "@/components/Modal";
+import styles from "./factory-verification.module.css";
 
 export type SignaturePadStrings = {
   title: string; hint: string;
@@ -40,7 +41,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
     g.lineCap = "round";
     g.lineJoin = "round";
     // Ink color comes from the design system, never a bare color.
-    g.strokeStyle = getComputedStyle(c).getPropertyValue("--ax-color-text").trim();
+    g.strokeStyle = getComputedStyle(c).getPropertyValue("--text-primary").trim();
   }, []);
 
   const pos = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -89,27 +90,22 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       title={strings.title}
       closeLabel={strings.cancel}
       footer={<>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clear}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-        <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
+        <button type="button" className="btn btn-ghost" onClick={clear}>{strings.clear}</button>
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>{strings.cancel}</button>
+        <button type="button" className="btn btn-primary" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
       </>}
     >
-      <p className="ax-caption">{strings.hint}</p>
-      <label className="ax-field">
-        <span className="ax-field__label">{strings.nameLabel}<span className="ax-req">*</span></span>
-        <input className="ax-input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
+      <p className="t-caption">{strings.hint}</p>
+      <label className="field">
+        <span className={styles.fieldLabel}>{strings.nameLabel}<span className="req">*</span></span>
+        <input className="input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
       </label>
       <canvas
         ref={canvasRef}
+        className={styles.signatureCanvas}
         onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-        style={{
-          inlineSize: "100%", blockSize: 180, touchAction: "none", cursor: "crosshair",
-          background: "var(--ax-color-surface-sunken)",
-          border: "1.5px dashed var(--ax-color-border-strong)",
-          borderRadius: "var(--ax-radius-standard)",
-        }}
       />
-      {err && <p className="ax-field__error">{err}</p>}
+      {err && <p className="field-error">{err}</p>}
     </Modal>
   );
 }

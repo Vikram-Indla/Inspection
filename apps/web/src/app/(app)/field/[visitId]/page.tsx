@@ -1,4 +1,5 @@
-import Shell from "@/components/Shell";
+import Link from "next/link";
+import FieldHeader from "@/components/field/FieldHeader";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
@@ -16,6 +17,7 @@ import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import packageInfo from "../../../../../package.json";
 import { getVerifiedUser } from "@/lib/verified-user";
+import styles from "./startup.module.css";
 
 // BUG-2 fix — [visitId] sits beside static field/* routes (drafts, notifications,
 // settings, …) with no more-specific match; Next.js still routes an unmatched
@@ -33,12 +35,32 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
+  // SAQEEL field chrome — the global <Shell> is replaced by the shared
+  // <FieldHeader> (back arrow + language + theme). This is a focused execution
+  // screen, so like the design it carries no bottom <FieldNav>.
+  const tr = (k: string, en: string, ar: string) => (locale === "ar" ? ar : t(k, en));
+  const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
+  const langLabel = locale === "ar" ? "EN" : "AR";
+  const themeLabels = {
+    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
+    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
+  };
+  const back = (
+    <Link href="/field/my-tasks" prefetch={false} className="btn btn-icon btn-ghost"
+      aria-label={tr("common.back", "Back", "رجوع")}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m15 18-6-6 6-6" /></svg>
+    </Link>
+  );
   if (!UUID_SHAPE.test(visitId)) {
     return (
-      <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
-        <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
-          body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
-      </Shell>
+      <>
+        <FieldHeader leading={back} title={t("field.start.notFoundTitle", "Not found")}
+          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+        <div className={styles.page}>
+          <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
+            body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
+        </div>
+      </>
     );
   }
   // NB: visits.execution_date (20260721090000) is deliberately NOT in this
@@ -114,10 +136,14 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   }
   if (!v) {
     return (
-      <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
-        <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
-          body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
-      </Shell>
+      <>
+        <FieldHeader leading={back} title={t("field.start.notFoundTitle", "Not found")}
+          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+        <div className={styles.page}>
+          <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
+            body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
+        </div>
+      </>
     );
   }
   // TASK-EXECUTION-MODULE-001 · Phase 3B — Pre-Execution readiness data.
@@ -539,19 +565,39 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (
-    <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
-      context={<span className="badge badge-info">SCR-IPAD-610/620</span>}>
+    <>
+      <FieldHeader leading={back}
+        title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
+        subtitle={<>SCR-IPAD-610/620 · <span className="id-code">{v.id.slice(0, 8)}</span></>}
+        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
       <CreatedToast created={created}
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
-      <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
-        {factory360Href && <a className="btn btn-ghost btn-touch" href={factory360Href}>{t("field.start.openFactory360", "Open Factory 360")}</a>}
+      <div className={styles.page}>
+        <div className={styles.quickActions}>
+          {factory360Href && (
+            <a className={styles.quickAction} href={factory360Href}>
+              <span className={styles.quickActionIcon} aria-hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M3 9l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M9 22V12h6v10" /></svg>
+              </span>
+              <span className={styles.quickActionLabel}>{t("field.start.openFactory360", "Open Factory 360")}</span>
+              <svg className={styles.quickActionChevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m9 18 6-6-6-6" /></svg>
+            </a>
+          )}
+          <Link href={`/field/${v.id}/travel`} prefetch={false} className={styles.quickAction}>
+            <span className={styles.quickActionIcon} aria-hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M12 21s-7-5.686-7-11a7 7 0 0 1 14 0c0 5.314-7 11-7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>
+            </span>
+            <span className={styles.quickActionLabel}>{tr("field.start.openTravel", "Journey to site", "الرحلة إلى الموقع")}</span>
+            <svg className={styles.quickActionChevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m9 18 6-6-6-6" /></svg>
+          </Link>
+        </div>
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
           <div className="stack" style={{ gap: 8 }}>
             <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <span className={`ax-lozenge ${physicalEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+              <span className={`badge ${physicalEligible ? "badge-compliant" : "badge-critical"}`}>
                 {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
               <span>{dispatchSource === "official"
@@ -560,7 +606,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
               {v.execution_mode !== "virtual" && <span className="badge badge-info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
             <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <span className={`ax-lozenge ${virtualEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+              <span className={`badge ${virtualEligible ? "badge-compliant" : "badge-critical"}`}>
                 {virtualEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
               <span>{t("field.start.virtualRule", "Virtual — requires OTP identity-verification engine configured (ENG · REF-011)")}</span>
@@ -601,7 +647,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         )}
         {factoryUnverifiedManual && (
           <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <span className="ax-lozenge ax-lozenge--warning">{unverifiedManualLabel}</span>
+            <span className="badge badge-warning">{unverifiedManualLabel}</span>
           </div>
         )}
         <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} userId={user.id} preparationGated={preparationGated}
@@ -609,6 +655,6 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           initialCancellation={initialCancellation as never}
           initialCorrections={initialCorrections as never} />
       </div>
-    </Shell>
+    </>
   );
 }

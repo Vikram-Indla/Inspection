@@ -1,0 +1,57 @@
+/* SAQEEL Field Establishments — list layout ported verbatim from
+   SAQEEL Field Establishments.dc.html (the design's own <style> block).
+   Every value is a SAQEEL design-system token linked by (app)/field/layout.tsx;
+   no bare colours. The design's es-* classes live here (route-scoped) because
+   they are page-local in the .dc.html and are not part of the shared DS. */
+
+.wrap {
+  max-width: 960px; margin: 0 auto; width: 100%;
+  padding: 18px 18px 100px; display: flex; flex-direction: column; gap: 16px;
+}
+@media (max-width: 560px) { .wrap { padding: 14px 12px 100px; } }
+
+.tabs { display: flex; gap: 8px; }
+.tab {
+  flex: 1; padding: 11px 14px; border-radius: 10px;
+  border: 1px solid var(--border-subtle); background: var(--surface-primary);
+  font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+  color: var(--text-secondary); text-decoration: none; text-align: center;
+}
+.tabActive {
+  background: var(--accent-soft); border-color: var(--action-primary);
+  color: var(--accent-text);
+}
+
+.searchRow { display: flex; gap: 10px; align-items: center; }
+
+.grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: block; border: 1px solid var(--border-subtle); border-radius: 12px;
+  background: var(--surface-primary); box-shadow: var(--shadow-card);
+  padding: 15px 16px; text-align: start; cursor: pointer; font: inherit;
+  color: var(--text-primary); text-decoration: none;
+  transition: box-shadow .12s, transform .12s;
+}
+.card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+.cardStatic { cursor: default; }
+.cardStatic:hover { box-shadow: var(--shadow-card); transform: none; }
+
+.cardHead { display: flex; align-items: flex-start; gap: 8px; }
+.cardName { flex: 1; font-weight: 600; font-size: 14.5px; }
+.cardLic { margin-block-start: 6px; }
+.cardFoot { display: flex; gap: 14px; align-items: center; margin-block-start: 10px; }
+
+/* Filter drawer field label (design's .fld). */
+.fld { display: flex; flex-direction: column; gap: 5px; }
+.fld > span { font-size: 13px; color: var(--text-secondary); }
+
+.drawerFoot {
+  display: flex; gap: 10px; padding: 14px 16px;
+  border-block-start: 1px solid var(--border-subtle);
+}
+
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 10px; }

@@ -95,12 +95,19 @@ export class GeminiSuggestionProvider {
    * the M2-11 docket prompt so contextual surfaces can require source facts,
    * evidence references and a bounded response without changing docket UX.
    */
-  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary", context: string): Promise<AiGenResult> {
+  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary", context: string, outputLanguage: "en" | "ar" = "en"): Promise<AiGenResult> {
     const itemExplanation = surface === "inspection_item_explanation";
     const riskExplanation = surface === "factory_risk_explanation";
     const dailyBriefing = surface === "inspector_daily_briefing";
+    // Language directive must live IN the prompt (not just the context JSON,
+    // which the model treats as data and ignores). The Arabic inspector profile
+    // requires the whole advisory in Arabic.
+    const languageLine = outputLanguage === "ar"
+      ? "Write the ENTIRE response in Modern Standard Arabic (العربية الفصحى). Every word must be Arabic — do not use any English except unavoidable proper nouns or identifier codes. Arabic-Indic or Western digits are both acceptable."
+      : "Write the response in clear professional English.";
     const prompt = [
       "You are an advisory assistant for a government factory-inspection platform.",
+      languageLine,
       `Produce a concise ${surface === "planning_summary" ? "planning summary" : surface === "preparation_assistant" ? "inspector preparation brief" : itemExplanation ? "inspection-item explanation" : riskExplanation ? "factory risk and health-score explanation" : surface === "inspector_daily_briefing" ? "daily inspector briefing" : "visit-management operational summary"}.`,
       "Use only the supplied source facts. Never invent a threshold, score, legal clause, penalty, severity, license decision, route, assignment, or policy value.",
       itemExplanation
@@ -108,10 +115,10 @@ export class GeminiSuggestionProvider {
         : riskExplanation
           ? "Explain only the recorded risk score, band, model version and stored driver values in at most 4 short sentences. Do not recalculate risk, infer a cause, assign a priority, or recommend an enforcement, licensing or inspection action."
           : dailyBriefing
-            ? "Summarize only the inspector's recorded assigned visits, windows, states and factory details. Group by what the inspector actually needs to act on (e.g. today's/this week's visits, anything returned or overdue, anything expiring), not by array position. Do not invent a route, timing, priority, assignment, risk score or visit-state change; state unavailable where facts do not support it."
+            ? "Summarize the inspector's recorded assigned visits in a concrete, useful way, and ALWAYS give several distinct findings — not one summary line. Name specific establishments and give real counts. Cover, as separate lines where the data supports it: how many visits today vs upcoming; a breakdown by visit type (e.g. periodic vs complaint); a breakdown by region; how many high-risk factories and which ones; anything returned, overdue or expiring; and the two or three establishments the inspector will reach soonest by window. When nothing is scheduled today, still break down the upcoming assigned visits this way rather than stopping at 'none today'. Do not invent a route, timing, priority, risk score, or visit-state change; briefly note where a fact is genuinely unavailable."
         : "Write at most 5 short sentences, one each covering Risk, Workload, Hotspot, Route, or Recommendation as applicable.",
       dailyBriefing
-        ? "Output 3 to 5 short bullet lines, one fact or grouped finding per line (at most 16 words each), one per line separated by a newline, each line starting with \"- \". No paragraph, no sentence connecting multiple lines, no headings, no bold text, no nested bullets."
+        ? "Write the briefing as 4 to 6 separate bullet lines. Each line is one finished finding, on its own line, starting with \"- \". Write ONLY the briefing content — do not describe your own output, do not count or mention the number of words, do not add any meta or formatting commentary. No paragraph, no headings, no bold, no nested bullets."
         : "Write plain prose sentences only — no Markdown, no asterisks, no bullet lists, no headings, no bold text.",
       "State when a fact is unavailable. This is advisory text only; a human remains the decision maker.",
       `Source facts: ${String(context ?? "").slice(0, 6000)}`,

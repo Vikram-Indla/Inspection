@@ -15,6 +15,7 @@ import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
+import styles from "./workspace.module.css";
 
 type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
@@ -724,98 +725,98 @@ export default function Workspace({ inspection, items, library, serverResponses,
     });
   }
 
-  const tone = sync === "synced" ? "ax-sync--synced" : sync === "offline" ? "ax-sync--offline" : sync === "syncing" ? "ax-sync--syncing" : sync === "conflict" ? "ax-sync--conflict" : sync === "failed" ? "ax-sync--failed" : "ax-sync--pending";
+  const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--ax-color-canvas)", paddingBlock: "var(--ax-space-100)" }}>
-        <span className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
-          <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
+      <div className={styles.toolbar}>
+        <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+          <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(userId, onState)}>{strings.retryNow}</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.retryNow}</button>
           )}
         </span>
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
-          {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
+        <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+          <span className="t-caption id-code">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+          {!submitted && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
       </div>
       <FieldConnectivityBanner offline={strings.connectivityOffline} weak={strings.connectivityWeak} />
-      {msg && <div className="ax-banner"><div>{msg}</div></div>}
+      {msg && <div className="alert alert-info"><div>{msg}</div></div>}
 
       {/* DEC-A — Figma wizard-shell parity as a guided presentation over the existing
           config-driven engine: pure anchor navigation over the unchanged section list
           below, no new state, no altered validation/submit/RLS/offline behaviour. */}
       {!submitted && sections.length > 1 && (
-        <nav className="ax-tabs" role="tablist" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+        <nav className="tabs" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
           {sections.map(s => (
-            <a key={s.key} role="tab" aria-selected="false" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap", textDecoration: "none" }}>{s.title}</a>
+            <a key={s.key} className="tab" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap" }}>{s.title}</a>
           ))}
         </nav>
       )}
 
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
-      <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>
-          {strings.panelTitle}{inspectionNo ? <span className="ax-numeric"> · {inspectionNo}</span> : null}
+      <details className={styles.card} style={{ padding: "var(--space-4)" }}>
+        <summary style={{ cursor: "pointer", fontSize: "var(--type-compact-size)", fontWeight: 600 }}>
+          {strings.panelTitle}{inspectionNo ? <span className="id-code"> · {inspectionNo}</span> : null}
         </summary>
-        <div className="ax-grid-2" style={{ marginBlockStart: "var(--ax-space-200)" }}>
-          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+        <div className={styles.grid2} style={{ marginBlockStart: "var(--space-3)" }}>
+          <details open className={styles.panel} style={{ padding: "var(--space-3)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
-            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+            <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-2)" }}>
               <div><strong>{panel.factory.name}</strong></div>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelCode}</span><span className="id-code">{panel.factory.code ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelLicense}</span><span className="id-code">{panel.factory.license ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
             </div>
           </details>
-          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+          <details open className={styles.panel} style={{ padding: "var(--space-3)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
-            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
-              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
+            <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-2)" }}>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelWindow}</span><span className="id-code">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="id-code">{panel.pkg.label}</span></span></div>
             </div>
           </details>
         </div>
         {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
-        {prev && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
+        {prev && <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
       </details>
       {conflicts.map(c => (
-        <div key={c.key} className="ax-conflict">
-          <div className="ax-conflict__head">{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
-          <div className="ax-conflict__grid">
-            <div className="ax-conflict__side"><h5>{strings.thisDevice}</h5><p>{JSON.stringify(c.local)}</p></div>
-            <div className="ax-conflict__side"><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
+        <div key={c.key} className={styles.conflict}>
+          <div className={styles.conflictHead}>{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
+          <div className={styles.conflictGrid}>
+            <div className={styles.conflictSide}><h5>{strings.thisDevice}</h5><p>{JSON.stringify(c.local)}</p></div>
+            <div className={styles.conflictSide}><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
           </div>
-          <div className="ax-conflict__foot">
-            <button className="ax-btn ax-btn--secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
-            <button className="ax-btn" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
+          <div className={styles.conflictFoot}>
+            <button className="btn btn-secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
+            <button className="btn btn-primary" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
           </div>
         </div>
       ))}
       {inspection.status === "returned" && (() => {
         const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
-        return lastReturn ? <div className="ax-banner ax-banner--warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
+        return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
       })()}
-      {submitted && <div className="ax-banner ax-banner--immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
+      {submitted && <div className="alert alert-immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
       {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
           pending: non-blocking banner, the inspector keeps working (§12). */}
-      {cancelApproved && <div className="ax-banner ax-banner--immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
-      {cancelPending && <div className="ax-banner ax-banner--warning" role="status"><div>{strings.cancelPending}</div></div>}
-      {cancelState?.status === "rejected" && <div className="ax-banner ax-banner--warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
+      {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
+      {cancelPending && <div className="alert alert-warning" role="status"><div>{strings.cancelPending}</div></div>}
+      {cancelState?.status === "rejected" && <div className="alert alert-warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
 
       {/* Live summary — answered / pending / compliant / non-compliant / violations / evidence (M04-149) */}
       {!submitted && (
-        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "center" }}>
-          <span className="ax-overline">{strings.summaryTitle}</span>
-          <span className="ax-badge">{strings.sumAnswered} <span className="ax-numeric">{summary.answered}</span></span>
-          <span className="ax-badge">{strings.sumPending} <span className="ax-numeric">{summary.pending}</span></span>
-          <span className="ax-badge">{strings.sumCompliant} <span className="ax-numeric">{summary.compliant}</span></span>
-          <span className={`ax-badge ${summary.nonCompliant ? "ax-badge--critical" : ""}`}>{strings.sumNonCompliant} <span className="ax-numeric">{summary.nonCompliant}</span></span>
-          <span className={`ax-badge ${summary.violations ? "ax-badge--critical" : ""}`}>{strings.sumViolations} <span className="ax-numeric">{summary.violations}</span></span>
-          <span className="ax-badge">{strings.sumEvidence} <span className="ax-numeric">{summary.evidence}</span></span>
+        <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "center" }}>
+          <span className={styles.overline}>{strings.summaryTitle}</span>
+          <span className="badge">{strings.sumAnswered} <span className="id-code">{summary.answered}</span></span>
+          <span className="badge">{strings.sumPending} <span className="id-code">{summary.pending}</span></span>
+          <span className="badge badge-compliant">{strings.sumCompliant} <span className="id-code">{summary.compliant}</span></span>
+          <span className={`badge ${summary.nonCompliant ? "badge-critical" : ""}`}>{strings.sumNonCompliant} <span className="id-code">{summary.nonCompliant}</span></span>
+          <span className={`badge ${summary.violations ? "badge-critical" : ""}`}>{strings.sumViolations} <span className="id-code">{summary.violations}</span></span>
+          <span className="badge">{strings.sumEvidence} <span className="id-code">{summary.evidence}</span></span>
         </div>
       )}
 
@@ -826,16 +827,16 @@ export default function Workspace({ inspection, items, library, serverResponses,
       <fieldset disabled={cancelApproved} style={{ display: "contents" }}>
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{strings.ctxTitle}</h4>
-          <p className="ax-caption">{strings.ctxHint}</p>
-          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)" }}>
+          <p className="t-caption">{strings.ctxHint}</p>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-4)" }}>
             {flags.map(k => (
-              <div key={k} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-                <span style={{ font: "var(--ax-text-field)" }}>{strings.ctxLabels[k] ?? k}</span>
-                <div className="ax-segmented ax-segmented--field">
-                  <button type="button" aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
-                  <button type="button" aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
+              <div key={k} className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+                <span style={{ fontSize: "var(--type-compact-size)" }}>{strings.ctxLabels[k] ?? k}</span>
+                <div className="seg">
+                  <button type="button" className="seg-opt" aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
+                  <button type="button" className="seg-opt" aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
                 </div>
               </div>
             ))}
@@ -847,19 +848,19 @@ export default function Workspace({ inspection, items, library, serverResponses,
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
-            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="ax-caption">{strings.lockedSection}</p></div>;
+            return <div key={s.key} className={styles.card} style={{ padding: "var(--space-4)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="t-caption">{strings.lockedSection}</p></div>;
           }
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+        <div key={s.key} id={`ax-section-${s.key}`} className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
-            <span className="ax-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
+            <span className="t-caption id-code">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
-          <div style={{ blockSize: 4, borderRadius: 2, background: "var(--ax-color-border)" }} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
-            <div style={{ blockSize: 4, borderRadius: 2, inlineSize: `${sp.pct}%`, background: "var(--ax-color-primary)" }} />
+          <div className={styles.track} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
+            <div className={styles.trackFill} style={{ inlineSize: `${sp.pct}%` }} />
           </div>
           {(s.items ?? []).map(code => {
             const it = allMap[code]; if (!it) return null;
@@ -874,18 +875,18 @@ export default function Workspace({ inspection, items, library, serverResponses,
             const complete = def ? formComplete(def, draft) : false;
             const conditional = !!it.response_model.conditional?.visible_when;
             return (
-              <div key={code} className={`ipad-q ${val?.value ? "is-answered" : ""}`} style={{ border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-large)", padding: "var(--ax-space-300)", borderInlineStart: val?.value ? "4px solid var(--ax-color-success)" : undefined, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-                <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
-                  <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{code} · {it.title}</p>
-                  {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
-                  {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
-                  {itemStates[it.id]?.active && itemStates[it.id]?.state === "added" && <span className="ax-lozenge ax-lozenge--info">{strings.libAddedGroup}</span>}
+              <div key={code} className={`${styles.question} ${val?.value ? styles.questionAnswered : ""}`}>
+                <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "baseline" }}>
+                  <p className={styles.title}>{code} · {it.title}</p>
+                  {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
+                  {conditional && <span className="badge badge-info">{strings.conditionalBadge}</span>}
+                  {itemStates[it.id]?.active && itemStates[it.id]?.state === "added" && <span className="badge badge-info">{strings.libAddedGroup}</span>}
                   {/* §15 — optional/added items only; mandatory items never show this (fail closed like D-007) */}
                   {canDeselect(it) && (
-                    <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setDeselecting({ item: it, reason: "" })}>{strings.deselectBtn}</button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDeselecting({ item: it, reason: "" })}>{strings.deselectBtn}</button>
                   )}
                 </div>
-                {it.guidance && <p className="ax-caption"><IconLightbulb size={16} /> {strings.guidanceLabel}: {it.guidance}</p>}
+                {it.guidance && <p className="t-caption"><IconLightbulb size={16} /> {strings.guidanceLabel}: {it.guidance}</p>}
                 {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
                 <ContextualAiPanel
                   surface="inspection_item_explanation"
@@ -903,71 +904,71 @@ export default function Workspace({ inspection, items, library, serverResponses,
                 />
                 {/* M04-136/137 — same item's answer + evidence count from the factory's latest prior approved inspection */}
                 {prev && (
-                  <p className="ax-caption">
+                  <p className="t-caption">
                     ↩ {fmt(strings.prevLine, {
                       value: prev.answers[it.id] ? (strings.enumLabels[prev.answers[it.id]] ?? prev.answers[it.id].replace(/_/g, " ")) : strings.prevNoAnswer,
                       n: prev.evidence[it.id] ?? 0,
                     })}
                   </p>
                 )}
-                <div className="ax-row" style={{ flexWrap: "wrap" }}>
+                <div className="row" style={{ flexWrap: "wrap" }}>
                   {isDate ? (
-                    <label className="ax-field">
-                      <span className="ax-field__label">{strings.dateLabel}</span>
-                      <input className="ax-input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
+                    <label className={styles.fld}>
+                      <span>{strings.dateLabel}</span>
+                      <input className="input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
                     </label>
                   ) : (it.response_model.responses ?? []).map(r => (
-                    <button key={r} className="ax-btn ax-btn--field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--ax-color-critical)" : "var(--ax-color-primary)") : "var(--ax-color-surface)", color: val?.value === r ? "var(--ax-color-inverse-text)" : "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)" }}
+                    <button key={r} className={val?.value === r ? (r === "non_compliant" ? "btn btn-lg btn-danger" : "btn btn-lg btn-primary") : "btn btn-lg btn-secondary"}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
                   {leg?.applies && leg.type !== "comment" && (
-                    <label className="ax-btn ax-btn--field ax-btn--secondary" style={{ cursor: "pointer" }}>
+                    <label className="btn btn-lg btn-secondary" style={{ cursor: "pointer" }}>
                       {val?.value === "non_compliant" && leg.mandatory ? strings.mandatoryPhoto : (leg.type === "document" ? strings.evAddDoc : strings.evAdd)}
                       <input type="file" accept={acceptFor(leg.type)} multiple hidden onChange={e => { if (e.target.files?.length) { attachFiles(it, e.target.files); e.target.value = ""; } }} />
                     </label>
                   )}
                   {leg?.applies && leg.type === "comment" && (
-                    <span className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
-                      <label className="ax-field">
-                        <span className="ax-field__label">{strings.noteLabel}</span>
-                        <textarea className="ax-input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
+                    <span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+                      <label className={styles.fld}>
+                        <span>{strings.noteLabel}</span>
+                        <textarea className="input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
                       </label>
-                      <button type="button" className="ax-btn ax-btn--field ax-btn--secondary" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
+                      <button type="button" className="btn btn-lg btn-secondary" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
                     </span>
                   )}
                   {leg?.applies && leg.mandatory && (
-                    <span className={`ax-lozenge ${evCount >= leg.min ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{fmt(strings.evCount, { n: evCount, min: leg.min })}</span>
+                    <span className={`badge ${evCount >= leg.min ? "badge-compliant" : "badge-warning"}`}>{fmt(strings.evCount, { n: evCount, min: leg.min })}</span>
                   )}
                 </div>
-                {val?.value && scoreExcluded(it, val.value) && <p className="ax-caption">{strings.naExcluded}</p>}
-                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
+                {val?.value && scoreExcluded(it, val.value) && <p className="t-caption">{strings.naExcluded}</p>}
+                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="t-caption" style={{ color: "var(--status-critical-text)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
                 {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
                     + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
                 {(() => {
                   const rows = serverEvidence.filter(ev2 => ev2.linked_type === "item" && ev2.linked_id === it.id && !ev2.deleted_at && !evState[ev2.id]?.deleted);
                   if (!rows.length && !thumbs.length) return null;
                   return (
-                    <div className="ax-evidence-grid">
+                    <div className={styles.evidenceGrid}>
                       {rows.map(ev2 => {
                         const archived = !!ev2.archived_at || !!evState[ev2.id]?.archived;
                         const url = evidenceUrls[ev2.id];
                         return (
-                          <div key={ev2.id} className={`ax-evidence ${archived ? "is-quarantined" : ""}`}>
+                          <div key={ev2.id} className={`${styles.evidence} ${archived ? styles.evidenceQuarantined : ""}`}>
                             {url
-                              ? <img className="ax-evidence__thumb" src={url} alt={strings.evSyncedAlt} />
-                              : <div className="ax-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? <IconDocument size={24} /> : <IconVideo size={24} />}</div>}
-                            <div className="ax-evidence__meta">
-                              <span className="ax-numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
+                              ? <img className={styles.evidenceThumb} src={url} alt={strings.evSyncedAlt} />
+                              : <div className={styles.evidenceThumb} aria-hidden="true">{ev2.evidence_type === "document" ? <IconDocument size={24} /> : <IconVideo size={24} />}</div>}
+                            <div className={styles.evidenceMeta}>
+                              <span className="id-code">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
                               {archived
-                                ? <span className="ax-lozenge ax-lozenge--warning">{strings.evArchived}</span>
+                                ? <span className="badge badge-warning">{strings.evArchived}</span>
                                 : (
-                                  <span className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap" }}>
-                                    <label className="ax-btn ax-btn--subtle" style={{ cursor: "pointer" }}>
+                                  <span className="row" style={{ gap: "var(--space-1)", flexWrap: "wrap" }}>
+                                    <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer" }}>
                                       {strings.evReplace}
                                       <input type="file" accept={acceptFor(leg?.type ?? "photo")} hidden
                                         onChange={ie => { if (ie.target.files?.length) { attachFiles(it, ie.target.files, ev2.id); ie.target.value = ""; } }} />
                                     </label>
-                                    <button className="ax-btn ax-btn--subtle" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
+                                    <button className="btn btn-ghost btn-sm" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
                                   </span>
                                 )}
                             </div>
@@ -975,32 +976,32 @@ export default function Workspace({ inspection, items, library, serverResponses,
                         );
                       })}
                       {thumbs.map((q, i) => (
-                        <div key={i} className="ax-evidence is-unsynced">
-                          <img className="ax-evidence__thumb" src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
+                        <div key={i} className={styles.evidence}>
+                          <img className={styles.evidenceThumb} src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
                         </div>
                       ))}
                     </div>
                   );
                 })()}
-                <label className="ax-field">
-                  <span className="ax-field__label">{strings.noteLabel}</span>
-                  <textarea className="ax-textarea" rows={2} placeholder={strings.notePlaceholder} value={val?.note ?? ""} onChange={e => saveNote(it, e.target.value)} onBlur={() => flushNote(it)} />
+                <label className={styles.fld}>
+                  <span>{strings.noteLabel}</span>
+                  <textarea className="input" rows={2} placeholder={strings.notePlaceholder} value={val?.note ?? ""} onChange={e => saveNote(it, e.target.value)} onBlur={() => flushNote(it)} />
                 </label>
                 {/* Action form runtime (M04-171..184): instantiated from the package's form template */}
                 {def && (
-                  <div className="ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", borderInlineStart: complete ? "4px solid var(--ax-color-success)" : "4px solid var(--ax-color-critical)" }}>
-                    <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+                  <div className={styles.panel} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)", borderInlineStart: complete ? "4px solid var(--status-compliant)" : "4px solid var(--status-critical)" }}>
+                    <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
                       <strong>{def.title}</strong>
-                      <span className={`ax-lozenge ${complete ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{complete ? strings.afComplete : strings.afIncomplete}</span>
+                      <span className={`badge ${complete ? "badge-compliant" : "badge-critical"}`}>{complete ? strings.afComplete : strings.afIncomplete}</span>
                     </div>
-                    {def.blocking && !complete && <p className="ax-caption">{strings.afBlocking}</p>}
-                    <div className="ax-grid-2">
+                    {def.blocking && !complete && <p className="t-caption">{strings.afBlocking}</p>}
+                    <div className={styles.grid2}>
                       {def.fields.map(f => (
-                        <label key={f} className="ax-field" style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>
-                          <span className="ax-field__label">{strings.afFieldLabels[f] ?? f}<span className="ax-req">*</span></span>
+                        <label key={f} className={styles.fld} style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>
+                          <span>{strings.afFieldLabels[f] ?? f}<span className="req">*</span></span>
                           {f === "required_correction"
-                            ? <textarea className="ax-textarea" rows={2} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />
-                            : <input className="ax-input" type={f === "due_at" ? "date" : "text"} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />}
+                            ? <textarea className="input" rows={2} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />
+                            : <input className="input" type={f === "due_at" ? "date" : "text"} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />}
                         </label>
                       ))}
                     </div>
@@ -1016,14 +1017,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
           Under a reviewer return the whole panel locks (added items have no
           frozen section to match against the return scope — fail closed). */}
       {!submitted && inspection.status !== "returned" && (
-        <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>{strings.libTitle}</summary>
-          <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.libHint}</p>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
-            {libraryCandidates.length === 0 ? <p className="ax-caption">{strings.libEmpty}</p> : libraryCandidates.map(it => (
-              <div key={it.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
-                <span style={{ font: "var(--ax-text-field)" }}>{it.code} · {it.title}</span>
-                <button type="button" className="ax-btn ax-btn--secondary" onClick={() => { pushItemState(it, "added", null, false); setMsg(fmt(strings.libAddedMsg, { code: it.code })); }}>{strings.libAdd}</button>
+        <details className={styles.card} style={{ padding: "var(--space-4)" }}>
+          <summary style={{ cursor: "pointer", fontSize: "var(--type-compact-size)", fontWeight: 600 }}>{strings.libTitle}</summary>
+          <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.libHint}</p>
+          <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-2)" }}>
+            {libraryCandidates.length === 0 ? <p className="t-caption">{strings.libEmpty}</p> : libraryCandidates.map(it => (
+              <div key={it.id} className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-2)" }}>
+                <span style={{ fontSize: "var(--type-compact-size)" }}>{it.code} · {it.title}</span>
+                <button type="button" className="btn btn-secondary" onClick={() => { pushItemState(it, "added", null, false); setMsg(fmt(strings.libAddedMsg, { code: it.code })); }}>{strings.libAdd}</button>
               </div>
             ))}
           </div>
@@ -1033,9 +1034,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
       {/* §15 — deselected items stay in the audit trail with their reason;
           restore is available before submit (returned scope permitting). */}
       {!submitted && deselectedItems.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{fmt(strings.deselectedTitle, { n: deselectedItems.length })}</h4>
-          <p className="ax-caption">{strings.deselectedAudit}</p>
+          <p className="t-caption">{strings.deselectedAudit}</p>
           {deselectedItems.map(({ item, reason }) => {
             const homeKey = sections.find(s2 => (s2.items ?? []).includes(item.code))?.key ?? ADDED_SECTION_KEY;
             const lr = inspection.status === "returned"
@@ -1043,10 +1044,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
               : null;
             const restoreLocked = inspection.status === "returned" && !lr?.returned_sections?.includes(homeKey);
             return (
-              <div key={item.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
-                <span className="ax-caption"><strong>{item.code}</strong> · {item.title} — {reason}</span>
+              <div key={item.id} className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-2)" }}>
+                <span className="t-caption"><strong>{item.code}</strong> · {item.title} — {reason}</span>
                 {!restoreLocked && (
-                  <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { pushItemState(item, "deselected", reason, true); setMsg(fmt(strings.restoredMsg, { code: item.code })); }}>{strings.restoreBtn}</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => { pushItemState(item, "deselected", reason, true); setMsg(fmt(strings.restoredMsg, { code: item.code })); }}>{strings.restoreBtn}</button>
                 )}
               </div>
             );
@@ -1058,24 +1059,24 @@ export default function Workspace({ inspection, items, library, serverResponses,
           item above; here the inspector adds published configuration templates
           manually. Included ≠ completed: new rows stay open. */}
       {!submitted && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{strings.afAddTitle}</h4>
-          <p className="ax-caption">{strings.afAddHint}</p>
-          <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
-            <label className="ax-field">
-              <span className="ax-field__label">{strings.afAddPick}</span>
-              <select className="ax-select" value={afPick} onChange={e => setAfPick(e.target.value)}>
+          <p className="t-caption">{strings.afAddHint}</p>
+          <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
+            <label className={styles.fld}>
+              <span>{strings.afAddPick}</span>
+              <select className="select" value={afPick} onChange={e => setAfPick(e.target.value)}>
                 <option value="">—</option>
                 {actionTemplates.map(t2 => <option key={t2.id} value={t2.id}>{t2.title}</option>)}
               </select>
             </label>
-            <button type="button" className="ax-btn ax-btn--secondary" disabled={!afPick} onClick={addManualForm}>{strings.afAddBtn}</button>
+            <button type="button" className="btn btn-secondary" disabled={!afPick} onClick={addManualForm}>{strings.afAddBtn}</button>
           </div>
-          {actionTemplates.length === 0 && <p className="ax-caption">{strings.afNone}</p>}
+          {actionTemplates.length === 0 && <p className="t-caption">{strings.afNone}</p>}
           {manualForms.map(f => (
-            <div key={f.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ font: "var(--ax-text-field)" }}>{f.title}</span>
-              <span className="ax-lozenge ax-lozenge--warning">{f.status}</span>
+            <div key={f.id} className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "var(--type-compact-size)" }}>{f.title}</span>
+              <span className="badge badge-warning">{f.status}</span>
             </div>
           ))}
         </div>
@@ -1091,13 +1092,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           closeLabel={strings.deselectCancel}
           maxWidth="480px"
           footer={<>
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setDeselecting(null)}>{strings.deselectCancel}</button>
-            <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!deselecting.reason.trim()} onClick={confirmDeselect}>{strings.deselectConfirm}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setDeselecting(null)}>{strings.deselectCancel}</button>
+            <button type="button" className="btn btn-primary" aria-disabled={!deselecting.reason.trim()} onClick={confirmDeselect}>{strings.deselectConfirm}</button>
           </>}
         >
-          <label className="ax-field">
-            <span className="ax-field__label">{strings.deselectReason}<span className="ax-req">*</span></span>
-            <textarea className="ax-textarea" rows={2} placeholder={strings.deselectReasonPh} value={deselecting.reason}
+          <label className={styles.fld}>
+            <span>{strings.deselectReason}<span className="req">*</span></span>
+            <textarea className="input" rows={2} placeholder={strings.deselectReasonPh} value={deselecting.reason}
               onChange={e => setDeselecting(d => d ? { ...d, reason: e.target.value } : d)} />
           </label>
         </Modal>
@@ -1105,10 +1106,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Violation auto-display — config-driven, non-overridable (M04-142/143/144) */}
       {!submitted && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{strings.vioTitle}</h4>
-          {implied.length === 0 && invalidatedList.length === 0 ? <p className="ax-caption">{strings.vioNone}</p> : implied.map(v => (
-            <div key={`${v.itemCode}-${v.code}`} className="ax-banner ax-banner--critical">
+          {implied.length === 0 && invalidatedList.length === 0 ? <p className="t-caption">{strings.vioNone}</p> : implied.map(v => (
+            <div key={`${v.itemCode}-${v.code}`} className="alert alert-critical">
               <div>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })} · {v.itemCode}
                 {/* §18 / D-018 — penalty singularity fail-closed: a configuration
@@ -1125,7 +1126,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           {/* §18 / D-018 — invalidated candidates stay visible with state
               (audit preserved; never deleted). */}
           {invalidatedList.map(v => (
-            <div key={`invalidated-${v.code}`} className="ax-banner" data-state="invalidated">
+            <div key={`invalidated-${v.code}`} className="alert alert-immutable" data-state="invalidated">
               <div>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })}
                 {" · "}{strings.vioInvalidated}
@@ -1137,15 +1138,15 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Grouped validation results by section (M04-200/201-lite) */}
       {!submitted && validation && validation.length > 0 && (
-        <div className="ax-validation">
+        <div className={styles.validation}>
           <strong>{strings.valTitle}</strong>
           <ul>
             {validation.map(g => (
               <li key={g.key}>
                 <strong>{g.title}</strong>
-                {g.unanswered.length > 0 && <div className="ax-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
-                {g.evidence.length > 0 && <div className="ax-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
-                {g.forms.length > 0 && <div className="ax-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
+                {g.unanswered.length > 0 && <div className="t-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
+                {g.evidence.length > 0 && <div className="t-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
+                {g.forms.length > 0 && <div className="t-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
               </li>
             ))}
           </ul>
@@ -1153,10 +1154,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
       )}
 
       {!submitted && (
-        <div className="ax-row" style={{ justifyContent: "flex-end", alignItems: "center", gap: "var(--ax-space-200)" }}>
+        <div className={styles.actionbar}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
-          <span className="ax-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
-          <button className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
+          <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
+          <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
         </div>
       )}
       </fieldset>
@@ -1183,8 +1184,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
           closeLabel={strings.exitCancel}
           maxWidth="420px"
           footer={<>
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
-            <button type="button" className="ax-btn ax-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
+            <button type="button" className="btn btn-primary" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
           </>}
         >
           <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
@@ -1194,21 +1195,21 @@ export default function Workspace({ inspection, items, library, serverResponses,
               passed — pre-migration there is no active-session cancel path. */}
           {journeySchemaAvailable && !cancelApproved && (
             cancelPending ? (
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>{strings.cancelPending}</p>
+              <p className="t-caption" style={{ marginBlockStart: "var(--space-3)" }}>{strings.cancelPending}</p>
             ) : (cancelReasons ?? []).length === 0 ? (
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>{strings.cancelReasonsMissing}</p>
+              <p className="t-caption" style={{ marginBlockStart: "var(--space-3)" }}>{strings.cancelReasonsMissing}</p>
             ) : (
-              <div className="ax-stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)", borderBlockStart: "1px solid var(--ax-color-border)", paddingBlockStart: "var(--ax-space-200)" }}>
+              <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)", borderBlockStart: "var(--border-w) solid var(--border-subtle)", paddingBlockStart: "var(--space-3)" }}>
                 <strong>{strings.cancelHeading}</strong>
-                <p className="ax-caption">{strings.cancelCaption}</p>
-                <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>
-                  <select className="ax-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
+                <p className="t-caption">{strings.cancelCaption}</p>
+                <label className={styles.fld}><span>{strings.cancelSelectReason}</span>
+                  <select className="select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
                     <option value="">—</option>
                     {(cancelReasons ?? []).map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
                   </select>
                 </label>
-                <textarea className="ax-textarea" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
-                <button type="button" className="ax-btn ax-btn--danger" onClick={requestCancellation}
+                <textarea className="input" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
+                <button type="button" className="btn btn-danger" onClick={requestCancellation}
                   disabled={cancelBusy || !cancelReason || (cancelReason === "other" && !cancelComment.trim())}>{strings.cancelSubmit}</button>
               </div>
             )
@@ -1225,13 +1226,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           closeLabel={strings.evDeleteCancel}
           maxWidth="480px"
           footer={<>
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
-            <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
+            <button type="button" className="btn btn-primary" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
           </>}
         >
-          <label className="ax-field">
-            <span className="ax-field__label">{strings.evDeleteReason}<span className="ax-req">*</span></span>
-            <textarea className="ax-textarea" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
+          <label className={styles.fld}>
+            <span>{strings.evDeleteReason}<span className="req">*</span></span>
+            <textarea className="input" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
               onChange={e => setDeleting(d => d ? { ...d, reason: e.target.value } : d)} />
           </label>
         </Modal>

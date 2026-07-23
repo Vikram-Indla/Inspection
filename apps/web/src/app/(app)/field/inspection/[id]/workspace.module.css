@@ -1,0 +1,133 @@
+/* SCR-IPAD Inspection workspace — SAQEEL design-system layout for the core
+   field inspection screen (checklist → violations → evidence → immutable
+   submit). Presentation only: the state machine, offline engine, validation and
+   submit logic in page.tsx / Workspace.tsx / runtime.ts are unchanged.
+
+   SAQEEL DS tokens only (var(--surface-*), var(--text-*), var(--action-*),
+   --status-*, --border-*, --radius-*, --space-*, --type-*, --font-*) linked by
+   (app)/field/layout.tsx. No bare colors. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  padding-block-end: 48px;
+}
+
+/* Surface card (was ax-surface). Padding stays inline at call sites so the
+   original density is preserved verbatim. */
+.card {
+  background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+/* Nested panel (was ax-panel). */
+.panel {
+  background: var(--surface-secondary);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* Field label wrapper (was ax-field / ax-field__label). */
+.fld { display: flex; flex-direction: column; gap: var(--space-1); min-inline-size: 0; }
+.fld > span {
+  font-size: var(--type-label-size); font-weight: var(--type-label-w);
+  color: var(--text-secondary); line-height: var(--type-label-lh);
+}
+.fld .req { color: var(--status-critical); margin-inline-start: 2px; }
+
+.overline {
+  font-size: var(--type-label-size); font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+[dir="rtl"] .overline { letter-spacing: 0; }
+
+/* Checklist item card (was .ipad-q). */
+.question {
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
+  scroll-margin-block-start: var(--space-8);
+}
+.questionAnswered { border-inline-start: 4px solid var(--status-compliant); }
+
+.title { font-size: var(--type-compact-size); font-weight: 600; margin: 0; }
+
+/* Evidence grid (was ax-evidence-grid / ax-evidence). */
+.evidenceGrid { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.evidence {
+  inline-size: 128px;
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-secondary);
+}
+.evidenceQuarantined { opacity: 0.55; }
+.evidenceThumb {
+  inline-size: 128px; block-size: 92px; object-fit: cover;
+  display: grid; place-items: center;
+  background: var(--surface-sunken); color: var(--text-muted);
+}
+.evidenceMeta {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--type-caption-size);
+}
+
+/* Explicit sync conflict (was ax-conflict — STM-SYNC-002, no silent overwrite). */
+.conflict {
+  border: var(--border-w) solid var(--status-warning);
+  background: var(--status-warning-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.conflictHead { font-weight: 600; color: var(--status-warning-text); }
+.conflictGrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 640px) { .conflictGrid { grid-template-columns: 1fr; } }
+.conflictSide h5 { margin: 0 0 4px; font-size: var(--type-label-size); color: var(--text-muted); }
+.conflictSide p {
+  margin: 0; font-family: var(--font-mono); font-size: var(--type-mono-size);
+  color: var(--text-secondary); overflow-wrap: anywhere;
+}
+.conflictFoot { display: flex; gap: var(--space-2); justify-content: flex-end; }
+
+/* Grouped validation results (was ax-validation). */
+.validation {
+  border: var(--border-w) solid var(--status-warning);
+  background: var(--status-warning-soft);
+  color: var(--status-warning-text);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+.validation ul {
+  margin: var(--space-2) 0 0; padding-inline-start: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+
+/* Sticky immutable-submit action bar (factory-360 .actionBar idiom). */
+.actionbar {
+  position: sticky; inset-block-end: 0; z-index: 10;
+  background: var(--surface-primary);
+  border-block-start: var(--border-w) solid var(--border-subtle);
+  padding: var(--space-3);
+  display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3);
+}
+
+/* Sticky sync/progress toolbar at the top of the workspace. */
+.toolbar {
+  position: sticky; inset-block-start: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-2); flex-wrap: wrap;
+  background: var(--surface-canvas);
+  padding-block: var(--space-2);
+}
+
+/* Per-section progress track (was inline blockSize/background). */
+.track { block-size: 4px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
+.trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }

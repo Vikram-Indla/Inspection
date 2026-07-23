@@ -1,0 +1,125 @@
+/* SAQEEL Field Travel — route-scoped layout for the "Journey to Site" screen.
+   Presentation only; DS tokens exclusively (var(--space-*), --surface-*,
+   --text-*, --border-*, --radius-*, --status-*). No bare colors. Surfaces,
+   badges and buttons use the ported SAQEEL DS classes linked by
+   (app)/field/layout.tsx. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) 120px;
+  max-inline-size: 720px;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+.card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-primary);
+  overflow: hidden;
+}
+
+.pad { padding: var(--space-5) var(--space-5); }
+
+/* Definite-height map box so GeoMap's blockSize:100% resolves (Mapbox fills
+   the frame instead of collapsing to its default height). */
+.mapFrame {
+  position: relative;
+  block-size: 280px;
+  background: var(--surface-sunken);
+}
+
+.mapChip {
+  position: absolute;
+  inset-block-end: var(--space-2);
+  inset-inline-end: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--surface-primary);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-subtle);
+}
+
+.stats {
+  display: flex;
+  border-block-start: 1px solid var(--border-subtle);
+  padding: var(--space-3) var(--space-4);
+}
+
+.stat {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-2) var(--space-2);
+}
+
+.stat + .stat { border-inline-start: 1px solid var(--border-subtle); }
+
+.statValue {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.etaNote { padding: 0 var(--space-4) var(--space-3); margin: 0; }
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block-end: var(--space-3);
+}
+
+.cardTitle { font-weight: 600; font-size: 14px; }
+
+.shield {
+  inline-size: 18px;
+  block-size: 18px;
+  flex: none;
+  color: var(--action-primary);
+}
+
+.rangeNote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.rangeOk { background: var(--status-compliant-soft); color: var(--status-compliant-text); }
+.rangeWarn { background: var(--status-warning-soft); color: var(--status-warning-text); }
+.rangeInfo { background: var(--status-info-soft); color: var(--status-info-text); }
+
+.noteGlyph { inline-size: 15px; block-size: 15px; flex: none; }
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin-block-start: var(--space-3);
+}
+
+.footer {
+  position: sticky;
+  inset-block-end: 0;
+  background: var(--surface-primary);
+  border-block-start: 1px solid var(--border-subtle);
+  padding: var(--space-3) var(--space-5);
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
+}
+
+.footerInner {
+  max-inline-size: 720px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checkinCaption { margin: 0; text-align: center; }

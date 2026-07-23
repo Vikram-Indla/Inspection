@@ -520,7 +520,11 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell-search__results a small { color: var(--ax-color-text-secondary); font: var(--ax-text-micro); }
 .ax-shell-search__results a:hover { background: var(--ax-color-neutral-tint); }
 .ax-shell-search__results p { margin: 0; padding: var(--ax-space-100); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
-.ax-shell-scope { position: relative; display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); padding-inline: var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); white-space: nowrap; }
+/* background matches .ax-shell-search input's recessed shade, not the
+   pagehead's own — the pill previously used the SAME token as its parent
+   header bar (only a 1px border differed), reading as flat/washed out in
+   both themes rather than a distinct interactive control. */
+.ax-shell-scope { position: relative; display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); padding-inline: var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface-sunken); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); white-space: nowrap; }
 button.ax-shell-scope { cursor: pointer; }
 .ax-shell-scope summary { display: flex; align-items: center; gap: var(--ax-space-100); cursor: pointer; list-style: none; }
 .ax-shell-scope summary::-webkit-details-marker { display: none; }
@@ -547,6 +551,10 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-notification__trigger:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-notification__badge { position: absolute; inset-block-start: 2px; inset-inline-end: 1px; min-inline-size: 18px; block-size: 18px; display: grid; place-items: center; padding-inline: 4px; border: 2px solid var(--ax-color-surface); border-radius: var(--ax-radius-full); background: var(--ax-color-critical); color: var(--ax-color-on-critical); font: 600 10px/1 var(--ax-font-sans); }
 .ax-shell-account__menu { position: absolute; inset-block-start: calc(100% + var(--ax-space-100)); inset-inline-end: 0; z-index: var(--ax-z-drawer); inline-size: min(320px, 80vw); display: flex; flex-direction: column; gap: var(--ax-space-100); padding: var(--ax-space-200); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-overlay); }
+/* Portaled variant (DR-36/DR-51 family) — position comes from inline style
+   (viewport coordinates measured off the trigger), not the static inset
+   values above, which assumed a `position:relative` ancestor it no longer has. */
+.ax-shell-account__menu--portal { position: fixed; inset-block-start: auto; inset-inline-end: auto; z-index: var(--ax-z-toast); }
 .ax-shell-account__menu a { color: var(--ax-color-primary-hover); text-decoration: none; padding-block: var(--ax-space-050); }
 .ax-shell-account__menu a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .ax-pagehead__row { display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-200); flex-wrap: wrap; }
@@ -647,16 +655,17 @@ button.ax-shell-scope { cursor: pointer; }
   align-items: stretch; gap: var(--ax-space-050); padding: var(--ax-space-100) max(var(--ax-space-200), env(safe-area-inset-right)) max(var(--ax-space-100), env(safe-area-inset-bottom)) max(var(--ax-space-200), env(safe-area-inset-left));
   border-block-start: 1px solid var(--ax-color-border); background: var(--ax-color-surface);
 }
+/* Vertical icon-over-label per the SAQEEL Field design nav; the active tab is
+   marked by COLOR only (design uses nav-text-active), not a filled tint box —
+   the prior filled/bordered pill diverged from the design. */
 .ax-field-taskbar__item, .ax-field-taskbar__primary {
-  min-inline-size: 0; min-block-size: var(--ax-control-height-field); display: flex; align-items: center; justify-content: center; gap: var(--ax-space-100);
-  padding-inline: var(--ax-space-150); border: 1px solid transparent; border-radius: var(--ax-radius-standard);
-  font: var(--ax-text-caption); font-weight: 500; text-decoration: none; text-align: center;
+  min-inline-size: 0; min-block-size: var(--ax-control-height-field); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  padding-block: var(--ax-space-100); padding-inline: var(--ax-space-050); border: 0; border-radius: var(--ax-radius-standard);
+  font: var(--ax-text-micro); font-weight: 500; text-decoration: none; text-align: center;
 }
 .ax-field-taskbar__item { color: var(--ax-color-text-secondary); background: transparent; }
-.ax-field-taskbar__item:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-.ax-field-taskbar__item[aria-current="page"] { color: var(--ax-color-primary-strong); background: var(--ax-color-primary-tint); border-color: color-mix(in srgb, var(--ax-color-primary) 24%, var(--ax-color-border)); }
-.ax-field-taskbar__primary { color: var(--ax-color-inverse-text); background: var(--ax-color-primary); border-color: var(--ax-color-primary); }
-.ax-field-taskbar__primary:hover { background: var(--ax-color-primary-hover); border-color: var(--ax-color-primary-hover); }
+.ax-field-taskbar__item:hover { color: var(--ax-color-text); }
+.ax-field-taskbar__item[aria-current="page"] { color: var(--ax-color-primary); font-weight: 600; }
 .ax-field-taskbar__item:focus-visible, .ax-field-taskbar__primary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-field-taskbar svg { flex: 0 0 auto; }
 

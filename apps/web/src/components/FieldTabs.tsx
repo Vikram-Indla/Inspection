@@ -2,12 +2,14 @@
 // Shell A remains the governed global navigation. This local bar is the
 // SAQEEL design handoff's fixed 5-slot bottom tab bar (Home · My Tasks ·
 // Establishments · Notifications · Account) — replaces the earlier 3-tab +
-// FAB bar. "My Tasks" links to the existing Visits list (relabeled, not a
-// separate Tasks concept — sponsor decision, SAQEEL-CORRECTION-PROGRESS.md
-// Step 6). Virtual and the old "Start next visit" primary action are no
-// longer in the bar (sponsor decision, same step) — Virtual is now a quick
-// action on the dashboard body instead; "Start next visit" was redundant
-// with the dashboard's own "Go to check-in" action.
+// FAB bar. "My Tasks" now links to the real /field/my-tasks screen (built
+// from SAQEEL Field My Tasks.dc.html — task list → full establishment dossier
+// with license/compliance/risk/map + Start-remote/Start-visit actions), not
+// the old Visits-list anchor. Virtual and the old "Start next visit" primary
+// action are no longer in the bar (sponsor decision, SAQEEL-CORRECTION-
+// PROGRESS.md Step 6) — Virtual is now a quick action on the dashboard body
+// instead; "Start next visit" was redundant with the dashboard's own
+// "Go to check-in" action.
 // Labels arrive pre-translated from the server page; logical properties
 // preserve RTL. next/link (prefetch off — all targets are force-dynamic)
 // keeps tab taps on the client router instead of full document reloads (K-006).
@@ -31,11 +33,13 @@ function Icon({ children }: IconProps) {
   );
 }
 
-const HomeIcon = () => <Icon><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 11h7v9h-7zM4 14h7v6H4z" /></Icon>;
-const TasksIcon = () => <Icon><path d="M4 6h16M4 12h16M4 18h10" /></Icon>;
-const EstablishmentsIcon = () => <Icon><path d="M3 21V9l6 4V9l6 4V9l6 4v8" /><path d="M3 21h18" /><path d="M7 17h2M12 17h2M17 17h2" /></Icon>;
-const NotificationsIcon = () => <Icon><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></Icon>;
-const AccountIcon = () => <Icon><circle cx="12" cy="8" r="4" /><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" /></Icon>;
+// Icon glyphs match the canonical SAQEEL Field design nav bar exactly
+// (SAQEEL Field Dashboard.dc.html / My Tasks.dc.html nav SVG paths).
+const HomeIcon = () => <Icon><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></Icon>;
+const TasksIcon = () => <Icon><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M9 9h6M9 13h6" /></Icon>;
+const EstablishmentsIcon = () => <Icon><path d="M3 21V10l7 4v-4l7 4V6l4-2v17" /></Icon>;
+const NotificationsIcon = () => <Icon><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></Icon>;
+const AccountIcon = () => <Icon><circle cx="12" cy="8" r="4" /><path d="M4 20a8 8 0 0 1 16 0" /></Icon>;
 
 export type FieldTabActive = "home" | "myTasks" | "establishments" | "notifications" | "account";
 
@@ -49,7 +53,7 @@ export default function FieldTabs({ active, labels }: {
         aria-current={active === "home" ? "page" : undefined}>
         <HomeIcon />{labels.home}
       </Link>
-      <Link href="/field#visits" className="ax-field-taskbar__item" prefetch={false}
+      <Link href="/field/my-tasks" className="ax-field-taskbar__item" prefetch={false}
         aria-current={active === "myTasks" ? "page" : undefined}>
         <TasksIcon />{labels.myTasks}
       </Link>

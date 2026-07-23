@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import Shell from "@/components/Shell";
+import FieldHeader from "@/components/field/FieldHeader";
 import { formatDateTime } from "@/lib/dates";
 import { useT } from "@/lib/i18n";
 import { notificationPayloadEntries, notificationReadPatch } from "@/lib/notification-read";
@@ -10,6 +10,8 @@ import { getVerifiedUser } from "@/lib/verified-user";
 // PLAN v7 item 2 · MVP1-M03-001 · AC-0099
 // Notification payloads are event-specific JSON. This route deliberately
 // renders stored keys generically instead of imposing an invented schema.
+// SAQEEL Field Notifications.dc.html — DS chrome (back-arrow header + DS cards);
+// the read-receipt write and generic payload rendering are unchanged.
 export default async function FieldNotificationDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sb = await supabaseServer();
@@ -17,6 +19,24 @@ export default async function FieldNotificationDetail({ params }: { params: Prom
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
+
+  const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
+  const langLabel = locale === "ar" ? "EN" : "AR";
+  const themeLabels = {
+    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
+    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
+  };
+  const title = tr("field.notification.title", "Notification details", "تفاصيل الإشعار");
+  const back = (
+    <Link href="/field/notifications" prefetch={false} className="btn btn-icon btn-ghost"
+      aria-label={tr("common.back", "Back", "رجوع")}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" data-directional><path d="m15 6-6 6 6 6" /></svg>
+    </Link>
+  );
+  const header = (
+    <FieldHeader leading={back} title={title}
+      langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+  );
 
   const { data: notification, error: readError } = await sb
     .from("notifications")
@@ -28,11 +48,14 @@ export default async function FieldNotificationDetail({ params }: { params: Prom
   if (readError) {
     console.error("[field notification detail read]", readError.message, readError.code);
     return (
-      <Shell current="/field" title={tr("field.notification.title", "Notification details", "تفاصيل الإشعار")}>
-        <div className="ax-banner ax-banner--critical" role="alert">
-          {tr("field.notification.unavailable", "This notification is temporarily unavailable. Try again.", "هذا الإشعار غير متاح مؤقتًا. حاول مرة أخرى.")}
+      <>
+        {header}
+        <div style={{ flex: 1, padding: 20 }}>
+          <div className="alert alert-critical" role="alert">
+            {tr("field.notification.unavailable", "This notification is temporarily unavailable. Try again.", "هذا الإشعار غير متاح مؤقتًا. حاول مرة أخرى.")}
+          </div>
         </div>
-      </Shell>
+      </>
     );
   }
   if (!notification) notFound();
@@ -54,47 +77,44 @@ export default async function FieldNotificationDetail({ params }: { params: Prom
   }
 
   const entries = notificationPayloadEntries(notification.payload);
-  const title = tr("field.notification.title", "Notification details", "تفاصيل الإشعار");
+  const kv = { display: "grid", gridTemplateColumns: "minmax(8rem, auto) 1fr", gap: "10px 18px", margin: 0 } as const;
   return (
-    <Shell current="/field" title={title}>
-      <div className="ax-field-page" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
-        <Link className="ax-link ax-inline-target" href="/field" prefetch={false}>
-          {tr("field.notification.back", "Back to field dashboard", "العودة إلى لوحة الميدان")}
-        </Link>
-
+    <>
+      {header}
+      <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
         {receiptError && (
-          <div className="ax-banner ax-banner--warning" role="alert">
+          <div className="alert alert-warning" role="alert">
             {tr("field.notification.receiptError", "The notification opened, but its read receipt could not be saved. Try again.", "فُتح الإشعار، لكن تعذر حفظ إيصال القراءة. حاول مرة أخرى.")}
           </div>
         )}
 
-        <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)" }} aria-label={title}>
-          <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "minmax(8rem, auto) 1fr", gap: "var(--ax-space-150) var(--ax-space-300)" }}>
-            <dt style={{ font: "var(--ax-text-body-strong)" }}>{tr("field.notification.eventKey", "Event key", "مفتاح الحدث")}</dt>
-            <dd className="ax-numeric" style={{ margin: 0, overflowWrap: "anywhere" }}>{notification.event_key}</dd>
-            <dt style={{ font: "var(--ax-text-body-strong)" }}>{tr("field.notification.createdAt", "Created at", "تاريخ الإنشاء")}</dt>
-            <dd className="ax-numeric" style={{ margin: 0 }}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</dd>
+        <section className="card" style={{ padding: 18 }} aria-label={title}>
+          <dl style={kv}>
+            <dt style={{ fontWeight: 600, fontSize: 13 }}>{tr("field.notification.eventKey", "Event key", "مفتاح الحدث")}</dt>
+            <dd className="id-code" style={{ margin: 0, overflowWrap: "anywhere" }}>{notification.event_key}</dd>
+            <dt style={{ fontWeight: 600, fontSize: 13 }}>{tr("field.notification.createdAt", "Created at", "تاريخ الإنشاء")}</dt>
+            <dd style={{ margin: 0, fontVariantNumeric: "tabular-nums" }}>{formatDateTime(notification.created_at, locale === "ar" ? "ar" : "en")}</dd>
           </dl>
         </section>
 
-        <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h3 style={{ marginBlockStart: 0 }}>{tr("field.notification.payload", "Payload", "بيانات الإشعار")}</h3>
+        <section className="card" style={{ padding: 18 }}>
+          <h3 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 600 }}>{tr("field.notification.payload", "Payload", "بيانات الإشعار")}</h3>
           {entries.length === 0 ? (
-            <p className="ax-caption" role="status">
+            <p className="t-caption" role="status">
               {tr("field.notification.payloadEmpty", "No notification payload is available.", "لا تتوفر بيانات إضافية للإشعار.")}
             </p>
           ) : (
-            <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "minmax(8rem, auto) 1fr", gap: "var(--ax-space-150) var(--ax-space-300)" }}>
+            <dl style={kv}>
               {entries.map(entry => (
                 <div key={entry.key} style={{ display: "contents" }}>
-                  <dt className="ax-numeric" style={{ font: "var(--ax-text-body-strong)", overflowWrap: "anywhere" }}>{entry.key}</dt>
-                  <dd className="ax-numeric" style={{ margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{entry.value}</dd>
+                  <dt className="id-code" style={{ fontWeight: 600, overflowWrap: "anywhere" }}>{entry.key}</dt>
+                  <dd style={{ margin: 0, whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontVariantNumeric: "tabular-nums" }}>{entry.value}</dd>
                 </div>
               ))}
             </dl>
           )}
         </section>
       </div>
-    </Shell>
+    </>
   );
 }

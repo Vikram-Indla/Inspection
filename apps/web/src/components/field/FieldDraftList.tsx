@@ -32,14 +32,17 @@ export default function FieldDraftList({ userId, serverDrafts, draftLabel, resum
     return mergeDraftSummaries(localIds, serverDrafts, localLabel);
   }, [serverDrafts, localIds, localLabel]);
 
-  if (!drafts.length) return emptyLabel ? <span className="ax-caption">{emptyLabel}</span> : null;
+  // SAQEEL DS classes — renders on the DS-linked /field routes (drafts page and
+  // the dashboard) so drafts read consistently across the field channel. Only
+  // presentation changed; the offline merge and props are untouched.
+  if (!drafts.length) return emptyLabel ? <span className="t-caption">{emptyLabel}</span> : null;
   return (
     <>
       {drafts.slice(0, 4).map(draft => (
-        <div key={`draft-${draft.inspectionId}`} className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
-          <span className="ax-lozenge ax-lozenge--warning">{draftLabel}</span>
-          <span style={{ flex: 1 }} className="ax-caption">{draft.factoryName}</span>
-          <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${draft.inspectionId}`}>{resumeLabel}</a>
+        <div key={`draft-${draft.inspectionId}`} className="row" style={{ gap: "var(--space-2)" }}>
+          <span className="badge badge-draft"><span className="dot" />{draftLabel}</span>
+          <span className="grow t-caption"><bdi>{draft.factoryName}</bdi></span>
+          <a className="btn btn-secondary btn-sm" href={`/field/inspection/${draft.inspectionId}`}>{resumeLabel}</a>
         </div>
       ))}
     </>

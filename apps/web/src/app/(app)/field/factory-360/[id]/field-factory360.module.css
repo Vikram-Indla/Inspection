@@ -2,42 +2,52 @@
    Single-column, touch-first, RTL-safe via CSS logical properties only.
    Business data/calc/permissions come from the SHARED dossier loader; this
    file governs layout/density/touch/action-placement only (the permitted
-   platform differences in FACTORY_360_PLATFORM_PARITY_LEDGER). */
+   platform differences in FACTORY_360_PLATFORM_PARITY_LEDGER).
+
+   Converted to the SAQEEL design system — SAQEEL DS tokens only
+   (var(--surface-*), var(--text-*), var(--action-primary), --border-subtle,
+   --radius-*, --space-*) linked by (app)/field/layout.tsx. No bare colors. */
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-300, 12px);
-  padding-block-end: 96px; /* clear the sticky action bar + task bar */
+  gap: var(--space-3);
+  padding: var(--space-4);
+  padding-block-end: 120px; /* clear the sticky action bar + bottom nav */
 }
 
 .header {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-200, 8px);
+  gap: var(--space-2);
 }
 .headerTop {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--ax-space-200, 8px);
+  gap: var(--space-2);
   justify-content: space-between;
 }
-.headerName { margin: 0; font-size: 1.25rem; }
+.headerName { margin: 0; font-size: 1.25rem; font-weight: 700; }
 .ids {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ax-space-200, 8px);
+  gap: var(--space-2);
   font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 .ids > span { white-space: nowrap; }
 
 /* Horizontally scrollable license selector — touch friendly. */
 .licenseStrip {
   display: flex;
-  gap: var(--ax-space-200, 8px);
+  gap: var(--space-2);
   overflow-x: auto;
-  padding-block: var(--ax-space-100, 4px);
+  padding-block: var(--space-1);
   scroll-snap-type: inline mandatory;
   -webkit-overflow-scrolling: touch;
 }
@@ -49,62 +59,91 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--ax-space-200, 8px) var(--ax-space-300, 12px);
-  border: 1px solid var(--ax-color-border, currentColor);
-  border-radius: var(--ax-radius-300, 10px);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   text-decoration: none;
   color: inherit;
+  background: var(--surface-secondary);
 }
 .licenseChip[aria-current="page"] {
-  border-color: var(--ax-color-primary, currentColor);
-  box-shadow: inset 0 0 0 1px var(--ax-color-primary, currentColor);
+  border-color: var(--action-primary);
+  box-shadow: inset 0 0 0 1px var(--action-primary);
+  background: var(--accent-soft);
 }
 
 /* Field-readiness quick facts as a responsive tile grid. */
 .readiness {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--ax-space-200, 8px);
+  gap: var(--space-2);
 }
 .tile {
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--ax-space-200, 8px);
+  padding: var(--space-3);
 }
-.tileValue { font-size: 1.35rem; }
+.tileValue { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-.section { padding: 0; }
+.section {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0;
+}
 .section > summary {
   cursor: pointer;
   list-style: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--ax-space-200, 8px);
-  padding: var(--ax-space-300, 12px);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   min-block-size: 48px;
+  font-weight: 600;
 }
 .section > summary::-webkit-details-marker { display: none; }
-.sectionBody { padding: 0 var(--ax-space-300, 12px) var(--ax-space-300, 12px); }
+.sectionBody {
+  padding: 0 var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.sectionBody h3 { margin: var(--space-2) 0 0; font-size: 14px; font-weight: 600; }
+.sectionBody ul {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
 
-.facts { display: grid; grid-template-columns: 1fr; gap: var(--ax-space-100, 4px); margin: 0; }
-.facts > div { display: flex; justify-content: space-between; gap: var(--ax-space-200, 8px); padding-block: 4px; }
-.facts dt { color: var(--ax-text-subtle, inherit); }
+.facts { display: grid; grid-template-columns: 1fr; gap: var(--space-1); margin: 0; }
+.facts > div { display: flex; justify-content: space-between; gap: var(--space-2); padding-block: 4px; }
+.facts dt { color: var(--text-muted); }
 .facts dd { margin: 0; text-align: end; }
 
-.mediaGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--ax-space-200, 8px); }
-.mediaGrid img { inline-size: 100%; block-size: auto; border-radius: var(--ax-radius-200, 8px); }
+.mediaGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-2); }
+.mediaGrid img { inline-size: 100%; block-size: auto; border-radius: var(--radius-sm); }
 
-/* Sticky field action bar — sits above the FieldTabs task bar. */
+/* Sticky field action bar — sits above the FieldNav bottom bar. */
 .actionBar {
   position: sticky;
   inset-block-end: 64px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   display: flex;
-  gap: var(--ax-space-200, 8px);
+  gap: var(--space-2);
   overflow-x: auto;
-  padding: var(--ax-space-200, 8px);
-  border-radius: var(--ax-radius-300, 10px);
+  padding: var(--space-2);
   -webkit-overflow-scrolling: touch;
 }
-.actionBar .ax-btn, .actionBar a, .actionBar > * { flex: 0 0 auto; min-block-size: 48px; }
+.actionBar > * { flex: 0 0 auto; min-block-size: 48px; }
+
+.link { color: var(--text-link); text-decoration: underline; }
+.statBig { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }

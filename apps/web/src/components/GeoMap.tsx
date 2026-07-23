@@ -23,6 +23,11 @@ export type GeoMarkerData = {
 
 export type GeoFocus = { lat: number; lng: number; zoom?: number };
 
+// The platform is KSA-bound: constrain every map (web, Admin, iPad) to the
+// Kingdom's bounding box so no view — even with bad/absent coordinates — can
+// drift to another country. [SW[lng,lat], NE[lng,lat]] with light padding.
+const KSA_MAX_BOUNDS: [[number, number], [number, number]] = [[33.5, 15.4], [56.6, 33.1]];
+
 const MARKER_SOURCE = "inspection-markers";
 const FENCE_SOURCE = "inspection-geofences";
 const MARKER_LAYER = "inspection-markers-circle";
@@ -84,6 +89,10 @@ type Props = {
   onRadiusChange?: (id: string, radiusM: number) => void;
   interactive?: boolean;
   ariaLabel?: string;
+  /** Frame ALL markers in view on load (fit-bounds) instead of centring on the
+   *  first one — so a multi-site task map shows every assigned establishment,
+   *  not just whichever sorted first. Falls back to center/zoom for 0–1 marker. */
+  fitMarkers?: boolean;
   /** Draw the canonical KSA region boundary reference layer (default true). */
   showRegions?: boolean;
   /** Colour regions by RAG posture (canonical region id → band). Boundary
@@ -166,8 +175,13 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
 }
 
 function locale() { return document.documentElement.lang === "ar" ? "ar" : "en"; }
+// App theme is stored as data-theme on <html> (see ThemeToggle/ThemeScript).
+// The Mapbox Standard style exposes a matching day/night light preset.
+function readTheme(): "light" | "dark" {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
 
-export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", showRegions = true, regionPostures }: Props) {
+export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", fitMarkers = false, showRegions = true, regionPostures }: Props) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -177,28 +191,57 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   const radiusChangeRef = useRef(onRadiusChange);
   const posturesRef = useRef(regionPostures);
   const suppressRadiusRef = useRef(false);
+  const fitRef = useRef(fitMarkers);
   posturesRef.current = regionPostures;
+  fitRef.current = fitMarkers;
   const [mapLocale, setMapLocale] = useState<"en" | "ar">("en");
+  const [mapTheme, setMapTheme] = useState<"light" | "dark">("light");
   const [failed, setFailed] = useState(false);
+  const lightPreset = mapTheme === "dark" ? "night" : "day";
   latest.current = { center, zoom, markers, selectedId, focus };
   selectedRef.current = selectedId;
   markerClickRef.current = onMarkerClick;
   radiusChangeRef.current = onRadiusChange;
 
   useEffect(() => { setMapLocale(locale()); }, []);
+  // Track app theme (data-theme on <html>) and re-apply the basemap light preset
+  // live when the user toggles, so map tiles follow light/dark like the rest of
+  // the field chrome instead of always rendering the day basemap.
+  useEffect(() => {
+    setMapTheme(readTheme());
+    const observer = new MutationObserver(() => setMapTheme(readTheme()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     if (!token || !containerRef.current) return;
     const map = new mapboxgl.Map({
       accessToken: token, container: containerRef.current, style: "mapbox://styles/mapbox/standard",
       center: [center[1], center[0]], zoom, language: mapLocale,
-      config: { basemap: { lightPreset: "day", show3dObjects: false } }, attributionControl: true,
+      maxBounds: KSA_MAX_BOUNDS,
+      config: { basemap: { lightPreset, show3dObjects: false } }, attributionControl: false,
       interactive,
     });
     mapRef.current = map;
+    // Mapbox + OpenStreetMap licences REQUIRE attribution; it cannot be removed,
+    // only collapsed. Compact mode shows a small ⓘ that expands on tap instead
+    // of the always-on "© Mapbox © OpenStreetMap" line cluttering the card.
+    map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-right");
     if (interactive) map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
     const onLoad = () => {
       if (showRegions) installRegions(map, posturesRef.current);
       sync(map, latest.current, true);
+      // Task-map framing: fit every marker in view rather than parking on the
+      // first pin (which cropped establishments in other regions). Bounded by
+      // maxZoom so a single cluster doesn't zoom to street level.
+      const pins = latest.current.markers;
+      if (fitRef.current && pins.length > 1) {
+        const bounds = pins.reduce(
+          (b, m) => b.extend([m.lng, m.lat]),
+          new mapboxgl.LngLatBounds([pins[0].lng, pins[0].lat], [pins[0].lng, pins[0].lat]),
+        );
+        map.fitBounds(bounds, { padding: 56, maxZoom: 11, duration: 0 });
+      }
       map.on("click", MARKER_LAYER, event => {
         const feature = event.features?.[0];
         const id = String(feature?.properties?.id ?? "");
@@ -230,6 +273,16 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
 
   useEffect(() => { if (mapRef.current?.isStyleLoaded()) sync(mapRef.current, latest.current); }, [center, focus, markers, selectedId, zoom]);
   useEffect(() => { mapRef.current?.setLanguage(mapLocale); }, [mapLocale]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => { try { map.setConfigProperty("basemap", "lightPreset", lightPreset); } catch { /* style gone */ } };
+    // If the theme resolves before the style finishes loading (the common case
+    // on first mount), isStyleLoaded() is false here — apply on style.load
+    // instead of dropping the update, so the basemap never sticks on "day".
+    if (map.isStyleLoaded()) apply();
+    else map.once("style.load", apply);
+  }, [lightPreset]);
   // Re-colour the region choropleth when postures change (no source rebuild).
   useEffect(() => { const map = mapRef.current; if (map?.isStyleLoaded()) applyPostures(map, regionPostures); }, [regionPostures]);
 

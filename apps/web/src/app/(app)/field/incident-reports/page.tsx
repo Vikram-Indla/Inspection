@@ -1,9 +1,10 @@
-import Shell from "@/components/Shell";
-import FieldTabs from "@/components/FieldTabs";
-import EmptyState from "@/components/EmptyState";
+import Link from "next/link";
+import FieldNav from "@/components/field/FieldNav";
+import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import FieldIncidentReportForm from "./IncidentReportForm";
+import styles from "./incident-reports.module.css";
 
 type IncidentRow = {
   id: string;
@@ -27,6 +28,12 @@ type IncidentRow = {
 // PLAN v7 item 7 · FNS-033 / J-12. Field-only sessions cannot use the existing
 // /incident-reports route because the authenticated layout redirects every
 // non-field route. This route is additive and leaves that web route untouched.
+//
+// Chrome converted to the SAQEEL field design system: <Shell> replaced by
+// <FieldHeader> + shared <FieldNav>, the form/history/banners moved to DS
+// classes and tokens. The mid-visit context banner, the real incident_reports
+// insert/read (via IncidentReportForm's server action) and every governed field
+// label are unchanged.
 export default async function FieldIncidentReportsPage({ searchParams }: { searchParams: Promise<{ visit?: string; factory?: string; inspection?: string }> }) {
   const { visit: visitId, factory: factoryId, inspection: inspectionId } = await searchParams;
   const { t, locale } = await useT();
@@ -56,57 +63,87 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
     created: tr("incident.report.created", "Incident report submitted.", "تم إرسال بلاغ الحادث."),
   };
 
-  const tabs = <FieldTabs active="home" labels={{
-    home: tr("field.tabs.dashboard", "Dashboard", "لوحة القيادة"),
-    myTasks: tr("field.tabs.visits", "Visits", "الزيارات"),
-    establishments: tr("field.establishments.title", "Field establishments", "المنشآت الميدانية"),
-    notifications: tr("field.notifications.title", "Notifications", "الإشعارات"),
-    account: tr("field.account.title", "Account", "الحساب"),
-  }} />;
+  const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
+  const langLabel = locale === "ar" ? "EN" : "AR";
+  const themeLabels = {
+    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
+    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
+  };
+  const nav = (
+    <FieldNav active="home" labels={{
+      home: tr("field.tabs.home", "Home", "الرئيسية"),
+      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
+      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
+      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
+      account: tr("field.tabs.account", "Account", "الحساب"),
+    }} />
+  );
+  const back = (
+    <Link href="/field" prefetch={false} className="btn btn-icon btn-ghost"
+      aria-label={tr("common.back", "Back", "رجوع")}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m15 18-6-6 6-6" /></svg>
+    </Link>
+  );
+  const dtf = (iso: string) => new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
 
   return (
-    <Shell current="/field" title={tr("field.incidents.title", "Field incident reports", "بلاغات الحوادث الميدانية")}
-      context={<span className="ax-lozenge ax-lozenge--warning">FNS-033 · J-12</span>}>
-      <div className="ax-field-page">
-        <div className="ax-banner ax-banner--info"><div><strong>{tr("field.incidents.capture", "Capture an incident observation", "تسجيل ملاحظة حادث")}</strong>{" "}{tr(
-          "field.incidents.help",
-          "This writes the existing incident-report record. Report Source, Incident Type, Report Time and Number of Cases remain text because their governed domains or formats are not defined.",
-          "يكتب هذا النموذج في سجل بلاغات الحوادث القائم. تبقى حقول مصدر البلاغ ونوع الحادث ووقت البلاغ وعدد الحالات نصية لأن نطاقاتها أو صيغها المعتمدة غير محددة.",
-        )}</div></div>
-        {visitId && <div className="ax-banner ax-banner--warning" role="status"><div>{tr("field.incidents.midVisit", "Logging for the active visit — this report will be linked to it, distinct from any violation.", "تسجيل ضمن الزيارة الحالية — سيُربط هذا البلاغ بها، وهو منفصل عن أي مخالفة.")}</div></div>}
+    <>
+      <FieldHeader leading={back}
+        title={tr("field.incidents.title", "Field incident reports", "بلاغات الحوادث الميدانية")}
+        subtitle="FNS-033 · J-12"
+        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+      <div className={styles.page}>
+        <div className="alert alert-info">
+          <div>
+            <div className="alert-title">{tr("field.incidents.capture", "Capture an incident observation", "تسجيل ملاحظة حادث")}</div>
+            {tr(
+              "field.incidents.help",
+              "This writes the existing incident-report record. Report Source, Incident Type, Report Time and Number of Cases remain text because their governed domains or formats are not defined.",
+              "يكتب هذا النموذج في سجل بلاغات الحوادث القائم. تبقى حقول مصدر البلاغ ونوع الحادث ووقت البلاغ وعدد الحالات نصية لأن نطاقاتها أو صيغها المعتمدة غير محددة.",
+            )}
+          </div>
+        </div>
+        {visitId && <div className="alert alert-warning" role="status"><div>{tr("field.incidents.midVisit", "Logging for the active visit — this report will be linked to it, distinct from any violation.", "تسجيل ضمن الزيارة الحالية — سيُربط هذا البلاغ بها، وهو منفصل عن أي مخالفة.")}</div></div>}
 
         <FieldIncidentReportForm locale={locale} strings={labels}
           context={{ factoryId: factoryId || undefined, visitId: visitId || undefined, inspectionId: inspectionId || undefined }} />
 
-        <section aria-labelledby="field-incident-history" className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
-          <h2 id="field-incident-history">{tr("field.incidents.history", "Reports in your access scope", "البلاغات ضمن نطاق صلاحياتك")}</h2>
-          {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{tr("field.incidents.loadError", "Incident reports are temporarily unavailable. Nothing was changed.", "بلاغات الحوادث غير متاحة مؤقتًا. لم يتم تغيير أي شيء.")}</div></div>}
-          {!error && rows.length === 0 && <EmptyState glyph="∅" title={tr("field.incidents.empty", "No incident reports in scope", "لا توجد بلاغات حوادث ضمن النطاق")}
-            body={tr("field.incidents.emptyBody", "Submitted incident reports appear here according to incident_reports RLS.", "تظهر بلاغات الحوادث المرسلة هنا وفق صلاحيات صفوف جدول بلاغات الحوادث.")} />}
+        <section aria-labelledby="field-incident-history" className={styles.history}>
+          <h2 id="field-incident-history" style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{tr("field.incidents.history", "Reports in your access scope", "البلاغات ضمن نطاق صلاحياتك")}</h2>
+          {error && <div className="alert alert-critical" role="alert"><div>{tr("field.incidents.loadError", "Incident reports are temporarily unavailable. Nothing was changed.", "بلاغات الحوادث غير متاحة مؤقتًا. لم يتم تغيير أي شيء.")}</div></div>}
+          {!error && rows.length === 0 && (
+            <div className={styles.empty}>
+              <div className={styles.emptyTitle}>{tr("field.incidents.empty", "No incident reports in scope", "لا توجد بلاغات حوادث ضمن النطاق")}</div>
+              <p className="t-caption">{tr("field.incidents.emptyBody", "Submitted incident reports appear here according to incident_reports RLS.", "تظهر بلاغات الحوادث المرسلة هنا وفق صلاحيات صفوف جدول بلاغات الحوادث.")}</p>
+            </div>
+          )}
           {!error && rows.map(row => (
-            <details key={row.id} className="ax-surface ax-panel">
-              <summary style={{ minBlockSize: "var(--ax-control-height-field)", cursor: "pointer" }}>
-                <strong><bdi>{value(row.establishment_code)}</bdi></strong>{" · "}<span>{value(row.incident_type)}</span>{" · "}
-                <span className="ax-caption"><bdi>{new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(row.created_at))}</bdi></span>
+            <details key={row.id} className={styles.rowcard}>
+              <summary>
+                <strong><bdi>{value(row.establishment_code)}</bdi></strong>
+                <span className="badge badge-info">{value(row.incident_type)}</span>
+                <span className="grow" />
+                <span className="t-caption id-code"><bdi>{dtf(row.created_at)}</bdi></span>
               </summary>
-              <dl className="ax-grid-2" style={{ marginBlockStart: "var(--ax-space-200)" }}>
-                <div><dt className="ax-caption">{labels.commercialRegistrationNumber}</dt><dd><bdi>{value(row.commercial_registration_number)}</bdi></dd></div>
-                <div><dt className="ax-caption">{labels.reportSource}</dt><dd>{value(row.report_source)}</dd></div>
-                <div><dt className="ax-caption">{labels.reporterName}</dt><dd>{value(row.reporter_name)}</dd></div>
-                <div><dt className="ax-caption">{labels.reporterContactNumber}</dt><dd><bdi>{value(row.reporter_contact_number)}</bdi></dd></div>
-                <div><dt className="ax-caption">{labels.reportTime}</dt><dd>{value(row.report_time)}</dd></div>
-                <div><dt className="ax-caption">{labels.numberOfCases}</dt><dd>{value(row.number_of_cases)}</dd></div>
-                <div><dt className="ax-caption">{labels.resultingDamage}</dt><dd>{value(row.resulting_damage)}</dd></div>
-                <div><dt className="ax-caption">{labels.preliminaryIncidentDescription}</dt><dd>{value(row.preliminary_incident_description)}</dd></div>
-                <div><dt className="ax-caption">{tr("field.incidents.recordId", "Record ID", "معرّف السجل")}</dt><dd><bdi>{row.id}</bdi></dd></div>
-                <div><dt className="ax-caption">{tr("field.incidents.anchors", "Factory / visit / inspection anchors", "روابط المصنع / الزيارة / التفتيش")}</dt><dd><bdi>{value(row.factory_id)} / {value(row.visit_id)} / {value(row.inspection_id)}</bdi></dd></div>
-                <div><dt className="ax-caption">{tr("field.incidents.createdBy", "Created by", "أنشئ بواسطة")}</dt><dd><bdi>{row.created_by}</bdi></dd></div>
+              <dl className={styles.grid2dl}>
+                <div><dt className="t-caption">{labels.commercialRegistrationNumber}</dt><dd className="id-code"><bdi>{value(row.commercial_registration_number)}</bdi></dd></div>
+                <div><dt className="t-caption">{labels.reportSource}</dt><dd>{value(row.report_source)}</dd></div>
+                <div><dt className="t-caption">{labels.reporterName}</dt><dd><bdi>{value(row.reporter_name)}</bdi></dd></div>
+                <div><dt className="t-caption">{labels.reporterContactNumber}</dt><dd className="id-code"><bdi>{value(row.reporter_contact_number)}</bdi></dd></div>
+                <div><dt className="t-caption">{labels.reportTime}</dt><dd>{value(row.report_time)}</dd></div>
+                <div><dt className="t-caption">{labels.numberOfCases}</dt><dd>{value(row.number_of_cases)}</dd></div>
+                <div><dt className="t-caption">{labels.resultingDamage}</dt><dd><bdi>{value(row.resulting_damage)}</bdi></dd></div>
+                <div><dt className="t-caption">{labels.preliminaryIncidentDescription}</dt><dd><bdi>{value(row.preliminary_incident_description)}</bdi></dd></div>
+                <div><dt className="t-caption">{tr("field.incidents.recordId", "Record ID", "معرّف السجل")}</dt><dd className="id-code"><bdi>{row.id}</bdi></dd></div>
+                <div><dt className="t-caption">{tr("field.incidents.anchors", "Factory / visit / inspection anchors", "روابط المصنع / الزيارة / التفتيش")}</dt><dd className="id-code"><bdi>{value(row.factory_id)} / {value(row.visit_id)} / {value(row.inspection_id)}</bdi></dd></div>
+                <div><dt className="t-caption">{tr("field.incidents.createdBy", "Created by", "أنشئ بواسطة")}</dt><dd className="id-code"><bdi>{row.created_by}</bdi></dd></div>
               </dl>
             </details>
           ))}
         </section>
       </div>
-      {tabs}
-    </Shell>
+      <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
+      {nav}
+    </>
   );
 }

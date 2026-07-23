@@ -1,5 +1,5 @@
-import Shell from "@/components/Shell";
-import EmptyState from "@/components/EmptyState";
+import Link from "next/link";
+import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Workspace, { type WorkspaceStrings, type WorkspacePanel, type PrevComparison } from "./Workspace";
@@ -10,6 +10,7 @@ import FactoryVerification, {
 import { contextFlags, type FormDef, type Item, type VioConfig } from "./runtime";
 import { redirect } from "next/navigation";
 import { getVerifiedUser } from "@/lib/verified-user";
+import styles from "./workspace.module.css";
 
 const humanize = (k: string) => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
 
@@ -29,6 +30,26 @@ type FrozenItemRow = Omit<ItemRow, "regulation_clauses"> & {
 export default async function FieldInspection({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { t, locale } = await useT();
+  // SAQEEL field-chrome helpers (parity with the converted factory-360 screen):
+  // this focused execution screen renders its own back-arrow header and NO
+  // bottom FieldNav.
+  const tr = (key: string, en: string, ar: string) => (locale === "ar" ? ar : t(key, en));
+  const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
+  const langLabel = locale === "ar" ? "EN" : "AR";
+  const themeLabels = {
+    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
+    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
+  };
+  const back = (
+    <Link href="/field/my-tasks" prefetch={false} className="btn btn-icon btn-ghost"
+      aria-label={tr("common.back", "Back", "رجوع")}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" data-directional><path d="m15 18-6-6 6-6" /></svg>
+    </Link>
+  );
+  const header = (title: React.ReactNode, subtitle?: React.ReactNode) => (
+    <FieldHeader leading={back} title={title} subtitle={subtitle}
+      langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+  );
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
@@ -36,16 +57,32 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)")
     .eq("id", id).single();
   if (!ins) {
-    return <Shell current="/field" title={t("field.ws.notFound", "Not found")}><div /></Shell>;
+    return (
+      <>
+        {header(t("field.ws.notFound", "Not found"))}
+        <div className={styles.page}>
+          <div className="empty">
+            <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
+            <div className="empty-title">{t("field.ws.notFound", "Not found")}</div>
+          </div>
+        </div>
+      </>
+    );
   }
   const packageVersion = ins.package_versions as unknown as { id: string; definition: { package_kind?: unknown; sections?: { items?: string[] }[]; item_snapshot?: Record<string, FrozenItemRow>; violation_snapshot?: Record<string, FrozenVCodeRow> } };
   const frozenDefinition = packageVersion.definition;
   if (frozenDefinition.package_kind) {
     return (
-      <Shell current="/field" title={t("field.ws.notConfiguredTitle", "Not configured")}>
-        <EmptyState glyph="∅" title={t("field.ws.notConfigured", "Inspection package not configured")}
-          body={t("field.ws.notConfiguredDesc", "This report type is not configured for field execution.")} />
-      </Shell>
+      <>
+        {header(t("field.ws.notConfiguredTitle", "Not configured"))}
+        <div className={styles.page}>
+          <div className="empty">
+            <div style={{ fontSize: 32 }} aria-hidden="true">∅</div>
+            <div className="empty-title">{t("field.ws.notConfigured", "Inspection package not configured")}</div>
+            <p className="t-caption">{t("field.ws.notConfiguredDesc", "This report type is not configured for field execution.")}</p>
+          </div>
+        </div>
+      </>
     );
   }
   const packageCodes = [...new Set((frozenDefinition.sections ?? []).flatMap(section => section.items ?? []))];
@@ -262,7 +299,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   // inspection_factory_checks read is tolerant: a missing table degrades the
   // module into a load-error banner rather than killing the page.
   const [{ data: factoryFull }, { data: prodRows }, { data: matRows }, { data: licRow }, { data: checkRows, error: checksErr }] = await Promise.all([
-    sb.from("factories").select("name, cr_number, license_number, activity_class, region, city, employees_total, employees_saudi, capital_invested").eq("id", visitRow.factory_id).maybeSingle(),
+    sb.from("factories").select("name, cr_number, license_number, activity_class, region, city, employees_total, employees_saudi, capital_invested, risk_score, risk_band").eq("id", visitRow.factory_id).maybeSingle(),
     sb.from("factory_products").select("name, hs_code, unit, annual_capacity, is_primary").eq("factory_id", visitRow.factory_id).order("is_primary", { ascending: false }),
     sb.from("factory_materials").select("name, source, hs_code").eq("factory_id", visitRow.factory_id),
     sb.from("factory_documents").select("reference_no, valid_from, valid_to").eq("factory_id", visitRow.factory_id).eq("doc_type", "license").order("valid_to", { ascending: false }).limit(1).maybeSingle(),
@@ -290,6 +327,11 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     : null;
   const factoryProducts = (prodRows ?? []) as FactoryProductRow[];
   const factoryMaterials = (matRows ?? []) as FactoryMaterialRow[];
+  // Factory-360 snapshot — governed risk leg (Risk Engine output on the factory
+  // row; RLS-scoped). Health Score is intentionally absent (Health ≠ Risk).
+  const factoryRiskScore = fRow.risk_score == null ? null : Number(fRow.risk_score);
+  const factoryRiskBand = fRow.risk_band == null ? null : String(fRow.risk_band);
+  const factoryRiskBandLabel = factoryRiskBand ? t(`enum.${factoryRiskBand}`, factoryRiskBand.replace(/_/g, " ")) : null;
   const factoryChecks = (checkRows ?? []) as { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }[];
   const factoryChecksError = checksErr
     ? t("field.fv.loadError", "Saved checks could not be loaded: {error}")
@@ -354,6 +396,81 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     colMatSource: t("field.fv.colMatSource", "Source"),
     srcLocal: t("field.fv.srcLocal", "Local"),
     srcImported: t("field.fv.srcImported", "Imported"),
+    // SAQEEL Field Establishment File — new sections (pre-translated en+ar).
+    snapshotTitle: tr("field.fv.snapshotTitle", "Factory 360 snapshot", "لمحة المنشأة 360"),
+    snapshotAdvisory: tr("field.fv.snapshotAdvisory", "Advisory", "استشاري"),
+    riskScore: tr("field.fv.riskScore", "Risk score", "مؤشر الخطورة"),
+    riskUnknown: tr("field.fv.riskUnknown", "No band", "غير محدد"),
+    drafts: tr("field.fv.drafts", "Drafts", "مسودات"),
+    pendingSync: tr("field.fv.pendingSync", "Pending sync", "بانتظار المزامنة"),
+    licensesDocs: tr("field.fv.licensesDocs", "Licenses & documents", "التراخيص والمستندات"),
+    incidentTitle: tr("field.fv.incidentTitle", "Log an incident during the visit", "رصد حادث أثناء الزيارة"),
+    incidentDesc: tr("field.fv.incidentDesc", "Log an incident observed during the visit. It surfaces in this visit's outputs — separate from violation items.", "سجّل حادثاً تم رصده أثناء الزيارة، ليظهر ضمن مخرجات الزيارة — مستقل عن بنود المخالفة."),
+    incidentLog: tr("field.fv.incidentLog", "Log incident", "تسجيل حادث"),
+    inspectionItems: tr("field.fv.inspectionItems", "Inspection items", "بنود التفتيش"),
+    // Pending-integration scaffolding — design structure awaiting a governed
+    // source/API; captured values are NOT persisted (pre-translated en+ar).
+    pendingIntegration: tr("field.fv.pendingIntegration", "Pending integration", "قيد الربط"),
+    pendingCaption: tr("field.fv.pendingCaption", "Design structure pending a governed source — captured values are not saved yet.", "هيكل تصميمي بانتظار مصدر معتمد — القيم المدخلة لا تُحفظ بعد."),
+    selectPlaceholder: tr("field.fv.selectPlaceholder", "Select…", "اختر…"),
+    estDataTitle: tr("field.fv.estDataTitle", "Establishment data", "بيانات المنشأة"),
+    spatialAuth: tr("field.fv.spatialAuth", "Establishment spatial authority", "الإشراف المكاني للمنشأة"),
+    spatialAuthModon: tr("field.fv.spatialAuthModon", "MODON", "هيئة مدن"),
+    optOther: tr("field.fv.optOther", "Other", "أخرى"),
+    energyType: tr("field.fv.energyType", "Energy type used", "نوع الطاقة المستخدمة"),
+    energyGas: tr("field.fv.energyGas", "Natural gas", "الغاز الطبيعي"),
+    energyElectricity: tr("field.fv.energyElectricity", "Electricity", "الكهرباء"),
+    estStatus: tr("field.fv.estStatus", "Establishment status", "حالة المنشأة"),
+    estStatusProduction: tr("field.fv.estStatusProduction", "In production", "الإنتاج"),
+    estStatusClosed: tr("field.fv.estStatusClosed", "Closed", "مغلق"),
+    prodStatus: tr("field.fv.prodStatus", "Production status", "الحالة الإنتاجية"),
+    prodContinuous: tr("field.fv.prodContinuous", "Continuous production", "إنتاج مستمر"),
+    prodNonContinuous: tr("field.fv.prodNonContinuous", "Non-continuous production", "إنتاج غير مستمر"),
+    closureJustification: tr("field.fv.closureJustification", "Establishment status justification", "مبرر حالة المنشأة"),
+    closureJustificationPh: tr("field.fv.closureJustificationPh", "Shown when stopped/closed/repair/relocated is chosen", "يظهر عند اختيار متوقف/مغلق/إصلاح/نقل"),
+    closingAuthority: tr("field.fv.closingAuthority", "Government body that closed it", "الجهة الحكومية التي قامت بالإغلاق"),
+    authCivilDefense: tr("field.fv.authCivilDefense", "Civil Defense", "الدفاع المدني"),
+    authMunicipality: tr("field.fv.authMunicipality", "Municipality", "البلدية"),
+    authModon: tr("field.fv.authModon", "MODON", "هيئة المدن الصناعية"),
+    exportsProducts: tr("field.fv.exportsProducts", "Does the establishment export products?", "هل يتم تصدير منتجات؟"),
+    optYes: tr("field.fv.optYes", "Yes", "نعم"),
+    optNo: tr("field.fv.optNo", "No", "لا"),
+    contactsTitle: tr("field.fv.contactsTitle", "Contacts", "جهات التواصل"),
+    contactLabel: tr("field.fv.contactLabel", "Contact", "جهة"),
+    contactDelete: tr("field.fv.contactDelete", "Delete", "حذف"),
+    addContact: tr("field.fv.addContact", "Add contact", "إضافة جهة اتصال"),
+    cName: tr("field.fv.cName", "Name", "الاسم"),
+    cTitle: tr("field.fv.cTitle", "Title", "الصفة"),
+    cId: tr("field.fv.cId", "ID number", "رقم الهوية"),
+    cMobile: tr("field.fv.cMobile", "Mobile", "الجوال"),
+    cEmail: tr("field.fv.cEmail", "Email", "البريد الإلكتروني"),
+    workforceTitle: tr("field.fv.workforceTitle", "Workforce", "العمالة"),
+    machinesTitle: tr("field.fv.machinesTitle", "Machines", "الآلات"),
+    spareTitle: tr("field.fv.spareTitle", "Spare parts", "قطع غيار"),
+    shift1: tr("field.fv.shift1", "Shift 1", "الوردية الأولى"),
+    shift2: tr("field.fv.shift2", "Shift 2", "الوردية الثانية"),
+    shift3: tr("field.fv.shift3", "Shift 3", "الوردية الثالثة"),
+    totalLabel: tr("field.fv.totalLabel", "Total", "المجموع"),
+    workerUnit: tr("field.fv.workerUnit", "workers", "عامل"),
+    itemCheck1: tr("field.fv.itemCheck1", "Exemption beneficiary", "مستفيد من الإعفاء"),
+    itemCheck2: tr("field.fv.itemCheck2", "Chemical clearance beneficiary", "مستفيد من الفسح الكيميائي"),
+    itemCheck3: tr("field.fv.itemCheck3", "Present at site", "موجودة في المنشأة"),
+    categoryPending: tr("field.fv.categoryPending", "This category is pending integration — no governed source yet.", "هذه الفئة قيد الربط — لا يوجد مصدر معتمد بعد."),
+    // Presentational workflow step (Factory-360 header).
+    stepBadge: tr("field.fv.stepBadge", "Step 2 of 4", "الخطوة 2 من 4"),
+    // Violation history — no governed factory-scoped source; badged empty scaffold.
+    violationHistory: tr("field.fv.violationHistory", "Violation history", "سجل المخالفات"),
+    violationHistoryPending: tr("field.fv.violationHistoryPending", "No governed violation-history source yet.", "لا يوجد مصدر معتمد لسجل المخالفات بعد."),
+    // Standalone visit-notes scaffold (in-memory only, not persisted).
+    visitNotesTitle: tr("field.fv.visitNotesTitle", "Notes", "الملاحظات"),
+    visitNoteLabel: tr("field.fv.visitNoteLabel", "Note detail", "تفاصيل الملاحظة"),
+    visitNotePlaceholder: tr("field.fv.visitNotePlaceholder", "Record a free-text note for this visit…", "دوّن ملاحظة نصية لهذه الزيارة…"),
+    // Workforce roster scaffold (no governed count source).
+    workerTypeLabel: tr("field.fv.workerTypeLabel", "Worker type", "نوع العامل"),
+    workerTypePh: tr("field.fv.workerTypePh", "e.g. Administrative", "مثال: إدارية"),
+    addWorkerRow: tr("field.fv.addWorkerRow", "Add worker type", "إضافة نوع عامل"),
+    grandTotal: tr("field.fv.grandTotal", "Grand total", "المجموع الكلي"),
+    rosterEmpty: tr("field.fv.rosterEmpty", "No worker types added yet — add a row to record a shift breakdown (not saved yet).", "لم تتم إضافة أنواع عمال بعد — أضف صفاً لتسجيل توزيع الورديات (لا يُحفظ بعد)."),
   };
   // Read-only unless the inspection is actively in progress (submitted/approved lock it).
   const factoryReadOnly = ins.status !== "in_progress";
@@ -554,8 +671,12 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   };
   const inspectionNo = (ins as unknown as { inspection_no: string | null }).inspection_no ?? null;
   return (
-    <Shell current="/field" title={t("field.ws.title", "Inspection — {factory}").replace("{factory}", (ins.visits as unknown as { factories: { name: string } }).factories.name)}
-      context={<span className="ax-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>}>
+    <>
+      {header(
+        <bdi>{t("field.ws.title", "Inspection — {factory}").replace("{factory}", (ins.visits as unknown as { factories: { name: string } }).factories.name)}</bdi>,
+        <span className="id-code">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>,
+      )}
+      <div className={styles.page}>
       {/* SCR-IPAD-630 — factory-verification step precedes the checklist (M04-095) */}
       <FactoryVerification
         inspectionId={id}
@@ -570,25 +691,29 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         evidenceLimits={settings.evidence ?? {}}
         readOnly={factoryReadOnly}
         strings={fvStrings}
+        riskScore={factoryRiskScore}
+        riskBand={factoryRiskBand}
+        riskBandLabel={factoryRiskBandLabel}
+        incidentHref={incidentLogHref}
       />
 
       {/* O-13/IPAD-FIGMA-DELTA §2B — distinct from a violation; surfaced in
           this visit's own outputs, not folded into the checklist. */}
-      <section className="ax-surface ax-panel" aria-labelledby="field-ws-incidents-heading" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <section className={styles.card} aria-labelledby="field-ws-incidents-heading" style={{ padding: "var(--space-4)" }}>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-2)" }}>
           <h2 id="field-ws-incidents-heading" style={{ margin: 0 }}>{t("field.ws.incidents.heading", "Incident reports for this visit")}</h2>
-          <a className="ax-btn ax-btn--secondary ax-btn--field" href={incidentLogHref}>{t("field.ws.incidents.log", "Log incident")}</a>
+          <a className="btn btn-secondary btn-lg" href={incidentLogHref}>{t("field.ws.incidents.log", "Log incident")}</a>
         </div>
         {(visitIncidents ?? []).length ? (
-          <ul style={{ marginBlockStart: "var(--ax-space-150)" }}>
+          <ul style={{ marginBlockStart: "var(--space-2)" }}>
             {(visitIncidents ?? []).map(row => (
               <li key={row.id}>
                 <bdi>{row.incident_type || t("field.ws.incidents.untitled", "Incident")}</bdi>
-                {row.preliminary_incident_description ? <span className="ax-caption"> · {row.preliminary_incident_description.slice(0, 100)}</span> : null}
+                {row.preliminary_incident_description ? <span className="t-caption"> · {row.preliminary_incident_description.slice(0, 100)}</span> : null}
               </li>
             ))}
           </ul>
-        ) : <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
+        ) : <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{t("field.ws.incidents.empty", "No incidents logged for this visit.")}</p>}
       </section>
 
       <Workspace
@@ -619,6 +744,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         cancelReasons={cancelReasons}
         journeySchemaAvailable={journeySchemaAvailable}
       />
-    </Shell>
+      </div>
+    </>
   );
 }

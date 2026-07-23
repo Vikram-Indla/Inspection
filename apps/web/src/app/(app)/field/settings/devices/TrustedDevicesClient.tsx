@@ -7,6 +7,7 @@ import {
   selfEnrollFieldDevice,
   type FieldDeviceEnrollmentResult,
 } from "../actions";
+import styles from "./devices.module.css";
 
 type Locale = "en" | "ar";
 
@@ -54,10 +55,11 @@ function trustDetail(result: FieldDeviceEnrollmentResult | null, locale: Locale)
   return copy(locale, "The backend device register does not currently grant trusted access.", "لا يمنح سجل الأجهزة في الخادم حالياً وصولاً موثوقاً.");
 }
 
-// Split out of FieldSettingsClient.tsx (SAQEEL correction backlog Step 5) —
-// identical logic, moved to its own route per the handoff spec's "Trusted
-// Devices" dedicated screen. Settings keeps a link here instead of inlining
-// this section.
+// SAQEEL correction backlog Step 5 — the Trusted Devices section lives on its own
+// route. Chrome converted to the SAQEEL DS (SAQEEL Field Trusted Devices.dc.html):
+// a device card for the ONE real, RLS-scoped device register row, an enroll
+// action, and a governed security note. Trust is never inferred client-side — it
+// is whatever the backend register reports.
 export default function TrustedDevicesClient({ locale }: { locale: Locale }) {
   const [deviceIdentifier, setDeviceIdentifier] = useState("");
   const [enrollment, setEnrollment] = useState<FieldDeviceEnrollmentResult | null>(null);
@@ -79,35 +81,73 @@ export default function TrustedDevicesClient({ locale }: { locale: Locale }) {
     }
   }
 
+  const registered = enrollment && (enrollment.kind === "enrolled" || enrollment.kind === "already_registered");
+  const trusted = registered && enrollment.trustStatus === "trusted";
   const canEnroll = enrollment?.kind === "not_enrolled";
 
+  const fmt = (value: string | null): string => {
+    if (!value) return "—";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? "—" : new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium", timeStyle: "short" }).format(d);
+  };
+
   return (
-    <div className="ax-field-page">
-      <section className="ax-surface ax-panel stack" aria-labelledby="field-devices-heading">
-        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-          <div>
-            <h3 id="field-devices-heading">{copy(locale, "Trusted devices", "الأجهزة الموثوقة")}</h3>
-            <p className="ax-caption">{copy(locale, "Trust is granted only by the backend approval process.", "تُمنح الثقة فقط من خلال عملية الموافقة في الخادم.")}</p>
-          </div>
-          <span className={`ax-lozenge ${enrollment && (enrollment.kind === "enrolled" || enrollment.kind === "already_registered") && enrollment.trustStatus === "trusted" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
-            {trustLabel(enrollment, locale)}
+    <div className={styles.wrap}>
+      <p className={`t-caption ${styles.intro}`}>
+        {copy(locale, "Devices authorized to unlock the field app. Trust is granted only by the backend approval process — enrollment alone does not grant it.", "الأجهزة المصرّح لها بفتح التطبيق الميداني. تُمنح الثقة فقط من خلال عملية الموافقة في الخادم — التسجيل وحده لا يمنحها.")}
+      </p>
+
+      {/* The real device register row for THIS device — rendered only when the
+          backend actually has an enrollment; otherwise an honest status card. */}
+      {registered ? (
+        <div className={styles.card} data-enrollment-state={enrollment.kind}>
+          <span className={styles.icn} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 22, height: 22 }}>
+              <rect x="6" y="2" width="12" height="20" rx="2" /><path d="M10 18h4" />
+            </svg>
           </span>
-        </div>
-        <div className="ax-banner" role="status" data-enrollment-state={enrollment?.kind ?? "checking"}>
-          <strong>{trustLabel(enrollment, locale)}</strong> {trustDetail(enrollment, locale)}
-        </div>
-        <dl style={{ margin: 0 }}>
-          <dt className="ax-caption">{copy(locale, "Local device identifier", "معرّف الجهاز المحلي")}</dt>
-          <dd style={{ margin: 0, overflowWrap: "anywhere" }}><bdi>{deviceIdentifier || copy(locale, "Loading…", "جارٍ التحميل…")}</bdi></dd>
-        </dl>
-        {canEnroll ? (
-          <div>
-            <button type="button" className="ax-btn ax-btn--prominent ax-btn--field" onClick={() => void enroll()} disabled={enrolling}>
-              {enrolling ? copy(locale, "Requesting enrollment…", "جارٍ طلب التسجيل…") : copy(locale, "Request device approval", "طلب الموافقة على الجهاز")}
-            </button>
+          <div className={styles.body}>
+            <div className={styles.name}>
+              <span className={styles.nameText}>{copy(locale, "This device", "هذا الجهاز")}</span>
+              <span className="badge" style={{ background: "var(--status-compliant-soft)", color: "var(--status-compliant-text)", height: 18 }}>{copy(locale, "This device", "هذا الجهاز")}</span>
+              <span className={`badge ${trusted ? "badge-compliant" : "badge-warning"}`}>{trustLabel(enrollment, locale)}</span>
+            </div>
+            <div className={`t-caption id-code ${styles.id}`}><bdi>{deviceIdentifier}</bdi></div>
+            <div className={`t-caption ${styles.meta}`}>{copy(locale, "Last seen", "آخر ظهور")}: {fmt(enrollment.lastSeenAt)}</div>
+            <div className="t-caption">{copy(locale, "Enrolled", "تاريخ التسجيل")}: {fmt(enrollment.enrolledAt)}</div>
+            <p className="t-caption" style={{ marginBlockStart: 8, marginBlockEnd: 0 }}>{trustDetail(enrollment, locale)}</p>
           </div>
-        ) : null}
-      </section>
+        </div>
+      ) : (
+        <div className={styles.card} data-enrollment-state={enrollment?.kind ?? "checking"}>
+          <span className={styles.icn} aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 22, height: 22 }}>
+              <rect x="6" y="2" width="12" height="20" rx="2" /><path d="M10 18h4" />
+            </svg>
+          </span>
+          <div className={styles.body}>
+            <div className={styles.name}>
+              <span className={styles.nameText}>{copy(locale, "This device", "هذا الجهاز")}</span>
+              <span className="badge badge-warning">{trustLabel(enrollment, locale)}</span>
+            </div>
+            <div className={`t-caption id-code ${styles.id}`}><bdi>{deviceIdentifier || copy(locale, "Loading…", "جارٍ التحميل…")}</bdi></div>
+            <p className="t-caption" style={{ marginBlockStart: 8, marginBlockEnd: 0 }}>{trustDetail(enrollment, locale)}</p>
+          </div>
+        </div>
+      )}
+
+      {canEnroll && (
+        <button type="button" className="btn btn-primary btn-block btn-lg" onClick={() => void enroll()} disabled={enrolling}>
+          {enrolling ? copy(locale, "Requesting enrollment…", "جارٍ طلب التسجيل…") : copy(locale, "Enroll this device", "تسجيل هذا الجهاز")}
+        </button>
+      )}
+
+      <div className={`panel ${styles.hint}`}>
+        <svg className={styles.hintIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" />
+        </svg>
+        <span>{copy(locale, "The local device identifier is generated on-device. Trust and revocation are controlled by the backend device register, not by this screen.", "يُنشأ معرّف الجهاز المحلي على الجهاز. تُدار الثقة والإلغاء عبر سجل الأجهزة في الخادم، وليس من هذه الشاشة.")}</span>
+      </div>
     </div>
   );
 }

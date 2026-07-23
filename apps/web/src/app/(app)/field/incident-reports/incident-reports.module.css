@@ -1,0 +1,46 @@
+/* SAQEEL Field Incident Reports — route-scoped layout for the mid-visit
+   incident logging form + history. DS tokens only (linked by field/layout). */
+
+.page { flex: 1; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+
+.card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+
+.actions {
+  display: flex; gap: var(--space-3); align-items: center;
+  flex-wrap: wrap; margin-block-start: var(--space-4);
+}
+
+.history { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.rowcard {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.rowcard > summary {
+  list-style: none; cursor: pointer; min-block-size: 44px;
+  padding: var(--space-3) var(--space-4);
+  display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;
+}
+.rowcard > summary::-webkit-details-marker { display: none; }
+
+.grid2dl {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);
+  margin: 0; padding: 0 var(--space-4) var(--space-4);
+}
+@media (max-width: 640px) { .grid2dl { grid-template-columns: 1fr; } }
+.grid2dl dd { margin: 0; }
+
+.empty {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+  padding: var(--space-8) var(--space-4); text-align: center; color: var(--text-muted);
+}
+.emptyTitle { font-weight: 600; color: var(--text-secondary); }
