@@ -132,7 +132,11 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   transition: background-color 6000s ease-in-out 0s;
 }
 .ax-input:hover, .ax-select:hover, .ax-textarea:hover { border-color: var(--ax-color-border-strong); }
-.ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 0; }
+.ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .ax-input[disabled], .ax-select[disabled], .ax-textarea[disabled] { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-disabled); cursor: not-allowed; }
 .ax-input[readonly] { background: var(--ax-color-surface-sunken); border-style: dashed; }
 .ax-field.is-invalid .ax-input, .ax-field.is-invalid .ax-select, .ax-field.is-invalid .ax-textarea { border-color: var(--ax-color-critical); }
@@ -512,7 +516,11 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell-search { position: relative; inline-size: min(420px, 38vw); }
 .ax-shell-search__icon { position: absolute; inset-inline-start: var(--ax-space-150); inset-block-start: 50%; transform: translateY(-50%); color: var(--ax-color-text-secondary); pointer-events: none; }
 .ax-shell-search input { inline-size: 100%; min-block-size: var(--ax-control-height); padding-inline: 40px var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full); background: var(--ax-color-surface-sunken); color: var(--ax-color-text); font: var(--ax-text-input); }
-.ax-shell-search input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 0; }
+.ax-shell-search input:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .ax-shell-search__results { position: absolute; inset-block-start: calc(100% + var(--ax-space-100)); inset-inline: 0; z-index: var(--ax-z-drawer); padding: var(--ax-space-100); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-overlay); }
 .ax-shell-search__results a { display: flex; align-items: center; gap: var(--ax-space-100); padding: var(--ax-space-100); color: var(--ax-color-text); text-decoration: none; border-radius: var(--ax-radius-small); }
 .ax-shell-search__results a > span { display: flex; flex-direction: column; min-inline-size: 0; }

@@ -26,7 +26,7 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
     expect(source("src/app/(app)/planning/PlanningPreview.tsx")).not.toContain("⚡");
     expect(source("src/components/ShellClient.tsx")).toContain('<Icon name="ai" />');
     expect(source("src/app/astryx.css")).toContain(".wa-visit-detail-actions");
-    expect(source("src/app/astryx.css")).toContain("outline-offset: 0");
+    expect(source("src/app/astryx.css")).toContain("box-shadow: inset 0 0 0 1px var(--focus-ring)");
     expect(source("src/app/astryx.css")).not.toContain('a.ax-link:not(.ax-btn) { text-decoration: underline');
   });
 
@@ -56,6 +56,7 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
 
     expect(tokens).not.toMatch(/#101828|#0b1120|#26314a|#8a93ab/);
     expect(shell).not.toMatch(/#4b5670|#6b7794/);
+    expect(shell).toMatch(/\.ax-shell-search input:focus-visible\s*\{[^}]*outline: none;[^}]*border-color: var\(--focus-ring\);[^}]*box-shadow: inset 0 0 0 1px var\(--focus-ring\)/s);
   });
 });
 

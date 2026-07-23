@@ -77,7 +77,11 @@
 textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); resize: vertical; line-height: var(--type-body-lh); }
 .input::placeholder { color: var(--text-muted); }
 .input:hover, .select:hover { border-color: var(--border-strong); }
-.input:focus-visible, .select:focus-visible { outline-offset: 0; border-color: var(--focus-ring); }
+.input:focus-visible, .select:focus-visible, textarea.input:focus-visible {
+  outline: none;
+  border-color: var(--focus-ring);
+  box-shadow: inset 0 0 0 1px var(--focus-ring);
+}
 .input:disabled, .select:disabled { background: var(--surface-sunken); color: var(--text-disabled); cursor: not-allowed; }
 .input[readonly] { background: var(--surface-sunken); border-color: var(--border-subtle); }
 .field.is-error .input, .field.is-error .select { border-color: var(--status-critical); }
