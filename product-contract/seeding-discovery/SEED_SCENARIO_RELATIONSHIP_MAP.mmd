@@ -1,0 +1,106 @@
+%% SEED_SCENARIO_RELATIONSHIP_MAP.mmd
+%% Object-creation dependency graph for SEED_SCENARIO_CATALOG.csv (SCN-001..SCN-033).
+%% Design/plan only - not executed. Read alongside SEED_DEPENDENCY_DAG.md (Section I, not yet written in this pass).
+
+flowchart TD
+  subgraph IDENTITY[Identity & RBAC - seeder 02]
+    PROFILES[profiles / user_roles]
+  end
+
+  subgraph MASTER[Factory master data - seeder 04-05]
+    FACTORIES[factories]
+    LICENSES[industrial_licenses + plant_production_line_items - SCHEMA GAP: not yet backfilled for 23 existing rows]
+    PRODMAT[factory_products / factory_materials]
+    DOCSREPS[factory_documents / factory_representatives]
+  end
+
+  subgraph CONFIG[Compliance configuration - seeder 06-07]
+    REG[regulations / regulation_clauses / inspection_items]
+    PKG[packages / package_versions - incl. chemical_clearance & customs_exemption package_kind]
+    VIOL[violation_codes / penalty_mappings]
+    LOOKUPS[planning_lookups / planning_expiry_rules]
+  end
+
+  subgraph PLAN[Planning - seeder 08 -- SCN-001..004,022,023,024]
+    VPLANS[visit_plans]
+    VISITS[visits]
+    ASSIGN[assignments]
+  end
+
+  subgraph PREP[Preparation & Journey - seeder 09 -- SCN-005..012,025,026]
+    VPREP[visit_preparations]
+    VSNAP[visit_package_snapshots]
+    JOURNEY[journey_sessions]
+    GEO[geo_events]
+    OVERRIDE[geo_override_requests]
+    VSESSION[virtual_sessions / virtual_participants]
+  end
+
+  subgraph EXEC[Execution & Evidence - seeder 10 -- SCN-013..016,027..031]
+    INSPECT[inspections]
+    CHECK[checklist_responses]
+    EVID[evidence]
+    FIND[findings]
+    VIO[violations]
+    ACTF[action_forms]
+    INCIDENT[incident_reports]
+  end
+
+  subgraph REVIEW[Submission & Review - seeder 11 -- SCN-016..021]
+    SUBV[submission_versions]
+    REVIEWS[reviews]
+  end
+
+  subgraph OPS[Cross-channel receiving queues - seeder 12]
+    NOTIF[notifications]
+    AUDIT[audit_events - append-only]
+    OUTBOX[workflow_outbox]
+    DASH[dashboard_config_parameters/versions/heads]
+  end
+
+  subgraph GAP[Confirmed schema gaps - NOT seeded, see catalog notes]
+    SEIZURE[samples / seizure - SCN-030 BLOCKED, no table exists]
+    DISCREPANCY[factory-data discrepancy proposal - SCN-032 BLOCKED, no confirmed table]
+    DEPT[departments/teams/manager - persona plan gap]
+  end
+
+  PROFILES --> VPLANS
+  PROFILES --> ASSIGN
+  FACTORIES --> LICENSES --> PRODMAT
+  FACTORIES --> DOCSREPS
+  FACTORIES --> VISITS
+  REG --> VIOL
+  PKG --> VISITS
+  LOOKUPS --> VPLANS
+  LOOKUPS --> VISITS
+
+  VPLANS --> VISITS --> ASSIGN
+  ASSIGN --> VPREP --> VSNAP
+  VSNAP --> JOURNEY --> GEO
+  GEO --> OVERRIDE
+  ASSIGN --> VSESSION
+
+  VSNAP --> INSPECT
+  JOURNEY --> INSPECT
+  INSPECT --> CHECK --> EVID
+  CHECK --> FIND --> VIO
+  VIO --> ACTF
+  INSPECT --> INCIDENT
+  INSPECT --> SUBV --> REVIEWS
+  REVIEWS -->|returned scoped sections| CHECK
+  REVIEWS -->|approved| DASH
+
+  VISITS -.->|assignment created| NOTIF
+  OVERRIDE -.->|pending request| NOTIF
+  REVIEWS -.->|decision made| NOTIF
+  ASSIGN -.-> AUDIT
+  VISITS -.-> AUDIT
+  REVIEWS -.-> AUDIT
+  PKG -.-> OUTBOX
+
+  INSPECT -.->|would need| SEIZURE
+  REVIEWS -.->|would need| DISCREPANCY
+  PROFILES -.->|would need| DEPT
+
+  classDef gap fill:none,stroke-dasharray: 5 5;
+  class SEIZURE,DISCREPANCY,DEPT,LICENSES gap;
