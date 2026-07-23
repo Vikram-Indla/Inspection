@@ -15,9 +15,11 @@ import PreExecution, {
 import { getWindowCapacity } from "@/lib/execution";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
+import PreInspectionPackSheet, { type PackData, type PackStrings } from "@/components/field/PreInspectionPackSheet";
 import packageInfo from "../../../../../package.json";
 import { getVerifiedUser } from "@/lib/verified-user";
 import styles from "./startup.module.css";
+import packStyles from "../field-dashboard.module.css";
 
 // BUG-2 fix — [visitId] sits beside static field/* routes (drafts, notifications,
 // settings, …) with no more-specific match; Next.js still routes an unmatched
@@ -438,6 +440,22 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     logReturnFailed: locale === "ar"
       ? "تعذر إرسال طلب الإرجاع. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logReturnFailedSafe", "The return request could not be sent. Check the connection, then try again."),
+    // M03-005 — propose-window reschedule REQUEST (planners decide)
+    rescheduleHeading: locale === "ar" ? "طلب إعادة جدولة (M03-005)" : t("field.start.rescheduleHeading", "Request reschedule (M03-005)"),
+    rescheduleCaption: locale === "ar"
+      ? "اقترح نافذة زيارة جديدة. هذا طلب فقط — يقرّره المخطّطون؛ لا تتغيّر زيارتك حتى الموافقة."
+      : t("field.start.rescheduleCaption", "Propose a new visit window. This is a request only — planners decide; your visit is unchanged until they approve."),
+    rescheduleStartLabel: locale === "ar" ? "البداية المقترحة" : t("field.start.rescheduleStartLabel", "Proposed start"),
+    rescheduleEndLabel: locale === "ar" ? "النهاية المقترحة" : t("field.start.rescheduleEndLabel", "Proposed end"),
+    rescheduleSubmit: locale === "ar" ? "إرسال الطلب" : t("field.start.rescheduleSubmit", "Send request"),
+    rescheduleRequestedChip: locale === "ar" ? "تم إرسال الطلب إلى المخطّطين" : t("field.start.rescheduleRequestedChip", "Request sent to planners"),
+    rescheduleInvalid: locale === "ar" ? "يجب أن تكون البداية المقترحة قبل النهاية." : t("field.start.rescheduleInvalid", "Proposed start must be before the proposed end."),
+    logRescheduleSent: locale === "ar"
+      ? "تم إرسال طلب إعادة الجدولة — أُشعِر المخطّطون؛ يقرّرون النافذة (M03-005)."
+      : t("field.start.logRescheduleSent", "Reschedule request sent — planners notified; they decide the window (M03-005)."),
+    logRescheduleFailed: locale === "ar"
+      ? "تعذر إرسال طلب إعادة الجدولة. زيارتك دون تغيير — أعد المحاولة."
+      : t("field.start.logRescheduleFailedSafe", "The reschedule request could not be sent. Your visit is unchanged — try again."),
     deviceInfo: t("field.start.deviceInfo", "Device information (M04-012)"),
     etaLabel: t("field.start.etaLabel", "Road-network ETA (M04-017/024)"),
     etaAvailable: t("field.start.etaAvailable", "{minutes} min · {distance} m · updated {at}"),
@@ -564,6 +582,75 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     },
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
+  // CODEX 03 — Pre-Inspection Pack. Mounted in the preparation surface behind
+  // its own "Open pack" trigger. Data is sourced strictly from what this route
+  // already loads: visit identity, factory master (CR / licence / official
+  // location) and the resolved package. The Factory 360 dossier (risk band,
+  // compliance rate, previous-approval and repeat-finding lineage) is NOT
+  // loaded on the preparation route, so those sections carry the component's
+  // honest "unavailable"/"—" states rather than a fabricated value — exactly
+  // the null contract the component declares (STR-KPI-002 / STR-KPI-011).
+  // Reuses the file-level `tr` (EN/AR) helper declared with the header strings.
+  const packOfficialLocation = factory.official_lat != null && factory.official_lng != null
+    ? `${factory.official_lat.toFixed(5)}, ${factory.official_lng.toFixed(5)}`
+    : null;
+  const packLicenceUnavailable = tr("field.pack.licenceUnavailable", "Not recorded for this factory", "غير مسجّل لهذه المنشأة");
+  const packData: PackData = {
+    visitId: v.id,
+    inspectionId: normalizedInspection?.id ?? null,
+    visitRef: v.id.slice(0, 8),
+    factoryName,
+    packPolicyVersion: null,
+    packageLabel: (effectivePackageRow as { version_label?: string | null } | null)?.version_label ?? null,
+    packageStatus: v.planning_status ?? null,
+    crNumber: facIds.cr_number,
+    officialLocation: packOfficialLocation,
+    licence: { value: facIds.license_number, unavailable: facIds.license_number ? null : packLicenceUnavailable },
+    riskBand: null,
+    riskScore: null,
+    riskDrivers: null,
+    health: { value: null, unavailable: tr("field.pack.healthUnavailable", "No governed Health Score source (STR-KPI-002)", "لا يوجد مصدر محكوم لدرجة الصحة (STR-KPI-002)") },
+    previousApproved: null,
+    returnedContext: null,
+    compliance: null,
+    repeatFindings: { value: null, unavailable: tr("field.pack.repeatUnavailable", "No governed violation lineage (STR-KPI-011)", "لا يوجد سجل مخالفات محكوم (STR-KPI-011)") },
+    freshnessMinutes: null,
+  };
+  const packStrings: PackStrings = {
+    openPack: tr("field.pack.open", "Open pre-inspection pack", "فتح حزمة ما قبل التفتيش"),
+    title: tr("field.pack.title", "Pre-inspection pack", "حزمة ما قبل التفتيش"),
+    close: t("common.close", "Close"),
+    cached: tr("field.pack.cached", "cached for offline", "محفوظة للعمل دون اتصال"),
+    freshness: tr("field.pack.freshness", "freshness {n} min", "حداثة {n} دقيقة"),
+    reviewBlocker: tr("field.pack.reviewBlocker", "Review — {n} blocker(s)", "مراجعة — {n} عائق"),
+    ready: tr("field.pack.ready", "Ready", "جاهزة"),
+    sectionFactory: tr("field.pack.sectionFactory", "Factory", "المصنع"),
+    sectionPackage: tr("field.pack.sectionPackage", "Package", "الحزمة"),
+    sectionPrevious: tr("field.pack.sectionPrevious", "Previous inspection", "التفتيش السابق"),
+    sectionRepeat: tr("field.pack.sectionRepeat", "Repeat findings", "المخالفات المتكررة"),
+    sectionHealthRisk: tr("field.pack.sectionHealthRisk", "Health & risk", "الصحة والخطورة"),
+    sectionDocuments: tr("field.pack.sectionDocuments", "Documents", "الوثائق"),
+    crNumber: tr("field.pack.crNumber", "CR number", "رقم السجل التجاري"),
+    licence: tr("field.pack.licence", "Licence", "الترخيص"),
+    officialLocation: tr("field.pack.officialLocation", "Official location", "الموقع الرسمي"),
+    provenance: tr("field.pack.provenance", "Provenance", "المصدر"),
+    provenanceValue: tr("field.pack.provenanceValue", "Governed master data", "بيانات مرجعية محكومة"),
+    distinctConcepts: tr("field.pack.distinctConcepts", "Health and Risk are distinct governed concepts.", "الصحة والخطورة مفهومان محكومان منفصلان."),
+    documentsNote: tr("field.pack.documentsNote", "Licence documents open from the establishment dossier.", "تُفتح وثائق الترخيص من ملف المنشأة."),
+    healthScore: tr("field.pack.healthScore", "Health score", "درجة الصحة"),
+    riskScore: tr("field.pack.riskScore", "Risk score", "درجة الخطورة"),
+    compliance: tr("field.pack.compliance", "{rate}% compliant · {c}/{e} eligible", "{rate}% ملتزم · {c}/{e} مؤهل"),
+    noPrevious: tr("field.pack.noPrevious", "No previous approved inspection on record.", "لا يوجد تفتيش سابق معتمد مسجّل."),
+    startReadiness: tr("field.pack.startReadiness", "Start readiness", "جاهزية البدء"),
+    ackPackageCached: tr("field.pack.ackPackageCached", "Package cached for offline", "الحزمة محفوظة للعمل دون اتصال"),
+    ackFactory360: tr("field.pack.ackFactory360", "Factory 360 snapshot reviewed", "تمت مراجعة لقطة المصنع 360"),
+    ackRepeatReviewed: tr("field.pack.ackRepeatReviewed", "Repeat findings reviewed", "تمت مراجعة المخالفات المتكررة"),
+    required: tr("field.pack.required", "required", "مطلوب"),
+    downloadOffline: tr("field.pack.downloadOffline", "Download for offline", "تنزيل للعمل دون اتصال"),
+    checkIn: tr("field.pack.checkIn", "Check in — startup", "تسجيل الوصول — البدء"),
+    checkInBlocked: tr("field.pack.checkInBlocked", "Check in — review required", "تسجيل الوصول — مطلوب مراجعة"),
+    startupNote: tr("field.pack.startupNote", "Opens the governed startup; check-in gates are enforced there.", "يفتح البدء المحكوم؛ تُطبَّق بوابات تسجيل الوصول هناك."),
+  };
   return (
     <>
       <FieldHeader leading={back}
@@ -621,6 +708,22 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             readiness contract is incomplete, package download and journey
             start stay locked inside Startup (preparationGated) with the
             reason visible — never hidden. */}
+        {showPreparation && (
+          <div className="panel" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{packStrings.title}</h4>
+            <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>
+              {tr("field.pack.hostCaption",
+                "Review the governed pre-inspection briefing before you prepare and check in.",
+                "راجع ملخّص ما قبل التفتيش المحكوم قبل التحضير وتسجيل الوصول.")}
+            </p>
+            <PreInspectionPackSheet
+              data={packData}
+              strings={packStrings}
+              moduleClasses={{ packChipRow: packStyles.packChipRow, packReadiness: packStyles.packReadiness, packFooter: packStyles.packFooter, packBlocked: packStyles.packBlocked }}
+              userId={user.id}
+            />
+          </div>
+        )}
         {showPreparation && (
           <PreExecution
             visitId={v.id}

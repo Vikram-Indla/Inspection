@@ -10,6 +10,10 @@ import { formatDateTime, formatTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn, startJourneyAction, confirmArrivalAction, requestActiveCancellationAction, correctVisitLocationAction } from "./actions";
+// M03-005 — drag/propose-window reschedule REQUEST lives with the field-home
+// write legs (field/actions.ts), sibling to the notification legs; the return
+// request above is [visitId]-scoped. Both are planner-decided REQUESTS.
+import { requestVisitReschedule } from "../actions";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
 import styles from "./startup.module.css";
@@ -34,6 +38,8 @@ export type StartupStrings = {
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
   mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
+  // M03-005 — propose-window reschedule REQUEST (planners decide)
+  rescheduleHeading: string; rescheduleCaption: string; rescheduleStartLabel: string; rescheduleEndLabel: string; rescheduleSubmit: string; rescheduleRequestedChip: string; rescheduleInvalid: string; logRescheduleSent: string; logRescheduleFailed: string;
   deviceInfo: string; etaLabel: string; etaAvailable: string; etaUnavailable: string; etaStale: string;
   overrideHeading: string; overrideBody: string; overrideReason: string; overrideReasonCode: string; overrideEvidence: string; overrideSafetyException: string; overrideConfirm: string; overrideCancel: string; overridePending: string; overrideQueued: string; overrideApproved: string; overrideClosed: string; logOverrideQueued: string; logOverrideOfflineQueued: string; logOverrideEvidenceRequired: string; logOverrideFailed: string;
   arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalPhoto: string; arrivalComment: string; arrivalSave: string; arrivalSaved: string; arrivalRequired: string;
@@ -130,6 +136,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const [cancelRequested, setCancelRequested] = useState(flags.cancellationRequested);
   const [returnReason, setReturnReason] = useState("");
   const [returnRequested, setReturnRequested] = useState(flags.returnRequested);
+  // M03-005 — propose-window reschedule REQUEST (start/end datetime-local)
+  const [rescheduleStart, setRescheduleStart] = useState("");
+  const [rescheduleEnd, setRescheduleEnd] = useState("");
+  const [rescheduleRequested, setRescheduleRequested] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState(null as { device_id: string; os_version: string; app_version: string } | null);
   const [eta, setEta] = useState(null as { minutes: number; distance: number; updatedAt: string; provider: string; stale?: boolean } | null);
   const [etaUnavailable, setEtaUnavailable] = useState(false);
@@ -841,6 +851,23 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     add(strings.logReturnSent);
   }
 
+  // M03-005 — inspector proposes a new visit window; this is a REQUEST only
+  // (planners decide). Mirrors submitReturn: the inspector never mutates the
+  // visit — request_visit_reschedule (SECURITY DEFINER) records the proposed
+  // window on visits.reschedule_requested and notifies planners.
+  async function submitReschedule() {
+    if (!rescheduleStart || !rescheduleEnd) return;
+    const startIso = new Date(rescheduleStart).toISOString();
+    const endIso = new Date(rescheduleEnd).toISOString();
+    if (!(new Date(startIso) < new Date(endIso))) { add(strings.rescheduleInvalid); return; }
+    setBusy(true);
+    const r = await requestVisitReschedule(visit.id, startIso, endIso);
+    setBusy(false);
+    if (r.error) { add(strings.logRescheduleFailed); return; }
+    setRescheduleRequested(true);
+    add(strings.logRescheduleSent);
+  }
+
   async function startInspection() {
     // M04-056 — a requested cancellation stops the transition to execution
     if (cancelRequested) { add(fmt(strings.logStartBlocked, { error: strings.cancelRequestedChip })); return; }
@@ -1308,6 +1335,27 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <textarea className="input" style={{ flex: 1, minInlineSize: 220 }} rows={2} value={returnReason}
               onChange={e => setReturnReason(e.target.value)} placeholder={strings.returnPlaceholder} />
             <button className="btn btn-secondary" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
+          </div>
+        )}
+      </div>
+      {/* M03-005 propose-window reschedule REQUEST — planners decide, the visit
+          is never mutated here (mirrors the return request above). */}
+      <div className="panel" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.rescheduleHeading}</h4>
+        <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.rescheduleCaption}</p>
+        {rescheduleRequested ? (
+          <span className="badge badge-warning">{strings.rescheduleRequestedChip}</span>
+        ) : (
+          <div className="row" style={{ gap: 8, alignItems: "flex-end", flexWrap: "wrap" }}>
+            <label className="field"><span className={styles.fieldLabel}>{strings.rescheduleStartLabel}</span>
+              <input className="input" type="datetime-local" value={rescheduleStart}
+                onChange={e => setRescheduleStart(e.target.value)} />
+            </label>
+            <label className="field"><span className={styles.fieldLabel}>{strings.rescheduleEndLabel}</span>
+              <input className="input" type="datetime-local" value={rescheduleEnd}
+                onChange={e => setRescheduleEnd(e.target.value)} />
+            </label>
+            <button className="btn btn-secondary" onClick={submitReschedule} disabled={busy || !rescheduleStart || !rescheduleEnd}>{strings.rescheduleSubmit}</button>
           </div>
         )}
       </div>
