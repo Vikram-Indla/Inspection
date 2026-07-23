@@ -4720,7 +4720,7 @@
       "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-001.md", "visible Codex browser walkthrough on 2026-07-23"],
       "decisions": ["Current screens remain canonical", "Preview requires server flag and query", "Real values replace design fixtures", "No visual difference is self-approved"],
       "blockers": ["Explicit Product Owner decision for WA-P1-M2-BATCH-001", "APPROVED FOR CUTOVER required before canonical replacement"],
-      "commit_sha": "PENDING_APPROVAL_PACKET_COMMIT",
+      "commit_sha": "8b1e0036",
       "next_task": "Stop until Product Owner responds to WA-P1-M2-BATCH-001; do not begin another batch.",
       "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-001.md. Resume only from an explicit APPROVED — PROCEED, APPROVED WITH CORRECTIONS, REJECTED — REWORK, or APPROVED FOR CUTOVER decision."
     }
