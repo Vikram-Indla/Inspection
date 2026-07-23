@@ -4723,9 +4723,29 @@
       "commit_sha": "8b1e0036",
       "next_task": "Stop until Product Owner responds to WA-P1-M2-BATCH-001; do not begin another batch.",
       "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-001.md. Resume only from an explicit APPROVED — PROCEED, APPROVED WITH CORRECTIONS, REJECTED — REWORK, or APPROVED FOR CUTOVER decision."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-shell-authority-001",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001",
+      "gate": "Web/Admin shell-authority amendment approval",
+      "requirements": ["CR-001..CR-478 retained with exactly one unchanged allowed disposition", "G2-P00..P03, P06B, P10..P12", "Phase 1 Web/Admin only; Field/iPad Phase 2 isolated"],
+      "acceptance_ids": ["WA-SHELL-AC-001..018"],
+      "screens": ["Authenticated Web/Admin shell", "Dashboard Strategic and Operational", "Operations Center", "Factory 360"],
+      "engines": ["Next.js production route contract", "RLS/RBAC", "audit and immutable versioning", "governed workflow transitions", "provider fail-closed behavior"],
+      "files_changed": ["Canonical Web/Admin shell authority and source pointer", "Shell route and preservation manifests", "Current-to-target route map and conflict decisions", "Design authority hierarchy", "Change control current state task router work queue and screen-batch hold", "Governance validator and textual evidence"],
+      "tests": ["web-admin planning and shell authority validator PASS", "478/478 unique dispositions PASS", "71/71 Phase 1 route authority coverage PASS", "five deferred /field routes isolated", "46/45 module design identity preserved", "46/18/18 shell preservation route and acceptance records PASS", "YAML and JSON parse PASS", "git diff check PASS"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-AUTHORITY-001.md", "product-contract/web-admin-phase1/VALIDATION_RESULTS.md"],
+      "decisions": ["Saqeel Web(3).html is binding represented Phase 1 Web/Admin shell/dashboard authority", "Customer requirements and proven backend contracts remain behavioral authority", "Planning owns Visits with certified compatibility redirects", "Current frontend is migration/regression evidence only", "Application work remains paused pending approval"],
+      "blockers": ["Explicit Product Owner approval of the registered amendment", "Existing policy/provider and native-Arabic decisions remain fail closed", "APPROVED FOR CUTOVER required before canonical route replacement or legacy removal"],
+      "commit_sha": "5932a4db",
+      "next_task": "Product Owner reviews the canonical shell-authority amendment; do not resume a screen batch until explicit approval.",
+      "resume_prompt": "Read product-contract/execution/CURRENT_SLICE.yaml and product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md. Confirm commit 5932a4db and validator PASS. Restore stash 405708dc8f30fe46577dfbad05efd779d1424909 only after explicit amendment approval, then reconcile and redeclare the first coherent 2-4 screen batch."
     }
   ],
-  "last_session": "2026-07-23-web-admin-m2-batch-001",
+  "last_session": "2026-07-23-web-admin-shell-authority-001",
   "rules": {
     "append_only": true,
     "required_fields": [
