@@ -13,8 +13,9 @@ import FocusScroll from "./FocusScroll";
 
 const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
 
-export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; focus?: string }> }) {
-  const { created, focus } = await searchParams;
+export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; focus?: string; wa_preview?: string }> }) {
+  const { created, focus, wa_preview } = await searchParams;
+  const targetPreview = process.env.SAQEEL_M2_PREVIEW === "enabled" && wa_preview === "1";
   const { id } = await params;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
@@ -282,6 +283,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         {pkg && <span className="ax-version">{pkg.packages.code} · {pkg.version_label}</span>}
         {isUnverifiedManual && <span className="ax-lozenge ax-lozenge--warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
       </>}>
+      {targetPreview && <><h1 className="ax-sr-only">{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
+        <p data-saqeel-design="WA-DES-045"><a className="ax-link" href="/visits?wa_preview=1">← {t("visit.detail.backToVisits", "Visits")}</a></p></>}
       <CreatedToast created={created}
         registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />

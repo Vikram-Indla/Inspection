@@ -1402,3 +1402,21 @@ Phases 0-7 of the canonical Execution module are fully landed on `main` (slice `
 Verification evidence (Phase 8, on the pushed HEAD): typecheck 0 errors; production build PASS; static source contracts 230 passed / 4 skipped / 10 failed — the identical 10 pre-existing upstream failures (compliance-approval-queue, compliance-library, design-foundation, factory360-admin-control-plane, performance-pass4 ×2, platform-design-system ×2, terminology-regression ×2) owned by other lines, zero new. Live certification ran in a clean HEAD scratch copy (foreign workers share the checkout; a foreign `next dev` repeatedly clobbered the shared `.next`) against the shared Supabase with the documented-unapplied migrations absent remotely: golden-journey 7/11 — publish (M01-034/036/038/040/041), NEG publish-without-inspector, startup gate order, geofenced check-in, workspace answering with FS-101 non-compliant + mandatory evidence + blocking corrective form, and submit UX all green; the final sync/server-truth and P3-P5 review legs are blocked solely by DEC-029 (pre-existing P0 platform bug filed 2026-07-20: the `submission_versions` insert trigger calls `digest(bytea, unknown)` without pgcrypto → HTTP 404/42883; NO new submission can be written by anyone in this environment; requires a DB migration, not application code). offline-drill 5/6 (queue/replay/never-claims-success green; submit replay hits the same DEC-029 boundary). mvp2-modules-rls-negative 2/4 (M2-08/M2-10 write denials pass; M2-04/M2-06 legs are stale — the approved web-channel gate now route-redirects the inspector persona off `/admin/*` before the form renders, so the UI-driven negative cannot reach the form; server-side RLS posture unchanged). negative-auth 3/3. cd-028/cd-029/cd-030 and factory360-ipad-field deferred to full certification per the Phase 8 timebox (their review legs are also DEC-029-bound for fresh submissions).
 
 Standing boundaries are unchanged and explicit: migrations 20260721090000..20260721170000 remain UNAPPLIED to the remote Supabase pending sponsor DDL approval — all new runtime paths are probe-gated with legacy fallback (the one gap found, execution_date, is fixed at `0743dcf5`); external submission remains BLOCKED_TRIGGER_DECISION; Industry Shared remains INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED; the 10 upstream static failures remain owned by their lines. What remains runtime-pending: sponsor DDL approval + full browser certification against applied migrations (including the DEC-029 digest()/pgcrypto remediation, which sits outside this task's scope but blocks the submit-and-review legs of every live journey).
+
+## 2026-07-23 UPDATE 120 — Web/Admin M2 screen batch awaiting approval
+
+`WA-P1-M2-BATCH-001` implements the SAQEEL Planning landing, Visits list and
+Visit details as a server-gated preview on branch `revamp`. The canonical
+screens remain the default and no route, workflow, RLS policy, audit path or
+submitted version was removed or weakened. Typecheck and production build pass;
+the new read-only focused suite passes 6/6, including planner/admin permission
+boundaries, Arabic RTL at 390 pixels and zero axe violations. The pre-change
+protected baseline remains 29/38 with six external screenshot `EPERM` failures
+and three live mutation/shared-state failures; none is hidden or upgraded.
+Planning validation remains PASS at 478/478 requirements, 71 Phase 1 routes,
+five deferred Field routes, and 46 supplied/45 unique designs. The three-screen
+batch was opened in the visible Codex browser with real planner/RLS data and is
+stopped at Product Owner approval. During review, the Product Owner rejected the
+left-rail mismatch; a scoped F0 follow-up now matches the supplied 264-pixel
+SAQEEL rail and passes the corrected shell/M2 focused run 10/10. No Field/iPad work, cutover, push, merge,
+deployment, remote DDL, shared-data mutation or provider change occurred.

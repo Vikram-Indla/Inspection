@@ -13,6 +13,7 @@ import CreateVisitSection, { type CreateVisitMethod } from "./CreateVisitSection
 import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
+import PlanningPreview from "./PlanningPreview";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,7 @@ const continueHref = (d: DraftRow) =>
 
 export default async function PlanningHome({ searchParams }: { searchParams: Promise<Sp> }) {
   const sp = await searchParams;
+  const targetPreview = process.env.SAQEEL_M2_PREVIEW === "enabled" && first(sp.wa_preview) === "1";
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -188,6 +190,17 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     reference_asc: tr("plan.list.sortReferenceAsc", "Visit reference", "مرجع الزيارة"),
     status_asc: tr("plan.list.sortStatusAsc", "Planning status", "حالة التخطيط"),
   };
+
+  if (targetPreview) {
+    return (
+      <Shell current="/planning" title={title} context={<span className="ax-caption ax-numeric">CR-001..CR-098 · WA-DES-036</span>}>
+        <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
+          id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
+          planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),
+        }))} effectivePackage={packageOptions[0]?.label ?? null} canCreate={access.can("planning.create")} locale={locale} />
+      </Shell>
+    );
+  }
 
   const totalPages = Math.max(1, Math.ceil(list.total / list.pageSize));
   const page = Math.min(list.page, totalPages);

@@ -4703,9 +4703,29 @@
       "commit_sha": "4d972017",
       "next_task": "Product Owner reviews CC-WEB-ADMIN-PHASE1-001; if approved, start F0 only using its prompt and migration controls.",
       "resume_prompt": "Read product-contract/web-admin-phase1/00_START_HERE.md, CC-WEB-ADMIN-PHASE1-001.yaml, CURRENT_TO_TARGET_MIGRATION.csv, and the F0 prompt. Do not implement before Product Owner approval. Preserve existing screens and use guarded exposure whenever uncertainty remains."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-m2-batch-001",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-PLAN-001-M2-BATCH-001",
+      "gate": "Web/Admin Phase 1 human screen approval",
+      "requirements": ["CR-001..CR-098", "No Field/iPad Phase 2 implementation or investigation"],
+      "acceptance_ids": ["WA-M2-AC-001..006", "WA-AC-0001..0098"],
+      "screens": ["Planning landing", "Visits list", "Visit details"],
+      "engines": ["Supabase SSR/RLS", "planning capability and lifecycle", "audit and immutable version reads"],
+      "files_changed": ["Server-gated Planning preview", "Visits target mode and detail preview marker", "focused batch tests", "screen approval governance and evidence"],
+      "tests": ["typecheck PASS", "production build PASS", "focused read-only Playwright 6/6 PASS", "planning validator PASS", "protected pre-change baseline 29/38 with nine recorded pre-existing failures"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-001.md", "visible Codex browser walkthrough on 2026-07-23"],
+      "decisions": ["Current screens remain canonical", "Preview requires server flag and query", "Real values replace design fixtures", "No visual difference is self-approved"],
+      "blockers": ["Explicit Product Owner decision for WA-P1-M2-BATCH-001", "APPROVED FOR CUTOVER required before canonical replacement"],
+      "commit_sha": "PENDING_APPROVAL_PACKET_COMMIT",
+      "next_task": "Stop until Product Owner responds to WA-P1-M2-BATCH-001; do not begin another batch.",
+      "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-001.md. Resume only from an explicit APPROVED — PROCEED, APPROVED WITH CORRECTIONS, REJECTED — REWORK, or APPROVED FOR CUTOVER decision."
     }
   ],
-  "last_session": "2026-07-23-web-admin-phase1-plan-001",
+  "last_session": "2026-07-23-web-admin-m2-batch-001",
   "rules": {
     "append_only": true,
     "required_fields": [

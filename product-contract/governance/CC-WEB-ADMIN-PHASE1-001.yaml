@@ -2,7 +2,7 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "APPROVED_F0_ONLY"
+status: "APPROVED_SCREEN_BATCH_EXECUTION"
 prepared_on: "2026-07-23"
 approved_on: "2026-07-23"
 approved_by: "Vikram Indla / Product Owner"
@@ -12,7 +12,7 @@ branch: "revamp"
 authority:
   statement: "The supplied package is Product Owner replacement-design input and authorizes planning preparation only."
   implementation_authorized: true
-  authorized_package: "F0 only"
+  authorized_package: "Declared Web/Admin screen batches; current authorization WA-P1-M2-BATCH-001 only"
 scope:
   requirements: "CR-001..CR-478"
   processes: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]
@@ -37,7 +37,7 @@ replacement_policy:
   retention: "Do not delete the current implementation until stabilization and Product Owner removal approval."
   route_authority: "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
 approval_effect:
-  approved: "Authorizes F0 source implementation only; M1-M11 remain gated on F0 certification."
+  approved: "Authorizes one declared 2-4 screen Web/Admin batch at a time with mandatory live review and stop; current authorization WA-P1-M2-BATCH-001 only."
   rejected: "No application source change; revise the planning baseline under change control."
 separate_explicit_approval_required: ["remote DDL", "deployment", "shared-data mutation", "provider enablement", "push", "merge to main"]
 rollback: "Revert package branch changes; database remediation must be additive and forward-only."

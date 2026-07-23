@@ -11,12 +11,12 @@ WA-M1-AC-003,M1,VISUAL,Reference and implementation match at the fixed design vi
 WA-M1-AC-004,M1,RTL_RESPONSIVE_A11Y,"English/LTR and Arabic/RTL pass desktop, 1024, 412/390 and 320 reflow plus keyboard/accessibility checks.",P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
 WA-M1-AC-005,M1,REGRESSION,"Protected backend, workflow, audit, version, maker-checker and adjacent-route regression passes.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
 WA-M1-AC-006,M1,EVIDENCE,Requirement/design/route IDs and external binary evidence manifest are complete and truthful.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-M2-AC-001,M2,FUNCTIONAL,Authorized source-backed route behavior and all required interactions are wired to real services.,P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-M2-AC-002,M2,NEGATIVE_SECURITY,"Unauthorized, validation, stale/conflict, provider and RLS/RBAC negative paths fail safely.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-M2-AC-003,M2,VISUAL,Reference and implementation match at the fixed design viewport with zero unapproved difference.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-M2-AC-004,M2,RTL_RESPONSIVE_A11Y,"English/LTR and Arabic/RTL pass desktop, 1024, 412/390 and 320 reflow plus keyboard/accessibility checks.",P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-M2-AC-005,M2,REGRESSION,"Protected backend, workflow, audit, version, maker-checker and adjacent-route regression passes.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-M2-AC-006,M2,EVIDENCE,Requirement/design/route IDs and external binary evidence manifest are complete and truthful.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
+WA-M2-AC-001,M2,FUNCTIONAL,Authorized source-backed route behavior and all required interactions are wired to real services.,P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,REVIEW_READY_FOCUSED_PASS
+WA-M2-AC-002,M2,NEGATIVE_SECURITY,"Unauthorized, validation, stale/conflict, provider and RLS/RBAC negative paths fail safely.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,REVIEW_READY_FOCUSED_PASS
+WA-M2-AC-003,M2,VISUAL,Reference and implementation match at the fixed design viewport with zero unapproved difference.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL
+WA-M2-AC-004,M2,RTL_RESPONSIVE_A11Y,"English/LTR and Arabic/RTL pass desktop, 1024, 412/390 and 320 reflow plus keyboard/accessibility checks.",P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,REVIEW_READY_AR_390_AXE_PASS
+WA-M2-AC-005,M2,REGRESSION,"Protected backend, workflow, audit, version, maker-checker and adjacent-route regression passes.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,FOCUSED_PASS_BASELINE_29_OF_38_WITH_9_PREEXISTING_FAILURES
+WA-M2-AC-006,M2,EVIDENCE,Requirement/design/route IDs and external binary evidence manifest are complete and truthful.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,REVIEW_PACKET_RECORDED
 WA-M3-AC-001,M3,FUNCTIONAL,Authorized source-backed route behavior and all required interactions are wired to real services.,P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
 WA-M3-AC-002,M3,NEGATIVE_SECURITY,"Unauthorized, validation, stale/conflict, provider and RLS/RBAC negative paths fail safely.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
 WA-M3-AC-003,M3,VISUAL,Reference and implementation match at the fixed design viewport with zero unapproved difference.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED

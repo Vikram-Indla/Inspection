@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-M2-BATCH-001"
+    gate: "Web/Admin Phase 1 human screen approval"
+    priority: "P0"
+    status: "AWAITING_PRODUCT_OWNER_APPROVAL"
+    owner: "Codex implementation and QA + Product Owner screen approval"
+    blocked_by: []
+    blocks: ["Next Web/Admin screen batch", "Canonical Planning/Visits cutover"]
+    note: "Three-screen batch only: Planning landing, Visits list, Visit details. Review uses server-gated wa_preview URLs; current routes remain default and retained for rollback. CR-001..CR-098; WA-DES-036/045; WA-M2-AC-001..006. No Field/iPad, next batch, cutover, push, merge, deploy, DDL, data mutation, or provider change."
   - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-F0"
     gate: "Web/Admin Phase 1 F0 foundation certification"
     priority: "P0"

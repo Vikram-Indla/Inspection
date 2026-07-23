@@ -23,6 +23,7 @@ import type { ReasonOption } from "@/lib/planning/lifecycle";
 //     result is NEVER a green success banner. Focus moves to the summary; a
 //     failing/partial submit is a single role=alert, progress is role=status.
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { useActionState } from "react";
 import {
   bulkCancelVisits, bulkRescheduleVisits, bulkReassignVisits, bulkEditVisits,
@@ -175,7 +176,7 @@ type AllowedKey = "editable" | "locked" | "final" | "expired";
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, cancelReasons, total, limit, nextLimit, strings, locale }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, cancelReasons, total, limit, nextLimit, strings, locale, targetMode = false }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
@@ -189,6 +190,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   nextLimit: number | null;
   strings: VisitsBoardStrings;
   locale: "ar" | "en";
+  targetMode?: boolean;
 }) {
   void locale;
   const [q, setQ] = useState("");
@@ -359,10 +361,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const anyProblem = nBlocked > 0 || nNoNotif > 0; // partial/failed → role=alert
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div data-saqeel-design={targetMode ? "WA-DES-045" : undefined}
+      style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", ...(targetMode ? { "--text-muted": "var(--text-secondary)" } : {}) } as CSSProperties}>
+      {targetMode && <h1 className="ax-sr-only">Visit management</h1>}
       {/* CD-026 — Selected Visit Continuity Spine (signature pattern). One stable
           selected identity + state + allowed-action context, carried in-session. */}
-      <section className="panel" aria-label={strings.spineHeading}
+      {!targetMode && <section className="panel" aria-label={strings.spineHeading}
         style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
           <span className="ax-overline">{strings.spineHeading}</span>
@@ -395,7 +399,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
           </div>
         )}
-      </section>
+      </section>}
 
       {/* M02-002 — KPI tiles double as status filters */}
       <div className="ax-kpi-row" role="group" aria-label={strings.kpiFilterHint}>
@@ -603,7 +607,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="ax-link t-caption ax-inline-target" href={`/visits/${v.id}`}
+                    {" "}<a className="ax-link t-caption ax-inline-target" href={`/visits/${v.id}${targetMode ? "?wa_preview=1" : ""}`}
                       aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
                     {v.planId && (
                       <><br /><span className="t-caption numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>

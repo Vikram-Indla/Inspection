@@ -34,13 +34,13 @@
   --surface-overlay:   rgba(21, 23, 26, 0.44);
 
   /* Navigation (deep graphite in both themes) */
-  --nav-bg:          #1f2328;
-  --nav-bg-hover:    #2a2f35;
-  --nav-bg-selected: #17352b;
-  --nav-border:      #32373d;
-  --nav-text:        #b9bec4;
+  --nav-bg:          #101828;
+  --nav-bg-hover:    #1b2535;
+  --nav-bg-selected: rgba(16, 185, 129, 0.14);
+  --nav-border:      #26314a;
+  --nav-text:        #8a93ab;
   --nav-text-active: #f5f6f7;
-  --nav-indicator:   #35b285;
+  --nav-indicator:   #10b981;
 
   /* Text */
   --text-primary:   #1a1d1f;
@@ -126,13 +126,13 @@
   --surface-raised:    #282c33;
   --surface-overlay:   rgba(8, 9, 11, 0.62);
 
-  --nav-bg:          #131519;
-  --nav-bg-hover:    #1d2025;
-  --nav-bg-selected: #16342a;
-  --nav-border:      #262a30;
-  --nav-text:        #a8adb4;
-  --nav-text-active: #f2f4f5;
-  --nav-indicator:   #3fbd8d;
+  --nav-bg:          #0b1120;
+  --nav-bg-hover:    #1b2535;
+  --nav-bg-selected: rgba(16, 185, 129, 0.16);
+  --nav-border:      #26314a;
+  --nav-text:        #8a93ab;
+  --nav-text-active: #f5f6f7;
+  --nav-indicator:   #10b981;
 
   --text-primary:   #e8eaec;
   --text-secondary: #b1b6bc;
@@ -263,8 +263,8 @@
   --row-h-compact: 34px;
   --touch-target: 44px;
 
-  --sidebar-w: 248px;
-  --sidebar-w-collapsed: 60px;
+  --sidebar-w: 264px;
+  --sidebar-w-collapsed: 74px;
   --topbar-h: 52px;
   --page-pad: var(--space-6);
 
