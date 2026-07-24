@@ -163,8 +163,13 @@ active_worker_packets:
   - packet_id: CLAUDE-M3-STATUS-001
     actor: Claude Code
     mode: STATUS_AND_DESIGN_PROMPT_PACKET
-    status: RUNNING
+    status: COMPLETE_AWAITING_CODEX_BLOCKER_REVIEW
     scope: "M3 Revision 3; five independent status-board lanes"
+  - packet_id: CLAUDE-M4-DESIGN-INVENTORY-001
+    actor: Claude Code
+    mode: READ_ONLY_DESIGN_AND_REPOSITORY_INVENTORY
+    status: RUNNING
+    scope: "CR-410..CR-429; WA-DES-026; WA-DES-027; WA-M4-AC-001..006"
 
 control_cycle:
   automation_id: saqeel-two-hour-orchestration-review

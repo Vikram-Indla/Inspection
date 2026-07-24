@@ -18,6 +18,24 @@ current:
     BASELINED_NOT_IMPLEMENTED while newer implementation evidence exists in
     separate branches and evidence files. No row is counted complete until the
     full SAQEEL Operating System completion gate is reconciled per requirement.
+blocking_findings:
+  - blocker_id: M3-BLOCK-OPS-MUTATING-GET-001
+    requirements: "CR-430..CR-448"
+    finding: >-
+      Reading the Operations page appears to expire pending GPS-override
+      requests. Browser delivery certification is blocked until independently
+      reproduced and corrected under a bounded application-code lease.
+  - blocker_id: M3-DEC-METRIC-CONTRACTS-001
+    requirements: "CR-430..CR-448"
+    finding: >-
+      Submitted Today metric grain and Active Alerts taxonomy/deduplication
+      remain undefined; designs correctly render decision-required states.
+  - blocker_id: M3-DEC-PROJECTED-ROUTE-001
+    requirements: "CR-430..CR-448"
+    finding: >-
+      The projected-route requirement conflicts with an accepted no-route rule.
+      No route/ETA behavior may be certified until the authority conflict is
+      resolved.
 required_row_evidence:
   - accepted_design_revision_or_proven_not_applicable
   - implementation_commit_and_files

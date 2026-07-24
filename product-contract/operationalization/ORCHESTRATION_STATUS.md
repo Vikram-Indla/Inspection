@@ -64,12 +64,27 @@ closes.
 |---|---|---|---|---|
 | `KIMI-M4-READINESS-001` | Kimi engineering session 1 | M4 requirement, screen, engine, route, service, permission and evidence map | None | Running |
 | `KIMI-M3-QA-001` | Kimi engineering session 2 | Independent M3 code, test, negative-path and evidence certification | None | Running |
-| `CLAUDE-M3-STATUS-001` | Claude Code M3 session | Five-lane status packet and exact next Claude Design prompt | None | Running |
+| `CLAUDE-M3-STATUS-001` | Claude Code M3 session | Five-lane status packet and exact next Claude Design prompt | None | Complete; blocker review recorded |
+| `CLAUDE-M4-DESIGN-INVENTORY-001` | Claude Code M3 session, reassigned | M4 design revision, frame/state and repository mapping | None | Running |
 | M3 primary-view critique | ChatGPT editable chat | Adversarial IA and authority critique | None | Handoff received; Codex review |
 
 At the end of the cycle, Codex must ACK, RETURN or BLOCK each completed
 handoff, update dirty laundry, reconcile the Claude Design status board and
 issue the next queue.
+
+Update: `CLAUDE-M3-STATUS-001` completed. Claude Code verified live, read-only
+Claude Design access and found the M3 C3 files already materialized. Codex has
+accepted the handoff for blocker review and reassigned the healthy 40%-context
+session to `CLAUDE-M4-DESIGN-INVENTORY-001`, now running.
+
+M3 cannot be certified yet:
+
+- `M3-BLOCK-OPS-MUTATING-GET-001`: opening Operations appears to expire pending
+  GPS-override requests.
+- `M3-DEC-METRIC-CONTRACTS-001`: Submitted Today grain and Active Alerts
+  taxonomy/deduplication are not governed.
+- `M3-DEC-PROJECTED-ROUTE-001`: projected-route and no-route authorities
+  conflict.
 
 ## 478-row delivery score
 
