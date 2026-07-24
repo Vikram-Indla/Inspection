@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
+import { getFieldDeviceIdentifier } from "@/lib/field-device";
+import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
+import { readBiometricUnlock, unlockWithBiometric, type BiometricUnlockRecord } from "@/lib/field-biometric-unlock";
 import "./field-login.css";
 
 // SAQEEL Field Login — implementation of the Claude Design component
@@ -22,11 +25,30 @@ import "./field-login.css";
 // The DC's own copy already says the OTP transport is "not wired in this
 // mockup" (DEC-007: Unifonic at release), so that path stays honest-blocked
 // rather than simulating a delivery.
+//
+// Mental model (corrected from an earlier version of this file): Face ID is an
+// UNLOCK for an existing signed-in session on an ALREADY BACKEND-TRUSTED
+// device — never a way to establish trust or a fresh login. A device only
+// reaches that state by (1) an inspector signing in normally at least once
+// with "keep me signed in", (2) Operations approving the device in the real
+// device register (readFieldDeviceEnrollment / selfEnrollFieldDevice —
+// server-authoritative, never inferred client-side), and (3) the inspector
+// opting into biometric unlock from Settings > Security > Trusted Devices,
+// which is only offered once step 2 is true.
+//
+// Concretely, on load this screen checks, in order: is there a persisted
+// Supabase session (getSession, local — no fresh login is happening)? Is THIS
+// device's identifier reported `trusted` by the real backend register? Has
+// this browser opted into a local biometric credential? Only when all three
+// hold does the Face ID lock screen appear. Every other case — first run, no
+// session, device not yet approved, biometric not opted in, session expired —
+// is the exact same plain credential form. There is no "unrecognised device"
+// warning: an unenrolled device is the normal, expected first-run state, not
+// an anomaly worth alarming a user over.
 
 export type FieldLoginStrings = {
   brand1: string;
   tagline: string;
-  theme: string;
   langBtn: string;
   netOnline: string;
   netOffline: string;
@@ -40,48 +62,17 @@ export type FieldLoginStrings = {
   keepSignedIn: string;
   forgot: string;
   signIn: string;
-  verifyContinue: string;
   offlineNote: string;
   copyright: string;
-  synced: string;
-  newDeviceTitle: string;
-  newDeviceDesc: string;
-  otpTitle: string;
-  otpDesc: string;
-  otpResendIn: string;
-  otpResend: string;
-  otpVerify: string;
-  otpBack: string;
-  otpTrustThis: string;
-  otpTransportNote: string;
   // Copy with no DC counterpart: states the mockup never had to express.
   bioUnavailable: string;
+  bioFallback: string;
   directoryBlocked: string;
   authInvalid: string;
   authNetwork: string;
   signingIn: string;
+  unlocking: string;
 };
-
-// Device trust is stored per-origin and per-device only. The server-side
-// trusted-device registry (W1: WebAuthn enrolment -> admin/devices) is not
-// built, so there is no claim here that the SERVER trusts this device — only
-// that this device has previously enrolled a platform authenticator locally.
-const TRUST_KEY = "saqeel.field.deviceTrust.v1";
-
-type DeviceTrust = { deviceId: string; credentialId: string; enrolledAt: string };
-
-function readDeviceTrust(): DeviceTrust | null {
-  try {
-    const raw = window.localStorage.getItem(TRUST_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<DeviceTrust>;
-    return parsed.deviceId && parsed.credentialId && parsed.enrolledAt
-      ? (parsed as DeviceTrust)
-      : null;
-  } catch {
-    return null;
-  }
-}
 
 const ShieldIcon = () => (
   <svg
@@ -136,8 +127,14 @@ export default function FieldLoginClient({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [online, setOnline] = useState(true);
-  const [trust, setTrust] = useState<DeviceTrust | null>(null);
-  const [bioAvailable, setBioAvailable] = useState(false);
+
+  // Face ID lock-screen eligibility. Starts closed; only flips open once every
+  // one of session + backend trust + local opt-in is confirmed. Never assume
+  // eligibility while the checks are in flight — the plain form is always the
+  // safe default and what renders during that window.
+  const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord } | null>(null);
+  const [unlocking, setUnlocking] = useState(false);
+  const [showPasswordFallback, setShowPasswordFallback] = useState(false);
 
   // Network state is observed, never assumed: the DC's pill is a live claim
   // about connectivity and the field app is offline-first.
@@ -153,59 +150,55 @@ export default function FieldLoginClient({
   }, []);
 
   useEffect(() => {
-    setTrust(readDeviceTrust());
-    if (typeof window === "undefined" || !window.PublicKeyCredential) {
-      setBioAvailable(false);
-      return;
-    }
-    // Only a platform authenticator (Face ID / Touch ID) counts. A roaming key
-    // is not the "this trusted device" guarantee the design's copy promises.
-    void PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-      .then(setBioAvailable)
-      .catch(() => setBioAvailable(false));
+    let cancelled = false;
+    (async () => {
+      // 1. Is there a persisted session? If not, this is a fresh login —
+      // there is nothing to unlock, so no further check runs.
+      const { data: { session } } = await supabaseBrowser().auth.getSession();
+      if (cancelled || !session?.user) return;
+
+      // 2. Has THIS browser opted into biometric unlock for THIS user? The
+      // check is local-only and cheap, so it runs before the network call.
+      const record = readBiometricUnlock(session.user.id);
+      if (!record) return;
+
+      // 3. Is this device currently reported trusted by the real backend
+      // register? This is the only source of truth for trust — read fresh,
+      // never cached, never inferred from the local opt-in record existing.
+      const enrollment = await readFieldDeviceEnrollment(getFieldDeviceIdentifier());
+      if (cancelled) return;
+      const trusted = "trustStatus" in enrollment && enrollment.trustStatus === "trusted";
+      if (!trusted) return;
+
+      setLockScreen({ record });
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // The Face ID hero renders only when this device has actually enrolled a
-  // platform credential. Otherwise the design's own "unrecognised device"
-  // branch is the truthful state — no invented DVC id, no fake biometric.
-  const trusted = Boolean(trust && bioAvailable);
-
-  const submitLabel = trusted ? s.signIn : s.verifyContinue;
-
   const unlockWithFaceId = useCallback(async () => {
-    if (!trust) return;
+    if (!lockScreen) return;
     setMessage(null);
-    try {
-      const assertion = await navigator.credentials.get({
-        publicKey: {
-          challenge: crypto.getRandomValues(new Uint8Array(32)),
-          allowCredentials: [
-            {
-              // Stored base64url at enrolment.
-              id: Uint8Array.from(atob(trust.credentialId.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0)),
-              type: "public-key",
-              transports: ["internal"],
-            },
-          ],
-          userVerification: "required",
-          timeout: 60_000,
-        },
-      });
-      if (!assertion) throw new Error("no assertion");
-      // A WebAuthn assertion proves possession of the device key. It cannot by
-      // itself mint a session: that requires server-side verification against
-      // the trusted-device registry, which is not built (W1 / admin/devices).
-      // Refreshing an existing session is the only truthful completion here.
-      const { data, error } = await supabaseBrowser().auth.refreshSession();
-      if (error || !data.session) {
-        setMessage(s.bioUnavailable);
-        return;
-      }
-      window.location.assign("/field");
-    } catch {
+    setUnlocking(true);
+    const ok = await unlockWithBiometric(lockScreen.record);
+    setUnlocking(false);
+    if (!ok) {
       setMessage(s.bioUnavailable);
+      setShowPasswordFallback(true);
+      return;
     }
-  }, [trust, s.bioUnavailable]);
+    // The biometric ceremony only gates access to the session that already
+    // existed at load — it never mints one. Confirm it is still valid rather
+    // than assuming so.
+    const { data: { session } } = await supabaseBrowser().auth.getSession();
+    if (!session) {
+      setMessage(s.bioUnavailable);
+      setShowPasswordFallback(true);
+      return;
+    }
+    window.location.assign("/field");
+  }, [lockScreen, s.bioUnavailable]);
 
   const submitCredentials = useCallback(
     async (e: React.FormEvent) => {
@@ -243,6 +236,7 @@ export default function FieldLoginClient({
   );
 
   const netLabel = online ? s.netOnline : s.netOffline;
+  const showLockScreen = lockScreen !== null && !showPasswordFallback;
 
   const localeHref = useMemo(() => `/login/field?lang=${lang === "ar" ? "en" : "ar"}`, [lang]);
 
@@ -276,112 +270,102 @@ export default function FieldLoginClient({
           </div>
           <div className="t-caption fl-tagline">{s.tagline}</div>
 
-          {/* trusted-device path */}
-          {trusted && trust && (
+          {/* Face ID lock screen — only when session + backend device trust +
+              local opt-in all hold. See the mental-model note above the
+              component: this never appears on a first-run or unenrolled
+              device, and there is no "unrecognised device" warning — an
+              unenrolled device is the normal case, not an anomaly. */}
+          {showLockScreen ? (
             <>
               <div className="fl-pill fl-trusted-pill">
                 <LockIcon />
-                {s.trustedDevice} · <span className="id-code">{trust.deviceId}</span>
+                {s.trustedDevice}
               </div>
               <button
                 type="button"
                 className="fl-bio"
                 onClick={unlockWithFaceId}
                 aria-label={s.faceUnlock}
+                disabled={unlocking}
               >
                 <FaceIcon />
               </button>
-              <div className="fl-face-title">{s.faceUnlock}</div>
+              <div className="fl-face-title">{unlocking ? s.unlocking : s.faceUnlock}</div>
               <div className="t-caption fl-face-desc">{s.faceDesc}</div>
               <div className="fl-or">
                 <span className="fl-or-line" />
                 <span className="t-label fl-or-label">{s.orPassword}</span>
                 <span className="fl-or-line" />
               </div>
-            </>
-          )}
-
-          {/* unrecognised-device notice */}
-          {!trusted && (
-            <div className="fl-warn">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--status-warning-text)"
-                strokeWidth="1.7"
-                style={{ width: 18, height: 18, flex: "none", marginBlockStart: 1 }}
-                aria-hidden="true"
+              <button
+                type="button"
+                className="btn btn-ghost btn-block"
+                onClick={() => setShowPasswordFallback(true)}
               >
-                <path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z" />
-                <path d="M12 9v4M12 17h.01" />
-              </svg>
-              <div>
-                <div className="fl-warn-title">{s.newDeviceTitle}</div>
-                <div className="t-caption fl-warn-desc">{s.newDeviceDesc}</div>
-              </div>
-            </div>
-          )}
-
-          {/* credential form */}
-          <form className="fl-form" onSubmit={submitCredentials}>
-            <label className="fl-label">
-              <span className="t-label">{s.idLabel}</span>
-              <input
-                className="fl-in"
-                type="text"
-                autoComplete="username"
-                value={identifier}
-                onChange={e => setIdentifier(e.target.value)}
-              />
-            </label>
-            <label className="fl-label">
-              <span className="t-label">{s.password}</span>
-              <div className="fl-pw-wrap">
+                {s.bioFallback}
+              </button>
+            </>
+          ) : (
+            <form className="fl-form" onSubmit={submitCredentials}>
+              <label className="fl-label">
+                <span className="t-label">{s.idLabel}</span>
                 <input
-                  className="fl-in fl-pw-in"
-                  type={showPw ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  className="fl-in"
+                  type="text"
+                  autoComplete="username"
+                  value={identifier}
+                  onChange={e => setIdentifier(e.target.value)}
                 />
-                <button
-                  type="button"
-                  className="fl-pw-toggle"
-                  onClick={() => setShowPw(v => !v)}
-                  aria-label={s.showPw}
-                  aria-pressed={showPw}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 20, height: 20 }} aria-hidden="true">
-                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
-              </div>
-            </label>
-            <div className="fl-row">
-              <label className="check fl-keep">
-                <input
-                  type="checkbox"
-                  checked={keepSignedIn}
-                  onChange={e => setKeepSignedIn(e.target.checked)}
-                />
-                {s.keepSignedIn}
               </label>
-              <a href="/reset" className="fl-forgot">
-                {s.forgot}
-              </a>
-            </div>
-
-            {message && (
-              <div className="fl-msg" role="alert">
-                {message}
+              <label className="fl-label">
+                <span className="t-label">{s.password}</span>
+                <div className="fl-pw-wrap">
+                  <input
+                    className="fl-in fl-pw-in"
+                    type={showPw ? "text" : "password"}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="fl-pw-toggle"
+                    onClick={() => setShowPw(v => !v)}
+                    aria-label={s.showPw}
+                    aria-pressed={showPw}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 20, height: 20 }} aria-hidden="true">
+                      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
+              </label>
+              <div className="fl-row">
+                <label className="check fl-keep">
+                  <input
+                    type="checkbox"
+                    checked={keepSignedIn}
+                    onChange={e => setKeepSignedIn(e.target.checked)}
+                  />
+                  {s.keepSignedIn}
+                </label>
+                <a href="/reset" className="fl-forgot">
+                  {s.forgot}
+                </a>
               </div>
-            )}
 
-            <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy}>
-              {busy ? s.signingIn : submitLabel}
-            </button>
-          </form>
+              {message && (
+                <div className="fl-msg" role="alert">
+                  {message}
+                </div>
+              )}
+
+              <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy}>
+                {busy ? s.signingIn : s.signIn}
+              </button>
+            </form>
+          )}
         </div>
       </div>
 

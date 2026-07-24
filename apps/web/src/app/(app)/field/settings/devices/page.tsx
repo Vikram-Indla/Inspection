@@ -31,12 +31,8 @@ export default async function FieldTrustedDevicesPage() {
         title={tr("field.devices.title", "Trusted Devices", "الأجهزة الموثوقة")}
         langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
         langLabel={locale === "ar" ? "EN" : "AR"}
-        themeLabels={{
-          toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-          toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-        }}
       />
-      <TrustedDevicesClient locale={locale} />
+      <TrustedDevicesClient locale={locale} userId={user.id} userLabel={user.email ?? user.id} />
     </>
   );
 }

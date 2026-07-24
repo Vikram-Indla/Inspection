@@ -37,7 +37,6 @@ export default async function FieldLogin({
     ? {
         brand1: "SAQEEL",
         tagline: "تطبيق المفتّش الميداني · وزارة الصناعة والثروة المعدنية",
-        theme: "الوضع",
         langBtn: "EN",
         netOnline: "متصل",
         netOffline: "دون اتصال — يعمل محلياً",
@@ -51,36 +50,23 @@ export default async function FieldLogin({
         keepSignedIn: "إبقائي مسجّلاً",
         forgot: "نسيت كلمة المرور؟",
         signIn: "تسجيل الدخول",
-        verifyContinue: "متابعة والتحقق",
         offlineNote:
           "التطبيق يعمل دون اتصال: تُحفظ زياراتك وأدلّتك محلياً وتُزامَن تلقائياً عند عودة الشبكة. القفل الحيوي متاح فقط على هذا الجهاز الموثوق.",
         copyright: "صقيل © 2026",
-        synced: "آخر مزامنة",
-        newDeviceTitle: "جهاز غير معروف",
-        newDeviceDesc:
-          "لم نتعرّف على هذا الجهاز. بعد إدخال بياناتك سنرسل رمز تحقّق لمرة واحدة لتأكيد هويتك.",
-        otpTitle: "أدخل رمز التحقّق",
-        otpDesc: "أرسلنا رمزاً من 6 أرقام إلى",
-        otpResendIn: "يمكن إعادة الإرسال خلال",
-        otpResend: "إعادة إرسال الرمز",
-        otpVerify: "تحقّق وتسجيل الدخول",
-        otpBack: "رجوع",
-        otpTrustThis: "الوثوق بهذا الجهاز على هذا الجهاز مستقبلاً",
-        otpTransportNote:
-          "قناة الإرسال (رسالة نصية / بريد / تطبيق مصادقة) تُحدَّد أثناء الربط — غير مفعّلة في هذا النموذج.",
         bioUnavailable:
           "تعذّر إكمال الفتح بالتعرف على الوجه على هذا الجهاز. استخدم كلمة المرور.",
+        bioFallback: "استخدم كلمة المرور بدلاً من ذلك",
         directoryBlocked:
           "تسجيل الدخول بالهوية الوطنية أو رقم المنسوب غير مُفعّل بعد — لم يُسلَّم عقد دليل الوزارة. استخدم بريد العمل الإلكتروني.",
         authInvalid:
           "تعذّر تسجيل الدخول بهذه البيانات. تحقّق منها أو أعد تعيين كلمة المرور.",
         authNetwork: "تعذّر الوصول إلى خدمة تسجيل الدخول. تحقّق من الاتصال وحاول مرة أخرى.",
         signingIn: "جارٍ الدخول…",
+        unlocking: "جارٍ التحقق…",
       }
     : {
         brand1: "SAQEEL",
         tagline: "Field Inspector App · Ministry of Industry & Mineral Resources",
-        theme: "Theme",
         langBtn: "AR",
         netOnline: "Online",
         netOffline: "Offline — working locally",
@@ -95,25 +81,12 @@ export default async function FieldLogin({
         keepSignedIn: "Keep me signed in",
         forgot: "Forgot password?",
         signIn: "Sign in",
-        verifyContinue: "Continue & verify",
         offlineNote:
           "The app works offline: your visits and evidence are saved locally and sync automatically when the network returns. Biometric unlock is available only on this trusted device.",
         copyright: "SAQEEL © 2026",
-        synced: "Last sync",
-        newDeviceTitle: "Unrecognized device",
-        newDeviceDesc:
-          "We don't recognize this device. After your credentials we'll send a one-time code to confirm your identity.",
-        otpTitle: "Enter verification code",
-        otpDesc: "We sent a 6-digit code to",
-        otpResendIn: "Resend available in",
-        otpResend: "Resend code",
-        otpVerify: "Verify & sign in",
-        otpBack: "Back",
-        otpTrustThis: "Trust this device for future sign-ins",
-        otpTransportNote:
-          "Delivery channel (SMS / email / authenticator) is set during enrollment — not wired in this mockup.",
         bioUnavailable:
           "Face ID unlock could not be completed on this device. Use your password.",
+        bioFallback: "Use password instead",
         directoryBlocked:
           "National ID / staff number sign-in is not enabled yet — the ministry directory contract has not been supplied. Use your work email address.",
         authInvalid:
@@ -121,6 +94,7 @@ export default async function FieldLogin({
         authNetwork:
           "We could not reach the sign-in service. Check your connection and try again.",
         signingIn: "Signing in…",
+        unlocking: "Verifying…",
       };
 
   return <FieldLoginClient s={strings} dir={ar ? "rtl" : "ltr"} lang={locale} />;
