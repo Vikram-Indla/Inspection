@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="256" height="256">
-  <path d="M12 2.5 4 5.5v6c0 6 3.5 9 8 10 4.5-1 8-4 8-10v-6l-8-3Z" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-  <path d="m8.5 12 2.4 2.4L15.8 9" fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="256" height="256" role="img" aria-label="SAQEEL">
+  <!-- Opaque plate: brand background_color (manifest.json). Guarantees contrast
+       against ANY browser chrome — light, dark, or a coloured tab group — instead
+       of inheriting the tab colour through a transparent background. -->
+  <rect width="24" height="24" rx="5.2" fill="#090714"/>
+  <!-- Solid shield silhouette in the brand accent (manifest theme_color).
+       Filled, not stroked: at 16px a stroke-only mark vanishes. 10.4:1 vs plate. -->
+  <path d="M12 3.4 5 6.05v5.4c0 5.2 3 7.9 7 8.95 4-1.05 7-3.75 7-8.95v-5.4L12 3.4Z" fill="#34d399"/>
+  <!-- Check knocked out in the plate colour: negative space reads at small sizes
+       and keeps the silhouette to a single idea. -->
+  <path d="m8.9 11.85 2.25 2.25 4.3-4.95" fill="none" stroke="#090714" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
