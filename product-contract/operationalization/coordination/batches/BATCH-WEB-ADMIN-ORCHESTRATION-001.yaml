@@ -1,0 +1,152 @@
+schema_version: "1.0"
+batch_id: BATCH-WEB-ADMIN-ORCHESTRATION-001
+title: Five-actor Web/Admin access audit and controlled onboarding
+status: READ_ONLY_LANES_ACTIVE
+phase: orchestration_control_plane
+owner: Codex lead
+sponsor: Vikram Indla
+objective: >-
+  Establish verified, non-overlapping operating lanes for Codex, Claude Code,
+  Claude Design, ChatGPT and Kimi without changing application product code.
+
+authority_read_order:
+  - /Users/vikramindla/Developer/Inspection/AGENTS.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/00_START_HERE.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/CURRENT_STATE.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/GATE_STATUS.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml
+  - /Users/vikramindla/Developer/Inspection/product-contract/execution/TASK_ROUTER.yaml
+  - /Users/vikramindla/Developer/Inspection/product-contract/governance/OPEN_DECISIONS.yaml
+  - /Users/vikramindla/Developer/Inspection/product-contract/web-admin-phase1/00_START_HERE.md
+
+global_rules:
+  - Every scope begins from canonical requirement, screen and acceptance IDs.
+  - No actor may infer authority from chat memory, filenames or an open browser tab.
+  - One actor owns a product-code write lease; independent reviewers remain read-only.
+  - Claude Design owns design changes and revision lineage, never product implementation.
+  - ChatGPT and Kimi provide research, critique and bounded handoffs, never self-approval.
+  - Codex is control writer, implementation orchestrator and final reviewer.
+  - Claude Code implements only after an exact approved slice and exclusive file lease.
+  - Blocked details enter the dirty-laundry register; unrelated READY work continues.
+  - No merge, deployment, remote DDL, provider enablement or shared-data mutation.
+
+actors:
+  codex:
+    role: orchestrator_control_writer_final_reviewer
+    session_id: "019f9364-f5b1-7060-8483-e1ea3e902214"
+    access:
+      canonical_repo: VERIFIED
+      browser_runtime: VERIFIED
+      claude_design_project: VERIFIED_READ
+    allowed_writes:
+      - product-contract/operationalization/coordination/
+      - product-contract/operationalization/ORCHESTRATION_STATUS.md
+    prohibited_writes:
+      - apps/
+      - supabase/
+      - main
+
+  claude_code:
+    role: m3_design_package_owner_and_future_implementation_worker
+    session_id: "local_f90cfcda-7e60-448f-a130-7280d6528341"
+    observed_session_name: "M3 Operations design-only lease"
+    branch: "catalyst/m3-operations-design-0f2c11"
+    head: "bb7836c2"
+    access:
+      canonical_repo: VERIFIED
+      orchestration_control_worktree: HANDSHAKE_COMPLETE
+      claude_design_native_connector: NOT_PROVEN_CURRENT
+    current_scope: M3_DESIGN_PACKAGE_REVISION_3_HANDOFF_COMPLETE
+    implementation_lease: NONE
+    completion_rule: emit_actor_handoff_then_wait_for_codex_ACK_or_RETURNED
+
+  claude_design:
+    role: design_authority_and_revision_owner
+    project_id: "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61"
+    project_url: "https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61"
+    access:
+      live_browser_project: VERIFIED
+      readable_chat_history: VERIFIED
+      prior_authenticated_read_write_audit: VERIFIED
+    current_scope: HOLD_FOR_EXACT_DESIGN_PACKET
+    prohibited_writes:
+      - apps/
+      - supabase/
+      - product-contract/
+
+  chatgpt:
+    role: research_critique_and_design_prompt_author
+    shared_chat_id: "6a636a5a-036c-83eb-885d-0f8078cec7cf"
+    access:
+      shared_chat_url_supplied_by_sponsor: VERIFIED
+      current_live_session: VERIFIED
+      current_live_chat_id: "6a6324f3-37f0-83eb-ab62-dbc6054e89aa"
+      canonical_repo_connection: NOT_PROVEN
+    current_scope: HANDSHAKE_COMPLETE_FOR_M3_M4_ADVERSARIAL_CRITIQUE
+    reported_unknowns:
+      - canonical_screen_ids
+      - canonical_engine_ids
+      - current_design_revision_proof
+      - current_runtime_wiring_and_negative_evidence
+    completion_rule: produce_actor_handoff_with_sources_and_no_design_self_approval
+
+  kimi:
+    role: adversarial_reviewer_and_bounded_research_worker
+    application: "com.moonshot.kimichat"
+    model: "K3 High"
+    access:
+      github_plugin: VERIFIED_AVAILABLE
+      supabase_plugin: VERIFIED_AVAILABLE
+      kimi_webbridge: VERIFIED_AVAILABLE
+      direct_claude_design_connector: NOT_AVAILABLE_IN_UI
+      claude_design_via_browser: BLOCKED_EXTENSION_NOT_CONNECTED
+      canonical_repo_handshake: VERIFIED
+      canonical_requirement_rows: 478
+      observed_branch: "docs/saqeel-inspector-inventory"
+      observed_head: "3323a8ef"
+    current_scope: RUNNING_KIMI-M4-READINESS-001
+    implementation_lease: NONE
+    completion_rule: produce_actor_handoff_then_wait_for_codex_ACK_or_RETURNED
+
+initial_lanes:
+  - lane_id: LANE-01-M3-CERTIFICATION
+    owner: Codex
+    mode: READ_ONLY_REVIEW
+    requirements: ["CR-430..CR-448"]
+    screens: ["WA-DES-033-C3", "WA-DES-034-C3"]
+    acceptance: ["WA-M3-AC-001..006"]
+    inputs:
+      - "PR #60 codex/m3-operations-reconciliation@c48f71cc"
+      - "PR #61 codex/shared-brand-regression@2f795773"
+    output: sponsor_browser_verdict
+
+  - lane_id: LANE-02-M4-READINESS
+    owner: Kimi
+    mode: READ_ONLY_DISCOVERY
+    packet_id: KIMI-M4-READINESS-001
+    requirements: ["CR-410..CR-429"]
+    screens: ["WA-DES-026", "WA-DES-027"]
+    acceptance: ["WA-M4-AC-001..006"]
+    packet_rule: >-
+      Codex supplies exact requirements, design export/revision evidence, routes,
+      acceptance IDs and output template; Kimi does not need Claude Design access.
+    blocker: "No M4 implementation until a replacement CURRENT_SLICE and sponsor consent."
+    output: governed_mapping_and_blocker_handoff
+
+  - lane_id: LANE-03-DESIGN-CRITIQUE
+    owner: ChatGPT
+    mode: READ_ONLY_INDEPENDENT_CRITIQUE
+    requirements: ["CR-430..CR-448", "CR-410..CR-429"]
+    output: source_marked_critique_and_claude_design_prompt_candidates
+
+  - lane_id: LANE-04-M3-DESIGN-HANDOFF
+    owner: Claude Code
+    mode: DESIGN_PACKAGE_HANDOFF_ONLY
+    requirements: ["CR-430..CR-448"]
+    screens: ["WA-DES-033-C3", "WA-DES-034-C3"]
+    implementation_lease: NONE
+    output: revision_3_handoff_with_owned_files_decisions_and_next_review_action
+
+stop_boundary: >-
+  This batch authorizes access verification, coordination artifacts and read-only
+  discovery only. It does not authorize new product implementation.
