@@ -63,10 +63,6 @@ export default async function FieldConflictsPage() {
         title={tr("field.conflicts.title", "Sync Conflict Resolution", "حل تعارضات المزامنة")}
         langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
         langLabel={locale === "ar" ? "EN" : "AR"}
-        themeLabels={{
-          toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-          toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-        }}
       />
       <ConflictResolutionClient locale={locale} userId={user.id} strings={strings} />
     </>

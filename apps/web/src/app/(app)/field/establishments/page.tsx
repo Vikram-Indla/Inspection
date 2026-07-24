@@ -154,10 +154,6 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const nav = (
     <FieldNav active="establishments" labels={{
       home: tr("field.tabs.home", "Home", "الرئيسية"),
@@ -196,7 +192,7 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
         title={tr("field.establishments.title", "Establishments", "المنشآت")}
         subtitle={tr("field.establishments.authorityScope", "Authority-scoped", "نطاق محكوم بالصلاحية")}
         right={addUnlicensed}
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels}
+        langHref={langHref} langLabel={langLabel}
       />
 
       <div className={styles.wrap}>

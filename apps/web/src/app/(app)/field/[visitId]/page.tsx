@@ -43,10 +43,6 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const tr = (k: string, en: string, ar: string) => (locale === "ar" ? ar : t(k, en));
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const back = (
     <Link href="/field/my-tasks" prefetch={false} className="btn btn-icon btn-ghost"
       aria-label={tr("common.back", "Back", "رجوع")}>
@@ -57,7 +53,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     return (
       <>
         <FieldHeader leading={back} title={t("field.start.notFoundTitle", "Not found")}
-          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+          langHref={langHref} langLabel={langLabel} />
         <div className={styles.page}>
           <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
             body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
@@ -140,7 +136,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     return (
       <>
         <FieldHeader leading={back} title={t("field.start.notFoundTitle", "Not found")}
-          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+          langHref={langHref} langLabel={langLabel} />
         <div className={styles.page}>
           <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
             body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
@@ -656,7 +652,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       <FieldHeader leading={back}
         title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
         subtitle={<>SCR-IPAD-610/620 · <span className="id-code">{v.id.slice(0, 8)}</span></>}
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+        langHref={langHref} langLabel={langLabel} />
       <CreatedToast created={created}
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />

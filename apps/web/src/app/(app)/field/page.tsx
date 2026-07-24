@@ -89,10 +89,6 @@ export default async function Field() {
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const nav = (
     <FieldNav active="home" labels={{
       home: tr("field.tabs.home", "Home", "الرئيسية"),
@@ -118,7 +114,7 @@ export default async function Field() {
     return (
       <>
         <FieldHeader title={tr("field.dashboard.title", "Field dashboard", "لوحة الميدان")}
-          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+          langHref={langHref} langLabel={langLabel} />
         <div style={{ flex: 1, padding: 20 }}>
           <div className="alert alert-critical" role="alert">
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
@@ -297,7 +293,7 @@ export default async function Field() {
   return (
     <>
       <FieldHeader leading={avatar} title={greeting} subtitle={dateLine} right={headerRight}
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+        langHref={langHref} langLabel={langLabel} />
 
       <div className={styles.wrap} style={{ flex: 1 }}>
         {/* 1 — AI DAILY BRIEF */}

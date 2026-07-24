@@ -59,10 +59,6 @@ export default async function FieldAccountPage() {
       <FieldHeader
         title={tr("field.account.title", "Account", "الحساب")}
         langHref={langHref} langLabel={langLabel}
-        themeLabels={{
-          toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-          toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-        }}
       />
 
       <div className={styles.wrap}>

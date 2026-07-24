@@ -32,10 +32,6 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
 
   // RLS-scoped visit resolution — identical to the sibling field pages; the
   // policy is the authority for whether this inspector may see the visit.
@@ -105,7 +101,6 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
       backHref={`/field/${visitId}`}
       langHref={langHref}
       langLabel={langLabel}
-      themeLabels={themeLabels}
       strings={strings}
     />
   );

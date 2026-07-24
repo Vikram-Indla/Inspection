@@ -90,10 +90,6 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
   );
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
 
   const { data: asg, error } = await sb.from("assignments")
     .select("visit_id, visits(id, planning_status, operational_state, window_start, visit_type, execution_mode, factory_id, factories(id, name, factory_code, cr_number, region, city, official_lat, official_lng), inspections(id, status))")
@@ -105,7 +101,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     return (
       <>
         <FieldHeader title={tr("field.myTasks.title", "My Tasks", "مهامي")}
-          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+          langHref={langHref} langLabel={langLabel} />
         <div style={{ flex: 1, padding: 20 }}>
           <div role="alert" style={{ padding: 16, borderRadius: "var(--radius-md)", background: "var(--status-critical-soft)", color: "var(--status-critical-text)", borderInlineStart: "3px solid var(--status-critical)" }}>
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
@@ -278,7 +274,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
         leading={backBtn}
         title={tr("field.myTasks.title", "My Tasks", "مهامي")}
         subtitle={tr("field.myTasks.sub", "Tasks assigned to you · authority-scoped", "المهام المسندة إليك · نطاق محكوم بالصلاحية")}
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels}
+        langHref={langHref} langLabel={langLabel}
       />
       <div className={`${styles.grid} ${pane}`}>
         {/* LEFT — assigned task list */}

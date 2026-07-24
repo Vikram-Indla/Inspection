@@ -58,10 +58,6 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
 
   const backBtn = (
     <Link href="/field" prefetch={false} className="btn btn-icon btn-ghost" aria-label={tr("common.back", "Back", "رجوع")}>
@@ -78,7 +74,7 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
       <FieldHeader
         leading={backBtn}
         title={tr("field.search.title", "Global Search", "البحث الشامل")}
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels}
+        langHref={langHref} langLabel={langLabel}
       />
 
       {/* Search bar — GET form; submits on Enter (no client JS). */}

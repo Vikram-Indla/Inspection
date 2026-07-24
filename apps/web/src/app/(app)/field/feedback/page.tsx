@@ -28,10 +28,6 @@ export default async function FieldFeedbackQrPage({ searchParams }: { searchPara
   const payload = `saqeel://feedback?inspector=${user.id}${visitPart}`;
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const back = (
     <Link href="/field" prefetch={false} className="btn btn-icon btn-ghost" aria-label={tr("common.back", "Back", "رجوع")}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" data-directional><path d="m15 6-6 6 6 6" /></svg>
@@ -42,7 +38,7 @@ export default async function FieldFeedbackQrPage({ searchParams }: { searchPara
     <>
       <FieldHeader leading={back} title={tr("field.qr.title", "Establishment feedback QR", "رمز تقييم المنشأة")}
         subtitle={tr("field.qr.sub", "Show to the site representative", "اعرضه على ممثل الموقع")}
-        langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} themeLabels={themeLabels} />
+        langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} />
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-5)", maxWidth: 520, width: "100%", margin: "0 auto" }}>
         <div className="card" style={{ padding: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 16, width: "100%" }}>

@@ -57,10 +57,6 @@ export default async function FieldMapPage() {
 
   const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : KSA_CENTER;
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
 
   const back = (
     <Link href="/field" prefetch={false} className="btn btn-icon btn-ghost"
@@ -75,7 +71,7 @@ export default async function FieldMapPage() {
         leading={back}
         title={tr("field.map.title", "Task map", "خريطة المهام")}
         subtitle={tr("field.map.sub", "Your assigned establishments", "منشآتك المسندة")}
-        langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} themeLabels={themeLabels}
+        langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"}
       />
       <FieldFullMap markers={markers} center={center}
         ariaLabel={tr("field.map.aria", "Map of your assigned tasks", "خريطة مهامك المسندة")} />

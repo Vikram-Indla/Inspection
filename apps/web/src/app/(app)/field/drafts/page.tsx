@@ -37,10 +37,6 @@ export default async function FieldDraftsPage() {
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const nav = (
     <FieldNav active="home" labels={{
       home: tr("field.tabs.home", "Home", "الرئيسية"),
@@ -68,7 +64,7 @@ export default async function FieldDraftsPage() {
     return (
       <>
         <FieldHeader leading={back} title={tr("field.drafts.title", "Drafts", "المسودات")}
-          langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+          langHref={langHref} langLabel={langLabel} />
         <div className={styles.page}>
           <div className="alert alert-critical" role="alert">
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
@@ -99,7 +95,7 @@ export default async function FieldDraftsPage() {
     <>
       <FieldHeader leading={back} title={tr("field.drafts.title", "Drafts", "المسودات")}
         subtitle={tr("field.rail.draft", "{n} draft to resume", "{n} مسودة للاستئناف").replace("{n}", String(serverDrafts.length))}
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+        langHref={langHref} langLabel={langLabel} />
       <div className={styles.page}>
         <section aria-labelledby="field-drafts-heading" className={styles.card}>
           <div className={styles.head}>

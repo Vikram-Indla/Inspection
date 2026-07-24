@@ -55,11 +55,7 @@ export default async function FieldFactory360Resolver({ searchParams }: {
   return (
     <>
       <FieldHeader leading={back} title={t("f360.title", "Factory 360")}
-        langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"}
-        themeLabels={{
-          toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-          toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-        }} />
+        langHref={langHref} langLabel={locale === "ar" ? "EN" : "AR"} />
       <div style={{ flex: 1, display: "grid", placeItems: "center", padding: 24 }}>
         <div className="empty" role="status">
           <div style={{ fontSize: 30, lineHeight: 1, marginBlockEnd: 10 }} aria-hidden="true">∅</div>

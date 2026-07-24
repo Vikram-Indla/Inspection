@@ -59,7 +59,7 @@ const KSA_CENTER: [number, number] = [23.8859, 45.0792];
 
 export default function TravelClient({
   visitId, exists, destination, factoryName, factoryTone, fenceRadiusM,
-  backHref, langHref, langLabel, themeLabels, strings,
+  backHref, langHref, langLabel, strings,
 }: {
   visitId: string;
   exists: boolean;
@@ -70,7 +70,6 @@ export default function TravelClient({
   backHref: string;
   langHref: string;
   langLabel: string;
-  themeLabels: { toLight: string; toDark: string };
   strings: TravelStrings;
 }) {
   const [fix, setFix] = useState<Fix | null>(null);
@@ -173,7 +172,7 @@ export default function TravelClient({
       title={strings.title}
       subtitle={exists && factoryName ? factoryName : undefined}
       right={<span className={`badge ${stateBadge}`}>{stateLabel}</span>}
-      langHref={langHref} langLabel={langLabel} themeLabels={themeLabels}
+      langHref={langHref} langLabel={langLabel}
     />
   );
 

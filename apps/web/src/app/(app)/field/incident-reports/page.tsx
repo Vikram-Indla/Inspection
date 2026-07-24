@@ -65,10 +65,6 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const nav = (
     <FieldNav active="home" labels={{
       home: tr("field.tabs.home", "Home", "الرئيسية"),
@@ -91,7 +87,7 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
       <FieldHeader leading={back}
         title={tr("field.incidents.title", "Field incident reports", "بلاغات الحوادث الميدانية")}
         subtitle="FNS-033 · J-12"
-        langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+        langHref={langHref} langLabel={langLabel} />
       <div className={styles.page}>
         <div className="alert alert-info">
           <div>

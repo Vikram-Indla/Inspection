@@ -6,12 +6,10 @@ import type { ReactNode } from "react";
 // trailing controls cluster (language toggle, plus any extras).
 // Consumes the SAQEEL DS tokens linked by (app)/field/layout.tsx.
 //
-// No theme control: the field channel is fixed dark (see ThemeScript), so there
-// is nothing for one to switch. `themeLabels` is retained as an optional,
-// unused prop purely so the 23 existing call sites keep compiling; it should be
-// dropped in a follow-up sweep.
+// No theme control: the field channel is fixed dark (see ThemeScript), so
+// there is nothing for one to switch.
 export default function FieldHeader({
-  title, subtitle, leading, right, langHref, langLabel, themeLabels,
+  title, subtitle, leading, right, langHref, langLabel,
 }: {
   title: ReactNode;
   subtitle?: ReactNode;
@@ -19,8 +17,6 @@ export default function FieldHeader({
   right?: ReactNode;
   langHref: string;
   langLabel: string;
-  /** @deprecated Unused — the field channel is fixed dark and renders no theme control. */
-  themeLabels?: { toLight: string; toDark: string };
 }) {
   return (
     <header

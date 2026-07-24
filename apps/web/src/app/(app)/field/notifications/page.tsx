@@ -55,10 +55,6 @@ export default async function FieldNotificationsList({ searchParams }: { searchP
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const themeLabels = {
-    toLight: tr("field.theme.toLight", "Light mode", "الوضع الفاتح"),
-    toDark: tr("field.theme.toDark", "Dark mode", "الوضع الداكن"),
-  };
   const title = tr("field.notifications.title", "Notifications", "الإشعارات");
 
   // Design header: back arrow returns to the field dashboard (SAQEEL Field
@@ -71,7 +67,7 @@ export default async function FieldNotificationsList({ searchParams }: { searchP
   );
   const header = (
     <FieldHeader leading={back} title={title}
-      langHref={langHref} langLabel={langLabel} themeLabels={themeLabels} />
+      langHref={langHref} langLabel={langLabel} />
   );
 
   let query = sb.from("notifications")
