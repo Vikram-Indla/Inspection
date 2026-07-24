@@ -28,7 +28,7 @@ final_design_delta_approval:
   interpretation: "APPROVED AS IMPLEMENTATION CANDIDATE, NOT BLIND VISUAL ACCEPTANCE — Codex must independently challenge premium quality and functional fit, return defects to ChatGPT/Claude Design, and implement only the resulting bounded frontend delta."
   authorizes: "One additional Planning landing preview correction from methods-first to the accepted list-first hierarchy using existing real RLS-scoped data and services, followed by independent QA and paired browser proof."
   prohibits: "No backend, API, schema, RLS/RBAC, workflow, route cutover, deletion, Field/PWA/iPad, stash, shared-data, provider, push, merge, deploy, or next-module implementation."
-  independent_review: "RETURN FOR MAPPING CORRECTION — revision 1784904309230874 contains an invented /planning/methods route, duplicated shell/page controls, undefined Planning date/region semantics, an unproven effective-package label, collapsed visit-versus-draft data grains, and incomplete viewport/theme/RTL/state evidence."
+  independent_review: "RETURN FOR DESIGN EVIDENCE CORRECTION — Claude revision WA-DES-036-r3 corrects the invented route, action hierarchy, and visit-versus-draft data grains, but remains non-implementable because named 1440/1024/768-899/390-412/320 light-dark EN-AR-RTL frames are not directly inspectable, the real authenticated shell header is incomplete, and the five-lane sponsor board clips horizontally at normal canvas width."
   current_hold: "Application edits remain paused while Claude Design produces a corrected stable revision and the Codex reviewer validates it."
 
 approved_reconciliation:
