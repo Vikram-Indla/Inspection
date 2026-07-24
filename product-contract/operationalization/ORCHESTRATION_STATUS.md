@@ -11,7 +11,7 @@ requirements, gate files, immutable events and screen ledgers remain authoritati
 | Actor | Repository | Claude Design | Browser | Current role | Status |
 |---|---|---|---|---|---|
 | Codex | Verified canonical repo | Verified project read | Verified | Orchestrator and final reviewer | Active |
-| Claude Code | Verified | Current native connector not proven | Desktop session verified | M3 Revision 3 design-package handoff | Complete; no code lease |
+| Claude Code | Verified | Live native project read verified against project `5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61` | Desktop session verified | M4 inventory plus M3 sponsor packetization | Running; no code lease |
 | Claude Design | Not a product-code worker | Live project and history verified | Chrome | Design authority | Awaiting exact packet |
 | ChatGPT | Live repo connection not proven | Via authored prompt only | Editable chat `6a6324f3…` verified | Research and critique | Handoff complete |
 | Kimi | Canonical repo, branch, HEAD and 478 rows verified | No direct connector; WebBridge extension disconnected | WebBridge daemon only | Packetized M4 repository reviewer | `KIMI-M4-READINESS-001` active |
@@ -66,6 +66,7 @@ closes.
 | `KIMI-M3-QA-001` | Kimi engineering session 2 | Independent M3 code, test, negative-path and evidence certification | None | Running |
 | `CLAUDE-M3-STATUS-001` | Claude Code M3 session | Five-lane status packet and exact next Claude Design prompt | None | Complete; blocker review recorded |
 | `CLAUDE-M4-DESIGN-INVENTORY-001` | Claude Code M3 session, reassigned | M4 design revision, frame/state and repository mapping | None | Running |
+| `M3-SPONSOR-DIRECTION-20260725` | Claude Code M3 session, queued after M4 inventory | Seed source map, provenance-safe live-map design packet, and mutating-read fix packet | Packetization only | Dispatched |
 | M3 primary-view critique | ChatGPT editable chat | Adversarial IA and authority critique | None | Handoff received; Codex review |
 
 At the end of the cycle, Codex must ACK, RETURN or BLOCK each completed
@@ -85,6 +86,28 @@ M3 cannot be certified yet:
   taxonomy/deduplication are not governed.
 - `M3-DEC-PROJECTED-ROUTE-001`: projected-route and no-route authorities
   conflict.
+
+Sponsor direction has now been recorded in
+`coordination/batches/M3-SPONSOR-DIRECTION-20260725.yaml`:
+
+- deterministic governed seeding is approved after Claude maps the existing
+  source queries;
+- M3 shows last-recorded GPS or schedule/assignment-projected markers with
+  explicit provenance, but no projected route or fabricated ETA;
+- the read-triggered geo-override expiry mutation must be fixed under an exact
+  implementation and data lease.
+
+The direction was dispatched to Claude Code session
+`local_f90cfcda-7e60-448f-a130-7280d6528341` at 46% context use. Claude must
+finish the active M4 inventory, then return the three exact M3 packets. Product,
+design and shared-data writes remain blocked in that design-only worktree until
+Codex reviews the packets and issues isolated leases.
+
+Claude's first M4 finding is accepted for correction: `WA-DES-027` represents
+MODON as a live, versioned provider even though the current provider contract
+does not support that claim. The design must use truthful unavailable,
+configured-source or provenance-safe language; it may not invent a live MODON
+integration.
 
 ## 478-row delivery score
 

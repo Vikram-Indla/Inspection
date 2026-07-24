@@ -1,0 +1,96 @@
+schema_version: "1.0"
+direction_id: M3-SPONSOR-DIRECTION-20260725
+status: DISPATCHED_TO_CLAUDE_CODE
+owner: Codex lead
+sponsor: Vikram Indla
+requirements: ["CR-430..CR-448"]
+screens: ["WA-DES-033-C3", "WA-DES-034-C3"]
+acceptance: ["WA-M3-AC-001..006"]
+
+decisions:
+  - decision_id: M3-SEED-DATA-001
+    sponsor_direction: "Ask Claude to seed data; Codex assists with the approved seeder."
+    execution:
+      existing_seeder: apps/web/scripts/seed-dashboard-kpis.mjs
+      approved_project_ref: iiozvqntawxfwbgffzqu
+      approach:
+        - Trace each displayed value to its existing governed query first.
+        - Add or refresh deterministic, labelled source records only.
+        - Use real persona authentication so RLS, foreign keys and audit remain active.
+        - Prefer existing canonical RPCs for business transitions.
+        - Validate referential integrity, RLS visibility and endpoint results after seeding.
+      restrictions:
+        - "Seeding does not define an otherwise missing KPI formula."
+        - "No service-role key in browser or client code."
+        - "No schema, policy, provider or production change in this packet."
+        - "No fabricated KPI totals."
+      first_packet: CLAUDE-M3-SEED-SOURCE-MAP-001
+      write_lease: PENDING_AFTER_SOURCE_MAP_REVIEW
+
+  - decision_id: M3-MAP-PROVENANCE-001
+    sponsor_direction: "Use a real Codex recommendation and logical data rather than null."
+    codex_recommendation:
+      actual_location:
+        label: "Last recorded GPS — not guaranteed live"
+        source: "Latest permitted immutable geo_event"
+        show: ["recorded timestamp", "accuracy when present", "source/provenance"]
+      projected_location:
+        label: "Projected from assignment/schedule — not live GPS"
+        source: "Assigned visit, schedule and governed factory/dispatch location"
+        show: ["projection label", "source/provenance", "relevant scheduled time"]
+      no_location:
+        label: "Location unavailable"
+        behavior: "Keep the inspector/factory in the operational list and expose the missing-data reason."
+      route_and_eta:
+        disposition: "Do not draw a projected route or fabricate ETA in the current M3 phase."
+        rationale: >-
+          A logical marker with provenance provides operational value while
+          respecting the accepted no-route rule and avoiding a false live-GPS
+          claim. A future real route requires a separately accepted contract
+          and current provider evidence.
+      seed_support:
+        - "Seed deterministic current geo_events for the actual-location case."
+        - "Seed assigned visits without geo_events for the projected case."
+        - "Seed a permitted missing-coordinate case for the unavailable path."
+    first_packet: CLAUDE-M3-MAP-DESIGN-UPDATE-001
+    design_write_lease: PENDING_AFTER_PROMPT_REVIEW
+
+  - decision_id: M3-FIX-MUTATING-READ-001
+    sponsor_direction: "Claude has to fix the bug."
+    blocker: M3-BLOCK-OPS-MUTATING-GET-001
+    observed_code:
+      - apps/web/src/app/(app)/operations/page.tsx:172
+      - apps/web/src/app/(app)/field/[visitId]/page.tsx:100
+      - supabase/migrations/20260716161605_ipad_geo_override_approval_workflow.sql
+    required_outcome:
+      - "Opening Operations or Field pages performs no expiry mutation."
+      - "Expired requests are not actionable."
+      - "Decision-time expiry remains race-safe."
+      - "Expiry persistence and audit occur through a scheduled or explicit governed mechanism, not a page read."
+      - "RLS/RBAC and requester/decider separation remain unchanged."
+    first_packet: CLAUDE-M3-OVERRIDE-EXPIRY-FIX-001
+    implementation_lease: PENDING_CLEAN_WORKTREE_AND_EXACT_FILE_LEASE
+
+execution_order:
+  - complete_CLAUDE-M4-DESIGN-INVENTORY-001
+  - CLAUDE-M3-SEED-SOURCE-MAP-001
+  - CLAUDE-M3-MAP-DESIGN-UPDATE-001
+  - CLAUDE-M3-OVERRIDE-EXPIRY-FIX-001
+  - independent_QA_and_real_browser_review
+
+dispatch:
+  actor: Claude Code
+  session: local_f90cfcda-7e60-448f-a130-7280d6528341
+  dispatched_on: "2026-07-25"
+  current_context_health: "46 percent used at dispatch"
+  current_branch: catalyst/m3-operations-design-0f2c11
+  current_lease: "Read-only inventory and packetization only"
+  next_lease_gate: >-
+    Codex review of the three returned packets, followed by an isolated clean
+    implementation worktree and exact file/data/design leases.
+
+product_changes_authorized: true
+authorization_boundary: >-
+  Authorization is limited to the three bounded directions above. Exact file,
+  data and design leases must still be issued before writes. No main, merge,
+  deployment or unrelated change is authorized.

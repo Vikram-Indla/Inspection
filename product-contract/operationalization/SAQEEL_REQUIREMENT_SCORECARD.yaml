@@ -25,6 +25,10 @@ blocking_findings:
       Reading the Operations page appears to expire pending GPS-override
       requests. Browser delivery certification is blocked until independently
       reproduced and corrected under a bounded application-code lease.
+    status: FIX_AUTHORIZED
+    resolution: >-
+      Claude Code must remove mutation from page reads while preserving
+      race-safe decision expiry, persistence, audit and permissions.
   - blocker_id: M3-DEC-METRIC-CONTRACTS-001
     requirements: "CR-430..CR-448"
     finding: >-
@@ -36,6 +40,10 @@ blocking_findings:
       The projected-route requirement conflicts with an accepted no-route rule.
       No route/ETA behavior may be certified until the authority conflict is
       resolved.
+    status: RESOLVED_BY_M3-MAP-PROVENANCE-001
+    resolution: >-
+      Show actual last-recorded or projected markers with explicit provenance;
+      do not draw a projected route or fabricate ETA in the current M3 phase.
 required_row_evidence:
   - accepted_design_revision_or_proven_not_applicable
   - implementation_commit_and_files
