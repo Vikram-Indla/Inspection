@@ -48,7 +48,7 @@ requirements, gate files, immutable events and screen ledgers remain authoritati
 Live internal watch lanes are mandatory for Kimi, Claude Code and Claude
 Design, and every independent Codex delivery task is directly monitored. The
 two-hour control cycle remains the planning horizon, while the maximum
-passive-idle tolerance is two minutes. A worker waiting for an answer, lease or
+passive-idle tolerance is five minutes. A worker waiting for an answer, lease or
 connector must record that dependency and move to a safe fallback packet.
 
 1. Worker reads canonical authority and emits a handshake.
@@ -60,7 +60,7 @@ connector must record that dependency and move to a safe fallback packet.
 7. Sponsor sees only verified browser output and decisions requiring authority.
 
 The recurring heartbeat `saqeel-two-hour-orchestration-review` now checks live
-actor utilization every two minutes and performs the complete reconciliation
+actor utilization every five minutes and performs the complete reconciliation
 every two hours. Idle is treated as a scheduling defect: the actor receives a
 new bounded packet or a recorded blocker plus active fallback work.
 

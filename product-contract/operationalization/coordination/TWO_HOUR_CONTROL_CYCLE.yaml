@@ -1,11 +1,11 @@
 schema_version: "1.0"
 control_cycle_id: SAQEEL-TWO-HOUR-CONTROL-001
 automation_id: saqeel-two-hour-orchestration-review
-heartbeat_cadence: every_2_minutes
+heartbeat_cadence: every_5_minutes
 full_reconciliation_cadence: every_2_hours
 owner: Codex lead
 status: ACTIVE
-idle_tolerance_seconds: 120
+idle_tolerance_seconds: 300
 
 objective: >-
   Keep every connected actor on a bounded requirement-backed task, independently
@@ -24,7 +24,7 @@ non_negotiables:
     an actor idle between reviews.
   - Kimi, Claude Code and Claude Design each have a live internal watch lane,
     and every independent Codex delivery task is directly monitored.
-  - More than 120 seconds without useful work, active handoff review or a
+  - More than 300 seconds without useful work, active handoff review or a
     recorded external dependency is an orchestration defect.
 
 actor_utilization:

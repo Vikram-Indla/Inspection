@@ -54,7 +54,7 @@ an implied approval.
 - Keeps one live internal watch lane parked on Kimi, one on Claude Code and one
   on Claude Design throughout every active two-hour cycle, and directly watches
   every independent Codex delivery task.
-- Treats more than two minutes without a running packet, a handoff under active
+- Treats more than five minutes without a running packet, a handoff under active
   review, or a recorded external dependency as an orchestration defect.
 - Reviews every handoff and returns `ACK`, `RETURNED` or `BLOCKED`.
 - Maintains the requirement score, status board, dirty laundry and PR queue.
@@ -74,7 +74,7 @@ an implied approval.
 
 - Runs up to two independent engineering sessions by default.
 - Receives a new non-conflicting engineering, QA, security or evidence packet
-  within two minutes of completing or blocking its current packet.
+  within five minutes of completing or blocking its current packet.
 - When Claude Design is inaccessible, works from Codex-supplied,
   revision-stamped design evidence and performs repository engineering,
   service/RLS/RBAC mapping, independent QA, negative-path analysis, test-gap
@@ -93,7 +93,7 @@ an implied approval.
 
 - Owns design revisions and the visual programme status board.
 - Receives a reviewed design packet or a read-only revision/delta audit within
-  two minutes of becoming idle.
+  five minutes of becoming idle.
 - Changes design only from a reviewed packet with exact authority and preserved
   capabilities.
 - Tracks Design, Frontend, Service Wiring, QA and Sponsor independently.
@@ -129,7 +129,7 @@ The score source is
 
 The two-hour cycle is the planning and reconciliation horizon, not the idle
 tolerance. During the cycle, the Kimi, Claude Code and Claude Design watch lanes
-perform a live heartbeat. No actor may remain passively idle for more than two
+perform a live heartbeat. No actor may remain passively idle for more than five
 minutes while a safe READY packet exists. Waiting for a sponsor decision,
 connector, lease or another actor is recorded as a dependency; the actor then
 switches to a non-conflicting fallback packet.
