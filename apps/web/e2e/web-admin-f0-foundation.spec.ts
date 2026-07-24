@@ -49,7 +49,7 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(css).toContain("current .ax-state and SAQEEL component contracts remain");
   });
 
-  test("WA-P1-F0-CORR-001 uses the approved shield favicon and bilingual wordmark", () => {
+  test("sponsor shell correction uses the canonical shield and locale-specific lockup", () => {
     const layout = read("src/app/layout.tsx");
     const shell = read("src/components/ShellClient.tsx");
     const css = read("src/app/astryx.css");
@@ -62,16 +62,14 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(layout).toContain('import "./astryx.css"');
     expect(shell).toContain("ax-shell");
     expect(css).toContain(".ax-shell {");
-    expect(shell).toContain('/saqeel-favicon.svg');
-    expect(shell).toContain('/saqeel-wordmark-dark-mode.svg');
-    expect(shell).toContain('alt="SAQEEL | صقيل"');
-    expect(shell).not.toContain('ax-shell__brand-sub');
-    expect(shell).not.toContain('>صناعي</span>');
-    expect(shell).not.toContain('ax-shell__brand-mark" aria-hidden="true" lang="ar">ص');
-    expect(css).toContain('.ax-shell__brand-mark { display: none;');
-    expect(css).toContain('.ax-shell__brand-wordmark { display: block; inline-size: 170px;');
+    expect(shell).toContain('import SaqeelBrandMark from "@/components/SaqeelBrandMark"');
+    expect(shell).toContain('<SaqeelBrandMark className="ax-shell__brand-mark" />');
+    expect(shell).toContain('className="ax-shell__brand-sub"');
+    expect(css).toContain('.ax-shell__brand-mark { display: block;');
+    expect(shell).toContain('locale === "ar" ? "صقيل" : "SAQEEL"');
+    expect(shell).toContain('locale === "ar" ? "صناعي" : "Industrial"');
     expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: none; }');
+    expect(css).toContain('.ax-shell.is-collapsed .ax-nav-item--child { display: none; }');
     expect(favicon).toContain('M12 3.4 5 6.05');
     for (const asset of [darkWordmark, lightWordmark]) {
       expect(asset).toContain('M12 2.5 4 5.5');
