@@ -104,9 +104,9 @@ rollback:
   retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
 
 implementation:
-  commit: "PENDING — isolated worktree changes are not committed, pushed, merged, or deployed"
-  correction_commit: "PENDING"
-  focus_correction_commit: "PENDING"
+  commit: "22173ec8"
+  correction_commit: "22173ec8"
+  focus_correction_commit: "22173ec8"
   decision_history: "2026-07-24 sponsor activated Lease A native-SAQEEL reconciliation and Lease B Planning correction -> implementation verified -> Claude design-only premium revision in progress"
   corrections: "Restore the imported native SAQEEL shell/component namespace; remove the legacy token bridge; add bounded Planning and Visit-detail CSS modules; localize draft timestamps; remove rejected directional link arrows; make the explicit sponsor preview read-only; preserve routes, RLS/RBAC, services, APIs, audit/versioning, and backend behavior."
   verification: "typecheck PASS; production build PASS; focused Web/Admin F0 plus Planning M2 16/16 PASS; real Planner RLS journey PASS; Visit detail/audit/version PASS; admin denial and explicit-query fail-closed PASS; Arabic RTL, 390px reflow, and axe PASS. Additional cross-module static sweep 21/29 with eight existing/stale foundation contracts recorded and not waived."
