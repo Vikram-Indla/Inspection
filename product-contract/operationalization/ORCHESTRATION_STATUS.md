@@ -59,10 +59,10 @@ packet.
 6. Codex independently reviews and emits `ACK` or `RETURNED`.
 7. Sponsor sees only verified browser output and decisions requiring authority.
 
-The recurring heartbeat `saqeel-two-hour-orchestration-review` now runs this
-reconciliation every two hours. Idle is treated as a scheduling defect: the
-actor receives a new bounded packet or a recorded blocker before the cycle
-closes.
+The recurring heartbeat `saqeel-two-hour-orchestration-review` now checks live
+actor utilization every two minutes and performs the complete reconciliation
+every two hours. Idle is treated as a scheduling defect: the actor receives a
+new bounded packet or a recorded blocker plus active fallback work.
 
 ## Active two-hour queue
 

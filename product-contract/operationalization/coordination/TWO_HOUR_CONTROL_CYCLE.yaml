@@ -1,7 +1,8 @@
 schema_version: "1.0"
 control_cycle_id: SAQEEL-TWO-HOUR-CONTROL-001
 automation_id: saqeel-two-hour-orchestration-review
-cadence: every_2_hours
+heartbeat_cadence: every_2_minutes
+full_reconciliation_cadence: every_2_hours
 owner: Codex lead
 status: ACTIVE
 idle_tolerance_seconds: 120
