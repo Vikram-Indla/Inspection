@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { cache, type ReactNode } from "react";
 import { getShellRegions, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
@@ -35,7 +36,13 @@ export function preloadShell(current: string) {
 
 export async function AppShell({ children }: { children: ReactNode }) {
   const { t, locale, user, roles, regions } = await loadShellData();
-  if (!user) redirect("/login");
+  if (!user) {
+    // SCR-PWA-001: a deep link into the field channel while signed out lands
+    // on the field-specific sign-in, matching the /field top-level entry —
+    // not the desktop /login story-panel surface.
+    const pathname = (await headers()).get("x-pathname") ?? "";
+    redirect(pathname.startsWith("/field") ? "/field-login" : "/login");
+  }
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
     label: t(group.labelKey, locale === "ar" ? group.labelAr : group.labelEn),

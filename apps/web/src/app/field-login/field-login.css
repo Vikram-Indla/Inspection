@@ -1,0 +1,40 @@
+/* SCR-PWA-001 — Field Inspector sign-in, from Claude Design "SAQEEL Field
+   Login.dc.html". Distinct from /login: this is the PWA/installed-app entry
+   (manifest start_url = /field), so the surface is mobile-first, single
+   column, with a live network-status pill instead of the desktop story panel. */
+
+.fl-langbtn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--nav-text) 30%, transparent);
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--nav-text-active);
+}
+.fl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.fl-in {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-input);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 15px;
+  padding: 0 14px;
+  box-sizing: border-box;
+}
+.fl-in:focus-visible { outline: 2px solid var(--action-primary); outline-offset: 1px; }
+@keyframes fl-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.fl-live { animation: fl-blink 2.2s ease-in-out infinite; }
