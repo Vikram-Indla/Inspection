@@ -1,0 +1,278 @@
+schema_version: "1.0"
+packet_id: M5-REVIEW-APPROVAL-DESIGN-AUDIT-007
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  authorized_control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 19398564b30f8980e1c6274694657db41249bd9e
+  task: M5-REVIEW-APPROVAL-DESIGN-AUDIT-007
+  requirements: ["CR-357..CR-409"]
+  acceptance: ["WA-M5-AC-001..006"]
+  screens: ["SCR-WEB-300", "SCR-WEB-310", "SCR-WEB-320"]
+  processes: ["P10", "P11"]
+  engines: ["ENG-03", "ENG-07", "ENG-08", "ENG-09", "ENG-11", "ENG-12"]
+  do_not_touch:
+    - "Claude Design files and accepted design mappings."
+    - "Application code, tests, migrations, seeds, Supabase data and providers."
+    - "main, setup/Inspection and every existing stash."
+
+authority:
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  requirements: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  transitions: product-contract/domain/state_transitions.csv
+  design_prompt: design/claude-design-mvp1/prompts/systems/REVIEW_AND_VERSION_COMPARISON.md
+  journeys:
+    - design/claude-design-mvp1/prompts/journeys/P10_LEVEL_TWO_REVIEW.md
+    - design/claude-design-mvp1/prompts/journeys/P11_RETURN_CORRECTION_RESUBMISSION.md
+
+design_identity:
+  source_directory: /Users/vikramindla/Attachment dump/export-non-inspector
+  live_revision_proof: >-
+    These are exact exported files registered by DESIGN_ROUTE_MAP.csv. The
+    audit proves stable exported identity, not that the cloud project has a
+    stronger mutable etag or accepted successor revision.
+  files:
+    - logical_id: WA-DES-039
+      filename: "SAQEEL Review & Approval.dc.html"
+      bytes: 25566
+      sha256: "9d0e62bfe8208c5e122bc7d7142e8ebc457cbfaf5e21d16b5dac8de9f3e6da3e"
+      registered_sha_match: true
+    - logical_id: WA-DES-017
+      filename: "SAQEEL Cases.dc.html"
+      bytes: 16519
+      sha256: "7226c73e7a9d735391bdeb947db408cc79b1a6d0d7f6fd6ae6de61eb47aa7f86"
+      registered_sha_match: true
+    - logical_id: WA-DES-042
+      filename: "SAQEEL Tasks.dc.html"
+      bytes: 14102
+      sha256: "b97ff987d88c9c2728d703708d2826c0fe200b3a5963e0d76c0659376317ff37"
+      registered_sha_match: true
+
+mapping_validation:
+  - logical_id: WA-DES-039
+    design: "SAQEEL Review & Approval.dc.html"
+    validation: CONFIRMED_WITH_CORRECTION
+    routes:
+      - route: /reviews
+        component: apps/web/src/app/(app)/reviews/page.tsx
+      - route: "/reviews/:id"
+        component: apps/web/src/app/(app)/reviews/[id]/page.tsx
+      - route: "/reviews/:id/started"
+        component: apps/web/src/app/(app)/reviews/[id]/started/page.tsx
+    nearest_match: true
+    correction: >-
+      The route/component capability match is correct, but the registered
+      design is not acceptance-ready and is materially behind both the
+      canonical contract and the current implementation.
+  - logical_id: WA-DES-017
+    design: "SAQEEL Cases.dc.html"
+    proposed_route: /cases
+    proposed_component: apps/web/src/app/(app)/cases/page.tsx
+    validation: INCORRECT_MAPPING
+    route_exists: true
+    component_exists: true
+    nearest_match: true
+    correction: >-
+      The design-to-route pairing is semantically correct for case management,
+      but CR-357..CR-409 contain only Inspection Review capabilities. They do
+      not authorize case creation, correction evidence, reinspection,
+      resolution or one-open-case behavior. The route cannot inherit M5
+      completion from this requirement range.
+  - logical_id: WA-DES-042
+    design: "SAQEEL Tasks.dc.html"
+    proposed_route: /tasks
+    proposed_component: apps/web/src/app/(app)/tasks/page.tsx
+    validation: INCORRECT_MAPPING
+    route_exists: true
+    component_exists: true
+    nearest_match: true
+    correction: >-
+      The design-to-route pairing is semantically correct for governed workflow
+      tasks, but CR-357..CR-409 contain no general task-assignment or task-status
+      capability. The route cannot inherit M5 completion from this requirement
+      range.
+
+design_code_delta:
+  design_missing_against_contract_and_code:
+    - id: M5-DES-P0-001
+      severity: P0
+      finding: >-
+        WA-DES-039 records Approve directly from the decision panel. It has no
+        separate irreversible approval confirmation containing inspection
+        summary, violations, critical violations, action forms, evidence count,
+        factory updates, version and compliance consequences required by
+        CR-358..CR-360.
+      design_evidence: "WA-DES-039 lines 185-202 and local decide() at lines 241-259."
+      code_evidence: >-
+        DecisionPanel.tsx has one preselected approve radio and one submit
+        button; page.tsx renders violations/actions but no complete compliance
+        preview contract.
+      implication: "An irreversible high-impact action can be confirmed without the required consequence review."
+    - id: M5-DES-P0-002
+      severity: P0
+      finding: >-
+        WA-DES-039 has no exact returned-section selector even though it claims
+        a return reopens only returned scope. The implementation does provide
+        server-allow-listed checkboxes and mandatory reason validation.
+      design_evidence: "WA-DES-039 lines 118-122 and 185-195."
+      code_evidence: "DecisionPanel.tsx returned_section checkboxes; actions.ts validates section membership and non-empty scope."
+      implication: "The design cannot represent or validate CR-361, CR-362, CR-367 and CR-399."
+    - id: M5-DES-P0-003
+      severity: P0
+      finding: >-
+        WA-DES-039 has no N versus N+1 comparison, changed-section navigation,
+        locked-section tamper signal, missing-version, package-incompatibility
+        or repeated-return state. The implementation contains a read-only
+        scope-authoritative comparison but explicitly leaves evidence,
+        package-semantic and metadata comparisons unavailable.
+      design_evidence: "No comparison surface or comparison state exists in the registered export."
+      code_evidence: "VersionCompare.tsx and cd-030-version-comparison.spec.ts."
+      implication: "CR-367, CR-402..CR-404 and CR-409 are not covered by the design; code remains partial for CR-409."
+    - id: M5-DES-P1-004
+      severity: P1
+      finding: >-
+        All three exports are fixed 248px-rail English screens with isolated
+        Arabic typed branding, not complete EN/LTR and AR/RTL variants at 1024,
+        412/390 and 320.
+      evidence: "Each export root uses a fixed 248px grid; state exposes theme only. No locale or viewport control exists."
+      implication: "WA-M5-AC-003 and WA-M5-AC-004 are unevidenced."
+    - id: M5-DES-P1-005
+      severity: P1
+      finding: >-
+        All three English designs use typed Arabic-only صقيل صناعي identity,
+        contrary to the approved bilingual SAQEEL | صقيل Web/Admin asset and
+        the prohibition on the Industrial/صناعي sub-brand.
+      evidence: "WA-DES-017 line 23, WA-DES-039 line 25, WA-DES-042 line 23."
+      implication: "The known English-profile identity defect would be reintroduced by literal design replication."
+    - id: M5-DES-P1-006
+      severity: P1
+      finding: >-
+        Required loading, empty, error, degraded evidence, unauthorized, stale
+        assignment/version, conflict, provider-unavailable, decision-in-progress
+        and failure-without-partial-transition states are not independently
+        selectable or evidenced in WA-DES-039.
+      implication: "Negative-path and accessibility review cannot be completed from the current design."
+
+  code_risks_not_represented_by_design:
+    - id: M5-CODE-P0-001
+      severity: P0
+      finding: >-
+        startReview inserts the review row before transitioning the inspection.
+        If the second write fails, the action reports failure after leaving a
+        claimed/open review row. There is no single transactional RPC.
+      evidence: apps/web/src/app/(app)/reviews/[id]/actions.ts
+      required_classification: BLOCK_DUE_TO_MISSING_ATOMIC_WORKFLOW_CONTRACT
+    - id: M5-CODE-P0-002
+      severity: P0
+      finding: >-
+        decide updates the immutable review decision before transitioning the
+        inspection and before notification verification. Later failure returns
+        an error even though the irreversible decision may already be stored.
+        This violates the required failure-without-partial-transition state.
+      evidence: apps/web/src/app/(app)/reviews/[id]/actions.ts
+      required_classification: BLOCK_DUE_TO_MISSING_ATOMIC_WORKFLOW_CONTRACT
+    - id: M5-CODE-P0-003
+      severity: P0
+      finding: >-
+        The current Playwright suites intentionally avoid submitting live
+        decisions. Source assertions protect guards, but do not prove atomic
+        approve/return/reject behavior, immutable audit, downstream compliance
+        triggering and fail-closed notification outcomes end to end.
+      evidence:
+        - apps/web/e2e/cd-029-review-workspace.spec.ts
+        - apps/web/e2e/cd-030-version-comparison.spec.ts
+      required_classification: BLOCK_UNTIL_RUNTIME_NEGATIVE_EVIDENCE_EXISTS
+
+recommended_action:
+  overall: RETURN_FOR_MAPPING_CORRECTION
+  sponsor_decision: >-
+    Do not authorize M5 implementation/cutover from the current design bundle.
+    First repair requirement ownership for Cases and Tasks. Then create and
+    accept a safe successor for Review & Approval. Independently resolve the
+    atomic workflow contract before any irreversible decision path is certified.
+  route_actions:
+    /reviews: CHANGE_DESIGN
+    "/reviews/:id": BLOCK
+    "/reviews/:id/started": BLOCK
+    /cases: RETURN_FOR_MAPPING_CORRECTION
+    /tasks: RETURN_FOR_MAPPING_CORRECTION
+
+safe_next_packets:
+  - packet: M5-TRACEABILITY-CORRECTION-008
+    order: 1
+    mode: READ_ONLY_GOVERNANCE
+    purpose: >-
+      Find the real requirement and acceptance ownership for /cases and /tasks,
+      or mark them explicitly outside the 478-row Phase 1 requirement subset.
+      Remove no capability and change no application or design file.
+    exit: "Every route has truthful requirement ownership; no Cases/Tasks row inherits CR-357..CR-409 by convenience."
+  - packet: M5-REVIEW-SUCCESSOR-DESIGN-009
+    order: 2
+    depends_on: M5-TRACEABILITY-CORRECTION-008
+    mode: SAFE_SUCCESSOR_ONLY
+    logical_id: WA-DES-039
+    predecessor:
+      filename: "SAQEEL Review & Approval.dc.html"
+      bytes: 25566
+      sha256: "9d0e62bfe8208c5e122bc7d7142e8ebc457cbfaf5e21d16b5dac8de9f3e6da3e"
+    proposed_successor:
+      revision: WA-DES-039-C1
+      filename: "SAQEEL Review & Approval - WA-DES-039-C1.dc.html"
+      status: DRAFT_NON_CONSUMABLE
+    bounded_delta:
+      - "Approved bilingual identity; complete EN/LTR and AR/RTL."
+      - "Distinct 1440, 1024, 412, 390 and 320 responsive states."
+      - "Prioritized queue, explicit claim, immutable read-only workspace and complete trace chain."
+      - "No preselected irreversible decision."
+      - "Complete approve consequence preview and separate confirmation."
+      - "Exact one/multiple return scope plus mandatory reason and impact."
+      - "Final reject confirmation and no-compliance consequence."
+      - "N versus N+1 comparison with textual added/removed/changed/unchanged/unavailable states."
+      - "Loading, empty, unauthorized, degraded evidence, stale assignment/version, conflict, provider failure, progress, decided/locked and atomic failure states."
+    consumption_rule: "Claude Code ignores this successor until exact export hash, comparison evidence and sponsor acceptance are recorded."
+
+queued_next_module:
+  task: M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010
+  status: QUEUED_READ_ONLY
+  requirements: ["CR-449..CR-478"]
+  acceptance: ["WA-M6-AC-001..006"]
+  initial_designs:
+    - "WA-DES-018 SAQEEL Committee.dc.html"
+    - "WA-DES-019 SAQEEL Compliance Requests.dc.html"
+    - "WA-DES-023 SAQEEL Enforcement.dc.html"
+    - "WA-DES-040 SAQEEL Risk.dc.html"
+  boundary: "Inventory and mapping audit only; no design or product write."
+
+status_board:
+  Design:
+    status: RED
+    reason: "Stable predecessor hashes exist, but WA-DES-039 has P0 semantic omissions and all three designs have P1 locale/responsive/identity defects."
+  Frontend:
+    status: AMBER
+    reason: "Routes/components exist and contain substantial behavior, but irreversible decision atomicity and complete consequence preview remain unproven."
+  Wiring:
+    status: RED
+    reason: "Two-step writes can partially commit; Cases/Tasks requirement ownership is incorrect."
+  QA:
+    status: RED
+    reason: "Read-only/source tests exist; live atomic approve/return/reject and downstream evidence is absent."
+  Sponsor:
+    status: BLOCKED
+    reason: "No truthful M5 consent packet can be issued while P0 mapping and workflow-contract defects remain."
+
+stop_conditions:
+  - "Do not overwrite any registered design predecessor."
+  - "Do not let Claude Code consume a draft or rejected successor."
+  - "Do not certify M5 while Cases or Tasks inherit CR-357..CR-409."
+  - "Do not certify an irreversible decision path without atomic failure proof."
+  - "Do not advance with any unresolved P0/P1 finding."

@@ -1,0 +1,159 @@
+schema_version: "1.0"
+packet_id: DESIGN-PRELEASE-IDENTITY-004
+status: COMPLETE
+observed_on: "2026-07-25"
+observer: claude_design_live_watch
+project:
+  id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
+  title: SAQEEL Design System
+  verified_surface: "Separate authenticated Claude Design Chrome surface."
+  visible_inventory_count: 104
+
+method:
+  - "Opened the project page selector and identified each exact file by its visible filename."
+  - "Used the page-level Download action without editing, duplicating or renaming the design."
+  - "Recorded the downloaded file size, modification time and SHA-256 outside Git."
+  - "Compared the two M4 exports byte-for-byte with their registered source artifacts."
+  - "Inspected the visible page selector and page action menu for a revision or etag token."
+  - "No stable revision or etag token is exposed in the Claude Design browser UI."
+
+files:
+  - lease: CLAUDE-DESIGN-M3-PROVENANCE-003-A
+    logical_id: WA-DES-034
+    visible_revision_label: WA-DES-034-C3
+    exact_live_filename: "SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+    visible_last_edited: "Edited 1h ago"
+    current_export:
+      path: "/Users/vikramindla/Attachment dump/SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+      bytes: 21270
+      modified_at: "2026-07-25T02:17:04+0300"
+      sha256: "ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279"
+    comparison:
+      registered_base_file: "SAQEEL Operations Live.dc.html"
+      registered_base_sha256: "157b68c8ba4bbbdba4f61265b25ff98d097a810e5acb42f2aef67f4b4403452d"
+      result: "NOT_EXPECTED_TO_MATCH"
+      reason: "C3 is a superseding corrected revision, not the registered base file."
+    browser_revision_token: NOT_EXPOSED
+    external_read_etag: NOT_CAPTURED_FOR_C3
+    issue_recommendation: ISSUE_WITH_EXECUTION_PREFLIGHT
+    mandatory_execution_preflight:
+      - "Read the exact live C3 file immediately before writing and capture its current etag."
+      - "Require the write to use that etag as if_match or the equivalent compare-and-swap guard."
+      - "Download immediately before writing and require SHA-256 ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279."
+      - "Stop and return for delta review if either identity check differs."
+
+  - lease: CLAUDE-DESIGN-M4-SOURCE-BRAND-003-B
+    logical_id: WA-DES-026
+    exact_live_filename: "SAQEEL Factories.dc.html"
+    visible_last_edited: "Edited 1 day ago"
+    last_observed_external_read_etag: "1784806013700217"
+    current_export:
+      path: "/Users/vikramindla/Attachment dump/SAQEEL Factories.dc.html"
+      bytes: 11274
+      modified_at: "2026-07-25T02:16:40+0300"
+      sha256: "a099cdf0b94e85ff57b3357fb4a26212c052261e0cb49b29bb4237d8372dfa87"
+    registered_source:
+      bytes: 11275
+      sha256: "b6fbf963aee937be7cf40b8df65862b10a88ccd8a89dd3ac5a6021a87f2244c6"
+    exact_drift:
+      count: 1
+      location: "Component initial state"
+      registered: 'state = { theme: "light", view: "list" };'
+      current_export: 'state = { theme: "dark", view: "list" };'
+      semantic_assessment: "Theme preview default changed; no source wording, capability, route or state contract changed."
+    browser_revision_token: NOT_EXPOSED
+    issue_recommendation: ISSUE_WITH_EXECUTION_PREFLIGHT
+
+  - lease: CLAUDE-DESIGN-M4-SOURCE-BRAND-003-B
+    logical_id: WA-DES-027
+    exact_live_filename: "SAQEEL Factory 360.dc.html"
+    visible_last_edited: "Edited 1 day ago"
+    last_observed_external_read_etag: "1784806013700217"
+    current_export:
+      path: "/Users/vikramindla/Attachment dump/SAQEEL Factory 360.dc.html"
+      bytes: 29250
+      modified_at: "2026-07-25T02:15:27+0300"
+      sha256: "8fdfd8530ccf4ebbddb4a1960455aee3f638824d72bd1b7db824ed7eba096573"
+    registered_source:
+      bytes: 29251
+      sha256: "680c838cde826e24d1ad53ac4438a4de06379e0cf07605d30ad3d1d1a2392d77"
+    exact_drift:
+      count: 1
+      location: "Component initial state"
+      registered: 'state = { theme: "light", license: 0 };'
+      current_export: 'state = { theme: "dark", license: 0 };'
+      semantic_assessment: "Theme preview default changed; MODON, fake version/sync and Arabic-only English-shell defects remain unchanged."
+    browser_revision_token: NOT_EXPOSED
+    issue_recommendation: ISSUE_WITH_EXECUTION_PREFLIGHT
+
+m4_atomic_preflight:
+  - "Re-read both exact live M4 filenames immediately before writing."
+  - "Capture both current etags and use each as an if_match/compare-and-swap guard."
+  - "Download both files immediately before writing."
+  - "Require WA-DES-026 SHA-256 a099cdf0b94e85ff57b3357fb4a26212c052261e0cb49b29bb4237d8372dfa87."
+  - "Require WA-DES-027 SHA-256 8fdfd8530ccf4ebbddb4a1960455aee3f638824d72bd1b7db824ed7eba096573."
+  - "Stop both M4 writes if either etag or export hash differs; do not partially update one file."
+
+post_write_revision_convention:
+  logical_ids:
+    - "WA-DES-034 remains the logical screen ID; C3 remains its superseding revision lineage."
+    - "WA-DES-026 and WA-DES-027 remain the logical screen IDs; the first corrected M4 exports are recorded as C1 in the authority ledger without creating new product screens."
+  evidence:
+    - "Capture the new etag returned by each successful write."
+    - "Download each corrected file immediately after the write."
+    - "Record filename, byte size, SHA-256, etag, writer, timestamp, packet and predecessor hash."
+    - "Capture the required design comparison frames."
+    - "Do not declare acceptance if any file lacks predecessor and successor identity."
+  rollback:
+    - "Restore the exact predecessor export with the successor etag as if_match."
+    - "For M4, roll back both files atomically."
+    - "Record the rollback export hashes and etags."
+
+review_disposition:
+  operations: >-
+    ISSUE CLAUDE-DESIGN-M3-PROVENANCE-003-A with the mandatory immediate
+    read/etag/hash preflight. The current C3 export is now independently hashed.
+  factory_360: >-
+    ISSUE CLAUDE-DESIGN-M4-SOURCE-BRAND-003-B with the mandatory atomic
+    two-file read/etag/hash preflight. The only drift from the registered M4
+    source is the dark preview default, and the target provider/brand defects
+    remain present.
+  do_not_issue_if:
+    - "Any immediate pre-write etag or SHA-256 differs from this record."
+    - "Compare-and-swap/if_match protection is unavailable."
+    - "The executor cannot capture successor etag and export hashes."
+    - "The requested change expands beyond the exact file lease."
+
+m3_execution_outcome:
+  lease: CLAUDE-DESIGN-M3-PROVENANCE-003-A
+  status: BLOCKED_CONCURRENT_VERSION_CONTROL
+  predecessor:
+    bytes: 21270
+    sha256: "ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279"
+    preflight_result: "MATCHED immediately before the attempted write."
+  rejected_candidate_successor:
+    bytes: 25344
+    sha256: "c510fbe6c45fd76d01bc4df599a7cdb38ffe7c2a875fc941c1900e87c2c6c249"
+    semantic_result: >-
+      The candidate rendered the three required mutually exclusive location
+      provenance states and removed route, trail, path, navigation and ETA
+      behavior while retaining the entity with unavailable location in the
+      accessible list.
+    changed_files:
+      - "SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+    new_pages: 0
+  rejection_reason: >-
+    The executor disclosed after writing that the Claude Design environment
+    exposes no etag and no if_match API. Content-preconditioned atomic edits do
+    not satisfy this packet's mandatory opaque revision-token requirement.
+  rollback:
+    action: "Used Claude Design's turn-level Undo control."
+    result: >-
+      The authoritative preview returned to the predecessor treatment
+      “Projected route — not live GPS”; the candidate successor is not accepted.
+  next_action: >-
+    Do not replay the candidate until a sponsor-approved concurrency-control
+    exception is recorded or a true etag/if_match-capable design write path is
+    available.
+
+product_or_design_writes_performed: "Attempted one design write, rejected it, and rolled it back; no accepted persistent design change."

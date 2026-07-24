@@ -1,0 +1,406 @@
+schema_version: "1.0"
+packet_id: M4-P1-CLOSURE-DESIGN-006
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+
+session_bootstrap:
+  invocation: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  actor: claude_design_live_watch
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  authorized_control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 19398564b30f8980e1c6274694657db41249bd9e
+  packet: M4-P1-CLOSURE-DESIGN-006
+  ownership:
+    allowed:
+      - product-contract/operationalization/coordination/batches/M4-P1-CLOSURE-DESIGN-006.yaml
+    prohibited:
+      - "Every Claude Design file until Codex issues a new write lease."
+      - "All application code, tests, migrations, seeds, Supabase data, provider configuration and accepted design mappings."
+      - "Both M4 predecessor files."
+      - "main, setup/Inspection and every existing stash."
+
+business_function:
+  module: M4 Factories and Factory 360
+  purpose: >-
+    Let authorized business users find a factory and inspect its complete,
+    read-only, source-labelled longitudinal dossier without losing required
+    capability when a provider or subsection is unavailable.
+  process: P12
+  screen: SCR-WEB-400
+  requirements: ["CR-410..CR-429"]
+  acceptance:
+    module: ["WA-M4-AC-001..006"]
+    shell: ["WA-SHELL-AC-010..012", "WA-SHELL-AC-016"]
+    design: ["DSG-A11Y-001"]
+    factory_360: ["AC-0410..AC-0429", "F360-AC-001..F360-AC-018"]
+  engines: ["ENG-04", "ENG-06", "ENG-07", "ENG-08", "ENG-09", "ENG-11", "ENG-12"]
+  routes: ["/factories", "/factories/:id", "/factories/cr/:id"]
+  application_components:
+    - apps/web/src/app/(app)/factories/page.tsx
+    - apps/web/src/app/(app)/factories/[id]/page.tsx
+    - apps/web/src/app/(app)/factories/cr/[id]/page.tsx
+
+authority:
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  immutable_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+  source_identity: product-contract/operationalization/coordination/batches/DESIGN-PRELEASE-IDENTITY-004.yaml
+  shell: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+  preservation: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv
+  route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  requirements: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  factory_master: product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv
+  source_precedence: product-contract/factory-360/FACTORY_360_SOURCE_PRECEDENCE_MATRIX.csv
+
+lineage:
+  bundle_rule: >-
+    WA-DES-026-C1 and WA-DES-027-C1 are one acceptance bundle. They are created
+    as new successors, never by overwriting either predecessor. Both remain
+    DRAFT_NON_CONSUMABLE until every P1 closure row in this packet passes.
+  files:
+    - logical_id: WA-DES-026
+      predecessor:
+        filename: "SAQEEL Factories.dc.html"
+        bytes: 11274
+        sha256: "a099cdf0b94e85ff57b3357fb4a26212c052261e0cb49b29bb4237d8372dfa87"
+      proposed_successor:
+        revision: WA-DES-026-C1
+        filename: "SAQEEL Factories - WA-DES-026-C1.dc.html"
+        status: DRAFT_NON_CONSUMABLE
+    - logical_id: WA-DES-027
+      predecessor:
+        filename: "SAQEEL Factory 360.dc.html"
+        bytes: 29250
+        sha256: "8fdfd8530ccf4ebbddb4a1960455aee3f638824d72bd1b7db824ed7eba096573"
+      proposed_successor:
+        revision: WA-DES-027-C1
+        filename: "SAQEEL Factory 360 - WA-DES-027-C1.dc.html"
+        status: DRAFT_NON_CONSUMABLE
+
+requirement_preservation:
+  groups:
+    - ids: ["CR-410..CR-414"]
+      capabilities:
+        - "Full dossier, overview, licence, commercial registration and separate official/planner/observed locations."
+      screen_owner: "WA-DES-026 discovery and WA-DES-027 full dossier."
+    - ids: ["CR-415..CR-418"]
+      capabilities:
+        - "Products, raw materials, workforce and investment/capacity as read-only source-labelled facts."
+      screen_owner: WA-DES-027
+    - ids: ["CR-419..CR-422"]
+      capabilities:
+        - "Visit and inspection history, approved compliance outcomes, violations, penalties and corrective actions."
+      screen_owner: WA-DES-027
+    - ids: ["CR-423..CR-424"]
+      capabilities:
+        - "Health and risk outputs only from governed Risk Engine results with model/source traceability."
+      screen_owner: WA-DES-027
+      decision_boundary: >-
+        DEC-001 and DEC-028 remain open. Never invent a score, band, target,
+        driver, recalculation date or explanation. Render Not Available when the
+        governed result is absent.
+    - ids: ["CR-425..CR-426"]
+      capabilities:
+        - "Permission-scoped documents/evidence and immutable business timeline."
+      screen_owner: WA-DES-027
+    - ids: ["CR-427..CR-429"]
+      capabilities:
+        - "Registry-to-dossier navigation, role/data-scope protection and independently failing partial-profile behavior."
+      screen_owner: "Both successors."
+  hard_business_rules:
+    - "Factory 360 is a full page, not the small Factory Card."
+    - "One Commercial Registration can contain multiple Industrial Licences; one licence is selected and changing it refreshes every dependent section."
+    - "The module is read-only; only separately governed Create Inspection, Map, PDF, preview and download actions appear when authorized."
+    - "Planner, licence and observed coordinates stay separate; none overwrites another."
+    - "No CR-level risk or compliance score is calculated."
+    - "Compliance Rate is Not Available without an approved inspection; only approved inspections contribute."
+    - "Returned and rejected inspections remain visible for audit, but visits do not appear inside the Compliance section."
+    - "Historical violations, source facts, documents and timeline events are never silently removed."
+    - "One integration failure does not fail the whole dossier."
+
+truthful_source_and_brand_correction:
+  provider:
+    configured: >-
+      Display the governed source name and source_synced_at only when those
+      permitted values exist. Keep the source label attached to the affected
+      fact or section.
+    unconfigured: >-
+      Display "Source not configured". Omit provider version, synchronization
+      claim and timestamp.
+    unavailable: >-
+      Display the section as unavailable or degraded with its retained
+      last-permitted facts only when the contract permits them. Do not claim
+      freshness without a source timestamp.
+    prohibited:
+      - "Literal MODON provider claims."
+      - "Invented source version such as v6."
+      - "Invented recorded/synchronization time."
+      - "Empty provider parentheses."
+      - "A permanent mock presented as live provider data."
+  brand:
+    expanded_dark_surface: "Approved bilingual SAQEEL | صقيل dark-surface asset."
+    expanded_light_surface: "Approved bilingual SAQEEL | صقيل light-surface asset only on a genuinely light rail."
+    collapsed_or_mobile: "Approved shield/favicon mark with accessible product name."
+    prohibited: ["Typed Arabic-only or English-only substitute", "صناعي sub-brand", "Industrial sub-brand"]
+
+p1_closure:
+  responsive:
+    id: M4-DESIGN-P1-RESPONSIVE-001
+    status: SPECIFIED_NOT_EVIDENCED
+    shared_rules:
+      - "No horizontal page overflow at any required width or 200 percent zoom."
+      - "Use the approved desktop expanded/collapsed shell and mobile modal drawer; do not create a second navigation model."
+      - "Mobile drawer has backdrop, explicit close, focus entry/containment, Escape dismissal and focus restoration."
+      - "All actions, filters, provenance and permission notices remain reachable at every width."
+      - "Tables may use an internally bounded scroll region only when the same facts remain available in an accessible row/card alternative."
+      - "Sticky elements may not cover content, focus indicators, error summaries or the final row."
+    viewport_contract:
+      - viewport: "1200x860"
+        applies_to: WA-DES-026-C1
+        required_layout: >-
+          Expanded authenticated shell; one page header; search and view switch;
+          filters; bounded factory result region; list and map modes; source
+          truth notice and result count visible without overlap.
+      - viewport: "1440x900"
+        applies_to: WA-DES-027-C1
+        required_layout: >-
+          Preserve the three-zone structure: licence portfolio/navigation,
+          selected-factory dossier, and sticky AI/provenance rail. The centre
+          owns primary reading order; the rails may not steal heading order.
+      - viewport: "1024x768"
+        applies_to: "Both successors."
+        required_layout: >-
+          Use the approved compact/collapsed desktop shell. WA-DES-026 keeps
+          search, filters and List/Map visible with a bounded result region.
+          WA-DES-027 moves the licence portfolio above the dossier, retains a
+          centre reading column and a bounded trust/provenance panel; no
+          subsection or action disappears.
+      - viewport: "412x915"
+        applies_to: "Both successors."
+        required_layout: >-
+          Use the mobile modal drawer. Page header, search, filters and actions
+          become logical single-column groups. Registry table rows become
+          complete factory cards. Factory 360 orders selected context, licence
+          switcher, actions, dossier sections, AI/trust and timeline without
+          dropping the three semantic zones.
+      - viewport: "390x844"
+        applies_to: "Both successors."
+        required_layout: >-
+          Provide a distinct 390 state, not a 412 label reuse. Tighten spacing
+          through approved tokens while retaining full labels, provenance,
+          touch reachability, focus visibility and all actions.
+      - viewport: "320x800"
+        applies_to: "Both successors."
+        required_layout: >-
+          One-column reflow with no page-level horizontal scroll. Identifiers,
+          dates, coordinates and source labels wrap or use bounded scrolling;
+          action groups stack; comparison facts remain labelled; nothing relies
+          on clipped icons or hover.
+
+  locale:
+    id: M4-DESIGN-P1-LOCALE-002
+    status: SPECIFIED_NOT_EVIDENCED
+    requirements:
+      - "Provide complete EN/LTR and AR/RTL variants for both successors at every required viewport."
+      - "Arabic is an entire document state, not isolated Arabic field values inside an English shell."
+      - "Desktop navigation is physically right in RTL and left in LTR; the dossier zone order mirrors meaningfully."
+      - "At wide RTL, licence portfolio is at logical start/right, dossier remains central and trust/AI rail is at logical end/left."
+      - "Use logical start/end alignment, padding and chevrons. Do not mirror the shield, charts, map geography or status meaning."
+      - "Keep CR numbers, licence IDs, HS codes, coordinates, hashes and machine timestamps in isolated LTR spans within Arabic text."
+      - "Use canonical localization keys and approved Arabic copy. Unapproved machine translation is marked TRANSLATION_PENDING and blocks acceptance."
+      - "Long Arabic labels, mixed-direction source metadata, empty/error text, filter chips and modal/drawer controls must not clip."
+      - "The bilingual SAQEEL | صقيل identity remains canonical in both locales."
+
+  states:
+    id: M4-DESIGN-P1-STATES-003
+    status: SPECIFIED_NOT_EVIDENCED
+    common_behavior:
+      - "Every state has a visible title, plain-language explanation, permitted next action and screen-reader announcement."
+      - "A state changes only the affected route or subsection; no integration failure blanks unrelated permitted data."
+      - "Never confuse zero authorized records with authorization failure."
+      - "Never use stale data without its source and timestamp, and never resolve a discrepancy by overwriting."
+    registry_WA_DES_026_C1:
+      loading: "Preserve header/filter geometry; mark results busy; use non-interactive skeleton rows/cards and map placeholder."
+      empty: "Authorized zero result. Distinguish no factories from filters producing no matches; preserve reset/search action."
+      error: "Registry load failed. Show retry and safe navigation; no stale rows masquerade as current."
+      degraded: "Available factory identity remains usable while risk/map/source subsection failure is named locally."
+      unauthorized: "No factory facts render. Explain access boundary and provide a safe return route."
+      stale_conflict: "Show source/timestamp and discrepancy state; keep records read-only and link to governed review path when one exists."
+      provider_unavailable: "Show platform-permitted identity where available plus 'Source not configured' or provider unavailable; no provider/version fabrication."
+      not_found: NOT_APPLICABLE_TO_COLLECTION_ROUTE
+    dossier_WA_DES_027_C1:
+      loading: "Preserve all three semantic zones with labelled skeletons; selected licence and actions are not falsely enabled."
+      empty: "Existing CR with no permitted licence/detail records. Keep CR context, state reason and return-to-registry action."
+      error: "Root factory identity failed. Show full-page error, retry and return-to-registry; reveal no partial sensitive data."
+      degraded: "Render every healthy subsection and an inline retry/unavailable card for each failed subsection."
+      unauthorized:
+        route: "No dossier data renders when view_factory_360 is absent."
+        section: "Permission-restricted documents, contacts, risk details and actions are hidden or replaced by a scoped denial without leaking counts."
+      stale_conflict: "Show current official and observed snapshot separately with source/timestamp; label discrepancy as requiring review; never merge/overwrite."
+      provider_unavailable: "Keep Inspection Platform history and permitted facts; source-dependent industrial/government areas fail closed with truthful status."
+      not_found: "Unknown factory/CR/licence. Show not-found title, searched identifier and return-to-registry action without revealing whether an unauthorized object exists."
+      map_provider_failure: "Location facts and accessible coordinate list remain; no schematic replacement map or invented pin."
+      no_approved_inspection: "Compliance Rate is 'Not Available', not zero."
+      no_documents: "Friendly permission-aware empty state; no upload action in Factory 360."
+      no_risk_result: "Risk/health is 'Not Available'; no fallback score or AI explanation."
+
+  accessibility:
+    id: M4-DESIGN-P1-A11Y-004
+    status: SPECIFIED_NOT_EVIDENCED
+    semantic_contract:
+      - "One h1 per route, ordered h2/h3 subsection headings, named nav/main/aside/region landmarks and a skip-to-content link."
+      - "Factory result count, state changes, retries and licence refresh completion use appropriate polite announcements; blocking errors use an error summary."
+      - "Loading regions expose busy state; skeletons and decorative icons are hidden from assistive technology."
+      - "Status, risk, compliance, discrepancy and provider health use text/icon/shape and never color alone."
+      - "Tables have captions, column headers and row identity; narrow card alternatives preserve every column's label."
+      - "Charts have textual summary and data/table alternative. Maps have synchronized keyboard-operable list alternatives."
+      - "Documents expose file type and action; unavailable or unauthorized actions do not appear as unexplained dead links."
+      - "Dates, codes, coordinates and mixed-direction values have explicit reading direction."
+    keyboard_contract:
+      - "Focus order follows visual/semantic reading order in each locale."
+      - "All navigation, search, filters, List/Map switch, licence cards, disclosures, tabs, links and permitted actions are keyboard operable."
+      - "Active/selected state is programmatically exposed; focus is visible in light and dark at every viewport."
+      - "Modal drawer and any dialog trap focus, close with Escape and restore focus to their invoker."
+      - "Licence selection moves focus to the refreshed dossier heading or announces completion without unexpected page loss."
+      - "Section error Retry returns focus to the repaired region heading."
+      - "No hover-only details, icon-only unexplained action or focus-obscuring sticky region."
+    visual_contract:
+      - "WCAG 2.2 AA text, non-text control and focus contrast in light and dark."
+      - "200 percent zoom and 320 CSS-pixel reflow."
+      - "Reduced motion; no information exists only in animation."
+      - "Target sizes and input geometry follow the approved authenticated shell/component contract."
+
+state_control_specification:
+  purpose: >-
+    Each successor must expose reproducible design-tool controls so reviewers
+    can select evidence cases without editing source.
+  WA_DES_026_C1:
+    viewports: ["1200", "1024", "412", "390", "320"]
+    locales: ["EN/LTR", "AR/RTL"]
+    themes: ["light", "dark"]
+    views: ["List", "Map"]
+    data_states: ["loaded", "loading", "empty", "error", "degraded", "unauthorized", "stale/conflict", "provider-unavailable"]
+    motion: ["standard", "reduced"]
+  WA_DES_027_C1:
+    viewports: ["1440", "1024", "412", "390", "320"]
+    locales: ["EN/LTR", "AR/RTL"]
+    themes: ["light", "dark"]
+    route_modes: ["factory-id", "cr-id"]
+    data_states:
+      - "loaded"
+      - "loading"
+      - "empty/no-licence"
+      - "error"
+      - "degraded-subsection"
+      - "unauthorized-route"
+      - "unauthorized-section"
+      - "stale/conflict"
+      - "provider-unavailable"
+      - "not-found"
+      - "map-provider-failure"
+      - "no-approved-inspection"
+      - "no-documents"
+      - "no-risk-result"
+    motion: ["standard", "reduced"]
+
+evidence_matrix:
+  base_frames:
+    rule: >-
+      Capture every viewport in EN/LTR and AR/RTL, light and dark, for the
+      loaded reference state. This yields 20 frames per successor and proves
+      that 412 and 390 are independent implementations.
+  state_frames:
+    rule: >-
+      Capture every applicable negative state at its reference desktop and at
+      390 AR/RTL light. Provider-unavailable, unauthorized, degraded,
+      stale/conflict and not-found may not be evidenced only in English desktop.
+  interaction_evidence:
+    - "Keyboard trace from skip link through shell, search/filter, result selection, licence switching, dossier disclosures, documents and safe actions."
+    - "Mobile drawer focus entry, containment, Escape and restoration."
+    - "Licence refresh announcement and focus behavior."
+    - "Section retry announcement and focus return."
+    - "Map/list synchronized selection and accessible alternative."
+    - "Automated contrast and semantic checks plus manual screen-reader annotations."
+  required_manifest_fields:
+    - "packet, logical ID, successor revision and SHA-256"
+    - "route, state, persona/data scope, locale, direction, theme and viewport"
+    - "source/provider condition"
+    - "capture timestamp and reviewer"
+    - "P0/P1 result and blocker ID"
+
+review_gate:
+  before_any_design_write:
+    - "Codex reviews this complete packet and issues a new successor-only write lease."
+    - "Claude Design runs SAQEEL_SESSION_START_COMMAND.md."
+    - "Proposed successor filenames are proven absent."
+    - "Both predecessor hashes match immediately before creation."
+  draft_acceptance:
+    - "Exactly two successors were created; zero predecessor or unrelated file changes."
+    - "Both predecessors re-export byte-identically after successor creation."
+    - "Every P1 closure row is evidenced."
+    - "No P0/P1 remains."
+    - "Both successors receive one bundle disposition; never partial acceptance."
+  stop_conditions:
+    - "Any predecessor, mapping, route, provider contract, API, workflow, data or policy would need modification."
+    - "Any canonical capability is removed, hidden without authority or converted into a permanent mock."
+    - "Any applicable state, viewport, Arabic/RTL or accessibility evidence is missing."
+    - "Any P0/P1 remains."
+    - "The platform cannot create under exact unused successor filenames."
+
+status_board:
+  module: M4
+  design:
+    status: RED
+    owner: Claude Design
+    date: "2026-07-25"
+    revision: "WA-DES-026 predecessor; WA-DES-027 predecessor"
+    evidence: SAFE-SUCCESSOR-REVISION-005
+    blocker: "M4-DESIGN-P1-RESPONSIVE-001; M4-DESIGN-P1-LOCALE-002; M4-DESIGN-P1-STATES-003; M4-DESIGN-P1-A11Y-004"
+    next_action: "Codex review, then successor-only design lease."
+  frontend:
+    status: GREY
+    owner: UNLEASED
+    date: "2026-07-25"
+    revision: "No accepted M4 successor"
+    evidence: "No new frontend evidence claimed."
+    blocker: "Accepted successor bundle and application-code lease are absent."
+    next_action: "Wait for accepted successor bundle and separate code lease."
+  service_wiring:
+    status: AMBER
+    owner: Existing implementation
+    date: "2026-07-25"
+    revision: "Current canonical implementation"
+    evidence: product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml
+    blocker: "Provider contracts remain fail-closed; no MODON claim is permitted."
+    next_action: "Independent wiring validation after accepted design."
+  qa:
+    status: RED
+    owner: Independent reviewer
+    date: "2026-07-25"
+    revision: "No M4 successor evidence"
+    evidence: "M4-DESIGN-P1-RESPONSIVE-001; M4-DESIGN-P1-LOCALE-002; M4-DESIGN-P1-STATES-003; M4-DESIGN-P1-A11Y-004"
+    blocker: "Four P1 design-proof gaps are unevidenced."
+    next_action: "Run the evidence matrix against successor exports."
+  sponsor:
+    status: GREY
+    owner: Product Owner
+    date: "2026-07-25"
+    revision: "No sponsor-ready M4 successor"
+    evidence: "Not ready for sponsor review."
+    blocker: "Four P1 design-proof gaps remain."
+    next_action: "Review only after Codex reports zero P0/P1."
+
+queued_next_module_audit:
+  packet_id: M5-REVIEW-APPROVAL-DESIGN-AUDIT-007
+  status: READY_READ_ONLY_AFTER_M4_PACKET_REVIEW
+  module: M5 Review, Approval, Cases and Tasks
+  requirements: ["CR-357..CR-409"]
+  designs: ["WA-DES-017", "WA-DES-039", "WA-DES-042"]
+  routes: ["/cases", "/reviews", "/reviews/:id", "/reviews/:id/started", "/tasks"]
+  scope: >-
+    Independently fingerprint the three current design exports, map immutable
+    decision/version behavior to the real routes, and inventory responsive,
+    EN/AR, negative-state and accessibility gaps. No design or product write.
