@@ -28,6 +28,26 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+function watchBrowserHealth(page: Page) {
+  const failures: string[] = [];
+  page.on("pageerror", error => failures.push(`pageerror: ${error.message}`));
+  page.on("console", message => {
+    if (message.type() === "error") failures.push(`console: ${message.text()}`);
+  });
+  page.on("requestfailed", request => {
+    // Route/locale changes cancel the shell's in-flight notification-count
+    // HEAD request. That browser navigation cancellation is not a provider
+    // failure; any other failed request remains test-fatal.
+    const errorText = request.failure()?.errorText ?? "";
+    if (errorText === "net::ERR_ABORTED") return;
+    failures.push(`requestfailed: ${request.method()} ${request.url()} ${errorText}`);
+  });
+  page.on("response", response => {
+    if (response.status() >= 500) failures.push(`response: ${response.status()} ${response.url()}`);
+  });
+  return () => expect(failures, "browser console and network health").toEqual([]);
+}
+
 test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
   test("the registered design is traceable and existing localization behavior remains wired", () => {
     const manager = source("src/app/(app)/admin/localization/Manager.tsx");
@@ -66,6 +86,7 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
   test.use({ storageState: storageStatePath("admin") });
 
   test("desktop registry is bounded, searchable, keyboard operable and accessible", async ({ page }) => {
+    const expectHealthyBrowser = watchBrowserHealth(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await setPresentation(page, "en", "light");
 
@@ -98,10 +119,12 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
 
     const a11y = await new AxeBuilder({ page }).analyze();
     expect(a11y.violations).toEqual([]);
+    expectHealthyBrowser();
     await page.screenshot({ path: join(EVIDENCE_DIR, "after-admin-localization-en-light-1440x900.png"), fullPage: true });
   });
 
   test("Arabic RTL, dark theme, tablet and narrow layouts preserve every control", async ({ page }) => {
+    const expectHealthyBrowser = watchBrowserHealth(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await setPresentation(page, "ar", "dark");
 
@@ -116,6 +139,7 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     await page.reload();
     await expect(page.locator('[data-saqeel-design="WA-DES-010"]')).toBeVisible();
     await expectNoHorizontalOverflow(page);
+    expectHealthyBrowser();
   });
 });
 
@@ -123,10 +147,12 @@ test.describe("WA-M9-AC-005 denied-user runtime", () => {
   test.use({ storageState: storageStatePath("reviewer") });
 
   test("a reviewer sees a fail-closed role boundary and no localization data", async ({ page }) => {
+    const expectHealthyBrowser = watchBrowserHealth(page);
     await page.goto("/locale?set=en");
     await page.goto("/admin/localization");
     await expect(page.locator(".sq-state[role='alert']")).toContainText("No localization data has been loaded");
     await expect(page.locator('[data-saqeel-design="WA-DES-010"]')).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Return to my workspace" })).toBeVisible();
+    expectHealthyBrowser();
   });
 });
