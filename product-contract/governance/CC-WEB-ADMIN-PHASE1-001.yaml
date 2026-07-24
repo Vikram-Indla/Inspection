@@ -2,7 +2,7 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "MODULE_1_IMPLEMENTATION_VERIFIED_AWAITING_SPONSOR_DESIGN_DELTA_CONSENT"
+status: "MODULE_1_FINAL_DESIGN_DELTA_APPROVED_IMPLEMENTATION_ACTIVE"
 prepared_on: "2026-07-23"
 approved_on: "2026-07-23"
 approved_by: "Vikram Indla / Product Owner"
@@ -87,3 +87,14 @@ planning_module_1_approval_2026_07_24:
   lease_b: "Bounded Planning landing and Planning-owned Visits preview correction, tests, runtime, and paired design/implementation evidence."
   required_human_review: "Visible Chrome comparison of Claude Design and real runtime before another module begins."
   prohibited: ["route cutover", "deletion", "push", "merge", "deploy", "remote DDL", "shared-data mutation", "provider enablement", "Field behavior change", "PWA or iPad feature work"]
+
+planning_module_1_final_design_delta_approval_2026_07_24:
+  approved_by: "Vikram Indla / Product Owner"
+  approval_evidence: "Explicit user response with Claude Design project link: Approved; orchestrate ChatGPT and Claude Design challenges, bounded implementation, parallel QA, status-board updates, and live real-system browser proof."
+  design_id: "WA-DES-036"
+  accepted_candidate_revision: "1784904309230874"
+  approval_character: "Implementation consent subject to independent challenge; not unconditional visual acceptance."
+  implementation_lease: "Planning landing preview only: wire the accepted list-first KPI/filter/table hierarchy to existing real RLS-scoped services and preserve methods as secondary navigation."
+  review_lease: "ChatGPT advisory critique, Claude Design correction/revision authority, Codex independent mapping/delta review and QA."
+  status_board_direction: "Ask Claude Design to convert the supplied journey-map page into a sponsor board with grey/amber/green/red keys and update module frontend/backend/testing status as evidence changes."
+  prohibited: ["backend", "API", "schema", "RLS/RBAC", "workflow", "route cutover", "deletion", "Field/PWA/iPad", "stashes", "shared-data mutation", "providers", "push", "merge", "deploy", "next-module implementation"]

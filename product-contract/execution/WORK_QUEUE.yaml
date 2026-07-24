@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
     gate: "Web/Admin human screen approval"
     priority: "P0"
-    status: "AWAITING_PRODUCT_OWNER_APPROVAL"
+    status: "FINAL_DESIGN_DELTA_APPROVED_IMPLEMENTATION_ACTIVE"
     owner: "Codex implementation and QA + Product Owner screen approval"
     blocked_by: []
     blocks: ["Next Web/Admin screen batch", "Planning-owned Visits cutover"]
-    note: "Rework commits 8343c62c, 50c95d35 and 31baf2f8 correct icons, spacing, directional links, fixed rail, sticky Visit action form, unauthorized navy/blue shell colors, and the stacked field focus border/outline. Latest typecheck/build and same-batch/protected M2 15/15 PASS; live /planning single-stroke focus verified; validator 478/478 PASS. Current routes remain canonical and retained. Stop pending Product Owner decision; no Field/iPad or remote action."
+    note: "Native SAQEEL reconciliation and focused Planning M2 correction are committed and verified. Product Owner approved WA-DES-036 candidate revision 1784904309230874 on 2026-07-24 for one additional bounded list-first Planning preview correction, subject to continuing ChatGPT/Claude Design challenge, independent QA, status-board update, and live browser proof. Current routes remain canonical and retained; no backend/API/schema/RLS/RBAC/workflow, Field/PWA/iPad, cutover, deletion, push, merge, deploy, shared-data, provider, or next-module action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
     gate: "Web/Admin human screen approval"
     priority: "P0"

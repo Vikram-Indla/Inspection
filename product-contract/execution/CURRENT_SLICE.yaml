@@ -4,7 +4,7 @@ batch_id: "WA-P1-M2-BATCH-002"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 gate: "Web/Admin human screen approval"
 title: "Planning landing and Planning-owned Visits list/detail"
-status: "IMPLEMENTATION_VERIFIED_AWAITING_SPONSOR_DESIGN_DELTA_CONSENT"
+status: "SPONSOR_APPROVED_FINAL_DESIGN_DELTA_IMPLEMENTATION_ACTIVE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
@@ -18,6 +18,16 @@ approval:
   evidence: "Explicit user response: Approved; show the real implementation in the browser and proceed module by module."
   interpretation: "APPROVED — activate shared native-SAQEEL reconciliation followed by the bounded Planning M2 correction and browser comparison."
   authorizes: "Lease A shared style-namespace reconciliation plus Lease B WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement."
+
+final_design_delta_approval:
+  approved_by: "Vikram Indla / Product Owner"
+  approved_on: "2026-07-24"
+  evidence: "Explicit user response with Claude Design project link: Approved; continue challenging the design through ChatGPT and Claude Design while Codex orchestrates bounded implementation, QA, and live browser proof."
+  design_id: "WA-DES-036"
+  accepted_candidate_revision: "1784904309230874"
+  interpretation: "APPROVED AS IMPLEMENTATION CANDIDATE, NOT BLIND VISUAL ACCEPTANCE — Codex must independently challenge premium quality and functional fit, return defects to ChatGPT/Claude Design, and implement only the resulting bounded frontend delta."
+  authorizes: "One additional Planning landing preview correction from methods-first to the accepted list-first hierarchy using existing real RLS-scoped data and services, followed by independent QA and paired browser proof."
+  prohibits: "No backend, API, schema, RLS/RBAC, workflow, route cutover, deletion, Field/PWA/iPad, stash, shared-data, provider, push, merge, deploy, or next-module implementation."
 
 approved_reconciliation:
   design_revision: "WA-DES-036 etag 1784901048581707"
@@ -115,10 +125,10 @@ implementation:
     - ".codex-review/module-comparisons/planning.md"
     - ".codex-review/design-mapping-review.csv"
     - ".codex-review/pilot-delta-review.md"
-  design_follow_up: "Claude preserved frozen baseline 1784901048581707 and produced final candidate 1784904309230874 after Codex returned the first candidate for directional-arrow and emoji regressions. Codex zero-trace review passed. The candidate is ready for sponsor consent; visual parity is not claimed and no further application correction is authorized before that decision."
+  design_follow_up: "Claude preserved frozen baseline 1784901048581707 and produced final candidate 1784904309230874 after Codex returned the first candidate for directional-arrow and emoji regressions. The Product Owner approved this candidate on 2026-07-24 for one bounded frontend correction, subject to continuing ChatGPT/Claude Design challenge and independent QA. Visual parity is not yet claimed."
 
 exit_condition: >-
-  Product Owner reviews the real Planning implementation in visible Chrome
-  beside the accepted Claude Design revision. Do not cut over, delete, push,
-  merge, deploy, or start another module until an explicit permitted Product
-  Owner decision is received.
+  Complete the bounded list-first Planning preview correction, independent QA,
+  status-board update, and visible Chrome comparison beside the accepted Claude
+  Design revision. Do not cut over, delete, push, merge, deploy, or start another
+  module until the Product Owner reviews that evidence.
