@@ -1,5 +1,44 @@
 # Current State
 
+## 2026-07-24 UPDATE 130 — Shared Web/Admin brand regressions corrected
+
+The Product Owner reported that the English Operations runtime displays the
+Arabic-only `صقيل صناعي` identity. Repository tracing confirms a global
+authenticated-shell regression: `ShellClient.tsx` hard-codes that Arabic-only
+lockup for every locale even though approved batch `WA-P1-F0-CORR-001` requires
+the supplied bilingual `SAQEEL | صقيل` dark-surface asset in the expanded
+graphite rail and the supplied shield/check favicon when collapsed.
+
+`TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001` is implemented on isolated branch
+`codex/shared-brand-regression` from canonical main `9d8c4142`. The lease is
+limited to `ShellClient.tsx`, `astryx.css`, the focused F0 branding contract,
+and branch-local governance/evidence. The expanded rail now renders the
+approved `/saqeel-wordmark-dark-mode.svg` with accessible name
+`SAQEEL | صقيل`; collapsed desktop navigation renders
+`/saqeel-favicon.svg`; and the mobile drawer restores the expanded wordmark.
+No asset or locale-specific substitute was introduced.
+
+The first real-browser validation then exposed that the entire authenticated
+shell was unstyled: promoted `ShellClient.tsx` still emits `ax-*` classes while
+the root layout declared that family retired and did not import the existing
+`astryx.css` rules. The runtime HTML therefore had no matching compiled shell
+style layer. The bounded lease was expanded only to `app/layout.tsx`; it now
+loads the matching stylesheet and records the `ax-*` layer as transitional
+until a separately certified namespace migration occurs.
+
+Typecheck and production build pass. The focused F0 source and brand contract
+passes 4/4, including exact asset geometry, expanded/collapsed/mobile CSS, and
+absence of the hard-coded Arabic-only shell lettering. Runtime HTML links the
+compiled stylesheet that contains `.ax-shell` and the approved wordmark rules.
+The initially inherited
+dependency symlink loop was bypassed only for verification using an existing
+healthy dependency directory, then the worktree link was restored unchanged.
+No M3 page, Field/PWA/iPad, asset, backend, remote system, commit, push, merge
+or deployment changed. Codex then reloaded the real authenticated Planning
+route in Chrome at `127.0.0.1:3014/planning`: the graphite navigation, normal
+page layout and accessible `SAQEEL | صقيل` wordmark rendered together. Status:
+`TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF`.
+
 ## 2026-07-24 UPDATE 129 — M1 Dashboard promoted to canonical main
 
 The Product Owner explicitly approved promotion of

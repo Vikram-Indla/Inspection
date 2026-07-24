@@ -59,12 +59,24 @@ test.describe("Web/Admin F0 source and security contract", () => {
 
     expect(layout).toContain('/saqeel-favicon.svg');
     expect(layout).not.toContain('/saqeel-prism.svg');
+    expect(layout).toContain('import "./astryx.css"');
+    expect(shell).toContain("ax-shell");
+    expect(css).toContain(".ax-shell {");
     expect(shell).toContain('/saqeel-favicon.svg');
     expect(shell).toContain('/saqeel-wordmark-dark-mode.svg');
+    expect(shell).toContain('alt="SAQEEL | صقيل"');
+    expect(shell).not.toContain('ax-shell__brand-sub');
+    expect(shell).not.toContain('>صناعي</span>');
     expect(shell).not.toContain('ax-shell__brand-mark" aria-hidden="true" lang="ar">ص');
+    expect(css).toContain('.ax-shell__brand-mark { display: none;');
+    expect(css).toContain('.ax-shell__brand-wordmark { display: block; inline-size: 170px;');
     expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
-    for (const asset of [favicon, darkWordmark, lightWordmark]) {
+    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: none; }');
+    expect(favicon).toContain('M12 3.4 5 6.05');
+    for (const asset of [darkWordmark, lightWordmark]) {
       expect(asset).toContain('M12 2.5 4 5.5');
+    }
+    for (const asset of [favicon, darkWordmark, lightWordmark]) {
       expect(asset).not.toMatch(/D946EF|7C6CFF|magenta|prism/i);
     }
     expect(darkWordmark).toContain('>SAQEEL</text>');

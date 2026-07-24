@@ -1,12 +1,17 @@
 import "./tokens.css";
+// The promoted authenticated AppShell still emits the governed ax-* namespace.
+// Keep its matching component layer loaded until that shell is migrated as one
+// separately certified unit; removing this import leaves the real Web/Admin
+// shell structurally present but completely unstyled.
+import "./astryx.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import ThemeChannelSync from "@/components/ThemeChannelSync";
 import "./saqeel-components-legacy.css";
 // SAQEEL Inspection Design System v1.0 component layer. saqeel-components.css is
 // the canonical layer; saqeel-components-legacy.css holds the .sq-* families not
-// yet redesigned into it. Both consume SAQEEL semantic tokens only; no legacy
-// alias layer remains — astryx.css and its .ax-* families are fully retired.
+// yet redesigned into it. The transitional astryx.css import above is bounded
+// to current ax-* consumers and consumes the same semantic tokens.
 import "./saqeel-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";

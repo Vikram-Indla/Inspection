@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001"
+    gate: "Web/Admin shared-shell regression correction"
+    priority: "P0"
+    status: "TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF"
+    owner: "Codex shared-shell correction owner"
+    blocked_by: ["Product Owner confirms the corrected real Web/Admin shell in Chrome"]
+    blocks: ["M3 final sponsor browser acceptance", "Reliable shared-shell visual baseline for later Web/Admin modules"]
+    note: "Sponsor-reported EN/LTR Operations defect was a global shell regression against the already-approved bilingual asset. Real-browser follow-up also proved the promoted ShellClient's ax-* namespace had no matching root stylesheet import. The isolated correction restores /saqeel-wordmark-dark-mode.svg expanded, /saqeel-favicon.svg collapsed, mobile drawer expansion, and the existing astryx.css component layer in root layout. Typecheck/build, focused 4/4 and runtime compiled-CSS link pass. Await Product Owner Chrome confirmation. No M3 page, Field/PWA/iPad, asset, backend, remote, commit, push, merge or deployment action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
     gate: "Web/Admin M1 implementation and screen certification"
     priority: "P0"

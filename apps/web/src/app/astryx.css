@@ -441,11 +441,9 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   position: sticky; inset-block-start: 0; block-size: 100dvh; min-inline-size: 0; overflow: hidden;
 }
 .ax-shell__brand { display:flex; align-items:center; gap: var(--ax-space-100); min-block-size: 64px; padding: var(--ax-space-100) var(--ax-space-100) var(--ax-space-150); border-block-end: 1px solid var(--nav-border); margin-block-end: var(--ax-space-050); }
-.ax-shell__brand-mark { inline-size: 30px; block-size: 30px; flex: 0 0 auto; color: var(--nav-indicator); }
-.ax-shell__brand-lockup { display: flex; align-items: baseline; gap: var(--ax-space-100); min-inline-size: 0; white-space: nowrap; }
-/* Saqeel wordmark — always the Arabic brand, whatever the UI locale */
-.ax-shell__brand-wordmark { font: 600 21px/28px var(--ax-font-arabic); color: var(--nav-text-active); }
-.ax-shell__brand-sub { font: var(--ax-text-caption); color: var(--nav-text); }
+.ax-shell__brand-mark { display: none; inline-size: 30px; block-size: 30px; flex: 0 0 auto; }
+.ax-shell__brand-lockup { display: flex; align-items: center; min-inline-size: 0; white-space: nowrap; }
+.ax-shell__brand-wordmark { display: block; inline-size: 170px; block-size: auto; max-inline-size: 100%; }
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
 .ax-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: var(--ax-space-100); scrollbar-width: thin; }
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
@@ -480,6 +478,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 [dir="rtl"] .ax-shell__collapse > span:first-child { transform: scaleX(-1); }
 .ax-shell.is-collapsed .ax-shell__nav { padding-inline: var(--ax-space-100); }
 .ax-shell.is-collapsed .ax-shell__brand { justify-content: center; padding-inline: 0; }
+.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }
 .ax-shell.is-collapsed .ax-shell__brand-lockup,
 .ax-shell.is-collapsed .ax-nav-label { display: none; }
 .ax-shell.is-collapsed .ax-nav-group__trigger { display: none; }
@@ -577,6 +576,7 @@ button.ax-shell-scope { cursor: pointer; }
   [dir="rtl"] .ax-shell.is-drawer-open .ax-shell__nav,
   [dir="rtl"] .ax-shell.is-collapsed.is-drawer-open .ax-shell__nav { transform: translateX(0); }
   .ax-shell.is-collapsed .ax-shell__brand { justify-content: flex-start; padding: var(--ax-space-050) var(--ax-space-100) var(--ax-space-200); }
+  .ax-shell.is-collapsed .ax-shell__brand-mark { display: none; }
   .ax-shell.is-collapsed .ax-shell__brand-lockup, .ax-shell.is-collapsed .ax-nav-label { display: initial; }
   .ax-shell.is-collapsed .ax-nav-group__trigger { display: flex; justify-content: space-between; padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); }
   .ax-shell.is-collapsed .ax-nav-item { justify-content: flex-start; padding-inline: var(--ax-space-150); }
