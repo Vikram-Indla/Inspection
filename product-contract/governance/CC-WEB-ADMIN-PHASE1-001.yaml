@@ -2,7 +2,7 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "MODULE_1_FINAL_DESIGN_DELTA_APPROVED_IMPLEMENTATION_ACTIVE"
+status: "MODULE_1_APPROVED_CANDIDATE_RETURNED_FOR_DESIGN_CORRECTION"
 prepared_on: "2026-07-23"
 approved_on: "2026-07-23"
 approved_by: "Vikram Indla / Product Owner"
@@ -98,3 +98,6 @@ planning_module_1_final_design_delta_approval_2026_07_24:
   review_lease: "ChatGPT advisory critique, Claude Design correction/revision authority, Codex independent mapping/delta review and QA."
   status_board_direction: "Ask Claude Design to convert the supplied journey-map page into a sponsor board with grey/amber/green/red keys and update module frontend/backend/testing status as evidence changes."
   prohibited: ["backend", "API", "schema", "RLS/RBAC", "workflow", "route cutover", "deletion", "Field/PWA/iPad", "stashes", "shared-data mutation", "providers", "push", "merge", "deploy", "next-module implementation"]
+  independent_review_result: "RETURN FOR MAPPING CORRECTION"
+  correction_reasons: ["invented /planning/methods route", "duplicated global and page controls", "undefined Planning date and region semantics", "unproven effective-package claim", "canonical visit list collapsed into draft-plan grain", "required viewport theme RTL accessibility and state evidence absent"]
+  implementation_status: "PAUSED_PENDING_CORRECTED_STABLE_CLAUDE_DESIGN_REVISION_AND_CODEX_VALIDATION"

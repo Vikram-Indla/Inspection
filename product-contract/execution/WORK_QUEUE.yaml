@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
     gate: "Web/Admin human screen approval"
     priority: "P0"
-    status: "FINAL_DESIGN_DELTA_APPROVED_IMPLEMENTATION_ACTIVE"
+    status: "APPROVED_CANDIDATE_RETURNED_FOR_DESIGN_CORRECTION"
     owner: "Codex implementation and QA + Product Owner screen approval"
     blocked_by: []
     blocks: ["Next Web/Admin screen batch", "Planning-owned Visits cutover"]
-    note: "Native SAQEEL reconciliation and focused Planning M2 correction are committed and verified. Product Owner approved WA-DES-036 candidate revision 1784904309230874 on 2026-07-24 for one additional bounded list-first Planning preview correction, subject to continuing ChatGPT/Claude Design challenge, independent QA, status-board update, and live browser proof. Current routes remain canonical and retained; no backend/API/schema/RLS/RBAC/workflow, Field/PWA/iPad, cutover, deletion, push, merge, deploy, shared-data, provider, or next-module action."
+    note: "Native SAQEEL reconciliation and focused Planning M2 correction are committed and verified. Product Owner approved WA-DES-036 candidate revision 1784904309230874 on 2026-07-24 as an implementation candidate, subject to challenge. Independent Codex/ChatGPT review returned it for correction: false /planning/methods route, duplicated controls, undefined Planning date/region semantics, unproven effective-package label, collapsed visit/draft grains, and missing viewport/theme/RTL/state evidence. Application edits are paused pending a corrected stable Claude revision and Codex validation. Current routes remain canonical and retained; no backend/API/schema/RLS/RBAC/workflow, Field/PWA/iPad, cutover, deletion, push, merge, deploy, shared-data, provider, or next-module action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
     gate: "Web/Admin human screen approval"
     priority: "P0"
