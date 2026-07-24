@@ -1317,3 +1317,19 @@ button.sq-shell-scope { cursor: pointer; }
 @media(max-width:900px){.ccr-grid{grid-template-columns:1fr}.ccr-card--wide{grid-column:auto}.ccr-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.cmp-approval-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.ccr-facts,.ccr-compare,.ccr-form,.cmp-runtime-facts,.cmp-approval-facts{grid-template-columns:1fr}.ccr-span{grid-column:auto}.ccr-register-head .sq-btn,.ccr-actions .sq-btn,.cmp-library-tabs .sq-btn,.cmp-approval-filters .sq-btn{inline-size:100%}.ccr-inline-form{align-items:stretch}.ccr-inline-form .sq-field{inline-size:100%;max-inline-size:none}.cmp-runtime-head,.cmp-runtime-selector{align-items:stretch;flex-direction:column}.cmp-approval-card footer .sq-btn{inline-size:100%}}
+
+/* Astryx elimination — the following selectors had no .sq-* counterpart
+   because they were added after the ax->sq class migration (PR12). */
+.sq-nav-subgroup__chevron { margin-inline-start: auto; }
+.sq-shell__admin-pin { flex: 0 0 auto; padding: 12px 10px 16px; border-block-start: 1px solid var(--nav-border); }
+.sq-shell.is-collapsed .sq-shell__admin-pin { padding-inline: 10px; }
+.sq-shell-search__results--portal { position: fixed; inset-inline: auto; margin-block-start: var(--space-2); z-index: var(--z-toast); }
+.sq-shell-account__menu--portal { position: fixed; inset-block-start: auto; inset-inline-end: auto; z-index: var(--z-toast); }
+/* Top-of-page route-change indicator (role=status, sr-only label carries the copy). */
+.sq-route-progress { position: fixed; inset-block-start: 0; inset-inline: 0; block-size: 2px; z-index: var(--z-toast);
+  background: linear-gradient(90deg, transparent, var(--action-primary), transparent);
+  background-size: 200% 100%; animation: sq-route-progress-sweep 1.1s ease-in-out infinite; }
+@keyframes sq-route-progress-sweep { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .sq-route-progress { animation: none; background: var(--action-primary); } }
+/* Touch-sized segmented control for field surfaces (matches the field control-height floor). */
+.sq-segmented--field button { min-block-size: 44px; font-size: 15px; }

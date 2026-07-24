@@ -1,9 +1,9 @@
 /* MIM Field — app-shell service worker (FND-005: field app survives offline).
    Static assets: cache-first. Navigations: network-first, fallback to cached shell.
    Data writes are NOT handled here — the IndexedDB outbox owns them (idempotent replay). */
-const SHELL = "saqeel-shell-v5";
+const SHELL = "saqeel-shell-v6";
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/field", "/manifest.json", "/saqeel-prism.svg"])));
+  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/field", "/manifest.json", "/saqeel-favicon.svg"])));
   self.skipWaiting();
 });
 self.addEventListener("activate", (e) => {
@@ -24,8 +24,8 @@ self.addEventListener("push", (e) => {
   try { if (e.data) data = { ...data, ...e.data.json() }; } catch { /* non-JSON payload: use default */ }
   e.waitUntil(self.registration.showNotification(data.title, {
     body: data.body,
-    icon: "/saqeel-prism-192.png",
-    badge: "/saqeel-prism-192.png",
+    icon: "/saqeel-favicon-192.png",
+    badge: "/saqeel-favicon-192.png",
     data: { event_key: data.event_key ?? null },
   }));
 });
@@ -42,7 +42,7 @@ self.addEventListener("notificationclick", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;
-  if (url.pathname.startsWith("/_next/static/") || url.pathname === "/saqeel-prism.svg" || url.pathname === "/manifest.json") {
+  if (url.pathname.startsWith("/_next/static/") || url.pathname === "/saqeel-favicon.svg" || url.pathname === "/manifest.json") {
     e.respondWith(caches.open(SHELL).then(async (c) => (await c.match(e.request)) ?? fetch(e.request).then((r) => { c.put(e.request, r.clone()); return r; })));
     return;
   }

@@ -4,11 +4,11 @@
   "start_url": "/field",
   "display": "standalone",
   "background_color": "#090714",
-  "theme_color": "#D946EF",
+  "theme_color": "#34d399",
   "orientation": "any",
   "icons": [
-    { "src": "/saqeel-prism.svg", "sizes": "any", "type": "image/svg+xml" },
-    { "src": "/saqeel-prism-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/saqeel-prism-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/saqeel-favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/saqeel-favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/saqeel-favicon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }

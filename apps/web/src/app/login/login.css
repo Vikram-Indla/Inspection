@@ -40,9 +40,12 @@
 [dir="rtl"] .lg-lockup__sub { font-family: var(--font-body); letter-spacing: 0; }
 
 .lg-controls { display: inline-flex; align-items: center; gap: var(--space-2); }
+/* Pushed to the far corner of the lockup row, not just trailing the wordmark
+   with a small gap. */
+.lg-controls--end { margin-inline-start: auto; }
 /* theme toggle in the lockup row exists for small screens only — on desktop
    the story panel header owns it */
-.lg-controls--compact { display: none; margin-inline-start: auto; }
+.lg-controls--compact { display: none; }
 @media (max-width: 960px) { .lg-controls--compact { display: inline-flex; } }
 
 .lg-iconbtn { display: grid; place-items: center; inline-size: 40px; block-size: 40px;
@@ -54,6 +57,21 @@
 
 .lg-center { flex: 1; display: flex; flex-direction: column; justify-content: center;
   padding-block: var(--space-6); }
+
+/* Ministry attribution — last line of the footer. Same start-aligned
+   icon+text pattern as .lg-foot__item above it (was centered while the
+   trust line was left-aligned — two different alignment models in the same
+   footer read as architecturally disjointed, not just "needs polish"). */
+.lg-foot__ministry { display: inline-flex; align-items: center;
+  gap: var(--space-2); }
+[dir="rtl"] .lg-foot__ministry { justify-content: flex-start; }
+/* The source SVG sets preserveAspectRatio="none" (it's designed to stretch
+   to fill its own container), so inline-size:auto can't infer a ratio from
+   it — pin the real one (330.798 x 325.207) explicitly or it distorts. Sized
+   to match the shield icon's line-height above it, not a separate scale. */
+.lg-foot__ministry-mark { display: block; block-size: 15px; aspect-ratio: 330.798 / 325.207; flex-shrink: 0; }
+.lg-foot__ministry-label { font: var(--type-caption-font); color: var(--text-secondary); }
+[dir="rtl"] .lg-foot__ministry-label { font-family: var(--font-body); }
 
 .lg-card { inline-size: 100%; display: flex; flex-direction: column;
   gap: var(--space-5); }
@@ -113,6 +131,11 @@
 .lg-lang { font: 600 14px/20px var(--font-body); color: var(--action-primary-hover);
   text-decoration: none; }
 .lg-lang:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Moved from the footer (buried next to fine print, easy to miss/mis-click)
+   to the header, same priority as the theme toggle. */
+.lg-lang--top { font: 600 13px/1 var(--font-body); padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-full); }
+.lg-lang--top:hover { border-color: var(--action-primary); text-decoration: none; background: var(--accent-soft); }
 
 /* ---- demo-access helper (evaluation only) ------------------------------- */
 .lg-demo { margin-block-start: var(--space-2);
@@ -628,9 +651,10 @@
   .lg-atlas3d__dossier { inset-block: auto 8px; inset-inline: 8px; inline-size: auto; }
 }
 
-/* The atlas becomes a scroll-to story below the credential panel instead of
-   disappearing. This keeps sign-in first while preserving the approved asset
-   on tablet/mobile. */
+/* Below the split-layout breakpoint the credential panel is the only surface:
+   hide the atlas story entirely rather than stacking it below (a scrollable
+   hero under a sign-in form reads as a broken/incomplete page on phones and
+   narrow tablets, not a deliberate second screen). */
 @media (max-width: 960px) {
   /* Below the credential panel the hero keeps its one-surface model but caps
      its height so sign-in stays first. Frame stays inset:0 within the block. */

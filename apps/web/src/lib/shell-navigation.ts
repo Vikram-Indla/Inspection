@@ -31,11 +31,59 @@ export function isFieldOnlyPersona(roleKeys: readonly string[]): boolean {
     && roleKeys.every(role => (FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role));
 }
 
+export type ShellGlobalSearchResultType =
+  | "commercial_registration"
+  | "industrial_license"
+  | "plant"
+  | "factory"
+  | "visit"
+  | "inspection";
+
+export type ShellGlobalSearchResultHref = {
+  id: string;
+  type: ShellGlobalSearchResultType;
+  href: string;
+};
+
+// PLAN v7 item 1 — preserve the API-provided console/admin destination exactly,
+// and rewrite only field-only Inspector sessions to field-channel routes.
+export function shellGlobalSearchHref(
+  result: ShellGlobalSearchResultHref,
+  fieldOnly: boolean,
+): string {
+  if (!fieldOnly) return result.href;
+
+  switch (result.type) {
+    case "commercial_registration":
+      return `/field/factory-360?cr=${encodeURIComponent(result.id)}`;
+    case "industrial_license":
+    case "plant":
+      return `/field/factory-360?license=${encodeURIComponent(result.id)}`;
+    case "factory":
+      return `/field/factory-360?factory=${encodeURIComponent(result.id)}`;
+    case "visit":
+      return `/field/${encodeURIComponent(result.id)}`;
+    case "inspection":
+      return result.href;
+  }
+}
+
+// PLAN v7 item 2 — notification planning links use the same persona-aware
+// visit resolver as global search. The supplied web href (including a focus
+// query) is preserved byte-for-byte for non-field sessions.
+export function shellNotificationVisitHref(
+  visitId: string,
+  webHref: string,
+  fieldOnly: boolean,
+): string {
+  return shellGlobalSearchHref({ id: visitId, type: "visit", href: webHref }, fieldOnly);
+}
+
 export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
   | "forms" | "enforcement" | "workflow" | "risk" | "map"
-  | "access" | "notify" | "insights" | "ai";
+  | "access" | "notify" | "ai";
 
 type Visibility = "business" | "admin-primary" | "admin-advanced";
 

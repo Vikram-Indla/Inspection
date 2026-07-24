@@ -17,7 +17,7 @@ export type Factory360OfflineStrings = {
   unavailable: string; // "No offline snapshot cached for this license yet — open while online to cache it."
   refreshing: string;  // "Refreshing offline snapshot…"
   omitted: string;     // "Sections excluded by your permissions:"
-  gaps: string;        // "Integration gaps:"
+  gaps: string;        // "Integration gaps ({n}) — hover for detail"
 };
 
 type Mode = "refreshing" | "live" | "cached" | "offline" | "unavailable";
@@ -80,10 +80,18 @@ export default function Factory360Offline({ crId, licenseId, strings, locale }: 
     strings.unavailable;
 
   return (
-    <div className={`sq-sync ${mode === "live" ? "sq-sync--synced" : mode === "unavailable" ? "sq-sync--offline" : "sq-sync--offline"}`} role="status" aria-live="polite">
-      <span className={`sq-lozenge ${tone}`}>{message}</span>
-      {snapshot && snapshot.sectionsOmitted.length > 0 && <span className="t-caption"> · {strings.omitted} {snapshot.sectionsOmitted.join(", ")}</span>}
-      {snapshot && snapshot.providerGaps.length > 0 && <span className="t-caption"> · {strings.gaps} {snapshot.providerGaps.join(", ")}</span>}
+    <div className={`ax-sync ${mode === "live" ? "ax-sync--synced" : mode === "unavailable" ? "ax-sync--offline" : "ax-sync--offline"}`} role="status" aria-live="polite">
+      <span className={`ax-lozenge ${tone}`}>{message}</span>
+      {snapshot && snapshot.sectionsOmitted.length > 0 && (
+        <span className="t-caption" title={snapshot.sectionsOmitted.join("\n")}>
+          {" "}· {strings.omitted} ({snapshot.sectionsOmitted.length})
+        </span>
+      )}
+      {snapshot && snapshot.providerGaps.length > 0 && (
+        <span className="t-caption" title={snapshot.providerGaps.join("\n")}>
+          {" "}· {strings.gaps.replace("{n}", String(snapshot.providerGaps.length))}
+        </span>
+      )}
     </div>
   );
 }

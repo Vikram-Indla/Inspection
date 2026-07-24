@@ -1,0 +1,406 @@
+/* SAQEEL Field Login — ported 1:1 from Claude Design
+ * `SAQEEL Field Login.dc.html` (project 5e8154ad-9a7d-4e3d-9b7a-c66ca020bd61).
+ *
+ * Every declaration below is transcribed from that DC's <helmet> block and its
+ * inline element styles. No value is re-derived by eye from a screenshot, and
+ * no bare colour is introduced: the DC already styles exclusively from SAQEEL
+ * design-system tokens, which this app defines globally in tokens.css.
+ *
+ * RCA note (why this route exists): the shared /login surface paints
+ * --surface-canvas plus a raised --surface-primary card, which is the lightest
+ * and most blue-leaning value in the dark ramp. The design paints full-bleed
+ * --nav-bg, the darkest value, with no card. Same tokens, different surface
+ * choice — that difference, not a divergent palette, is the colour mismatch.
+ */
+
+.fl-root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--nav-bg);
+  color: var(--nav-text-active);
+  font-family: var(--font-body);
+}
+
+/* top utility row */
+.fl-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px 0;
+}
+.fl-grow { flex: 1; }
+
+.fl-langbtn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--nav-text) 30%, transparent);
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--nav-text-active);
+}
+.fl-themebtn { min-width: 40px; }
+
+.fl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.fl-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+
+/* network pill states — token-only, mirroring the DC's netBg/netColor */
+.fl-net-online {
+  background: color-mix(in srgb, var(--status-compliant-text) 16%, transparent);
+  color: var(--status-compliant-text);
+}
+.fl-net-offline {
+  background: color-mix(in srgb, var(--status-warning-text) 20%, transparent);
+  color: var(--status-warning-text);
+}
+
+/* centred stage */
+.fl-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px 12px;
+  text-align: center;
+}
+.fl-col {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* brand lockup */
+.fl-shield {
+  width: 52px;
+  height: 52px;
+  margin-block-end: 14px;
+}
+.fl-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.fl-brand-latin {
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  color: var(--nav-text-active);
+}
+.fl-brand-ar {
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--nav-text-active);
+}
+.fl-tagline {
+  color: var(--nav-text);
+  margin-block-start: 6px;
+}
+
+/* trusted-device path */
+.fl-trusted-pill {
+  margin-block-start: 18px;
+  background: color-mix(in srgb, var(--nav-indicator) 14%, transparent);
+  color: var(--nav-indicator);
+}
+
+.fl-bio {
+  margin-block-start: 24px;
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  border: 2px solid var(--nav-indicator);
+  background: color-mix(in srgb, var(--nav-indicator) 10%, transparent);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), background 160ms;
+}
+.fl-bio:hover {
+  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--nav-indicator) 20%, transparent);
+}
+.fl-bio:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.fl-bio:disabled:hover { transform: none; }
+
+.fl-face-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-block-start: 12px;
+  color: var(--nav-text-active);
+}
+.fl-face-desc {
+  color: var(--nav-text);
+  margin-block-start: 4px;
+  max-width: 32ch;
+}
+
+/* "or use password" rule */
+.fl-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-block: 22px 2px;
+}
+.fl-or-line {
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--nav-text) 22%, transparent);
+}
+.fl-or-label { color: var(--nav-text); }
+
+/* unrecognised-device notice */
+.fl-warn {
+  margin-block-start: 18px;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: start;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--status-warning-text) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-warning-text) 34%, transparent);
+}
+.fl-warn-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--nav-text-active);
+}
+.fl-warn-desc {
+  color: var(--nav-text);
+  margin-block-start: 3px;
+}
+
+/* credential form */
+.fl-form {
+  width: 100%;
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-block-start: 14px;
+}
+.fl-label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.fl-label > .t-label { color: var(--nav-text); }
+
+.fl-in {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-input);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 15px;
+  padding: 0 14px;
+  box-sizing: border-box;
+}
+.fl-in:focus-visible {
+  outline: 2px solid var(--action-primary);
+  outline-offset: 1px;
+}
+
+.fl-pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.fl-pw-in { padding-inline-end: 44px; }
+.fl-pw-toggle {
+  position: absolute;
+  inset-inline-end: 8px;
+  border: 0;
+  background: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+}
+
+.fl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.fl-keep {
+  font-size: 13px;
+  color: var(--nav-text);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.fl-forgot {
+  font-size: 13px;
+  color: var(--nav-indicator);
+}
+
+.fl-submit { margin-block-start: 20px; }
+
+/* honest blocked / error message */
+.fl-msg {
+  width: 100%;
+  margin-block-start: 14px;
+  text-align: start;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--status-warning-text) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-warning-text) 34%, transparent);
+  color: var(--nav-text-active);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* OTP challenge */
+.fl-otp-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  border: 2px solid var(--nav-indicator);
+  background: color-mix(in srgb, var(--nav-indicator) 10%, transparent);
+  display: grid;
+  place-items: center;
+  margin-block-end: 16px;
+}
+.fl-otp-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--nav-text-active);
+}
+.fl-otp-desc {
+  color: var(--nav-text);
+  margin: 8px 0 0;
+  max-width: 34ch;
+}
+.fl-otp-cells {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-block: 26px 6px;
+}
+.fl-otp-cell {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 0;
+}
+.fl-otp-meta {
+  color: var(--nav-text);
+  margin-block-start: 10px;
+}
+.fl-otp-resend {
+  margin-block-start: 6px;
+  background: none;
+  border: 0;
+  color: var(--nav-indicator);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.fl-otp-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-block-start: 24px;
+}
+.fl-otp-back { color: var(--nav-text); }
+.fl-otp-trust {
+  margin-block-start: 18px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.fl-otp-trust label { color: var(--nav-text); }
+.fl-otp-note {
+  color: var(--text-muted);
+  margin-block-start: 12px;
+  max-width: 34ch;
+}
+
+/* footer: offline-first assurance */
+.fl-foot {
+  padding: 0 24px 24px;
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.fl-foot-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--nav-text-active) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent);
+}
+.fl-foot-note span {
+  color: var(--nav-text);
+  line-height: 1.55;
+}
+.fl-foot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-start: 12px;
+}
+.fl-foot-row .t-caption { color: var(--nav-text); }
+.fl-sync {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fl-sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-compliant-text);
+}
+
+/* live blink — the DC's fl-blink, with the required reduced-motion escape */
+@keyframes fl-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.fl-live { animation: fl-blink 2.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-live { animation: none; }
+  .fl-bio { transition: none; }
+  .fl-bio:hover { transform: none; }
+}

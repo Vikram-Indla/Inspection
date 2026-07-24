@@ -40,6 +40,7 @@ export type ResetStrings = {
 
 type Stage = "checking" | "form" | "invalid" | "done";
 type FieldError = { id: "pw" | "pw2"; message: string } | null;
+const RECOVERY_OTP_USER_KEY = "saqeel-recovery-otp-user";
 
 // Deterministic classification — the provider's error.message is never
 // rendered or otherwise exposed; only used to pick one of four safe copies.
@@ -77,21 +78,27 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
     else if (stage === "done") doneCtaRef.current?.focus();
   }, [stage]);
 
-  // The recovery token arrives in the URL fragment; supabase-js processes it on
-  // load and fires PASSWORD_RECOVERY (or establishes a session). If neither
-  // happens within a short window, the link is invalid/expired.
+  // The prior /login OTP verification establishes the recovery session. Admit
+  // the form only when that persisted session matches the same-tab marker set
+  // after verifyOtp succeeds; ordinary signed-in sessions do not enter it.
   useEffect(() => {
     const sb = supabaseBrowser();
-    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
-        setStage(cur => (cur === "checking" ? "form" : cur));
+    let cancelled = false;
+    const expectedUserId = sessionStorage.getItem(RECOVERY_OTP_USER_KEY);
+    void sb.auth.getSession().then(({ data, error }) => {
+      if (cancelled) return;
+      if (!error && expectedUserId && data.session?.user.id === expectedUserId) {
+        setStage("form");
+        return;
       }
+      sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
+      setStage("invalid");
+    }).catch(() => {
+      if (cancelled) return;
+      sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
+      setStage("invalid");
     });
-    sb.auth.getSession().then(({ data }) => {
-      if (data.session) setStage(cur => (cur === "checking" ? "form" : cur));
-    });
-    const t = setTimeout(() => setStage(cur => (cur === "checking" ? "invalid" : cur)), 4000);
-    return () => { subscription.unsubscribe(); clearTimeout(t); };
+    return () => { cancelled = true; };
   }, []);
 
   async function save(e: React.FormEvent) {
@@ -115,7 +122,11 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
         return;
       }
       if (kind === "transport") { setBannerError(s.saveTransportError); return; }
-      if (kind === "invalidSession") { setStage("invalid"); return; }
+      if (kind === "invalidSession") {
+        sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
+        setStage("invalid");
+        return;
+      }
       setBannerError(s.saveUnexpectedError);
       return;
     }
@@ -124,6 +135,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
     const { data } = await getVerifiedUser(sb);
     if (data.user?.email) await logAuthEvent("password_reset_completed", data.user.email);
     // Drop the short-lived recovery session so sign-in starts clean.
+    sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
     await sb.auth.signOut();
     setStage("done");
   }

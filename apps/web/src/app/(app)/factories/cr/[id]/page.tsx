@@ -40,8 +40,9 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
   const {
     cr, crError, licenses, licenseError, selected, factory, factoryId, licenseId,
-    address, lines, government, docs, media, officialMedia, linkedEvidence, reports, riskHistory, penalties,
-    latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance,
+    address, lines, government, chemicalPermits, customsExemptions, chemicalPermitsError, customsExemptionsError,
+    docs, media, officialMedia, linkedEvidence, reports, riskHistory, penalties,
+    latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance, exportsProducts,
     approvedEnforcement, portfolioCounts, highestRiskLicense, downloadUrls, mediaUrls,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult,
     penaltiesResult, portfolioReportsResult, snapshotsResult, canonical,
@@ -117,6 +118,27 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-license-heading">
             <div className={styles.sectionHead}><h2 id="f360-license-heading">{t("f360.license.heading", "Selected license, plant & address")}</h2>{sourceBadge(addressResult.error, address, !!selected)}</div>
+            {selected && (() => {
+              const expiry = selected.expiry_date ? new Date(selected.expiry_date) : null;
+              const daysToExpiry = expiry ? Math.ceil((expiry.getTime() - Date.now()) / 86400000) : null;
+              const tone = daysToExpiry == null ? "info" : daysToExpiry < 0 ? "critical" : daysToExpiry <= 30 ? "warning" : "info";
+              return (
+                <div className={`ax-banner ax-banner--${tone}`} role="status" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
+                  <div>
+                    <strong>{t("f360.licenseCurrency.title", "Verify license currency before you proceed")}</strong>
+                    <div className="ax-caption">
+                      {daysToExpiry == null
+                        ? t("f360.licenseCurrency.noExpiry", "No expiry date on record for this license — confirm the license number and status with the establishment and report any discrepancy.")
+                        : daysToExpiry < 0
+                          ? t("f360.licenseCurrency.expired", "This license shows as expired ({date}). Confirm with the establishment and report the discrepancy if it has since been renewed.").replace("{date}", dt(selected.expiry_date))
+                          : daysToExpiry <= 30
+                            ? t("f360.licenseCurrency.expiringSoon", "This license expires in {days} day(s) ({date}). Verify the license number on site.").replace("{days}", String(daysToExpiry)).replace("{date}", dt(selected.expiry_date))
+                            : t("f360.licenseCurrency.valid", "License {number} recorded valid through {date}. Verify the number on site and report any discrepancy.").replace("{number}", selected.license_number).replace("{date}", dt(selected.expiry_date))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             {selected && factory ? <dl className={styles.facts}>
               <div><dt>{t("f360.id.license", "Industrial license")}</dt><dd className="sq-numeric"><bdi>{selected.license_number}</bdi></dd></div>
               <div><dt>{t("f360.plant", "Plant number")}</dt><dd className="sq-numeric"><bdi>{text(selected.plant_number)}</bdi></dd></div>
@@ -126,6 +148,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
               <div><dt>{t("f360.id.licenseHolder", "License holder")}</dt><dd>{text(selected.holder_name)}</dd></div>
               <div><dt>{t("f360.location", "Address")}</dt><dd>{address ? [address.address_line_1, locale === "ar" ? address.street_name_ar : address.street_name_en, locale === "ar" ? address.city_ar : address.city_en, locale === "ar" ? address.region_ar : address.region_en].filter(Boolean).join(" · ") || "—" : "—"}</dd></div>
               <div><dt>{t("f360.coordinates", "Coordinates")}</dt><dd className="sq-numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : "—"}</bdi></dd></div>
+              <div><dt>{t("f360.exportsProducts", "Exports products?")}</dt><dd>{exportsProducts == null ? t("f360.exportsProducts.unknown", "Unknown") : exportsProducts ? t("common.yes", "Yes") : t("common.no", "No")}</dd></div>
             </dl> : <p className="sq-caption">{t("f360.license.unavailable", "Select a mapped industrial license to load plant facts.")}</p>}
           </section>
 
@@ -171,12 +194,27 @@ export default async function Factory360ByCr({ params, searchParams }: {
             {government.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th><th scope="col">{t("f360.source", "Source")}</th></tr></thead><tbody>{government.map(row => <tr key={row.id}><td>{text(row.title ?? row.record_type)}</td><td className="sq-numeric"><bdi>{row.external_record_id}</bdi></td><td>{label(row.status)}</td><td className="sq-numeric">{dt(row.valid_from)} → {dt(row.valid_to)}</td><td>{row.source_system} · v{row.version_number}</td></tr>)}</tbody></table></div> : <p className="sq-caption">{governmentResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.government.empty", "Government-domain records are unavailable until a governed source contract supplies them.")}</p>}
           </section>
 
+          <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-chemical-customs-heading">
+            <div className={styles.sectionHead}><h2 id="f360-chemical-customs-heading">{t("f360.chemicalCustoms.heading", "Chemical permits & customs exemptions")}</h2>{sourceBadge(!!chemicalPermitsError || !!customsExemptionsError, [...chemicalPermits, ...customsExemptions], !!selected?.plant_number)}</div>
+            {!selected?.plant_number ? <p className="sq-caption">{t("f360.chemicalCustoms.noPlant", "No plant number on the selected license — chemical permits and customs exemptions are looked up by plant number.")}</p> : <>
+              <h3>{t("f360.chemicalPermits.heading", "Chemical permits")}</h3>
+              {chemicalPermitsError ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+                : chemicalPermits.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("f360.chemicalPermits.approval", "Approval number")}</th><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{chemicalPermits.map(permit => <tr key={permit.externalId}><td className="sq-numeric"><bdi>{text(permit.approvalNumber)}</bdi></td><td>{label(permit.type?.label)}</td><td><span className="sq-lozenge sq-lozenge--info">{label(permit.status?.label)}</span></td><td className="sq-numeric">{dt(permit.startsAt)} → {dt(permit.endsAt)}</td></tr>)}</tbody></table></div>
+                : <p className="sq-caption">{t("f360.chemicalPermits.empty", "No chemical permits found for this plant.")}</p>}
+              <h3>{t("f360.customsExemptions.heading", "Customs exemptions")}</h3>
+              {customsExemptionsError ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p>
+                : customsExemptions.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("f360.customsExemptions.decree", "Decree number")}</th><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{customsExemptions.map(exemption => <tr key={exemption.externalId}><td className="sq-numeric"><bdi>{text(exemption.decreeNumber)}</bdi></td><td>{label(exemption.type?.label)}</td><td><span className="sq-lozenge sq-lozenge--info">{label(exemption.status?.label)}</span></td><td className="sq-numeric">{dt(exemption.startsAt)} → {dt(exemption.endsAt)}</td></tr>)}</tbody></table></div>
+                : <p className="sq-caption">{t("f360.customsExemptions.empty", "No customs exemptions found for this plant.")}</p>}
+            </>}
+          </section>
+
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-docs-heading">
             <div className={styles.sectionHead}><h2 id="f360-docs-heading">{t("f360.documents.heading", "Documents & factory media")}</h2>{permissions["view_factory_documents"] ? sourceBadge(docsResult.error || mediaResult.error, [...docs, ...media], !!factoryId) : <span className="sq-lozenge">{t("f360.restricted", "restricted")}</span>}</div>
             {!permissions["view_factory_documents"] ? <p className="sq-caption">{t("f360.documents.restricted", "Document metadata requires Factory Documents permission.")}</p> : <>
               {docs.length ? <div className="sq-tablewrap"><table className="sq-table"><thead><tr><th scope="col">{t("common.category", "Category")}</th><th scope="col">{t("common.title", "Title")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("f360.validity", "Validity")}</th><th scope="col">{t("f360.source", "Source")}</th><th scope="col" /></tr></thead><tbody>{docs.map(doc => <tr key={doc.id}><td>{label(doc.business_category ?? doc.doc_type)}</td><td>{doc.title}</td><td className="sq-numeric"><bdi>{text(doc.reference_no)}</bdi></td><td className="sq-numeric">{dt(doc.valid_from)} → {dt(doc.valid_to)}</td><td>{text(doc.source_system)} · {text(doc.source_status)}</td><td>{permissions["download_factory_documents"] && downloadUrls[doc.id] ? <a className="sq-link" href={downloadUrls[doc.id]} download>{t("common.download", "Download")}</a> : <span className="sq-caption">{permissions["download_factory_documents"] ? t("f360.download.unavailable", "file unavailable") : t("f360.download.restricted", "download restricted")}</span>}</td></tr>)}</tbody></table></div> : <p className="sq-caption">{t("f360.documents.empty", "No source-backed document metadata is available.")}</p>}
               {officialMedia.some(asset => mediaUrls[asset.id]) && <><h3>{t("f360.media.official", "Official factory gallery")}</h3><div className={styles.mediaGrid}>{officialMedia.filter(asset => mediaUrls[asset.id]).map(asset => <figure key={asset.id}><img src={mediaUrls[asset.id]} alt={asset.title ?? t("f360.media.alt", "Official factory image")} /><figcaption className="sq-caption">{asset.title ?? label(asset.category)} · {asset.source_system}</figcaption></figure>)}</div></>}
               <p className="sq-caption">{t("f360.media.boundary", "Only official factory/profile media appears here. Inspection evidence remains linked to its inspection report and is never merged into this gallery.")}</p>
+
               <h3>{t("f360.media.evidence", "Linked inspection evidence")}</h3>
               {linkedEvidence.length ? <ul>{linkedEvidence.map(asset => <li key={asset.id}>
                 <span className="sq-lozenge sq-lozenge--info">{label(asset.category)}</span> {asset.title ?? text(asset.evidence_id)} · {dt(asset.captured_at)} {asset.inspection_id ? <a className="sq-link" href={`/reports/inspection/${asset.inspection_id}`}>{t("f360.media.origin", "origin report")}</a> : factoryId ? <a className="sq-link" href={`/factories/${factoryId}#timeline`}>{t("f360.media.origin", "origin context")}</a> : null} {asset.evidence_id ? <a className="sq-link" href={`/evidence-ocr?evidence=${asset.evidence_id}`}>{t("f360.media.ocr", "Contextual OCR")}</a> : null}

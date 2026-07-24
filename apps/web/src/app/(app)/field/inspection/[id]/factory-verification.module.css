@@ -1,0 +1,277 @@
+/* M04-095..114 · M04-190 — Factory-information verification module (SCR-IPAD-630/640/650).
+   Presentation-only conversion to the SAQEEL design system. Layout, density and
+   surface treatment only — every hook, action, evidence rule and field name is
+   unchanged. SAQEEL DS tokens only (linked by (app)/field/layout.tsx); no bare
+   colors. The reference analog is field/factory-360 (establishment fields,
+   tables, badges, evidence). */
+
+/* SAQEEL Field Establishment File — outer column of stacked section cards. */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* One section card (Factory-360 snapshot, establishment data, incident, items). */
+.card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Card heading with an inline leading icon + trailing advisory badge. */
+.cardH {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding-block-end: var(--space-2);
+  border-block-end: 1px solid var(--border-subtle);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.cardHFlush { padding-block-end: 0; border-block-end: 0; }
+.hIcon { width: 16px; height: 16px; flex: none; }
+
+/* Factory-360 stat tiles (risk / drafts / pending sync). */
+.statRow { display: flex; gap: var(--space-2); }
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+}
+.statVal { font-size: 1.25rem; font-weight: 700; }
+.statBadge { margin-block-start: 2px; }
+
+/* Section sub-label (e.g. "Licenses & documents"). */
+.subLabel {
+  font-size: var(--type-label-size);
+  font-weight: var(--type-label-w);
+  line-height: var(--type-label-lh);
+  color: var(--text-secondary);
+}
+
+/* Sub-label row with a trailing badge (violation-history scaffold header). */
+.subHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Synced-license document row. */
+.licRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.licIcon {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.licIcon svg { width: 14px; height: 14px; }
+.licBody { display: flex; flex-direction: column; min-width: 0; }
+.licTitle { font-size: 0.8125rem; font-weight: 600; }
+
+/* Inspection-items category chips. */
+.chipRow {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-block-end: var(--space-1);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.84rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.chip[aria-pressed="true"] {
+  background: var(--action-primary);
+  border-color: var(--action-primary);
+  color: var(--text-on-action);
+}
+
+/* Pending-integration form scaffolding (establishment data, contacts). */
+.formCol { display: flex; flex-direction: column; gap: var(--space-3); }
+.fld { display: flex; flex-direction: column; gap: 5px; }
+.fld > span { font-size: 0.8125rem; color: var(--text-secondary); }
+.fldRow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 560px) { .fldRow { grid-template-columns: 1fr; } }
+
+.exportsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+}
+.exportsLabel { flex: 1; font-size: 0.875rem; }
+
+/* Contact scaffolding card (editable, unpersisted, never a Senaei write). */
+.contactCard {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--surface-sunken);
+}
+.contactHead { display: flex; align-items: center; gap: var(--space-2); margin-block-end: var(--space-2); }
+.trashIcon { width: 16px; height: 16px; }
+
+/* Workforce shift/roster scaffolding. */
+.shiftGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.shiftTotal { margin-block-start: var(--space-2); text-align: end; font-size: 0.8125rem; color: var(--text-secondary); }
+/* Worker-type label input grows; delete button sits beside it in the row head. */
+.rosterType { flex: 1; min-width: 0; }
+/* Roster grand-total footer (derived from entered values only). */
+.rosterFoot {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+}
+.rosterFoot > span:first-child { flex: 1; font-size: 0.875rem; }
+.rosterFoot strong { font-size: 1.125rem; font-weight: 700; }
+
+/* Standalone visit-notes textarea. */
+.notesArea { min-block-size: 84px; resize: vertical; }
+
+/* Per-item checkbox scaffolding row. */
+.checkRow { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-block-start: var(--space-3); }
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.check:disabled { cursor: default; }
+.checkBox {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  border: 1.5px solid var(--border-strong);
+}
+.checkBoxOn { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
+.checkMark { width: 10px; height: 10px; }
+
+/* Inspection-item cards. */
+.itemList { display: flex; flex-direction: column; gap: var(--space-2); }
+.itemCard {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+.itemHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.itemMain { min-width: 0; }
+.itemTitle { font-size: 0.875rem; font-weight: 600; }
+
+.headerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.headerRow h4 { margin: 0; font-size: 1rem; font-weight: 700; }
+
+/* Sub-section (review list, license, products, materials). */
+.section { display: flex; flex-direction: column; gap: var(--space-2); }
+.section h4 { margin: 0; font-size: 0.95rem; font-weight: 600; }
+
+/* Label text for a nested-input .field wrapper (implicit label kept — the
+   .field element IS the <label>, so its text needs its own class rather than
+   the DS `.field > label` child selector). */
+.fieldLabel {
+  font-size: var(--type-label-size);
+  font-weight: var(--type-label-w);
+  color: var(--text-secondary);
+  line-height: var(--type-label-lh);
+}
+
+/* Note field sits under the observed input inside the same cell. */
+.noteField { margin-block-start: var(--space-2); }
+
+.observedInput { min-inline-size: 140px; }
+
+/* Verify action stacks above the derived status badge in the status cell. */
+.verifyBtn { margin-block-end: var(--space-2); }
+
+/* Updated-field row highlight (M04-107). */
+.rowUpdated { background: var(--surface-sunken); }
+.cellUpdated { border-inline-start: 4px solid var(--status-warning); }
+
+/* Failure banner action row. */
+.bannerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.reviewItem { margin-block-end: var(--space-2); }
+
+/* Annotation canvas (M04-109) and its dashed capture frame. */
+.canvas {
+  max-inline-size: 100%;
+  touch-action: none;
+  cursor: crosshair;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+}
+
+/* Signature capture pad (DEC-009 / M04-197) — dashed well on a sunken surface. */
+.signatureCanvas {
+  inline-size: 100%;
+  block-size: 180px;
+  touch-action: none;
+  cursor: crosshair;
+  background: var(--surface-sunken);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+}

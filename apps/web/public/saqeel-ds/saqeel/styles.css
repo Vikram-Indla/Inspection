@@ -1,0 +1,52 @@
+/* SAQEEL Inspection Design System — global entry. Link this one file. */
+@import url('tokens/fonts.css');
+@import url('tokens/colors.css');
+@import url('tokens/typography.css');
+@import url('tokens/layout.css');
+@import url('components.css');
+
+/* Field-channel link normalisation (loaded only on /field routes via the field
+   layout). The SAQEEL field designs never use underlined links — every link is
+   a card/row/nav item/button with its own affordance — so the DS prose
+   a:hover underline (tokens/typography.css) must not leak onto them. */
+a, a:hover, a:focus, a:focus-visible { text-decoration: none; }
+
+/* Field header control icons: the DS ghost-button muted grey (--text-secondary)
+   reads pale on the dark field canvas. These already pass WCAG AA/AAA (~7.9:1),
+   but bump to full text colour for crispness. Nav keeps its intentional
+   active/inactive step (--nav-text vs --nav-text-active). */
+header .btn-ghost, header .btn-icon { color: var(--text-primary); }
+header .btn-ghost:hover, header .btn-icon:hover { color: var(--text-primary); background: var(--surface-sunken); }
+
+/* Mapbox popup — the default renderer ships a white bubble that clashes with
+   the SAQEEL field surfaces in both themes. Re-skin it with DS tokens (loaded
+   only on /field routes). Marker labels are establishment names, so keep it
+   legible and compact. */
+.mapboxgl-popup-content {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.35;
+  padding: 9px 28px 9px 12px;
+}
+.mapboxgl-popup-close-button {
+  color: var(--text-muted);
+  font-size: 17px;
+  padding: 0 6px;
+}
+.mapboxgl-popup-close-button:hover {
+  color: var(--text-primary);
+  background: transparent;
+}
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip { border-bottom-color: var(--surface-raised); }
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip { border-top-color: var(--surface-raised); }
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: var(--surface-raised); }
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: var(--surface-raised); }

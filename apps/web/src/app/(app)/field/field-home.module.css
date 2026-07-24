@@ -1,0 +1,151 @@
+/* SAQEEL Field Dashboard (Home) — layout ported verbatim from
+   SAQEEL Field Dashboard.dc.html. Consumes the SAQEEL design-system tokens
+   (var(--surface-*), var(--text-*), var(--action-primary), --border-subtle,
+   --shadow-card, --accent-soft/-text, --status-*) linked by
+   (app)/field/layout.tsx. The design's bare colors (hex-white on the avatar and
+   pin glyphs) are replaced with the DS token var(--text-on-action). */
+
+.wrap {
+  max-width: 960px; margin: 0 auto; width: 100%;
+  padding: 18px 18px 100px; display: flex; flex-direction: column; gap: 16px;
+}
+@media (max-width: 560px) { .wrap { padding: 14px 12px 100px; } }
+
+.card {
+  border: 1px solid var(--border-subtle); border-radius: 14px;
+  background: var(--surface-primary); box-shadow: var(--shadow-card);
+}
+
+/* Today's Brief */
+.brief { padding: 16px 18px; border-inline-start: 3px solid var(--action-primary); }
+.briefHead { display: flex; align-items: center; gap: 9px; margin-block-end: 10px; }
+.briefTitle { font-weight: 600; font-size: 14.5px; }
+.briefList { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.briefItem { display: flex; gap: 9px; font-size: 13.5px; }
+.briefMark { margin-block-start: 2px; }
+.briefFoot { margin-block-start: 10px; color: var(--text-muted); }
+
+/* Quick actions */
+.qa { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 560px) { .qa { grid-template-columns: repeat(2, 1fr); } }
+.qbtn {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px 10px; border: 1px solid var(--border-subtle); border-radius: 12px;
+  background: var(--surface-primary); font: inherit; font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text-primary); box-shadow: var(--shadow-card);
+  text-decoration: none; text-align: center;
+}
+.qbtn:hover { box-shadow: var(--shadow-card-hover); }
+.qi {
+  width: 40px; height: 40px; border-radius: 11px;
+  background: var(--accent-soft); color: var(--accent-text);
+  display: grid; place-items: center;
+}
+.qiCritical { background: var(--status-critical-soft); color: var(--status-critical-text); }
+
+/* Map card */
+.mapCard { padding: 0; overflow: hidden; }
+/* Fills the map card's height so the wider map column matches the factory
+   preview instead of leaving a short 200px block with whitespace below. */
+.mapCanvas { position: relative; flex: 1; min-height: 320px; background: var(--surface-sunken); }
+.mapFoot { display: flex; align-items: center; gap: 10px; padding: 13px 16px; text-decoration: none; color: inherit; }
+.mapTitle { font-weight: 600; font-size: 14px; }
+.mapLink { display: inline-flex; align-items: center; gap: 5px; color: var(--action-primary); font-size: 13px; }
+
+/* Daily Register */
+.regHead { display: flex; align-items: center; margin-block-end: 10px; }
+.regTitle { font-weight: 600; font-size: 15px; }
+.regSub { margin-inline-start: 8px; }
+.regList { display: flex; flex-direction: column; gap: 10px; }
+.regRow {
+  display: flex; align-items: center; gap: 13px; padding: 14px 16px;
+  text-align: start; width: 100%; text-decoration: none; color: inherit; box-sizing: border-box;
+}
+.regNum {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent-text);
+  display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none;
+}
+.regBody { flex: 1; min-width: 0; }
+.regCompany { display: block; font-weight: 600; font-size: 14px; }
+.regEnd { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+.emptyReg { padding: 20px 16px; }
+.emptyRegTitle { font-weight: 600; margin-block-end: 6px; }
+
+/* ---- Dashboard redesign (SAQEEL Field Dashboard.dc.html) ------------------ */
+/* Header date pill */
+.datePill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px;
+  border-radius: var(--radius-full); border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken); font-size: 12px; font-weight: 600;
+  color: var(--text-secondary); white-space: nowrap;
+}
+
+/* AI Daily Brief — stats row */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-block-start: 14px; }
+@media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+.stat { display: flex; align-items: center; gap: 9px; padding-inline-end: 16px; border-inline-end: 1px solid var(--border-subtle); }
+.stat:last-child { border-inline-end: none; }
+@media (max-width: 640px) { .stat { border-inline-end: none; padding-inline-end: 0; } }
+.statIc { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; }
+.statNum { font-weight: 700; font-size: 16px; }
+
+/* AI recommendation row */
+.reco {
+  border-block-start: 1px solid var(--border-subtle); padding-block-start: 14px; margin-block-start: 14px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+
+/* Pill buttons (recommendation actions + quick-action rail) */
+.qbtnPill {
+  display: inline-flex; align-items: center; gap: 9px; padding: 12px 15px;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
+  background: var(--surface-primary); font: inherit; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; color: var(--text-primary); box-shadow: var(--shadow-card);
+  white-space: nowrap; text-decoration: none; flex: none;
+}
+.qbtnPill:hover { box-shadow: var(--shadow-card-hover); }
+.qbtnPrimary { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
+
+/* Two-column map + factory preview */
+/* Map gets the dominant width; the factory preview is a right rail that fits. */
+.twoCol { display: grid; grid-template-columns: 2fr 0.95fr; gap: 14px; align-items: stretch; }
+@media (max-width: 900px) { .twoCol { grid-template-columns: 1fr; } }
+.cardHead { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-block-end: 1px solid var(--border-subtle); }
+.legend { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-block-start: 1px solid var(--border-subtle); flex-wrap: wrap; }
+.legendItem { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+
+/* Factory preview */
+.focusNote {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: var(--accent-soft); color: var(--accent-text);
+  border-radius: 10px; padding: 10px 12px; font-size: 12.5px; line-height: 1.45;
+}
+.scoreBox { background: var(--surface-sunken); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 9px; text-align: center; margin-block-start: 8px; }
+.kvRow { display: flex; justify-content: space-between; }
+.btnOutline { border: 1px solid var(--border-subtle); background: none; }
+
+/* Today's schedule rows */
+.schedRow {
+  display: grid; grid-template-columns: 60px 1fr auto auto; align-items: center; gap: 12px;
+  padding: 12px 16px; border-block-end: 1px solid var(--border-subtle);
+  text-decoration: none; color: inherit;
+}
+.schedRow:hover { background: var(--surface-secondary); }
+
+/* Pending attention */
+.attn { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 640px) { .attn { grid-template-columns: 1fr; } }
+.attnIc { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
+.attnNum { font-size: 26px; font-weight: 700; }
+
+/* Operational insight strip */
+.insight { display: flex; align-items: center; flex-wrap: wrap; padding: 13px 18px; }
+.insightItem { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 130px; padding: 4px 16px; border-inline-end: 1px solid var(--border-subtle); }
+.insightItem:last-child { border-inline-end: none; }
+.insightNum { font-weight: 700; font-size: 17px; }
+.progressTrack { width: 56px; height: 5px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; display: inline-block; }
+.progressFill { display: block; height: 100%; background: var(--action-primary); }
+
+/* Quick-action rail (horizontal scroll) */
+.qaRail { display: flex; gap: 9px; flex-wrap: nowrap; overflow-x: auto; padding-block-end: 2px; -webkit-overflow-scrolling: touch; }

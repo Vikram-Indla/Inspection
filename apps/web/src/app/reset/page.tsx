@@ -4,9 +4,9 @@ import ResetClient, { type ResetStrings } from "./ResetClient";
 
 export const dynamic = "force-dynamic";
 
-// SCR-PUB-010 (reset leg) — lands the Supabase recovery link. The email link
-// carries a recovery token in the URL fragment; supabase-js establishes a
-// short-lived recovery session on load, then the user sets a new password.
+// SCR-PUB-010 (reset leg) — continues after /login verifies the emailed OTP.
+// verifyOtp establishes the short-lived recovery session, then the user sets a
+// new password here.
 type Locale = "ar" | "en";
 
 async function resolveLocale(): Promise<Locale> {
@@ -23,12 +23,12 @@ export default async function Reset() {
     lang: locale,
     brandTitle: "صقيل | صناعي",
     brandSub: ar ? "منصّة التفتيش الصناعي" : "Industrial Inspection Platform",
-    checking: ar ? "جارٍ التحقق من رابط إعادة التعيين…" : "Verifying your reset link…",
-    invalidTitle: ar ? "رابط إعادة التعيين غير صالح أو منتهي الصلاحية." : "This reset link is invalid or has expired.",
-    invalidBody: ar ? "اطلب رابطًا جديدًا من صفحة تسجيل الدخول." : "Request a new link from the sign-in page.",
+    checking: ar ? "جارٍ التحقق من جلسة الاسترداد…" : "Verifying your recovery session…",
+    invalidTitle: ar ? "جلسة الاسترداد غير صالحة أو منتهية الصلاحية." : "This recovery session is invalid or has expired.",
+    invalidBody: ar ? "اطلب رمزًا جديدًا من صفحة تسجيل الدخول." : "Request a new code from the sign-in page.",
     invalidHint: ar
-      ? "اختر \"هل نسيت كلمة المرور؟\" في صفحة تسجيل الدخول لطلب رابط جديد."
-      : "Select \"Forgot your password?\" on the sign-in page to request a new link.",
+      ? "اختر \"هل نسيت كلمة المرور؟\" في صفحة تسجيل الدخول لطلب رمز جديد."
+      : "Select \"Forgot your password?\" on the sign-in page to request a new code.",
     title: ar ? "تعيين كلمة مرور جديدة" : "Set a new password",
     sub: ar ? "اختر كلمة مرور جديدة لحسابك." : "Choose a new password for your account.",
     pwLabel: ar ? "كلمة المرور الجديدة" : "New password",

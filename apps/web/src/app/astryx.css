@@ -24,8 +24,8 @@ h3 { font: var(--ax-text-heading); margin: 0; }
 h4 { font: var(--ax-text-subheading); margin: 0; }
 p  { margin: 0; }
 a.ax-link { color: var(--ax-color-primary); text-decoration: none; border-radius: var(--ax-space-050); }
-a.ax-link:not(.ax-btn) { text-decoration: none; }
-a.ax-link:hover { text-decoration: none; color: var(--ax-color-primary-hover); }
+a.ax-link:not(.ax-btn) { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: .08em; }
+a.ax-link:hover { text-decoration: underline; color: var(--ax-color-primary-hover); }
 a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-inline-target {
   display: inline-flex;
@@ -45,7 +45,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   border: 1px solid var(--ax-color-border);
   border-radius: var(--ax-radius-standard);
 }
-.ax-panel { border-radius: var(--ax-radius-large); }
+.ax-panel { border-radius: var(--ax-radius-large); padding: var(--ax-space-250); }
 
 /* ============================================================ CORE: BUTTONS
    States: default/hover/focus/active/disabled/loading.
@@ -132,11 +132,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   transition: background-color 6000s ease-in-out 0s;
 }
 .ax-input:hover, .ax-select:hover, .ax-textarea:hover { border-color: var(--ax-color-border-strong); }
-.ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible {
-  outline: none;
-  border-color: var(--focus-ring);
-  box-shadow: inset 0 0 0 1px var(--focus-ring);
-}
+.ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-input[disabled], .ax-select[disabled], .ax-textarea[disabled] { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-disabled); cursor: not-allowed; }
 .ax-input[readonly] { background: var(--ax-color-surface-sunken); border-style: dashed; }
 .ax-field.is-invalid .ax-input, .ax-field.is-invalid .ax-select, .ax-field.is-invalid .ax-textarea { border-color: var(--ax-color-critical); }
@@ -431,72 +427,67 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    TASK-WEB-SHELL-001 — role-scoped grouped nav, sticky topbar, desktop
    collapse and accessible mobile drawer. All geometry uses logical axes. */
 .ax-shell { display: grid; grid-template-columns: var(--ax-shell-nav-width) minmax(0, 1fr); min-block-size: 100dvh; transition: grid-template-columns var(--ax-motion-standard); }
-.ax-shell.is-collapsed { grid-template-columns: var(--sidebar-w-collapsed) minmax(0, 1fr); }
+.ax-shell.is-collapsed { grid-template-columns: 68px minmax(0, 1fr); }
+/* Field-only Inspector sessions render no console sidebar nav at all — the
+   drawer, backdrop and hamburger are not in the DOM. Collapse the reserved
+   nav column so the page content spans full width instead of leaving a gap. */
+.ax-shell.is-field-nav-hidden, .ax-shell.is-field-nav-hidden.is-collapsed { grid-template-columns: minmax(0, 1fr); }
 .ax-shell__skip { position: fixed; inset-block-start: var(--ax-space-100); inset-inline-start: var(--ax-space-100); z-index: var(--ax-z-toast); transform: translateY(-160%); background: var(--ax-color-primary); color: var(--ax-color-inverse-text); padding: var(--ax-space-100) var(--ax-space-150); border-radius: var(--ax-radius-small); font: var(--ax-text-body-strong); text-decoration: none; }
 .ax-shell__skip:focus { transform: translateY(0); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* SAQEEL graphite navigation — deep graphite in BOTH themes (PR 1b hotfix). */
 .ax-shell__nav {
   background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
-  padding: 0; display: flex; flex-direction: column; gap: 0;
+  padding: var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
   position: sticky; inset-block-start: 0; block-size: 100dvh; min-inline-size: 0; overflow: hidden;
 }
-.ax-shell__brand { display:flex; align-items:center; gap: 11px; min-block-size: 75px; padding: 20px 18px; border-block-end: 1px solid var(--nav-border); }
-.ax-shell__brand-mark { display: none; inline-size: 34px; block-size: 34px; flex: 0 0 auto; }
-.ax-shell__brand-lockup { display: flex; align-items: center; min-inline-size: 0; white-space: nowrap; }
-.ax-shell__brand-wordmark { display: block; inline-size: 170px; block-size: auto; max-inline-size: 100%; }
+.ax-shell__brand { display:flex; align-items:center; gap: var(--ax-space-100); min-block-size: 64px; padding: var(--ax-space-100) var(--ax-space-100) var(--ax-space-150); border-block-end: 1px solid var(--nav-border); margin-block-end: var(--ax-space-050); }
+.ax-shell__brand-mark { inline-size: 30px; block-size: 30px; flex: 0 0 auto; color: var(--nav-indicator); }
+.ax-shell__brand-lockup { display: flex; align-items: baseline; gap: var(--ax-space-100); min-inline-size: 0; white-space: nowrap; }
+/* Saqeel wordmark — always the Arabic brand, whatever the UI locale */
+.ax-shell__brand-wordmark { font: 600 21px/28px var(--ax-font-arabic); color: var(--nav-text-active); }
+.ax-shell__brand-sub { font: var(--ax-text-caption); color: var(--nav-text); }
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
-.ax-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: 0; padding: 14px 10px; scrollbar-width: thin; }
-.ax-shell__admin-pin { flex: 0 0 auto; padding: 12px 10px 16px; border-block-start: 1px solid var(--nav-border); }
-.ax-nav-group { display: flex; flex-direction: column; gap: 0; }
-.ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 15px 10px 6px; border: 0; background: none; color: color-mix(in srgb, var(--nav-text) 65%, transparent); cursor: pointer; font: 500 10px/1.4 var(--ax-font-mono); letter-spacing: .12em; text-transform: uppercase; text-align: start; border-radius: 0; }
-.ax-nav-group:first-child .ax-nav-group__trigger { padding-block-start: 2px; }
-.ax-nav-group__trigger:hover { color: var(--nav-text); background: transparent; }
-.ax-shell__groups > .ax-nav-group > .ax-nav-group__trigger .ax-nav-group__chevron { display: none; }
-.ax-nav-group__trigger.is-administration { align-items: center; justify-content: flex-start; gap: 11px; padding: 9px 11px; color: var(--nav-text); font: 500 13.5px/1.35 var(--ax-font-sans); letter-spacing: 0; text-transform: none; border-radius: 8px; }
-.ax-nav-group__trigger.is-administration:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
-.ax-nav-group__trigger.is-administration .ax-nav-group__chevron { display: block; margin-inline-start: auto; }
+.ax-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: var(--ax-space-100); scrollbar-width: thin; }
+.ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
+.ax-nav-group__trigger { inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); border: 0; background: none; color: color-mix(in srgb, var(--nav-text) 65%, transparent); cursor: pointer; font: var(--ax-text-micro); letter-spacing: .01em; text-align: start; border-radius: var(--ax-radius-small); }
+.ax-nav-group__trigger:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
 .ax-nav-group__chevron { transition: transform var(--ax-motion-fast); }
 .ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(-90deg); }
 [dir="rtl"] .ax-nav-group__trigger[aria-expanded="false"] .ax-nav-group__chevron { transform: rotate(90deg); }
 .ax-nav-item {
-  display: flex; align-items: center; gap: 11px; min-block-size: 36px;
-  padding: 9px 11px; margin-block-end: 2px;
-  border-radius: 8px; color: var(--nav-text);
-  font: 500 13.5px/1.35 var(--ax-font-sans); text-decoration: none; border: 0; background: none; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height);
+  padding-block: var(--ax-space-100); padding-inline: var(--ax-space-150);
+  border-radius: var(--ax-radius-standard); color: var(--nav-text);
+  font: var(--ax-text-body); text-decoration: none; border: 1px solid transparent; background: none; cursor: pointer; white-space: nowrap;
   position: relative;
 }
 .ax-nav-label { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; }
-.ax-nav-icon { display: grid; place-items: center; inline-size: 16px; block-size: 16px; flex: 0 0 auto; }
-.ax-nav-icon > svg { inline-size: 16px; block-size: 16px; }
+.ax-nav-icon { display: grid; place-items: center; inline-size: var(--ax-space-300); block-size: var(--ax-space-300); flex: 0 0 auto; }
 .ax-nav-item:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
 .ax-nav-item.is-disabled { color: var(--nav-text); cursor: not-allowed; opacity: .5; }
 .ax-nav-item.is-disabled:hover { background: transparent; color: var(--nav-text); }
 .ax-nav-item.is-disabled:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-nav-lock { display: grid; place-items: center; margin-inline-start: auto; flex: 0 0 auto; }
 .ax-nav-subgroup { display: flex; flex-direction: column; gap: var(--ax-space-050); }
-.ax-nav-subgroup__label { display: flex; align-items: center; gap: 11px; min-block-size: 36px; padding: 9px 11px; color: var(--nav-text); font: 500 13.5px/1.35 var(--ax-font-sans); }
-.ax-nav-subgroup__chevron { margin-inline-start: auto; }
-.ax-nav-item--child { margin-inline-start: 31px; inline-size: calc(100% - 31px); }
-.ax-nav-item[aria-current="page"] { background: var(--nav-bg-selected); color: var(--nav-text-active); border-color: transparent; font-weight: 500; box-shadow: inset 2px 0 0 var(--nav-indicator); }
-.ax-nav-item[aria-current="page"]::before { content: none; }
+.ax-nav-subgroup__label { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height); padding-inline: var(--ax-space-150); color: var(--nav-text-active); font: var(--ax-text-body-strong); }
+.ax-nav-item--child { margin-inline-start: var(--ax-space-300); inline-size: calc(100% - var(--ax-space-300)); }
+.ax-nav-item[aria-current="page"] { background: var(--nav-bg-selected); color: var(--nav-text-active); border-color: transparent; font-weight: 600; box-shadow: none; }
+.ax-nav-item[aria-current="page"]::before { content: ""; position: absolute; inset-block: 6px; inset-inline-start: 0; inline-size: 2.5px; border-radius: 999px; background: var(--nav-indicator); }
 [dir="rtl"] .ax-nav-item[aria-current="page"] { box-shadow: none; }
 .ax-nav-item:focus-visible, .ax-nav-group__trigger:focus-visible, .ax-shell__collapse:focus-visible, .ax-shell__close:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.ax-shell__collapse { display: grid; place-items: center; margin-inline-start: auto; inline-size: 26px; block-size: 26px; min-block-size: 26px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--nav-text); cursor: pointer; }
+.ax-shell__collapse { display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); padding: var(--ax-space-100) var(--ax-space-150); border: 0; border-radius: var(--ax-radius-standard); background: transparent; color: var(--nav-text); cursor: pointer; font: var(--ax-text-caption); white-space: nowrap; }
 .ax-shell__collapse:hover { color: var(--nav-text-active); background: var(--nav-bg-hover); }
 [dir="rtl"] .ax-shell__collapse > span:first-child { transform: scaleX(-1); }
-.ax-shell.is-collapsed .ax-shell__nav { padding-inline: 0; }
-.ax-shell.is-collapsed .ax-shell__brand { justify-content: center; padding-inline: 10px; }
-.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }
+.ax-shell.is-collapsed .ax-shell__nav { padding-inline: var(--ax-space-100); }
+.ax-shell.is-collapsed .ax-shell__brand { justify-content: center; padding-inline: 0; }
 .ax-shell.is-collapsed .ax-shell__brand-lockup,
 .ax-shell.is-collapsed .ax-nav-label { display: none; }
 .ax-shell.is-collapsed .ax-nav-group__trigger { display: none; }
-.ax-shell.is-collapsed .ax-shell__groups { padding-inline: 10px; }
-.ax-shell.is-collapsed .ax-shell__admin-pin { padding-inline: 10px; }
 .ax-shell.is-collapsed .ax-nav-item { justify-content: center; padding-inline: 0; }
 .ax-shell.is-collapsed .ax-nav-subgroup__label { display: none; }
 .ax-shell.is-collapsed .ax-nav-item--child { margin-inline-start: 0; inline-size: 100%; }
 .ax-shell.is-collapsed .ax-nav-lock { display: none; }
-.ax-shell.is-collapsed .ax-shell__collapse { position: absolute; inset-block-start: 58px; margin: 0; transform: rotate(180deg); background: var(--nav-bg); }
+.ax-shell.is-collapsed .ax-shell__collapse { justify-content: center; padding-inline: 0; }
 .ax-shell.is-collapsed .ax-nav-item[aria-current="page"] { box-shadow: none; }
 [dir="rtl"] .ax-shell.is-collapsed .ax-nav-item[aria-current="page"] { box-shadow: none; }
 .ax-shell__main { display: flex; flex-direction: column; min-inline-size: 0; }
@@ -506,7 +497,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   padding: var(--ax-space-100) var(--ax-space-300) var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
   position: sticky; inset-block-start: 0; z-index: var(--ax-z-sticky);
 }
-.ax-pagehead__topbar { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height-field); }
+.ax-pagehead__topbar { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height-field); position: relative; z-index: 1; }
 .ax-pagehead__actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--ax-space-100); }
 .ax-shell-controls { display: flex; align-items: center; gap: var(--ax-space-100); min-inline-size: 0; flex: 1; }
 .ax-topbar-icon { display: grid; place-items: center; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid transparent; border-radius: var(--ax-radius-standard); background: transparent; color: var(--ax-color-text-secondary); cursor: pointer; transition: color var(--ax-motion-fast), background var(--ax-motion-fast), border-color var(--ax-motion-fast); }
@@ -516,19 +507,24 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell-search { position: relative; inline-size: min(420px, 38vw); }
 .ax-shell-search__icon { position: absolute; inset-inline-start: var(--ax-space-150); inset-block-start: 50%; transform: translateY(-50%); color: var(--ax-color-text-secondary); pointer-events: none; }
 .ax-shell-search input { inline-size: 100%; min-block-size: var(--ax-control-height); padding-inline: 40px var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full); background: var(--ax-color-surface-sunken); color: var(--ax-color-text); font: var(--ax-text-input); }
-.ax-shell-search input:focus-visible {
-  outline: none;
-  border-color: var(--focus-ring);
-  box-shadow: inset 0 0 0 1px var(--focus-ring);
-}
+.ax-shell-search input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-shell-search__results { position: absolute; inset-block-start: calc(100% + var(--ax-space-100)); inset-inline: 0; z-index: var(--ax-z-drawer); padding: var(--ax-space-100); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-overlay); }
+/* Portaled to document.body (see ShellClient.tsx) so it paints outside the
+   sticky pagehead's subtree — top/left/width come from inline style, computed
+   off the search box's live position; margin-top clears the gap the
+   attached-layout variant got from inset-block-start above. */
+.ax-shell-search__results--portal { position: fixed; inset-inline: auto; margin-block-start: var(--ax-space-100); z-index: var(--ax-z-toast); }
 .ax-shell-search__results a { display: flex; align-items: center; gap: var(--ax-space-100); padding: var(--ax-space-100); color: var(--ax-color-text); text-decoration: none; border-radius: var(--ax-radius-small); }
 .ax-shell-search__results a > span { display: flex; flex-direction: column; min-inline-size: 0; }
 .ax-shell-search__results a strong, .ax-shell-search__results a small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ax-shell-search__results a small { color: var(--ax-color-text-secondary); font: var(--ax-text-micro); }
 .ax-shell-search__results a:hover { background: var(--ax-color-neutral-tint); }
 .ax-shell-search__results p { margin: 0; padding: var(--ax-space-100); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
-.ax-shell-scope { position: relative; display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); padding-inline: var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); white-space: nowrap; }
+/* background matches .ax-shell-search input's recessed shade, not the
+   pagehead's own — the pill previously used the SAME token as its parent
+   header bar (only a 1px border differed), reading as flat/washed out in
+   both themes rather than a distinct interactive control. */
+.ax-shell-scope { position: relative; display: flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); padding-inline: var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface-sunken); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); white-space: nowrap; }
 button.ax-shell-scope { cursor: pointer; }
 .ax-shell-scope summary { display: flex; align-items: center; gap: var(--ax-space-100); cursor: pointer; list-style: none; }
 .ax-shell-scope summary::-webkit-details-marker { display: none; }
@@ -555,6 +551,10 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-notification__trigger:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-notification__badge { position: absolute; inset-block-start: 2px; inset-inline-end: 1px; min-inline-size: 18px; block-size: 18px; display: grid; place-items: center; padding-inline: 4px; border: 2px solid var(--ax-color-surface); border-radius: var(--ax-radius-full); background: var(--ax-color-critical); color: var(--ax-color-on-critical); font: 600 10px/1 var(--ax-font-sans); }
 .ax-shell-account__menu { position: absolute; inset-block-start: calc(100% + var(--ax-space-100)); inset-inline-end: 0; z-index: var(--ax-z-drawer); inline-size: min(320px, 80vw); display: flex; flex-direction: column; gap: var(--ax-space-100); padding: var(--ax-space-200); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-overlay); }
+/* Portaled variant (DR-36/DR-51 family) — position comes from inline style
+   (viewport coordinates measured off the trigger), not the static inset
+   values above, which assumed a `position:relative` ancestor it no longer has. */
+.ax-shell-account__menu--portal { position: fixed; inset-block-start: auto; inset-inline-end: auto; z-index: var(--ax-z-toast); }
 .ax-shell-account__menu a { color: var(--ax-color-primary-hover); text-decoration: none; padding-block: var(--ax-space-050); }
 .ax-shell-account__menu a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .ax-pagehead__row { display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-200); flex-wrap: wrap; }
@@ -569,70 +569,6 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-shell em, .ax-content em { font-style: normal; }
 .ax-shell__backdrop { display: none; }
 
-/* WA-P1-M2-BATCH-002 — desktop shell and preview workspaces. The console rail
-   remains anchored while the workspace scrolls; mobile retains the drawer
-   contract below. */
-@media (min-width: 900px) {
-  .ax-shell__nav { position: fixed; inset-block: 0; inset-inline-start: 0; inline-size: var(--ax-shell-nav-width); z-index: var(--ax-z-sticky); }
-  .ax-shell.is-collapsed .ax-shell__nav { inline-size: var(--sidebar-w-collapsed); }
-  .ax-shell__main { grid-column: 2; }
-}
-
-.wa-planning-methods {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--ax-space-200);
-}
-.wa-planning-method {
-  min-inline-size: 0;
-  min-block-size: 132px;
-  padding: var(--ax-space-250);
-  display: flex;
-  align-items: flex-start;
-  gap: var(--ax-space-150);
-  border-color: var(--ax-color-border);
-  transition: border-color var(--ax-motion-fast), background var(--ax-motion-fast), transform var(--ax-motion-fast);
-}
-.wa-planning-method:hover { border-color: var(--ax-color-primary); background: var(--ax-color-primary-tint); transform: translateY(-1px); }
-.wa-planning-method__icon {
-  display: grid;
-  place-items: center;
-  inline-size: 42px;
-  block-size: 42px;
-  flex: 0 0 auto;
-  border-radius: var(--ax-radius-standard);
-  color: var(--ax-color-primary-strong);
-  background: var(--ax-color-primary-tint);
-}
-.wa-planning-method__copy { display: flex; flex-direction: column; gap: var(--ax-space-100); min-inline-size: 0; }
-
-.wa-visit-detail-workspace {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
-  gap: var(--ax-space-250);
-  align-items: start;
-}
-.wa-visit-detail-main { display: flex; flex-direction: column; gap: var(--ax-space-250); min-inline-size: 0; }
-.wa-visit-detail-actions {
-  position: sticky;
-  inset-block-start: calc(var(--ax-control-height-field) + var(--ax-space-400));
-  max-block-size: calc(100dvh - var(--ax-control-height-field) - var(--ax-space-600));
-  overflow: auto;
-  scrollbar-gutter: stable;
-}
-.wa-visit-detail-actions > .panel { padding: var(--ax-space-250) !important; gap: var(--ax-space-200) !important; box-shadow: none; border-color: var(--ax-color-border-strong); }
-.wa-visit-detail-actions .ax-actionzone > .row { flex-direction: column; align-items: stretch !important; gap: var(--ax-space-150) !important; }
-.wa-visit-detail-actions form.row { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch !important; inline-size: 100%; gap: var(--ax-space-100); }
-.wa-visit-detail-actions .ax-field { max-inline-size: none !important; inline-size: 100%; }
-.wa-visit-detail-actions form.row > .btn { inline-size: 100%; }
-
-@media (max-width: 1099px) {
-  .wa-planning-methods { grid-template-columns: minmax(0, 1fr); }
-  .wa-planning-method { min-block-size: 0; }
-  .wa-visit-detail-workspace { grid-template-columns: minmax(0, 1fr); }
-  .wa-visit-detail-actions { position: static; max-block-size: none; overflow: visible; }
-}
-
 @media (max-width: 899px) {
   .ax-shell, .ax-shell.is-collapsed { grid-template-columns: minmax(0, 1fr); }
   .ax-shell__nav, .ax-shell.is-collapsed .ax-shell__nav { position: fixed; z-index: var(--ax-z-drawer); inset-block: 0; inset-inline-start: 0; inline-size: min(var(--ax-shell-nav-width), 88vw); block-size: 100dvh; padding: var(--ax-space-200); transform: translateX(-105%); transition: transform var(--ax-motion-standard); box-shadow: var(--ax-shadow-overlay); overflow: hidden; }
@@ -641,7 +577,6 @@ button.ax-shell-scope { cursor: pointer; }
   [dir="rtl"] .ax-shell.is-drawer-open .ax-shell__nav,
   [dir="rtl"] .ax-shell.is-collapsed.is-drawer-open .ax-shell__nav { transform: translateX(0); }
   .ax-shell.is-collapsed .ax-shell__brand { justify-content: flex-start; padding: var(--ax-space-050) var(--ax-space-100) var(--ax-space-200); }
-  .ax-shell.is-collapsed .ax-shell__brand-mark { display: none; }
   .ax-shell.is-collapsed .ax-shell__brand-lockup, .ax-shell.is-collapsed .ax-nav-label { display: initial; }
   .ax-shell.is-collapsed .ax-nav-group__trigger { display: flex; justify-content: space-between; padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); }
   .ax-shell.is-collapsed .ax-nav-item { justify-content: flex-start; padding-inline: var(--ax-space-150); }
@@ -716,20 +651,21 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-field-page { display: flex; flex-direction: column; gap: var(--ax-space-300); padding-block-end: 104px; }
 .ax-field-taskbar {
   position: fixed; inset-block-end: 0; inset-inline: 0; z-index: var(--ax-z-sticky);
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(180px, auto);
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch; gap: var(--ax-space-050); padding: var(--ax-space-100) max(var(--ax-space-200), env(safe-area-inset-right)) max(var(--ax-space-100), env(safe-area-inset-bottom)) max(var(--ax-space-200), env(safe-area-inset-left));
   border-block-start: 1px solid var(--ax-color-border); background: var(--ax-color-surface);
 }
+/* Vertical icon-over-label per the SAQEEL Field design nav; the active tab is
+   marked by COLOR only (design uses nav-text-active), not a filled tint box —
+   the prior filled/bordered pill diverged from the design. */
 .ax-field-taskbar__item, .ax-field-taskbar__primary {
-  min-inline-size: 0; min-block-size: var(--ax-control-height-field); display: flex; align-items: center; justify-content: center; gap: var(--ax-space-100);
-  padding-inline: var(--ax-space-150); border: 1px solid transparent; border-radius: var(--ax-radius-standard);
-  font: var(--ax-text-caption); font-weight: 500; text-decoration: none; text-align: center;
+  min-inline-size: 0; min-block-size: var(--ax-control-height-field); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  padding-block: var(--ax-space-100); padding-inline: var(--ax-space-050); border: 0; border-radius: var(--ax-radius-standard);
+  font: var(--ax-text-micro); font-weight: 500; text-decoration: none; text-align: center;
 }
 .ax-field-taskbar__item { color: var(--ax-color-text-secondary); background: transparent; }
-.ax-field-taskbar__item:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-.ax-field-taskbar__item[aria-current="page"] { color: var(--ax-color-primary-strong); background: var(--ax-color-primary-tint); border-color: color-mix(in srgb, var(--ax-color-primary) 24%, var(--ax-color-border)); }
-.ax-field-taskbar__primary { color: var(--ax-color-inverse-text); background: var(--ax-color-primary); border-color: var(--ax-color-primary); }
-.ax-field-taskbar__primary:hover { background: var(--ax-color-primary-hover); border-color: var(--ax-color-primary-hover); }
+.ax-field-taskbar__item:hover { color: var(--ax-color-text); }
+.ax-field-taskbar__item[aria-current="page"] { color: var(--ax-color-primary); font-weight: 600; }
 .ax-field-taskbar__item:focus-visible, .ax-field-taskbar__primary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-field-taskbar svg { flex: 0 0 auto; }
 

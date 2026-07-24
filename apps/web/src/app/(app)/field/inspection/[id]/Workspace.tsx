@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { local, processOutbox, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
+import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
@@ -9,11 +9,13 @@ import {
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
+import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
+import styles from "./workspace.module.css";
 
 type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
@@ -50,6 +52,10 @@ export type WorkspaceCancellation = {
 // server-side with t() and passed as props; offline logic is untouched.
 export type WorkspaceStrings = {
   sync: { [K in SyncState]: string };
+  // O-12/IPAD-FIGMA-DELTA §2A — "في حال ان الاتصال ضعيف": a degraded-connection
+  // signal distinct from the sync chip above (which reports write/queue
+  // outcome, not network quality).
+  connectivityOffline: string; connectivityWeak: string;
   answered: string;
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
@@ -102,14 +108,16 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, cancellation, cancelReasons, journeySchemaAvailable }: {
+export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
   inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
+  userId: string;
   serverItemStates: SItemState[]; actionTemplates: ActionTemplate[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
   // Phase 4B — active-session cancellation (inert unless the schema probe passed)
   cancellation?: WorkspaceCancellation | null; cancelReasons?: { key: string; label: string }[]; journeySchemaAvailable?: boolean;
 }) {
+  const local = useMemo(() => localForUser(userId), [userId]);
   const router = useRouter();
   const [sync, setSync] = useState("synced" as SyncState);
   const [detail, setDetail] = useState(undefined as string | undefined);
@@ -141,6 +149,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const cancelIdemRef = useRef(null as string | null);
   const cancelApproved = cancelState?.status === "approved";
   const cancelPending = cancelState?.status === "pending";
+  useEffect(() => { void promptLegacyOfflineRestore(userId).catch(() => {}); }, [userId]);
   useEffect(() => { setCancelState(cancellation ?? null); }, [cancellation]);
   useEffect(() => {
     if (!cancelPending) return;
@@ -259,7 +268,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         });
       }
     });
-  }, [inspection.id]);
+  }, [inspection.id, local]);
 
   const onState = useCallback((s: SyncState, d?: string) => {
     // A replay started while online can finish after the browser goes offline.
@@ -268,19 +277,19 @@ export default function Workspace({ inspection, items, library, serverResponses,
     setSync(effective);
     setDetail(effective === "offline" ? undefined : d);
     local.conflicts().then(setConflicts);
-  }, []);
+  }, [local]);
   const refreshQueued = useCallback(async () => {
     const ops = await local.peekAll();
     setQueuedEv(ops.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.inspection_id === inspection.id));
   }, [inspection.id]);
   useEffect(() => {
-    const tick = () => { processOutbox(onState); refreshQueued(); flushRef.current(); };
+    const tick = () => { processOutbox(userId, onState); refreshQueued(); flushRef.current(); };
     tick();
     const goOffline = () => onState("offline");
     window.addEventListener("online", tick); window.addEventListener("offline", goOffline);
     const iv = setInterval(tick, 8000);
     return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
-  }, [onState, refreshQueued]);
+  }, [onState, refreshQueued, userId]);
 
   // --- Persistence beyond the outbox (context · action forms · runtime violations) ---
   // The offline engine is untouched: these use direct writes when online plus a
@@ -337,7 +346,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       violation_id: vid, violation_code_id: vid ? null : (vioConfig[code]?.id ?? null),
       reason: "Response changed to compliant", queued_at: new Date().toISOString(),
     });
-    processOutbox(onState);
+    processOutbox(userId, onState);
   }
   /** Phase 5 (§15, D-017) — one op kind covers add / deselect / restore: the
    *  payload is the DESIRED final row, upserted on (inspection_id, item_id). */
@@ -345,7 +354,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const reverted_at = reverted ? new Date().toISOString() : null;
     setItemStates(m => ({ ...m, [item.id]: { state, reason, active: !reverted } }));
     await local.enqueue({ kind: "item_state", inspection_id: inspection.id, item_id: item.id, state, reason, reverted_at, queued_at: new Date().toISOString() });
-    processOutbox(onState);
+    processOutbox(userId, onState);
   }
   async function confirmDeselect() {
     if (!deselecting) return;
@@ -466,7 +475,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     await local.saveDraft(inspection.id, item.id, next);                 // durable draft (autosave — FND-005)
     if (next.value) {                                                    // note rides with the answer; note-only stays a local draft
       await local.enqueue({ kind: "response", inspection_id: inspection.id, item_id: item.id, response: next, baseline_updated_at: baseline[item.id] ?? null, queued_at: new Date().toISOString() });
-      processOutbox(onState);
+      processOutbox(userId, onState);
     }
     const nc = next.value ? item.response_model.mapping?.[next.value] : undefined;
     if (nc?.violation) {
@@ -509,7 +518,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       setMsg(fmt(strings.evidenceQueued, { code: item.code, sha: sha.slice(0, 12) }));
     }
     await refreshQueued();
-    processOutbox(onState);
+    processOutbox(userId, onState);
     flushMedia();
   }
   async function attachFiles(item: Item, files: FileList, replaceId?: string) {
@@ -711,102 +720,103 @@ export default function Workspace({ inspection, items, library, serverResponses,
     setMsg(navigator.onLine ? fmt(strings.submitting, { v: legacyVersion }) : strings.queuedOffline);
     // After a successful RPC submit, local state follows the SERVER-assigned
     // version number (D-020); the legacy fallback never reports one back.
-    processOutbox(onState, (inspectionId, info) => {
+    processOutbox(userId, onState, (inspectionId, info) => {
       if (inspectionId === inspection.id) setMsg(fmt(strings.submitting, { v: info.version_number }));
     });
   }
 
-  const tone = sync === "synced" ? "sq-sync--synced" : sync === "offline" ? "sq-sync--offline" : sync === "syncing" ? "sq-sync--syncing" : sync === "conflict" ? "sq-sync--conflict" : sync === "failed" ? "sq-sync--failed" : "sq-sync--pending";
+  const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
   return (
-    <div className="sq-stack" style={{ gap: "var(--space-6)" }}>
-      <div className="sq-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--surface-canvas)", paddingBlock: "var(--space-2)" }}>
-        <span className="sq-row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
-          <span className={`sq-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
+      <div className={styles.toolbar}>
+        <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+          <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
-            <button type="button" className="sq-btn sq-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.retryNow}</button>
           )}
         </span>
-        <span className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-          <span className="sq-caption sq-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
-          {!submitted && <button type="button" className="sq-btn sq-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
+        <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+          <span className="t-caption id-code">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+          {!submitted && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
       </div>
-      {msg && <div className="sq-banner"><div>{msg}</div></div>}
+      <FieldConnectivityBanner offline={strings.connectivityOffline} weak={strings.connectivityWeak} />
+      {msg && <div className="alert alert-info"><div>{msg}</div></div>}
 
       {/* DEC-A — Figma wizard-shell parity as a guided presentation over the existing
           config-driven engine: pure anchor navigation over the unchanged section list
           below, no new state, no altered validation/submit/RLS/offline behaviour. */}
       {!submitted && sections.length > 1 && (
-        <nav className="sq-tabs" role="tablist" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+        <nav className="tabs" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
           {sections.map(s => (
-            <a key={s.key} role="tab" aria-selected="false" href={`#sq-section-${s.key}`} style={{ whiteSpace: "nowrap", textDecoration: "none" }}>{s.title}</a>
+            <a key={s.key} className="tab" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap" }}>{s.title}</a>
           ))}
         </nav>
       )}
 
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
-      <details className="sq-surface" style={{ padding: "var(--space-6)" }}>
-        <summary style={{ cursor: "pointer", font: "var(--type-field)", fontWeight: 600 }}>
-          {strings.panelTitle}{inspectionNo ? <span className="sq-numeric"> · {inspectionNo}</span> : null}
+      <details className={styles.card} style={{ padding: "var(--space-4)" }}>
+        <summary style={{ cursor: "pointer", fontSize: "var(--type-compact-size)", fontWeight: 600 }}>
+          {strings.panelTitle}{inspectionNo ? <span className="id-code"> · {inspectionNo}</span> : null}
         </summary>
-        <div className="sq-grid-2" style={{ marginBlockStart: "var(--space-4)" }}>
-          <details open className="sq-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+        <div className={styles.grid2} style={{ marginBlockStart: "var(--space-3)" }}>
+          <details open className={styles.panel} style={{ padding: "var(--space-3)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
-            <div className="sq-stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
+            <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-2)" }}>
               <div><strong>{panel.factory.name}</strong></div>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelCode}</span><span className="sq-numeric">{panel.factory.code ?? "—"}</span></div>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelLicense}</span><span className="sq-numeric">{panel.factory.license ?? "—"}</span></div>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelCode}</span><span className="id-code">{panel.factory.code ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelLicense}</span><span className="id-code">{panel.factory.license ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
             </div>
           </details>
-          <details open className="sq-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+          <details open className={styles.panel} style={{ padding: "var(--space-3)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
-            <div className="sq-stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelWindow}</span><span className="sq-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
-              <div className="sq-row" style={{ justifyContent: "space-between" }}><span className="sq-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="sq-version">{panel.pkg.label}</span></span></div>
+            <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-2)" }}>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelWindow}</span><span className="id-code">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="id-code">{panel.pkg.label}</span></span></div>
             </div>
           </details>
         </div>
         {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
-        {prev && <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
+        {prev && <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
       </details>
       {conflicts.map(c => (
-        <div key={c.key} className="sq-conflict">
-          <div className="sq-conflict__head">{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
-          <div className="sq-conflict__grid">
-            <div className="sq-conflict__side"><h5>{strings.thisDevice}</h5><p>{JSON.stringify(c.local)}</p></div>
-            <div className="sq-conflict__side"><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
+        <div key={c.key} className={styles.conflict}>
+          <div className={styles.conflictHead}>{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
+          <div className={styles.conflictGrid}>
+            <div className={styles.conflictSide}><h5>{strings.thisDevice}</h5><p>{JSON.stringify(c.local)}</p></div>
+            <div className={styles.conflictSide}><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
           </div>
-          <div className="sq-conflict__foot">
-            <button className="sq-btn sq-btn--secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
-            <button className="sq-btn" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
+          <div className={styles.conflictFoot}>
+            <button className="btn btn-secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
+            <button className="btn btn-primary" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
           </div>
         </div>
       ))}
       {inspection.status === "returned" && (() => {
         const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
-        return lastReturn ? <div className="sq-banner sq-banner--warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
+        return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
       })()}
-      {submitted && <div className="sq-banner sq-banner--immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
+      {submitted && <div className="alert alert-immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
       {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
           pending: non-blocking banner, the inspector keeps working (§12). */}
-      {cancelApproved && <div className="sq-banner sq-banner--immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
-      {cancelPending && <div className="sq-banner sq-banner--warning" role="status"><div>{strings.cancelPending}</div></div>}
-      {cancelState?.status === "rejected" && <div className="sq-banner sq-banner--warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
+      {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
+      {cancelPending && <div className="alert alert-warning" role="status"><div>{strings.cancelPending}</div></div>}
+      {cancelState?.status === "rejected" && <div className="alert alert-warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
 
       {/* Live summary — answered / pending / compliant / non-compliant / violations / evidence (M04-149) */}
       {!submitted && (
-        <div className="sq-row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "center" }}>
-          <span className="sq-overline">{strings.summaryTitle}</span>
-          <span className="sq-badge">{strings.sumAnswered} <span className="sq-numeric">{summary.answered}</span></span>
-          <span className="sq-badge">{strings.sumPending} <span className="sq-numeric">{summary.pending}</span></span>
-          <span className="sq-badge">{strings.sumCompliant} <span className="sq-numeric">{summary.compliant}</span></span>
-          <span className={`sq-badge ${summary.nonCompliant ? "sq-badge--critical" : ""}`}>{strings.sumNonCompliant} <span className="sq-numeric">{summary.nonCompliant}</span></span>
-          <span className={`sq-badge ${summary.violations ? "sq-badge--critical" : ""}`}>{strings.sumViolations} <span className="sq-numeric">{summary.violations}</span></span>
-          <span className="sq-badge">{strings.sumEvidence} <span className="sq-numeric">{summary.evidence}</span></span>
+        <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "center" }}>
+          <span className={styles.overline}>{strings.summaryTitle}</span>
+          <span className="badge">{strings.sumAnswered} <span className="id-code">{summary.answered}</span></span>
+          <span className="badge">{strings.sumPending} <span className="id-code">{summary.pending}</span></span>
+          <span className="badge badge-compliant">{strings.sumCompliant} <span className="id-code">{summary.compliant}</span></span>
+          <span className={`badge ${summary.nonCompliant ? "badge-critical" : ""}`}>{strings.sumNonCompliant} <span className="id-code">{summary.nonCompliant}</span></span>
+          <span className={`badge ${summary.violations ? "badge-critical" : ""}`}>{strings.sumViolations} <span className="id-code">{summary.violations}</span></span>
+          <span className="badge">{strings.sumEvidence} <span className="id-code">{summary.evidence}</span></span>
         </div>
       )}
 
@@ -817,16 +827,16 @@ export default function Workspace({ inspection, items, library, serverResponses,
       <fieldset disabled={cancelApproved} style={{ display: "contents" }}>
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
-        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{strings.ctxTitle}</h4>
-          <p className="sq-caption">{strings.ctxHint}</p>
-          <div className="sq-row" style={{ flexWrap: "wrap", gap: "var(--space-6)" }}>
+          <p className="t-caption">{strings.ctxHint}</p>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-4)" }}>
             {flags.map(k => (
-              <div key={k} className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-                <span style={{ font: "var(--type-field)" }}>{strings.ctxLabels[k] ?? k}</span>
-                <div className="sq-segmented sq-segmented--field">
-                  <button type="button" aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
-                  <button type="button" aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
+              <div key={k} className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+                <span style={{ fontSize: "var(--type-compact-size)" }}>{strings.ctxLabels[k] ?? k}</span>
+                <div className="seg">
+                  <button type="button" className="seg-opt" aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
+                  <button type="button" className="seg-opt" aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
                 </div>
               </div>
             ))}
@@ -838,19 +848,19 @@ export default function Workspace({ inspection, items, library, serverResponses,
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
-            return <div key={s.key} className="sq-surface" style={{ padding: "var(--space-6)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="sq-caption">{strings.lockedSection}</p></div>;
+            return <div key={s.key} className={styles.card} style={{ padding: "var(--space-4)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="t-caption">{strings.lockedSection}</p></div>;
           }
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} id={`sq-section-${s.key}`} className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)", scrollMarginBlockStart: "var(--space-12)" }}>
-          <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+        <div key={s.key} id={`ax-section-${s.key}`} className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
-            <span className="sq-caption sq-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
+            <span className="t-caption id-code">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
-          <div style={{ blockSize: 4, borderRadius: 2, background: "var(--border-subtle)" }} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
-            <div style={{ blockSize: 4, borderRadius: 2, inlineSize: `${sp.pct}%`, background: "var(--action-primary)" }} />
+          <div className={styles.track} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
+            <div className={styles.trackFill} style={{ inlineSize: `${sp.pct}%` }} />
           </div>
           {(s.items ?? []).map(code => {
             const it = allMap[code]; if (!it) return null;
@@ -865,18 +875,18 @@ export default function Workspace({ inspection, items, library, serverResponses,
             const complete = def ? formComplete(def, draft) : false;
             const conditional = !!it.response_model.conditional?.visible_when;
             return (
-              <div key={code} className={`ipad-q ${val?.value ? "is-answered" : ""}`} style={{ border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", padding: "var(--space-6)", borderInlineStart: val?.value ? "4px solid var(--status-compliant)" : undefined, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-                <div className="sq-row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "baseline" }}>
-                  <p style={{ font: "var(--type-field)", fontWeight: 600 }}>{code} · {it.title}</p>
-                  {it.clause && <span className="sq-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
-                  {conditional && <span className="sq-lozenge sq-lozenge--info">{strings.conditionalBadge}</span>}
-                  {itemStates[it.id]?.active && itemStates[it.id]?.state === "added" && <span className="sq-lozenge sq-lozenge--info">{strings.libAddedGroup}</span>}
+              <div key={code} className={`${styles.question} ${val?.value ? styles.questionAnswered : ""}`}>
+                <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "baseline" }}>
+                  <p className={styles.title}>{code} · {it.title}</p>
+                  {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
+                  {conditional && <span className="badge badge-info">{strings.conditionalBadge}</span>}
+                  {itemStates[it.id]?.active && itemStates[it.id]?.state === "added" && <span className="badge badge-info">{strings.libAddedGroup}</span>}
                   {/* §15 — optional/added items only; mandatory items never show this (fail closed like D-007) */}
                   {canDeselect(it) && (
-                    <button type="button" className="sq-btn sq-btn--subtle" onClick={() => setDeselecting({ item: it, reason: "" })}>{strings.deselectBtn}</button>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDeselecting({ item: it, reason: "" })}>{strings.deselectBtn}</button>
                   )}
                 </div>
-                {it.guidance && <p className="sq-caption"><IconLightbulb size={16} /> {strings.guidanceLabel}: {it.guidance}</p>}
+                {it.guidance && <p className="t-caption"><IconLightbulb size={16} /> {strings.guidanceLabel}: {it.guidance}</p>}
                 {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
                 <ContextualAiPanel
                   surface="inspection_item_explanation"
@@ -894,71 +904,71 @@ export default function Workspace({ inspection, items, library, serverResponses,
                 />
                 {/* M04-136/137 — same item's answer + evidence count from the factory's latest prior approved inspection */}
                 {prev && (
-                  <p className="sq-caption">
+                  <p className="t-caption">
                     ↩ {fmt(strings.prevLine, {
                       value: prev.answers[it.id] ? (strings.enumLabels[prev.answers[it.id]] ?? prev.answers[it.id].replace(/_/g, " ")) : strings.prevNoAnswer,
                       n: prev.evidence[it.id] ?? 0,
                     })}
                   </p>
                 )}
-                <div className="sq-row" style={{ flexWrap: "wrap" }}>
+                <div className="row" style={{ flexWrap: "wrap" }}>
                   {isDate ? (
-                    <label className="sq-field">
-                      <span className="sq-field__label">{strings.dateLabel}</span>
-                      <input className="sq-input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
+                    <label className={styles.fld}>
+                      <span>{strings.dateLabel}</span>
+                      <input className="input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
                     </label>
                   ) : (it.response_model.responses ?? []).map(r => (
-                    <button key={r} className="sq-btn sq-btn--field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--status-critical)" : "var(--action-primary)") : "var(--surface-primary)", color: val?.value === r ? "var(--text-inverse)" : "var(--text-primary)", border: "1.5px solid var(--border-subtle)" }}
+                    <button key={r} className={val?.value === r ? (r === "non_compliant" ? "btn btn-lg btn-danger" : "btn btn-lg btn-primary") : "btn btn-lg btn-secondary"}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
                   {leg?.applies && leg.type !== "comment" && (
-                    <label className="sq-btn sq-btn--field sq-btn--secondary" style={{ cursor: "pointer" }}>
+                    <label className="btn btn-lg btn-secondary" style={{ cursor: "pointer" }}>
                       {val?.value === "non_compliant" && leg.mandatory ? strings.mandatoryPhoto : (leg.type === "document" ? strings.evAddDoc : strings.evAdd)}
                       <input type="file" accept={acceptFor(leg.type)} multiple hidden onChange={e => { if (e.target.files?.length) { attachFiles(it, e.target.files); e.target.value = ""; } }} />
                     </label>
                   )}
                   {leg?.applies && leg.type === "comment" && (
-                    <span className="sq-row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
-                      <label className="sq-field">
-                        <span className="sq-field__label">{strings.noteLabel}</span>
-                        <textarea className="sq-input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
+                    <span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+                      <label className={styles.fld}>
+                        <span>{strings.noteLabel}</span>
+                        <textarea className="input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
                       </label>
-                      <button type="button" className="sq-btn sq-btn--field sq-btn--secondary" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
+                      <button type="button" className="btn btn-lg btn-secondary" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
                     </span>
                   )}
                   {leg?.applies && leg.mandatory && (
-                    <span className={`sq-lozenge ${evCount >= leg.min ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{fmt(strings.evCount, { n: evCount, min: leg.min })}</span>
+                    <span className={`badge ${evCount >= leg.min ? "badge-compliant" : "badge-warning"}`}>{fmt(strings.evCount, { n: evCount, min: leg.min })}</span>
                   )}
                 </div>
-                {val?.value && scoreExcluded(it, val.value) && <p className="sq-caption">{strings.naExcluded}</p>}
-                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="sq-caption" style={{ color: "var(--status-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
+                {val?.value && scoreExcluded(it, val.value) && <p className="t-caption">{strings.naExcluded}</p>}
+                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="t-caption" style={{ color: "var(--status-critical-text)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
                 {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
                     + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
                 {(() => {
                   const rows = serverEvidence.filter(ev2 => ev2.linked_type === "item" && ev2.linked_id === it.id && !ev2.deleted_at && !evState[ev2.id]?.deleted);
                   if (!rows.length && !thumbs.length) return null;
                   return (
-                    <div className="sq-evidence-grid">
+                    <div className={styles.evidenceGrid}>
                       {rows.map(ev2 => {
                         const archived = !!ev2.archived_at || !!evState[ev2.id]?.archived;
                         const url = evidenceUrls[ev2.id];
                         return (
-                          <div key={ev2.id} className={`sq-evidence ${archived ? "is-quarantined" : ""}`}>
+                          <div key={ev2.id} className={`${styles.evidence} ${archived ? styles.evidenceQuarantined : ""}`}>
                             {url
-                              ? <img className="sq-evidence__thumb" src={url} alt={strings.evSyncedAlt} />
-                              : <div className="sq-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? <IconDocument size={24} /> : <IconVideo size={24} />}</div>}
-                            <div className="sq-evidence__meta">
-                              <span className="sq-numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
+                              ? <img className={styles.evidenceThumb} src={url} alt={strings.evSyncedAlt} />
+                              : <div className={styles.evidenceThumb} aria-hidden="true">{ev2.evidence_type === "document" ? <IconDocument size={24} /> : <IconVideo size={24} />}</div>}
+                            <div className={styles.evidenceMeta}>
+                              <span className="id-code">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
                               {archived
-                                ? <span className="sq-lozenge sq-lozenge--warning">{strings.evArchived}</span>
+                                ? <span className="badge badge-warning">{strings.evArchived}</span>
                                 : (
-                                  <span className="sq-row" style={{ gap: "var(--space-1)", flexWrap: "wrap" }}>
-                                    <label className="sq-btn sq-btn--subtle" style={{ cursor: "pointer" }}>
+                                  <span className="row" style={{ gap: "var(--space-1)", flexWrap: "wrap" }}>
+                                    <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer" }}>
                                       {strings.evReplace}
                                       <input type="file" accept={acceptFor(leg?.type ?? "photo")} hidden
                                         onChange={ie => { if (ie.target.files?.length) { attachFiles(it, ie.target.files, ev2.id); ie.target.value = ""; } }} />
                                     </label>
-                                    <button className="sq-btn sq-btn--subtle" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
+                                    <button className="btn btn-ghost btn-sm" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
                                   </span>
                                 )}
                             </div>
@@ -966,32 +976,32 @@ export default function Workspace({ inspection, items, library, serverResponses,
                         );
                       })}
                       {thumbs.map((q, i) => (
-                        <div key={i} className="sq-evidence is-unsynced">
-                          <img className="sq-evidence__thumb" src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
+                        <div key={i} className={styles.evidence}>
+                          <img className={styles.evidenceThumb} src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
                         </div>
                       ))}
                     </div>
                   );
                 })()}
-                <label className="sq-field">
-                  <span className="sq-field__label">{strings.noteLabel}</span>
-                  <textarea className="sq-textarea" rows={2} placeholder={strings.notePlaceholder} value={val?.note ?? ""} onChange={e => saveNote(it, e.target.value)} onBlur={() => flushNote(it)} />
+                <label className={styles.fld}>
+                  <span>{strings.noteLabel}</span>
+                  <textarea className="input" rows={2} placeholder={strings.notePlaceholder} value={val?.note ?? ""} onChange={e => saveNote(it, e.target.value)} onBlur={() => flushNote(it)} />
                 </label>
                 {/* Action form runtime (M04-171..184): instantiated from the package's form template */}
                 {def && (
-                  <div className="sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)", borderInlineStart: complete ? "4px solid var(--status-compliant)" : "4px solid var(--status-critical)" }}>
-                    <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+                  <div className={styles.panel} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)", borderInlineStart: complete ? "4px solid var(--status-compliant)" : "4px solid var(--status-critical)" }}>
+                    <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
                       <strong>{def.title}</strong>
-                      <span className={`sq-lozenge ${complete ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>{complete ? strings.afComplete : strings.afIncomplete}</span>
+                      <span className={`badge ${complete ? "badge-compliant" : "badge-critical"}`}>{complete ? strings.afComplete : strings.afIncomplete}</span>
                     </div>
-                    {def.blocking && !complete && <p className="sq-caption">{strings.afBlocking}</p>}
-                    <div className="sq-grid-2">
+                    {def.blocking && !complete && <p className="t-caption">{strings.afBlocking}</p>}
+                    <div className={styles.grid2}>
                       {def.fields.map(f => (
-                        <label key={f} className="sq-field" style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>
-                          <span className="sq-field__label">{strings.afFieldLabels[f] ?? f}<span className="sq-req">*</span></span>
+                        <label key={f} className={styles.fld} style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>
+                          <span>{strings.afFieldLabels[f] ?? f}<span className="req">*</span></span>
                           {f === "required_correction"
-                            ? <textarea className="sq-textarea" rows={2} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />
-                            : <input className="sq-input" type={f === "due_at" ? "date" : "text"} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />}
+                            ? <textarea className="input" rows={2} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />
+                            : <input className="input" type={f === "due_at" ? "date" : "text"} value={draft?.[f] ?? ""} onChange={e => editForm(it, f, e.target.value)} onBlur={() => pushForm(it, def)} />}
                         </label>
                       ))}
                     </div>
@@ -1007,14 +1017,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
           Under a reviewer return the whole panel locks (added items have no
           frozen section to match against the return scope — fail closed). */}
       {!submitted && inspection.status !== "returned" && (
-        <details className="sq-surface" style={{ padding: "var(--space-6)" }}>
-          <summary style={{ cursor: "pointer", font: "var(--type-field)", fontWeight: 600 }}>{strings.libTitle}</summary>
-          <p className="sq-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.libHint}</p>
-          <div className="sq-stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
-            {libraryCandidates.length === 0 ? <p className="sq-caption">{strings.libEmpty}</p> : libraryCandidates.map(it => (
-              <div key={it.id} className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
-                <span style={{ font: "var(--type-field)" }}>{it.code} · {it.title}</span>
-                <button type="button" className="sq-btn sq-btn--secondary" onClick={() => { pushItemState(it, "added", null, false); setMsg(fmt(strings.libAddedMsg, { code: it.code })); }}>{strings.libAdd}</button>
+        <details className={styles.card} style={{ padding: "var(--space-4)" }}>
+          <summary style={{ cursor: "pointer", fontSize: "var(--type-compact-size)", fontWeight: 600 }}>{strings.libTitle}</summary>
+          <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.libHint}</p>
+          <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-2)" }}>
+            {libraryCandidates.length === 0 ? <p className="t-caption">{strings.libEmpty}</p> : libraryCandidates.map(it => (
+              <div key={it.id} className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-2)" }}>
+                <span style={{ fontSize: "var(--type-compact-size)" }}>{it.code} · {it.title}</span>
+                <button type="button" className="btn btn-secondary" onClick={() => { pushItemState(it, "added", null, false); setMsg(fmt(strings.libAddedMsg, { code: it.code })); }}>{strings.libAdd}</button>
               </div>
             ))}
           </div>
@@ -1024,9 +1034,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
       {/* §15 — deselected items stay in the audit trail with their reason;
           restore is available before submit (returned scope permitting). */}
       {!submitted && deselectedItems.length > 0 && (
-        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{fmt(strings.deselectedTitle, { n: deselectedItems.length })}</h4>
-          <p className="sq-caption">{strings.deselectedAudit}</p>
+          <p className="t-caption">{strings.deselectedAudit}</p>
           {deselectedItems.map(({ item, reason }) => {
             const homeKey = sections.find(s2 => (s2.items ?? []).includes(item.code))?.key ?? ADDED_SECTION_KEY;
             const lr = inspection.status === "returned"
@@ -1034,10 +1044,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
               : null;
             const restoreLocked = inspection.status === "returned" && !lr?.returned_sections?.includes(homeKey);
             return (
-              <div key={item.id} className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
-                <span className="sq-caption"><strong>{item.code}</strong> · {item.title} — {reason}</span>
+              <div key={item.id} className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-2)" }}>
+                <span className="t-caption"><strong>{item.code}</strong> · {item.title} — {reason}</span>
                 {!restoreLocked && (
-                  <button type="button" className="sq-btn sq-btn--subtle" onClick={() => { pushItemState(item, "deselected", reason, true); setMsg(fmt(strings.restoredMsg, { code: item.code })); }}>{strings.restoreBtn}</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => { pushItemState(item, "deselected", reason, true); setMsg(fmt(strings.restoredMsg, { code: item.code })); }}>{strings.restoreBtn}</button>
                 )}
               </div>
             );
@@ -1049,24 +1059,24 @@ export default function Workspace({ inspection, items, library, serverResponses,
           item above; here the inspector adds published configuration templates
           manually. Included ≠ completed: new rows stay open. */}
       {!submitted && (
-        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{strings.afAddTitle}</h4>
-          <p className="sq-caption">{strings.afAddHint}</p>
-          <div className="sq-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
-            <label className="sq-field">
-              <span className="sq-field__label">{strings.afAddPick}</span>
-              <select className="sq-select" value={afPick} onChange={e => setAfPick(e.target.value)}>
+          <p className="t-caption">{strings.afAddHint}</p>
+          <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", alignItems: "center" }}>
+            <label className={styles.fld}>
+              <span>{strings.afAddPick}</span>
+              <select className="select" value={afPick} onChange={e => setAfPick(e.target.value)}>
                 <option value="">—</option>
                 {actionTemplates.map(t2 => <option key={t2.id} value={t2.id}>{t2.title}</option>)}
               </select>
             </label>
-            <button type="button" className="sq-btn sq-btn--secondary" disabled={!afPick} onClick={addManualForm}>{strings.afAddBtn}</button>
+            <button type="button" className="btn btn-secondary" disabled={!afPick} onClick={addManualForm}>{strings.afAddBtn}</button>
           </div>
-          {actionTemplates.length === 0 && <p className="sq-caption">{strings.afNone}</p>}
+          {actionTemplates.length === 0 && <p className="t-caption">{strings.afNone}</p>}
           {manualForms.map(f => (
-            <div key={f.id} className="sq-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ font: "var(--type-field)" }}>{f.title}</span>
-              <span className="sq-lozenge sq-lozenge--warning">{f.status}</span>
+            <div key={f.id} className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: "var(--type-compact-size)" }}>{f.title}</span>
+              <span className="badge badge-warning">{f.status}</span>
             </div>
           ))}
         </div>
@@ -1082,13 +1092,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           closeLabel={strings.deselectCancel}
           maxWidth="480px"
           footer={<>
-            <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setDeselecting(null)}>{strings.deselectCancel}</button>
-            <button type="button" className="sq-btn sq-btn--prominent" aria-disabled={!deselecting.reason.trim()} onClick={confirmDeselect}>{strings.deselectConfirm}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setDeselecting(null)}>{strings.deselectCancel}</button>
+            <button type="button" className="btn btn-primary" aria-disabled={!deselecting.reason.trim()} onClick={confirmDeselect}>{strings.deselectConfirm}</button>
           </>}
         >
-          <label className="sq-field">
-            <span className="sq-field__label">{strings.deselectReason}<span className="sq-req">*</span></span>
-            <textarea className="sq-textarea" rows={2} placeholder={strings.deselectReasonPh} value={deselecting.reason}
+          <label className={styles.fld}>
+            <span>{strings.deselectReason}<span className="req">*</span></span>
+            <textarea className="input" rows={2} placeholder={strings.deselectReasonPh} value={deselecting.reason}
               onChange={e => setDeselecting(d => d ? { ...d, reason: e.target.value } : d)} />
           </label>
         </Modal>
@@ -1096,10 +1106,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Violation auto-display — config-driven, non-overridable (M04-142/143/144) */}
       {!submitted && (
-        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{strings.vioTitle}</h4>
-          {implied.length === 0 && invalidatedList.length === 0 ? <p className="sq-caption">{strings.vioNone}</p> : implied.map(v => (
-            <div key={`${v.itemCode}-${v.code}`} className="sq-banner sq-banner--critical">
+          {implied.length === 0 && invalidatedList.length === 0 ? <p className="t-caption">{strings.vioNone}</p> : implied.map(v => (
+            <div key={`${v.itemCode}-${v.code}`} className="alert alert-critical">
               <div>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })} · {v.itemCode}
                 {/* §18 / D-018 — penalty singularity fail-closed: a configuration
@@ -1116,7 +1126,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           {/* §18 / D-018 — invalidated candidates stay visible with state
               (audit preserved; never deleted). */}
           {invalidatedList.map(v => (
-            <div key={`invalidated-${v.code}`} className="sq-banner" data-state="invalidated">
+            <div key={`invalidated-${v.code}`} className="alert alert-immutable" data-state="invalidated">
               <div>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })}
                 {" · "}{strings.vioInvalidated}
@@ -1128,15 +1138,15 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Grouped validation results by section (M04-200/201-lite) */}
       {!submitted && validation && validation.length > 0 && (
-        <div className="sq-validation">
+        <div className={styles.validation}>
           <strong>{strings.valTitle}</strong>
           <ul>
             {validation.map(g => (
               <li key={g.key}>
                 <strong>{g.title}</strong>
-                {g.unanswered.length > 0 && <div className="sq-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
-                {g.evidence.length > 0 && <div className="sq-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
-                {g.forms.length > 0 && <div className="sq-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
+                {g.unanswered.length > 0 && <div className="t-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
+                {g.evidence.length > 0 && <div className="t-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
+                {g.forms.length > 0 && <div className="t-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
               </li>
             ))}
           </ul>
@@ -1144,10 +1154,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
       )}
 
       {!submitted && (
-        <div className="sq-row" style={{ justifyContent: "flex-end", alignItems: "center", gap: "var(--space-4)" }}>
+        <div className={styles.actionbar}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
-          <span className="sq-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
-          <button className="sq-btn sq-btn--prominent sq-btn--field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
+          <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
+          <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
         </div>
       )}
       </fieldset>
@@ -1174,8 +1184,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
           closeLabel={strings.exitCancel}
           maxWidth="420px"
           footer={<>
-            <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
-            <button type="button" className="sq-btn sq-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
+            <button type="button" className="btn btn-primary" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
           </>}
         >
           <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
@@ -1185,21 +1195,21 @@ export default function Workspace({ inspection, items, library, serverResponses,
               passed — pre-migration there is no active-session cancel path. */}
           {journeySchemaAvailable && !cancelApproved && (
             cancelPending ? (
-              <p className="sq-caption" style={{ marginBlockStart: "var(--space-4)" }}>{strings.cancelPending}</p>
+              <p className="t-caption" style={{ marginBlockStart: "var(--space-3)" }}>{strings.cancelPending}</p>
             ) : (cancelReasons ?? []).length === 0 ? (
-              <p className="sq-caption" style={{ marginBlockStart: "var(--space-4)" }}>{strings.cancelReasonsMissing}</p>
+              <p className="t-caption" style={{ marginBlockStart: "var(--space-3)" }}>{strings.cancelReasonsMissing}</p>
             ) : (
-              <div className="sq-stack" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-4)", borderBlockStart: "1px solid var(--border-subtle)", paddingBlockStart: "var(--space-4)" }}>
+              <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)", borderBlockStart: "var(--border-w) solid var(--border-subtle)", paddingBlockStart: "var(--space-3)" }}>
                 <strong>{strings.cancelHeading}</strong>
-                <p className="sq-caption">{strings.cancelCaption}</p>
-                <label className="sq-field"><span className="sq-field__label">{strings.cancelSelectReason}</span>
-                  <select className="sq-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
+                <p className="t-caption">{strings.cancelCaption}</p>
+                <label className={styles.fld}><span>{strings.cancelSelectReason}</span>
+                  <select className="select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
                     <option value="">—</option>
                     {(cancelReasons ?? []).map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
                   </select>
                 </label>
-                <textarea className="sq-textarea" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
-                <button type="button" className="sq-btn sq-btn--danger" onClick={requestCancellation}
+                <textarea className="input" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
+                <button type="button" className="btn btn-danger" onClick={requestCancellation}
                   disabled={cancelBusy || !cancelReason || (cancelReason === "other" && !cancelComment.trim())}>{strings.cancelSubmit}</button>
               </div>
             )
@@ -1216,13 +1226,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           closeLabel={strings.evDeleteCancel}
           maxWidth="480px"
           footer={<>
-            <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
-            <button type="button" className="sq-btn sq-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
+            <button type="button" className="btn btn-primary" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
           </>}
         >
-          <label className="sq-field">
-            <span className="sq-field__label">{strings.evDeleteReason}<span className="sq-req">*</span></span>
-            <textarea className="sq-textarea" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
+          <label className={styles.fld}>
+            <span>{strings.evDeleteReason}<span className="req">*</span></span>
+            <textarea className="input" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
               onChange={e => setDeleting(d => d ? { ...d, reason: e.target.value } : d)} />
           </label>
         </Modal>

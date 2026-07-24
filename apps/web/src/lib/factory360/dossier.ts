@@ -3,6 +3,9 @@ import { calculateApprovedCompliance, type FrozenPackageDefinition, type Complia
 import { FACTORY_360_PERMISSIONS, hasFactory360Permission, type Factory360Permission } from "@/lib/factory360/permissions";
 import { buildFactory360CanonicalProjection } from "@/lib/factory360/canonical-projection";
 import type { Factory360CanonicalProjection } from "@/lib/factory360/cross-provider-contract";
+import { senaeiClientFromEnvironment } from "@/lib/integrations/senaei/client";
+import { listChemicalPermitsByPlant, listCustomsExemptionsByPlant } from "@/lib/integrations/senaei/adapters/factory360";
+import type { ChemicalPermit, CustomsExemption } from "@/lib/integrations/senaei/types";
 
 // TASK-FACTORY-360-IPAD-011 · F360IPAD-EXTRACT-016
 // Shared, platform-neutral Factory 360 read model. Both the web CR dossier
@@ -76,6 +79,10 @@ export type Factory360Dossier = {
   address: Record<string, string | number | null> | null;
   lines: ProductionLine[];
   government: GovernmentRecord[];
+  chemicalPermits: ChemicalPermit[];
+  customsExemptions: CustomsExemption[];
+  chemicalPermitsError: string | null;
+  customsExemptionsError: string | null;
   docs: FactoryDocument[];
   media: MediaAsset[];
   officialMedia: MediaAsset[];
@@ -100,6 +107,10 @@ export type Factory360Dossier = {
   // re-resolves precedence nor calls a provider. Industry Shared is fail-closed.
   canonical: Factory360CanonicalProjection;
   // Raw provider results preserved so callers can render per-section degraded state.
+  // O-13/IPAD-FIGMA-DELTA §2B "export-products" flag. Read tolerantly (no
+  // source feed populates it) so the dossier degrades to null/unknown rather
+  // than erroring when the migration adding this column hasn't landed yet.
+  exportsProducts: boolean | null;
   addressResult: Result<unknown>;
   linesResult: Result<unknown>;
   governmentResult: Result<unknown>;
@@ -160,7 +171,20 @@ export async function loadFactory360Dossier(
   const portfolioFactoryIds = licenses.map(row => row.factory_id);
 
   const emptyResult = { data: [] as unknown[], error: null };
-  const [addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult, penaltiesResult, portfolioReportsResult, snapshotsResult] = await Promise.all([
+  const plantNumber = selected?.plant_number ?? null;
+  const fetchChemicalPermits = async () => {
+    if (!plantNumber) return { status: "not_configured", code: "SENAEI_CONTRACT_NOT_SUPPLIED", domain: "chemical permits", message: "No plant number on the selected license.", data: null } as const;
+    const client = senaeiClientFromEnvironment();
+    if (client.status !== "available") return client;
+    return listChemicalPermitsByPlant(client.data, plantNumber);
+  };
+  const fetchCustomsExemptions = async () => {
+    if (!plantNumber) return { status: "not_configured", code: "SENAEI_CONTRACT_NOT_SUPPLIED", domain: "customs exemptions", message: "No plant number on the selected license.", data: null } as const;
+    const client = senaeiClientFromEnvironment();
+    if (client.status !== "available") return client;
+    return listCustomsExemptionsByPlant(client.data, plantNumber);
+  };
+  const [addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult, penaltiesResult, portfolioReportsResult, snapshotsResult, chemicalPermitsResult, customsExemptionsResult] = await Promise.all([
     licenseId ? sb.from("plant_addresses").select("id, address_line_1, landmark, district_en, district_ar, building_number, postal_code, street_name_en, street_name_ar, city_en, city_ar, region_en, region_ar, latitude, longitude, source_system, effective_at").eq("industrial_license_id", licenseId).eq("is_current", true).maybeSingle() : Promise.resolve({ data: null, error: null }),
     licenseId ? sb.from("plant_production_line_items").select("id, item_type, version_number, name_en, name_ar, hs_code, hs_code_type, activity_code, activity_name_en, activity_name_ar, quantity, capacity, real_production, maximum_production, price, is_primary, unit_code, unit_name_en, unit_name_ar, is_spare_part, is_machine, is_end_product, is_raw_material, attributes, source_system, effective_at").eq("industrial_license_id", licenseId).is("superseded_at", null).order("item_type") : Promise.resolve(emptyResult),
     licenseId ? sb.from("factory_government_records").select("id, record_type, external_record_id, version_number, status, title, valid_from, valid_to, source_system, recorded_at").eq("industrial_license_id", licenseId).order("recorded_at", { ascending: false }) : Promise.resolve(emptyResult),
@@ -177,12 +201,24 @@ export async function loadFactory360Dossier(
     factoryId ? sb.from("penalty_notices").select("id, inspection_id, violation_id, notice_number, status, issued_at").eq("factory_id", factoryId).order("issued_at", { ascending: false }).limit(50) : Promise.resolve(emptyResult),
     portfolioFactoryIds.length ? sb.from("inspections").select("id, status, visits!inner(factory_id), violations(id)").in("visits.factory_id", portfolioFactoryIds).eq("status", "approved") : Promise.resolve(emptyResult),
     factoryId && licenseId ? sb.from("inspection_factory_snapshots").select("id, submission_version_id, snapshot, snapshot_sha256, captured_at").eq("factory_id", factoryId).eq("industrial_license_id", licenseId).order("captured_at", { ascending: false }).limit(50) : Promise.resolve(emptyResult),
+    fetchChemicalPermits(),
+    fetchCustomsExemptions(),
   ]);
+
+  let exportsProducts: boolean | null = null;
+  if (factoryId) {
+    const { data: exportsRow, error: exportsErr } = await sb.from("factories").select("exports_products").eq("id", factoryId).maybeSingle();
+    if (!exportsErr) exportsProducts = (exportsRow as { exports_products: boolean | null } | null)?.exports_products ?? null;
+  }
 
   const address = addressResult.data as null | Record<string, string | number | null>;
   const lines = (linesResult.data ?? []) as unknown as ProductionLine[];
   const government = ((governmentResult.data ?? []) as unknown as GovernmentRecord[])
     .filter(row => !["pending", "returned", "rejected", "draft"].includes(row.status));
+  const chemicalPermits = chemicalPermitsResult.status === "available" ? chemicalPermitsResult.data : [];
+  const customsExemptions = customsExemptionsResult.status === "available" ? customsExemptionsResult.data : [];
+  const chemicalPermitsError = chemicalPermitsResult.status === "available" ? null : chemicalPermitsResult.message;
+  const customsExemptionsError = customsExemptionsResult.status === "available" ? null : customsExemptionsResult.message;
   const docs = ((docsResult.data ?? []) as unknown as FactoryDocument[]).filter(row => !row.industrial_license_id || row.industrial_license_id === licenseId);
   const media = ((mediaResult.data ?? []) as unknown as MediaAsset[]).filter(row => !row.industrial_license_id || row.industrial_license_id === licenseId);
   const officialMedia = media.filter(asset => ["official_factory_image", "factory_profile_image"].includes(asset.category));
@@ -250,10 +286,10 @@ export async function loadFactory360Dossier(
 
   const base: Omit<Factory360Dossier, "canonical"> = {
     found: true, permissions, cr: cr as unknown as CommercialRegistration, crError, licenses, licenseError,
-    selected, factory, factoryId, licenseId, address, lines, government, docs, media, officialMedia, linkedEvidence,
+    selected, factory, factoryId, licenseId, address, lines, government, chemicalPermits, customsExemptions, chemicalPermitsError, customsExemptionsError, docs, media, officialMedia, linkedEvidence,
     reports, riskHistory, penalties, snapshots, latestApprovedFactorySnapshot, snapshotOrigin,
     approvedTrend, currentCompliance, reportCompliance, approvedEnforcement, portfolioCounts, highestRiskLicense,
-    downloadUrls, mediaUrls, observedComparison,
+    downloadUrls, mediaUrls, observedComparison, exportsProducts,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult, penaltiesResult, portfolioReportsResult, snapshotsResult,
   };
   return { ...base, canonical: buildFactory360CanonicalProjection(base as Factory360Dossier) };
@@ -263,12 +299,14 @@ function blankDossier(permissions: Factory360Permissions, cr: CommercialRegistra
   const empty: Result<unknown> = { data: null, error: null };
   const base: Omit<Factory360Dossier, "canonical"> = {
     found: false, permissions, cr, crError, licenses: [], licenseError, selected: null, factory: null,
-    factoryId: undefined, licenseId: undefined, address: null, lines: [], government: [], docs: [], media: [],
+    factoryId: undefined, licenseId: undefined, address: null, lines: [], government: [],
+    chemicalPermits: [], customsExemptions: [], chemicalPermitsError: null, customsExemptionsError: null,
+    docs: [], media: [],
     officialMedia: [], linkedEvidence: [], reports: [], riskHistory: [], penalties: [], snapshots: [],
     latestApprovedFactorySnapshot: null, snapshotOrigin: null, approvedTrend: [],
     currentCompliance: { status: "not_available", passed: 0, answered: 0, rate: null }, reportCompliance: {},
     approvedEnforcement: [], portfolioCounts: { total: 0, active: 0, expired: 0, suspended: 0, approvedInspections: 0 },
-    highestRiskLicense: null, downloadUrls: {}, mediaUrls: {}, observedComparison: [],
+    highestRiskLicense: null, downloadUrls: {}, mediaUrls: {}, observedComparison: [], exportsProducts: null,
     addressResult: empty, linesResult: empty, governmentResult: empty, docsResult: empty, mediaResult: empty,
     reportsResult: empty, riskResult: empty, penaltiesResult: empty, portfolioReportsResult: empty, snapshotsResult: empty,
   };

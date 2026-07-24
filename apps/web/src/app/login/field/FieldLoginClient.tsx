@@ -1,0 +1,401 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { supabaseBrowser } from "@/lib/supabase";
+import { getFieldDeviceIdentifier } from "@/lib/field-device";
+import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
+import { readBiometricUnlock, unlockWithBiometric, type BiometricUnlockRecord } from "@/lib/field-biometric-unlock";
+import "./field-login.css";
+
+// SAQEEL Field Login — implementation of the Claude Design component
+// `SAQEEL Field Login.dc.html` (project 5e8154ad-9a7d-4e3d-9b7a-c66ca020bd61).
+//
+// Structure, spacing, type scale and every token reference are transcribed from
+// that DC. Three classes of DC content are deliberately NOT carried across,
+// because a mockup may assert things a running system must not:
+//
+//   1. Prefilled credentials (`1082 447 913` / `inspection2026`) — never ship a
+//      form that pre-populates an identity or a secret.
+//   2. `DVC-77120` and `Last sync 08:41` — a device id and a sync time are
+//      facts about the running device. They are read from real state or the
+//      element is not rendered at all.
+//   3. The OTP screen's fixed digits and `00:27` countdown — the countdown is
+//      real; the cells start empty.
+//
+// The DC's own copy already says the OTP transport is "not wired in this
+// mockup" (DEC-007: Unifonic at release), so that path stays honest-blocked
+// rather than simulating a delivery.
+//
+// Mental model (corrected from an earlier version of this file): Face ID is an
+// UNLOCK for an existing signed-in session on an ALREADY BACKEND-TRUSTED
+// device — never a way to establish trust or a fresh login. A device only
+// reaches that state by (1) an inspector signing in normally at least once
+// with "keep me signed in", (2) Operations approving the device in the real
+// device register (readFieldDeviceEnrollment / selfEnrollFieldDevice —
+// server-authoritative, never inferred client-side), and (3) the inspector
+// opting into biometric unlock from Settings > Security > Trusted Devices,
+// which is only offered once step 2 is true.
+//
+// Concretely, on load this screen checks, in order: is there a persisted
+// Supabase session (getSession, local — no fresh login is happening)? Is THIS
+// device's identifier reported `trusted` by the real backend register? Has
+// this browser opted into a local biometric credential? Only when all three
+// hold does the Face ID lock screen appear. Every other case — first run, no
+// session, device not yet approved, biometric not opted in, session expired —
+// is the exact same plain credential form. There is no "unrecognised device"
+// warning: an unenrolled device is the normal, expected first-run state, not
+// an anomaly worth alarming a user over.
+
+export type FieldLoginStrings = {
+  brand1: string;
+  tagline: string;
+  langBtn: string;
+  netOnline: string;
+  netOffline: string;
+  trustedDevice: string;
+  faceUnlock: string;
+  faceDesc: string;
+  orPassword: string;
+  idLabel: string;
+  password: string;
+  showPw: string;
+  keepSignedIn: string;
+  forgot: string;
+  signIn: string;
+  offlineNote: string;
+  copyright: string;
+  // Copy with no DC counterpart: states the mockup never had to express.
+  bioUnavailable: string;
+  bioFallback: string;
+  directoryBlocked: string;
+  authInvalid: string;
+  authNetwork: string;
+  signingIn: string;
+  unlocking: string;
+};
+
+const ShieldIcon = () => (
+  <svg
+    className="fl-shield"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="var(--nav-indicator)"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
+
+const FaceIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="var(--nav-indicator)"
+    strokeWidth="1.6"
+    style={{ width: 42, height: 42 }}
+    aria-hidden="true"
+  >
+    <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+    <path d="M9 10h.01M15 10h.01M9.5 15c.9.7 4.1.7 5 0" />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }} aria-hidden="true">
+    <rect x="5" y="11" width="14" height="9" rx="1.5" />
+    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+  </svg>
+);
+
+export default function FieldLoginClient({
+  s,
+  dir,
+  lang,
+}: {
+  s: FieldLoginStrings;
+  dir: "rtl" | "ltr";
+  lang: "ar" | "en";
+}) {
+  const [showPw, setShowPw] = useState(false);
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [keepSignedIn, setKeepSignedIn] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [online, setOnline] = useState(true);
+
+  // Face ID lock-screen eligibility. Starts closed; only flips open once every
+  // one of session + backend trust + local opt-in is confirmed. Never assume
+  // eligibility while the checks are in flight — the plain form is always the
+  // safe default and what renders during that window.
+  const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord } | null>(null);
+  const [unlocking, setUnlocking] = useState(false);
+  const [showPasswordFallback, setShowPasswordFallback] = useState(false);
+
+  // Network state is observed, never assumed: the DC's pill is a live claim
+  // about connectivity and the field app is offline-first.
+  useEffect(() => {
+    const sync = () => setOnline(navigator.onLine);
+    sync();
+    window.addEventListener("online", sync);
+    window.addEventListener("offline", sync);
+    return () => {
+      window.removeEventListener("online", sync);
+      window.removeEventListener("offline", sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      // 1. Is there a persisted session? If not, this is a fresh login —
+      // there is nothing to unlock, so no further check runs.
+      const { data: { session } } = await supabaseBrowser().auth.getSession();
+      if (cancelled || !session?.user) return;
+
+      // 2. Has THIS browser opted into biometric unlock for THIS user? The
+      // check is local-only and cheap, so it runs before the network call.
+      const record = readBiometricUnlock(session.user.id);
+      if (!record) return;
+
+      // 3. Is this device currently reported trusted by the real backend
+      // register? This is the only source of truth for trust — read fresh,
+      // never cached, never inferred from the local opt-in record existing.
+      const enrollment = await readFieldDeviceEnrollment(getFieldDeviceIdentifier());
+      if (cancelled) return;
+      const trusted = "trustStatus" in enrollment && enrollment.trustStatus === "trusted";
+      if (!trusted) return;
+
+      setLockScreen({ record });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const unlockWithFaceId = useCallback(async () => {
+    if (!lockScreen) return;
+    setMessage(null);
+    setUnlocking(true);
+    const ok = await unlockWithBiometric(lockScreen.record);
+    setUnlocking(false);
+    if (!ok) {
+      setMessage(s.bioUnavailable);
+      setShowPasswordFallback(true);
+      return;
+    }
+    // The biometric ceremony only gates access to the session that already
+    // existed at load — it never mints one. Confirm it is still valid rather
+    // than assuming so.
+    const { data: { session } } = await supabaseBrowser().auth.getSession();
+    if (!session) {
+      setMessage(s.bioUnavailable);
+      setShowPasswordFallback(true);
+      return;
+    }
+    window.location.assign("/field");
+  }, [lockScreen, s.bioUnavailable]);
+
+  const submitCredentials = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setMessage(null);
+
+      // The design labels this field "National ID / Staff number". Resolving a
+      // national ID or staff number to an account requires the MIM directory
+      // contract, which is not supplied. Rather than silently treating the
+      // value as an email, the unresolvable case is stated plainly.
+      const id = identifier.trim();
+      if (!id.includes("@")) {
+        setMessage(s.directoryBlocked);
+        return;
+      }
+
+      setBusy(true);
+      const { data, error } = await supabaseBrowser().auth.signInWithPassword({
+        email: id,
+        password,
+      });
+      setBusy(false);
+
+      if (error) {
+        setMessage(/fetch|network/i.test(error.message) ? s.authNetwork : s.authInvalid);
+        return;
+      }
+      if (!data.session) {
+        setMessage(s.authInvalid);
+        return;
+      }
+      window.location.assign("/field");
+    },
+    [identifier, password, s.directoryBlocked, s.authInvalid, s.authNetwork],
+  );
+
+  const netLabel = online ? s.netOnline : s.netOffline;
+  const showLockScreen = lockScreen !== null && !showPasswordFallback;
+
+  const localeHref = useMemo(() => `/login/field?lang=${lang === "ar" ? "en" : "ar"}`, [lang]);
+
+  return (
+    <div className="fl-root" dir={dir} lang={lang}>
+      {/* top utility row */}
+      <div className="fl-top">
+        <span className={`fl-pill ${online ? "fl-net-online" : "fl-net-offline"}`}>
+          <span className={`fl-dot${online ? " fl-live" : ""}`} />
+          {netLabel}
+        </span>
+        <span className="fl-grow" />
+        <a className="fl-langbtn" href={localeHref}>
+          {s.langBtn}
+        </a>
+        {/* The DC pairs the language control with a theme control. The field
+            channel is fixed dark (see ThemeScript), so there is nothing for a
+            theme control to switch and it is deliberately not rendered. The
+            language control remains — locale is still a real user choice. */}
+      </div>
+
+      <div className="fl-stage">
+        <div className="fl-col">
+          {/* brand lockup */}
+          <ShieldIcon />
+          <div className="fl-brand">
+            <span className="fl-brand-latin">{s.brand1}</span>
+            <span className="fl-brand-ar" lang="ar">
+              صقيل
+            </span>
+          </div>
+          <div className="t-caption fl-tagline">{s.tagline}</div>
+
+          {/* Face ID lock screen — only when session + backend device trust +
+              local opt-in all hold. See the mental-model note above the
+              component: this never appears on a first-run or unenrolled
+              device, and there is no "unrecognised device" warning — an
+              unenrolled device is the normal case, not an anomaly. */}
+          {showLockScreen ? (
+            <>
+              <div className="fl-pill fl-trusted-pill">
+                <LockIcon />
+                {s.trustedDevice}
+              </div>
+              <button
+                type="button"
+                className="fl-bio"
+                onClick={unlockWithFaceId}
+                aria-label={s.faceUnlock}
+                disabled={unlocking}
+              >
+                <FaceIcon />
+              </button>
+              <div className="fl-face-title">{unlocking ? s.unlocking : s.faceUnlock}</div>
+              <div className="t-caption fl-face-desc">{s.faceDesc}</div>
+              <div className="fl-or">
+                <span className="fl-or-line" />
+                <span className="t-label fl-or-label">{s.orPassword}</span>
+                <span className="fl-or-line" />
+              </div>
+              <button
+                type="button"
+                className="btn btn-ghost btn-block"
+                onClick={() => setShowPasswordFallback(true)}
+              >
+                {s.bioFallback}
+              </button>
+            </>
+          ) : (
+            <form className="fl-form" onSubmit={submitCredentials}>
+              <label className="fl-label">
+                <span className="t-label">{s.idLabel}</span>
+                <input
+                  className="fl-in"
+                  type="text"
+                  autoComplete="username"
+                  value={identifier}
+                  onChange={e => setIdentifier(e.target.value)}
+                />
+              </label>
+              <label className="fl-label">
+                <span className="t-label">{s.password}</span>
+                <div className="fl-pw-wrap">
+                  <input
+                    className="fl-in fl-pw-in"
+                    type={showPw ? "text" : "password"}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="fl-pw-toggle"
+                    onClick={() => setShowPw(v => !v)}
+                    aria-label={s.showPw}
+                    aria-pressed={showPw}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 20, height: 20 }} aria-hidden="true">
+                      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
+              </label>
+              <div className="fl-row">
+                <label className="check fl-keep">
+                  <input
+                    type="checkbox"
+                    checked={keepSignedIn}
+                    onChange={e => setKeepSignedIn(e.target.checked)}
+                  />
+                  {s.keepSignedIn}
+                </label>
+                <a href="/reset" className="fl-forgot">
+                  {s.forgot}
+                </a>
+              </div>
+
+              {message && (
+                <div className="fl-msg" role="alert">
+                  {message}
+                </div>
+              )}
+
+              <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy}>
+                {busy ? s.signingIn : s.signIn}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* footer: offline-first assurance */}
+      <div className="fl-foot">
+        <div className="fl-foot-note">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--nav-indicator)"
+            strokeWidth="1.6"
+            style={{ width: 16, height: 16, flex: "none", marginBlockStart: 1 }}
+            aria-hidden="true"
+          >
+            <path d="M5 12.55a11 11 0 0 1 14 0M8.5 16.05a6 6 0 0 1 7 0M2 8.82a15 15 0 0 1 20 0" />
+            <circle cx="12" cy="20" r="1" />
+          </svg>
+          <span className="t-compact">{s.offlineNote}</span>
+        </div>
+        <div className="fl-foot-row">
+          <span className="t-caption">{s.copyright}</span>
+          {/* The DC's "Last sync 08:41" is a fact about a signed-in device.
+              Before authentication there is no sync history to report, so the
+              chip states connectivity instead of inventing a timestamp. */}
+          <span className="t-caption fl-sync">
+            <span className="fl-sync-dot" />
+            {netLabel}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
