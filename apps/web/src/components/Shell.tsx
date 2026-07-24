@@ -38,10 +38,11 @@ export async function AppShell({ children }: { children: ReactNode }) {
   const { t, locale, user, roles, regions } = await loadShellData();
   if (!user) {
     // SCR-PWA-001: a deep link into the field channel while signed out lands
-    // on the field-specific sign-in, matching the /field top-level entry —
-    // not the desktop /login story-panel surface.
+    // on the field-specific biometric sign-in (SAQEEL Field Login.dc.html),
+    // matching the /field top-level entry — not the desktop /login
+    // story-panel surface.
     const pathname = (await headers()).get("x-pathname") ?? "";
-    redirect(pathname.startsWith("/field") ? "/field-login" : "/login");
+    redirect(pathname.startsWith("/field") ? "/login/field" : "/login");
   }
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
