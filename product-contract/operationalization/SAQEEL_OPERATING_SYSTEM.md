@@ -52,7 +52,8 @@ an implied approval.
 - Owns scheduling, task packets, write leases, integration sequencing and final
   review.
 - Keeps one live internal watch lane parked on Kimi, one on Claude Code and one
-  on Claude Design throughout every active two-hour cycle.
+  on Claude Design throughout every active two-hour cycle, and directly watches
+  every independent Codex delivery task.
 - Treats more than two minutes without a running packet, a handoff under active
   review, or a recorded external dependency as an orchestration defect.
 - Reviews every handoff and returns `ACK`, `RETURNED` or `BLOCKED`.
@@ -132,6 +133,20 @@ perform a live heartbeat. No actor may remain passively idle for more than two
 minutes while a safe READY packet exists. Waiting for a sponsor decision,
 connector, lease or another actor is recorded as a dependency; the actor then
 switches to a non-conflicting fallback packet.
+
+### Command discipline
+
+1. Every workstream has one named owner, one active task and one queued task.
+2. Every application session, design surface, source path, branch and shared
+   data set has only one controller at a time.
+3. A completed handoff is accepted, returned or blocked within the live
+   heartbeat; it is never left waiting without review.
+4. Incomplete, unsafe or unsupported work is returned with exact corrections,
+   not accepted to preserve pace.
+5. The independent Codex delivery task is monitored like every external actor;
+   creating it does not transfer final acceptance authority.
+6. Codex lead personally owns conflict resolution, final technical review,
+   real-browser acceptance and sponsor escalation.
 
 Every two hours Codex must:
 

@@ -22,7 +22,8 @@ non_negotiables:
   - Missing design-tool access never authorizes invented design evidence.
   - The two-hour cadence is a reconciliation horizon, not permission to leave
     an actor idle between reviews.
-  - Kimi, Claude Code and Claude Design each have a live internal watch lane.
+  - Kimi, Claude Code and Claude Design each have a live internal watch lane,
+    and every independent Codex delivery task is directly monitored.
   - More than 120 seconds without useful work, active handoff review or a
     recorded external dependency is an orchestration defect.
 
@@ -93,7 +94,11 @@ required_cycle_output:
 
 queue_health:
   minimum_running_sessions: 3
-  required_live_watch_lanes: [kimi, claude_code, claude_design]
+  required_live_watch_lanes:
+    - kimi
+    - claude_code
+    - claude_design
+    - independent_codex_delivery
   minimum_ready_packets_behind_active_work: 2
   exception: every_ready_packet_is_contract_blocked
   idle_response: assign_next_non_conflicting_requirement_backed_packet
