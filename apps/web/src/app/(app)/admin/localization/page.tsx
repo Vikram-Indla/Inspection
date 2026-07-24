@@ -3,15 +3,62 @@
 // owns filtering and inline editing. The page itself renders through useT()
 // (keys l10n.*) — the module that manages language works in both languages.
 import Shell from "@/components/Shell";
+import EmptyState from "@/components/EmptyState";
+import { IconShieldCheck } from "@/app/icons";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { redirect } from "next/navigation";
 import Manager, { type Labels, type UiString } from "./Manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function Localization() {
   const { t, locale } = await useT();
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError?.name === "AuthSessionMissingError" || !user) redirect("/login");
+  if (authError) {
+    console.error("[localization] identity verification failed", authError.message);
+    throw new Error("localization_auth_unavailable");
+  }
+
+  // WA-M9-AC-005: fail closed before loading any configuration data.
+  // RLS remains authoritative for reads and every mutation.
+  const { data: roleRows, error: rolesError } = await getUserRoles(user.id);
+  if (rolesError) {
+    console.error("[localization] role verification failed", rolesError.message);
+    throw new Error("localization_roles_unavailable");
+  }
+  const roles = new Set((roleRows ?? []).map(row => row.role_key));
+  const canManageLocalization = ["compliance_admin", "security_admin", "workflow_admin"]
+    .some(role => roles.has(role));
+
+  if (!canManageLocalization) {
+    return (
+      <Shell current="/admin/localization" title={t("l10n.title", copy("Language & translations", "اللغة والترجمات"))}>
+        <EmptyState
+          icon={<IconShieldCheck size={28} />}
+          role="alert"
+          title={t("admin.unauthorized.heading", copy("This control-plane module is outside your role", "هذه الوحدة الإدارية خارج نطاق دورك"))}
+          body={t(
+            "admin.unauthorized.body",
+            copy(
+              "No localization data has been loaded. Return to your assigned workspace or ask an administrator for the required role.",
+              "لم يتم تحميل أي بيانات ترجمة. ارجع إلى مساحة عملك أو اطلب من المسؤول منحك الدور المطلوب.",
+            ),
+          )}
+        >
+          <a className="btn btn-secondary sq-link btn-touch" href="/launch">
+            {t("admin.unauthorized.return", copy("Return to my workspace", "العودة إلى مساحة عملي"))}
+          </a>
+        </EmptyState>
+      </Shell>
+    );
+  }
+
   const { data, error } = await sb.from("ui_strings")
     .select("key, en, ar, status, context, orphaned")
     .order("key");
@@ -72,10 +119,41 @@ export default async function Localization() {
     riskLong: t("l10n.risk.long", "Arabic runs long — check narrow layouts"),
     orphanNote: t("l10n.orphan.note", "No longer found in the last code scan — kept and restorable, not deleted."),
     placeholderErr: t("l10n.placeholder.err", "Placeholder {token} is missing from the Arabic — Save is disabled until placeholders match."),
+    registryTitle: t("l10n.registry.title", copy("Translation registry", "سجل الترجمات")),
+    registryBody: t(
+      "l10n.registry.body",
+      copy(
+        "Manage the English source and Arabic translation consumed by every localized application surface.",
+        "إدارة النص الإنجليزي المصدر والترجمة العربية المستخدمة في جميع واجهات التطبيق المترجمة.",
+      ),
+    ),
+    statusNavigation: t("l10n.status.navigation", copy("Translation status", "حالة الترجمة")),
+    allKeys: t("l10n.status.all", copy("All keys", "جميع المفاتيح")),
+    missingKeys: t("l10n.status.missing", copy("Missing Arabic", "العربية مفقودة")),
+    draftKeys: t("l10n.status.draft", copy("Draft review", "مسودة للمراجعة")),
+    reviewedKeys: t("l10n.status.reviewed", copy("Reviewed", "تمت المراجعة")),
+    orphanedKeys: t("l10n.status.orphaned", copy("Orphaned", "غير مستخدمة")),
+    sourceHeading: t("l10n.heading.source", copy("English source", "المصدر الإنجليزي")),
+    translationHeading: t("l10n.heading.translation", copy("Arabic translation", "الترجمة العربية")),
+    stateHeading: t("l10n.heading.state", copy("State & actions", "الحالة والإجراءات")),
+    governanceTitle: t("l10n.governance.title", copy("Versioned reference data", "بيانات مرجعية ذات إصدارات")),
+    governanceBody: t(
+      "l10n.governance.body",
+      copy(
+        "Changes are revisioned. Retired keys remain in history and can be restored; they are never silently deleted.",
+        "تُحفظ التغييرات كإصدارات. تبقى المفاتيح المتوقفة في السجل ويمكن استعادتها، ولا تُحذف بصمت.",
+      ),
+    ),
+    openAdd: t("l10n.add.open", copy("Add key", "إضافة مفتاح")),
+    closeAdd: t("l10n.add.close", copy("Close", "إغلاق")),
+    previous: t("common.previous", copy("Previous", "السابق")),
+    next: t("common.next", copy("Next", "التالي")),
+    page: t("common.page", copy("Page", "صفحة")),
+    filteredResults: t("l10n.filtered.results", copy("filtered results", "نتائج تمت تصفيتها")),
   };
 
   return (
-    <Shell current="/admin/localization" title={t("l10n.title", "Localization")}
+    <Shell current="/admin/localization" title={t("l10n.title", copy("Language & translations", "اللغة والترجمات"))}
       context={
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>
