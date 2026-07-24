@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute, isFieldOnlyPersona } from "../src/lib/shell-navigation";
+import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute, isFieldOnlyPersona, SHELL_NAVIGATION } from "../src/lib/shell-navigation";
 import { homeForRoles } from "../src/lib/role-home";
 import { storageStatePath } from "./personas";
 
@@ -11,7 +11,7 @@ const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item
 // role-specific additions on top of this shared set.)
 const businessHrefsFor = (roles: string[]) =>
   itemsFor(roles).filter(item => item.visibility === "business" && item.enabled).map(item => item.href);
-const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin/compliance-approvals", "/admin/violations", "/ai/suggestions"];
+const enabledBusinessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/visits", "/reviews", "/admin/regulations", "/admin/compliance-approvals", "/enforcement"];
 
 test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   // TASK-WEB-CHANNEL-ACCESS-GATE-001 (change-control of CMP-REQ-SHELL-001..003):
@@ -19,32 +19,49 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   // The Inspector is an iPad-channel persona (rbac_matrix.csv RBAC-009/010) and
   // is redirected off the web portal, so it no longer receives the web nav or a
   // locked Administration group. See the "field channel" describe block below.
-  test("every WEB business persona receives the same business catalogue and ten locked admin entries", () => {
+  test("every WEB business persona receives the fixed catalogue and six locked Administration hubs", () => {
     for (const role of ["planner", "reviewer", "ops", "leadership"]) {
       const groups = buildShellNavigation([role]);
       expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
-      expect(businessHrefsFor([role])).toEqual(businessHrefs);
+      expect(businessHrefsFor([role])).toEqual(enabledBusinessHrefs);
       const adminItems = groups.find(group => group.id === "administration")!.items;
-      // 7 original + 3 M9 planning control-plane entries (lookups/expiry/status).
-      expect(adminItems.filter(item => item.visibility === "admin-primary")).toHaveLength(10);
+      expect(adminItems.filter(item => item.visibility === "admin-primary")).toHaveLength(6);
       expect(adminItems.filter(item => item.visibility === "admin-primary").every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
     }
   });
 
-  test("admin primary and advanced options compose from existing role families", () => {
+  test("Administration exposes only the six governed hubs and composes from existing role families", () => {
+    expect(SHELL_NAVIGATION.find(group => group.id === "administration")?.items.map(item => [item.labelEn, item.href])).toEqual([
+      ["Users & Roles", "/admin/access"],
+      ["Lookup Management", "/admin/planning/lookups"],
+      ["Risk Configuration", "/admin/risk"],
+      ["Survey Configuration", "/admin/items"],
+      ["Notification Configuration", "/admin/notifications"],
+      ["Integration Management", "/admin/integrations"],
+    ]);
     const security = itemsFor(["security_admin"]);
-    expect(security.find(item => item.id === "users")?.enabled).toBe(true);
-    expect(security.find(item => item.id === "roles")?.enabled).toBe(true);
-    expect(security.find(item => item.id === "risk")?.enabled).toBe(false);
-    expect(security.find(item => item.id === "surveys")?.enabled).toBe(false);
-    expect(security.find(item => item.id === "devices")?.enabled).toBe(true);
-    expect(security.find(item => item.id === "gis")).toBeUndefined();
+    expect(security.find(item => item.id === "users-roles")?.enabled).toBe(true);
+    expect(security.find(item => item.id === "lookup-management")?.enabled).toBe(true);
+    expect(security.find(item => item.id === "risk-configuration")?.enabled).toBe(false);
+    expect(security.find(item => item.id === "survey-configuration")?.enabled).toBe(false);
+    expect(security.find(item => item.id === "integration-management")?.enabled).toBe(true);
 
     const composed = itemsFor(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"]);
     expect(composed.filter(item => item.visibility === "admin-primary").every(item => item.enabled)).toBe(true);
-    expect(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id)).toEqual([
-      "workflows", "gis", "audit", "platform-operations", "security-access", "devices", "enforcement-cases",
-    ]);
+    expect(composed.filter(item => item.visibility === "admin-advanced")).toEqual([]);
+  });
+
+  test("authority targets remain explicit while unfinished cutovers fail honestly", () => {
+    const definitions = SHELL_NAVIGATION.flatMap(group => group.items);
+    expect(definitions.find(item => item.id === "inspection-execution")?.href).toBe("/planning/visits?view=execution");
+    expect(definitions.find(item => item.id === "analytics")?.href).toBe("/dashboard?view=analytics");
+    const planner = itemsFor(["planner"]);
+    expect(planner.find(item => item.id === "inspection-execution")).toMatchObject({ href: "/visits", enabled: true });
+    expect(planner.find(item => item.id === "analytics")).toMatchObject({
+      href: "/dashboard?view=analytics",
+      enabled: false,
+      disabledReasonEn: "Analytics is awaiting its approved module wiring.",
+    });
   });
 
   test("dashboard and live operations have distinct active states", () => {
@@ -78,7 +95,7 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
 
   test("an operational grant wins: a multi-role Inspector+Planner keeps the full web catalogue", () => {
     expect(isFieldOnlyPersona(["inspector", "planner"])).toBe(false);
-    expect(businessHrefsFor(["inspector", "planner"])).toEqual(businessHrefs);
+    expect(businessHrefsFor(["inspector", "planner"])).toEqual(enabledBusinessHrefs);
     expect(buildShellNavigation(["inspector", "planner"]).find(group => group.id === "administration")).toBeDefined();
   });
 
@@ -105,11 +122,11 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "Inspection Rules" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Compliance Library" })).toBeVisible();
     await nav.getByRole("button", { name: "Administration" }).click();
-    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(10);
-    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
-    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");
+    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(7);
+    await expect(nav.getByRole("link", { name: /Users & Roles.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
+    await expect(nav.getByRole("link", { name: /Users & Roles.*Administrator access required/ })).not.toHaveAttribute("href");
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
     await expect(page.locator(".sq-shell")).toHaveClass(/is-collapsed/);

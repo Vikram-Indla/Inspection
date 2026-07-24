@@ -439,11 +439,9 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   position: sticky; inset-block-start: 0; block-size: 100dvh; min-inline-size: 0; overflow: hidden;
 }
 .sq-shell__brand { display:flex; align-items:center; gap: var(--space-2); min-block-size: 64px; padding: var(--space-2) var(--space-2) var(--space-3); border-block-end: 1px solid var(--nav-border); margin-block-end: var(--space-1); }
-.sq-shell__brand-mark { inline-size: 30px; block-size: 30px; flex: 0 0 auto; color: var(--nav-indicator); }
-.sq-shell__brand-lockup { display: flex; align-items: baseline; gap: var(--space-2); min-inline-size: 0; white-space: nowrap; }
-/* Saqeel wordmark — always the Arabic brand, whatever the UI locale */
-.sq-shell__brand-wordmark { font: 600 21px/28px var(--font-body); color: var(--nav-text-active); }
-.sq-shell__brand-sub { font: var(--type-caption-font); color: var(--nav-text); }
+.sq-shell__brand-mark { display: none; inline-size: 34px; block-size: 34px; flex: 0 0 auto; }
+.sq-shell__brand-lockup { display: flex; align-items: center; min-inline-size: 0; white-space: nowrap; }
+.sq-shell__brand-wordmark { display: block; inline-size: 170px; block-size: auto; max-inline-size: 100%; }
 .sq-shell__close { display: none; margin-inline-start: auto; inline-size: var(--touch-target); block-size: var(--touch-target); border: 1px solid var(--nav-border); border-radius: var(--radius-xs); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
 .sq-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: var(--space-2); scrollbar-width: thin; }
 .sq-nav-group { display: flex; flex-direction: column; gap: var(--space-1); }
@@ -478,6 +476,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 [dir="rtl"] .sq-shell__collapse > span:first-child { transform: scaleX(-1); }
 .sq-shell.is-collapsed .sq-shell__nav { padding-inline: var(--space-2); }
 .sq-shell.is-collapsed .sq-shell__brand { justify-content: center; padding-inline: 0; }
+.sq-shell.is-collapsed .sq-shell__brand-mark { display: block; }
 .sq-shell.is-collapsed .sq-shell__brand-lockup,
 .sq-shell.is-collapsed .sq-nav-label { display: none; }
 .sq-shell.is-collapsed .sq-nav-group__trigger { display: none; }
@@ -489,6 +488,7 @@ a.sq-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .sq-shell.is-collapsed .sq-nav-item[aria-current="page"] { box-shadow: none; }
 [dir="rtl"] .sq-shell.is-collapsed .sq-nav-item[aria-current="page"] { box-shadow: none; }
 .sq-shell__main { display: flex; flex-direction: column; min-inline-size: 0; }
+.sq-shell.is-field-nav-hidden { grid-template-columns: minmax(0, 1fr); }
 
 .sq-pagehead {
   background: var(--surface-primary); border-block-end: 1px solid var(--border-subtle);
@@ -562,6 +562,7 @@ button.sq-shell-scope { cursor: pointer; }
   [dir="rtl"] .sq-shell.is-drawer-open .sq-shell__nav,
   [dir="rtl"] .sq-shell.is-collapsed.is-drawer-open .sq-shell__nav { transform: translateX(0); }
   .sq-shell.is-collapsed .sq-shell__brand { justify-content: flex-start; padding: var(--space-1) var(--space-2) var(--space-4); }
+  .sq-shell.is-collapsed .sq-shell__brand-mark { display: none; }
   .sq-shell.is-collapsed .sq-shell__brand-lockup, .sq-shell.is-collapsed .sq-nav-label { display: initial; }
   .sq-shell.is-collapsed .sq-nav-group__trigger { display: flex; justify-content: space-between; padding: var(--space-2) var(--space-3) var(--space-1); }
   .sq-shell.is-collapsed .sq-nav-item { justify-content: flex-start; padding-inline: var(--space-3); }

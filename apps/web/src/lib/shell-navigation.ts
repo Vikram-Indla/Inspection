@@ -83,7 +83,7 @@ export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
   | "forms" | "enforcement" | "workflow" | "risk" | "map"
-  | "access" | "notify" | "ai";
+  | "access" | "notify" | "ai" | "analytics";
 
 type Visibility = "business" | "admin-primary" | "admin-advanced";
 
@@ -135,9 +135,6 @@ const businessRoles = [
 const primaryAdmin = (
   item: Omit<ShellNavItemDefinition, "visibility">,
 ): ShellNavItemDefinition => ({ ...item, visibility: "admin-primary" });
-const advancedAdmin = (
-  item: Omit<ShellNavItemDefinition, "visibility">,
-): ShellNavItemDefinition => ({ ...item, visibility: "admin-advanced" });
 
 export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
   {
@@ -158,7 +155,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "العمليات",
     items: [
       { id: "planning", labelKey: "nav.planning", labelEn: "Planning", labelAr: "التخطيط", href: "/planning", icon: "calendar", roles: businessRoles, businessTab: "Planning", visibility: "business" },
-      { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/field", icon: "inspect", roles: businessRoles, businessTab: "Inspection / Execution", visibility: "business", channels: ["web", "field"], parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
+      { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/planning/visits?view=execution", icon: "inspect", roles: businessRoles, businessTab: "Inspection / Execution", visibility: "business", channels: ["web", "field"], parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
       { id: "inspection-review", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: businessRoles, businessTab: "Inspection / Review & Approval", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
     ],
   },
@@ -168,9 +165,9 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Compliance",
     labelAr: "الامتثال",
     items: [
-      { id: "compliance-library", labelKey: "shell.nav.regulations", labelEn: "Inspection Rules", labelAr: "قواعد التفتيش", href: "/admin/regulations", icon: "library", roles: businessRoles, businessTab: "Inspection Rules", visibility: "business" },
-      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Awaiting Approval", labelAr: "بانتظار الاعتماد", href: "/admin/compliance-approvals", icon: "review", roles: businessRoles, businessTab: "Awaiting Approval", visibility: "business" },
-      { id: "enforcement-library", labelKey: "shell.nav.enforcement", labelEn: "Violations & Penalties", labelAr: "المخالفات والعقوبات", href: "/admin/violations", icon: "enforcement", roles: businessRoles, businessTab: "Violations & Penalties", visibility: "business" },
+      { id: "compliance-library", labelKey: "shell.nav.complianceLibrary", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: businessRoles, businessTab: "Compliance Library", visibility: "business" },
+      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Approval Queue", labelAr: "قائمة انتظار الاعتماد", href: "/admin/compliance-approvals", icon: "review", roles: businessRoles, businessTab: "Approval Queue", visibility: "business" },
+      { id: "enforcement-library", labelKey: "shell.nav.enforcementLibrary", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/enforcement", icon: "enforcement", roles: businessRoles, businessTab: "Enforcement Library", visibility: "business" },
     ],
   },
   {
@@ -179,7 +176,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Insights",
     labelAr: "الرؤى",
     items: [
-      { id: "ai-insights", labelKey: "shell.nav.aiInsights", labelEn: "AI Insights", labelAr: "رؤى الذكاء الاصطناعي", href: "/ai/suggestions", icon: "ai", roles: businessRoles, businessTab: "AI Insights", visibility: "business" },
+      { id: "analytics", labelKey: "shell.nav.analytics", labelEn: "Analytics", labelAr: "التحليلات", href: "/dashboard?view=analytics", icon: "analytics", roles: businessRoles, businessTab: "Analytics", visibility: "business" },
     ],
   },
   {
@@ -188,29 +185,12 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Administration",
     labelAr: "الإدارة",
     items: [
-      primaryAdmin({ id: "users", labelKey: "shell.nav.users", labelEn: "Users", labelAr: "المستخدمون", href: "/admin/access", icon: "access", roles: ["security_admin"], businessTab: "Users" }),
-      primaryAdmin({ id: "roles", labelKey: "shell.nav.roles", labelEn: "Roles", labelAr: "الأدوار", href: "/admin/access?view=roles", icon: "access", roles: ["security_admin"], businessTab: "Roles" }),
-      primaryAdmin({ id: "lookups", labelKey: "shell.nav.lookups", labelEn: "Reference Lists", labelAr: "القوائم المرجعية", href: "/admin/localization", icon: "library", roles: ["compliance_admin", "workflow_admin", "security_admin"], businessTab: "Reference Lists" }),
-      primaryAdmin({ id: "planning-lookups", labelKey: "shell.nav.planningLookups", labelEn: "Planning Lookups", labelAr: "قوائم التخطيط", href: "/admin/planning/lookups", icon: "library", roles: adminRoles, businessTab: "Planning Lookups" }),
-      primaryAdmin({ id: "planning-expiry", labelKey: "shell.nav.planningExpiry", labelEn: "Planning Expiry Rules", labelAr: "قواعد انتهاء التخطيط", href: "/admin/planning/expiry", icon: "workflow", roles: adminRoles, businessTab: "Planning Expiry Rules" }),
-      primaryAdmin({ id: "planning-status", labelKey: "shell.nav.planningStatus", labelEn: "Planning Status Rules", labelAr: "قواعد حالة التخطيط", href: "/admin/planning/status", icon: "workflow", roles: adminRoles, businessTab: "Planning Status Rules" }),
-      primaryAdmin({ id: "risk", labelKey: "shell.nav.risk", labelEn: "Risk Settings", labelAr: "إعدادات المخاطر", href: "/admin/risk", icon: "risk", roles: ["risk_owner"], businessTab: "Risk Settings" }),
-      primaryAdmin({ id: "surveys", labelKey: "shell.nav.surveys", labelEn: "Inspection Forms", labelAr: "نماذج التفتيش", href: "/admin/packages", icon: "forms", roles: ["form_admin", "compliance_admin"], businessTab: "Inspection Forms" }),
-      primaryAdmin({ id: "notifications", labelKey: "shell.nav.notificationConfiguration", labelEn: "Notification Settings", labelAr: "إعدادات الإشعارات", href: "/admin/notifications", icon: "notify", roles: adminRoles, businessTab: "Notification Settings" }),
-      advancedAdmin({ id: "execution", labelKey: "shell.nav.executionSettings", labelEn: "Execution Settings", labelAr: "إعدادات التنفيذ", href: "/admin/execution", icon: "workflow", roles: adminRoles, businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      primaryAdmin({ id: "integrations", labelKey: "shell.nav.integrationManagement", labelEn: "System Connections", labelAr: "اتصالات النظام", href: "/admin/integrations", icon: "workflow", roles: ["security_admin", "workflow_admin"], businessTab: "System Connections" }),
-      advancedAdmin({ id: "workflows", labelKey: "shell.nav.workflows", labelEn: "Workflow Settings", labelAr: "إعدادات سير العمل", href: "/admin/workflows", icon: "workflow", roles: ["workflow_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "gis", labelKey: "shell.nav.gis", labelEn: "Map Settings", labelAr: "إعدادات الخرائط", href: "/admin/gis", icon: "map", roles: ["gis_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "audit", labelKey: "shell.nav.audit", labelEn: "Activity Log", labelAr: "سجل النشاط", href: "/admin/audit", icon: "access", roles: adminRoles, businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "platform-operations", labelKey: "shell.nav.platformOperations", labelEn: "System Operations", labelAr: "عمليات النظام", href: "/admin/operations", icon: "radar", roles: ["security_admin", "workflow_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "security-access", labelKey: "shell.nav.securityAccess", labelEn: "Security & Access Review", labelAr: "مراجعة الأمن والوصول", href: "/admin/security-access", icon: "access", roles: ["security_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "devices", labelKey: "shell.nav.devices", labelEn: "Trusted Devices", labelAr: "الأجهزة الموثوقة", href: "/admin/devices", icon: "inspect", roles: ["security_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "admin-home", labelKey: "shell.nav.adminHome", labelEn: "Approval & Configuration", labelAr: "الاعتماد والتهيئة", href: "/admin", icon: "admin", roles: adminRoles, businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "inspection-items", labelKey: "shell.nav.items", labelEn: "Inspection Items", labelAr: "بنود التفتيش", href: "/admin/items", icon: "forms", roles: ["compliance_admin", "form_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "enforcement-recommendations", labelKey: "shell.nav.enforcementRecommendations", labelEn: "Enforcement Recommendations", labelAr: "توصيات الإنفاذ", href: "/admin/enforcement-recommendations", icon: "enforcement", roles: ["ops", "compliance_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "bulk-violations", labelKey: "shell.nav.bulkViolations", labelEn: "Issue Multiple Violations", labelAr: "إصدار عدة مخالفات", href: "/admin/bulk-violations", icon: "enforcement", roles: ["ops", "compliance_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "localization", labelKey: "shell.nav.localization", labelEn: "Language & Translations", labelAr: "اللغة والترجمة", href: "/admin/localization", icon: "library", roles: ["compliance_admin", "security_admin", "workflow_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
-      advancedAdmin({ id: "enforcement-cases", labelKey: "shell.nav.enforcementCases", labelEn: "Violation Cases", labelAr: "قضايا المخالفات", href: "/enforcement", icon: "enforcement", roles: ["compliance_admin"], businessTab: "Advanced Administration", parentId: "advanced-administration", parentLabelKey: "shell.nav.advancedAdministration", parentLabelEn: "Advanced Administration", parentLabelAr: "الإدارة المتقدمة" }),
+      primaryAdmin({ id: "users-roles", labelKey: "shell.nav.usersRoles", labelEn: "Users & Roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: ["security_admin"], businessTab: "Users & Roles" }),
+      primaryAdmin({ id: "lookup-management", labelKey: "shell.nav.lookupManagement", labelEn: "Lookup Management", labelAr: "إدارة القوائم المرجعية", href: "/admin/planning/lookups", icon: "library", roles: ["compliance_admin", "workflow_admin", "security_admin"], businessTab: "Lookup Management" }),
+      primaryAdmin({ id: "risk-configuration", labelKey: "shell.nav.riskConfiguration", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: ["risk_owner"], businessTab: "Risk Configuration" }),
+      primaryAdmin({ id: "survey-configuration", labelKey: "shell.nav.surveyConfiguration", labelEn: "Survey Configuration", labelAr: "تهيئة الاستبيانات", href: "/admin/items", icon: "forms", roles: ["form_admin", "compliance_admin", "workflow_admin"], businessTab: "Survey Configuration" }),
+      primaryAdmin({ id: "notification-configuration", labelKey: "shell.nav.notificationConfiguration", labelEn: "Notification Configuration", labelAr: "تهيئة الإشعارات", href: "/admin/notifications", icon: "notify", roles: adminRoles, businessTab: "Notification Configuration" }),
+      primaryAdmin({ id: "integration-management", labelKey: "shell.nav.integrationManagement", labelEn: "Integration Management", labelAr: "إدارة التكاملات", href: "/admin/integrations", icon: "workflow", roles: ["security_admin", "workflow_admin", "gis_admin"], businessTab: "Integration Management" }),
     ],
   },
 ] as const;
@@ -232,7 +212,15 @@ export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNav
       if (item.visibility === "admin-advanced" && !allowed) return [];
       return [{
         ...item,
-        enabled: item.visibility === "business" || allowed,
+        ...(item.id === "inspection-execution"
+          ? { href: fieldOnly ? "/field" : "/visits" }
+          : {}),
+        enabled: item.id !== "analytics" && (item.visibility === "business" || allowed),
+        ...(item.id === "analytics" ? {
+          disabledReasonKey: "shell.notYetWired",
+          disabledReasonEn: "Analytics is awaiting its approved module wiring.",
+          disabledReasonAr: "التحليلات بانتظار ربط الوحدة المعتمدة.",
+        } : {}),
         ...(item.visibility === "admin-primary" && !allowed ? {
           disabledReasonKey: "shell.adminRequired",
           disabledReasonEn: "Administrator access required.",
