@@ -74,6 +74,40 @@
   background: var(--surface-sunken);
 }
 
+.mapFrame :global(.mapboxgl-popup-content) {
+  min-inline-size: 220px;
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-overlay);
+  color: var(--text-primary);
+  font: var(--type-caption-font);
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.mapFrame :global(.mapboxgl-popup-close-button) {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.mapFrame :global(.mapboxgl-popup-anchor-top .mapboxgl-popup-tip) {
+  border-bottom-color: var(--surface-primary);
+}
+
+.mapFrame :global(.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip) {
+  border-top-color: var(--surface-primary);
+}
+
+.mapFrame :global(.mapboxgl-popup-anchor-left .mapboxgl-popup-tip) {
+  border-right-color: var(--surface-primary);
+}
+
+.mapFrame :global(.mapboxgl-popup-anchor-right .mapboxgl-popup-tip) {
+  border-left-color: var(--surface-primary);
+}
+
 .mapFrame > [role="status"],
 .mapFrame > [role="alert"] {
   min-block-size: 540px;
@@ -114,6 +148,82 @@
   margin: 0;
   color: var(--text-primary);
   font: var(--type-heading-3);
+}
+
+.selectionCard {
+  margin-block-end: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--action-primary);
+  border-inline-start-width: 3px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.selectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.selectionHeader h3 {
+  margin: 0;
+  font: var(--type-body-strong);
+}
+
+.selectionHeader button {
+  display: grid;
+  inline-size: var(--touch-target);
+  block-size: var(--touch-target);
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.selectionHeader button:hover {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.selectionHeader button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.selectionDetails {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+}
+
+.selectionDetails div {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1.3fr);
+  gap: var(--space-2);
+}
+
+.selectionDetails dt {
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
+}
+
+.selectionDetails dd {
+  min-inline-size: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--text-primary);
+  font: var(--type-caption-font);
+  font-weight: 600;
+}
+
+.selectionDisclosure {
+  margin: var(--space-3) 0 0;
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
 }
 
 .listItems {
@@ -298,6 +408,11 @@
   .listButton > span:last-child {
     align-items: flex-start;
     text-align: start;
+  }
+
+  .selectionDetails div {
+    grid-template-columns: 1fr;
+    gap: 2px;
   }
 
   .wallboard {

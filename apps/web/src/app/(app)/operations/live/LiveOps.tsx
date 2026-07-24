@@ -26,6 +26,13 @@ export type LiveOpsStrings = {
   mapboxNotConfigured: string;
   mapAriaLabel: string;
   wallboardExit: string;
+  selectedInspector: string;
+  inspectorName: string;
+  factoryName: string;
+  regionName: string;
+  operationalState: string;
+  visitReference: string;
+  closeDetails: string;
 };
 
 const Map = dynamic(() => import("./LiveMapInner"), { ssr: false });
@@ -52,6 +59,7 @@ export default function LiveOps({
   const markProviderFailed = useCallback(() => setProviderFailed(true), []);
   const enRoute = inspectors.filter(inspector => inspector.state === "on_the_way").length;
   const executing = inspectors.filter(inspector => inspector.state === "executing" || inspector.state === "arrived").length;
+  const selectedInspector = inspectors.find(inspector => inspector.id === selectedId) ?? null;
   const noScopeRows = factories.length === 0 && inspectors.length === 0;
   const hasNoPositions = factories.length > 0 && inspectors.length === 0;
   const formattedObservedAt = new Intl.DateTimeFormat(undefined, {
@@ -116,6 +124,28 @@ export default function LiveOps({
             <h2 id="live-inspector-list-title">{s.activeList}</h2>
             <span className="sq-lozenge sq-lozenge--neutral">{inspectors.length}</span>
           </div>
+          {selectedInspector ? (
+            <section
+              className={styles.selectionCard}
+              aria-live="polite"
+              aria-labelledby="selected-inspector-title"
+              data-testid="live-inspector-details"
+            >
+              <div className={styles.selectionHeader}>
+                <h3 id="selected-inspector-title">{s.selectedInspector}</h3>
+                <button type="button" onClick={() => setSelectedId(null)} aria-label={s.closeDetails}>×</button>
+              </div>
+              <dl className={styles.selectionDetails}>
+                <div><dt>{s.inspectorName}</dt><dd>{selectedInspector.inspector}</dd></div>
+                <div><dt>{s.factoryName}</dt><dd>{selectedInspector.factoryName}</dd></div>
+                <div><dt>{s.regionName}</dt><dd>{selectedInspector.region}</dd></div>
+                <div><dt>{s.operationalState}</dt><dd>{selectedInspector.stateLabel}</dd></div>
+                <div><dt>{s.since}</dt><dd>{selectedInspector.sinceLabel}</dd></div>
+                <div><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
+              </dl>
+              <p className={styles.selectionDisclosure}>{s.projected}</p>
+            </section>
+          ) : null}
           {inspectors.length ? (
             <ul className={styles.listItems}>
               {inspectors.map(inspector => (

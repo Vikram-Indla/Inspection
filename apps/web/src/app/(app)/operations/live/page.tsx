@@ -160,6 +160,13 @@ export default async function LiveOperations({ searchParams }: {
     mapboxNotConfigured: t("ops.live.map.notConfigured", "Live map unavailable — basemap provider failed."),
     mapAriaLabel: t("ops.live.map.ariaLabel", "Mapbox operations map"),
     wallboardExit: t("ops.live.wallboardExit", "Exit wallboard"),
+    selectedInspector: t("ops.live.selectedInspector", "Inspector details"),
+    inspectorName: t("ops.live.inspectorName", "Inspector"),
+    factoryName: t("ops.live.factoryName", "Factory"),
+    regionName: t("ops.live.regionName", "Region"),
+    operationalState: t("ops.live.operationalState", "Operational state"),
+    visitReference: t("ops.live.visitReference", "Visit reference"),
+    closeDetails: t("ops.live.closeDetails", "Close inspector details"),
   };
 
   const title = t("ops.live.title", "Live Operations — Saudi Arabia");

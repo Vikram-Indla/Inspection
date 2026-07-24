@@ -69,6 +69,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(tabletRule).not.toContain(".kpiGrid");
     expect(cssSource).toContain("@media (max-width: 430px)");
     expect(cssSource).toContain("@media (max-width: 340px)");
+    expect(cssSource).toContain("grid-template-columns: repeat(6, minmax(0, 1fr))");
+    expect(cssSource).toContain("grid-column: span 3");
   });
 
   test("adds neutral regional map drill and a fail-closed direct-route boundary", () => {
@@ -120,6 +122,10 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
 
   test("provides synchronized list, wallboard, loading disclosure and bounded responsive rules", () => {
     expect(liveShellSource).toContain('aria-pressed={selectedId === inspector.id}');
+    expect(liveShellSource).toContain('data-testid="live-inspector-details"');
+    expect(liveShellSource).toContain("selectedInspector.visitId");
+    expect(liveMapSource).toContain("feature.properties?.inspector");
+    expect(liveCssSource).toContain(":global(.mapboxgl-popup-content)");
     expect(liveShellSource).toContain("onProviderFailure={markProviderFailed}");
     expect(liveShellSource).toContain("noScopeRows || hasNoPositions");
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");
@@ -208,10 +214,16 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Last observed:", { exact: false })).toBeVisible();
-    const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button').first();
+    const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
     if (await firstInspector.count()) {
       await firstInspector.click();
       await expect(firstInspector).toHaveAttribute("aria-pressed", "true");
+      const details = page.getByTestId("live-inspector-details");
+      await expect(details).toBeVisible();
+      await expect(details.getByText("Inspector details", { exact: true })).toBeVisible();
+      await expect(details.getByText("Visit reference", { exact: true })).toBeVisible();
+      await page.getByRole("button", { name: "Close inspector details", exact: true }).click();
+      await expect(details).toHaveCount(0);
     }
   });
 

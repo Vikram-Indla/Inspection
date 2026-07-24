@@ -206,8 +206,19 @@ export default function LiveMapInner({
           .addTo(map);
       });
       map.on("click", INSPECTOR_LAYER, event => {
-        const id = String(event.features?.[0]?.properties?.id ?? "");
-        if (id) latest.current.onSelect(id);
+        const feature = event.features?.[0];
+        if (feature?.geometry.type !== "Point") return;
+        const id = String(feature.properties?.id ?? "");
+        if (!id) return;
+        latest.current.onSelect(id);
+        new mapboxgl.Popup({ closeButton: true, closeOnClick: true })
+          .setLngLat(feature.geometry.coordinates as [number, number])
+          .setText([
+            String(feature.properties?.inspector ?? ""),
+            String(feature.properties?.factory ?? ""),
+            String(feature.properties?.state ?? ""),
+          ].filter(Boolean).join("\n"))
+          .addTo(map);
       });
       for (const layer of [FACTORY_LAYER, INSPECTOR_LAYER]) {
         map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
