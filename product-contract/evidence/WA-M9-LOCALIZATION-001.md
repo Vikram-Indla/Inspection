@@ -20,6 +20,7 @@
   `11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d`
 - Implementation commit: `0e81ba97`
 - Branch: `codex/admin-localization-lookups`
+- Draft PR: `https://github.com/Vikram-Indla/Inspection/pull/63`
 - Dependency base: `codex/shared-brand-regression` at `2f795773`
 
 ## Design-to-code decision
