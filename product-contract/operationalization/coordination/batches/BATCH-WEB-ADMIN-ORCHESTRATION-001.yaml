@@ -17,6 +17,8 @@ authority_read_order:
   - /Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml
   - /Users/vikramindla/Developer/Inspection/product-contract/execution/TASK_ROUTER.yaml
   - /Users/vikramindla/Developer/Inspection/product-contract/governance/OPEN_DECISIONS.yaml
+  - /Users/vikramindla/Developer/Inspection-codex-orchestration/product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  - /Users/vikramindla/Developer/Inspection-codex-orchestration/product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
   - /Users/vikramindla/Developer/Inspection/product-contract/web-admin-phase1/00_START_HERE.md
 
 global_rules:

@@ -72,6 +72,10 @@ cycle_steps:
   - Publish the next two-hour packet queue and sponsor-facing summary.
 
 required_cycle_output:
+  - context_health_by_actor_and_session
+  - real_browser_delivery_review
+  - committed_pushed_and_PR_updated_packets
+  - certified_complete_requirement_rows_out_of_478
   - actor_session_status
   - completed_and_rejected_handoffs
   - active_packet_queue
@@ -79,6 +83,30 @@ required_cycle_output:
   - dirty_laundry_changes
   - status_board_delta
   - decisions_needed_from_sponsor
+
+queue_health:
+  minimum_running_sessions: 1
+  minimum_ready_packets_behind_active_work: 2
+  exception: every_ready_packet_is_contract_blocked
+  idle_response: assign_next_non_conflicting_requirement_backed_packet
+
+current_next_queue:
+  - packet_id: KIMI-M4-TEST-GAP-002
+    actor: Kimi
+    status: READY_AFTER_KIMI-M4-READINESS-001
+    scope: "CR-410..CR-429; WA-M4-AC-001..006"
+  - packet_id: KIMI-M3-SECURITY-002
+    actor: Kimi
+    status: READY_AFTER_KIMI-M3-QA-001
+    scope: "CR-430..CR-448; RLS/RBAC/provider/error boundaries"
+  - packet_id: CLAUDE-M3-DESIGN-REVISION-002
+    actor: Claude Code
+    status: READY_AFTER_CLAUDE-M3-STATUS-001_AND_CODEX_REVIEW
+    scope: "WA-DES-033-C3; WA-DES-034-C3; CR-430..CR-448"
+  - packet_id: CLAUDE-M4-DESIGN-INVENTORY-001
+    actor: Claude Code
+    status: READY
+    scope: "WA-DES-026; WA-DES-027; CR-410..CR-429"
 
 stop_conditions:
   - conflicting_file_ownership

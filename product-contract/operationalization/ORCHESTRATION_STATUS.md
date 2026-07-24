@@ -1,5 +1,8 @@
 # SAQEEL Orchestration Status
 
+Mandatory session bootstrap:
+`product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md`.
+
 Generated control view for `BATCH-WEB-ADMIN-ORCHESTRATION-001`. Canonical
 requirements, gate files, immutable events and screen ledgers remain authoritative.
 
@@ -67,6 +70,23 @@ closes.
 At the end of the cycle, Codex must ACK, RETURN or BLOCK each completed
 handoff, update dirty laundry, reconcile the Claude Design status board and
 issue the next queue.
+
+## 478-row delivery score
+
+Current certified end-to-end completion: **0 / 478 — PROVISIONAL**.
+
+This is not a claim that no implementation exists. It means no requirement row
+has yet been reconciled through the new combined design, development,
+integration, negative-test, browser-evidence and acceptance gate. M3
+`CR-430..448` and M4 `CR-410..429` are the first 39 rows under active
+certification. The score may increase only from per-row evidence.
+
+## Ready queue behind active work
+
+1. `KIMI-M4-TEST-GAP-002`
+2. `KIMI-M3-SECURITY-002`
+3. `CLAUDE-M3-DESIGN-REVISION-002`
+4. `CLAUDE-M4-DESIGN-INVENTORY-001`
 
 ## Verified actor facts
 

@@ -5,6 +5,12 @@ actor:
   tool_or_application: "<exact tool/application>"
   account_or_workspace: "<non-secret identity or UNKNOWN>"
   session_or_conversation_id: "<exact ID or NOT_PROVEN>"
+  context_health: "<HEALTHY|WARN|ROTATE_SESSION>"
+  context_usage_or_reason: "<observed percentage or evidence>"
+bootstrap:
+  saqeel_operating_system_loaded: true
+  authority_read_order_completed: true
+  retired_checkout_excluded: true
 packet:
   batch_id: "<batch>"
   lane_id: "<lane>"
@@ -15,6 +21,7 @@ packet:
 authority:
   requirement_ids: []
   screen_ids: []
+  engine_ids: []
   acceptance_ids: []
   design_project_id: "<ID or N/A>"
   design_file_id: "<stable ID or N/A>"
@@ -32,6 +39,14 @@ verification:
   tests: []
   browser_evidence: []
   negative_paths: []
+  integration_evidence: []
+  permission_and_audit_evidence: []
+delivery:
+  requirement_rows_certified_complete_this_packet: []
+  requirement_rows_remaining_or_blocked: []
+  commit: "<full SHA or N/A>"
+  pull_request: "<URL or N/A>"
+  pushed: false
 findings:
   confirmed: []
   ambiguous: []
@@ -41,7 +56,7 @@ completion:
   status: "<READY_FOR_CODEX_REVIEW|BLOCKED|RETURNED>"
   completed_at_utc: "<UTC>"
   next_checkpoint: "<exact next action>"
+  next_two_ready_packets: []
   no_unlisted_product_change: true
 acknowledgement:
   codex_event_id: "<ACK|RETURNED event or PENDING>"
-

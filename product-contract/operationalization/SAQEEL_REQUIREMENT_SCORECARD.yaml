@@ -1,0 +1,33 @@
+schema_version: "1.0"
+scorecard_id: SAQEEL-478-END-TO-END
+denominator: 478
+numerator_definition: evidence_verified_design_development_integration_and_acceptance_complete
+source_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+baseline_row_count_verified: 478
+last_reconciled_utc: "2026-07-24T23:00:00Z"
+current:
+  evidence_verified_complete: 0
+  active_evaluation: 39
+  active_requirement_ranges:
+    - "CR-410..CR-429"
+    - "CR-430..CR-448"
+  completion_percentage: 0.0
+  confidence: PROVISIONAL
+  reason: >-
+    The canonical baseline currently records all rows as
+    BASELINED_NOT_IMPLEMENTED while newer implementation evidence exists in
+    separate branches and evidence files. No row is counted complete until the
+    full SAQEEL Operating System completion gate is reconciled per requirement.
+required_row_evidence:
+  - accepted_design_revision_or_proven_not_applicable
+  - implementation_commit_and_files
+  - real_integration_and_permission_evidence
+  - positive_and_applicable_negative_tests
+  - current_browser_evidence
+  - independent_review
+  - sponsor_acceptance_when_required
+  - no_open_P0_or_P1_blocker
+next_reconciliation:
+  - "Certify CR-430..CR-448 from M3 Operations."
+  - "Map and certify CR-410..CR-429 from M4 Factory 360."
+  - "Backfill all remaining rows module by module without changing the source baseline."
