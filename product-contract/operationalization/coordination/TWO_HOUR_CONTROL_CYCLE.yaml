@@ -10,11 +10,14 @@ idle_tolerance_seconds: 300
 objective: >-
   Keep every connected actor on a bounded requirement-backed task, independently
   review every handoff, expose blockers without stopping unrelated work, and
-  refresh the next two-hour workload without conflicting write ownership.
+  aggressively improve delivery speed, cleanliness and defect prevention while
+  refreshing the next two-hour workload without conflicting write ownership.
 
 non_negotiables:
   - The 478 canonical requirements remain the behavioral baseline.
   - Quality, requirement adherence, negative paths and evidence outrank throughput.
+  - No module, PR or release candidate advances with an unresolved P0 or P1.
+  - Speed is measured by accepted business capability, not actor activity.
   - No actor self-approves its design, implementation, test result or status.
   - No green status exists without current revision or commit, current evidence,
     named owner, date and no unresolved blocker.
@@ -64,6 +67,14 @@ actor_utilization:
     role:
       - design_revision_owner
       - visual_status_board_owner
+      - current_module_correction
+      - next_module_readiness
+      - responsive_RTL_accessibility_and_consistency_review
+      - design_truth_and_evidence_review
+    utilization_rule: >-
+      Keep Claude Design active whenever safe design correction, next-module
+      readiness, responsive/Arabic/accessibility review, status evidence or
+      cross-module consistency work exists.
     status_board_rule: >-
       Update Design, Frontend, Service Wiring, QA and Sponsor independently.
       Every status includes its word, icon or shape, evidence or blocker ID,
@@ -83,7 +94,10 @@ required_cycle_output:
   - context_health_by_actor_and_session
   - real_browser_delivery_review
   - committed_pushed_and_PR_updated_packets
-  - certified_complete_requirement_rows_out_of_478
+  - built_requirement_rows_out_of_478
+  - independently_verified_requirement_rows_out_of_478
+  - fully_accepted_requirement_rows_out_of_478
+  - current_P0_and_P1_count
   - actor_session_status
   - completed_and_rejected_handoffs
   - active_packet_queue
