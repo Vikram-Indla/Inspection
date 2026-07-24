@@ -4,20 +4,44 @@ batch_id: "WA-P1-M2-BATCH-002"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 gate: "Web/Admin human screen approval"
 title: "Planning landing and Planning-owned Visits list/detail"
-status: "AWAITING_PRODUCT_OWNER_APPROVAL"
+status: "IMPLEMENTATION_VERIFIED_AWAITING_SPONSOR_DESIGN_DELTA_CONSENT"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
-branch: "revamp"
-baseline_sha: "cf705db0"
-worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
+branch: "codex/planning-m2-saqeel-correction"
+baseline_sha: "3323a8ef3d788c1c157a9bf0d63e32a3d9334e42"
+worktree: "/Users/vikramindla/Developer/Inspection-codex-planning-m2"
 
 approval:
   approved_by: "Vikram Indla / Product Owner"
-  approved_on: "2026-07-23"
-  evidence: "Explicit user direction: continue"
-  interpretation: "APPROVED — PROCEED after WA-P1-F0-CORR-001"
-  authorizes: "WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement"
+  approved_on: "2026-07-24"
+  evidence: "Explicit user response: Approved; show the real implementation in the browser and proceed module by module."
+  interpretation: "APPROVED — activate shared native-SAQEEL reconciliation followed by the bounded Planning M2 correction and browser comparison."
+  authorizes: "Lease A shared style-namespace reconciliation plus Lease B WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement."
+
+approved_reconciliation:
+  design_revision: "WA-DES-036 etag 1784901048581707"
+  lease_a_outcome: "Restore the already-imported native SAQEEL component namespace without re-importing astryx.css or changing behavior."
+  lease_a_shared_files:
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/components/NotificationBell.tsx"
+    - "apps/web/src/app/BrandMark.tsx"
+    - "apps/web/src/components/charts/BarChart.tsx"
+    - "apps/web/src/components/charts/DonutChart.tsx"
+    - "apps/web/src/components/charts/LineChart.tsx"
+    - "apps/web/src/app/login/LoginClient.tsx"
+    - "apps/web/src/app/(app)/factories/cr/[id]/page.tsx"
+  lease_a_field_namespace_only:
+    - "apps/web/src/components/FieldTabs.tsx"
+    - "apps/web/src/components/field/DailyBriefingCard.tsx"
+    - "apps/web/src/components/field/FieldConnectivityBanner.tsx"
+    - "apps/web/src/components/field/FieldFullMap.tsx"
+    - "apps/web/src/components/field/FieldHome.tsx"
+    - "apps/web/src/components/field/FieldScopeToggle.tsx"
+    - "apps/web/src/app/(app)/field/[visitId]/travel/TravelClient.tsx"
+    - "apps/web/src/app/(app)/field/factory-360/[id]/Factory360Offline.tsx"
+  lease_a_token_file: "apps/web/src/app/tokens.css"
+  lease_a_rule: "Field-owned edits are mechanical class/token namespace reconciliation only; no Field route, behavior, PWA, offline, iPad, data, permission, or test scope changes."
 
 process_ids: ["G2-P01", "G2-P02", "G2-P03"]
 requirement_ids: ["CR-001..CR-098"]
@@ -37,11 +61,26 @@ backend_contracts_to_preserve:
   - "Canonical workflow transitions immutable submitted versions audit and fail-closed providers"
 
 expected_files:
+  - "apps/web/src/components/ShellClient.tsx"
+  - "apps/web/src/components/NotificationBell.tsx"
+  - "apps/web/src/app/BrandMark.tsx"
+  - "apps/web/src/components/charts/{BarChart,DonutChart,LineChart}.tsx"
+  - "apps/web/src/app/login/LoginClient.tsx"
+  - "apps/web/src/app/(app)/factories/cr/[id]/page.tsx"
+  - "apps/web/src/components/FieldTabs.tsx"
+  - "apps/web/src/components/field/{DailyBriefingCard,FieldConnectivityBanner,FieldFullMap,FieldHome,FieldScopeToggle}.tsx"
+  - "apps/web/src/app/(app)/field/[visitId]/travel/TravelClient.tsx"
+  - "apps/web/src/app/(app)/field/factory-360/[id]/Factory360Offline.tsx"
+  - "apps/web/src/app/tokens.css"
   - "apps/web/src/app/(app)/planning/page.tsx"
   - "apps/web/src/app/(app)/planning/PlanningPreview.tsx"
+  - "apps/web/src/app/(app)/planning/PlanningPreview.module.css"
   - "apps/web/src/app/(app)/planning/visits/**"
   - "apps/web/src/app/(app)/visits/** compatibility sources only"
+  - "apps/web/src/app/(app)/visits/[id]/VisitDetailPreview.module.css"
   - "apps/web/e2e/web-admin-m2-batch-002.spec.ts"
+  - "apps/web/e2e/design-foundation-contract.spec.ts"
+  - "apps/web/e2e/web-admin-f0-foundation.spec.ts"
   - "product-contract/web-admin-phase1/** batch records"
 
 verification:
@@ -65,15 +104,21 @@ rollback:
   retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
 
 implementation:
-  commit: "8343c62c"
-  correction_commit: "50c95d35"
-  focus_correction_commit: "31baf2f8"
-  decision_history: "APPROVED_IN_PROGRESS -> REJECTED_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_PALETTE_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_DOUBLE_BORDER_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL"
-  corrections: "Replace placeholder/legacy AI icons; compact Planning card spacing; remove directional-link styling; fix desktop rail; use a sticky bounded Visit action form; replace unauthorized navy/hard-coded blue shell colors with exact SAQEEL graphite tokens; replace stacked field border/outline with one contiguous focus stroke."
-  verification: "typecheck PASS; production build PASS; latest same-batch/protected M2 15/15 PASS; live /planning focus computed as outline none plus focus border and inset reinforcement; exact semantic-color comparison PASS; axe/RTL/reflow/permission negatives PASS; Web/Admin validator PASS 478/478."
-  live_review: "Visible Codex browser on 2026-07-23 at all three review routes with planner persona and safe RLS-scoped data; no mutation performed."
+  commit: "PENDING — isolated worktree changes are not committed, pushed, merged, or deployed"
+  correction_commit: "PENDING"
+  focus_correction_commit: "PENDING"
+  decision_history: "2026-07-24 sponsor activated Lease A native-SAQEEL reconciliation and Lease B Planning correction -> implementation verified -> Claude design-only premium revision in progress"
+  corrections: "Restore the imported native SAQEEL shell/component namespace; remove the legacy token bridge; add bounded Planning and Visit-detail CSS modules; localize draft timestamps; remove rejected directional link arrows; make the explicit sponsor preview read-only; preserve routes, RLS/RBAC, services, APIs, audit/versioning, and backend behavior."
+  verification: "typecheck PASS; production build PASS; focused Web/Admin F0 plus Planning M2 16/16 PASS; real Planner RLS journey PASS; Visit detail/audit/version PASS; admin denial and explicit-query fail-closed PASS; Arabic RTL, 390px reflow, and axe PASS. Additional cross-module static sweep 21/29 with eight existing/stale foundation contracts recorded and not waived."
+  live_review: "Visible Chrome on 2026-07-24 at /planning?wa_preview=1 using the Planner persona and real RLS-scoped data. Full-page implementation evidence captured externally. The preview skips expire_lapsed_visits so the sponsor comparison performs no shared-data mutation."
+  review_artifacts:
+    - ".codex-review/module-comparisons/planning.md"
+    - ".codex-review/design-mapping-review.csv"
+    - ".codex-review/pilot-delta-review.md"
+  design_follow_up: "Claude preserved frozen baseline 1784901048581707 and produced final candidate 1784904309230874 after Codex returned the first candidate for directional-arrow and emoji regressions. Codex zero-trace review passed. The candidate is ready for sponsor consent; visual parity is not claimed and no further application correction is authorized before that decision."
 
 exit_condition: >-
-  Product Owner reviews commit 8343c62c. Do not continue, cut over, delete,
-  push, merge, deploy, or start another batch until an explicit permitted
-  Product Owner decision is received.
+  Product Owner reviews the real Planning implementation in visible Chrome
+  beside the accepted Claude Design revision. Do not cut over, delete, push,
+  merge, deploy, or start another module until an explicit permitted Product
+  Owner decision is received.

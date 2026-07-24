@@ -124,8 +124,12 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   // M02-016 parity with /visits — persist published→expired before reading so
   // the Expired tab and counts are fresh; a failed refresh never blocks the list.
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
-  if (expiryError) console.error("[planning.list] expiry refresh failed:", expiryError.message);
+  // The explicit design-review preview is read-only and must not mutate shared
+  // planning state while a sponsor compares the candidate against its design.
+  if (!targetPreview) {
+    const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
+    if (expiryError) console.error("[planning.list] expiry refresh failed:", expiryError.message);
+  }
 
   const regionFilter = params.filters.region;
   const [list, lookupsRead, regionsRead, citiesRead, inspectorsRead, packagesRead, draftsRead] = await Promise.all([
@@ -193,7 +197,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
   if (targetPreview) {
     return (
-      <Shell current="/planning" title={title} context={<span className="ax-caption ax-numeric">CR-001..CR-098 · WA-DES-036</span>}>
+      <Shell current="/planning" title={title} context={<span className="sq-caption sq-numeric">CR-001..CR-098 · WA-DES-036</span>}>
         <PlanningPreview methods={methods} drafts={drafts.map(draft => ({
           id: draft.id, method: t(`enum.${draft.method}`, draft.method), status: t(`enum.${draft.status}`, draft.status),
           planReference: draft.plan_reference, createdAt: draft.created_at, planner: draft.profiles?.full_name ?? "—", href: continueHref(draft),

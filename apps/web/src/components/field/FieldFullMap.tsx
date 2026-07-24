@@ -9,7 +9,7 @@ import type { GeoMarkerData } from "@/components/GeoMap";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => <div className="ax-skeleton" style={{ blockSize: "100%", minBlockSize: 240 }} />,
+  loading: () => <div className="sq-skeleton" style={{ blockSize: "100%", minBlockSize: 240 }} />,
 });
 
 export default function FieldFullMap({

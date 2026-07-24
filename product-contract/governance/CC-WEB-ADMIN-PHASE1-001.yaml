@@ -2,7 +2,7 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "BRAND_CORRECTION_IMPLEMENTED_AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL"
+status: "MODULE_1_IMPLEMENTATION_VERIFIED_AWAITING_SPONSOR_DESIGN_DELTA_CONSENT"
 prepared_on: "2026-07-23"
 approved_on: "2026-07-23"
 approved_by: "Vikram Indla / Product Owner"
@@ -11,8 +11,8 @@ baseline_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
 branch: "revamp"
 authority:
   statement: "The supplied package remains module authority; Saqeel Web(3).html is the binding represented shell/dashboard authority under the 2026-07-23 amendment."
-  implementation_authorized: false
-  authorized_package: "WA-P1-F0-CORR-001 implemented and stopped for Product Owner review; no further batch authorized"
+  implementation_authorized: true
+  authorized_package: "2026-07-24: Lease A native-SAQEEL namespace reconciliation followed by WA-P1-M2-BATCH-002 Planning Module 1 only"
   shell_source_id: "WA-SHELL-SRC-001"
   shell_source_sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
   shell_authority_record: "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
@@ -75,3 +75,15 @@ brand_correction_2026_07_23:
   status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL"
   exclusions: ["manifest.json", "sw.js", "Field PWA", "offline execution", "Inspector iPad"]
   rollback: "Legacy assets retained; revert one correction commit"
+
+planning_module_1_approval_2026_07_24:
+  approved_by: "Vikram Indla / Product Owner"
+  approval_evidence: "Explicit user response: Approved; expectation is the real implementation in the browser with module-by-module Claude Design comparison."
+  design_id: "WA-DES-036"
+  accepted_design_revision: "1784901048581707"
+  implementation_branch: "codex/planning-m2-saqeel-correction"
+  implementation_worktree: "/Users/vikramindla/Developer/Inspection-codex-planning-m2"
+  lease_a: "Mechanical native-SAQEEL class/token namespace reconciliation needed to restore the shared shell and existing consumers; Field-owned files may receive namespace-only changes with behavior frozen."
+  lease_b: "Bounded Planning landing and Planning-owned Visits preview correction, tests, runtime, and paired design/implementation evidence."
+  required_human_review: "Visible Chrome comparison of Claude Design and real runtime before another module begins."
+  prohibited: ["route cutover", "deletion", "push", "merge", "deploy", "remote DDL", "shared-data mutation", "provider enablement", "Field behavior change", "PWA or iPad feature work"]

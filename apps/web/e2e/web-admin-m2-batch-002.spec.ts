@@ -25,9 +25,22 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
     expect(source("src/app/(app)/planning/PlanningPreview.tsx")).toContain('href="/planning/visits?wa_preview=1"');
     expect(source("src/app/(app)/planning/PlanningPreview.tsx")).not.toContain("⚡");
     expect(source("src/components/ShellClient.tsx")).toContain('<Icon name="ai" />');
-    expect(source("src/app/astryx.css")).toContain(".wa-visit-detail-actions");
-    expect(source("src/app/astryx.css")).toContain("box-shadow: inset 0 0 0 1px var(--focus-ring)");
-    expect(source("src/app/astryx.css")).not.toContain('a.ax-link:not(.ax-btn) { text-decoration: underline');
+    expect(source("src/app/(app)/planning/PlanningPreview.module.css")).toContain("grid-template-columns: repeat(3, minmax(0, 1fr))");
+    expect(source("src/app/(app)/visits/[id]/VisitDetailPreview.module.css")).toContain("position: sticky");
+    expect(source("src/app/(app)/visits/[id]/VisitDetailPreview.module.css")).toContain("grid-template-columns: minmax(0, 1fr) minmax(320px, 380px)");
+    expect(source("src/app/saqeel-components.css")).toContain("box-shadow: inset 0 0 0 1px var(--focus-ring)");
+
+    for (const file of [
+      "src/app/(app)/planning/PlanningPreview.tsx",
+      "src/app/(app)/planning/PlanningPreview.module.css",
+      "src/app/(app)/planning/page.tsx",
+      "src/app/(app)/planning/bulk/review/review.css",
+      "src/app/(app)/visits/page.tsx",
+      "src/app/(app)/visits/[id]/page.tsx",
+      "src/app/(app)/visits/[id]/VisitDetailPreview.module.css",
+    ]) {
+      expect(source(file), `${file} must use the native SAQEEL vocabulary`).not.toMatch(/\bax-[a-z]|var\(--ax-/);
+    }
   });
 
   test("no Field or iPad ownership entered this batch", () => {
@@ -37,7 +50,7 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
 
   test("runtime navigation colors match the supplied SAQEEL semantic tokens", () => {
     const tokens = source("src/app/tokens.css");
-    const shell = source("src/app/astryx.css");
+    const shell = source("src/app/saqeel-components-legacy.css");
 
     for (const token of [
       "--nav-bg:          #1f2328",
@@ -56,7 +69,7 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
 
     expect(tokens).not.toMatch(/#101828|#0b1120|#26314a|#8a93ab/);
     expect(shell).not.toMatch(/#4b5670|#6b7794/);
-    expect(shell).toMatch(/\.ax-shell-search input:focus-visible\s*\{[^}]*outline: none;[^}]*border-color: var\(--focus-ring\);[^}]*box-shadow: inset 0 0 0 1px var\(--focus-ring\)/s);
+    expect(shell).toMatch(/\.sq-shell-search input:focus-visible\s*\{[^}]*border-color: var\(--action-primary\);[^}]*outline: 2px solid var\(--focus-ring\);[^}]*outline-offset: 2px;/s);
   });
 });
 
@@ -68,8 +81,8 @@ test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
   test("Planning landing enters the Planning-owned Visits replacement", async ({ page }) => {
     await page.goto("/planning?wa_preview=1");
     await expect(page.locator('[data-saqeel-design="WA-DES-036"]')).toBeVisible();
-    await expect(page.locator(".wa-planning-method__icon svg")).toHaveCount(3);
-    await expect(page.getByRole("link", { name: "Open AI Insights" }).locator('path[fill="currentColor"]')).toHaveCount(1);
+    await expect(page.locator('[data-testid="planning-method-icon"] svg')).toHaveCount(3);
+    await expect(page.locator('.sq-pagehead__actions a[href="/ai/suggestions"] svg')).toHaveCount(1);
     await expect(page.locator('a[href="/planning/visits?wa_preview=1"]')).toBeVisible();
     await page.locator('a[href="/planning/visits?wa_preview=1"]').click();
     await expect(page).toHaveURL(/\/planning\/visits\?wa_preview=1$/);
@@ -99,7 +112,7 @@ test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
     await expect(page.getByRole("tablist", { name: /state domains/i })).toBeVisible();
     await expect(page.getByRole("tab")).toHaveCount(5);
     await expect(page.locator("#ribbon-panel a")).not.toContainText("→");
-    await expect(page.locator(".wa-visit-detail-actions")).toBeVisible();
+    await expect(page.locator('[data-testid="visit-management-actions"]')).toBeVisible();
     await expect(page.getByRole("link", { name: "Open plan", exact: true })).not.toContainText("→");
     await expect(page.getByText(/Planning history — cannot be edited/i)).toBeVisible();
   });
@@ -116,6 +129,8 @@ test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/planning/visits?wa_preview=1");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator('[data-saqeel-design="WA-DES-045"]')).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     const results = await new AxeBuilder({ page }).analyze();

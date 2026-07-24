@@ -360,12 +360,12 @@ export default function ShellClient({
     const groupOpen = openGroups[group.id] ?? true;
     const isAdministration = group.id === "administration";
     return (
-      <section className="ax-nav-group" data-nav-group={group.id} key={group.id}>
-        <button className={`ax-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
+      <section className="sq-nav-group" data-nav-group={group.id} key={group.id}>
+        <button className={`sq-nav-group__trigger${isAdministration ? " is-administration" : ""}`} type="button" aria-label={group.label} aria-expanded={groupOpen}
           aria-controls={`nav-group-${group.id}`}
           onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
-          {isAdministration ? <span className="ax-nav-icon"><Icon name="admin" /></span> : null}
-          <span className="ax-nav-label">{group.label}</span><svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+          {isAdministration ? <span className="sq-nav-icon"><Icon name="admin" /></span> : null}
+          <span className="sq-nav-label">{group.label}</span><svg className="sq-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
         </button>
         <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
           {group.items.map((item, index) => {
@@ -373,11 +373,11 @@ export default function ShellClient({
             if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
             const children = group.items.filter(candidate => candidate.parentId === item.parentId);
             return (
-              <div className="ax-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
-                <div className="ax-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
-                  <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-                  <span className="ax-nav-label">{item.parentLabel}</span>
-                  <svg className="ax-nav-subgroup__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+              <div className="sq-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
+                <div className="sq-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
+                  <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+                  <span className="sq-nav-label">{item.parentLabel}</span>
+                  <svg className="sq-nav-subgroup__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
                 </div>
                 {children.map(child => renderNavItem(child, true))}
               </div>
@@ -389,52 +389,52 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${fieldOnly ? " is-field-nav-hidden" : ""}${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`sq-shell${fieldOnly ? " is-field-nav-hidden" : ""}${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
-      {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
-      <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
+      {pendingHref ? <div className="sq-route-progress" role="status"><span className="sq-sr-only">{strings.loadingDestination}</span></div> : null}
+      <a className="sq-shell__skip" href="#main-content">{strings.skipToContent}</a>
       {/* Field-only Inspector sessions have no console sidebar: the field
           design (SAQEEL Field *.dc.html) navigates only via the top-bar icons
           and the bottom tab bar. The shared web-console drawer — and the
           hamburger that opens it — must not render for this persona. */}
       {!fieldOnly && (
         <>
-          <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
-          <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
-            <div className="ax-shell__brand">
-              <SaqeelBrandMark className="ax-shell__brand-mark" />
-              <span className="ax-shell__brand-lockup">
-                <span className="ax-shell__brand-wordmark" lang="ar">صقيل</span>
-                <span className="ax-shell__brand-sub" lang="ar">صناعي</span>
+          <button className="sq-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
+          <nav ref={navRef} id="saqeel-primary-nav" className="sq-shell__nav" aria-label={strings.primary}>
+            <div className="sq-shell__brand">
+              <SaqeelBrandMark className="sq-shell__brand-mark" />
+              <span className="sq-shell__brand-lockup">
+                <span className="sq-shell__brand-wordmark" lang="ar">صقيل</span>
+                <span className="sq-shell__brand-sub" lang="ar">صناعي</span>
               </span>
-              <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
+              <button className="sq-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
               </button>
-              <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
+              <button className="sq-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
               </button>
             </div>
 
-            <div className="ax-shell__groups">
+            <div className="sq-shell__groups">
               {groups.filter(group => group.id !== "administration").map(renderNavGroup)}
             </div>
-            <div className="ax-shell__admin-pin">{groups.filter(group => group.id === "administration").map(renderNavGroup)}</div>
+            <div className="sq-shell__admin-pin">{groups.filter(group => group.id === "administration").map(renderNavGroup)}</div>
           </nav>
         </>
       )}
 
-      <main id="main-content" className="ax-shell__main" tabIndex={-1}>
-        <header className="ax-pagehead">
-          <div className="ax-pagehead__topbar">
+      <main id="main-content" className="sq-shell__main" tabIndex={-1}>
+        <header className="sq-pagehead">
+          <div className="sq-pagehead__topbar">
             {!fieldOnly && (
-              <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
+              <button ref={menuRef} className="sq-topbar-icon sq-shell__menu" type="button" aria-label={strings.openMenu}
                 aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
               </button>
             )}
-            <div className="ax-shell-controls">
-                <div className="ax-shell-search" ref={searchWrapRef}>
-                  <span className="ax-shell-search__icon" aria-hidden="true">
+            <div className="sq-shell-controls">
+                <div className="sq-shell-search" ref={searchWrapRef}>
+                  <span className="sq-shell-search__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                       <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
                     </svg>
@@ -444,7 +444,7 @@ export default function ShellClient({
                     onFocus={() => setSearchOpen(true)} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }}
                     onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); setQuery(""); } }} />
                   {searchResultsOpen && searchRect && typeof document !== "undefined" && createPortal(
-                    <div id="shell-global-search-results" className="ax-shell-search__results ax-shell-search__results--portal" role="listbox"
+                    <div id="shell-global-search-results" className="sq-shell-search__results sq-shell-search__results--portal" role="listbox"
                       aria-label={strings.searchResults}
                       style={{ top: searchRect.top, left: searchRect.left, width: searchRect.width }}>
                       {navigationResults.map(item => (
@@ -493,27 +493,27 @@ export default function ShellClient({
                   </select>
                 </label>
             </div>
-            <div className="ax-pagehead__actions">
-              <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
+            <div className="sq-pagehead__actions">
+              <ThemeToggle className="sq-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* Notifications and Account are already destinations in the
                   field bottom tab bar (FieldTabs) — showing them again here
                   duplicated the exact same two destinations for a field-only
                   inspector. Desktop/console personas still need them here;
                   the sidebar/hamburger are already hidden the same way. */}
               {!fieldOnly && <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />}
-              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
+              <Link className="sq-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="ai" />
               </Link>
               {!fieldOnly && (
-              <div ref={accountRef} className="ax-shell-account">
-                <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
+              <div ref={accountRef} className="sq-shell-account">
+                <button className="sq-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>
                   <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
                   <span className="sq-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
                   <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && accountMenuPos && typeof document !== "undefined" && createPortal(
-                  <div ref={accountMenuRef} className="ax-shell-account__menu ax-shell-account__menu--portal" role="dialog" aria-label={strings.account}
+                  <div ref={accountMenuRef} className="sq-shell-account__menu sq-shell-account__menu--portal" role="dialog" aria-label={strings.account}
                     style={{ top: accountMenuPos.top, left: accountMenuPos.left, right: accountMenuPos.right }}>
                     <strong>{email}</strong>
                     <span className="sq-caption">{strings.roles}: {roles.join(", ")}</span>

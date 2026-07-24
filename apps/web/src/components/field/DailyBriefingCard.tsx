@@ -81,44 +81,44 @@ export default function DailyBriefingCard({
 
   return (
     <section
-      className="ax-surface ax-panel"
+      className="sq-surface sq-panel"
       aria-labelledby="inspector-briefing-heading"
       data-testid="inspector-daily-briefing-panel"
       data-evidence-refs={evidenceRefs.join(",")}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}
+      style={{ padding: "var(--sq-space-300)", display: "flex", flexDirection: "column", gap: "var(--sq-space-150)" }}
     >
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)" }}>
-        <h3 id="inspector-briefing-heading" style={{ font: "var(--ax-text-heading)", margin: 0 }}>{title}</h3>
-        <div className="ax-row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
-          <span className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{strings.advisory}</span>
+      <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--sq-space-150)" }}>
+        <h3 id="inspector-briefing-heading" style={{ font: "var(--sq-text-heading)", margin: 0 }}>{title}</h3>
+        <div className="sq-row" style={{ alignItems: "center", gap: "var(--sq-space-100)" }}>
+          <span className="sq-caption" style={{ color: "var(--sq-color-text-secondary)" }}>{strings.advisory}</span>
           <button
             type="button"
-            className="ax-btn ax-btn--subtle ax-btn--icon"
+            className="sq-btn sq-btn--subtle sq-btn--icon"
             aria-label={strings.refreshAria}
             title={strings.refreshAria}
             disabled={pending}
             onClick={onRefresh}
           >
-            <span aria-hidden style={pending ? { display: "inline-block", animation: "ax-spin 0.9s linear infinite" } : undefined}>⟳</span>
+            <span aria-hidden style={pending ? { display: "inline-block", animation: "sq-spin 0.9s linear infinite" } : undefined}>⟳</span>
           </button>
         </div>
       </div>
 
       {pending ? (
-        <p className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{strings.refreshing}</p>
+        <p className="sq-caption" style={{ color: "var(--sq-color-text-secondary)" }}>{strings.refreshing}</p>
       ) : active.text ? (
-        <ul style={{ font: "var(--ax-text-body)", lineHeight: 1.5, margin: 0, paddingInlineStart: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}
+        <ul style={{ font: "var(--sq-text-body)", lineHeight: 1.5, margin: 0, paddingInlineStart: "var(--sq-space-200)", display: "flex", flexDirection: "column", gap: "var(--sq-space-050)" }}
           data-briefing-period={active.periodDate ?? undefined}>
           {toBulletLines(active.text).map((line, index) => (
             <li key={index}>{line}</li>
           ))}
         </ul>
       ) : (
-        <p role="status" className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{strings.unavailable}</p>
+        <p role="status" className="sq-caption" style={{ color: "var(--sq-color-text-secondary)" }}>{strings.unavailable}</p>
       )}
 
       {active.insightId && (
-        <a className="ax-link ax-caption" href={`/ai/suggestions#ai-suggestion-${active.insightId}`}>
+        <a className="sq-link sq-caption" href={`/ai/suggestions#ai-suggestion-${active.insightId}`}>
           {strings.review} →
         </a>
       )}

@@ -271,9 +271,9 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
                 <p className="lg-card__sub">{s.forgotSentBody}</p>
               </div>
               <form className="lg-credentials" onSubmit={verifyResetOtp} noValidate>
-                <div className={`ax-field${otpFormatError ? " is-invalid" : ""}`}>
-                  <label className="ax-field__label" htmlFor="reset-otp">{s.otpLabel}</label>
-                  <input ref={otpRef} id="reset-otp" className="ax-input" type="text" inputMode="numeric"
+                <div className={`sq-field${otpFormatError ? " is-invalid" : ""}`}>
+                  <label className="sq-field__label" htmlFor="reset-otp">{s.otpLabel}</label>
+                  <input ref={otpRef} id="reset-otp" className="sq-input" type="text" inputMode="numeric"
                     autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} dir="ltr"
                     placeholder={s.otpPlaceholder} value={otp}
                     aria-invalid={otpFormatError ? true : undefined}
@@ -283,9 +283,9 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
                       setOtpFormatError(null);
                       setError(null);
                     }} required />
-                  {otpFormatError && <p id="otp-err" className="ax-field__error">{otpFormatError}</p>}
+                  {otpFormatError && <p id="otp-err" className="sq-field__error">{otpFormatError}</p>}
                 </div>
-                {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
+                {error && <div className="sq-banner sq-banner--critical" role="alert">{error}</div>}
                 <button className="btn btn-primary btn-lg lg-submit btn-touch" type="submit" disabled={busy} aria-busy={busy}>
                   {busy ? s.otpVerifying : s.otpVerify}
                 </button>

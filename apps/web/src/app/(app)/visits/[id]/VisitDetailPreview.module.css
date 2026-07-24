@@ -1,0 +1,63 @@
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-inline-size: 0;
+}
+
+.actions {
+  position: sticky;
+  inset-block-start: calc(var(--control-h-field) + var(--space-8));
+  max-block-size: calc(100dvh - var(--control-h-field) - var(--space-12));
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.actions > :global(.panel) {
+  padding: var(--space-5) !important;
+  gap: var(--space-4) !important;
+  box-shadow: none;
+  border-color: var(--border-strong);
+}
+
+.actions :global(.sq-actionzone) > :global(.row) {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-3) !important;
+}
+
+.actions :global(form.row) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch !important;
+  inline-size: 100%;
+  gap: var(--space-2);
+}
+
+.actions :global(.sq-field) {
+  max-inline-size: none !important;
+  inline-size: 100%;
+}
+
+.actions :global(form.row) > :global(.btn) {
+  inline-size: 100%;
+}
+
+@media (max-width: 1099px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actions {
+    position: static;
+    max-block-size: none;
+    overflow: visible;
+  }
+}

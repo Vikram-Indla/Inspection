@@ -123,10 +123,10 @@ export default async function Factory360ByCr({ params, searchParams }: {
               const daysToExpiry = expiry ? Math.ceil((expiry.getTime() - Date.now()) / 86400000) : null;
               const tone = daysToExpiry == null ? "info" : daysToExpiry < 0 ? "critical" : daysToExpiry <= 30 ? "warning" : "info";
               return (
-                <div className={`ax-banner ax-banner--${tone}`} role="status" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
+                <div className={`sq-banner sq-banner--${tone}`} role="status" style={{ marginBlockEnd: "var(--sq-space-200)" }}>
                   <div>
                     <strong>{t("f360.licenseCurrency.title", "Verify license currency before you proceed")}</strong>
-                    <div className="ax-caption">
+                    <div className="sq-caption">
                       {daysToExpiry == null
                         ? t("f360.licenseCurrency.noExpiry", "No expiry date on record for this license — confirm the license number and status with the establishment and report any discrepancy.")
                         : daysToExpiry < 0

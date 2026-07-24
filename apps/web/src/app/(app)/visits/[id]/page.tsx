@@ -10,6 +10,7 @@ import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import FocusScroll from "./FocusScroll";
+import previewStyles from "./VisitDetailPreview.module.css";
 
 const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
@@ -286,8 +287,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         {pkg && <span className="sq-version">{pkg.packages.code} · {pkg.version_label}</span>}
         {isUnverifiedManual && <span className="sq-lozenge sq-lozenge--warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
       </>}>
-      {targetPreview && <><h1 className="ax-sr-only">{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
-        <p data-saqeel-design="WA-DES-045"><a className="ax-btn ax-btn--subtle" href={`${routeBase}?wa_preview=1`}>{t("visit.detail.backToVisits", "Visits")}</a></p></>}
+      {targetPreview && <><h1 className="sq-sr-only">{t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}</h1>
+        <p data-saqeel-design="WA-DES-045"><a className="sq-btn sq-btn--subtle" href={`${routeBase}?wa_preview=1`}>{t("visit.detail.backToVisits", "Visits")}</a></p></>}
       <CreatedToast created={created}
         registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
@@ -297,7 +298,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <div id="config" className="sq-surface" style={{ padding: "var(--space-6)" }}>
           <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="sq-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
-          <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="sq-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
+          <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="sq-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360")}</a></p>
 
           {(v.immediate_creator_role || v.source_channel) && (
             <p className="sq-caption" style={{ marginBlockStart: 8 }}>
@@ -322,13 +323,13 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <p key={i} className="sq-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
               ))}
               {/* M04-215 — official report (browser print-to-PDF is the production PDF path) */}
-              <p><a className="sq-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report →")}</a></p>
+              <p><a className="sq-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report")}</a></p>
             </div>
           ) : <p className="sq-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
         </div>
       </div>
-      <div className={targetPreview ? "wa-visit-detail-workspace" : undefined} style={targetPreview ? undefined : { display: "contents" }}>
-      <div className={targetPreview ? "wa-visit-detail-main" : undefined} style={targetPreview ? undefined : { display: "contents" }}>
+      <div className={targetPreview ? previewStyles.workspace : undefined} style={targetPreview ? undefined : { display: "contents" }}>
+      <div className={targetPreview ? previewStyles.main : undefined} style={targetPreview ? undefined : { display: "contents" }}>
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
       <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
@@ -341,7 +342,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             {" "}· <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
             {/* M8 — bulk context: this visit is one of N under the plan */}
             {" "}· {t("visit.detail.siblings", "{n} visits under this plan").replace("{n}", String(siblingCount))}
-            {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan →")}</a>
+            {" "}· <a className="sq-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan")}</a>
           </p>
         ) : (
           <p className="sq-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
@@ -492,7 +493,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </ul>
       </div>
       </div>
-      <aside className={targetPreview ? "wa-visit-detail-actions" : undefined} style={targetPreview ? undefined : { display: "contents" }}>
+      <aside className={targetPreview ? previewStyles.actions : undefined} data-testid={targetPreview ? "visit-management-actions" : undefined} style={targetPreview ? undefined : { display: "contents" }}>
         <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
           opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
           visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}

@@ -440,7 +440,7 @@ td.rail-td > i { display: block; width: 4px; height: 100%; }
   line-height: 1; margin-inline-start: var(--space-1); }
 
 /* Web/Admin Phase 1 F0 — source-backed states and guarded reference renderer.
-   Additive only: current .ax-state and SAQEEL component contracts remain. */
+   Additive only: current .sq-state and SAQEEL component contracts remain. */
 .saqeel-state { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-6); color: var(--text-secondary); }
 .saqeel-state__glyph { display: grid; place-items: center; width: 36px; height: 36px; flex: none; color: var(--text-disabled); }
 .saqeel-state__glyph svg { width: 32px; height: 32px; }

@@ -46,25 +46,30 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(search).not.toMatch(/service[_-]?role/i);
     expect(css).toContain(".btn-touch");
     expect(css).toContain(".btn-field");
-    expect(css).toContain("current .ax-state and SAQEEL component contracts remain");
+    expect(css).toContain("current .sq-state and SAQEEL component contracts remain");
   });
 
   test("WA-P1-F0-CORR-001 uses the approved shield favicon and bilingual wordmark", () => {
     const layout = read("src/app/layout.tsx");
     const shell = read("src/components/ShellClient.tsx");
-    const css = read("src/app/astryx.css");
+    const shellMark = read("src/components/SaqeelBrandMark.tsx");
+    const css = read("src/app/saqeel-components-legacy.css");
     const favicon = read("public/saqeel-favicon.svg");
     const darkWordmark = read("public/saqeel-wordmark-dark-mode.svg");
     const lightWordmark = read("public/saqeel-wordmark-light-mode.svg");
 
     expect(layout).toContain('/saqeel-favicon.svg');
     expect(layout).not.toContain('/saqeel-prism.svg');
-    expect(shell).toContain('/saqeel-favicon.svg');
-    expect(shell).toContain('/saqeel-wordmark-dark-mode.svg');
-    expect(shell).not.toContain('ax-shell__brand-mark" aria-hidden="true" lang="ar">ص');
-    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
-    for (const asset of [favicon, darkWordmark, lightWordmark]) {
+    expect(shell).toContain("SaqeelBrandMark");
+    expect(shell).toContain('className="sq-shell__brand-wordmark" lang="ar">صقيل');
+    expect(shellMark).toContain('d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"');
+    expect(shell).not.toContain('sq-shell__brand-mark" aria-hidden="true" lang="ar">ص');
+    expect(css).toContain(".sq-shell__brand-mark");
+    expect(favicon).toContain('M12 3.4 5 6.05');
+    for (const asset of [darkWordmark, lightWordmark]) {
       expect(asset).toContain('M12 2.5 4 5.5');
+    }
+    for (const asset of [favicon, darkWordmark, lightWordmark]) {
       expect(asset).not.toMatch(/D946EF|7C6CFF|magenta|prism/i);
     }
     expect(darkWordmark).toContain('>SAQEEL</text>');

@@ -19,7 +19,7 @@ import styles from "./travel.module.css";
 // fail-state (data-map-provider="mapbox-unavailable") when the token is absent.
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => <div className="ax-skeleton" style={{ blockSize: "100%", minBlockSize: 240 }} />,
+  loading: () => <div className="sq-skeleton" style={{ blockSize: "100%", minBlockSize: 240 }} />,
 });
 
 export type TravelStrings = {

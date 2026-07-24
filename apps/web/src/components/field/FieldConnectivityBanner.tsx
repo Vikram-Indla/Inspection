@@ -29,7 +29,7 @@ export default function FieldConnectivityBanner({ offline, weak }: { offline: st
 
   if (state === null || state === "online") return null;
   return (
-    <div className="ax-banner ax-banner--warning" role="status">
+    <div className="sq-banner sq-banner--warning" role="status">
       {state === "offline" ? offline : weak}
     </div>
   );
