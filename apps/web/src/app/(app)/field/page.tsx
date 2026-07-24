@@ -73,7 +73,7 @@ export default async function Field() {
   const sb = await supabaseServer();
   const { t, locale } = await useT();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  if (authError || !user) redirect("/login");  // ERR-AUTH-001: never proceed with a null session
+  if (authError || !user) redirect("/field-login");  // ERR-AUTH-001: never proceed with a null session; SCR-PWA-001 field-channel entry
 
   // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
     // (0025, every 15 min, unscoped); boards render display-level 'expired' for
