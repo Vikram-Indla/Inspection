@@ -1,11 +1,15 @@
 import type { ReactNode } from "react";
-import ThemeToggle from "@/components/ThemeToggle";
 
 // Shared SAQEEL field-screen header — markup/geometry ported from the design's
 // per-screen headers (SAQEEL Field My Tasks/Dashboard/… .dc.html): a sticky
 // surface-primary bar with an optional leading control, title + subtitle, and a
-// trailing controls cluster (language toggle + theme toggle, plus any extras).
+// trailing controls cluster (language toggle, plus any extras).
 // Consumes the SAQEEL DS tokens linked by (app)/field/layout.tsx.
+//
+// No theme control: the field channel is fixed dark (see ThemeScript), so there
+// is nothing for one to switch. `themeLabels` is retained as an optional,
+// unused prop purely so the 23 existing call sites keep compiling; it should be
+// dropped in a follow-up sweep.
 export default function FieldHeader({
   title, subtitle, leading, right, langHref, langLabel, themeLabels,
 }: {
@@ -15,7 +19,8 @@ export default function FieldHeader({
   right?: ReactNode;
   langHref: string;
   langLabel: string;
-  themeLabels: { toLight: string; toDark: string };
+  /** @deprecated Unused — the field channel is fixed dark and renders no theme control. */
+  themeLabels?: { toLight: string; toDark: string };
 }) {
   return (
     <header
@@ -33,7 +38,6 @@ export default function FieldHeader({
       </div>
       {right}
       <a href={langHref} className="btn btn-ghost btn-sm" style={{ fontWeight: 700 }}>{langLabel}</a>
-      <ThemeToggle className="btn btn-icon btn-ghost" labels={themeLabels} />
     </header>
   );
 }

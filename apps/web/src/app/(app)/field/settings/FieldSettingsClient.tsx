@@ -6,7 +6,6 @@ import { localForUser, promptLegacyOfflineRestore, type SyncState } from "@/lib/
 import styles from "./settings.module.css";
 
 type Locale = "en" | "ar";
-type Mode = "light" | "dark";
 type OfflineSnapshot = { state: SyncState; queued: number; conflicts: number };
 
 const initialOffline: OfflineSnapshot = { state: "pending", queued: 0, conflicts: 0 };
@@ -40,30 +39,10 @@ function GovernedRow({ label, note }: { label: string; note: string }) {
   );
 }
 
-// Real Light/Dark segmented control. Reads and writes the exact theme contract
-// used by the shared ThemeToggle (data-theme attribute + "saqeel-theme"
-// localStorage, re-applied before paint by ThemeScript) — no new mechanism.
-function ThemeSeg({ locale }: { locale: Locale }) {
-  const [mode, setMode] = useState<Mode>("light");
-  useEffect(() => {
-    let persisted: string | null = null;
-    try { persisted = localStorage.getItem("saqeel-theme"); } catch { /* private mode */ }
-    if (persisted === "light" || persisted === "dark") { setMode(persisted); return; }
-    const attr = document.documentElement.getAttribute("data-theme");
-    setMode(attr === "dark" ? "dark" : "light");
-  }, []);
-  const apply = (next: Mode) => {
-    document.documentElement.setAttribute("data-theme", next);
-    try { localStorage.setItem("saqeel-theme", next); } catch { /* private mode */ }
-    setMode(next);
-  };
-  return (
-    <div className="seg">
-      <button type="button" className="seg-opt" aria-pressed={mode === "light"} onClick={() => apply("light")}>{copy(locale, "Light", "فاتح")}</button>
-      <button type="button" className="seg-opt" aria-pressed={mode === "dark"} onClick={() => apply("dark")}>{copy(locale, "Dark", "داكن")}</button>
-    </div>
-  );
-}
+// The Light/Dark segmented control was removed here: the field channel is fixed
+// dark (see ThemeScript), so the control had nothing to switch and writing
+// "saqeel-theme" from a field screen would only have changed the WEB console's
+// theme — a confusing side effect on a surface that never changes appearance.
 
 export default function FieldSettingsClient({
   locale,
@@ -120,13 +99,11 @@ export default function FieldSettingsClient({
 
   return (
     <div className={styles.wrap}>
-      {/* General — theme + language are REAL persisted controls; text size is governed */}
+      {/* General — language is a REAL persisted control; text size is governed.
+          Appearance is not offered: the field channel is fixed dark
+          (see ThemeScript), so there would be nothing to switch. */}
       <SectionLabel>{copy(locale, "General", "عام")}</SectionLabel>
       <div className={styles.card}>
-        <div className={styles.row}>
-          <span className={styles.rowLabel}>{copy(locale, "Appearance", "المظهر")}</span>
-          <ThemeSeg locale={locale} />
-        </div>
         <div className={styles.row}>
           <span className={styles.rowLabel}>{copy(locale, "Language", "اللغة")}</span>
           <div className="seg">

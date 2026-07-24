@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
-import ThemeToggle from "@/components/ThemeToggle";
 import "./field-login.css";
 
 // SAQEEL Field Login — implementation of the Claude Design component
@@ -259,15 +258,10 @@ export default function FieldLoginClient({
         <a className="fl-langbtn" href={localeHref}>
           {s.langBtn}
         </a>
-        {/* The DC pairs the language control with a theme control. This reuses
-            the app-wide ThemeToggle so both surfaces write the same persisted
-            `saqeel-theme` contract — the field login does not get a second,
-            competing theme mechanism, and the sponsor-approved default theme
-            is left untouched. */}
-        <ThemeToggle
-          className="fl-langbtn fl-themebtn"
-          labels={{ toLight: s.theme, toDark: s.theme }}
-        />
+        {/* The DC pairs the language control with a theme control. The field
+            channel is fixed dark (see ThemeScript), so there is nothing for a
+            theme control to switch and it is deliberately not rendered. The
+            language control remains — locale is still a real user choice. */}
       </div>
 
       <div className="fl-stage">
