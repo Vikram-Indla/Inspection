@@ -1,0 +1,390 @@
+schema_version: "1.0"
+packet_id: M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: b0c5e2b0
+  task: M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010
+  requirements: ["CR-449..CR-478"]
+  acceptance: ["WA-M6-AC-001..006"]
+  business_function: >-
+    Govern the full Compliance Configuration lifecycle: regulations, inspection
+    items, violation and penalty rules, evidence rules, packages, templates,
+    action-form triggers, sections, ordering, response/condition logic,
+    configuration preview, validation, versioning, publication and runtime
+    locking.
+  do_not_touch:
+    - "All Claude Design files and registered design mappings."
+    - "All product code, tests, migrations, seeds, Supabase data and providers."
+    - "main, setup/Inspection and every existing stash."
+
+authority:
+  requirements: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  design_route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screens: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  open_decisions: product-contract/governance/OPEN_DECISIONS.yaml
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+
+design_identity:
+  source_directory: /Users/vikramindla/Attachment dump/export-non-inspector
+  files:
+    - logical_id: WA-DES-018
+      filename: "SAQEEL Committee.dc.html"
+      bytes: 13334
+      sha256: "4cc526547a11783b769b1ebe24937d60cf0af10b7c450c40995644a49cd964ae"
+      registered_sha_match: true
+    - logical_id: WA-DES-019
+      filename: "SAQEEL Compliance Requests.dc.html"
+      bytes: 12557
+      sha256: "05332be7bf0ed96a70f58507aa183f2f3010adada28938bf70466fa4038fad18"
+      registered_sha_match: true
+    - logical_id: WA-DES-023
+      filename: "SAQEEL Enforcement.dc.html"
+      bytes: 15480
+      sha256: "64e1bb6e90d468451e48c538b0abf0a97b1da81033e5fe8d75273581d3cb0925"
+      registered_sha_match: true
+    - logical_id: WA-DES-040
+      filename: "SAQEEL Risk.dc.html"
+      bytes: 16193
+      sha256: "e1a9adee84aa2e2923c3513feb0994808781157c57ab250a084fc5d18e5fb50f"
+      registered_sha_match: true
+  revision_limit: >-
+    Exact registered export identity is proven. No accepted successor revision
+    or stronger cloud etag was established by this read-only audit.
+
+canonical_capability_to_route_map:
+  - requirement_group: ["CR-449"]
+    capability: "Regulation management"
+    screens: ["SCR-ADM-010", "SCR-ADM-011"]
+    routes: ["/admin/regulations", "/admin/regulations/:id"]
+    components:
+      - apps/web/src/app/(app)/admin/regulations/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/[id]/page.tsx
+    permissions: "RBAC-001; Compliance Admin; maker-checker; published version immutable."
+    nearest_registered_design: "WA-DES-002 SAQEEL Admin Detail.dc.html"
+    m6_design_match: NO_DESIGN_MATCH
+  - requirement_group: ["CR-450", "CR-453", "CR-464..CR-475"]
+    capability: "Inspection items, sections, ordering, response/condition, mandatory, evidence and action-form rules"
+    screens: ["SCR-ADM-020", "SCR-ADM-031"]
+    routes: ["/admin/items", "/admin/items/:id/runtime-preview", "/admin/packages/:id/designer"]
+    components:
+      - apps/web/src/app/(app)/admin/items/page.tsx
+      - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+    permissions: "RBAC-001/RBAC-002; Compliance Admin/Form Admin; no published-version editing."
+    nearest_registered_design: "WA-DES-005 SAQEEL Admin Form Builder.dc.html"
+    m6_design_match: NO_DESIGN_MATCH
+  - requirement_group: ["CR-451", "CR-452", "CR-474"]
+    capability: "Violation catalogue, trigger and one-to-one penalty mapping"
+    screens: ["SCR-ADM-040", "SCR-ADM-041"]
+    routes: ["/admin/violations", "/admin/violations?mode=penalty"]
+    components:
+      - apps/web/src/app/(app)/admin/violations/page.tsx
+      - apps/web/src/app/(app)/admin/violations/Controls.tsx
+    permissions: "Compliance/Form Admin writes; inspector/reviewer read; audit/version/immutable publication."
+    nearest_registered_design: "No route-specific configuration design; generic WA-DES-002 is closer than WA-DES-023."
+    m6_design_match: INCORRECT_MAPPING
+  - requirement_group: ["CR-454..CR-463", "CR-476..CR-478"]
+    capability: "Package/template composition, dependency validation, draft/publish/version/audit/preview/runtime lock"
+    screens: ["SCR-ADM-030", "SCR-ADM-031"]
+    routes: ["/admin/packages", "/admin/packages/:id/designer"]
+    components:
+      - apps/web/src/app/(app)/admin/packages/page.tsx
+      - apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+      - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+      - apps/web/src/app/(app)/admin/packages/PublishControls.tsx
+    permissions: "RBAC-002; Form/Compliance Admin; maker-checker; published/locked versions immutable."
+    nearest_registered_design: "WA-DES-002 plus WA-DES-005"
+    m6_design_match: NO_DESIGN_MATCH
+  - requirement_group: ["Cross-cutting CR-449..CR-478"]
+    capability: "Maker-checker compliance configuration request envelope"
+    routes:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+      - /admin/compliance-approvals
+    components:
+      - apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+      - apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+      - apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+      - apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+    permissions: "Compliance Admin/Form Admin maker; Reviewer/eligible approver checker."
+    nearest_registered_design: "WA-DES-019"
+    m6_design_match: CONFIRMED_WITH_CORRECTION
+
+registered_mapping_validation:
+  - logical_id: WA-DES-018
+    design: "SAQEEL Committee.dc.html"
+    route: /committee
+    component: apps/web/src/app/(app)/committee/page.tsx
+    route_component_match: CONFIRMED
+    requirement_match: INCORRECT_MAPPING
+    evidence: >-
+      CR-449..CR-478 contain no committee, quorum, deliberation, signature act,
+      PKI or EBDA capability. Committee/signature belongs to the later M2-12 and
+      MVP3 provider-governance contracts. It cannot count toward M6 or the 478
+      Compliance Configuration rows.
+    recommended_action: RETURN_FOR_MAPPING_CORRECTION
+  - logical_id: WA-DES-019
+    design: "SAQEEL Compliance Requests.dc.html"
+    routes:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+    route_component_match: CONFIRMED
+    requirement_match: CONFIRMED_WITH_CORRECTION
+    evidence: >-
+      The governed request envelope, component dependencies, maker-checker
+      decisions, revisions and transactional publication support the cross-cutting
+      lifecycle, but the design does not itself cover each regulation, item,
+      package, template, violation, penalty and runtime-preview control plane.
+    alternative_route: /admin/compliance-approvals
+    recommended_action: CHANGE_DESIGN
+  - logical_id: WA-DES-023
+    design: "SAQEEL Enforcement.dc.html"
+    routes: ["/enforcement", "/admin/violations"]
+    validation:
+      /enforcement: CONFIRMED_WITH_CORRECTION
+      /admin/violations: INCORRECT_MAPPING
+    evidence: >-
+      The design is an operational enforcement/correction case and recommendation
+      surface. It is not the SCR-ADM-040 violation-code configuration catalogue
+      and does not provide configuration versions, clause anchoring, trigger
+      mapping, one-to-one penalty mapping, maker-checker publication or audit
+      evidence.
+    better_matches:
+      - /admin/enforcement-recommendations
+      - /enforcement
+    recommended_action: RETURN_FOR_MAPPING_CORRECTION
+  - logical_id: WA-DES-040
+    design: "SAQEEL Risk.dc.html"
+    routes: ["/admin/risk", "/admin/risk/models"]
+    route_component_match: CONFIRMED
+    requirement_match: INCORRECT_MAPPING
+    evidence: >-
+      General risk-model configuration is not a CR-449..CR-478 capability.
+      CR-471/CR-472 only say item scoring can feed an approved Risk/Health
+      Engine and are explicitly OPEN_BUSINESS_DECISION under DEC-001/DEC-028.
+    recommended_action: BLOCK_DUE_TO_MISSING_CONTRACT
+
+meaningful_design_code_delta:
+  WA_DES_019:
+    design_present:
+      - "Request creation, current/proposed component values, dependency tree, revision history."
+      - "Maker-checker decisions, mandatory reason statement, immutable version identifiers and transactional publication claim."
+    design_missing:
+      - "Request and approval queue states, ownership conflict, duplicate component, invalid dependency and publish rollback."
+      - "Loading, empty, unauthorized, degraded, stale/conflict and provider/error cases."
+      - "Complete route-level relationship to regulations, items, packages, templates, violations and penalty mapping."
+      - "Independently selectable EN/LTR, AR/RTL, 1024, 412, 390 and 320 states."
+    code_present:
+      - "Real request/revision/component/dependency/decision/publication tables and request creation RPC."
+      - "Separate request and approval routes with role boundaries and loading/error paths."
+    implication: "WA-DES-019 is a useful shell but cannot serve as sole CR-449..CR-478 design authority."
+  WA_DES_023:
+    design_present:
+      - "Operational cases and enforcement recommendations."
+    design_missing:
+      - "Violation configuration catalogue, legal clause source, configuration versioning, deactivation, usage trace and penalty-mapping lifecycle."
+    code_present:
+      - "The /admin/violations implementation reads violation_codes, regulation_clauses, penalty_mappings and immutable templates; exposes audit, usage, publish and deactivation paths."
+    implication: "Literal replication would remove existing configuration capability."
+  WA_DES_040:
+    design_present:
+      - "Live Risk Studio and governed draft workbench."
+    code_present:
+      - "The same split exists: /admin/risk saves engine_settings immediately; /admin/risk/models uses risk_models and maker-checker transitions."
+    conflict: >-
+      Design and current Risk Studio both state there is no draft/approval and
+      save is immediately effective, while RBAC-004 and SCR-ADM-060 require
+      draft/test/submit and approved publication. This is a contract/code/design
+      conflict, not a visual gap.
+
+p0_risks:
+  - id: M6-MAP-P0-001
+    finding: >-
+      Committee, operational Enforcement and Risk are convenience-bundled under
+      CR-449..CR-478 without semantic authority. Their existence cannot count as
+      delivery of any M6 requirement row.
+    action: RETURN_FOR_MAPPING_CORRECTION
+  - id: M6-COVERAGE-P0-002
+    finding: >-
+      The M6 design bundle omits the real control-plane screens for regulations,
+      items, packages/designer, templates, violation configuration and penalty
+      mapping. Those routes are placed under generic M9 design authority.
+    action: BLOCK_UNTIL_CROSS_MODULE_DESIGN_OWNERSHIP_IS_RESOLVED
+  - id: M6-RISK-P0-003
+    finding: >-
+      WA-DES-040 invents active weights 0.35/0.25/0.20/0.20 and bands 39/69,
+      claims effective-immediate save and bypasses maker-checker while
+      DEC-001/DEC-028 remain open.
+    evidence: "WA-DES-040 lines 67, 72-92 and 160-163."
+    action: BLOCK_DUE_TO_MISSING_CONTRACT
+  - id: M6-ENF-P0-004
+    finding: >-
+      WA-DES-023 presents Immediate closure, Financial fine, Refer to committee
+      and Final warning as available decisions without CR-449..CR-478 policy,
+      legal-basis or authorization authority.
+    evidence: "WA-DES-023 lines 90-96."
+    action: BLOCK_DUE_TO_MISSING_CONTRACT
+  - id: M6-REG-P0-005
+    finding: >-
+      Treating WA-DES-023 as /admin/violations authority would regress current
+      legal-clause, version, audit, usage, immutable template, one-to-one penalty
+      and maker-checker publication capabilities.
+    action: CHANGE_DESIGN
+
+p1_risks:
+  - id: M6-DES-P1-001
+    finding: >-
+      All four exports use a fixed 248px desktop grid and expose theme only.
+      They do not prove 1024, 412, 390 or 320 reflow.
+  - id: M6-DES-P1-002
+    finding: >-
+      All four English exports use typed Arabic-only صقيل صناعي identity instead
+      of the approved bilingual SAQEEL | صقيل asset.
+  - id: M6-DES-P1-003
+    finding: >-
+      None proves a complete AR/RTL document variant, localized validation,
+      logical-direction control or mixed-direction identifier handling.
+  - id: M6-DES-P1-004
+    finding: >-
+      Required loading, empty, unauthorized, degraded, stale/conflict,
+      dependency failure, publish failure and provider-unavailable states are
+      not selectable or evidenced.
+  - id: M6-DES-P1-005
+    finding: >-
+      Keyboard order, error-summary focus, table/card alternatives, live
+      announcements, maker-checker confirmation and narrow sticky-region
+      behavior are unevidenced.
+
+safe_next_packets:
+  - packet: M6-TRACEABILITY-SPLIT-011
+    order: 1
+    mode: READ_ONLY_GOVERNANCE
+    purpose: >-
+      Split CR-449..CR-478 across regulations, items, packages/designer,
+      templates, violation/penalty configuration and compliance request/approval
+      routes. Remove Committee, operational Enforcement and Risk from M6
+      completion accounting without deleting those capabilities.
+    required_decisions:
+      - "Resolve M6 versus M9 ownership for SCR-ADM-010/011/020/030/031/040/041."
+      - "Record Committee, Enforcement and Risk under their actual later contracts."
+    exit: "Every requirement has one semantic route/design owner and no route inherits an unrelated range."
+  - packet: M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+    order: 2
+    depends_on: M6-TRACEABILITY-SPLIT-011
+    mode: SAFE_SUCCESSOR_ONLY
+    logical_id: WA-DES-019
+    predecessor:
+      filename: "SAQEEL Compliance Requests.dc.html"
+      bytes: 12557
+      sha256: "05332be7bf0ed96a70f58507aa183f2f3010adada28938bf70466fa4038fad18"
+    proposed_successor:
+      revision: WA-DES-019-C1
+      filename: "SAQEEL Compliance Requests - WA-DES-019-C1.dc.html"
+      status: DRAFT_NON_CONSUMABLE
+    bounded_delta:
+      - "Add request and approval queues plus maker/checker ownership."
+      - "Add dependency, duplicate, stale revision, unauthorized, partial publication and transactional failure states."
+      - "Link each request component to the correct configuration route without pretending the request workspace replaces that route."
+      - "Use approved identity, complete EN/AR, responsive and accessibility states."
+    preserve:
+      - "RPC/RLS/maker-checker/audit/correlation claims only where independently proven."
+      - "Immutable revision and publication history."
+    consumption_rule: "No Claude Code consumption before exact export fingerprint, independent comparison and sponsor acceptance."
+  - packet: M6-CONFIGURATION-CONTROL-PLANE-DESIGN-013
+    order: 3
+    depends_on: M6-TRACEABILITY-SPLIT-011
+    mode: READ_ONLY_DESIGN_AUTHORITY_SELECTION
+    candidate_designs:
+      - "WA-DES-002 SAQEEL Admin Detail.dc.html"
+      - "WA-DES-005 SAQEEL Admin Form Builder.dc.html"
+    purpose: >-
+      Audit and select truthful route-specific authority for regulations, items,
+      packages/designer, templates and violation/penalty configuration. New
+      logical IDs or successors require separate approval; do not stretch
+      WA-DES-019 or WA-DES-023 across missing screens.
+
+recommended_sponsor_decision:
+  recommendation: RETURN_FOR_MAPPING_CORRECTION
+  business_language: >-
+    Keep the four existing products, but stop treating them as one module.
+    Approve a mapping correction first. Compliance Requests can proceed to a
+    controlled successor. Committee, operational Enforcement and Risk must move
+    to their real contracts, and the missing Compliance Configuration screens
+    must receive explicit design authority before implementation or cutover.
+
+status_board:
+  Design:
+    status: RED
+    owner: Claude Design
+    date: "2026-07-25"
+    revision: "WA-DES-018/019/023/040 registered predecessors"
+    blocker: "M6-MAP-P0-001; M6-COVERAGE-P0-002; M6-RISK-P0-003; M6-ENF-P0-004"
+    next_action: M6-TRACEABILITY-SPLIT-011
+  Frontend:
+    status: AMBER
+    owner: Claude Code
+    date: "2026-07-25"
+    revision: "Canonical repository routes exist"
+    blocker: "Design ownership split and current Risk lifecycle conflict"
+    next_action: "Read-only route/capability preservation review after mapping correction"
+  Service_Wiring:
+    status: AMBER
+    owner: Claude Code
+    date: "2026-07-25"
+    revision: "Current Supabase/RPC route inventory"
+    blocker: "Runtime atomic publication/provider/decision evidence not certified in this audit"
+    next_action: "Independent wiring and negative-path audit"
+  QA:
+    status: RED
+    owner: Codex reviewer
+    date: "2026-07-25"
+    revision: "WA-M6-AC-001..006 PLANNED_NOT_IMPLEMENTED"
+    blocker: "Missing route-specific designs and responsive/RTL/negative-state evidence"
+    next_action: "Build corrected acceptance matrix after M6-TRACEABILITY-SPLIT-011"
+  Sponsor:
+    status: RED
+    owner: Sponsor
+    date: "2026-07-25"
+    revision: "No valid M6 consent packet"
+    blocker: "Four unresolved P0 mapping/contract defects"
+    next_action: "Approve mapping correction only; no implementation/cutover approval"
+
+queued_next_matched_audit:
+  task: M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014
+  status: QUEUED_READ_ONLY
+  designs: ["WA-DES-002", "WA-DES-005"]
+  routes:
+    - /admin/regulations
+    - "/admin/regulations/:id"
+    - /admin/items
+    - "/admin/items/:id/runtime-preview"
+    - /admin/packages
+    - "/admin/packages/:id/designer"
+    - /admin/violations
+    - "/admin/violations?mode=penalty"
+  reason: >-
+    These designs and routes are the nearest real matches for the missing
+    CR-449..CR-478 Compliance Configuration control plane. Audit them before
+    moving to the unrelated convenience-bundled M7 surfaces.
+  boundary: "Read-only inventory/mapping/delta audit; no design or application writes."
+
+stop_conditions:
+  - "Do not overwrite any predecessor design."
+  - "Do not count Committee, Enforcement or Risk as CR-449..CR-478 completion."
+  - "Do not use unapproved weights, bands, penalties or enforcement outcomes."
+  - "Do not weaken maker-checker, immutable publication, audit or runtime locking."
+  - "Do not advance while any P0/P1 remains."
