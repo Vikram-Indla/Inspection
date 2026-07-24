@@ -179,13 +179,13 @@ test.describe.serial("CD-041 verified-gate — driven", () => {
 
       // SUCCESS — send OTP (DEV provider returns the code), verify it.
       await repRow.getByRole("button", { name: "Send OTP" }).click();
-      const devLozenge = repRow.locator(".ax-lozenge--warning, .badge-warning", { hasText: "DEV code:" });
+      const devLozenge = repRow.locator(".sq-lozenge--warning, .badge-warning", { hasText: "DEV code:" });
       await expect(devLozenge).toBeVisible();
       const devCode = (await devLozenge.textContent())!.match(/\d{4,8}/)![0];
       await repRow.locator(".cd-otpfield input").fill(devCode);
       await repRow.getByRole("button", { name: "Verify" }).click();
 
-      await expect(repRow.locator(".ax-lozenge--success, .badge-compliant", { hasText: "verified" })).toBeVisible();
+      await expect(repRow.locator(".sq-lozenge--success, .badge-compliant", { hasText: "verified" })).toBeVisible();
 
       // POSTED — the server-authoritative gate opens only after the transition lands.
       await expect(page.locator(".cd-decisionbar.is-ready")).toBeVisible();

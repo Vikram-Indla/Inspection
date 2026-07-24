@@ -117,7 +117,7 @@ await page.goto(`${BASE_URL}/login`, { waitUntil: "load" });
 await page.locator("#email").waitFor();
 await page.locator("#email").fill(INSPECTOR.email);
 await page.locator("#pw").fill(INSPECTOR.password);
-await page.locator("form:has(#email) button.ax-btn--prominent").click();
+await page.locator("form:has(#email) button.sq-btn--prominent").click();
 await page.waitForURL(url => url.pathname.startsWith("/field"), { timeout: 40_000 }).catch(() => {});
 
 await page.goto(`${BASE_URL}/field/inspection/${INSPECTION_ID}`, { waitUntil: "load", timeout: 60_000 });
@@ -140,7 +140,7 @@ async function markNonCompliant(code, { note } = {}) {
   // order (responses: ["compliant","non_compliant","na"]) instead of text.
   const card = page.locator(".ipad-q", { hasText: code }).first();
   await card.scrollIntoViewIfNeeded();
-  await card.locator("button.ax-btn--field").nth(1).click();
+  await card.locator("button.sq-btn--field").nth(1).click();
   await page.waitForTimeout(400); // let the answer/form/evidence-leg state settle before querying for them
 
   // .first() — a prior partial run may have already attached evidence,
@@ -150,7 +150,7 @@ async function markNonCompliant(code, { note } = {}) {
     await fileInput.setInputFiles(tmpPng);
     // Uploading opens the ImageAnnotator modal (Wave 2's Modal component) —
     // confirm it (no drawing required to become "ready") before continuing.
-    const modalConfirm = page.locator(".ax-modal-backdrop button.ax-btn--prominent").last();
+    const modalConfirm = page.locator(".sq-modal-backdrop button.sq-btn--prominent").last();
     await modalConfirm.waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
     if (await modalConfirm.count()) {
       await page.waitForTimeout(600); // let the annotator canvas finish loading the image before confirm becomes enabled
@@ -161,7 +161,7 @@ async function markNonCompliant(code, { note } = {}) {
   }
   await page.waitForTimeout(300);
   if (note) {
-    const noteBox = card.locator("textarea.ax-textarea").first();
+    const noteBox = card.locator("textarea.sq-textarea").first();
     await noteBox.fill(note);
     await noteBox.blur();
     await page.waitForTimeout(150);
@@ -170,12 +170,12 @@ async function markNonCompliant(code, { note } = {}) {
   // fill by field type (date input vs text input vs the required_correction
   // textarea) rather than by position, so DOM-order assumptions can't
   // silently skip a field.
-  const form = card.locator(".ax-panel");
+  const form = card.locator(".sq-panel");
   if (await form.count()) {
     await form.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
-    const textInputs = form.locator('input.ax-input:not([type="date"])');
-    const dateInputs = form.locator('input.ax-input[type="date"]');
-    const corrections = form.locator("textarea.ax-textarea");
+    const textInputs = form.locator('input.sq-input:not([type="date"])');
+    const dateInputs = form.locator('input.sq-input[type="date"]');
+    const corrections = form.locator("textarea.sq-textarea");
     for (let i = 0; i < await textInputs.count(); i++) {
       await textInputs.nth(i).fill("DEC-031 Fixture Owner");
       await textInputs.nth(i).blur();
@@ -202,7 +202,7 @@ const cardCount = await allCards.count();
 console.log(`answering ${cardCount} visible items compliant by default`);
 for (let i = 0; i < cardCount; i++) {
   const c = allCards.nth(i);
-  const buttons = c.locator("button.ax-btn--field");
+  const buttons = c.locator("button.sq-btn--field");
   if (await buttons.count() > 0) {
     await c.scrollIntoViewIfNeeded();
     await buttons.first().click();
@@ -218,17 +218,17 @@ await markNonCompliant("EG-201");
 // non_compliant answer to diversify the fixture without extra requirements.
 const fs102 = page.locator(".ipad-q", { hasText: "FS-102" }).first();
 await fs102.scrollIntoViewIfNeeded();
-await fs102.locator("button.ax-btn--field").nth(1).click();
+await fs102.locator("button.sq-btn--field").nth(1).click();
 await page.waitForTimeout(300);
 
-// Debug: dump every ax-panel's field values before submitting.
-const panels = page.locator(".ax-panel");
+// Debug: dump every sq-panel's field values before submitting.
+const panels = page.locator(".sq-panel");
 const panelCount = await panels.count();
-console.log(`.ax-panel count: ${panelCount}`);
+console.log(`.sq-panel count: ${panelCount}`);
 for (let p = 0; p < panelCount; p++) {
   const panel = panels.nth(p);
   const title = await panel.locator("strong").first().innerText().catch(() => "?");
-  const fields = panel.locator("input.ax-input, textarea.ax-textarea");
+  const fields = panel.locator("input.sq-input, textarea.sq-textarea");
   const fc = await fields.count();
   const vals = [];
   for (let i = 0; i < fc; i++) vals.push(await fields.nth(i).inputValue().catch(() => "<err>"));
@@ -238,29 +238,29 @@ for (let p = 0; p < panelCount; p++) {
 
 await page.waitForTimeout(500);
 
-// Submit button: `.ax-btn--prominent.ax-btn--field` (unique combo; the
+// Submit button: `.sq-btn--prominent.sq-btn--field` (unique combo; the
 // signature-confirm button below is --prominent but not --field). It stays
 // clickable while aria-disabled (per the code's own comment: "submit stays
 // clickable so refusal + grouped blockers surface on tap") — Playwright
 // treats aria-disabled as non-actionable, so force the click to match real
 // tap behavior, then read back what's still blocking if anything is.
-const submitBtn = page.locator("button.ax-btn--prominent.ax-btn--field").last();
+const submitBtn = page.locator("button.sq-btn--prominent.sq-btn--field").last();
 await submitBtn.scrollIntoViewIfNeeded();
 await submitBtn.click({ force: true });
 await page.waitForTimeout(800);
-const validationPanel = page.locator(".ax-validation");
+const validationPanel = page.locator(".sq-validation");
 if (await validationPanel.count()) {
   console.log("VALIDATION BLOCKED:", (await validationPanel.innerText()).replace(/\n+/g, " | "));
 } else {
-  console.log("no .ax-validation panel present — submit was not blocked by readiness check");
+  console.log("no .sq-validation panel present — submit was not blocked by readiness check");
 }
 
 // Signature pad: type a name, draw a stroke, confirm.
-const nameInput = page.locator('input.ax-input[placeholder]').last();
+const nameInput = page.locator('input.sq-input[placeholder]').last();
 if (await nameInput.count()) {
   await nameInput.waitFor({ state: "visible", timeout: 10_000 });
   await nameInput.fill("DEC-031 Fixture Inspector");
-  const canvas = page.locator(".ax-modal-backdrop canvas").last();
+  const canvas = page.locator(".sq-modal-backdrop canvas").last();
   await canvas.waitFor({ state: "visible", timeout: 10_000 });
   const box = await canvas.boundingBox();
   if (box) {
@@ -272,7 +272,7 @@ if (await nameInput.count()) {
   }
   await page.waitForTimeout(300);
   console.log("clicking signature confirm...");
-  await page.locator(".ax-modal-backdrop button.ax-btn--prominent:not(.ax-btn--field)").last().click({ force: true });
+  await page.locator(".sq-modal-backdrop button.sq-btn--prominent:not(.sq-btn--field)").last().click({ force: true });
   console.log("signature confirm clicked");
 } else {
   console.log("signature name input not found — submit may have been blocked (readiness/blockers)");

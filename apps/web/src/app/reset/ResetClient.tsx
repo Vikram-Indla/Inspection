@@ -151,7 +151,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
 
           {stage === "invalid" && (
             <div className="lg-waiting">
-              <div className="ax-banner ax-banner--critical" role="alert">
+              <div className="sq-banner sq-banner--critical" role="alert">
                 <div>{s.invalidTitle}</div>
                 <div>{s.invalidBody}</div>
               </div>
@@ -164,10 +164,10 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
             <form onSubmit={save} className="lg-credentials" noValidate>
               <h1 className="lg-card__title" ref={formHeadingRef} tabIndex={-1}>{s.title}</h1>
               <p className="lg-card__sub">{s.sub}</p>
-              <div className={`ax-field${fieldError?.id === "pw" ? " is-invalid" : ""}`}>
-                <label className="ax-field__label" htmlFor="pw">{s.pwLabel}</label>
+              <div className={`sq-field${fieldError?.id === "pw" ? " is-invalid" : ""}`}>
+                <label className="sq-field__label" htmlFor="pw">{s.pwLabel}</label>
                 <div className="lg-pwwrap">
-                  <input ref={pwRef} id="pw" className="ax-input" type={showPw ? "text" : "password"} placeholder={s.pwPlaceholder}
+                  <input ref={pwRef} id="pw" className="sq-input" type={showPw ? "text" : "password"} placeholder={s.pwPlaceholder}
                     value={pw} onChange={e => { setPw(e.target.value); if (fieldError?.id === "pw") setFieldError(null); }}
                     autoComplete="new-password" required
                     aria-invalid={fieldError?.id === "pw" ? true : undefined}
@@ -177,25 +177,25 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
                     {showPw ? <IconEyeOff /> : <IconEye />}
                   </button>
                 </div>
-                {fieldError?.id === "pw" && <p id="pw-err" className="ax-field__error">{fieldError.message}</p>}
+                {fieldError?.id === "pw" && <p id="pw-err" className="sq-field__error">{fieldError.message}</p>}
               </div>
-              <div className={`ax-field${fieldError?.id === "pw2" ? " is-invalid" : ""}`}>
-                <label className="ax-field__label" htmlFor="pw2">{s.pw2Label}</label>
-                <input ref={pw2Ref} id="pw2" className="ax-input" type={showPw ? "text" : "password"} placeholder={s.pw2Placeholder}
+              <div className={`sq-field${fieldError?.id === "pw2" ? " is-invalid" : ""}`}>
+                <label className="sq-field__label" htmlFor="pw2">{s.pw2Label}</label>
+                <input ref={pw2Ref} id="pw2" className="sq-input" type={showPw ? "text" : "password"} placeholder={s.pw2Placeholder}
                   value={pw2} onChange={e => { setPw2(e.target.value); if (fieldError?.id === "pw2") setFieldError(null); }}
                   autoComplete="new-password" required
                   aria-invalid={fieldError?.id === "pw2" ? true : undefined}
                   aria-describedby={fieldError?.id === "pw2" ? "pw2-err" : undefined} />
-                {fieldError?.id === "pw2" && <p id="pw2-err" className="ax-field__error">{fieldError.message}</p>}
+                {fieldError?.id === "pw2" && <p id="pw2-err" className="sq-field__error">{fieldError.message}</p>}
               </div>
-              {bannerError && <div className="ax-banner ax-banner--critical" role="alert"><div>{bannerError}</div></div>}
+              {bannerError && <div className="sq-banner sq-banner--critical" role="alert"><div>{bannerError}</div></div>}
               <button className="btn btn-primary btn-lg lg-submit btn-touch" disabled={busy} aria-busy={busy}>{busy ? s.saving : s.save}</button>
             </form>
           )}
 
           {stage === "done" && (
             <div className="lg-waiting" role="status">
-              <div className="ax-banner ax-banner--success"><div>{s.doneTitle}</div></div>
+              <div className="sq-banner sq-banner--success"><div>{s.doneTitle}</div></div>
               <p className="lg-card__sub">{s.doneBody}</p>
               <a ref={doneCtaRef} className="btn btn-primary btn-lg lg-submit btn-touch" href="/login">{s.toSignIn}</a>
             </div>

@@ -71,7 +71,7 @@ export default function Factory360Offline({ crId, licenseId, strings, locale }: 
     catch { return snapshot.generatedAt; }
   })() : "";
 
-  const tone = mode === "live" ? "ax-lozenge--success" : mode === "unavailable" ? "" : "ax-lozenge--warning";
+  const tone = mode === "live" ? "sq-lozenge--success" : mode === "unavailable" ? "" : "sq-lozenge--warning";
   const message =
     mode === "refreshing" ? strings.refreshing :
     mode === "live" ? strings.live.replace("{ts}", generatedAtLabel) :
@@ -80,8 +80,8 @@ export default function Factory360Offline({ crId, licenseId, strings, locale }: 
     strings.unavailable;
 
   return (
-    <div className={`ax-sync ${mode === "live" ? "ax-sync--synced" : mode === "unavailable" ? "ax-sync--offline" : "ax-sync--offline"}`} role="status" aria-live="polite">
-      <span className={`ax-lozenge ${tone}`}>{message}</span>
+    <div className={`sq-sync ${mode === "live" ? "sq-sync--synced" : mode === "unavailable" ? "sq-sync--offline" : "sq-sync--offline"}`} role="status" aria-live="polite">
+      <span className={`sq-lozenge ${tone}`}>{message}</span>
       {snapshot && snapshot.sectionsOmitted.length > 0 && <span className="t-caption"> · {strings.omitted} {snapshot.sectionsOmitted.join(", ")}</span>}
       {snapshot && snapshot.providerGaps.length > 0 && <span className="t-caption"> · {strings.gaps} {snapshot.providerGaps.join(", ")}</span>}
     </div>

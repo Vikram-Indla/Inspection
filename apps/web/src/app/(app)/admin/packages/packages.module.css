@@ -1,7 +1,7 @@
 .pageStack {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-300);
+  gap: var(--space-6);
 }
 
 .hero,
@@ -9,7 +9,7 @@
 .versionCard,
 .governance,
 .emptyState {
-  padding: var(--ax-space-300);
+  padding: var(--space-6);
 }
 
 .heroRow,
@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--ax-space-150);
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
@@ -35,33 +35,33 @@
 .versionBody {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-250);
-  padding-block-start: var(--ax-space-250);
+  gap: var(--space-5);
+  padding-block-start: var(--space-5);
 }
 
 .versionList {
   display: grid;
-  gap: var(--ax-space-200);
+  gap: var(--space-4);
 }
 
 .designerStudio {
   display: grid;
   grid-template-columns: minmax(13rem, 0.75fr) minmax(22rem, 1.5fr) minmax(18rem, 1fr);
-  gap: var(--ax-space-200);
+  gap: var(--space-4);
   align-items: start;
 }
 
 .studioPane {
   min-inline-size: 0;
-  padding: var(--ax-space-200);
-  border: 1px solid var(--ax-color-border);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-surface);
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
 }
 
 .structureList {
   display: grid;
-  gap: var(--ax-space-100);
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -70,23 +70,23 @@
 .structureButton {
   inline-size: 100%;
   min-block-size: 44px;
-  padding: var(--ax-space-100) var(--ax-space-150);
-  border: 1px solid var(--ax-color-border);
-  border-radius: var(--ax-radius-small);
-  background: var(--ax-color-surface);
-  color: var(--ax-color-text);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  background: var(--surface-primary);
+  color: var(--text-primary);
   text-align: start;
   cursor: pointer;
 }
 
 .structureButton[aria-current="true"] {
-  border-color: var(--ax-color-primary);
-  box-shadow: inset 3px 0 0 var(--ax-color-primary);
-  background: var(--ax-color-surface-sunken);
+  border-color: var(--action-primary);
+  box-shadow: inset 3px 0 0 var(--action-primary);
+  background: var(--surface-sunken);
 }
 
 [dir="rtl"] .structureButton[aria-current="true"] {
-  box-shadow: inset -3px 0 0 var(--ax-color-primary);
+  box-shadow: inset -3px 0 0 var(--action-primary);
 }
 
 .editorForm,
@@ -95,13 +95,13 @@
 .targetList {
   display: flex;
   flex-direction: column;
-  gap: var(--ax-space-150);
+  gap: var(--space-3);
 }
 
 .itemChip {
   display: inline-flex;
   align-items: center;
-  gap: var(--ax-space-100);
+  gap: var(--space-2);
   min-block-size: 44px;
 }
 
@@ -117,21 +117,21 @@
 
 .chipRemove:focus-visible,
 .structureButton:focus-visible {
-  outline: 3px solid var(--ax-color-focus, var(--ax-color-primary));
+  outline: 3px solid var(--focus-ring, var(--action-primary));
   outline-offset: 2px;
 }
 
 .blockedTarget {
-  padding: var(--ax-space-150);
-  border: 1px dashed var(--ax-color-border);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-surface-sunken);
+  padding: var(--space-3);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
 }
 
 .blockedTarget button {
   inline-size: 100%;
   min-block-size: 44px;
-  margin-block-end: var(--ax-space-100);
+  margin-block-end: var(--space-2);
 }
 
 .versionTable {
@@ -141,14 +141,14 @@
 
 .versionTable th,
 .versionTable td {
-  padding: var(--ax-space-150);
-  border-block-end: 1px solid var(--ax-color-border);
+  padding: var(--space-3);
+  border-block-end: 1px solid var(--border-subtle);
   text-align: start;
   vertical-align: top;
 }
 
 .versionTable th {
-  font: var(--ax-text-body-strong);
+  font: var(--type-body-strong);
 }
 
 .notice {
@@ -171,7 +171,7 @@
   .versionCard,
   .governance,
   .emptyState {
-    padding: var(--ax-space-200);
+    padding: var(--space-4);
   }
 
   .designerStudio {
@@ -199,20 +199,20 @@
   }
 
   .versionTable tr {
-    padding-block: var(--ax-space-100);
-    border-block-end: 1px solid var(--ax-color-border);
+    padding-block: var(--space-2);
+    border-block-end: 1px solid var(--border-subtle);
   }
 
   .versionTable td {
     border: 0;
-    padding: var(--ax-space-100) 0;
+    padding: var(--space-2) 0;
   }
 
   .versionTable td::before {
     content: attr(data-label);
     display: block;
-    color: var(--ax-color-text-subtle);
-    font: var(--ax-text-caption);
+    color: var(--text-muted);
+    font: var(--type-caption-font);
   }
 }
 

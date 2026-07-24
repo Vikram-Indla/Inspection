@@ -18,13 +18,13 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
     <form
       action={formAction}
       className="panel"
-      style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
+      style={{ padding: "var(--space-6)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
     >
       <h4>{strings.title}</h4>
       <p className="t-caption">{strings.body}</p>
       <input type="hidden" name="inspection_id" value={inspectionId} />
       <input type="hidden" name="submission_version_id" value={submissionVersionId} />
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.starting : strings.start}</button>
     </form>
   );

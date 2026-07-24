@@ -529,7 +529,7 @@ test.describe("CD-023 accessibility, localization and visual matrix", () => {
     await page.goto("/planning/immediate");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     const group = page.getByRole("group", { name: /ضوابط|الحماية|Immediate dispatch protections/i });
-    await expect(group.locator(".ax-authoritybar__chip")).toHaveCount(9);
+    await expect(group.locator(".sq-authoritybar__chip")).toHaveCount(9);
     await expect(group.getByText("السبب", { exact: true })).toBeVisible();
     await expect(group.getByText("الهوية", { exact: true })).toBeVisible();
     await expect(group).toContainText("اختر سببًا للاستعجال");

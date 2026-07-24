@@ -59,21 +59,21 @@ export default function FactoryList({ factories, strings }: { factories: Factory
     [factories, region, city, license]);
   return (
     <>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--space-4)" }}>
         {/* FNS-103/104 — licensed/unlicensed segmentation over the real is_temporary flag */}
-        <div className="ax-segmented" role="group" aria-label={strings.licenseGroupAria}>
+        <div className="sq-segmented" role="group" aria-label={strings.licenseGroupAria}>
           {([["", strings.licenseAll], ["licensed", strings.licensed], ["unlicensed", strings.unlicensed]] as [LicenseKey, string][]).map(([k, label]) => (
             <button key={k || "all"} type="button" aria-pressed={license === k} onClick={() => setLicense(k)}>{label}</button>
           ))}
         </div>
-        <div className="ax-field"><label className="ax-field__label" htmlFor="factory-region-filter">{strings.regionLabel}</label>
-          <select id="factory-region-filter" className="ax-select" value={region} onChange={e => setRegion(e.target.value)} style={{ maxInlineSize: 220 }}>
+        <div className="sq-field"><label className="sq-field__label" htmlFor="factory-region-filter">{strings.regionLabel}</label>
+          <select id="factory-region-filter" className="sq-select" value={region} onChange={e => setRegion(e.target.value)} style={{ maxInlineSize: 220 }}>
             <option value="">{strings.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select></div>
         {/* FNS-107 — city filter (city data already loaded) */}
-        <div className="ax-field"><label className="ax-field__label" htmlFor="factory-city-filter">{strings.cityLabel}</label>
-          <select id="factory-city-filter" className="ax-select" value={city} onChange={e => setCity(e.target.value)} style={{ maxInlineSize: 220 }}>
+        <div className="sq-field"><label className="sq-field__label" htmlFor="factory-city-filter">{strings.cityLabel}</label>
+          <select id="factory-city-filter" className="sq-select" value={city} onChange={e => setCity(e.target.value)} style={{ maxInlineSize: 220 }}>
             <option value="">{strings.allCities}</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select></div>
@@ -82,16 +82,16 @@ export default function FactoryList({ factories, strings }: { factories: Factory
       {rows.length === 0 ? (
         <EmptyState icon={<IconFactory size={28} />} title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
-          <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="ax-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>
+        <div className="sq-tablewrap"><table className="sq-table">
+          <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="sq-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>
           <tbody>{rows.map(f => (
             <tr key={f.id}>
               <td><strong>{f.name}</strong> <span className="t-caption">{f.factory_code}</span></td>
               <td className="numeric">{f.cr_number}</td>
               <td><span className="badge badge-info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>
-              <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
-              <td><a className="ax-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier} →</a></td>
+              <td className="sq-td-num"><span className={`sq-lozenge ${f.risk_band === "high" ? "sq-lozenge--critical" : f.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
+              <td><a className="sq-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier} →</a></td>
             </tr>
           ))}</tbody>
         </table></div>

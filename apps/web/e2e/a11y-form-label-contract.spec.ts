@@ -4,8 +4,8 @@ import path from "node:path";
 
 // WCAG 2.2 — 1.3.1 Info & Relationships + 4.1.2 Name, Role, Value.
 // Static release guard for the design-system form-field pattern:
-//   <div className="ax-field"><label className="ax-field__label">…</label><CONTROL/></div>
-// Every ax-field__label MUST be programmatically associated with its control:
+//   <div className="sq-field"><label className="sq-field__label">…</label><CONTROL/></div>
+// Every sq-field__label MUST be programmatically associated with its control:
 //   - the common case: htmlFor matching an id on the input/select/textarea; OR
 //   - the group case: the label carries an id that a role="radiogroup"/group
 //     references via aria-labelledby (a radiogroup is not a labelable element,
@@ -14,8 +14,8 @@ import path from "node:path";
 // source only (no browser) and fails listing any file that regresses.
 const srcRoot = path.resolve(__dirname, "..", "src");
 
-// Matches an opening `<label className="ax-field__label" …>` tag (up to its `>`).
-const LABEL_TAG = /<label className="ax-field__label"[^>]*>/g;
+// Matches an opening `<label className="sq-field__label" …>` tag (up to its `>`).
+const LABEL_TAG = /<label className="sq-field__label"[^>]*>/g;
 
 function collectTsx(dir: string): string[] {
   const out: string[] = [];
@@ -32,7 +32,7 @@ function collectTsx(dir: string): string[] {
 }
 
 test.describe("A11y form-label association release guard", () => {
-  test("every ax-field__label is associated with its control via htmlFor", () => {
+  test("every sq-field__label is associated with its control via htmlFor", () => {
     const offenders: string[] = [];
     let totalLabels = 0;
 
@@ -60,6 +60,6 @@ test.describe("A11y form-label association release guard", () => {
 
     // Guard the guard: the pattern must actually exist, or the scan is vacuous.
     expect(totalLabels).toBeGreaterThan(0);
-    expect(offenders, `ax-field__label without htmlFor:\n${offenders.join("\n")}`).toEqual([]);
+    expect(offenders, `sq-field__label without htmlFor:\n${offenders.join("\n")}`).toEqual([]);
   });
 });

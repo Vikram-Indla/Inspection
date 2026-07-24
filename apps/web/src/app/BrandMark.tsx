@@ -7,10 +7,10 @@ export default function BrandMark({ size = 28, className }: { size?: number; cla
     <svg width={size} height={size} viewBox="0 0 100 100" className={className} aria-hidden="true">
       <defs>
         <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="var(--ax-color-text)" />
-          <stop offset="45%" stopColor="var(--ax-color-border)" />
-          <stop offset="55%" stopColor="var(--ax-color-surface)" />
-          <stop offset="100%" stopColor="var(--ax-color-text-secondary)" />
+          <stop offset="0%" stopColor="var(--text-primary)" />
+          <stop offset="45%" stopColor="var(--border-subtle)" />
+          <stop offset="55%" stopColor="var(--surface-primary)" />
+          <stop offset="100%" stopColor="var(--text-secondary)" />
         </linearGradient>
       </defs>
       <path

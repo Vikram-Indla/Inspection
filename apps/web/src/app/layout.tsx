@@ -2,8 +2,13 @@ import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import "./astryx.css";
-// SAQEEL Inspection Design System v1.0 component layer (new components consume
-// this; supersedes .ax-* families as consumers migrate — Astryx removed at PR12).
+import "./saqeel-components-legacy.css";
+// SAQEEL Inspection Design System v1.0 component layer. saqeel-components.css is
+// the canonical layer; saqeel-components-legacy.css holds the .sq-* families not
+// yet redesigned into it. astryx.css remains for the web-admin shell/nav/visits
+// surfaces not yet migrated off it — tracked as follow-up, not silently forced
+// here (that silent drop is exactly the bug this restores).
+// yet redesigned into it. Both consume SAQEEL semantic tokens only; no legacy alias layer remains.
 import "./saqeel-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";

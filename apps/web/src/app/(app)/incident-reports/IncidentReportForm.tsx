@@ -3,7 +3,7 @@
 // (node 1068:123721). Client component; all labels arrive pre-translated as
 // props from the server page (useT), matching the CreateRequest convention.
 // Every label maps to a captured register string_id (EM-046..EM-059); the
-// ax-field pattern (label htmlFor + input id) satisfies the a11y guard.
+// sq-field pattern (label htmlFor + input id) satisfies the a11y guard.
 import { useActionState } from "react";
 import { createIncidentReport, type IncidentResult } from "./actions";
 
@@ -26,20 +26,20 @@ export type IncidentFormStrings = {
 export function IncidentReportForm({ strings: s }: { strings: IncidentFormStrings }) {
   const [state, action, pending] = useActionState<IncidentResult, FormData>(createIncidentReport, {});
   return (
-    <form action={action} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-establishment-code">{s.establishmentCode}</label><input className="ax-input" name="establishment_code" id="ir-establishment-code" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-cr-number">{s.commercialRegistrationNumber}</label><input className="ax-input" name="commercial_registration_number" id="ir-cr-number" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-report-source">{s.reportSource}</label><input className="ax-input" name="report_source" id="ir-report-source" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-reporter-name">{s.reporterName}</label><input className="ax-input" name="reporter_name" id="ir-reporter-name" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-reporter-contact">{s.reporterContactNumber}</label><input className="ax-input" name="reporter_contact_number" id="ir-reporter-contact" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-report-time">{s.reportTime}</label><input className="ax-input" name="report_time" id="ir-report-time" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-number-of-cases">{s.numberOfCases}</label><input className="ax-input" name="number_of_cases" id="ir-number-of-cases" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-incident-type">{s.incidentType}</label><input className="ax-input" name="incident_type" id="ir-incident-type" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-resulting-damage">{s.resultingDamage}</label><textarea className="ax-textarea" name="resulting_damage" id="ir-resulting-damage" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="ir-description">{s.preliminaryIncidentDescription}</label><textarea className="ax-textarea" name="preliminary_incident_description" id="ir-description" /></div>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <form action={action} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-establishment-code">{s.establishmentCode}</label><input className="sq-input" name="establishment_code" id="ir-establishment-code" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-cr-number">{s.commercialRegistrationNumber}</label><input className="sq-input" name="commercial_registration_number" id="ir-cr-number" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-report-source">{s.reportSource}</label><input className="sq-input" name="report_source" id="ir-report-source" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-reporter-name">{s.reporterName}</label><input className="sq-input" name="reporter_name" id="ir-reporter-name" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-reporter-contact">{s.reporterContactNumber}</label><input className="sq-input" name="reporter_contact_number" id="ir-reporter-contact" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-report-time">{s.reportTime}</label><input className="sq-input" name="report_time" id="ir-report-time" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-number-of-cases">{s.numberOfCases}</label><input className="sq-input" name="number_of_cases" id="ir-number-of-cases" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-incident-type">{s.incidentType}</label><input className="sq-input" name="incident_type" id="ir-incident-type" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-resulting-damage">{s.resultingDamage}</label><textarea className="sq-textarea" name="resulting_damage" id="ir-resulting-damage" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="ir-description">{s.preliminaryIncidentDescription}</label><textarea className="sq-textarea" name="preliminary_incident_description" id="ir-description" /></div>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.submitting : s.submit}</button>
-        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
         {state.ok && <span className="badge badge-compliant">{s.created}</span>}
       </div>
     </form>

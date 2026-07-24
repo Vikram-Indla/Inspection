@@ -24,27 +24,27 @@ test.describe("UI compliance release guard", () => {
 
   test("UIC-AC-038..040 frozen boundaries remain intact", () => {
     const tokens = read("src/app/tokens.css");
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-components.css");
     const login = read("src/app/login/login.css");
-    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // SAQEEL: inputs 3px (frozen 12px retired)
-    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)"); // SAQEEL body input
+    expect(tokens).toContain("--radius-sm: 3px;"); // SAQEEL: inputs 3px (frozen 12px retired, --ax-* shim removed PR12)
+    expect(tokens).toContain("--type-input: 400 14px/1.5 var(--font-body)"); // SAQEEL body input
     expect(css).not.toContain("--ax-color-prism-magenta");
     expect(login).toContain("lg-atlas");
   });
 
   test("UIC regression — links, targets and visit filters retain accessible affordances", () => {
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-components-legacy.css");
     const visits = read("src/app/(app)/visits/VisitsBoard.tsx");
     const factories = read("src/app/(app)/factories/FactoryList.tsx");
-    expect(css).toContain("a.ax-link:not(.ax-btn)");
+    expect(css).toContain("a.sq-link:not(.sq-btn)");
     expect(css).toContain("text-decoration: underline");
-    expect(css).toContain(".ax-inline-target");
+    expect(css).toContain(".sq-inline-target");
     expect(css).toContain("min-inline-size: 24px");
     expect(visits).toContain('htmlFor="visit-filter-from"');
     expect(visits).toContain('id="visit-filter-from"');
     expect(visits).toContain('htmlFor="visit-filter-to"');
     expect(visits).toContain('id="visit-filter-to"');
-    expect(visits).toContain('ax-link t-caption ax-inline-target'); // SAQEEL: t-caption replaces ax-caption
+    expect(visits).toContain('sq-link t-caption sq-inline-target'); // SAQEEL: t-caption + sq-* replace ax-caption/ax-*
     expect(factories).toContain('htmlFor="factory-region-filter"');
     expect(factories).toContain('id="factory-region-filter"');
   });

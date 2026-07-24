@@ -1,0 +1,4 @@
+schema_version: "1.0"
+status: "OPEN_DECISIONS_CAPTURED"
+count: 5
+manifest: "/Users/vikramindla/Inspection-R0-Control/manifests-corrected/R0_CORRECTED_DECISIONS.json"

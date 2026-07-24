@@ -78,7 +78,7 @@ test.describe("CD-029 reviewer workspace — read-only runtime", () => {
 
   async function openFirstWorkspace(page: Page): Promise<boolean> {
     await page.goto("/reviews");
-    const open = page.getByRole("link", { name: /open workspace/i }).first();
+    const open = page.getByRole("link", { name: /open review/i }).first();
     if (await open.count() === 0) {
       // The link label is localized in RTL; route ownership is stable and does
       // not weaken the read-only navigation proof.
@@ -124,7 +124,7 @@ test.describe("CD-029 reviewer workspace — read-only runtime", () => {
       const overflowDetails = await page.evaluate(() => {
         const viewport = document.documentElement.clientWidth;
         const overflowing = [...document.querySelectorAll<HTMLElement>("*")]
-          .filter((element) => !element.closest(".ax-shell__nav"))
+          .filter((element) => !element.closest(".sq-shell__nav"))
           .map((element) => ({ element, rect: element.getBoundingClientRect() }))
           .filter(({ rect }) => rect.right > viewport + 1 || rect.left < -1)
           .slice(0, 12)

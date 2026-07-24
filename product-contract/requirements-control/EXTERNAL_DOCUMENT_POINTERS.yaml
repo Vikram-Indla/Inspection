@@ -1,0 +1,5 @@
+schema_version: "1.0"
+status: "LOCAL_R0_CORRECTION_ROOT"
+approved_source_root: "/Users/vikramindla/Inspection-R0-Control/approved-sources"
+corrected_output_root: "/Users/vikramindla/Inspection-R0-Control/output-corrected"
+corrected_manifest_root: "/Users/vikramindla/Inspection-R0-Control/manifests-corrected"

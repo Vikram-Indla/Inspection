@@ -50,25 +50,25 @@ export default function FieldSyncChips({ strings }: { strings: FieldSyncStrings 
   return (
     <>
       {!online && (
-        <span className="ax-sync ax-sync--offline">
+        <span className="sq-sync sq-sync--offline">
           <span aria-hidden>●</span>
           {strings.offlineQueued.replace("{n}", String(queued))}
         </span>
       )}
       {online && queued > 0 && (
-        <span className="ax-sync ax-sync--pending">
+        <span className="sq-sync sq-sync--pending">
           <span aria-hidden>●</span>
           {strings.offlineQueued.replace("{n}", String(queued))}
         </span>
       )}
       {online && queued === 0 && conflicts === 0 && (
-        <span className="ax-sync ax-sync--synced">
+        <span className="sq-sync sq-sync--synced">
           <span aria-hidden>●</span>
           {strings.synced}
         </span>
       )}
       {conflicts > 0 && (
-        <span className="ax-sync ax-sync--conflict" role="status">
+        <span className="sq-sync sq-sync--conflict" role="status">
           <span aria-hidden>●</span>
           {strings.syncFailed.replace("{n}", String(conflicts))}
         </span>

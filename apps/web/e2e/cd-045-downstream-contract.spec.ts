@@ -66,7 +66,7 @@ test.describe("CD-045 notification deep-links (PLN-REQ-009)", () => {
 
     await page.goto("/admin/planning/status");
     await page.getByRole("button", { name: "Notifications" }).click();
-    const row = page.locator(".ax-popover .ax-surface", { hasText: marker });
+    const row = page.locator(".sq-popover .sq-surface", { hasText: marker });
     await expect(row).toBeVisible();
     await row.getByRole("link", { name: /Open/ }).click();
 
@@ -96,7 +96,7 @@ test.describe("CD-045 notification deep-links (PLN-REQ-009)", () => {
 
     await page.goto("/admin/planning/status");
     await page.getByRole("button", { name: "Notifications" }).click();
-    const row = page.locator(".ax-popover .ax-surface", { hasText: marker });
+    const row = page.locator(".sq-popover .sq-surface", { hasText: marker });
     await expect(row).toBeVisible();
     await row.getByRole("link", { name: /Open/ }).click();
 
@@ -160,7 +160,7 @@ test.describe("CD-045 inspector pool + provider posture", () => {
     await page.goto("/planning/bulk");
     // The honest lozenge list under the criteria tree (not the hidden
     // disabled <option> in the field picker).
-    await expect(page.locator(".ax-lozenge--warning", { hasText: "CONTRACT_NOT_SUPPLIED" }).first())
+    await expect(page.locator(".sq-lozenge--warning", { hasText: "CONTRACT_NOT_SUPPLIED" }).first())
       .toBeVisible({ timeout: 60000 });
   });
 });

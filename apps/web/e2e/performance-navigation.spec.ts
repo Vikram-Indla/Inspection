@@ -158,7 +158,7 @@ test("PERF-G11-001 captures repeatable authenticated route timings", async ({ br
       const page = await context.newPage();
       const started = Date.now();
       await page.goto(target.route, { waitUntil: "domcontentloaded" });
-      await expect(page.locator(".ax-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
+      await expect(page.locator(".sq-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
       samples.push(await collect(page, target.route, "cold", Date.now() - started));
       await context.close();
     }
@@ -170,14 +170,14 @@ test("PERF-G11-001 captures repeatable authenticated route timings", async ({ br
     for (let run = 0; run < warmRuns; run += 1) {
       const origin = run % 2 === 0 && target.route !== home ? home : "/profile";
       await page.goto(origin, { waitUntil: "domcontentloaded" });
-      await expect(page.locator(".ax-pagehead__context h2")).toBeVisible({ timeout: 40_000 });
+      await expect(page.locator(".sq-pagehead__context h2")).toBeVisible({ timeout: 40_000 });
       await installObservers(page);
       const link = page.getByRole("navigation", { name: "Primary navigation" }).locator(`a[href="${target.navHref}"]`);
       await expect(link).toHaveCount(1);
       const started = Date.now();
       await link.click();
-      await expect(page.locator(".ax-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
-      await expect(page.locator(".ax-route-progress")).toHaveCount(0);
+      await expect(page.locator(".sq-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
+      await expect(page.locator(".sq-route-progress")).toHaveCount(0);
       samples.push(await collect(page, target.route, "warm", Date.now() - started));
     }
     await context.close();

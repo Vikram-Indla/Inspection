@@ -13,7 +13,7 @@ export type RibbonTrack = {
   id: "planning" | "operational" | "assignment" | "inspection" | "review";
   domainLabel: string;      // "Planning", "Operational", …
   stateLabel: string;       // translated current state
-  tone: string;             // ax-lozenge tone class ("" | ax-lozenge--warning | …)
+  tone: string;             // sq-lozenge tone class ("" | sq-lozenge--warning | …)
   eventLabel: string;       // latest verified event + time, or "no verified event"
   sourceLabel: string;      // who/what proved it (audit / field app / assignment / …)
   boundaryLabel: string;    // what this domain permits from Visit Detail
@@ -54,9 +54,9 @@ export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTra
 
   const cur = tracks[active];
   return (
-    <section className="panel ax-ribbon" aria-label={strings.heading} style={{ padding: "var(--ax-space-300)" }}>
-      <h4 style={{ margin: 0, marginBlockEnd: "var(--ax-space-200)" }}>{strings.heading}</h4>
-      <div className="ax-ribbon__tracks" role="tablist" aria-label={strings.tablistLabel} aria-orientation="horizontal">
+    <section className="panel sq-ribbon" aria-label={strings.heading} style={{ padding: "var(--space-6)" }}>
+      <h4 style={{ margin: 0, marginBlockEnd: "var(--space-4)" }}>{strings.heading}</h4>
+      <div className="sq-ribbon__tracks" role="tablist" aria-label={strings.tablistLabel} aria-orientation="horizontal">
         {tracks.map((tr, i) => (
           <button
             key={tr.id}
@@ -66,24 +66,24 @@ export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTra
             aria-selected={i === active}
             aria-controls="ribbon-panel"
             tabIndex={i === active ? 0 : -1}
-            className={`ax-ribbon__track ${i === active ? "is-active" : ""}`}
+            className={`sq-ribbon__track ${i === active ? "is-active" : ""}`}
             onClick={() => setActive(i)}
             onKeyDown={e => onKeyDown(e, i)}
           >
-            <span className="ax-ribbon__glyph" aria-hidden="true">{GLYPH[tr.id]}</span>
-            <span className="ax-ribbon__domain">{tr.domainLabel}</span>
-            <span className={`ax-lozenge ${tr.tone}`}>{tr.stateLabel}</span>
+            <span className="sq-ribbon__glyph" aria-hidden="true">{GLYPH[tr.id]}</span>
+            <span className="sq-ribbon__domain">{tr.domainLabel}</span>
+            <span className={`sq-lozenge ${tr.tone}`}>{tr.stateLabel}</span>
           </button>
         ))}
       </div>
-      <div id="ribbon-panel" role="tabpanel" aria-labelledby={`ribbon-tab-${cur.id}`} tabIndex={0} className="ax-ribbon__panel">
-        <dl className="ax-ribbon__facts">
-          <div><dt>{strings.stateWord}</dt><dd><span className={`ax-lozenge ${cur.tone}`}>{cur.stateLabel}</span></dd></div>
+      <div id="ribbon-panel" role="tabpanel" aria-labelledby={`ribbon-tab-${cur.id}`} tabIndex={0} className="sq-ribbon__panel">
+        <dl className="sq-ribbon__facts">
+          <div><dt>{strings.stateWord}</dt><dd><span className={`sq-lozenge ${cur.tone}`}>{cur.stateLabel}</span></dd></div>
           <div><dt>{strings.latestWord}</dt><dd>{cur.eventLabel}</dd></div>
           <div><dt>{strings.sourceWord}</dt><dd>{cur.sourceLabel}</dd></div>
           <div><dt>{strings.boundaryWord}</dt><dd>{cur.boundaryLabel}</dd></div>
         </dl>
-        <a className="ax-btn ax-btn--subtle" href={cur.anchorHref}>{cur.anchorLabel}</a>
+        <a className="sq-link" href={cur.anchorHref}>{cur.anchorLabel} →</a>
       </div>
     </section>
   );

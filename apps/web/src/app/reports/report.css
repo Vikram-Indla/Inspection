@@ -1,77 +1,77 @@
 /* Official inspection report — screen preview + A4 print (M04-215 path).
    Logical properties throughout so the RTL (Arabic) document mirrors correctly. */
 
-.rp-page { min-block-size: 100vh; background: var(--ax-color-surface-sunken); padding-block-end: var(--ax-space-600); }
+.rp-page { min-block-size: 100vh; background: var(--surface-sunken); padding-block-end: var(--space-12); }
 .rp-doc {
   max-inline-size: 210mm;
   margin-inline: auto;
-  background: var(--ax-color-surface);
-  color: var(--ax-color-text);
-  box-shadow: var(--ax-shadow-raised);
-  padding: var(--ax-space-600);
-  display: flex; flex-direction: column; gap: var(--ax-space-400);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
+  padding: var(--space-12);
+  display: flex; flex-direction: column; gap: var(--space-8);
 }
 
 /* Ministry header — bilingual official identity */
-.rp-head { display: flex; justify-content: space-between; align-items: center; gap: var(--ax-space-300); border-block-end: 3px double var(--ax-color-primary-strong); padding-block-end: var(--ax-space-300); }
-.rp-head__mark { inline-size: 56px; block-size: 56px; border-radius: var(--ax-radius-standard); background: var(--ax-color-primary); color: var(--ax-color-inverse-text); display: grid; place-items: center; font: var(--ax-text-heading); }
+.rp-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-6); border-block-end: 3px double var(--action-primary-pressed); padding-block-end: var(--space-6); }
+.rp-head__mark { inline-size: 56px; block-size: 56px; border-radius: var(--radius-sm); background: var(--action-primary); color: var(--text-inverse); display: grid; place-items: center; font: var(--type-heading-lg); }
 .rp-head__col { display: flex; flex-direction: column; gap: 2px; }
-.rp-head__ar { font-family: var(--ax-font-arabic); direction: rtl; }
-.rp-title { font: var(--ax-text-title); color: var(--ax-color-primary-strong); }
+.rp-head__ar { font-family: var(--font-body); direction: rtl; }
+.rp-title { font: var(--type-title); color: var(--action-primary-pressed); }
 
 /* V2 5-layer content model: identity/outcome, findings/compliance,
    violations/corrective-actions, evidence/versions/decisions/lineage,
    acknowledgement/signatures/legal-footer. A layer groups the existing
    chapters below it; it carries no page-break constraint of its own —
    only .rp-sig (inside layer 5) is an atomic keep-together. */
-.rp-layer { display: flex; flex-direction: column; gap: var(--ax-space-400); }
-.rp-layer + .rp-layer { border-block-start: 1px solid var(--ax-color-border); padding-block-start: var(--ax-space-400); }
-.rp-layer__heading { font: var(--ax-text-heading); color: var(--ax-color-primary-strong); }
+.rp-layer { display: flex; flex-direction: column; gap: var(--space-8); }
+.rp-layer + .rp-layer { border-block-start: 1px solid var(--border-subtle); padding-block-start: var(--space-8); }
+.rp-layer__heading { font: var(--type-heading-lg); color: var(--action-primary-pressed); }
 
 /* V2 print spec: a chapter/section is allowed to continue across pages — only
    the signature block (below) is an atomic keep-together. Forcing every
    section to avoid a page break produced large forced blank gaps on a
    report with many items. */
-.rp-section { display: flex; flex-direction: column; gap: var(--ax-space-150); }
-.rp-section > h3 { font: var(--ax-text-subheading); color: var(--ax-color-primary-strong); border-block-end: 1px solid var(--ax-color-border); padding-block-end: var(--ax-space-050); }
+.rp-section { display: flex; flex-direction: column; gap: var(--space-3); }
+.rp-section > h3 { font: var(--type-subheading); color: var(--action-primary-pressed); border-block-end: 1px solid var(--border-subtle); padding-block-end: var(--space-1); }
 
-.rp-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--ax-space-150) var(--ax-space-300); }
-.rp-kv dt { font: var(--ax-text-micro); color: var(--ax-color-text-secondary); letter-spacing: .01em; }
-.rp-kv dd { font: var(--ax-text-body-strong); }
+.rp-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3) var(--space-6); }
+.rp-kv dt { font: var(--type-micro); color: var(--text-secondary); letter-spacing: .01em; }
+.rp-kv dd { font: var(--type-body-strong); }
 
-.rp-table { inline-size: 100%; border-collapse: collapse; font: var(--ax-text-caption); }
+.rp-table { inline-size: 100%; border-collapse: collapse; font: var(--type-caption-font); }
 .rp-table thead { display: table-header-group; } /* explicit repeat-on-page-break, belt-and-suspenders with UA default */
-.rp-table th { text-align: start; font: var(--ax-text-micro); color: var(--ax-color-text-secondary); letter-spacing: .01em; border-block-end: 1.5px solid var(--ax-color-border-strong); padding: var(--ax-space-100); }
-.rp-table td { border-block-end: 1px solid var(--ax-color-border); padding: var(--ax-space-100); vertical-align: top; }
+.rp-table th { text-align: start; font: var(--type-micro); color: var(--text-secondary); letter-spacing: .01em; border-block-end: 1.5px solid var(--border-strong); padding: var(--space-2); }
+.rp-table td { border-block-end: 1px solid var(--border-subtle); padding: var(--space-2); vertical-align: top; }
 .rp-table tr { break-inside: avoid; } /* an atomic ROW never splits across a page; the table itself flows freely */
 
 /* V2 print spec: the signature block is the ONE atomic keep-together on the
    whole document — a signature must never be separated from its line/name. */
-.rp-sig { display: flex; gap: var(--ax-space-400); align-items: flex-end; flex-wrap: wrap; break-inside: avoid; }
-.rp-sig__img { max-inline-size: 260px; max-block-size: 110px; border-block-end: 1px solid var(--ax-color-border-strong); background: var(--ax-color-surface); }
-.rp-sig__line { min-inline-size: 220px; border-block-end: 1px solid var(--ax-color-border-strong); padding-block-end: var(--ax-space-300); }
+.rp-sig { display: flex; gap: var(--space-8); align-items: flex-end; flex-wrap: wrap; break-inside: avoid; }
+.rp-sig__img { max-inline-size: 260px; max-block-size: 110px; border-block-end: 1px solid var(--border-strong); background: var(--surface-primary); }
+.rp-sig__line { min-inline-size: 220px; border-block-end: 1px solid var(--border-strong); padding-block-end: var(--space-6); }
 
-.rp-foot { border-block-start: 1px solid var(--ax-color-border); padding-block-start: var(--ax-space-200); display: flex; justify-content: space-between; gap: var(--ax-space-300); font: var(--ax-text-micro); color: var(--ax-color-text-secondary); }
+.rp-foot { border-block-start: 1px solid var(--border-subtle); padding-block-start: var(--space-4); display: flex; justify-content: space-between; gap: var(--space-6); font: var(--type-micro); color: var(--text-secondary); }
 
 @media print {
   @page { size: A4; margin: 12mm; }
   .no-print { display: none !important; }
-  /* V2 print spec: grayscale-safe #111/#555/#999 ladder, never the dark-theme
-     palette — a reviewer may have the app in dark mode when they print/export
+  /* V2 print spec: grayscale-safe near-black/mid-grey/light-grey ladder, never
+     the dark-theme palette — a reviewer may have the app in dark mode when they print/export
      to PDF; the official document must not inherit that. Scoped to .rp-page
      so it can't leak into any other on-screen content. */
   .rp-page {
-    --ax-color-text: var(--ax-color-print-text);
-    --ax-color-surface: var(--ax-color-print-surface);
-    --ax-color-canvas: var(--ax-color-print-surface);
-    --ax-color-border: var(--ax-color-print-border);
-    --ax-color-border-strong: var(--ax-color-print-border);
-    --ax-color-text-secondary: var(--ax-color-print-border);
-    --ax-color-primary-strong: var(--ax-color-print-text);
-    --ax-color-inverse-text: var(--ax-color-print-surface);
-    background: var(--ax-color-print-surface); padding: 0; min-block-size: auto;
+    --text-primary: var(--print-text);
+    --surface-primary: var(--print-surface);
+    --surface-canvas: var(--print-surface);
+    --border-subtle: var(--print-border);
+    --border-strong: var(--print-border);
+    --text-secondary: var(--print-border);
+    --action-primary-pressed: var(--print-text);
+    --text-inverse: var(--print-surface);
+    background: var(--print-surface); padding: 0; min-block-size: auto;
   }
-  .rp-doc { box-shadow: none; max-inline-size: none; padding: 0; background: var(--ax-color-print-surface); color: var(--ax-color-print-text); }
+  .rp-doc { box-shadow: none; max-inline-size: none; padding: 0; background: var(--print-surface); color: var(--print-text); }
   .rp-doc a { text-decoration: none; color: inherit; }
-  .rp-head__mark { background: var(--ax-color-print-text); }
+  .rp-head__mark { background: var(--print-text); }
 }

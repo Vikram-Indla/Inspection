@@ -50,10 +50,10 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale 
     : markers.length ? [markers[0].lat, markers[0].lng] : [24.7136, 46.6753];
 
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <label className="ax-field" style={{ minInlineSize: 260 }}><span className="ax-field__label">{s.region}</span>
-          <select className="ax-select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>
+        <label className="sq-field" style={{ minInlineSize: 260 }}><span className="sq-field__label">{s.region}</span>
+          <select className="sq-select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>
             <option value="">{s.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
@@ -69,14 +69,14 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale 
           <EmptyState glyph="∅" title={s.noneInRegion} bare />
         )}
       </div>
-      <div className="ax-tablewrap"><table className="ax-table">
+      <div className="sq-tablewrap"><table className="sq-table">
         <thead><tr><th scope="col">{s.visit}</th><th scope="col">{s.factory}</th><th scope="col">{s.regionCity}</th><th scope="col">{s.inspectorLocation}</th><th scope="col">{s.state}</th></tr></thead>
         <tbody>{filtered.map(v => <tr key={v.id} className={v.id === selectedVisitId ? "is-selected" : undefined}>
-          <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>
-          <td><a className="ax-link" href={`/factories/${v.factoryId}`}>{v.factoryName}</a></td>
+          <td><a className="sq-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>
+          <td><a className="sq-link" href={`/factories/${v.factoryId}`}>{v.factoryName}</a></td>
           <td>{v.region} · {v.city}</td>
           <td>{v.inspectorLat == null ? s.unavailableScope : `${v.inspectorName || s.inspectorFallback} · ${v.inspectorAt ? formatDateTime(v.inspectorAt, locale === "ar" ? "ar" : "en") : "—"}`}</td>
-          <td><span className="ax-lozenge ax-lozenge--ops">{v.operationalState.replace(/_/g, " ")}</span></td>
+          <td><span className="sq-lozenge sq-lozenge--ops">{v.operationalState.replace(/_/g, " ")}</span></td>
         </tr>)}</tbody>
       </table></div>
     </div>

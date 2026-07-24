@@ -35,19 +35,19 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     console.error("[CD-025 bulk review authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
-        <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
       </Shell>
     );
   }
   if (!user || !access.can("planning.create.bulk")) {
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
-        <section className="panel cd-panelpad ax-permission">
-          <div className="ax-state ax-state--inline">
-            <span className="ax-state__glyph" aria-hidden="true"><IconBlocked size={24} /></span>
+        <section className="panel cd-panelpad sq-permission">
+          <div className="sq-state sq-state--inline">
+            <span className="sq-state__glyph" aria-hidden="true"><IconBlocked size={24} /></span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>
             <p className="t-caption">{t("plan.review.unauth.body", "This view requires the bulk-planning capability and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
-            <a className="ax-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>
+            <a className="sq-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>
           </div>
         </section>
       </Shell>

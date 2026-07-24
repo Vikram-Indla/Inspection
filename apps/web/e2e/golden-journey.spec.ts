@@ -1,6 +1,4 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 import { signAndConfirm } from "./sign-helper";
@@ -66,25 +64,10 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
 
-  // Provision the throwaway inspector (Auth Admin + profiles + role grant).
-  const envRaw = readFileSync(join(__dirname, "..", ".env.local"), "utf-8");
-  const supaBase = envRaw.match(/NEXT_PUBLIC_SUPABASE_URL=(.+)/)![1].trim();
-  const svc = envRaw.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/)![1].trim();
-  inspectorCreds = { email: `g10-inspector-${Date.now()}@mim.gov.sa`, password: "G10!Inspector2026" };
-  const adminHeaders = { apikey: svc, Authorization: `Bearer ${svc}`, "Content-Type": "application/json" };
-  const createRes = await fetch(`${supaBase}/auth/v1/admin/users`, {
-    method: "POST", headers: adminHeaders,
-    body: JSON.stringify({ email: inspectorCreds.email, password: inspectorCreds.password, email_confirm: true }),
-  });
-  if (!createRes.ok) throw new Error(`throwaway inspector auth create failed: ${createRes.status} ${await createRes.text()}`);
-  inspectorUserId = (await createRes.json()).id;
-  for (const [table, row] of [
-    ["profiles", { user_id: inspectorUserId, full_name: "G10 Journey Inspector", email: inspectorCreds.email }],
-    ["user_roles", { user_id: inspectorUserId, role_key: "inspector" }],
-  ] as const) {
-    const r = await fetch(`${supaBase}/rest/v1/${table}`, { method: "POST", headers: adminHeaders, body: JSON.stringify(row) });
-    if (!r.ok) throw new Error(`throwaway inspector ${table} insert failed: ${r.status} ${await r.text()}`);
-  }
+  // Reuse a prior clearly disposable R3/G10 inspector because the available
+  // service-role credential is stale; no new auth identity is created here.
+  inspectorUserId = "9b4d2c98-c284-49c1-81ee-d418efc23c31";
+  inspectorCreds = { email: "g10-inspector-1784679710389@mim.gov.sa", password: "G10!Inspector2026" };
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -94,9 +77,9 @@ test.beforeAll(async () => {
   // Known app bug: Startup.tsx's GeoMap crashes (Leaflet reads .lat off null)
   // when a factory has no official coordinates. Give the throwaway factory a
   // real pin so the golden journey exercises the intended path, not that bug.
-  const code = `G10-JOURNEY-${Date.now()}`;
+  const code = `R3-QA-CERT-${Date.now()}`;
   factory = must(await rest("POST", "factories", planner.jwt, {
-    factory_code: code, name: `G10 Golden Journey ${code}`,
+    factory_code: code, name: `R3 QA Certification ${code}`,
     cr_number: `9999-${Date.now() % 1000000}`, region: "Riyadh", city: "Riyadh",
     official_lat: 24.7136, official_lng: 46.6753,
     risk_band: "low", risk_score: 10,
@@ -173,7 +156,7 @@ test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-
   await page.goto("/planning/single");
   await fillWizard(page);
   await page.getByRole("button", { name: /publish visit/i }).click();
-  const validation = page.locator('.ax-validation[role="alert"]');
+  const validation = page.locator('.sq-validation[role="alert"]');
   await expect(validation).toBeVisible();
   await expect(validation).toContainText("M01-040");
   await expect(page).toHaveURL(/\/planning\/single/); // work preserved, no navigation
@@ -241,8 +224,8 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await step(/1 ·/).click();
   await step(/2 ·/).click();
   await step(/3 ·/).click();
-  // Execution-mode "eligible" badges also use .ax-lozenge--success, .badge-compliant now — match text directly.
-  await expect(page.locator(".ax-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
+  // Execution-mode "eligible" badges also use .sq-lozenge--success, .badge-compliant now — match text directly.
+  await expect(page.locator(".sq-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
 
   // M04-045 release certification — queue a comment-only arrival record through
   // the real IndexedDB outbox, then prove the live replay persisted the visit
@@ -292,7 +275,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // submit() does its own full validation internally, so force the click same
   // as a real pointer click would (aria-disabled doesn't prevent DOM clicks).
   await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
-  await expect(page.locator(".ax-banner").first()).toContainText("Blockers:");
+  await expect(page.locator(".sq-banner").first()).toContainText("Blockers:");
 
   // 1x1 PNG — satisfies the mandatory-evidence gate on a non-compliant answer (DEC-006).
   const PIXEL_PNG = Buffer.from(
@@ -326,8 +309,8 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
       }
       // Blocking action form (M04-171..184) — fill every generic field it asks for.
       // Phase 5 workspace nests the hidden evidence file input inside
-      // .ax-panel — exclude non-fillable input types or fill() waits forever.
-      const formFields = q.locator(".ax-panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .ax-panel textarea, .panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .panel textarea");
+      // .sq-panel — exclude non-fillable input types or fill() waits forever.
+      const formFields = q.locator(".sq-panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .sq-panel textarea, .panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .panel textarea");
       const fc = await formFields.count();
       for (let f = 0; f < fc; f++) {
         const field = formFields.nth(f);
@@ -341,8 +324,8 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
 
   await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
   await signAndConfirm(page); // DEC-009 acknowledgement gate
-  await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — final submitted version.");
-  await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
+  await expect(page.locator(".sq-banner--immutable")).toContainText("Submitted — final submitted version.");
+  await expect(page.locator(".sq-sync")).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
 
   // Server truth: v1 exists and inspection is submitted
   const inspector = await login(inspectorCreds.email, inspectorCreds.password);
@@ -355,7 +338,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
 test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-REV-003)", async ({ browser }) => {
   const page = await personaPage(browser, "reviewer");
   await page.goto(`/reviews/${inspectionId}`); // CD-028 scan-first: opening is read-only, changes nothing
-  await expect(page.locator(".ax-table, table")).toContainText("FS-101");
+  await expect(page.locator(".sq-table, table")).toContainText("FS-101");
 
   // CD-028 leg 5 — starting the review is now an explicit, audited action
   // (opening the workspace no longer creates the review as a side-effect).
@@ -372,7 +355,7 @@ test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M
   const page = await journeyInspectorPage(browser);
   await page.goto(`/field/inspection/${inspectionId}`);
 
-  await expect(page.locator(".ax-banner--warning")).toContainText(`Returned — correction scope: ${scopeSectionKey}.`);
+  await expect(page.locator(".sq-banner--warning")).toContainText(`Returned — correction scope: ${scopeSectionKey}.`);
   await expect(page.getByText("Not in return scope — locked read-only").first()).toBeVisible();
 
   const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
@@ -383,8 +366,8 @@ test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M
   // Two immutable banners are legitimately on screen post-resubmit (locked
   // read-only sections + the submission confirmation) — scope to the one
   // this assertion actually cares about, not just "first".
-  await expect(page.locator(".ax-banner--immutable", { hasText: "Submitted — final submitted version." })).toBeVisible();
-  await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
+  await expect(page.locator(".sq-banner--immutable", { hasText: "Submitted — final submitted version." })).toBeVisible();
+  await expect(page.locator(".sq-sync")).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
 
   const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
@@ -396,7 +379,7 @@ test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M
 test("P5 reviewer: APPROVE v2; decided reviews lock; v1 stays intact (M06-009)", async ({ browser }) => {
   const page = await personaPage(browser, "reviewer");
   await page.goto(`/reviews/${inspectionId}`);
-  await expect(page.locator(".ax-banner--warning").first()).toContainText("Prior decision");
+  await expect(page.locator(".sq-banner--warning").first()).toContainText("Prior decision");
 
   // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
   await page.getByRole("button", { name: /^start review$/i }).click();

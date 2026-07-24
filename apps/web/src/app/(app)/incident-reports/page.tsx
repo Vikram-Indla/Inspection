@@ -30,7 +30,7 @@ export default async function IncidentReportsPage() {
       title={t("figma.establishmentmanagement.em029", "Report an Incident")}
       context={<span className="badge badge-info">FNS-033 · J-12</span>}
     >
-      <div className="ax-banner">
+      <div className="sq-banner">
         <div>
           <strong>{t("figma.establishmentmanagement.em028", "Incident Observation Details")}</strong>{" "}
           {t("incident.report.help", "Record a field incident observation. Report Source and Incident Type option lists are not yet defined, so they are captured as free text.")}
@@ -59,7 +59,7 @@ export default async function IncidentReportsPage() {
       />
 
       {error && (
-        <div className="ax-banner ax-banner--critical" role="alert">
+        <div className="sq-banner sq-banner--critical" role="alert">
           <div><strong>{t("incident.report.error", "Couldn’t load incident reports. Nothing changed.")}</strong></div>
         </div>
       )}
@@ -71,7 +71,7 @@ export default async function IncidentReportsPage() {
         />
       )}
       {(rows ?? []).map((r) => (
-        <div key={r.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={r.id} className="panel" style={{ padding: "var(--space-6)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>
               {r.establishment_code ?? "—"}{" "}

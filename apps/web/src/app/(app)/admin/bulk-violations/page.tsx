@@ -69,13 +69,13 @@ export default async function BulkViolations() {
   return (
     <Shell current="/admin/bulk-violations" title={t("admin.bulkvio.title", "Bulk violation issuance")}
       context={<span className="badge badge-info">DEC-L</span>}>
-      {roleError && <div className="ax-banner ax-banner--warning" role="alert"><div>{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>}
-      <div className="ax-banner ax-banner--warning">
+      {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>}
+      <div className="sq-banner sq-banner--warning">
         <div><strong>{tr("admin.bulkvio.warnTitle", "This issues real, permanent violations.", "هذا يُصدر مخالفات حقيقية ودائمة.")}</strong>{" "}
           {tr("admin.bulkvio.warnBody", "Each selected establishment receives a real inspection record and a real violation, exactly as if found during a field visit. This cannot be undone.", "تتلقى كل منشأة محددة سجل تفتيش حقيقيًا ومخالفة حقيقية، تمامًا كما لو تم اكتشافها أثناء زيارة ميدانية. لا يمكن التراجع عن هذا.")}</div>
       </div>
-      {factoriesError && <div className="ax-banner ax-banner--warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The establishment registry is unavailable in this environment.", "سجل المنشآت غير متاح في هذه البيئة.")}</div></div>}
-      {violationsError && <div className="ax-banner ax-banner--warning" role="alert"><div>{tr("admin.bulkvio.violationsError", "The violation catalogue is unavailable in this environment.", "كتالوج المخالفات غير متاح في هذه البيئة.")}</div></div>}
+      {factoriesError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.factoriesError", "The establishment registry is unavailable in this environment.", "سجل المنشآت غير متاح في هذه البيئة.")}</div></div>}
+      {violationsError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.bulkvio.violationsError", "The violation catalogue is unavailable in this environment.", "كتالوج المخالفات غير متاح في هذه البيئة.")}</div></div>}
       <BulkViolationForm
         factories={(factories ?? []).map(f => ({ id: f.id, name: f.name, factory_code: f.factory_code, cr_number: f.cr_number, region: f.region, city: f.city }))}
         violations={violations}

@@ -4,7 +4,7 @@ import path from "node:path";
 
 // WCAG 2.2 — 1.3.1 Info & Relationships (technique H63).
 // Static release guard for the design-system data-table pattern:
-//   <table className="ax-table"><thead><tr><th>…</th>…</thead>
+//   <table className="sq-table"><thead><tr><th>…</th>…</thead>
 //   <tbody>…<tr><th scope="row">…</th>…</tr>…</tbody></table>
 // Every <th> header cell MUST carry a `scope` attribute so screen readers can
 // programmatically associate headers with their data cells (scope="col" for

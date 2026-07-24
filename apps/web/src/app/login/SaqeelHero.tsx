@@ -5,7 +5,7 @@
 // data, no real factory names, no counts — so it conveys "factories being
 // inspected" on a public page without leaking operational intelligence
 // (DEC-011 / SAQEEL-07). Tokens only (GLOBAL COLOR LAW); animations are
-// disabled under prefers-reduced-motion by the global rule in astryx.css.
+// disabled under prefers-reduced-motion by the global rule in saqeel-components-legacy.css.
 
 // Accurate KSA outline projected to an 800×640 viewBox (see scratchpad/ksa_path).
 const KSA =
@@ -15,11 +15,11 @@ const RIYADH: [number, number] = [451.4, 303];
 
 // Regional posture blobs (illustrative, not live)
 const ZONES: { x: number; y: number; r: number; tone: string }[] = [
-  { x: 559, y: 229, r: 70, tone: "--ax-color-critical" }, // Eastern industrial
-  { x: 210, y: 424, r: 66, tone: "--ax-color-warning" },  // West (Jeddah/Makkah)
-  { x: 311, y: 542, r: 58, tone: "--ax-color-critical" }, // South (Abha)
-  { x: 283, y: 200, r: 54, tone: "--ax-color-success" },  // North (Hail)
-  { x: 360, y: 244, r: 52, tone: "--ax-color-success" },  // Qassim
+  { x: 559, y: 229, r: 70, tone: "--status-critical" }, // Eastern industrial
+  { x: 210, y: 424, r: 66, tone: "--status-warning" },  // West (Jeddah/Makkah)
+  { x: 311, y: 542, r: 58, tone: "--status-critical" }, // South (Abha)
+  { x: 283, y: 200, r: 54, tone: "--status-compliant" },  // North (Hail)
+  { x: 360, y: 244, r: 52, tone: "--status-compliant" },  // Qassim
 ];
 
 type Band = "high" | "medium" | "low";
@@ -43,12 +43,12 @@ const INSPECTORS: { from: [number, number]; to: [number, number] }[] = [
 ];
 
 const TONE: Record<Band, string> = {
-  high: "--ax-color-critical", medium: "--ax-color-warning", low: "--ax-color-success",
+  high: "--status-critical", medium: "--status-warning", low: "--status-compliant",
 };
 
 function FactoryPin({ x, y, band }: { x: number; y: number; band: Band }) {
   const c = `var(${TONE[band]})`;
-  const common = { fill: c, stroke: "var(--ax-color-canvas)", strokeWidth: 1.5 };
+  const common = { fill: c, stroke: "var(--surface-canvas)", strokeWidth: 1.5 };
   if (band === "high") return <path d={`M${x},${y - 6} L${x + 5.5},${y + 4} L${x - 5.5},${y + 4} Z`} {...common} />;
   if (band === "medium") return <path d={`M${x},${y - 6} L${x + 6},${y} L${x},${y + 6} L${x - 6},${y} Z`} {...common} />;
   return <circle cx={x} cy={y} r={5} {...common} />;
@@ -62,11 +62,11 @@ function Inspector({ from, to }: { from: [number, number]; to: [number, number] 
   return (
     <g>
       <line x1={from[0]} y1={from[1]} x2={px} y2={py}
-        stroke="var(--ax-color-primary)" strokeWidth={1.4} strokeDasharray="2 6" opacity={0.6} />
-      <circle cx={to[0]} cy={to[1]} r={9} className="lg-hero__ping" fill="var(--ax-color-primary)" />
+        stroke="var(--action-primary)" strokeWidth={1.4} strokeDasharray="2 6" opacity={0.6} />
+      <circle cx={to[0]} cy={to[1]} r={9} className="lg-hero__ping" fill="var(--action-primary)" />
       <g transform={`translate(${px} ${py}) rotate(${ang})`}>
-        <circle r={9} fill="var(--ax-color-surface)" stroke="var(--ax-color-primary)" strokeWidth={1.4} />
-        <path d="M0,-4 L3.4,4 L0,1.8 L-3.4,4 Z" fill="var(--ax-color-primary)" />
+        <circle r={9} fill="var(--surface-primary)" stroke="var(--action-primary)" strokeWidth={1.4} />
+        <path d="M0,-4 L3.4,4 L0,1.8 L-3.4,4 Z" fill="var(--action-primary)" />
       </g>
     </g>
   );
@@ -79,16 +79,16 @@ export default function SaqeelHero({ riyadhLabel = "RIYADH · GEOFENCED" }: { ri
       <defs>
         <clipPath id="lg-ksa"><path d={KSA} /></clipPath>
         <pattern id="lg-grat" width="26" height="26" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="1" fill="color-mix(in srgb, var(--ax-color-primary) 40%, transparent)" />
+          <circle cx="1" cy="1" r="1" fill="color-mix(in srgb, var(--action-primary) 40%, transparent)" />
         </pattern>
         <radialGradient id="lg-glow">
-          <stop offset="0%" stopColor="var(--ax-color-primary)" stopOpacity="0.28" />
-          <stop offset="100%" stopColor="var(--ax-color-primary)" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--action-primary)" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="var(--action-primary)" stopOpacity="0" />
         </radialGradient>
       </defs>
 
       {/* landmass */}
-      <path d={KSA} fill="color-mix(in srgb, var(--ax-color-primary) 7%, var(--ax-color-surface))" />
+      <path d={KSA} fill="color-mix(in srgb, var(--action-primary) 7%, var(--surface-primary))" />
       <rect x="0" y="0" width="800" height="640" fill="url(#lg-grat)" clipPath="url(#lg-ksa)" opacity="0.5" />
 
       {/* regional posture zones (clipped to the landmass) */}
@@ -100,15 +100,15 @@ export default function SaqeelHero({ riyadhLabel = "RIYADH · GEOFENCED" }: { ri
         ))}
       </g>
 
-      <path d={KSA} fill="none" stroke="color-mix(in srgb, var(--ax-color-primary) 65%, transparent)"
+      <path d={KSA} fill="none" stroke="color-mix(in srgb, var(--action-primary) 65%, transparent)"
         strokeWidth={1.6} strokeLinejoin="round" />
 
       {/* Riyadh — the highlighted geofenced zone */}
       <circle cx={RIYADH[0]} cy={RIYADH[1]} r={64} fill="url(#lg-glow)" />
       <circle cx={RIYADH[0]} cy={RIYADH[1]} r={64} className="lg-hero__fence"
-        fill="none" stroke="var(--ax-color-primary)" strokeWidth={1.6} strokeDasharray="5 6" />
+        fill="none" stroke="var(--action-primary)" strokeWidth={1.6} strokeDasharray="5 6" />
       <circle cx={RIYADH[0]} cy={RIYADH[1]} r={40} className="lg-hero__pulse"
-        fill="none" stroke="var(--ax-color-primary)" strokeWidth={1.2} />
+        fill="none" stroke="var(--action-primary)" strokeWidth={1.2} />
 
       {/* factory pins */}
       {FACTORIES.map((f, i) => <FactoryPin key={i} {...f} />)}
@@ -119,10 +119,10 @@ export default function SaqeelHero({ riyadhLabel = "RIYADH · GEOFENCED" }: { ri
       {/* Riyadh label chip */}
       <g transform={`translate(${RIYADH[0]} ${RIYADH[1] + 78})`}>
         <rect x="-64" y="-13" width="128" height="26" rx="13"
-          fill="var(--ax-color-surface)" stroke="var(--ax-color-border)" />
-        <circle cx="-48" cy="0" r="3.5" fill="var(--ax-color-primary)" />
-        <text x="-38" y="4" fill="var(--ax-color-text)"
-          style={{ font: "600 12px var(--ax-font-mono)" }}>{riyadhLabel}</text>
+          fill="var(--surface-primary)" stroke="var(--border-subtle)" />
+        <circle cx="-48" cy="0" r="3.5" fill="var(--action-primary)" />
+        <text x="-38" y="4" fill="var(--text-primary)"
+          style={{ font: "600 12px var(--font-mono)" }}>{riyadhLabel}</text>
       </g>
     </svg>
   );

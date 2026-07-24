@@ -157,17 +157,17 @@ export type VisitsBoardStrings = {
   errTypeOrNotes: string;
 };
 
-const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
+const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
 // Outcome → lozenge tone. "Applied" is success; everything else that means
 // "nothing changed / partial" is warning, never a green success signal.
 const OUTCOME_TONE: Record<OutcomeCode, string> = {
-  applied: "ax-lozenge--success",
-  applied_no_notification: "ax-lozenge--warning",
-  blocked_not_publishable: "ax-lozenge--warning",
-  blocked_started: "ax-lozenge--warning",
-  blocked_no_assignment: "ax-lozenge--warning",
-  error: "ax-lozenge--critical",
+  applied: "sq-lozenge--success",
+  applied_no_notification: "sq-lozenge--warning",
+  blocked_not_publishable: "sq-lozenge--warning",
+  blocked_started: "sq-lozenge--warning",
+  blocked_no_assignment: "sq-lozenge--warning",
+  error: "sq-lozenge--critical",
 };
 
 type SortKey = "window_asc" | "window_desc" | "factory";
@@ -246,8 +246,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
     final: strings.allowedFinal, expired: strings.allowedExpired,
   };
   const allowedTone: Record<AllowedKey, string> = {
-    editable: "ax-lozenge--success", locked: "ax-lozenge--warning",
-    final: "ax-lozenge--critical", expired: "ax-lozenge--critical",
+    editable: "sq-lozenge--success", locked: "sq-lozenge--warning",
+    final: "sq-lozenge--critical", expired: "sq-lozenge--critical",
   };
 
   const counts = useMemo(() => {
@@ -363,22 +363,23 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
   return (
     <div data-saqeel-design={targetMode ? "WA-DES-045" : undefined}
-      style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", ...(targetMode ? { "--text-muted": "var(--text-secondary)" } : {}) } as CSSProperties}>
-      {targetMode && <h1 className="ax-sr-only">Visit management</h1>}
+      style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", ...(targetMode ? { "--text-muted": "var(--text-secondary)" } : {}) } as CSSProperties}>
+      {targetMode && <h1 className="sq-sr-only">Visit management</h1>}
       {/* CD-026 — Selected Visit Continuity Spine (signature pattern). One stable
           selected identity + state + allowed-action context, carried in-session. */}
       {!targetMode && <section className="panel" aria-label={strings.spineHeading}
-        style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
-          <span className="ax-overline">{strings.spineHeading}</span>
+        style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-2)" }}>
+          <span className="sq-overline">{strings.spineHeading}</span>
+
           {activeVisit && (
-            <span className={`ax-lozenge ${allowedTone[allowedKey(activeVisit)]}`}>{allowedLabel[allowedKey(activeVisit)]}</span>
+            <span className={`sq-lozenge ${allowedTone[allowedKey(activeVisit)]}`}>{allowedLabel[allowedKey(activeVisit)]}</span>
           )}
         </div>
         {!activeVisit ? (
           <p className="t-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
         ) : (
-          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-6)", alignItems: "flex-start" }}>
             <div style={{ minInlineSize: 200 }}>
               <div className="numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
                 {activeVisit.planId && <span className="t-caption numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
@@ -387,11 +388,11 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="t-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
             </div>
             <div style={{ minInlineSize: 180 }}>
-              <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
-                <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[effectiveStatus(activeVisit)] ?? ""}`}>
+              <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+                <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[effectiveStatus(activeVisit)] ?? ""}`}>
                   {effectiveStatus(activeVisit) === "expired" && activeVisit.planningStatus === "published" ? strings.expiredLabel : activeVisit.planningLabel}
                 </span>
-                <span className="ax-lozenge ax-lozenge--ops">{activeVisit.opsLabel}</span>
+                <span className="sq-lozenge sq-lozenge--ops">{activeVisit.opsLabel}</span>
               </div>
               <div className="t-caption">{strings.spineWindow}: <span className="numeric">{fmt(activeVisit.windowStart)}</span></div>
               <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
@@ -403,51 +404,51 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       </section>}
 
       {/* M02-002 — KPI tiles double as status filters */}
-      <div className="ax-kpi-row" role="group" aria-label={strings.kpiFilterHint}>
+      <div className="sq-kpi-row" role="group" aria-label={strings.kpiFilterHint}>
         {["draft", "published", "returned", "cancelled", "expired"].map(s => (
-          <button key={s} type="button" className="panel ax-kpi"
+          <button key={s} type="button" className="panel sq-kpi"
             aria-pressed={status === s}
             onClick={() => setStatus(status === s ? "" : s)}
-            style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--ax-focus-ring)" : undefined }}>
-            <span className="ax-overline">{strings.statusLabels[s] ?? s}</span>
-            <span className="ax-kpi__value numeric">{counts[s] ?? 0}</span>
+            style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--focus-ring-shadow)" : undefined }}>
+            <span className="sq-overline">{strings.statusLabels[s] ?? s}</span>
+            <span className="sq-kpi__value numeric">{counts[s] ?? 0}</span>
           </button>
         ))}
       </div>
 
       {/* M02-003/004 — search + filters + sort */}
-      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
-        <input className="ax-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
+      <div className="panel" style={{ padding: "var(--space-4)", display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "flex-end" }}>
+        <input className="sq-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
           placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
-        <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
+        <select className="sq-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
           <option value="">{strings.allStatuses}</option>
           {["draft", "published", "returned", "cancelled", "expired"].map(s => <option key={s} value={s}>{strings.statusLabels[s] ?? s}</option>)}
         </select>
-        <select className="ax-select" value={type} onChange={e => setType(e.target.value)} aria-label={strings.allTypes}>
+        <select className="sq-select" value={type} onChange={e => setType(e.target.value)} aria-label={strings.allTypes}>
           <option value="">{strings.allTypes}</option>
           {typeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <select className="ax-select" value={mode} onChange={e => setMode(e.target.value)} aria-label={strings.allModes}>
+        <select className="sq-select" value={mode} onChange={e => setMode(e.target.value)} aria-label={strings.allModes}>
           <option value="">{strings.allModes}</option>
           {modeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <select className="ax-select" value={region} onChange={e => setRegion(e.target.value)} aria-label={strings.allRegions}>
+        <select className="sq-select" value={region} onChange={e => setRegion(e.target.value)} aria-label={strings.allRegions}>
           <option value="">{strings.allRegions}</option>
           {regionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <select className="ax-select" value={city} onChange={e => setCity(e.target.value)} aria-label={strings.allCities}>
+        <select className="sq-select" value={city} onChange={e => setCity(e.target.value)} aria-label={strings.allCities}>
           <option value="">{strings.allCities}</option>
           {cityOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <div className="ax-field" style={{ maxInlineSize: 170 }}>
-          <label className="ax-field__label" htmlFor="visit-filter-from">{strings.fromDate}</label>
-          <input id="visit-filter-from" className="ax-input numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
+        <div className="sq-field" style={{ maxInlineSize: 170 }}>
+          <label className="sq-field__label" htmlFor="visit-filter-from">{strings.fromDate}</label>
+          <input id="visit-filter-from" className="sq-input numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
         </div>
-        <div className="ax-field" style={{ maxInlineSize: 170 }}>
-          <label className="ax-field__label" htmlFor="visit-filter-to">{strings.toDate}</label>
-          <input id="visit-filter-to" className="ax-input numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
+        <div className="sq-field" style={{ maxInlineSize: 170 }}>
+          <label className="sq-field__label" htmlFor="visit-filter-to">{strings.toDate}</label>
+          <input id="visit-filter-to" className="sq-input numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
         </div>
-        <select className="ax-select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
+        <select className="sq-select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
           <option value="window_asc">{strings.sortWindowAsc}</option>
           <option value="window_desc">{strings.sortWindowDesc}</option>
           <option value="factory">{strings.sortFactory}</option>
@@ -457,16 +458,16 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* M02-007/011/031-034 — bulk action bar over the selection */}
       {selected.size > 0 && (
-        <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
             <button type="button" className="btn btn-ghost btn-touch" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
           </div>
 
           {/* CD-026 — eligibility preview: verified now, re-checked at submit */}
-          <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-050)", alignItems: "flex-start" }}>
-            <span className="ax-overline">{strings.eligHeading}</span>
-            <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+          <div className="sq-state sq-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", alignItems: "flex-start" }}>
+            <span className="sq-overline">{strings.eligHeading}</span>
+            <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }}>
               <span className="t-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
               <span className="t-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
               <span className="t-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
@@ -476,19 +477,19 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             {!elig.samePlan && <span className="badge badge-warning">{strings.eligSamePlanBlocked}</span>}
           </div>
 
-          <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+          <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
             <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
-                <input id="bulk-window-start" className="ax-input numeric" type="datetime-local" name="window_start" /></div>
-              <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
-                <input id="bulk-window-end" className="ax-input numeric" type="datetime-local" name="window_end" /></div>
+              <div className="sq-field" style={{ maxInlineSize: 210 }}><label className="sq-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
+                <input id="bulk-window-start" className="sq-input numeric" type="datetime-local" name="window_start" /></div>
+              <div className="sq-field" style={{ maxInlineSize: 210 }}><label className="sq-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
+                <input id="bulk-window-end" className="sq-input numeric" type="datetime-local" name="window_end" /></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
             <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
-                <select id="bulk-inspector" className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
+              <div className="sq-field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
+                <select id="bulk-inspector" className="sq-select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
@@ -497,25 +498,25 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               {/* M8 / PLN-CON-011 — governed cancellation reason (active lookup
                   keys only); comments mandatory when the reason is Other
                   (server-enforced). */}
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
-                <select id="bulk-cancel-reason" className="ax-select" name="reason_key" required>
+              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
+                <select id="bulk-cancel-reason" className="sq-select" name="reason_key" required>
                   <option value="">{strings.selectOption}</option>
                   {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
                 </select></div>
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-comments">{strings.bulkCancelComments}</label>
-                <input id="bulk-cancel-comments" className="ax-input" name="comments" placeholder={strings.bulkCancelPlaceholder} /></div>
+              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-cancel-comments">{strings.bulkCancelComments}</label>
+                <input id="bulk-cancel-comments" className="sq-input" name="comments" placeholder={strings.bulkCancelPlaceholder} /></div>
               <button className="btn btn-danger btn-touch" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
             <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
-                <select id="bulk-visit-type" className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
+              <div className="sq-field" style={{ maxInlineSize: 180 }}><label className="sq-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
+                <select id="bulk-visit-type" className="sq-select" name="visit_type"><option value="">{strings.selectOption}</option>
                   <option value="periodic">{strings.typePeriodic}</option>
                   <option value="follow_up">{strings.typeFollowUp}</option>
                   <option value="complaint">{strings.typeComplaint}</option></select></div>
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-edit-notes">{strings.bulkEditNotes}</label>
-                <input id="bulk-edit-notes" className="ax-input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
-              <label className="ax-choice" style={{ display: "flex" }}>
+              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="bulk-edit-notes">{strings.bulkEditNotes}</label>
+                <input id="bulk-edit-notes" className="sq-input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
+              <label className="sq-choice" style={{ display: "flex" }}>
                 <input type="checkbox" name="set_notes" value="1" />
                 <span>{strings.bulkEditSetNotes}</span>
               </label>
@@ -530,14 +531,14 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* CD-026 — busy progress: role=status, no optimistic success (S25/S39) */}
       {pending && (
-        <div className="ax-banner" role="status" aria-live="polite">
+        <div className="sq-banner" role="status" aria-live="polite">
           <div>{strings.progressBusy.replace("{n}", String(selected.size))}</div>
         </div>
       )}
 
       {/* CD-026 — neutral pre-flight validation (single role=alert) */}
       {!pending && hasFormError && (
-        <div ref={summaryRef} tabIndex={-1} className="ax-banner ax-banner--critical" role="alert">
+        <div ref={summaryRef} tabIndex={-1} className="sq-banner sq-banner--critical" role="alert">
           <div>{formErrorText()}</div>
         </div>
       )}
@@ -546,16 +547,16 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           mixed result. Partial/failed → role=alert; all-applied → role=status. */}
       {!pending && hasLedger && (
         <div ref={summaryRef} tabIndex={-1}
-          className={`panel ${anyProblem ? "ax-banner--critical" : ""}`}
+          className={`panel ${anyProblem ? "sq-banner--critical" : ""}`}
           role={anyProblem ? "alert" : "status"} aria-live="polite"
-          style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
+          style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "baseline" }}>
             <strong>{verbLabel[result!.verb as BulkVerb] ?? ""}</strong>
             {nApplied > 0 && <span className="badge badge-compliant">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
             {nBlocked > 0 && <span className="badge badge-warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
             {nNoNotif > 0 && <span className="badge badge-warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
           </div>
-          <div className="ax-tablewrap"><table className="ax-table">
+          <div className="sq-tablewrap"><table className="sq-table">
             <thead><tr>
               <th scope="col">{strings.ledgerColVisit}</th>
               <th scope="col">{strings.ledgerColOutcome}</th>
@@ -566,14 +567,14 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               {ledger.map(item => (
                 <tr key={item.id}>
                   <td className="numeric"><strong>{item.id.slice(0, 8)}</strong></td>
-                  <td><span className={`ax-lozenge ${OUTCOME_TONE[item.outcome]}`}>
+                  <td><span className={`sq-lozenge ${OUTCOME_TONE[item.outcome]}`}>
                     {item.outcome === "applied" ? strings.outcomeApplied
                       : item.outcome === "applied_no_notification" ? strings.ledgerShortNoNotif
                       : item.outcome === "error" ? strings.ledgerShortError
                       : strings.ledgerShortBlocked}
                   </span></td>
                   <td className="t-caption">{outcomeText[item.outcome]}</td>
-                  <td><a className="ax-link t-caption" href={`${routeBase}/${item.id}${targetMode ? "?wa_preview=1" : ""}`}>{strings.ledgerOpen}</a></td>
+                  <td><a className="sq-link t-caption" href={`${routeBase}/${item.id}${targetMode ? "?wa_preview=1" : ""}`}>{strings.ledgerOpen}</a></td>
                 </tr>
               ))}
             </tbody>
@@ -585,12 +586,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       {filtered.length === 0 ? (
         <EmptyState glyph="🔍" title={strings.noMatch} />
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col" style={{ inlineSize: 32 }}><input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label={strings.selectAllAria} /></th>
             <th scope="col">{strings.colVisit}</th><th scope="col">{strings.colFactory}</th><th scope="col">{strings.colTypeMode}</th>
             <th scope="col">{strings.colPlanning}</th><th scope="col">{strings.colOperational}</th><th scope="col">{strings.colInspector}</th>
-            <th scope="col" className="ax-td-num">{strings.colWindow}</th>
+            <th scope="col" className="sq-td-num">{strings.colWindow}</th>
           </tr></thead>
           <tbody>
             {filtered.map(v => {
@@ -598,17 +599,17 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               const isActive = v.id === activeId;
               return (
                 <tr key={v.id} aria-selected={isActive}
-                  style={isActive ? { outline: "var(--ax-focus-ring)", outlineOffset: "-2px" } : undefined}>
+                  style={isActive ? { outline: "var(--focus-ring-shadow)", outlineOffset: "-2px" } : undefined}>
                   <td><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)}
                     aria-label={strings.selectRowAria.replace("{id}", v.id.slice(0, 8))} /></td>
                   <td className="numeric">
                     {/* Button drives the continuity spine (keyboard-accessible);
                         the adjacent link preserves direct navigation to detail. */}
-                    <button type="button" className="ax-link ax-inline-target" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
+                    <button type="button" className="sq-link sq-inline-target" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="ax-link t-caption ax-inline-target" href={`${routeBase}/${v.id}${targetMode ? "?wa_preview=1" : ""}`}
+                    {" "}<a className="sq-link t-caption sq-inline-target" href={`${routeBase}/${v.id}${targetMode ? "?wa_preview=1" : ""}`}
                       aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 5h11v11"/><path d="m19 5-14 14"/></svg>
                     </a>
@@ -620,12 +621,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                     <><br /><span className="t-caption numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
                   )}</td>
                   <td>{v.typeLabel} · {v.modeLabel}</td>
-                  <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[eff] ?? ""}`}>
+                  <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[eff] ?? ""}`}>
                     {eff === "expired" && v.planningStatus === "published" ? strings.expiredLabel : v.planningLabel}
                   </span></td>
-                  <td><span className="ax-lozenge ax-lozenge--ops">{v.opsLabel}</span></td>
+                  <td><span className="sq-lozenge sq-lozenge--ops">{v.opsLabel}</span></td>
                   <td>{v.inspectorName || "—"}</td>
-                  <td className="ax-td-num numeric">{fmt(v.windowStart)}</td>
+                  <td className="sq-td-num numeric">{fmt(v.windowStart)}</td>
                 </tr>
               );
             })}

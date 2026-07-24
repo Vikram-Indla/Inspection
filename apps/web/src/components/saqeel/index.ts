@@ -1,5 +1,5 @@
 // SAQEEL Inspection Design System v1.0 — component barrel.
-// New components; supersede the .ax-* families as consumers migrate.
+// New components; supersede the .sq-* families as consumers migrate.
 export { Button, type ButtonProps } from "./actions/Button";
 export { ButtonGroup, SplitButton, type ButtonGroupProps, type SplitButtonProps } from "./actions/ButtonGroup";
 export { Field, type FieldProps } from "./inputs/Field";

@@ -1,0 +1,709 @@
+%% Section A discovery output — schema relationship map
+%% Source: live staging project iiozvqntawxfwbgffzqu (read-only information_schema/pg_catalog queries)
+%% 142 public base tables, grouped by seeding-blueprint domain; edges are deduplicated FK relationships
+%% (table-pair granularity, not column-level) to keep the diagram renderable.
+erDiagram
+    %% ---- Domain: Identity & Organisation (10 tables) ----
+    capabilities {
+        uuid capability_key PK
+    }
+    notification_preferences {
+        uuid user_id PK
+    }
+    permissions {
+        uuid permission_key PK
+    }
+    profiles {
+        uuid user_id PK
+    }
+    push_subscriptions {
+        uuid id PK
+    }
+    role_capabilities {
+        uuid role_key PK
+    }
+    role_permissions {
+        uuid role_key PK
+    }
+    roles {
+        uuid role_key PK
+    }
+    user_capability_grants {
+        uuid user_id PK
+    }
+    user_roles {
+        uuid user_id PK
+    }
+    %% ---- Domain: Geography & Master Data (18 tables) ----
+    commercial_registrations {
+        uuid id PK
+    }
+    factories {
+        uuid id PK
+    }
+    factory_documents {
+        uuid id PK
+    }
+    factory_government_records {
+        uuid id PK
+    }
+    factory_import_batches {
+        uuid id PK
+    }
+    factory_import_rows {
+        uuid id PK
+    }
+    factory_locations {
+        uuid id PK
+    }
+    factory_materials {
+        uuid id PK
+    }
+    factory_media_assets {
+        uuid id PK
+    }
+    factory_products {
+        uuid id PK
+    }
+    factory_representatives {
+        uuid id PK
+    }
+    factory_risk_snapshots {
+        uuid id PK
+    }
+    gis_layers {
+        uuid id PK
+    }
+    industrial_licenses {
+        uuid id PK
+    }
+    location_visibility_matrix {
+        uuid id PK
+    }
+    map_packs {
+        uuid id PK
+    }
+    plant_addresses {
+        uuid id PK
+    }
+    plant_production_line_items {
+        uuid id PK
+    }
+    %% ---- Domain: Compliance Configuration (32 tables) ----
+    compliance_configuration_requests {
+        uuid id PK
+    }
+    compliance_entity_heads {
+        uuid entity_kind PK
+    }
+    compliance_entity_versions {
+        uuid id PK
+    }
+    compliance_lookup_types {
+        uuid lookup_type_key PK
+    }
+    compliance_lookup_values {
+        uuid id PK
+    }
+    compliance_request_component_dependencies {
+        uuid id PK
+    }
+    compliance_request_components {
+        uuid id PK
+    }
+    compliance_request_decisions {
+        uuid id PK
+    }
+    compliance_request_publications {
+        uuid id PK
+    }
+    compliance_request_revisions {
+        uuid id PK
+    }
+    config_versions {
+        uuid id PK
+    }
+    configuration_templates {
+        uuid id PK
+    }
+    enforcement_recommendations {
+        uuid id PK
+    }
+    engine_settings {
+        uuid engine PK
+    }
+    inspection_item_versions {
+        uuid item_id PK
+    }
+    inspection_items {
+        uuid id PK
+    }
+    objections {
+        uuid id PK
+    }
+    package_version_dependency_snapshots {
+        uuid package_version_id PK
+    }
+    package_version_item_snapshots {
+        uuid package_version_id PK
+    }
+    package_versions {
+        uuid id PK
+    }
+    packages {
+        uuid id PK
+    }
+    penalty_mappings {
+        uuid id PK
+    }
+    penalty_notices {
+        uuid id PK
+    }
+    planning_expiry_rules {
+        uuid id PK
+    }
+    planning_lookups {
+        uuid id PK
+    }
+    regulation_attachments {
+        uuid id PK
+    }
+    regulation_clauses {
+        uuid id PK
+    }
+    regulations {
+        uuid id PK
+    }
+    self_assessments {
+        uuid id PK
+    }
+    ui_string_revisions {
+        uuid id PK
+    }
+    ui_strings {
+        uuid key PK
+    }
+    violation_codes {
+        uuid id PK
+    }
+    %% ---- Domain: Planning (6 tables) ----
+    assignments {
+        uuid id PK
+    }
+    bulk_violation_batch_items {
+        uuid id PK
+    }
+    bulk_violation_batches {
+        uuid id PK
+    }
+    visit_attachments {
+        uuid id PK
+    }
+    visit_plans {
+        uuid id PK
+    }
+    visits {
+        uuid id PK
+    }
+    %% ---- Domain: Preparation (3 tables) ----
+    visit_package_snapshots {
+        uuid id PK
+    }
+    visit_packages {
+        uuid id PK
+    }
+    visit_preparations {
+        uuid visit_id PK
+    }
+    %% ---- Domain: Journey & Arrival (8 tables) ----
+    cancellation_requests {
+        uuid id PK
+    }
+    geo_events {
+        uuid id PK
+    }
+    geo_override_requests {
+        uuid id PK
+    }
+    journey_sessions {
+        uuid id PK
+    }
+    route_snapshots {
+        uuid id PK
+    }
+    visit_lifecycle_events {
+        uuid id PK
+    }
+    visit_location_corrections {
+        uuid id PK
+    }
+    visit_location_events {
+        uuid id PK
+    }
+    %% ---- Domain: Inspection Execution (16 tables) ----
+    action_forms {
+        uuid id PK
+    }
+    checklist_responses {
+        uuid id PK
+    }
+    correction_evidence {
+        uuid id PK
+    }
+    evidence {
+        uuid id PK
+    }
+    findings {
+        uuid id PK
+    }
+    incident_reports {
+        uuid id PK
+    }
+    inspection_factory_checks {
+        uuid id PK
+    }
+    inspection_factory_snapshots {
+        uuid id PK
+    }
+    inspection_item_states {
+        uuid inspection_id PK
+    }
+    inspection_penalties {
+        uuid id PK
+    }
+    inspections {
+        uuid id PK
+    }
+    ocr_extractions {
+        uuid id PK
+    }
+    signature_acts {
+        uuid id PK
+    }
+    violations {
+        uuid id PK
+    }
+    virtual_participants {
+        uuid id PK
+    }
+    virtual_sessions {
+        uuid id PK
+    }
+    %% ---- Domain: Submission & Review (3 tables) ----
+    report_verifications {
+        uuid id PK
+    }
+    reviews {
+        uuid id PK
+    }
+    submission_versions {
+        uuid id PK
+    }
+    %% ---- Domain: Operations & Analytics (17 tables) ----
+    cases {
+        uuid id PK
+    }
+    dashboard_config_heads {
+        uuid config_key PK
+    }
+    dashboard_config_parameters {
+        uuid id PK
+    }
+    dashboard_config_versions {
+        uuid id PK
+    }
+    external_requests {
+        uuid id PK
+    }
+    notification_rules {
+        uuid id PK
+    }
+    notifications {
+        uuid id PK
+    }
+    risk_exceptions {
+        uuid id PK
+    }
+    risk_models {
+        uuid id PK
+    }
+    risk_overrides {
+        uuid id PK
+    }
+    risk_runs {
+        uuid id PK
+    }
+    risk_simulations {
+        uuid id PK
+    }
+    risk_variables {
+        uuid id PK
+    }
+    sla_calendars {
+        uuid id PK
+    }
+    sla_timers {
+        uuid id PK
+    }
+    workflow_outbox {
+        uuid id PK
+    }
+    workflow_task_assignments {
+        uuid id PK
+    }
+    %% ---- Domain: Integrations (21 tables) ----
+    ai_events {
+        uuid id PK
+    }
+    ai_suggestions {
+        uuid id PK
+    }
+    external_source_connections {
+        uuid id PK
+    }
+    inspector_briefing_cache {
+        uuid id PK
+    }
+    mvp3_access_reviews {
+        uuid id PK
+    }
+    mvp3_api_events {
+        uuid id PK
+    }
+    mvp3_device_commands {
+        uuid id PK
+    }
+    mvp3_devices {
+        uuid id PK
+    }
+    mvp3_error_queue {
+        uuid id PK
+    }
+    mvp3_evidence_access_grants {
+        uuid id PK
+    }
+    mvp3_export_jobs {
+        uuid id PK
+    }
+    mvp3_feature_flags {
+        uuid id PK
+    }
+    mvp3_inspection_package_manifests {
+        uuid id PK
+    }
+    mvp3_integration_endpoints {
+        uuid id PK
+    }
+    mvp3_kpi_definitions {
+        uuid id PK
+    }
+    mvp3_package_access_events {
+        uuid id PK
+    }
+    mvp3_signature_refusals {
+        uuid id PK
+    }
+    senaei_raw_snapshots {
+        uuid id PK
+    }
+    senaei_reconciliation_records {
+        uuid id PK
+    }
+    senaei_sync_calls {
+        uuid id PK
+    }
+    senaei_sync_runs {
+        uuid id PK
+    }
+    %% ---- Domain: Governance & Audit (8 tables) ----
+    audit_event_ontology_entries {
+        uuid id PK
+    }
+    audit_event_ontology_versions {
+        uuid id PK
+    }
+    audit_event_order_constraints {
+        uuid ontology_version_id PK
+    }
+    audit_event_registry {
+        uuid event_type PK
+    }
+    audit_event_semantic_mappings {
+        uuid id PK
+    }
+    audit_event_source_contracts {
+        uuid event_type PK
+    }
+    audit_events {
+        uuid id PK
+    }
+    audit_semantic_events {
+        uuid id PK
+    }
+    %% ---- Foreign key relationships (deduplicated by table pair) ----
+    action_forms }o--|| inspection_items : "item_id"
+    action_forms }o--|| inspections : "inspection_id"
+    action_forms }o--|| violations : "violation_id"
+    ai_events }o--|| ai_suggestions : "suggestion_id"
+    ai_events }o--|| profiles : "actor"
+    ai_suggestions }o--|| profiles : "disposed_by"
+    assignments }o--|| profiles : "inspector_id"
+    assignments }o--|| visits : "visit_id"
+    audit_event_ontology_entries }o--|| audit_event_ontology_versions : "ontology_version_id"
+    audit_event_ontology_entries }o--|| audit_event_registry : "event_type,schema_version"
+    audit_event_ontology_versions }o--|| profiles : "published_by"
+    audit_event_order_constraints }o--|| audit_event_ontology_versions : "ontology_version_id"
+    audit_event_semantic_mappings }o--|| audit_events : "audit_event_id"
+    audit_event_semantic_mappings }o--|| audit_semantic_events : "semantic_event_id"
+    audit_event_source_contracts }o--|| audit_event_registry : "event_type,schema_version"
+    audit_semantic_events }o--|| audit_event_registry : "event_type,schema_version"
+    audit_semantic_events }o--|| audit_events : "source_audit_event_id"
+    bulk_violation_batch_items }o--|| bulk_violation_batches : "batch_id"
+    bulk_violation_batch_items }o--|| factories : "factory_id"
+    bulk_violation_batch_items }o--|| inspections : "inspection_id"
+    bulk_violation_batch_items }o--|| violations : "violation_id"
+    bulk_violation_batches }o--|| profiles : "issued_by"
+    bulk_violation_batches }o--|| violation_codes : "violation_code_id"
+    cancellation_requests }o--|| evidence : "evidence_id"
+    cancellation_requests }o--|| inspections : "inspection_id"
+    cancellation_requests }o--|| visits : "visit_id"
+    cases }o--|| factories : "factory_id"
+    cases }o--|| profiles : "closed_by,opened_by"
+    checklist_responses }o--|| inspection_items : "item_id"
+    checklist_responses }o--|| inspections : "inspection_id"
+    commercial_registrations }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    compliance_configuration_requests }o--|| audit_events : "publication_audit_reference"
+    compliance_configuration_requests }o--|| profiles : "owner_id"
+    compliance_entity_heads }o--|| compliance_entity_versions : "current_version_id"
+    compliance_entity_versions }o--|| compliance_configuration_requests : "request_id"
+    compliance_entity_versions }o--|| compliance_request_components : "request_component_id"
+    compliance_entity_versions }o--|| compliance_request_revisions : "request_id,request_revision"
+    compliance_entity_versions }o--|| profiles : "published_by"
+    compliance_lookup_values }o--|| compliance_lookup_types : "lookup_type_key"
+    compliance_lookup_values }o--|| profiles : "created_by,deactivated_by"
+    compliance_request_component_dependencies }o--|| compliance_request_components : "child_component_id,parent_component_id,r"
+    compliance_request_components }o--|| compliance_request_revisions : "request_id,revision_number"
+    compliance_request_components }o--|| profiles : "created_by,decided_by"
+    compliance_request_decisions }o--|| compliance_configuration_requests : "request_id"
+    compliance_request_decisions }o--|| compliance_request_components : "component_id"
+    compliance_request_decisions }o--|| compliance_request_revisions : "request_id,revision_number"
+    compliance_request_decisions }o--|| profiles : "decided_by"
+    compliance_request_publications }o--|| compliance_configuration_requests : "request_id"
+    compliance_request_publications }o--|| compliance_entity_versions : "version_id"
+    compliance_request_publications }o--|| compliance_request_components : "component_id"
+    compliance_request_publications }o--|| compliance_request_revisions : "request_id,revision_number"
+    compliance_request_publications }o--|| profiles : "published_by"
+    compliance_request_revisions }o--|| compliance_configuration_requests : "request_id"
+    compliance_request_revisions }o--|| profiles : "created_by"
+    config_versions }o--|| profiles : "approved_by,created_by"
+    configuration_templates }o--|| profiles : "approved_by,created_by"
+    correction_evidence }o--|| external_requests : "request_id"
+    correction_evidence }o--|| factories : "factory_id"
+    correction_evidence }o--|| factory_representatives : "uploaded_by_rep"
+    dashboard_config_heads }o--|| dashboard_config_versions : "current_version_id"
+    dashboard_config_parameters }o--|| profiles : "decided_by,owner_id"
+    dashboard_config_versions }o--|| audit_events : "publication_audit_reference"
+    dashboard_config_versions }o--|| dashboard_config_parameters : "source_parameter_id"
+    dashboard_config_versions }o--|| profiles : "published_by"
+    enforcement_recommendations }o--|| factories : "factory_id"
+    enforcement_recommendations }o--|| profiles : "decided_by,recommended_by"
+    enforcement_recommendations }o--|| visits : "visit_id"
+    engine_settings }o--|| profiles : "updated_by"
+    evidence }o--|| inspections : "inspection_id"
+    evidence }o--|| profiles : "captured_by"
+    evidence }o--|| visits : "visit_id"
+    external_requests }o--|| factories : "factory_id"
+    external_requests }o--|| factory_representatives : "submitted_by_rep"
+    external_requests }o--|| profiles : "decided_by"
+    factory_documents }o--|| factories : "factory_id"
+    factory_documents }o--|| industrial_licenses : "industrial_license_id"
+    factory_documents }o--|| profiles : "uploaded_by"
+    factory_documents }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    factory_government_records }o--|| factories : "factory_id"
+    factory_government_records }o--|| industrial_licenses : "industrial_license_id"
+    factory_government_records }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    factory_import_batches }o--|| profiles : "uploaded_by"
+    factory_import_batches }o--|| senaei_sync_runs : "sync_run_id"
+    factory_import_rows }o--|| factory_import_batches : "batch_id"
+    factory_import_rows }o--|| senaei_raw_snapshots : "raw_snapshot_id"
+    factory_locations }o--|| factories : "factory_id"
+    factory_locations }o--|| profiles : "created_by"
+    factory_materials }o--|| factories : "factory_id"
+    factory_materials }o--|| profiles : "created_by"
+    factory_media_assets }o--|| evidence : "evidence_id"
+    factory_media_assets }o--|| factories : "factory_id"
+    factory_media_assets }o--|| industrial_licenses : "industrial_license_id"
+    factory_media_assets }o--|| inspections : "inspection_id"
+    factory_media_assets }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    factory_media_assets }o--|| violations : "violation_id"
+    factory_products }o--|| factories : "factory_id"
+    factory_products }o--|| profiles : "created_by"
+    factory_representatives }o--|| factories : "factory_id"
+    factory_risk_snapshots }o--|| factories : "factory_id"
+    factory_risk_snapshots }o--|| profiles : "calculated_by"
+    findings }o--|| inspection_items : "item_id"
+    findings }o--|| inspections : "inspection_id"
+    geo_events }o--|| journey_sessions : "journey_id"
+    geo_events }o--|| visits : "visit_id"
+    geo_override_requests }o--|| geo_events : "checkin_event_id,decision_event_id"
+    geo_override_requests }o--|| journey_sessions : "journey_id"
+    geo_override_requests }o--|| profiles : "decision_by,requested_by"
+    geo_override_requests }o--|| visits : "visit_id"
+    gis_layers }o--|| profiles : "created_by"
+    incident_reports }o--|| factories : "factory_id"
+    incident_reports }o--|| inspections : "inspection_id"
+    incident_reports }o--|| profiles : "created_by"
+    incident_reports }o--|| visits : "visit_id"
+    industrial_licenses }o--|| commercial_registrations : "commercial_registration_id"
+    industrial_licenses }o--|| factories : "factory_id"
+    industrial_licenses }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    inspection_factory_checks }o--|| inspections : "inspection_id"
+    inspection_factory_checks }o--|| profiles : "updated_by"
+    inspection_factory_snapshots }o--|| commercial_registrations : "commercial_registration_id"
+    inspection_factory_snapshots }o--|| factories : "factory_id"
+    inspection_factory_snapshots }o--|| industrial_licenses : "industrial_license_id"
+    inspection_factory_snapshots }o--|| submission_versions : "submission_version_id"
+    inspection_item_states }o--|| inspection_items : "item_id"
+    inspection_item_states }o--|| inspections : "inspection_id"
+    inspection_item_versions }o--|| inspection_items : "item_id"
+    inspection_item_versions }o--|| profiles : "recorded_by"
+    inspection_items }o--|| profiles : "deactivated_by"
+    inspection_items }o--|| regulation_clauses : "clause_id"
+    inspection_penalties }o--|| inspections : "inspection_id"
+    inspection_penalties }o--|| penalty_mappings : "penalty_mapping_id"
+    inspection_penalties }o--|| profiles : "issued_by"
+    inspection_penalties }o--|| violations : "violation_id"
+    inspections }o--|| package_versions : "package_version_id"
+    inspections }o--|| visits : "visit_id"
+    inspector_briefing_cache }o--|| ai_suggestions : "insight_id"
+    inspector_briefing_cache }o--|| profiles : "user_id"
+    journey_sessions }o--|| profiles : "inspector_id"
+    journey_sessions }o--|| visits : "visit_id"
+    map_packs }o--|| profiles : "created_by"
+    mvp3_access_reviews }o--|| profiles : "opened_by,reviewed_by,subject_user_id"
+    mvp3_api_events }o--|| mvp3_integration_endpoints : "endpoint_id"
+    mvp3_api_events }o--|| profiles : "actor_id"
+    mvp3_device_commands }o--|| mvp3_devices : "device_id"
+    mvp3_device_commands }o--|| profiles : "requested_by"
+    mvp3_devices }o--|| profiles : "assigned_user_id,enrolled_by"
+    mvp3_evidence_access_grants }o--|| profiles : "granted_by,grantee_user_id"
+    mvp3_export_jobs }o--|| mvp3_integration_endpoints : "endpoint_id"
+    mvp3_export_jobs }o--|| profiles : "requested_by"
+    mvp3_feature_flags }o--|| profiles : "approved_by,created_by"
+    mvp3_inspection_package_manifests }o--|| config_versions : "workflow_version_id"
+    mvp3_inspection_package_manifests }o--|| inspections : "inspection_id"
+    mvp3_inspection_package_manifests }o--|| package_versions : "package_version_id"
+    mvp3_inspection_package_manifests }o--|| profiles : "compiled_by"
+    mvp3_integration_endpoints }o--|| profiles : "created_by"
+    mvp3_kpi_definitions }o--|| profiles : "approved_by,created_by"
+    mvp3_kpi_definitions }o--|| roles : "owner_role"
+    mvp3_package_access_events }o--|| mvp3_devices : "device_id"
+    mvp3_package_access_events }o--|| mvp3_inspection_package_manifests : "manifest_id"
+    mvp3_package_access_events }o--|| profiles : "actor_id"
+    mvp3_signature_refusals }o--|| profiles : "recorded_by"
+    mvp3_signature_refusals }o--|| signature_acts : "signature_act_id"
+    notification_preferences }o--|| profiles : "user_id"
+    notification_rules }o--|| profiles : "approved_by,created_by,deactivated_by"
+    notification_rules }o--|| roles : "escalation_role,recipient_role"
+    notifications }o--|| notification_rules : "notification_rule_id"
+    notifications }o--|| profiles : "recipient"
+    objections }o--|| external_requests : "request_id"
+    objections }o--|| factories : "factory_id"
+    objections }o--|| factory_representatives : "filed_by_rep"
+    objections }o--|| profiles : "decided_by"
+    ocr_extractions }o--|| evidence : "evidence_id"
+    ocr_extractions }o--|| profiles : "requested_by"
+    package_version_dependency_snapshots }o--|| package_versions : "package_version_id"
+    package_version_item_snapshots }o--|| package_versions : "package_version_id"
+    package_versions }o--|| packages : "package_id"
+    package_versions }o--|| profiles : "approved_by,created_by"
+    penalty_mappings }o--|| configuration_templates : "template_version_id"
+    penalty_mappings }o--|| profiles : "approved_by,created_by"
+    penalty_mappings }o--|| violation_codes : "violation_code_id"
+    penalty_notices }o--|| factories : "factory_id"
+    penalty_notices }o--|| inspections : "inspection_id"
+    penalty_notices }o--|| profiles : "issued_by"
+    penalty_notices }o--|| violations : "violation_id"
+    plant_addresses }o--|| factories : "factory_id"
+    plant_addresses }o--|| industrial_licenses : "industrial_license_id"
+    plant_addresses }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    plant_production_line_items }o--|| factories : "factory_id"
+    plant_production_line_items }o--|| industrial_licenses : "industrial_license_id"
+    plant_production_line_items }o--|| senaei_raw_snapshots : "source_snapshot_id"
+    push_subscriptions }o--|| profiles : "user_id"
+    regulation_attachments }o--|| profiles : "uploaded_by"
+    regulation_attachments }o--|| regulations : "regulation_id"
+    regulation_clauses }o--|| regulations : "regulation_id"
+    regulations }o--|| profiles : "approved_by,created_by,deactivated_by"
+    reviews }o--|| inspections : "inspection_id"
+    reviews }o--|| profiles : "reviewer_id"
+    reviews }o--|| submission_versions : "submission_version_id"
+    risk_exceptions }o--|| profiles : "resolved_by"
+    risk_exceptions }o--|| risk_runs : "run_id"
+    risk_models }o--|| profiles : "approved_by,created_by"
+    risk_overrides }o--|| profiles : "decided_by,requested_by"
+    risk_runs }o--|| profiles : "requested_by"
+    risk_simulations }o--|| profiles : "created_by"
+    risk_simulations }o--|| risk_models : "model_id"
+    risk_variables }o--|| profiles : "created_by"
+    role_capabilities }o--|| capabilities : "capability_key"
+    role_capabilities }o--|| roles : "role_key"
+    role_permissions }o--|| permissions : "permission_key"
+    role_permissions }o--|| roles : "role_key"
+    self_assessments }o--|| factories : "factory_id"
+    self_assessments }o--|| factory_representatives : "submitted_by_rep"
+    self_assessments }o--|| profiles : "reviewed_by"
+    senaei_raw_snapshots }o--|| senaei_sync_calls : "sync_call_id"
+    senaei_raw_snapshots }o--|| senaei_sync_runs : "sync_run_id"
+    senaei_reconciliation_records }o--|| commercial_registrations : "commercial_registration_id"
+    senaei_reconciliation_records }o--|| factories : "factory_id"
+    senaei_reconciliation_records }o--|| industrial_licenses : "industrial_license_id"
+    senaei_reconciliation_records }o--|| profiles : "reconciled_by"
+    senaei_reconciliation_records }o--|| senaei_raw_snapshots : "raw_snapshot_id"
+    senaei_reconciliation_records }o--|| senaei_sync_runs : "sync_run_id"
+    senaei_sync_calls }o--|| senaei_sync_runs : "sync_run_id"
+    senaei_sync_runs }o--|| external_source_connections : "connection_id"
+    senaei_sync_runs }o--|| profiles : "requested_by"
+    signature_acts }o--|| factory_representatives : "actor_rep"
+    signature_acts }o--|| profiles : "actor_user"
+    sla_calendars }o--|| profiles : "created_by"
+    sla_timers }o--|| profiles : "created_by"
+    sla_timers }o--|| sla_calendars : "calendar_id"
+    submission_versions }o--|| inspections : "inspection_id"
+    submission_versions }o--|| profiles : "submitted_by"
+    ui_string_revisions }o--|| profiles : "changed_by"
+    ui_string_revisions }o--|| ui_strings : "key"
+    ui_strings }o--|| profiles : "updated_by"
+    user_capability_grants }o--|| capabilities : "capability_key"
+    user_roles }o--|| profiles : "granted_by,user_id"
+    user_roles }o--|| roles : "role_key"
+    violation_codes }o--|| inspection_items : "inspection_item_id"
+    violation_codes }o--|| profiles : "approved_by,created_by"
+    violation_codes }o--|| regulation_clauses : "clause_id"
+    violations }o--|| checklist_responses : "triggered_by_response"
+    violations }o--|| findings : "finding_id"
+    violations }o--|| inspections : "inspection_id"
+    violations }o--|| violation_codes : "violation_code_id"
+    virtual_participants }o--|| virtual_sessions : "session_id"
+    virtual_sessions }o--|| visits : "visit_id"
+    visit_attachments }o--|| profiles : "removed_by,uploaded_by"
+    visit_attachments }o--|| visits : "visit_id"
+    visit_lifecycle_events }o--|| visits : "visit_id"
+    visit_location_corrections }o--|| evidence : "evidence_id"
+    visit_location_corrections }o--|| visits : "visit_id"
+    visit_location_events }o--|| visits : "visit_id"
+    visit_package_snapshots }o--|| package_versions : "package_version_id"
+    visit_package_snapshots }o--|| visits : "visit_id"
+    visit_packages }o--|| package_versions : "package_version_id"
+    visit_packages }o--|| profiles : "added_by"
+    visit_packages }o--|| visits : "visit_id"
+    visit_plans }o--|| profiles : "created_by"
+    visit_preparations }o--|| package_versions : "package_version_id"
+    visit_preparations }o--|| visits : "visit_id"
+    visits }o--|| factories : "factory_id"
+    visits }o--|| package_versions : "package_version_id"
+    visits }o--|| planning_expiry_rules : "expired_by_rule_id"
+    visits }o--|| profiles : "created_by"
+    visits }o--|| visit_plans : "visit_plan_id"
+    workflow_outbox }o--|| profiles : "created_by"
+    workflow_task_assignments }o--|| profiles : "assignee,created_by"

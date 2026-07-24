@@ -14,15 +14,15 @@ const RULES = [
     id: "raw-input-radius-12px",
     pattern: /border-radius:\s*12px/,
     exts: new Set([".css"]),
-    message: "12px generic input radius reintroduced — use var(--ax-radius-input) (6px, V2).",
+    message: "12px generic input radius reintroduced — use the semantic radius token (var(--radius-sm)).",
   },
   {
     id: "transparent-loading-label",
     pattern: /\.is-loading\s*\{[^}]*color:\s*transparent/,
     exts: new Set([".css"]),
     message: "Loading buttons must keep their label visible (V2) — do not set color:transparent on .is-loading text.",
-    // Icon-only buttons have no label to hide — .ax-btn--icon.is-loading intentionally stays transparent (spinner replaces the icon).
-    exclude: /--icon/,
+    // Icon-only buttons have no label to hide — .btn-icon.is-loading intentionally stays transparent (spinner replaces the icon).
+    exclude: /-icon/,
   },
   {
     id: "utc-slice-date-format",
@@ -49,7 +49,7 @@ const RULES = [
   {
     // Narrow to true pictographic emoji (camera/shield/map/eye/etc). Deliberately
     // excludes the U+2600-27BF dingbat range (✓ ✕ ● ▲ ◆ ⟳ →) — those are the
-    // FND-011 glyph+label status system astryx.css itself defines, not V1 bugs.
+    // FND-011 glyph+label status system saqeel-components-legacy.css itself defines, not V1 bugs.
     id: "emoji-as-icon",
     pattern: /[\u{1F300}-\u{1FAFF}⛔]/u,
     exts: new Set([".tsx"]),

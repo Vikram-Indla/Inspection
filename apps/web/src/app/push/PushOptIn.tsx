@@ -45,11 +45,11 @@ export function PushOptIn({ strings: s }: { strings: { enable: string; enabling:
   }
 
   return (
-    <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
       <button className="btn btn-primary btn-touch" onClick={enable} disabled={state === "working" || state === "on"}>
         {state === "working" ? s.enabling : state === "on" ? s.enabled : s.enable}
       </button>
-      {msg && <span className="t-caption" role={state === "error" ? "alert" : "status"} style={state === "error" ? { color: "var(--ax-color-critical)" } : undefined}>{msg}</span>}
+      {msg && <span className="t-caption" role={state === "error" ? "alert" : "status"} style={state === "error" ? { color: "var(--status-critical)" } : undefined}>{msg}</span>}
     </div>
   );
 }

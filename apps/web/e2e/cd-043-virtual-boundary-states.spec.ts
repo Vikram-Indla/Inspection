@@ -122,7 +122,7 @@ test.describe.serial("CD-043 session-boundary states — driven", () => {
 
       await page.goto(`/virtual/${sessionId}`);
       // S12 immutable affordance is present and read-only.
-      const immutable = page.locator(".ax-banner--immutable");
+      const immutable = page.locator(".sq-banner--immutable");
       await expect(immutable).toBeVisible();
       await expect(immutable).toContainText("read-only");
       // No mutating control is offered on a closed session.
@@ -135,17 +135,17 @@ test.describe.serial("CD-043 session-boundary states — driven", () => {
       await page.goto(`/virtual/${sessionId}`);
 
       const primary = page.locator("#vir-actionzone .cd-primary");
-      const closeBtn = page.locator(".cd-closebox button.ax-btn--danger, .cd-closebox button.btn-danger");
+      const closeBtn = page.locator(".cd-closebox button.sq-btn--danger, .cd-closebox button.btn-danger");
       await expect(primary).toBeEnabled(); // online baseline
 
       await context.setOffline(true);
-      await expect(page.locator(".ax-banner--warning", { hasText: "You are offline" })).toBeVisible();
+      await expect(page.locator(".sq-banner--warning", { hasText: "You are offline" })).toBeVisible();
       await expect(primary).toBeDisabled();
       await expect(closeBtn).toBeDisabled();
 
       // Recovery — back online re-enables the controls; nothing was queued.
       await context.setOffline(false);
-      await expect(page.locator(".ax-banner--warning", { hasText: "You are offline" })).toHaveCount(0);
+      await expect(page.locator(".sq-banner--warning", { hasText: "You are offline" })).toHaveCount(0);
       await expect(primary).toBeEnabled();
     });
 
@@ -167,10 +167,10 @@ test.describe.serial("CD-043 session-boundary states — driven", () => {
 
       // Attempt the close with the now-stale rev.
       await page.locator(".cd-closebox input[name=reason]").fill("attempt on stale view");
-      await page.locator(".cd-closebox button.ax-btn--danger, .cd-closebox button.btn-danger").click();
+      await page.locator(".cd-closebox button.sq-btn--danger, .cd-closebox button.btn-danger").click();
 
       // NEGATIVE + UI — the stale banner appears with a reload affordance…
-      const stale = page.locator(".ax-banner--warning", { hasText: "This session changed" });
+      const stale = page.locator(".sq-banner--warning", { hasText: "This session changed" });
       await expect(stale).toBeVisible();
       await expect(stale.getByRole("button", { name: "Reload" })).toBeVisible();
 

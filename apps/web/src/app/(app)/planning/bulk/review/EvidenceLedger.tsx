@@ -64,7 +64,7 @@ function LRow({ mark, text }: { mark: Mark; text: string }) {
   return (
     <div className="cd-lrow">
       <span className={`cd-lrow__mark ${mark}`} aria-hidden="true">{glyph}</span>
-      <div className="cd-lrow__body"><div className="cd-lrow__d" style={{ color: "var(--ax-color-text-primary)" }}>{text}</div></div>
+      <div className="cd-lrow__body"><div className="cd-lrow__d" style={{ color: "var(--text-primary)" }}>{text}</div></div>
     </div>
   );
 }

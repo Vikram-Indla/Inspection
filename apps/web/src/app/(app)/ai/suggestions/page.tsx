@@ -46,8 +46,8 @@ export default async function AiSuggestionsPage() {
   }));
   return (
     <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="badge badge-info">CD-048 · REQ-0056..0066</span>}>
-      <div className="ax-banner"><div><strong>{t("ai.banner.title", "Advisory only — human decides.")}</strong> {t("ai.banner.body", "AI never writes a decision or legal text. Every suggestion needs a human disposition. The provider is fail-closed (unavailable) until configured; nothing is auto-actioned.")}</div></div>
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ai.error", "Couldn’t load suggestions. Nothing changed.")}</strong></div></div>}
+      <div className="sq-banner"><div><strong>{t("ai.banner.title", "Advisory only — human decides.")}</strong> {t("ai.banner.body", "AI never writes a decision or legal text. Every suggestion needs a human disposition. The provider is fail-closed (unavailable) until configured; nothing is auto-actioned.")}</div></div>
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("ai.error", "Couldn’t load suggestions. Nothing changed.")}</strong></div></div>}
       {!error && mapped.length === 0 && (
         <EmptyState icon={<IconRobot size={28} />} title={t("ai.empty.title", "No suggestions")}
           body={t("ai.empty.body", "With no configured provider, none are generated. A human may propose an advisory item for disposition. Empty may also mean none are in your scope (RLS).")} />

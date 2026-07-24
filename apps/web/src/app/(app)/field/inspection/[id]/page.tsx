@@ -533,7 +533,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const inspectionNo = (ins as unknown as { inspection_no: string | null }).inspection_no ?? null;
   return (
     <Shell current="/field" title={t("field.ws.title", "Inspection — {factory}").replace("{factory}", (ins.visits as unknown as { factories: { name: string } }).factories.name)}
-      context={<span className="ax-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>}>
+      context={<span className="sq-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>}>
       {/* SCR-IPAD-630 — factory-verification step precedes the checklist (M04-095) */}
       <FactoryVerification
         inspectionId={id}
