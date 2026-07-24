@@ -1,6 +1,7 @@
 import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
+import ThemeChannelSync from "@/components/ThemeChannelSync";
 import "./astryx.css";
 // SAQEEL Inspection Design System v1.0 component layer (new components consume
 // this; supersedes .ax-* families as consumers migrate — Astryx removed at PR12).
@@ -78,7 +79,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={`${grotesk.variable} ${plexArabic.variable} ${jbMono.variable}`} suppressHydrationWarning>
       <head><ThemeScript /></head>
-      <body><PwaRegister />{children}</body>
+      <body><PwaRegister /><ThemeChannelSync />{children}</body>
     </html>
   );
 }
