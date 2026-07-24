@@ -7,7 +7,7 @@ items:
     owner: "Codex implementation and QA + Claude Design review + Product Owner screen approval"
     blocked_by: []
     blocks: ["M3 canonical promotion", "Real-system Operations sponsor walkthrough"]
-    note: "Sponsor-approved M3 slice activated after independent mapping and three Claude Design critic corrections: EN/LTR wordmark, Operations Live active navigation and distinct 390px layouts. First sublease removes the mutating GET before runtime evidence. Submitted Today and Active Alerts remain fail-closed pending governed definitions. /operations/exceptions, Field/PWA/iPad, shared shell/GeoMap, APIs, migrations and remote Supabase are excluded."
+    note: "Route-safety and WA-DES-033-C3 Operations Center composition pass typecheck/build and focused source/runtime/route-safety 11/11 after two independent-review correction returns. Five governed KPIs, two views, neutral Mapbox/list, preview dialogs, drill and existing operational functions are preserved. Submitted Today and Active Alerts remain fail-closed. Operations Live and final integrated Chrome/RTL/theme/viewport/provider/a11y/protected evidence remain open. /operations/exceptions, Field/PWA/iPad, shared shell/GeoMap, APIs, migrations and remote Supabase are excluded."
   - task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
     gate: "Web/Admin M1 implementation and screen certification"
     priority: "P0"

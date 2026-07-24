@@ -6,11 +6,10 @@ import {
   ActionFormControls, MarkNotificationHandled,
   type ActionFormControlsStrings, type MarkHandledStrings,
 } from "./Controls";
-import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
-import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
-import { regionPostures } from "./region-posture";
+import { MonitoringTable, type MonitoringStrings } from "./Monitoring";
+import type { OpsPin } from "./OpsMap";
 import EmptyState from "@/components/EmptyState";
-import { IconMap, IconPin, IconBell } from "@/app/icons";
+import { IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
 import CancellationQueue, { type CancellationQueueRow, type CancellationQueueStrings } from "./CancellationQueue";
@@ -18,6 +17,15 @@ import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import { computeResubmissionFlags, type ResubmissionSource } from "./sla";
+import { getVerifiedUser } from "@/lib/verified-user";
+import { redirect } from "next/navigation";
+import { buildShellNavigation } from "@/lib/shell-navigation";
+import OperationsMapWorkspace, {
+  type OperationsMapEntry,
+  type OperationsMapWorkspaceStrings,
+} from "./OperationsMapWorkspace";
+import OperationsScopeFilter from "./OperationsScopeFilter";
+import styles from "./operations.module.css";
 
 // SCR-WEB-500 — Operations Center (SB12, M08). Read legs + write legs
 // (acknowledge/close corrective actions; mark notifications handled) +
@@ -68,12 +76,6 @@ const NOTIF_TONE: Record<string, string> = {
   delivered: "sq-lozenge--info",
   handled: "sq-lozenge--success",
   failed: "sq-lozenge--critical",
-};
-
-const BAND_TONE: Record<string, string> = {
-  high: "sq-lozenge--critical",
-  medium: "sq-lozenge--warning",
-  low: "sq-lozenge--success",
 };
 
 // Active operational states → map pin tone (GeoMap resolves tones to ax tokens).
@@ -160,13 +162,43 @@ function computeSlaFlags(visits: VisitRow[], sla: SlaConf, nowMs: number): SlaFl
   return flags.sort((a, b) => rank(a) - rank(b) || a.deadlineMs - b.deadlineMs);
 }
 
-export default async function Operations({ searchParams }: { searchParams: Promise<{ region?: string; city?: string }> }) {
+export default async function Operations({ searchParams }: { searchParams: Promise<{ region?: string; city?: string; view?: string }> }) {
   preloadShell("/operations");
   const sp = await searchParams;
   const region = typeof sp.region === "string" ? sp.region : "";
   const city = typeof sp.city === "string" ? sp.city : "";
+  const view = sp.view === "performance" ? "performance" : "map";
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  // DSG-CMD-020 — direct-route authorization must be identical to the accepted
+  // shared navigation contract. Derive it from the same builder instead of
+  // creating a second, narrower role list that can drift from the shell.
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) redirect("/login");
+  const { data: routeRoles, error: routeRoleError } = await sb
+    .from("user_roles")
+    .select("role_key")
+    .eq("user_id", user.id);
+  const routeRoleKeys = (routeRoles ?? []).map(row => row.role_key);
+  const operationsDestination = routeRoleError
+    ? null
+    : buildShellNavigation(routeRoleKeys)
+      .flatMap(group => group.items)
+      .find(item => item.href === "/operations");
+  const mayViewOperations = operationsDestination?.enabled === true;
+  if (!mayViewOperations) {
+    return (
+      <Shell current="/operations" title={t("ops.title", "Operations Center")}>
+        <EmptyState
+          glyph="⛨"
+          title={t("ops.unauthorized.title", "Operations access required")}
+          body={t("ops.unauthorized.body", "No operational data has been loaded because this destination is not enabled in your assigned navigation.")}
+        >
+          <a className="sq-btn sq-btn--secondary" href="/launch">{t("ops.unauthorized.return", "Return to my workspace")}</a>
+        </EmptyState>
+      </Shell>
+    );
+  }
   // A page GET is read-only. Use one request-start timestamp to exclude elapsed
   // requests from the actionable queue without materializing workflow state.
   // decide_geo_override remains the database-authoritative race guard.
@@ -432,12 +464,6 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     });
   }
 
-  // M08-002 — regional inspection posture over the canonical KSA regions, from
-  // the same region/city-scoped factory set that feeds the pins and risk board.
-  const mapRegionPostures = regionPostures(scopedFactories.map(f => ({
-    region: f.region, riskBand: f.risk_band, score: f.risk_score,
-  })));
-
   // ---------- M08-010 filter option lists (region-scoped cities) ----------
   const regions = [...new Set(factories.map(f => f.region).filter((r): r is string => !!r))].sort();
   const cities = [...new Set(factories
@@ -480,16 +506,39 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     emptyDesc: t("ops.live.empty.desc", "Visits appear here once planning publishes them (FLD-VIS-005)."),
     refreshedAt: t("ops.live.refreshedAt", "Refreshed"),
     refreshing: t("ops.live.refreshing", "Refreshing…"),
-    autoNote: t("ops.live.autoNote", "auto-refreshes every 30 s"),
+    autoNote: t("ops.live.scopeNote", "RLS-scoped monitoring records"),
   };
-  const mapStrings: OpsMapStrings = {
+  const mapWorkspaceStrings: OperationsMapWorkspaceStrings = {
+    mapLabel: t("ops.map.workspaceLabel", "Operations map"),
     loadingTitle: t("ops.map.loading.title", "Loading KSA map"),
     loadingBody: t("ops.map.loading.body", "Mapbox renders in the browser only."),
+    listHeading: t("ops.map.list.heading", "Map records"),
+    listDescription: t("ops.map.list.description", "The list and map use the same RLS-scoped records."),
+    emptyTitle: t("ops.map.empty.title", "No mappable factories in scope"),
+    emptyBody: t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006)."),
     open: t("ops.map.open", "Open"),
-    selectHint: t("ops.map.selectHint", "Click a pin to open the visit or factory profile."),
-    legendExecuting: t("ops.map.legend.executing", "executing"),
-    legendEnRoute: t("ops.map.legend.enRoute", "en route / arrived"),
-    legendFactory: t("ops.map.legend.factory", "factory"),
+    selected: t("ops.map.selected", "Selected on map and list"),
+    factory: t("ops.map.factory", "Factory 360"),
+    visit: t("ops.map.visit", "visit"),
+    preview: t("ops.map.preview", "Preview"),
+    previewStrings: {
+      inspectorTitle: t("ops.preview.inspector", "Inspector preview"),
+      factoryTitle: t("ops.preview.factory", "Factory quick card"),
+      close: t("ops.preview.close", "Close preview"),
+      currentVisit: t("ops.preview.currentVisit", "Current visit"),
+      operationalState: t("ops.preview.operationalState", "Operational state"),
+      assignments: t("ops.preview.assignments", "Assignments in current scope"),
+      lastGeoEvent: t("ops.preview.lastGeoEvent", "Last geo event"),
+      noGeoEvent: t("ops.preview.noGeoEvent", "No recorded position"),
+      openVisit: t("ops.preview.openVisit", "Open full visit"),
+      location: t("ops.preview.location", "Location"),
+      riskScore: t("ops.preview.riskScore", "Raw risk score"),
+      riskRank: t("ops.preview.riskRank", "RLS-visible rank"),
+      riskUnavailable: t("ops.preview.riskUnavailable", "Unavailable"),
+      activeVisits: t("ops.preview.activeVisits", "Active visits"),
+      openActions: t("ops.preview.openActions", "Open corrective actions"),
+      openFactory: t("ops.preview.openFactory", "Open Factory 360"),
+    },
   };
   const overrideQueueStrings: OverrideQueueStrings = {
     heading: t("ops.override.heading", "Location exception requests"),
@@ -532,6 +581,123 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   // ---------- M08-017 CSV export — three tables, region/city scope honored ----------
   const fmtTs = (ms: number) => formatDateTime(ms, locale === "ar" ? "ar" : "en");
+  const rankedFactories = scopedFactories
+    .filter(factory => factory.risk_score != null)
+    .sort((a, b) => Number(b.risk_score) - Number(a.risk_score));
+  const riskRankByFactory = new Map(rankedFactories.map((factory, index) => [factory.id, index + 1]));
+  const activeCountForFactory = (factoryId: string) => monitored.filter(visit =>
+    (visit.factories?.id ?? visit.factory_id) === factoryId).length;
+  const actionCountForFactory = (factoryId: string) => actions.filter(action =>
+    action.inspections?.visits?.factories?.id === factoryId).length;
+  const previewFields = (factory: FactoryRow | undefined, visit: VisitRow | undefined) => {
+    const inspectorName = visit?.assignments?.[0]?.profiles?.full_name ?? null;
+    const latestGeoEvent = visit ? scopedGeo.find(event => event.visit_id === visit.id) : null;
+    return {
+      factoryId: factory?.id ?? visit?.factories?.id ?? visit?.factory_id ?? null,
+      factoryName: factory?.name ?? visit?.factories?.name ?? "—",
+      region: factory?.region ?? visit?.factories?.region ?? null,
+      city: factory?.city ?? visit?.factories?.city ?? null,
+      visitId: visit?.id ?? null,
+      inspectorName,
+      assignmentCount: inspectorName
+        ? monitored.filter(item => item.assignments?.[0]?.profiles?.full_name === inspectorName).length
+        : 0,
+      lastGeoAt: latestGeoEvent ? fmtTs(Date.parse(latestGeoEvent.occurred_at)) : null,
+      riskScore: factory?.risk_score ?? null,
+      riskRank: factory ? riskRankByFactory.get(factory.id) ?? null : null,
+      riskRankTotal: rankedFactories.length,
+      activeVisitCount: factory ? activeCountForFactory(factory.id) : 0,
+      openActionCount: factory ? actionCountForFactory(factory.id) : 0,
+    };
+  };
+  const mapEntries: OperationsMapEntry[] = pins.map(pin => {
+    const visit = pin.kind === "visit"
+      ? monitored.find(item => `v:${item.id}` === pin.id)
+      : undefined;
+    const factoryId = visit?.factories?.id ?? visit?.factory_id ?? pin.id.replace(/^f:/, "");
+    const factory = scopedFactories.find(item => item.id === factoryId);
+    return {
+      ...pin,
+      ...previewFields(factory, visit),
+      state: visit ? enumLabel(visit.operational_state) : t("ops.map.factoryState", "Factory"),
+    };
+  });
+  const regionalMapEntries: OperationsMapEntry[] = scopedFactories
+    .filter(factory => factory.official_lat != null && factory.official_lng != null)
+    .map(factory => ({
+      id: `regional:${factory.id}`,
+      kind: "factory",
+      lat: Number(factory.official_lat),
+      lng: Number(factory.official_lng),
+      label: factory.name,
+      tone: "neutral",
+      href: `/factories/${factory.id}`,
+      ...previewFields(factory, undefined),
+      state: t("ops.map.factoryState", "Factory"),
+    }));
+  const scopedQuery = [
+    region ? `region=${encodeURIComponent(region)}` : "",
+    city ? `city=${encodeURIComponent(city)}` : "",
+  ].filter(Boolean).join("&");
+  const mapViewHref = `/operations${scopedQuery ? `?${scopedQuery}` : ""}`;
+  const performanceViewHref = `/operations?${["view=performance", scopedQuery].filter(Boolean).join("&")}`;
+  const performanceAnchor = (anchor: string) => `${performanceViewHref}#${anchor}`;
+  const overdueActions = actions.filter(action => action.due_at && Date.parse(action.due_at) < now);
+  const failedNotifications = notifs.filter(notification => notification.delivery_state === "failed");
+  const highlights = [
+    ...slaFlags.map(flag => ({
+      id: `sla:${flag.visit.id}`,
+      label: t("ops.highlights.sla", "Deadline breach"),
+      description: `${flag.visit.factories?.name ?? flag.visit.id.slice(0, 8)} · ${slaKindLabel(flag)}`,
+      at: flag.deadlineMs,
+      href: `/visits/${flag.visit.id}`,
+      evidenceUrl: null as string | null,
+    })),
+    ...overdueActions.map(action => ({
+      id: `action:${action.id}`,
+      label: t("ops.highlights.action", "Corrective action overdue"),
+      description: `${action.inspections?.visits?.factories?.name ?? action.owner_name ?? action.id.slice(0, 8)} · ${action.required_correction ?? enumLabel(action.status)}`,
+      at: action.due_at ? Date.parse(action.due_at) : 0,
+      href: action.inspections?.visit_id ? `/visits/${action.inspections.visit_id}` : performanceAnchor("corrective-actions"),
+      evidenceUrl: null as string | null,
+    })),
+    ...failedNotifications.map(notification => ({
+      id: `notification:${notification.id}`,
+      label: t("ops.highlights.notification", "Notification failed"),
+      description: `${notification.event_key} · ${notification.channel}`,
+      at: Date.parse(notification.created_at),
+      href: performanceAnchor("notifications"),
+      evidenceUrl: null as string | null,
+    })),
+    ...overrideQueueRows.map(item => ({
+      id: `override:${item.id}`,
+      label: t("ops.highlights.override", "Override decision required"),
+      description: `${item.factory_name ?? item.visit_id.slice(0, 8)} · ${item.inspector_name ?? "—"}`,
+      at: Date.parse(item.requested_at),
+      href: `/visits/${item.visit_id}`,
+      evidenceUrl: item.evidence_url,
+    })),
+    ...cancellationQueueRows.map(item => ({
+      id: `cancellation:${item.id}`,
+      label: t("ops.highlights.cancellation", "Cancellation decision required"),
+      description: `${item.factory_name ?? item.visit_id.slice(0, 8)} · ${item.reason_label}`,
+      at: Date.parse(item.requested_at),
+      href: `/visits/${item.visit_id}`,
+      evidenceUrl: item.evidence_url,
+    })),
+  ].sort((a, b) => b.at - a.at);
+  const regionSummaries = regions.map(regionName => {
+    const regionFactories = factories.filter(factory => factory.region === regionName);
+    const regionVisits = visits.filter(visit => visit.factories?.region === regionName);
+    const active = regionVisits.filter(visit =>
+      visit.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(visit.operational_state));
+    return {
+      name: regionName,
+      factories: regionFactories.length,
+      active: active.length,
+      href: `/operations?view=performance&region=${encodeURIComponent(regionName)}`,
+    };
+  });
   const exportStrings: OpsExportStrings = {
     heading: t("ops.export.heading", "Export CSV (M08-017):"),
     scopeNote: t("ops.export.scopeNote", "reflects the current region/city scope · UTF-8 BOM for Arabic"),
@@ -593,47 +759,212 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         </div></div>
       )}
 
-      {/* KPI cards — visits by operational_state (all planning statuses; FND-002) */}
-      <div className="sq-mstrip">
-        {states.map(s => (
-          <div key={s}><div className="sq-mstrip__label">{s === "prepared"
-            ? t("ops.kpi.prepared", "Prepared — ready for execution")
-            : s === "under_review"
-              ? t("ops.kpi.underReview", "Under review")
-              : enumLabel(s)}</div>
-            <div className="sq-mstrip__value sq-numeric">{counts[s]}</div></div>
-        ))}
-      </div>
-      <p className="sq-caption"><span className="sq-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="sq-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
+      <div className={styles.page}>
+        <nav className={styles.viewSwitch} aria-label={t("ops.views.label", "Operations Center views")}>
+          <a
+            className={`${styles.viewLink} ${view === "map" ? styles.viewLinkActive : ""}`}
+            href={mapViewHref}
+            aria-current={view === "map" ? "page" : undefined}
+          >
+            {t("ops.views.map", "Operations Map")}
+          </a>
+          <a
+            className={`${styles.viewLink} ${view === "performance" ? styles.viewLinkActive : ""}`}
+            href={performanceViewHref}
+            aria-current={view === "performance" ? "page" : undefined}
+          >
+            {t("ops.views.performance", "National Performance")}
+          </a>
+        </nav>
 
-      <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
-      <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
+        <section aria-labelledby="operations-kpi-heading">
+          <div className={styles.sectionHead}>
+            <div>
+              <h3 id="operations-kpi-heading">{t("ops.kpi.heading", "Operational position")}</h3>
+              <p className="sq-caption">
+                {t("ops.kpi.scope", "Current RLS-authorized region and city scope")}
+              </p>
+            </div>
+          </div>
+          <div className={styles.kpiGrid} data-testid="operations-kpi-grid">
+            <article className={styles.kpiCard}>
+              <div className={styles.kpiLabel}>{t("ops.kpi.activeVisits", "Active Visits")}</div>
+              <div className={`${styles.kpiValue} sq-numeric`}>{monitored.length}</div>
+              <p className={styles.kpiNote}>{t("ops.kpi.activeNote", "Published or actively executing")}</p>
+            </article>
+            <article className={styles.kpiCard}>
+              <div className={styles.kpiLabel}>{t("ops.kpi.onTheWay", "On the Way")}</div>
+              <div className={`${styles.kpiValue} sq-numeric`}>{counts.on_the_way}</div>
+              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", "Canonical operational state")}</p>
+            </article>
+            <article className={styles.kpiCard}>
+              <div className={styles.kpiLabel}>{t("ops.kpi.executing", "Executing")}</div>
+              <div className={`${styles.kpiValue} sq-numeric`}>{counts.executing}</div>
+              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", "Canonical operational state")}</p>
+            </article>
+            <article className={styles.kpiCard}>
+              <div className={styles.kpiLabel}>{t("ops.kpi.submittedToday", "Submitted Today")}</div>
+              <div className={styles.kpiValue}>
+                {t("ops.kpi.unavailable", "Unavailable — decision required")}
+              </div>
+              <p className={styles.kpiNote}>{t("ops.kpi.submittedDecision", "Grain, source and Riyadh day boundary require sponsor decision")}</p>
+            </article>
+            <article className={styles.kpiCard}>
+              <div className={styles.kpiLabel}>{t("ops.kpi.activeAlerts", "Active Alerts")}</div>
+              <div className={styles.kpiValue}>
+                {t("ops.kpi.unavailable", "Unavailable — decision required")}
+              </div>
+              <p className={styles.kpiNote}>{t("ops.kpi.alertDecision", "Taxonomy and deduplication require sponsor decision")}</p>
+            </article>
+          </div>
+          <p className={styles.decisionContext}>
+            <span>{t("ops.kpi.submittedContext", "Submitted Today: distinct visits vs inspections vs versions remains open.")}</span>
+            <span>
+              {t("ops.kpi.alertContext", "Alert source context:")}{" "}
+              <a className="sq-link" href={performanceAnchor("deadline-alerts")}>{t("ops.kpi.slaBreaches", "SLA breaches")} <span className="sq-numeric">{slaFlags.length}</span></a>{" · "}
+              <a className="sq-link" href={performanceAnchor("corrective-actions")}>{t("ops.kpi.actionsOverdue", "actions overdue")} <span className="sq-numeric">{overdueActions.length}</span></a>{" · "}
+              <a className="sq-link" href={performanceAnchor("notifications")}>{t("ops.kpi.notificationsFailed", "notifications failed")} <span className="sq-numeric">{failedNotifications.length}</span></a>{" · "}
+              <a className="sq-link" href="#geo-override-queue-heading">{t("ops.kpi.overridesPending", "overrides pending")} <span className="sq-numeric">{overrideQueueRows.length}</span></a>
+            </span>
+          </p>
+        </section>
 
-      {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
-      <div className="sq-surface" style={{ padding: "var(--space-4) var(--space-6)" }}>
-        <OpsExport datasets={exportDatasets} strings={exportStrings} />
-      </div>
+        <section className="sq-surface" style={{ padding: "var(--space-4) var(--space-6)" }} aria-label={t("ops.filter.heading", "Geographic scope")}>
+          <OperationsScopeFilter
+            view={view}
+            region={region}
+            city={city}
+            regions={regions}
+            cities={cities}
+            labels={{
+              region: monitoringStrings.regionLabel,
+              city: monitoringStrings.cityLabel,
+              allRegions: monitoringStrings.allRegions,
+              allCities: monitoringStrings.allCities,
+            }}
+          />
+        </section>
 
-      {/* Region/city scope — filters monitoring, map and SLA watch (M08-010) */}
-      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-        <RegionCityFilter region={region} city={city} regions={regions} cities={cities} strings={monitoringStrings} />
-      </div>
+        <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
+        <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
 
-      {/* KSA operations map — M08-002 */}
-      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
-        <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)", marginBlockEnd: "var(--space-3)" }}>
-          <h4 style={{ margin: 0 }}>{t("ops.map.heading", "Live inspection map")}</h4>
-          <a className="sq-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
-        </div>
-        {pins.length === 0 ? (
-          <EmptyState bare icon={<IconMap size={28} />} title={t("ops.map.empty.title", "No mappable factories in scope")}
-            body={t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")} />
+        <section className="sq-surface" style={{ padding: "var(--space-4) var(--space-6)" }}>
+          <OpsExport datasets={exportDatasets} strings={exportStrings} />
+        </section>
+
+        {view === "map" ? (
+          <>
+            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="operations-map-heading">
+              <div className={styles.sectionHead}>
+                <div>
+                  <h3 id="operations-map-heading">{t("ops.map.heading", "Operations Map")}</h3>
+                  <p className="sq-caption">
+                    {t("ops.map.truth", "Official factory coordinates and canonical visit states · markers and status only")}
+                  </p>
+                </div>
+                <a className="sq-link" href="/operations/live">{t("ops.map.liveLink", "Open Operations Live")}</a>
+              </div>
+              <OperationsMapWorkspace
+                entries={mapEntries}
+                strings={mapWorkspaceStrings}
+              />
+            </section>
+
+            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="operational-highlights-heading">
+              <div className={styles.sectionHead}>
+                <div>
+                  <h3 id="operational-highlights-heading">{t("ops.highlights.heading", "Operational Highlights")}</h3>
+                  <p className="sq-caption">{t("ops.highlights.deterministic", "Deterministic operational records · no AI recommendation")}</p>
+                </div>
+                <a className="sq-link" href={performanceViewHref}>{t("ops.highlights.performance", "Review National Performance")}</a>
+              </div>
+              {highlights.length === 0 ? (
+                <EmptyState
+                  bare
+                  glyph="✓"
+                  title={t("ops.highlights.empty.title", "No open items in scope")}
+                  body={t("ops.highlights.empty.body", "Deadline, decision, corrective-action and notification records will appear here.")}
+                />
+              ) : (
+                <ul className={styles.highlightList}>
+                  {highlights.slice(0, 8).map(item => (
+                    <li className={styles.highlightItem} key={item.id}>
+                      <div>
+                        <strong>{item.label}</strong>
+                        <div>{item.description}</div>
+                        <span className={styles.highlightMeta}>{item.at ? fmtTs(item.at) : "—"}</span>
+                      </div>
+                      <div className="sq-row" style={{ flexWrap: "wrap", justifyContent: "flex-end" }}>
+                        {item.evidenceUrl && (
+                          <a className="sq-link" href={item.evidenceUrl} target="_blank" rel="noreferrer">
+                            {t("ops.highlights.evidence", "View evidence")}
+                          </a>
+                        )}
+                        <a className="sq-link" href={item.href}>{t("ops.highlights.open", "Open record")}</a>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="operations-monitoring-heading">
+              <h3 id="operations-monitoring-heading">{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h3>
+              <MonitoringTable
+                initialRows={monitorRows}
+                initialAt={nowIso}
+                region={region}
+                city={city}
+                enumLabels={enumLabels}
+                strings={monitoringStrings}
+              />
+            </section>
+          </>
         ) : (
-          <OpsMap pins={pins} regionPostures={mapRegionPostures} strings={mapStrings} />
-        )}
-      </div>
+          <>
+            <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="regional-performance-heading">
+              <div className={styles.sectionHead}>
+                <div>
+                  <h3 id="regional-performance-heading">{t("ops.performance.regions", "National → region drill")}</h3>
+                  <p className="sq-caption">{t("ops.performance.regionTruth", "Factory and active-visit counts use the same RLS-scoped records as the map.")}</p>
+                </div>
+                {region && <a className="sq-link" href="/operations?view=performance">{t("ops.performance.national", "Return to national scope")}</a>}
+              </div>
+              {regionSummaries.length === 0 ? (
+                <EmptyState bare title={t("ops.performance.emptyRegions", "No regions in scope")} body={t("ops.performance.emptyRegionsBody", "Authorized factories will appear here when region data is available.")} />
+              ) : (
+                <ul className={styles.regionList}>
+                  {regionSummaries.map(item => (
+                    <li className={styles.regionItem} key={item.name}>
+                      <div>
+                        <strong>{item.name}</strong>
+                        <div className="sq-caption">
+                          <span className="sq-numeric">{item.factories}</span> {t("ops.performance.factories", "factories")} ·{" "}
+                          <span className="sq-numeric">{item.active}</span> {t("ops.performance.activeVisits", "active visits")}
+                        </div>
+                      </div>
+                      <a className="sq-link" href={item.href}>{t("ops.performance.openRegion", "Open region")}</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div style={{ marginBlockStart: "var(--space-5)" }}>
+                <div className={styles.sectionHead}>
+                  <div>
+                    <h4>{t("ops.performance.map", "Regional performance map")}</h4>
+                    <p className="sq-caption">
+                      {t("ops.performance.mapTruth", "Neutral factory markers · select from the map or synchronized factory list")}
+                    </p>
+                  </div>
+                </div>
+                <OperationsMapWorkspace
+                  entries={regionalMapEntries}
+                  strings={mapWorkspaceStrings}
+                />
+              </div>
+            </section>
 
-      <div className="sq-grid-2">
+            <div className="sq-grid-2">
         <div className="sq-stack">
           {/* Live monitoring — M08-003 (auto-refresh via server action) */}
           <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
@@ -643,7 +974,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* SLA watch — ENG-09 thresholds vs live visit windows */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <div id="deadline-alerts" className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.sla.heading", "Deadline alerts")}</h4>
             {slaFlags.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No deadline alerts in scope")}
@@ -702,7 +1033,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Corrective actions queue — SB12 write leg */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <div id="corrective-actions" className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
             {actions.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.actions.empty.title", "No open corrective actions")}
@@ -743,16 +1074,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 body={t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")} />
             ) : (
               <div className="sq-tablewrap"><table className="sq-table">
-                <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.band", "Band")}</th></tr></thead>
-                <tbody>{highRisk.map(f => (
+                <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.rank", "RLS-visible rank")}</th></tr></thead>
+                <tbody>{highRisk.map((f, index) => (
                   <tr key={f.id}>
                     <td><a className="sq-link" href={`/factories/${f.id}`}>{f.name}</a>
                       {f.activity_class && <><br /><span className="sq-caption">{f.activity_class}</span></>}</td>
                     <td className="sq-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
                     <td><span className="sq-numeric">{f.risk_score}</span></td>
-                    <td>{f.risk_band
-                      ? <span className={`sq-lozenge ${BAND_TONE[f.risk_band] ?? ""}`}>{enumLabel(f.risk_band)}</span>
-                      : <span className="sq-caption">—</span>}</td>
+                    <td><span className="sq-lozenge sq-numeric">{index + 1} / {highRisk.length}</span></td>
                   </tr>
                 ))}</tbody>
               </table></div>
@@ -778,7 +1107,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Notifications — ENG-11 */}
-          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <div id="notifications" className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
               <EmptyState bare icon={<IconBell size={28} />} title={t("ops.notifs.empty.title", "No notifications")}
@@ -802,6 +1131,9 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             </p>
           </div>
         </div>
+      </div>
+          </>
+        )}
       </div>
     </Shell>
   );

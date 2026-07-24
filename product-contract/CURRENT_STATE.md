@@ -21,8 +21,19 @@ The first implementation sublease corrects the existing mutating GET on
 `/operations` before any real-system browser capture. It is bounded to the
 Operations page and one focused route-safety test. `/operations/exceptions`,
 Field, PWA/iPad, shared shell, shared GeoMap, APIs, migrations and remote
-Supabase remain excluded. No application product code had changed at slice
-activation.
+Supabase remain excluded.
+
+The Operations Center C3 composition is now source-complete on the isolated
+branch. It has five governed KPIs, Operations Map and National Performance
+views, neutral Mapbox/list synchronization, Inspector and Factory preview
+dialogs, national-to-region-to-factory drill, and the existing queues,
+monitoring, SLA, risk, immutable history, notifications and exports. Two
+independent-review returns prevented shortcuts: missing preview/responsive
+requirements and an attempted narrow role list were corrected before
+acceptance. Typecheck/build pass and the combined composition/runtime/route
+safety suite passes 11/11. Operations Live, final integrated Chrome evidence,
+RTL/theme/viewport, provider-failure, accessibility and protected regression
+remain open; M3 is not complete or promoted.
 
 ## 2026-07-24 UPDATE 129 — M1 Dashboard promoted to canonical main
 
