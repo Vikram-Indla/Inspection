@@ -10,9 +10,9 @@ Design: `WA-DES-033`, `WA-DES-034`, `DSG-027`, `DSG-CMD-009..013`, `DSG-CMD-020`
 
 ## Reviewer recommendation
 
-**BLOCK DUE TO MISSING CONTRACT**
+**APPROVE FOR SPONSOR CONSENT**
 
-Claude Design Revision 3 is accepted as a corrected semantic delta specification. It is not accepted as a visual design revision and does not authorize application implementation.
+Claude Design Revision 3 is accepted as a corrected semantic delta specification and as a rendered visual-design candidate. It is ready for sponsor consent. This review does not itself authorize application implementation.
 
 ## What Codex challenged and Claude corrected
 
@@ -41,6 +41,11 @@ Claude Design Revision 3 is accepted as a corrected semantic delta specification
 - Whitespace validation: PASS.
 - Application product code changed: NO.
 - Frozen product-contract artifacts changed by Codex: NO.
+- Rendered Operations Center page: PASS (`WA-DES-033-C3`).
+- Rendered Operations Live page: PASS (`WA-DES-034-C3`).
+- EN/LTR wordmark and AR/RTL separation: PASS after critic correction.
+- Operations Live active-navigation semantics: PASS after critic correction.
+- Distinct 390-pixel state on both rendered pages: PASS after critic correction.
 
 ## Evidence reviewed
 
@@ -56,11 +61,16 @@ Source design hashes remain unchanged:
 - `WA-DES-033`: `ea9dce0b775ba69eb1bea3ebe7a35c076de316c18f1b955b5b3d8a2e8c7988e1`
 - `WA-DES-034`: `157b68c8ba4bbbdba4f61265b25ff98d097a810e5acb42f2aef67f4b4403452d`
 
-The open sponsor-provided Claude Design project was inspected. It exposes 102 pages and includes SAQEEL PWA journey, M1 Dashboard, Web Shell and Web Dashboard families. No rendered Operations Center or Operations Live revision was established as the writable visual source for `WA-DES-033` or `WA-DES-034`.
+The sponsor-provided Claude Design project was inspected. It now exposes 104 pages and includes these two rendered revision candidates:
 
-## Missing contract
+- `WA-DES-033-C3`: `https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61?file=SAQEEL+M3+Operations+Center+-+WA-DES-033-C3.dc.html`
+- `WA-DES-034-C3`: `https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61?file=SAQEEL+M3+Operations+Live+-+WA-DES-034-C3.dc.html`
 
-Implementation remains blocked until an actual rendered Claude Design revision exists for both Operations pages and receives human sign-off. Markdown correction specifications cannot satisfy `WA-M3-AC-003` or the relevant design/special-component acceptance rows.
+The first rendered pass was returned to Claude Design because its EN/LTR frame used an Arabic wordmark and Operations Live presented the wrong active navigation. Both were corrected. A second critic pass found that 390 pixels had been omitted as a distinct responsive state. Claude Design added a separate 390 selector and a 390-specific layout to both pages. Codex verified the Operations Live mobile state as `390×844 · Mobile · dark · EN/LTR`.
+
+## Remaining acceptance conditions
+
+The rendered design dependency is no longer missing. Application implementation still requires sponsor consent for these exact rendered revisions and a recorded implementation lease. `WA-M3-AC-003` and the relevant design/special-component acceptance rows must remain evidence-backed during implementation.
 
 The design revision must visibly cover:
 
@@ -76,7 +86,7 @@ The design revision must visibly cover:
 - reduced-motion and wallboard states;
 - no default route, path animation or ETA.
 
-## Sponsor decisions still required
+## Product decisions preserved as fail-closed
 
 These are product definitions, not implementation preferences:
 
@@ -86,8 +96,16 @@ These are product definitions, not implementation preferences:
    - Riyadh calendar-day boundary.
 2. **Active Alerts:** approve the alert taxonomy, severity ordering and deduplication rule.
 3. **Live map behavior:** confirm the recommended Phase 1 contract — markers/status only, with no route line, path animation or ETA — resolving the conflict between the live-map prompt and `SPC-CMD-005`.
-4. **Rendered design home:** identify or create the writable Claude Design project/file that will own corrected `WA-DES-033` and `WA-DES-034`.
-5. **Route safety lease:** authorize a separate bounded correction for the mutating GET before any visual evidence capture is performed against `/operations`.
+The rendered design does not fabricate the first two definitions: both affected cards remain present and visibly unavailable. It implements the recommended safe Phase 1 live-map behavior for the third decision.
+
+## Route-safety prerequisite
+
+Before runtime evidence capture against `/operations`, use a separate bounded lease containing only:
+
+- `apps/web/src/app/(app)/operations/page.tsx`
+- a new `apps/web/e2e/web-admin-m3-route-safety.spec.ts`
+
+Remove the render-time `expire_stale_geo_override_requests` RPC, use one request-start timestamp, and filter the actionable pending queue with `expires_at > nowIso`. Keep the existing atomic decision guard as the expiry-race authority. Repeated GETs must prove zero override, visit and audit mutations. The equivalent Field-page issue is outside this M3 lease and must not be silently absorbed.
 
 ## Proposed ownership boundary
 
@@ -102,4 +120,3 @@ After visual sign-off:
 - Codex receives the exclusive implementation lease for M3-local Operations files and focused tests.
 - Claude remains design reviewer.
 - `/operations/exceptions`, shared shell, shared `GeoMap`, global CSS, Field/PWA/iPad, APIs, migrations and remote Supabase remain outside the lease unless separately authorized.
-
