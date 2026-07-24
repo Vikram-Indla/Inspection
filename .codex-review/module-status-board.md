@@ -22,7 +22,7 @@ QA, and Sponsor. A module never receives one overall colour.
 | Execution / contract | Module | Design | Frontend | Service wiring | QA | Sponsor | Current focus |
 |---|---|---|---|---|---|---|---|
 | Foundation / F0 | Shared SAQEEL foundation | GREEN | GREEN | GREEN | AMBER | N/A | Historical protected-aggregate gaps remain disclosed. |
-| Execution #1 / M2 | Planning & Visits | AMBER | AMBER | GREEN | AMBER | AMBER | Claude revision `WA-DES-036-r3` corrects route and data-grain mapping, but remains returned: required named viewport/theme/RTL frames are absent, the authenticated shell header is incomplete, and the five-lane sponsor board clips horizontally. Existing RLS/audit/version services remain proven. |
+| Execution #1 / M2 | Planning & Visits | AMBER | AMBER | GREEN | AMBER | AMBER | Claude revision `WA-DES-036-r4` is now observable with named viewport controls, one authenticated shell header and a stacked five-lane sponsor board. Independent frame/theme/RTL verification and Claude's explicit stable completion handoff remain outstanding; no wiring has started. |
 | M1 | Dashboard | GREY | GREY | GREY | GREY | GREY | Design/code delta and KPI semantics `DEC-028`. |
 | M3 | Operations Center | GREY | GREY | GREY | GREY | GREY | Live/exception/ETA and provider review. |
 | M4 | Factories & Factory 360 | GREY | GREY | GREY | GREY | GREY | Industry Shared, privacy and provider contracts. |
@@ -67,11 +67,11 @@ Completed material implementation:
 
 Current hold:
 
-- Do not implement the list-first redesign yet. `WA-DES-036-r3` now corrects
-  the invented route, action hierarchy and visit-versus-draft grain, but it
-  still lacks directly inspectable named viewport/theme/RTL frames and the
-  real authenticated shell header. The Claude status board also needs a
-  responsive five-lane layout that does not clip.
+- Do not implement the list-first redesign yet. `WA-DES-036-r4` is observable
+  with the requested named viewport controls, authenticated shell header and
+  responsive stacked five-lane status cards. The design turn has not supplied
+  its explicit stable completion handoff, and independent frame/theme/RTL
+  verification is not yet complete.
 
 ## Non-negotiable ownership boundary
 
