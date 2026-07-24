@@ -29,7 +29,7 @@ export type CanvasMarker = {
   toneCompliance: GeoTone;
 };
 
-export type CanvasLayer = { id: "compliance" | "risk"; label: string; available: boolean };
+export type CanvasLayer = { id: "locations" | "compliance" | "risk"; label: string; available: boolean };
 
 export type CanvasRankRow = {
   key: string;
@@ -73,8 +73,8 @@ export default function DecisionCanvas({
   ranking: CanvasRankRow[];
   strings: DecisionCanvasStrings;
 }) {
-  const [layer, setLayer] = useState<"compliance" | "risk">(
-    layers.find((l) => l.available)?.id ?? "risk",
+  const [layer, setLayer] = useState<"locations" | "compliance" | "risk" | null>(
+    layers.find((candidate) => candidate.available)?.id ?? null,
   );
   const [region, setRegion] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -91,7 +91,7 @@ export default function DecisionCanvas({
         lat: m.lat,
         lng: m.lng,
         label: m.label,
-        tone: layer === "compliance" ? m.toneCompliance : m.toneRisk,
+        tone: layer === "compliance" ? m.toneCompliance : layer === "risk" ? m.toneRisk : "neutral",
       })),
     [shown, layer],
   );
@@ -151,9 +151,13 @@ export default function DecisionCanvas({
           )}
           <div className={styles.mapLegend}>
             <div className={styles.legendTitle}>{s.legendTitle}</div>
-            <div className={styles.legendRow}><span className={`${styles.swatch} ${styles.swLow}`} />{s.legendHealthy}</div>
-            <div className={styles.legendRow}><span className={`${styles.swatch} ${styles.swMed}`} />{s.legendAttention}</div>
-            <div className={styles.legendRow}><span className={`${styles.swatch} ${styles.swHigh}`} />{s.legendCritical}</div>
+            {layer === null || layer === "locations"
+              ? <div className={styles.legendNote}>{s.blockedLayer}</div>
+              : <>
+                {s.legendHealthy && <div className={styles.legendRow}><span className={`${styles.swatch} ${styles.swLow}`} />{s.legendHealthy}</div>}
+                {s.legendAttention && <div className={styles.legendRow}><span className={`${styles.swatch} ${styles.swMed}`} />{s.legendAttention}</div>}
+                {s.legendCritical && <div className={styles.legendRow}><span className={`${styles.swatch} ${styles.swHigh}`} />{s.legendCritical}</div>}
+              </>}
             <div className={styles.legendNote}>{s.provenance}</div>
           </div>
           {selected && (

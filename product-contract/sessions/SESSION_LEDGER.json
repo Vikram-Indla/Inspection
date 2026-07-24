@@ -4823,9 +4823,29 @@
       "commit_sha": "31baf2f8",
       "next_task": "Stop until Product Owner reviews the single-stroke focus correction.",
       "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md. Proceed only after an explicit permitted Product Owner decision."
+    },
+    {
+      "session_id": "2026-07-24-web-admin-m1-dashboard-001",
+      "started_at": "2026-07-24",
+      "ended_at": "2026-07-24",
+      "branch": "codex/m1-dashboard-reconciliation",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001",
+      "gate": "Web/Admin M1 implementation and screen certification",
+      "requirements": ["CR-001..CR-478 preserved", "G2-P12", "No Field/PWA/iPad implementation"],
+      "acceptance_ids": ["WA-M1-AC-001..006"],
+      "screens": ["WA-DES-025 Strategic Dashboard", "WA-DES-046 Operational Dashboard"],
+      "engines": ["Supabase SSR and RLS-scoped reads", "Dashboard KPI registry and projection", "Approved-inspection compliance", "Canonical visit/review/violation/audit reads", "Shared Mapbox provider boundary"],
+      "files_changed": ["Dashboard page and presentation composition", "Decision canvas and methodology interaction", "Dashboard metrics and projection", "Shared Mapbox idle-readiness evidence signal", "Demonstrated mobile shell corrections", "Focused M1 Playwright contract", "M1 execution acceptance evidence and session records"],
+      "tests": ["typecheck PASS", "production build PASS", "focused M1 16/16 PASS excluding pre-existing Inspector auth setup", "final evidence refresh 3/3 PASS", "Web/Admin validator 478/478 PASS", "Axe zero tested violations", "git diff check PASS"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md", "seven external final screenshots with SHA-256 manifest", "independent visual critic RELEASE"],
+      "decisions": ["Operations and Leadership only", "Approved inspections only for compliance", "DEC-028 policy values remain fail closed", "Map evidence waits for provider idle", "Unsupported views never inherit a selected perspective or Live state", "No seeding without the governed executable provenance contract"],
+      "blockers": ["Pre-existing Inspector authentication fixture HTTP 400", "Stale legacy Dashboard/performance assertions", "Separate Product Owner action required for commit push merge or deployment"],
+      "commit_sha": "UNCOMMITTED — isolated Product Owner-controlled branch; baseline c8bdf6d185d0326454f8d95247cfbaab10f47ae4",
+      "next_task": "Product Owner reviews the actual M1 runtime and authorizes promotion if desired; do not begin another module under the M1 lease.",
+      "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md, execution/CURRENT_SLICE.yaml and evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md. M1 has an independent RELEASE verdict on codex/m1-dashboard-reconciliation from baseline c8bdf6d1. Preserve all DEC-028 blocked states. Do not seed, commit, push, merge, deploy, or touch Field/PWA/iPad without the separate governed action."
     }
   ],
-  "last_session": "2026-07-23-web-admin-m2-batch-002-focus-rework",
+  "last_session": "2026-07-24-web-admin-m1-dashboard-001",
   "rules": {
     "append_only": true,
     "required_fields": [

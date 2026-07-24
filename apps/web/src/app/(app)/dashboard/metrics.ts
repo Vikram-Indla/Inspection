@@ -235,7 +235,8 @@ export function buildDashboardMetrics(input: {
   // separate, explicitly labelled figure. The overall totals above are kept
   // for the explorer breakdowns — no information is removed.
   const approvedScopedIds = new Set(scopedInspections.filter(i => approvedInspectionIds.has(i.id)).map(i => i.id));
-  const approvedComplianceCounts = countChecklistCompliance(scopedResponses.filter(r => approvedScopedIds.has(r.inspection_id)));
+  const approvedScopedResponses = scopedResponses.filter(r => approvedScopedIds.has(r.inspection_id));
+  const approvedComplianceCounts = countChecklistCompliance(approvedScopedResponses);
   const pendingComplianceCounts = countChecklistCompliance(scopedResponses.filter(r => !approvedScopedIds.has(r.inspection_id)));
   const approvedCompliant = approvedComplianceCounts.compliant;
   const approvedAnsweredForCompliance = approvedComplianceCounts.eligible;
@@ -262,7 +263,8 @@ export function buildDashboardMetrics(input: {
   const activeField = inspections.filter(i => i.status === "in_progress" && isInScope(i.visits?.window_start ?? i.started_at, scope)).length;
   const scopedLatestReviews = [...latest.values()].filter(r => isInScope(r.inspections?.submitted_at, scope));
   const awaitingRows = scopedLatestReviews.filter(r => r.status === "pending_review" || r.status === "under_review");
-  const returnedRows = scopedLatestReviews.filter(r => r.status === "returned");
+  const returnedRows = scopedLatestReviews.filter(r => r.status === "returned" || r.decision === "return");
+  const rejectedRows = scopedLatestReviews.filter(r => r.status === "rejected" || r.decision === "reject");
   const working = configuredWorkingDays(input.sla.calendar?.days);
   const reviewDays = input.sla.review_business_days;
   const reviewSlaConfigured = !!working && typeof reviewDays === "number";
@@ -350,6 +352,7 @@ export function buildDashboardMetrics(input: {
       approvedScoped,
       approvalRate: percent(approvedScoped, completedInspections),
       scopedResponses,
+      approvedScopedResponses,
       scopedViolations,
       previousViolations,
       violationDelta: scopedViolations.length - previousViolations,
@@ -370,6 +373,7 @@ export function buildDashboardMetrics(input: {
       overdueReviewRows,
       reviewSlaConfigured,
       returnedRows,
+      rejectedRows,
       highPriorityRows,
       activeInspectors,
       avgDurationMs,
