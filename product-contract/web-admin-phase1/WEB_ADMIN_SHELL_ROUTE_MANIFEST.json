@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "change_control_id": "CC-WEB-ADMIN-PHASE1-001",
+  "task_id": "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001",
+  "source_id": "WA-SHELL-SRC-001",
+  "authority_sha256": "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2",
+  "phase_scope": "PHASE1_WEB_ADMIN",
+  "navigation": [
+    {"order": 1, "section": "Overview", "label": "Dashboard", "target": "/dashboard", "owner": "M1", "children": []},
+    {"order": 2, "section": "Overview", "label": "Operations Center", "target": "/operations", "owner": "M3", "children": ["/operations?view=map", "/operations?view=national", "/operations/live", "/operations/exceptions"]},
+    {"order": 3, "section": "Overview", "label": "Factory 360", "target": "/factories", "owner": "M4", "children": ["/factories/:id", "/factories/cr/:id"]},
+    {"order": 4, "section": "Operations", "label": "Planning", "target": "/planning", "owner": "M2", "children": ["/planning/visits", "/planning/single", "/planning/bulk", "/planning/bulk/review", "/planning/immediate", "/planning/plans", "/planning/plans/:id"]},
+    {"order": 5, "section": "Operations", "label": "Inspection", "target": null, "owner": "M2_M5", "children": ["/planning/visits?view=execution", "/reviews"]},
+    {"order": 6, "section": "Operations/Inspection", "label": "Execution", "target": "/planning/visits?view=execution", "owner": "M2", "children": ["/planning/visits/:id"]},
+    {"order": 7, "section": "Operations/Inspection", "label": "Review & Approval", "target": "/reviews", "owner": "M5", "children": ["/reviews/:id", "/reviews/:id/started", "/cases", "/tasks"]},
+    {"order": 8, "section": "Compliance", "label": "Compliance Library", "target": "/admin/regulations", "owner": "M6", "children": ["/admin/regulations/:id", "/admin/items", "/admin/items/:id/runtime-preview", "/admin/packages"]},
+    {"order": 9, "section": "Compliance", "label": "Approval Queue", "target": "/admin/compliance-approvals", "owner": "M6", "children": ["/admin/compliance-requests", "/admin/compliance-requests/new", "/admin/compliance-requests/:id"]},
+    {"order": 10, "section": "Compliance", "label": "Enforcement Library", "target": "/enforcement", "owner": "M6", "children": ["/admin/violations", "/admin/bulk-violations", "/admin/enforcement-recommendations", "/committee"]},
+    {"order": 11, "section": "Insights", "label": "Analytics", "target": "/dashboard?view=analytics", "owner": "M1_M7", "children": ["/reports/inspection/:id", "/evidence-ocr", "/ai/suggestions", "/incident-reports"]},
+    {"order": 12, "section": "Administration", "label": "Users & Roles", "target": "/admin/access", "owner": "M8", "children": ["/admin/security-access", "/admin/devices"]},
+    {"order": 13, "section": "Administration", "label": "Lookup Management", "target": "/admin/planning/lookups", "owner": "M9", "children": ["/admin/localization", "/admin/planning/status", "/admin/planning/expiry"]},
+    {"order": 14, "section": "Administration", "label": "Risk Configuration", "target": "/admin/risk", "owner": "M6", "children": ["/admin/risk/models"]},
+    {"order": 15, "section": "Administration", "label": "Survey Configuration", "target": "/admin/items", "owner": "M9", "children": ["/admin/packages", "/admin/workflows", "/admin/dashboard-config"]},
+    {"order": 16, "section": "Administration", "label": "Notification Configuration", "target": "/admin/notifications", "owner": "M9", "children": []},
+    {"order": 17, "section": "Administration", "label": "Integration Management", "target": "/admin/integrations", "owner": "M10", "children": ["/admin/integrations/factory-data", "/admin/gis", "/admin/gis/spatial", "/admin/execution", "/admin/operations"]}
+  ],
+  "compatibility_redirects": [
+    {"from": "/visits", "to": "/planning/visits", "status": "PLANNED_AFTER_CERTIFIED_CUTOVER"},
+    {"from": "/visits/:id", "to": "/planning/visits/:id", "status": "PLANNED_AFTER_CERTIFIED_CUTOVER"},
+    {"from": "/visits/calendar", "to": "/planning/visits?view=calendar", "status": "PLANNED_AFTER_CERTIFIED_CUTOVER"},
+    {"from": "/visits/map", "to": "/planning/visits?view=map", "status": "PLANNED_AFTER_CERTIFIED_CUTOVER"},
+    {"from": "/visits/workload", "to": "/planning/visits?view=workload", "status": "PLANNED_AFTER_CERTIFIED_CUTOVER"}
+  ],
+  "non_shell_phase1_routes": ["/", "/login", "/reset", "/launch", "/launch/no-workspace", "/portal", "/profile", "/virtual", "/virtual/:id"],
+  "excluded": ["/field/**", "Field PWA", "offline field execution", "Inspector iPad"],
+  "cutover_rule": "No canonical route or redirect changes until batch certification and explicit APPROVED FOR CUTOVER.",
+  "rollback_rule": "Retain the current route implementation and reverse the server-evaluated flag or route mapping through stabilization."
+}

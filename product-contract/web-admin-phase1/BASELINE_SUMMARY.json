@@ -1,0 +1,27 @@
+{
+  "task_id": "TASK-WEB-ADMIN-PHASE1-PLAN-001",
+  "change_control": "CC-WEB-ADMIN-PHASE1-001",
+  "baseline_sha": "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d",
+  "requirement_count": 478,
+  "requirement_dispositions": {
+    "EXTERNAL_CONTRACT_BLOCKED": 0,
+    "OPEN_BUSINESS_DECISION": 5,
+    "PHASE1_ADMIN": 28,
+    "PHASE1_SHARED_BACKEND": 0,
+    "PHASE1_WEB": 207,
+    "PHASE2_IPAD_DEFERRED": 238
+  },
+  "page_route_count": 76,
+  "phase1_page_route_count": 71,
+  "phase2_page_route_count": 5,
+  "api_route_count": 3,
+  "design_file_count": 46,
+  "unique_design_payload_count": 45,
+  "package_count": 12,
+  "migration_row_count": 71,
+  "requirement_traceability_coverage": "478/478",
+  "phase1_implementation_scope_rows": 235,
+  "phase2_deferred_rows": 238,
+  "open_or_blocked_rows": 5,
+  "generated_date": "2026-07-23"
+}

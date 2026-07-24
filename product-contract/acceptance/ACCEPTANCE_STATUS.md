@@ -1,5 +1,19 @@
 # Acceptance Status
 
+## TASK-WEB-ADMIN-PHASE1-PLAN-001 — 2026-07-23
+
+- Planning baseline: **PASS_READY_FOR_PRODUCT_OWNER_APPROVAL**.
+- Requirement traceability: **478/478 PASS**; implementation status remains
+  235 Phase 1, 238 Phase 2-deferred, and five open-decision rows.
+- Route/design/package authority: **PASS** — 71 Phase 1 routes, five deferred
+  routes, 46 supplied/45 unique designs, and 12 packages.
+- Migration safety: **PASS** — 71/71 rows define current behavior, backend,
+  permission, tests, cutover, rollback, and legacy retention; 20 direct after
+  certification and 51 guarded preview/flag paths.
+- Application implementation and runtime acceptance: **NOT STARTED / NOT
+  AUTHORIZED**.
+- Exact evidence: `../evidence/TASK-WEB-ADMIN-PHASE1-PLAN-001.md`.
+
 ## TASK-G11-REMEDIATION-PERFORMANCE-001 — 2026-07-20
 
 - Pass-4 pinned union: **PASS_VERIFIED** — `7994cc6` and `e8ffeaa` are both
@@ -414,3 +428,10 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
 - Existing G11, provider, policy, sponsor, Arabic/human-review and release
   blockers remain authoritative after branch convergence.
 - Checkpoint: sponsor-approved push readiness PASS; all endpoints remain `DISCOVERY_REQUIRED`, provider network calls remain absent, sensitive domains remain separate, zero stubs are retired, and no canonical migration or Factory 360 projection changed. Stop state: `AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT`.
+## Web/Admin M2 Planning and Visits correction — 2026-07-23
+
+- `WA-M2-AC-001..006`, `WA-SHELL-AC-002`, and `WA-SHELL-AC-013`: engineering
+  evidence PASS at implementation commit `8343c62c`; Product Owner screen
+  acceptance remains pending.
+- Current routes remain canonical. Cutover, legacy removal, and stabilization
+  acceptance are not granted by this checkpoint.

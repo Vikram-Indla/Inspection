@@ -1,5 +1,160 @@
 # Current State
 
+## 2026-07-23 UPDATE 127 — Field focus double border removed
+
+The Product Owner rejected the remaining double focus border on the Planning
+header search. Commit `31baf2f8` replaces the stacked normal border plus outer
+outline with one contiguous two-pixel treatment across header search, inputs,
+selects and textareas: focus-colored border plus inset reinforcement, with no
+outline. Live `/planning` computed-style and visual review confirmed the outer
+ring is gone. Typecheck/build and same-batch/protected M2 Playwright pass 15/15.
+Current routes remain retained; status remains
+`SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
+## 2026-07-23 UPDATE 126 — SAQEEL palette authority corrected
+
+The Product Owner rejected the M2 navy/blue appearance and supplied `SAQEEL
+Design System.zip`. Exact comparison proved that the runtime navigation tokens
+had been locally substituted with navy values and that shell labels retained
+hard-coded blue colors. Commit `50c95d35` replaces them with the ZIP's exact
+graphite navigation ramp for light and dark themes and adds a regression guard.
+The external source is registered as `WA-DESIGN-SYSTEM-SRC-001`: 5,895,468
+bytes, SHA-256
+`d019686f88d0b1239df289b4030796a64c70c5daa20c74971f7d2399e4510a`.
+
+Token authority comparison, typecheck and production build pass; same-batch and
+protected M2 Playwright passes 15/15; and the Web/Admin validator remains PASS at
+478/478. Visible Codex browser review confirmed the exact light and dark semantic
+values. Current routes remain retained and canonical; no Field/iPad, cutover,
+deletion, push, merge, deploy, DDL, provider or shared-data action occurred.
+Status: `SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
+## 2026-07-23 UPDATE 125 — M2 Planning/Visits correction awaiting approval
+
+`WA-P1-M2-BATCH-002` rework is committed at `8343c62c`. The rejected visual
+issues are corrected: coherent SVG method icons, sparkle AI entry, compact card
+spacing, single focus treatment, no directional-link decoration, fixed desktop
+navigation, and a sticky bounded Visit management-action form. The replacement
+remains preview-only at `/planning?wa_preview=1`, `/planning/visits?wa_preview=1`,
+and `/planning/visits/:id?wa_preview=1`; current `/visits/**` routes remain
+canonical and retained.
+
+Typecheck and production build pass. Pinned focused/protected M2 Playwright is
+19/19 and the final focused correction run is 8/8; permission negatives, governed
+actions, audit/version preservation, RTL, narrow reflow and accessibility pass.
+The planning validator remains PASS at 478/478 requirements, 71 Phase 1 routes,
+five deferred Field routes, and 46 supplied/45 unique designs. All three screens
+were reviewed in the visible Codex browser with safe planner data and no mutation.
+No Field/iPad, cutover, deletion, push, merge, deploy, DDL, provider, or shared
+data action occurred. Status: `SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
+## 2026-07-23 UPDATE 124 — Web/Admin favicon and shell identity corrected
+
+The Product Owner approved correction batch `WA-P1-F0-CORR-001`. The active
+Web/Admin metadata no longer references the magenta prism and now serves the
+approved green shield/check `saqeel-favicon.svg`. The expanded graphite rail
+uses the supplied bilingual `SAQEEL | صقيل` dark-surface wordmark; the collapsed
+rail is wired to the supplied favicon mark. The approved light-surface wordmark
+is retained for light backgrounds. Source authority is `SAQEEL Design System
+(7).zip`, 2324 bytes, SHA-256
+`0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270`.
+
+Typecheck and production build pass. The focused branding contract including
+authentication setup passes 6/6, live asset requests pass, the Web/Admin
+planning validator still proves 478/478 unchanged dispositions, and visible
+in-app browser review confirms `/saqeel-favicon.svg` in document metadata plus
+the supplied favicon and bilingual wordmark in shell markup. A broader login
+atlas test remains red before its favicon assertion because the branch lacks
+that test's expected light atlas image; this pre-existing login baseline mismatch
+is recorded and not attributed to the branding correction.
+
+Legacy prism assets remain for rollback and the deferred PWA channel.
+`manifest.json`, `sw.js`, Field PWA, offline execution, and Inspector iPad were
+not changed. No route, backend, RLS/RBAC, workflow, audit, version, integration,
+DDL, deployment, push, merge, or shared-data mutation occurred. Status:
+`SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
+## 2026-07-23 UPDATE 123 — Web/Admin shell authority registered; implementation paused
+
+The Product Owner directed an immediate controlled design-authority amendment
+under `CC-WEB-ADMIN-PHASE1-001`. `Saqeel Web(3).html` is now registered as
+`WA-SHELL-SRC-001`, the binding represented Phase 1 Web/Admin visual and
+interaction authority for the authenticated shell, Dashboard, Operations
+Center, and Factory 360. The external source is 104507 bytes with SHA-256
+`b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2`; the
+rendered HTML remains outside Git under documentation-storage policy.
+
+Customer requirements and canonical backend/RLS/RBAC/audit/versioning/
+integration contracts remain behavioral authority. All 478 requirement rows
+retain exactly one disposition: 207 Phase 1 Web, 28 Phase 1 Admin, 238 Phase 2
+iPad-deferred, and five open business decisions. Planning owns Visits at target
+routes `/planning/visits` and `/planning/visits/:id`; existing `/visits/**`
+paths remain current and become compatibility redirects only after certified
+cutover approval. Field/iPad remains Phase 2 and was not investigated,
+estimated, tested, or implemented.
+
+The earlier M2 review batch is suspended pending amendment approval. Its
+interrupted visual-correction WIP is recoverably preserved at stash
+`405708dc8f30fe46577dfbad05efd779d1424909`. No application source is included
+in this governance amendment. No route cutover, deletion, push, merge, deploy,
+remote DDL, shared-data mutation, provider enablement, or G11 status change is
+authorized. Status: `CANONICAL_WEB_ADMIN_AUTHORITY_REGISTERED_AWAITING_APPROVAL`.
+
+## 2026-07-23 UPDATE 122 — F0 closed as internal technical foundation
+
+F0 is technically complete on `revamp`: typecheck and production build pass;
+focused functional/security/RTL/responsive/accessibility checks pass 6/6; the
+reference/evidence harness passes 2/2; and the Web/Admin planning validator still
+proves 478/478 traceability. The protected aggregate remains 26/38 with 12
+unchanged baseline failures and zero F0-introduced regression. Existing product
+screens, canonical routes, shell behavior, backend contracts, and rollback paths
+remain intact.
+
+The Product Owner clarified that foundations are internal technical work, not
+human project-screen approval batches. `SCREEN_BATCH_LEDGER.csv` therefore starts
+with the first actual M1-M11 screen batch. No foundation/reference route will be
+presented as a product screen. Field/iPad remains excluded.
+
+## 2026-07-23 UPDATE 121 — Web/Admin Phase 1 plan approved; F0 activated
+
+The Product Owner explicitly approved `CC-WEB-ADMIN-PHASE1-001`. Per the
+approved handoff, this authorizes F0 source implementation and local
+verification only. M1–M11, remote DDL, deployment, shared-data mutation,
+provider enablement, push, and merge remain blocked. The branch-local active
+slice is `TASK-WEB-ADMIN-PHASE1-PLAN-001-F0`; the prior planning slice is
+archived, and G11 remains concurrent and unchanged.
+
+Before application edits, F0 added a seven-row component migration ledger
+covering tokens, typed components, shell, navigation, localization, RLS-scoped
+search, and shared states/reference verification. Existing implementations are
+retained for rollback, and uncertainty remains guarded rather than silently
+replacing accepted behavior.
+
+## 2026-07-23 UPDATE 120 — Web/Admin Phase 1 planning handoff ready for approval
+
+`TASK-WEB-ADMIN-PHASE1-PLAN-001` prepared change control
+`CC-WEB-ADMIN-PHASE1-001` on isolated branch `revamp` from
+`6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d`. The dirty root checkout and its
+untracked work remain untouched; no application source, remote system, shared
+data, provider, deployment, `main`, or G11 acceptance record was changed.
+
+The source-backed baseline uniquely dispositions `CR-001..CR-478`: 207 Phase 1
+Web, 28 Phase 1 Admin, 238 Phase 2 iPad-deferred, and five open-decision rows.
+This is 478/478 traceability and preservation coverage, not a false claim that
+all rows are Phase 1-delivered. The approved Phase 1 implementation subset is
+currently 235 rows. The route register inventories 71 Phase 1 pages, five
+deferred `/field/**` pages, and three APIs. All 46 supplied design files are
+mapped as 45 unique payloads, including the exact Admin Lookups alias.
+
+F0 plus M1–M11 have exact manifests, prompts, acceptance gates, and 71
+current-to-target migration rows. Direct replacement after certification is
+recommended for 20 routes; 51 routes with test gaps or behavioral/provider
+uncertainty require a server-evaluated feature flag or guarded preview. Current
+implementations must be retained through stabilization and Product Owner
+removal approval. The planning validator passes. Status is
+`WEB_ADMIN_PLAN_READY_FOR_APPROVAL`; Product Owner approval authorizes only F0
+source implementation, with every broader action separately gated.
+
 ## 2026-07-20 UPDATE 112 — Saqeel wordmark-protected final override implemented
 
 `TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001` now implements the final consolidated
@@ -1347,3 +1502,21 @@ Phases 0-7 of the canonical Execution module are fully landed on `main` (slice `
 Verification evidence (Phase 8, on the pushed HEAD): typecheck 0 errors; production build PASS; static source contracts 230 passed / 4 skipped / 10 failed — the identical 10 pre-existing upstream failures (compliance-approval-queue, compliance-library, design-foundation, factory360-admin-control-plane, performance-pass4 ×2, platform-design-system ×2, terminology-regression ×2) owned by other lines, zero new. Live certification ran in a clean HEAD scratch copy (foreign workers share the checkout; a foreign `next dev` repeatedly clobbered the shared `.next`) against the shared Supabase with the documented-unapplied migrations absent remotely: golden-journey 7/11 — publish (M01-034/036/038/040/041), NEG publish-without-inspector, startup gate order, geofenced check-in, workspace answering with FS-101 non-compliant + mandatory evidence + blocking corrective form, and submit UX all green; the final sync/server-truth and P3-P5 review legs are blocked solely by DEC-029 (pre-existing P0 platform bug filed 2026-07-20: the `submission_versions` insert trigger calls `digest(bytea, unknown)` without pgcrypto → HTTP 404/42883; NO new submission can be written by anyone in this environment; requires a DB migration, not application code). offline-drill 5/6 (queue/replay/never-claims-success green; submit replay hits the same DEC-029 boundary). mvp2-modules-rls-negative 2/4 (M2-08/M2-10 write denials pass; M2-04/M2-06 legs are stale — the approved web-channel gate now route-redirects the inspector persona off `/admin/*` before the form renders, so the UI-driven negative cannot reach the form; server-side RLS posture unchanged). negative-auth 3/3. cd-028/cd-029/cd-030 and factory360-ipad-field deferred to full certification per the Phase 8 timebox (their review legs are also DEC-029-bound for fresh submissions).
 
 Standing boundaries are unchanged and explicit: migrations 20260721090000..20260721170000 remain UNAPPLIED to the remote Supabase pending sponsor DDL approval — all new runtime paths are probe-gated with legacy fallback (the one gap found, execution_date, is fixed at `0743dcf5`); external submission remains BLOCKED_TRIGGER_DECISION; Industry Shared remains INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED; the 10 upstream static failures remain owned by their lines. What remains runtime-pending: sponsor DDL approval + full browser certification against applied migrations (including the DEC-029 digest()/pgcrypto remediation, which sits outside this task's scope but blocks the submit-and-review legs of every live journey).
+
+## 2026-07-23 UPDATE 120 — Web/Admin M2 screen batch awaiting approval
+
+`WA-P1-M2-BATCH-001` implements the SAQEEL Planning landing, Visits list and
+Visit details as a server-gated preview on branch `revamp`. The canonical
+screens remain the default and no route, workflow, RLS policy, audit path or
+submitted version was removed or weakened. Typecheck and production build pass;
+the new read-only focused suite passes 6/6, including planner/admin permission
+boundaries, Arabic RTL at 390 pixels and zero axe violations. The pre-change
+protected baseline remains 29/38 with six external screenshot `EPERM` failures
+and three live mutation/shared-state failures; none is hidden or upgraded.
+Planning validation remains PASS at 478/478 requirements, 71 Phase 1 routes,
+five deferred Field routes, and 46 supplied/45 unique designs. The three-screen
+batch was opened in the visible Codex browser with real planner/RLS data and is
+stopped at Product Owner approval. During review, the Product Owner rejected the
+left-rail mismatch; a scoped F0 follow-up now matches the supplied 264-pixel
+SAQEEL rail and passes the corrected shell/M2 focused run 10/10. No Field/iPad work, cutover, push, merge,
+deployment, remote DDL, shared-data mutation or provider change occurred.

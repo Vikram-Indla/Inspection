@@ -1,9 +1,24 @@
-schema_version: "1.1"
+schema_version: "1.2"
 project: "Saqeel MVP1 Claude Design and UX Acceptance"
 mode: "design authority plus sponsor-approved vertical-slice implementation"
 brand_authority: "product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml"
 behavior_authority: "product-contract"
 implementation_root: "apps/web/src"
+web_admin_shell_authority:
+  source_id: "WA-SHELL-SRC-001"
+  source_name: "Saqeel Web(3).html"
+  sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
+  canonical_record: "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
+  scope: "Phase 1 Web/Admin represented shell, Dashboard, Operations Center and Factory 360 elements"
+  status: "REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL_BEFORE_IMPLEMENTATION"
+  current_frontend_role: "migration and regression evidence only"
+  phase2_exclusion: "Field/iPad/PWA/offline field execution excluded"
+  brand_assets:
+    source_name: "SAQEEL Design System (7).zip"
+    sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
+    manifest: "product-contract/web-admin-phase1/WEB_ADMIN_BRAND_ASSET_SOURCE_MANIFEST.csv"
+    approved_use: "Web/Admin favicon and bilingual shell wordmark"
+    status: "IMPLEMENTED_ON_REVAMP_AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL"
 counts:
   governed_screens: 38
   storyboards: 20

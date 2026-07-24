@@ -1,5 +1,53 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
+    gate: "Web/Admin human screen approval"
+    priority: "P0"
+    status: "AWAITING_PRODUCT_OWNER_APPROVAL"
+    owner: "Codex implementation and QA + Product Owner screen approval"
+    blocked_by: []
+    blocks: ["Next Web/Admin screen batch", "Planning-owned Visits cutover"]
+    note: "Rework commits 8343c62c, 50c95d35 and 31baf2f8 correct icons, spacing, directional links, fixed rail, sticky Visit action form, unauthorized navy/blue shell colors, and the stacked field focus border/outline. Latest typecheck/build and same-batch/protected M2 15/15 PASS; live /planning single-stroke focus verified; validator 478/478 PASS. Current routes remain canonical and retained. Stop pending Product Owner decision; no Field/iPad or remote action."
+  - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
+    gate: "Web/Admin human screen approval"
+    priority: "P0"
+    status: "PRODUCT_OWNER_APPROVED_PROCEED"
+    owner: "Product Owner visual approval authority"
+    blocked_by: []
+    blocks: ["Legacy prism removal remains separately gated"]
+    note: "Approved SAQEEL Design System (7) shield favicon and bilingual shell wordmark implemented on revamp. Typecheck/build and focused 6/6 pass; visible browser confirms new metadata and shell assets. PWA/Field/iPad untouched. One broader login-atlas test remains red on a pre-existing missing light-atlas expectation before its favicon assertion."
+  - task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
+    gate: "Web/Admin shell-authority amendment approval"
+    priority: "P0"
+    status: "PRODUCT_OWNER_APPROVED_2026-07-23"
+    owner: "Product Owner approval authority"
+    blocked_by: []
+    blocks: ["WA-P1-M2-BATCH-001 remains separately suspended until a new batch declaration", "Any canonical route cutover"]
+    note: "Saqeel Web(3).html registered as WA-SHELL-SRC-001 for represented Phase 1 Web/Admin shell Dashboard Operations Center and Factory 360 authority. Requirements remain 478/478 with unchanged dispositions. Planning owns Visits at target /planning/visits routes; /visits compatibility redirects require certified cutover. Field/iPad remains Phase 2. Governance only; application WIP preserved at stash 405708dc8f30fe46577dfbad05efd779d1424909."
+  - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-M2-BATCH-001"
+    gate: "Web/Admin Phase 1 human screen approval"
+    priority: "P0"
+    status: "SUSPENDED_PENDING_SHELL_AUTHORITY_APPROVAL_AND_RECONCILIATION"
+    owner: "Codex implementation and QA + Product Owner screen approval"
+    blocked_by: ["TASK-WEB-ADMIN-PHASE1-AUTHORITY-001 Product Owner approval"]
+    blocks: ["Next Web/Admin screen batch", "Canonical Planning/Visits cutover"]
+    note: "Three-screen batch is suspended and not approved. Its committed preview and retained current routes remain rollback evidence; interrupted corrections are stashed. Reconcile the shell and Planning-owned /planning/visits target routes only after the authority amendment is approved. No Field/iPad, next batch, cutover, push, merge, deploy, DDL, data mutation, or provider change."
+  - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-F0"
+    gate: "Web/Admin Phase 1 F0 foundation certification"
+    priority: "P0"
+    status: "TECHNICAL_COMPLETE"
+    owner: "Codex implementation and QA"
+    blocked_by: []
+    blocks: ["M1-M11 implementation"]
+    note: "F0 technical foundation complete 2026-07-23: typecheck/build and focused 6/6 pass; visual harness 2/2 pass; 12 protected failures are unchanged baseline debt and no F0 regression was introduced. Product Owner clarified foundations are not human screen-approval batches. Existing screens/routes/backend remain unchanged and rollback is additive commit reversion."
+  - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
+    gate: "Web/Admin Phase 1 planning approval"
+    priority: "P0"
+    status: "APPROVED_F0_ONLY"
+    owner: "Product Owner approval authority + F0 implementation owner after approval"
+    blocked_by: ["Product Owner approval of CC-WEB-ADMIN-PHASE1-001"]
+    blocks: ["F0 implementation", "M1-M11 implementation"]
+    note: "Source-backed planning handoff on branch revamp: 478/478 customer rows uniquely dispositioned; 71 Phase 1 and five deferred field routes; 46 supplied/45 unique designs; F0 plus M1-M11 manifests and prompts; 71/71 current-to-target migration rows with 20 direct-after-certification and 51 guarded preview/flag strategies. Existing implementations remain through stabilization and Product Owner removal approval. Planning only—no app source, remote DDL, deployment, data mutation, provider enablement, push, or merge authorized. G11 remains concurrent and unchanged."
   - task_id: "TASK-REPOSITORY-CONSOLIDATION-20260721"
     gate: "Repository administration during G11 hardening"
     priority: "P0"

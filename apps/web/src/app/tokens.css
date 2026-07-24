@@ -294,8 +294,8 @@
   --row-h-compact: 34px;
   --touch-target: 44px;
 
-  --sidebar-w: 248px;
-  --sidebar-w-collapsed: 60px;
+  --sidebar-w: 264px;
+  --sidebar-w-collapsed: 74px;
   --topbar-h: 52px;
   --page-pad: var(--space-6);
 
@@ -325,3 +325,123 @@
 /* Product voice: English → IBM Plex Sans; Arabic → IBM Plex Sans Arabic */
 body { font-family: var(--font-body); }
 :lang(ar) { font-family: var(--font-body); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ASTRYX (--ax-*) COMPATIBILITY SHIM — TEMPORARY. Maps every legacy --ax-*
+   token consumed in product code to its SAQEEL semantic equivalent so all
+   ~1996 existing consumers render SAQEEL immediately with zero edits.
+   Tracked for deletion in PR12 (zero-trace gate). DO NOT ADD NEW --ax-*.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Color */
+  --ax-color-primary:        var(--action-primary);
+  --ax-color-primary-hover:  var(--action-primary-hover);
+  --ax-color-primary-strong: var(--action-primary-pressed);
+  --ax-color-primary-tint:   var(--accent-soft);
+  --ax-color-primary-weak:   var(--accent-soft-hover);
+  --ax-color-selected-tint:  var(--accent-soft);
+  --ax-color-canvas:         var(--surface-canvas);
+  --ax-color-surface:        var(--surface-primary);
+  --ax-color-surface-raised: var(--surface-raised);
+  --ax-color-surface-sunken: var(--surface-sunken);
+  --ax-color-overlay:        var(--surface-overlay);
+  --ax-color-text:           var(--text-primary);
+  --ax-color-text-primary:   var(--text-primary);
+  --ax-color-text-secondary: var(--text-secondary);
+  --ax-color-text-subtle:    var(--text-muted);
+  --ax-text-subtle:          var(--text-muted);
+  --ax-color-text-disabled:  var(--text-disabled);
+  --ax-color-inverse-text:   var(--text-inverse);
+  --ax-color-on-critical:    var(--text-on-action);
+  --ax-fg-critical:          var(--text-on-action);
+  --ax-color-border:         var(--border-subtle);
+  --ax-color-border-strong:  var(--border-strong);
+  --ax-color-focus:          var(--focus-ring);
+  --ax-color-success:        var(--status-compliant);
+  --ax-color-success-tint:   var(--status-compliant-soft);
+  --ax-color-success-strong: var(--status-compliant-text);
+  --ax-color-warning:        var(--status-warning);
+  --ax-color-warning-tint:   var(--status-warning-soft);
+  --ax-color-warning-strong: var(--status-warning-text);
+  --ax-color-critical:       var(--status-critical);
+  --ax-color-critical-tint:  var(--status-critical-soft);
+  --ax-color-critical-strong:var(--status-critical-text);
+  --ax-color-info:           var(--status-info);
+  --ax-color-info-tint:      var(--status-info-soft);
+  --ax-color-neutral-tint:   var(--surface-secondary);
+  --ax-color-neutral-weak:   var(--border-subtle);
+  --ax-color-shadow-base:    #1a1d1f;
+  --ax-color-print-text:     var(--print-text);
+  --ax-color-print-surface:  var(--print-surface);
+  --ax-color-print-border:   var(--print-border);
+
+  /* Fonts */
+  --ax-font-sans:   var(--font-body);
+  --ax-font-arabic: var(--font-body);
+  --ax-font-mono:   var(--font-mono);
+  --ax-font-input:  var(--font-body);
+  --numeric-features: "tnum" 1, "lnum" 1;
+
+  /* Type shorthands (weight size/lh family) → SAQEEL roles */
+  --ax-text-display:      600 28px/1.25 var(--font-body);
+  --ax-text-title:        600 22px/1.3 var(--font-body);
+  --ax-text-heading:      600 17px/1.35 var(--font-body);
+  --ax-text-heading-xs:   600 14px/1.4 var(--font-body);
+  --ax-text-subheading:   600 15px/1.55 var(--font-body);
+  --ax-text-body:         400 14px/1.5 var(--font-body);
+  --ax-text-body-strong:  600 14px/1.5 var(--font-body);
+  --ax-text-field:        400 15px/1.55 var(--font-body);
+  --ax-text-caption:      400 12px/1.4 var(--font-body);
+  --ax-text-micro:        500 11.5px/1.4 var(--font-body);
+  --ax-text-input:        400 14px/1.5 var(--font-body);
+  --ax-text-input-field:  400 15px/1.55 var(--font-body);
+  --ax-font-size-150:     12px;
+  --ax-font-size-300:     22px;
+
+  /* Spacing */
+  --ax-space-050: var(--space-1);
+  --ax-space-100: var(--space-2);
+  --ax-space-150: var(--space-3);
+  --ax-space-200: var(--space-4);
+  --ax-space-250: var(--space-5);
+  --ax-space-300: var(--space-6);
+  --ax-space-400: var(--space-8);
+  --ax-space-600: var(--space-12);
+
+  /* Radius */
+  --ax-radius-small:    var(--radius-xs);
+  --ax-radius-standard: var(--radius-sm);
+  --ax-radius-large:    var(--radius-md);
+  --ax-radius-full:     var(--radius-full);
+  --ax-radius-input:    var(--radius-sm);
+  --ax-radius-200:      var(--radius-sm);
+  --ax-radius-300:      var(--radius-md);
+
+  /* Elevation */
+  --ax-shadow-raised:  var(--shadow-xs);
+  --ax-shadow-card:    var(--shadow-sm);
+  --ax-shadow-overlay: var(--shadow-lg);
+
+  /* Control metrics (field surfaces raise --control-h-lg to 52 via density) */
+  --ax-control-height:           var(--touch-target); /* restores original 44px floor (was 40 via control-h-lg) */
+  --ax-control-height-prominent: 48px;                 /* restores original 48px; no SAQEEL token matches exactly */
+  --ax-control-height-field:     52px;  /* legacy field controls expected an unconditional 52px touch target */
+  --ax-focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--focus-ring);
+
+  /* Motion */
+  --ax-motion-fast:     var(--motion-fast) var(--ease-standard);
+  --ax-motion-standard: var(--motion-base) var(--ease-standard);
+
+  /* Layout */
+  --ax-grid-desktop-max:  1440px;
+  --ax-shell-nav-width:   var(--sidebar-w);
+  --ax-shell-panel-width: 360px;
+
+  /* Z */
+  --ax-z-sticky:  var(--z-sticky);
+  --ax-z-drawer:  var(--z-drawer);
+  --ax-z-modal:   var(--z-modal);
+  --ax-z-toast:   var(--z-toast);
+  --ax-z-tooltip: var(--z-tooltip);
+}
+:root[data-theme="dark"] { --ax-color-shadow-base: #000000; }

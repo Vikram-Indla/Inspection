@@ -1,81 +1,79 @@
-schema_version: "1.2"
-task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
-gate: "G11 Hardening — platform navigation performance remediation"
-title: "P0 navigation-performance post-mortem and remediation across the Inspection Platform (Codex / Kimi K3 / Claude Code sequential passes)"
-status: "REMEDIATED_RESIDUAL_P0_BLOCKED"
+schema_version: "1.5"
+task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
+batch_id: "WA-P1-M2-BATCH-002"
+change_control_id: "CC-WEB-ADMIN-PHASE1-001"
+gate: "Web/Admin human screen approval"
+title: "Planning landing and Planning-owned Visits list/detail"
+status: "AWAITING_PRODUCT_OWNER_APPROVAL"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-branch: "perf/p0-navigation-remediation"
+application_implementation_allowed: true
+branch: "revamp"
+baseline_sha: "cf705db0"
+worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
 
-baseline_sha: "d53e09f7ee4018bf2046e36d95fe45df355b11a"
-head_at_activation: "f55e2eac80d040cb69c7a7211c67e80f7cfb9d51"
-measured_remediation_sha: "f2b86c4"
-post_audit_progress_guard_sha: "496ed0c"
+approval:
+  approved_by: "Vikram Indla / Product Owner"
+  approved_on: "2026-07-23"
+  evidence: "Explicit user direction: continue"
+  interpretation: "APPROVED — PROCEED after WA-P1-F0-CORR-001"
+  authorizes: "WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement"
 
-worktrees:
-  - path: "Inspection (main checkout)"
-    branch: "perf/p0-navigation-remediation"
-    agent: "Claude Code — Pass 3 (independent review and remediation)"
-  - path: "Inspection-perf-codex"
-    branch: "perf/p0-navigation-remediation--codex-pass"
-    agent: "Codex — Pass 1 (baseline/instrumentation) and Pass 4 (integration/acceptance)"
-  - path: "Inspection-perf-kimi"
-    branch: "perf/p0-navigation-remediation--kimi-pass"
-    agent: "Kimi K3 — Pass 2 (repository-wide post-mortem)"
+process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+requirement_ids: ["CR-001..CR-098"]
+acceptance_ids: ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"]
+screen_ids: ["WA-DES-036", "WA-DES-045"]
+screens: ["Planning landing", "Planning Visits list", "Planning Visit details"]
+current_routes: ["/planning", "/visits", "/visits/:id"]
+target_routes: ["/planning", "/planning/visits", "/planning/visits/:id"]
+review_routes: ["/planning?wa_preview=1", "/planning/visits?wa_preview=1", "/planning/visits/:id?wa_preview=1"]
+design_files: ["SAQEEL Planning.dc.html", "SAQEEL Visits.dc.html", "Saqeel Web(3).html shell authority"]
+engines: ["Supabase SSR/RLS", "planning capability and expiry RPCs", "visit lifecycle", "assignment and package/version reads", "audit/versioning"]
 
-slice_history:
-  - "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 — unrelated, concurrently active on its own branch/worktree; not superseded, not touched by this task."
+backend_contracts_to_preserve:
+  - "Authenticated planner/operations route guards and RLS visibility"
+  - "has_planning_capability and expire_lapsed_visits contracts"
+  - "visits assignments inspections notifications package/version lifecycle and audit reads"
+  - "Canonical workflow transitions immutable submitted versions audit and fail-closed providers"
 
-objective: >-
-  Measure and eliminate the platform-wide one-to-two-second post-authentication
-  navigation lag (dashboard, side-nav, lists, detail, forms, drawers, tables,
-  search/filter, reports, admin, iPad, light/dark) via a governed multi-agent
-  investigation covering 60 mandatory diagnostic checks, evidence-backed fixes,
-  and before/after measurement, per docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md.
+expected_files:
+  - "apps/web/src/app/(app)/planning/page.tsx"
+  - "apps/web/src/app/(app)/planning/PlanningPreview.tsx"
+  - "apps/web/src/app/(app)/planning/visits/**"
+  - "apps/web/src/app/(app)/visits/** compatibility sources only"
+  - "apps/web/e2e/web-admin-m2-batch-002.spec.ts"
+  - "product-contract/web-admin-phase1/** batch records"
 
-requirement_ids:
-  - "G11 Hardening — non-functional navigation performance. No MVP1 functional requirement, field, permission, state, or audit-event ID is invented, weakened, or removed while optimizing."
-
-acceptance_ids:
-  - "Project acceptance targets: docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §9 (navigation, interaction, network, rendering, responsive)"
-  - "60 mandatory P0 diagnostic checks: docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §6"
-
-integration:
-  - "docs/performance/inspection-performance-postmortem.md"
-  - "docs/performance/inspection-route-inventory.md"
-  - "docs/performance/inspection-p0-register.md"
-  - "docs/performance/inspection-before-after-results.md"
-  - "docs/performance/inspection-regression-results.md"
-  - "docs/performance/inspection-agent-handover.md"
-  - "docs/performance/evidence/INDEX.md (pointers only — binaries live under INSPECTION_DOCS_ROOT)"
-  - "docs/performance/results/baseline.json, final.json, route-results.csv"
+verification:
+  - "typecheck and production build"
+  - "focused unit integration route permission and negative-path tests"
+  - "Playwright functional and refresh-persistence tests"
+  - "exact design comparison at 1440x900"
+  - "EN/LTR and AR/RTL light/dark 1024x768 412/390 and 320 reflow"
+  - "keyboard and automated accessibility"
+  - "affected Planning Visits shell and protected regression"
 
 do_not_touch:
-  - "Do not push, merge, or fast-forward main, at any pass, for any reason."
-  - "Do not merge perf/p0-navigation-remediation into setup/Inspection without a separate future explicit human approval (Pass 4 opens a PR only)."
-  - "Do not touch TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 files, its branch codex/factory360-ipad-api-contract-consumption-015, or its worktree."
-  - "Do not commit binary evidence (screenshots, videos, traces) to Git — INSPECTION_DOCS_ROOT only, per docs/DOCUMENTATION_STORAGE_POLICY.md."
-  - "Do not weaken authentication, RLS, RBAC, tenant isolation, or accessibility behaviour to improve timings."
-  - "Do not invent policy values, thresholds, SLAs, or performance budgets beyond docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §9."
+  - "Do not edit or investigate /field/** Field PWA offline execution or Inspector iPad."
+  - "Do not delete current /planning or /visits routes components actions tests or backend contracts."
+  - "Do not activate compatibility redirects or change canonical routes without APPROVED FOR CUTOVER."
+  - "Do not restore the prior WIP stash blindly; it contains superseded prism branding."
+  - "Do not change shared brand assets PWA manifest service worker migrations providers G11 main or remote systems."
 
-evidence:
-  - "docs/performance/results/baseline.json — 90 authenticated production-build samples (5 cold / 10 warm per representative route)."
-  - "docs/performance/results/final.json and route-results.csv — definitive after sample and calculated comparison."
-  - "docs/performance/inspection-p0-register.md — P0-01..60 plus all 140 user-mandated investigations classified."
-  - "docs/performance/inspection-performance-postmortem.md and inspection-regression-results.md."
-  - "External before/after screenshots and traces indexed by docs/performance/evidence/INDEX.md."
+rollback:
+  method: "Disable new Planning-owned preview routes or revert the batch commit; retained /visits implementations remain canonical."
+  retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
+
+implementation:
+  commit: "8343c62c"
+  correction_commit: "50c95d35"
+  focus_correction_commit: "31baf2f8"
+  decision_history: "APPROVED_IN_PROGRESS -> REJECTED_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_PALETTE_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_DOUBLE_BORDER_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL"
+  corrections: "Replace placeholder/legacy AI icons; compact Planning card spacing; remove directional-link styling; fix desktop rail; use a sticky bounded Visit action form; replace unauthorized navy/hard-coded blue shell colors with exact SAQEEL graphite tokens; replace stacked field border/outline with one contiguous focus stroke."
+  verification: "typecheck PASS; production build PASS; latest same-batch/protected M2 15/15 PASS; live /planning focus computed as outline none plus focus border and inset reinforcement; exact semantic-color comparison PASS; axe/RTL/reflow/permission negatives PASS; Web/Admin validator PASS 478/478."
+  live_review: "Visible Codex browser on 2026-07-23 at all three review routes with planner persona and safe RLS-scoped data; no mutation performed."
 
 exit_condition: >-
-  All reachable routes measured cold/warm with median/p75/p95; P0 register
-  complete with evidence per item; high-confidence fixes implemented and
-  regression-tested without weakening protected functionality; before/after
-  results and full agent-handover package published under docs/performance/;
-  branch perf/p0-navigation-remediation pushed with a final acceptance status
-  per docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §16 — not merged.
-
-open_blockers:
-  - "Useful-content acceptance remains failed: final warm p75 is 859–8,897 ms against the <=500 ms target."
-  - "Operations still logs statement timeouts for action_forms and geo-override evidence."
-  - "The checkout is not linked to a Supabase project, so the forward index migration cannot be remotely applied, advised or EXPLAIN-verified in this session."
-  - "The current Supabase connector identity is also denied read-only project, migration, advisor and catalog access."
-  - "Dashboard entity-search focused regression timed out once and the full mutation-heavy inventory was not rerun; no release certification is claimed."
+  Product Owner reviews commit 8343c62c. Do not continue, cut over, delete,
+  push, merge, deploy, or start another batch until an explicit permitted
+  Product Owner decision is received.

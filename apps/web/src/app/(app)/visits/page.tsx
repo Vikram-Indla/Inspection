@@ -22,8 +22,12 @@ type Joined = {
   inspections: { status: string } | null; // TO-ONE embed — object or null
 };
 
-export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string }> }) {
+export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string; wa_preview?: string; wa_route_base?: string }> }) {
   const sp = await searchParams;
+  const targetPreview = process.env.SAQEEL_M2_PREVIEW === "enabled" && sp.wa_preview === "1";
+  const planningOwnedPreview = targetPreview && sp.wa_route_base === "planning";
+  const routeBase = planningOwnedPreview ? "/planning/visits" : "/visits";
+  const shellCurrent = planningOwnedPreview ? "/planning" : "/visits";
   const limit = Math.min(Math.max(Number.parseInt(sp.limit ?? "", 10) || PAGE_STEP, PAGE_STEP), PAGE_MAX);
   const { t, locale } = await useT();
   const sb = await supabaseServer();
@@ -48,7 +52,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     // text is logged server-side only; the user sees stable neutral copy (no raw message).
     console.error(`[visits.list] load failed: ${error.message}`);
     return (
-      <Shell current="/visits" title={t("visit.list.title", "Visit management")}>
+      <Shell current={shellCurrent} title={t("visit.list.title", "Visit management")}>
         <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
@@ -204,7 +208,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     errTypeOrNotes: t("visit.err.typeOrNotes", "Choose a visit type to change, or tick “update notes”."),
   };
   return (
-    <Shell current="/visits" title={t("visit.list.title", "Visit management")}
+    <Shell current={shellCurrent} title={t("visit.list.title", "Visit management")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("visit.list.context", "Filtered to your access")}</span>}>
       {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points.
           CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
@@ -212,7 +216,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           authoritative list below is the working equivalent — never faked. */}
       <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
         <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-          <Link className="sq-btn sq-btn--secondary" aria-current="page" href="/visits" prefetch={false}>{t("visit.views.list", "List")}</Link>
+          <Link className="sq-btn sq-btn--secondary" aria-current="page" href={targetPreview ? `${routeBase}?wa_preview=1` : routeBase} prefetch={false}>{t("visit.views.list", "List")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/calendar" prefetch={false}>{t("visit.views.calendar", "Calendar")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
           <Link className="sq-btn sq-btn--subtle" href="/visits/map" prefetch={false}>{t("visit.views.map", "Map")}</Link>
@@ -221,14 +225,18 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
             cross-linked in both directions (canonical §5/§6 reconciliation).
             The empty-state "Create a plan" link below only renders with zero
             rows, so the populated board needs its own always-visible route. */}
-        <Link className="sq-btn sq-btn--subtle" href="/planning" prefetch={false}>{t("visit.list.planningLink", "Planning — drafts and plans →")}</Link>
-        <span className="sq-caption sq-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
+        <Link className="sq-btn sq-btn--subtle" href="/planning" prefetch={false}>
+          {planningOwnedPreview
+            ? t("visit.list.planningLink", "Planning — drafts and plans →").replace(/[←→]\s*$/u, "").trim()
+            : t("visit.list.planningLink", "Planning — drafts and plans →")}
+        </Link>
+        <span className={targetPreview ? "sq-numeric" : "sq-caption sq-numeric"}>{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
       {/* M10 / canonical §19 — the AI widget fails isolated; it can never
           blank the visit board. */}
-      <WidgetBoundary label={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")}>
+      {!targetPreview && <WidgetBoundary label={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")}>
         <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
-      </WidgetBoundary>
+      </WidgetBoundary>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
@@ -237,8 +245,10 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
           regionOptions={regionOptions} cityOptions={cityOptions} cancelReasons={cancelReasons}
-          total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale} />
+          total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale}
+          targetMode={targetPreview} routeBase={routeBase} />
       )}
+      {targetPreview && <div className="ax-banner" role="note"><div>{t("visit.preview.dualState", "Planning status and operational state remain independent. Every bulk item reports its own applied, blocked, or notification outcome.")}</div></div>}
     </Shell>
   );
 }
