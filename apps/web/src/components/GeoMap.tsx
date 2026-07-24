@@ -197,6 +197,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   const [mapLocale, setMapLocale] = useState<"en" | "ar">("en");
   const [mapTheme, setMapTheme] = useState<"light" | "dark">("light");
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
   const lightPreset = mapTheme === "dark" ? "night" : "day";
   latest.current = { center, zoom, markers, selectedId, focus };
   selectedRef.current = selectedId;
@@ -215,6 +216,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   }, []);
   useEffect(() => {
     if (!token || !containerRef.current) return;
+    setReady(false);
     const map = new mapboxgl.Map({
       accessToken: token, container: containerRef.current, style: "mapbox://styles/mapbox/standard",
       center: [center[1], center[0]], zoom, language: mapLocale,
@@ -264,11 +266,15 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
       map.on("mouseenter", MARKER_LAYER, () => { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", MARKER_LAYER, () => { map.getCanvas().style.cursor = ""; });
     };
+    const onIdle = () => setReady(true);
     const onError = (event: { error?: Error }) => {
       if (/access token|authorization|unauthori[sz]ed|forbidden|failed to load.*style/i.test(event.error?.message ?? "")) setFailed(true);
     };
-    map.on("load", onLoad); map.on("error", onError);
-    return () => { map.off("load", onLoad); map.off("error", onError); map.remove(); mapRef.current = null; };
+    map.on("load", onLoad); map.on("idle", onIdle); map.on("error", onError);
+    return () => {
+      map.off("load", onLoad); map.off("idle", onIdle); map.off("error", onError);
+      map.remove(); mapRef.current = null;
+    };
   }, [interactive, mapLocale, showRegions, token]);
 
   useEffect(() => { if (mapRef.current?.isStyleLoaded()) sync(mapRef.current, latest.current); }, [center, focus, markers, selectedId, zoom]);
@@ -293,5 +299,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
       <p className="t-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
     </div>;
   }
-  return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox" style={{ blockSize: height, inlineSize: "100%" }} />;
+  return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox"
+    data-map-ready={ready ? "true" : "false"} aria-busy={ready ? undefined : "true"}
+    style={{ blockSize: height, inlineSize: "100%" }} />;
 }

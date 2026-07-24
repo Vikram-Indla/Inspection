@@ -171,7 +171,13 @@ export function buildMethodology(metric: SharedMetric, locale: Locale): Methodol
     formulaId: `${metric.metricId} · v${metric.formulaVersion}`,
     title: metricTitle(metric, locale),
     rows,
-    blockedNote: isBlocked(metric.sourceStatus) ? metric.unavailableReason : null,
+    blockedNote: isBlocked(metric.sourceStatus)
+      ? t(
+          locale,
+          metric.unavailableReason ?? "This measure is blocked until its policy or data contract is approved.",
+          "هذا المؤشر محجوب إلى أن تتم الموافقة على سياسته أو عقد بياناته.",
+        )
+      : null,
     drillRoute: metric.drill.route,
     drillLabel: t(locale, "Open records", "فتح السجلات"),
   };

@@ -1,79 +1,114 @@
 schema_version: "1.5"
-task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
-batch_id: "WA-P1-M2-BATCH-002"
+task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
+batch_id: "WA-P1-M1-DASHBOARD-001"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin human screen approval"
-title: "Planning landing and Planning-owned Visits list/detail"
-status: "AWAITING_PRODUCT_OWNER_APPROVAL"
+gate: "Web/Admin M1 implementation and human screen approval"
+title: "Executive and Business Dashboard reconciliation"
+status: "TECHNICAL_RELEASE_READY"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
-branch: "revamp"
-baseline_sha: "cf705db0"
-worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
+branch: "codex/m1-dashboard-reconciliation"
+baseline_sha: "c8bdf6d1"
+worktree: "/Users/vikramindla/Developer/Inspection-codex-m1-dashboard"
 
 approval:
   approved_by: "Vikram Indla / Product Owner"
-  approved_on: "2026-07-23"
-  evidence: "Explicit user direction: continue"
-  interpretation: "APPROVED — PROCEED after WA-P1-F0-CORR-001"
-  authorizes: "WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement"
+  approved_on: "2026-07-24"
+  evidence: "Explicit sponsor direction: Please proceed; loop the operating procedure until this module is finished; consider all approvals given."
+  interpretation: "APPROVED — execute the complete M1 Dashboard loop, retaining honest blocked states for unresolved policy contracts."
+  authorizes: "M1 leased application files, focused tests, local/runtime evidence, and a separately bounded non-production seeder dry-run. No push merge deployment production mutation or Field/PWA/iPad work."
 
-process_ids: ["G2-P01", "G2-P02", "G2-P03"]
-requirement_ids: ["CR-001..CR-098"]
-acceptance_ids: ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"]
-screen_ids: ["WA-DES-036", "WA-DES-045"]
-screens: ["Planning landing", "Planning Visits list", "Planning Visit details"]
-current_routes: ["/planning", "/visits", "/visits/:id"]
-target_routes: ["/planning", "/planning/visits", "/planning/visits/:id"]
-review_routes: ["/planning?wa_preview=1", "/planning/visits?wa_preview=1", "/planning/visits/:id?wa_preview=1"]
-design_files: ["SAQEEL Planning.dc.html", "SAQEEL Visits.dc.html", "Saqeel Web(3).html shell authority"]
-engines: ["Supabase SSR/RLS", "planning capability and expiry RPCs", "visit lifecycle", "assignment and package/version reads", "audit/versioning"]
+process_ids: ["G2-P12"]
+requirement_ids: ["CR-001..CR-478"]
+acceptance_ids: ["WA-M1-AC-001..006"]
+evidence_ids: ["WA-M1-EV-001..006"]
+screen_ids: ["WA-DES-025", "WA-DES-046"]
+preservation_ids: ["WA-SP-010..028"]
+screens: ["Dashboard Strategic View", "Dashboard Operational View"]
+routes: ["/dashboard", "/dashboard?view=strategic", "/dashboard?view=operational"]
+authorized_roles: ["ops", "leadership"]
+design_sources:
+  - "SAQEEL Executive Overview.html — SHA-256 0722d7438792a332fd533aae3c9276c54547ee29e1e7c9d80c5af17c47d078e1"
+  - "SAQEEL Web Dashboard.dc.html — SHA-256 d84d2a7cb916d0095954b005b096bc5c9342c848f649fb8c07b37ab0bcbc7088"
+  - "SAQEEL Design System.zip — SHA-256 cfdbfa1a7ff6c0cafe7c778f9a4d43fcf6c65841dc2652dcd7aa4e92b713df3c"
+engines:
+  - "Supabase SSR and RLS-scoped reads"
+  - "dashboard KPI registry and projection"
+  - "checklist compliance"
+  - "shared GeoMap provider boundary"
+  - "audit/version/immutable submission reads"
 
 backend_contracts_to_preserve:
-  - "Authenticated planner/operations route guards and RLS visibility"
-  - "has_planning_capability and expire_lapsed_visits contracts"
-  - "visits assignments inspections notifications package/version lifecycle and audit reads"
-  - "Canonical workflow transitions immutable submitted versions audit and fail-closed providers"
+  - "Approved inspections only for compliance truth."
+  - "Canonical visit, inspection, review, violation and audit states only."
+  - "Partial, stale, empty, unavailable, not configured, decision required, unauthorized and provider-unavailable states remain explicit."
+  - "No target, threshold, risk band, cycle, SLA, capacity, lookback, license or AI policy is invented."
+  - "RLS/RBAC and geography visibility remain server enforced."
 
-expected_files:
-  - "apps/web/src/app/(app)/planning/page.tsx"
-  - "apps/web/src/app/(app)/planning/PlanningPreview.tsx"
-  - "apps/web/src/app/(app)/planning/visits/**"
-  - "apps/web/src/app/(app)/visits/** compatibility sources only"
-  - "apps/web/e2e/web-admin-m2-batch-002.spec.ts"
-  - "product-contract/web-admin-phase1/** batch records"
+implementation_lease:
+  owner: "Codex root orchestrator"
+  files:
+    - "apps/web/src/app/(app)/dashboard/page.tsx"
+    - "apps/web/src/app/(app)/dashboard/DashboardView.tsx"
+    - "apps/web/src/app/(app)/dashboard/dashboard.module.css"
+    - "apps/web/src/app/(app)/dashboard/MetricStrip.tsx"
+    - "apps/web/src/app/(app)/dashboard/DecisionCanvas.tsx"
+    - "apps/web/src/app/(app)/dashboard/dashboard-format.ts"
+    - "apps/web/e2e/web-admin-m1-dashboard.spec.ts"
+  optional_with_evidence:
+    - "apps/web/src/app/(app)/dashboard/metrics.ts"
+    - "apps/web/src/app/(app)/dashboard/loading.tsx"
+
+seeder_lease:
+  owner: "Dedicated Supabase seeder agent"
+  project_ref: "iiozvqntawxfwbgffzqu"
+  environment: "SPONSOR_CONFIRMED_NON_PRODUCTION"
+  scope: "Deterministic reversible source-record seeding, dry-run first; never seed displayed KPI totals or invent governed policy values."
+  remote_write_gate: "Batch provenance, cleanup, idempotency, RLS-negative validation and exact project-ref check must pass before a remote write."
 
 verification:
   - "typecheck and production build"
-  - "focused unit integration route permission and negative-path tests"
-  - "Playwright functional and refresh-persistence tests"
-  - "exact design comparison at 1440x900"
-  - "EN/LTR and AR/RTL light/dark 1024x768 412/390 and 320 reflow"
-  - "keyboard and automated accessibility"
-  - "affected Planning Visits shell and protected regression"
+  - "focused M1 functional and negative-path tests"
+  - "RLS/RBAC role-positive and role-negative tests"
+  - "partial-source, zero-denominator and provider-failure tests"
+  - "real GeoMap plus accessible fallback"
+  - "EN/LTR and AR/RTL light/dark at 1440x900, 1024x768, 412/390 and 320"
+  - "keyboard, focus and automated accessibility"
+  - "protected F0, adjacent-route and 478-requirement validator regression"
+  - "real Chrome implementation evidence"
 
 do_not_touch:
-  - "Do not edit or investigate /field/** Field PWA offline execution or Inspector iPad."
-  - "Do not delete current /planning or /visits routes components actions tests or backend contracts."
-  - "Do not activate compatibility redirects or change canonical routes without APPROVED FOR CUTOVER."
-  - "Do not restore the prior WIP stash blindly; it contains superseded prism branding."
-  - "Do not change shared brand assets PWA manifest service worker migrations providers G11 main or remote systems."
+  - "Do not modify main, setup/Inspection, existing stashes, deployment or production."
+  - "Do not edit /field/**, PWA, iPad, offline engines or service workers."
+  - "Do not modify the F0 shell, shared navigation, global tokens, global component CSS or shared GeoMap."
+  - "Do not add APIs, RPCs, migrations, schema, RLS/RBAC or provider configuration under the M1 application lease."
+  - "Do not turn an unresolved DEC-028 metric into a numeric or green state."
 
 rollback:
-  method: "Disable new Planning-owned preview routes or revert the batch commit; retained /visits implementations remain canonical."
+  method: "Revert the isolated M1 package commit or disable the guarded composition; F0 baseline c8bdf6d1 remains available."
   retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
 
-implementation:
-  commit: "8343c62c"
-  correction_commit: "50c95d35"
-  focus_correction_commit: "31baf2f8"
-  decision_history: "APPROVED_IN_PROGRESS -> REJECTED_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_PALETTE_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL -> REJECTED_DOUBLE_BORDER_REWORK -> AWAITING_PRODUCT_OWNER_APPROVAL"
-  corrections: "Replace placeholder/legacy AI icons; compact Planning card spacing; remove directional-link styling; fix desktop rail; use a sticky bounded Visit action form; replace unauthorized navy/hard-coded blue shell colors with exact SAQEEL graphite tokens; replace stacked field border/outline with one contiguous focus stroke."
-  verification: "typecheck PASS; production build PASS; latest same-batch/protected M2 15/15 PASS; live /planning focus computed as outline none plus focus border and inset reinforcement; exact semantic-color comparison PASS; axe/RTL/reflow/permission negatives PASS; Web/Admin validator PASS 478/478."
-  live_review: "Visible Codex browser on 2026-07-23 at all three review routes with planner persona and safe RLS-scoped data; no mutation performed."
-
 exit_condition: >-
-  Product Owner reviews commit 8343c62c. Do not continue, cut over, delete,
-  push, merge, deploy, or start another batch until an explicit permitted
-  Product Owner decision is received.
+  M1 may be presented for sponsor acceptance only after all WA-M1-AC-001..006
+  P0/P1 evidence passes or each externally blocked contract is visibly and
+  truthfully classified. Do not push, merge, deploy, modify production, or
+  begin another implementation module without a separately recorded lease.
+
+completion:
+  completed_on: "2026-07-24"
+  verdict: "RELEASE"
+  independent_visual_review: "RELEASE — no remaining P0/P1 issue in the targeted M1 scope."
+  tests:
+    - "Typecheck PASS"
+    - "Production build PASS"
+    - "Focused M1 functional, permission, responsive, RTL and accessibility suite 16/16 PASS (Inspector setup excluded because the pre-existing fixture returns HTTP 400)"
+    - "Final evidence refresh 3/3 PASS"
+    - "Web/Admin validator PASS at 478/478"
+    - "git diff --check PASS"
+  evidence: "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md"
+  seeding: "No remote write. The supplied handoff is discovery/design authority, not an executable governed seeder."
+  remaining_release_caveats:
+    - "Inspector authentication fixture remains an external test-infrastructure defect and is not claimed as passed."
+    - "DEC-028 and all unresolved policy-derived KPIs remain visibly blocked; no values were invented."
+    - "No push, merge, deployment, production mutation, DDL, API, PWA, Field or iPad change occurred."

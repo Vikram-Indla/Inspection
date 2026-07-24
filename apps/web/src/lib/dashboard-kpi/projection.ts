@@ -127,6 +127,7 @@ export function buildDashboardKpiProjection(
             breakdown: [
               { labelRef: "approve", value: s.approvedScoped },
               { labelRef: "return", value: o.returnedRows.length },
+              { labelRef: "reject", value: o.rejectedRows.length },
             ],
           }),
         );

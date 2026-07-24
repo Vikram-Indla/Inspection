@@ -1,5 +1,40 @@
 # Current State
 
+## 2026-07-24 UPDATE 128 — M1 Dashboard independently released
+
+`TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001` is technically release-ready on the
+isolated branch `codex/m1-dashboard-reconciliation` from baseline `c8bdf6d1`.
+The Strategic and Operational perspectives now use source-backed, RLS-scoped
+records; exact Operations/Leadership route authorization; approved-inspection
+compliance truth; canonical visit, review, violation and audit states; the
+shared Mapbox boundary with official coordinates; honest partial/unavailable
+states; and explicit fail-closed handling for every unresolved DEC-028 KPI.
+No target, threshold, risk class, SLA, capacity, cycle, licence, forecast or AI
+value was invented.
+
+The sponsor-rejected visual defects are closed: Mapbox evidence waits for idle
+and shows rendered tiles; the Operational map/activity row is balanced; Arabic
+product and governance copy is localized; audit verbs use business labels; the
+mobile drawer no longer leaks; 320px shell controls occupy readable stacked
+rows; and unsupported Analytics shows neither a selected Dashboard perspective
+nor a false Live state. The independent visual critic's final verdict is
+`RELEASE`.
+
+Verification: typecheck PASS; production build PASS; focused M1 functional,
+permission, RTL/responsive and accessibility suite 16/16 PASS; final evidence
+refresh 3/3 PASS; Web/Admin validator PASS with 478/478 dispositions; and
+`git diff --check` PASS. Seven final screenshots and their SHA-256 values are
+indexed in
+`product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md`.
+
+The dedicated seeder review made zero remote writes. The supplied seeding ZIP
+contains discovery and rollback design but no executable governed seeder; the
+required allow-list, run registry, complete provenance membership, idempotent
+rerun, targeted cleanup and RLS-negative evidence do not yet exist. The
+Inspector authentication fixture still returns HTTP 400 during setup and is
+recorded as external test debt. No push, merge, deployment, production
+mutation, remote DDL, API, Field, PWA, iPad or stash change occurred.
+
 ## 2026-07-23 UPDATE 127 — Field focus double border removed
 
 The Product Owner rejected the remaining double focus border on the Planning

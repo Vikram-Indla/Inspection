@@ -23,9 +23,10 @@ import {
   SearchResults,
   StrategicView,
 } from "./DashboardView";
-import { BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
-
-export const dynamic = "force-dynamic";
+import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
+import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import type { MetricScope } from "@/lib/dashboard-kpi/contract";
+import { Suspense } from "react";
 
 type PageError = { message: string };
 type RowPage<T> = { data: T[] | null; error: PageError | null };
@@ -82,65 +83,83 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const today = riyadhTodayScope(nowMs);
   const region = typeof params.region === "string" ? params.region : "";
   const query = typeof params.q === "string" ? params.q.slice(0, 120) : "";
-  const view = params.view === "operational" ? "operational" : "strategic";
+  const requestedView = params.view ?? "strategic";
+  const unsupportedView = requestedView !== "strategic" && requestedView !== "operational"
+    ? requestedView
+    : null;
+  const view = requestedView === "operational" ? "operational" : "strategic";
   const group = (["region", "city", "sector", "authority"] as const).includes(params.group as "region" | "city" | "sector" | "authority")
     ? params.group as "region" | "city" | "sector" | "authority"
     : "region";
   const sb = await supabaseServer();
-  // DASH-015 — scope the two highest-cardinality, always-scoped sources at the
-  // database instead of loading all history and filtering in memory.
-  // checklist_responses (one row per checklist item per inspection) and
-  // geo_events are only ever consumed within the selected window and feed no
-  // search surface, so a DB-side bound is behaviour-preserving.
-  const scopeFromIso = new Date(scope.fromMs).toISOString();
-  const scopeToIso = new Date(scope.toMs).toISOString();
+  // K-003 / DASH-015 — load only the source families rendered by the selected
+  // perspective, and bound every historical source to the current/previous
+  // comparison window. The search surface explicitly opts entity rows back in.
+  const strategic = view === "strategic";
+  const searching = query.trim().length > 0;
+  const prevScopeFromMs = scope.fromMs - (scope.toMs - scope.fromMs + 1);
+  const boundIso = new Date(Math.min(prevScopeFromMs, today.fromMs)).toISOString();
+  const empty = <T,>() => Promise.resolve({ rows: [] as T[], failed: false });
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
-  // The Dashboard is a shared Command destination for every non-admin persona
-  // (business direction 2026-07-16); admin-only users are redirected. Data is
-  // still RLS-scoped per persona (RBAC-001..014).
+  // Sponsor-approved M1 role contract: Operations and Leadership only. Shell
+  // visibility remains presentation; this server boundary plus RLS is
+  // authoritative for copied URLs.
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const businessRoles = BUSINESS_ROLE_KEYS as readonly string[];
-  const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => businessRoles.includes(row.role_key));
+  const dashboardRoleKeys = ["ops", "leadership"] as const;
+  const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => dashboardRoleKeys.includes(row.role_key as typeof dashboardRoleKeys[number]));
   if (!mayViewDashboard) redirect("/launch");
 
-  const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, slaResult] = await Promise.all([
-    collect<VisitRow>((from, to) => sb.from("visits").select(`
+  const dataPromise = Promise.all([
+    (!strategic || searching) ? collect<VisitRow>((from, to) => sb.from("visits").select(`
       id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at,
-      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary),
+      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m),
       assignments(inspector_id, profiles(full_name))
-    `).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>),
+    `).or(`window_start.gte.${boundIso},created_at.gte.${boundIso}`).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>) : empty<VisitRow>(),
     collect<InspectionRow>((from, to) => sb.from("inspections").select(`
       id, visit_id, status, started_at, submitted_at,
       visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
+    `).or(`submitted_at.gte.${boundIso},started_at.gte.${boundIso},status.eq.not_started,status.eq.in_progress`).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
     collect<ReviewRow>((from, to) => sb.from("reviews").select(`
       id, inspection_id, status, decision, decided_at,
-      inspections(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
-    `).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
-    collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
+      inspections!inner(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
+    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
+    strategic ? collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
       inspection_id, is_complete, response,
       inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       inspection_items(regulation_clauses(regulations(title, issuing_authority)))
-    `).gte("inspections.submitted_at", scopeFromIso).lte("inspections.submitted_at", scopeToIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>),
-    collect<ViolationRow>((from, to) => sb.from("violations").select(`
+    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>) : empty<ResponseRow>(),
+    strategic ? collect<ViolationRow>((from, to) => sb.from("violations").select(`
       id, inspection_id,
-      inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       violation_codes(title, level, regulation_clauses(regulations(title, issuing_authority)))
-    `).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>),
-    collect<GeoRow>((from, to) => sb.from("geo_events").select(`
+    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>) : empty<ViolationRow>(),
+    !strategic ? collect<GeoRow>((from, to) => sb.from("geo_events").select(`
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).gte("occurred_at", scopeFromIso).lte("occurred_at", scopeToIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
-    collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
-    sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
+    `).gte("occurred_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>) : empty<GeoRow>(),
+    collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
+    !strategic ? sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
+  const policyPromise = resolveDashboardPolicyVersion(sb);
+
+  async function DashboardDataSections() {
+    const [
+      visitsResult,
+      inspectionsResult,
+      reviewsResult,
+      responsesResult,
+      violationsResult,
+      geoResult,
+      factoriesResult,
+      slaResult,
+    ] = await dataPromise;
 
   const auditObjectIds = [
     ...visitsResult.rows.map(row => row.id),
@@ -148,13 +167,15 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     ...reviewsResult.rows.map(row => row.id),
     ...violationsResult.rows.map(row => row.id),
   ];
-  const auditResult = await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
-    .select("id, object_type, object_id, action, requirement_refs, occurred_at")
-    .in("object_id", ids)
-    .gte("occurred_at", new Date(scope.fromMs).toISOString())
-    .lte("occurred_at", new Date(scope.toMs).toISOString())
-    .order("occurred_at", { ascending: false })
-    .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>);
+  const auditResult = !strategic
+    ? await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
+      .select("id, object_type, object_id, action, requirement_refs, occurred_at")
+      .in("object_id", ids)
+      .gte("occurred_at", new Date(scope.fromMs).toISOString())
+      .lte("occurred_at", new Date(scope.toMs).toISOString())
+      .order("occurred_at", { ascending: false })
+      .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>)
+    : { rows: [] as AuditRow[], failed: false };
 
   const failedSources = [
     visitsResult.failed && text("visits", "الزيارات"),
@@ -183,6 +204,35 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     region,
     nowMs,
   });
+
+  const policy = await policyPromise;
+  const metricScope: MetricScope = {
+    fromMs: scope.fromMs,
+    toMs: scope.toMs,
+    fromDate: scope.fromDate,
+    toDate: scope.toDate,
+    timezone: "Asia/Riyadh",
+    region: region || null,
+    filters: query ? { q: query } : {},
+  };
+  const projection = buildDashboardKpiProjection(metrics, {
+    scope: metricScope,
+    policyVersionId: policy.policyVersionId,
+    refreshedAt: new Date(nowMs).toISOString(),
+    generatedAtMs: nowMs,
+    failedSources: [...failedSources, ...policy.failedSources],
+  });
+
+  const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();
+  for (const factory of factoriesResult.rows) {
+    if (factory.official_lat != null && factory.official_lng != null) {
+      factoryCoords.set(factory.id, {
+        lat: Number(factory.official_lat),
+        lng: Number(factory.official_lng),
+        radiusM: factory.geofence_radius_m ?? null,
+      });
+    }
+  }
   const currentParams: Record<string, string> = {
     view,
     group,
@@ -191,16 +241,39 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     to: scope.toDate,
     region,
   };
-  const refreshedAt = new Date(nowMs).toISOString().slice(0, 16).replace("T", " ");
-  return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
-    context={<span className="id-code badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
-    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+  const refreshedAt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Riyadh",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(nowMs));
+  const partialSources = Array.from(new Set([...failedSources, ...policy.failedSources]));
+  if (unsupportedView) {
+    return <section className="panel" role="status" style={{ padding: "var(--space-6)", display: "grid", gap: "var(--space-3)" }}>
+      <h2 className="panel-title">{text("Dashboard view not configured", "منظور لوحة القيادة غير مهيأ")}</h2>
+      <p className="t-body">{text(`The “${unsupportedView}” perspective is not an approved M1 view. Choose an available perspective.`, `المنظور «${unsupportedView}» ليس منظوراً معتمداً في M1. اختر منظوراً متاحاً.`)}</p>
+      <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+        <a className="sq-btn sq-btn--primary" href="/dashboard?view=strategic">{text("Open Strategic View", "فتح المنظور الاستراتيجي")}</a>
+        <a className="sq-btn sq-btn--secondary" href="/dashboard?view=operational">{text("Open Operational View", "فتح المنظور التشغيلي")}</a>
+      </div>
+    </section>;
+  }
+
+  return <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
       {failedSources.length > 0 && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
-      <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} partialSources={[]} />
+      <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate}
+        region={region} query={query} refreshedAt={refreshedAt} partialSources={partialSources} />
       <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
       {view === "strategic"
-        ? <StrategicView locale={locale} metrics={metrics} group={group} params={currentParams} refreshedAt={refreshedAt} />
-        : <OperationalView locale={locale} metrics={metrics} refreshedAt={refreshedAt} />}
-    </div>
+          ? <StrategicView locale={locale} metrics={metrics} projection={projection} factories={factoriesResult.rows} group={group} params={currentParams} partialSources={partialSources} />
+          : <OperationalView locale={locale} metrics={metrics} projection={projection} factoryCoords={factoryCoords} partialSources={partialSources} />}
+    </div>;
+  }
+
+  return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
+    context={<span className="id-code badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
+    <Suspense fallback={<div className="panel" aria-busy="true" role="status">{text("Loading dashboard data…", "جارٍ تحميل بيانات لوحة القيادة…")}</div>}>
+      <DashboardDataSections />
+    </Suspense>
   </Shell>;
 }
