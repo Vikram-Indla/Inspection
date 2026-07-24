@@ -68,12 +68,13 @@ new bounded packet or a recorded blocker plus active fallback work.
 
 | Packet | Actor/session | Work | Write authority | State |
 |---|---|---|---|---|
-| `KIMI-M4-READINESS-001` | Kimi engineering session 1 | M4 requirement, screen, engine, route, service, permission and evidence map | None | Running |
-| `KIMI-M3-QA-001` | Kimi engineering session 2 | Independent M3 code, test, negative-path and evidence certification | None | Running |
-| `CLAUDE-M3-STATUS-001` | Claude Code M3 session | Five-lane status packet and exact next Claude Design prompt | None | Complete; blocker review recorded |
-| `CLAUDE-M4-DESIGN-INVENTORY-001` | Claude Code M3 session, reassigned | M4 design revision, frame/state and repository mapping | None | Running |
-| `M3-SPONSOR-DIRECTION-20260725` | Claude Code M3 session, queued after M4 inventory | Seed source map, provenance-safe live-map design packet, and mutating-read fix packet | Packetization only | Dispatched |
-| M3 primary-view critique | ChatGPT editable chat | Adversarial IA and authority critique | None | Handoff received; Codex review |
+| `KIMI-M3-NEGATIVE-TEST-SPEC-004` | Kimi engineering lane | Real behavioral security and failure-test specification for Operations | None | Running |
+| `KIMI-M4-BROWSER-EVIDENCE-SPEC-005` | Kimi engineering lane | Factory 360 real-browser evidence specification | None | Queued |
+| `CLAUDE-M3-MAP-PROVENANCE-CORRECTION` | Claude Code lane | Correct bounded live-map provenance contract after returned first draft | None | Running |
+| `CLAUDE-M3-FIELD-EXPIRY-A2` | Claude Code lane | Field-only page-read expiry implementation lease | Pending isolated branch | Queued |
+| `M5-REVIEW-APPROVAL-DESIGN-AUDIT-007` | Claude Design separate surface | Review & Approval design truth, route and risk audit | None | Running |
+| `M4-P1-CLOSURE-DESIGN-006` | Claude Design separate surface | Factory 360 responsive, Arabic, negative-state and accessibility correction plan | None | Reviewer-ready |
+| `CODEX-ADMIN-LOCALIZATION` | Independent Codex task `019f966d…` | Admin localization implementation, tests and draft PR | Isolated worktree; localization-owned files only | Running; focused 5/5, publishing review request |
 
 At the end of the cycle, Codex must ACK, RETURN or BLOCK each completed
 handoff, update dirty laundry, reconcile the Claude Design status board and
