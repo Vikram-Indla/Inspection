@@ -53,45 +53,51 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
 
   test("DSF-AC-014..018 SAQEEL control geometry (frozen 12px input contract retired)", () => {
     const tokens = read("src/app/tokens.css");
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-components.css");
     expect(tokens).toContain("--radius-sm: 3px;");                     // inputs/buttons 3px (was 12px)
-    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // shim retires 12px input radius
+    expect(tokens).not.toMatch(/--ax-[a-z-]+\s*:/);                     // --ax-* shim fully removed (PR12 zero-trace gate); tokens.css's own header comment still documents the retirement, so match only real declarations, not that prose
     expect(tokens).toContain("--control-h-lg: 40px;");                 // comfortable control height
     expect(tokens).toContain("--type-body-size: 15px;");              // field-density body 15px (data-density=field)
-    expect(css).toContain("border-radius: var(--ax-radius-input)");   // input rule still consumes the (now-3px) token
+    expect(css).toContain("border-radius: var(--radius-sm)");          // input rule consumes the (now-3px) token directly, no --ax-* alias
     expect(css).toContain("resize: vertical");
   });
 
   test("DSF-AC-019..023 authenticated foundation rejects cinematic styling", () => {
-    const css = read("src/app/astryx.css");
-    const dashboard = read("src/app/dashboard/dashboard.module.css");
-    // Scan authenticated PAGE/module CSS only. The SAQEEL design-system layer
-    // (tokens.css, the DS component sheet) and the login Atlas are excluded —
-    // they are DS/exception layers, not pages, and legitimately carry SAQEEL DS
+    const skeleton = read("src/app/saqeel-components-legacy.css");
+    const mapPanel = read("src/app/saqeel-components.css");
+    const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
+    // Scan authenticated PAGE/module CSS only. The SAQEEL design-system layers
+    // (tokens.css, saqeel-components.css, saqeel-components-legacy.css,
+    // v2-components.css) and the login Atlas are excluded — they are
+    // DS/exception layers, not pages, and legitimately carry SAQEEL DS
     // internals (uppercase micro-labels, white-on-status marker knobs, the
-    // on-hold severity hatch). Page CSS must still stay institutional.
+    // skeleton shimmer gradient, the texture-chrome repeating gradient).
+    // Page CSS must still stay institutional.
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-components.css", "saqeel-components-legacy.css", "v2-components.css"];
     const authenticated = cssFiles(path.join(root, "src/app"))
-      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css") && !file.endsWith("saqeel-components.css"))
+      .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);
     expect(authenticated).not.toMatch(/#[0-9A-Fa-f]{3,8}\b/);
     expect(dashboard).not.toContain("linear-gradient");
     expect(authenticated).not.toContain("--ax-color-prism-magenta");
-    expect(css).not.toContain("backdrop-filter: blur(12px)");
-    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(1);
-    expect(css).toContain(".ax-skeleton");
+    expect(mapPanel).not.toContain("backdrop-filter: blur(12px)"); // current value is blur(4px) on .map-panel — 12px never reintroduced
+    // No page/module carries a gradient of its own — the only two gradients in
+    // the whole authenticated tree are DS-internal (skeleton shimmer, texture chrome).
+    expect((authenticated.match(/linear-gradient\(/g) ?? []).length).toBe(0);
+    expect(skeleton).toContain(".sq-skeleton");
   });
 
   test("DSF-AC-024..027 prism, notification and account shell are ring-fenced", async () => {
     const prism = read("public/saqeel-prism.svg");
     const bell = read("src/components/NotificationBell.tsx");
     const shell = read("src/components/ShellClient.tsx");
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-components-legacy.css");
     expect(prism).not.toContain("<rect");
     expect(bell).not.toContain("🔔");
-    expect(bell).toContain("ax-notification__trigger");
-    expect(shell).toContain("ax-shell-account__chevron");
+    expect(bell).toContain("sq-notification__trigger");
+    expect(shell).toContain("sq-shell-account__chevron");
     expect(css).toContain("@media (max-width: 959px)");
     const { channels, width, height } = await sharp(path.join(root, "public/saqeel-prism-192.png")).metadata();
     expect(channels).toBe(4);

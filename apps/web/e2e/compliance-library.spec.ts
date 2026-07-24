@@ -22,8 +22,8 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
       expect(page).toContain('/admin/compliance-requests/new');
       expect(page).toContain("Legacy compatibility authoring");
     }
-    expect(items).not.toContain('ax-btn--prominent ax-link');
-    expect(regulations).not.toContain('ax-btn--prominent ax-link');
+    expect(items).not.toContain('sq-btn sq-btn--prominent sq-link');
+    expect(regulations).not.toContain('sq-btn sq-btn--prominent sq-link');
     expect(items).toContain("request_type=modify");
     expect(requestCreate).toContain("requestedTitle");
     expect(requestCreate).toContain("requestedDescription");

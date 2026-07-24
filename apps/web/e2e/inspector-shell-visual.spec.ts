@@ -8,7 +8,12 @@ import { buildShellNavigation } from "../src/lib/shell-navigation";
 // theme, RTL and focus for the changed chrome, not authenticated data behavior.
 const root = path.resolve(__dirname, "..");
 const tokens = fs.readFileSync(path.join(root, "src/app/tokens.css"), "utf8");
-const css = fs.readFileSync(path.join(root, "src/app/astryx.css"), "utf8");
+// astryx.css was a single monolithic sheet; its rules now live split across
+// the two SAQEEL DS component layers (PR12 zero-trace: --ax-* removed).
+const css = [
+  fs.readFileSync(path.join(root, "src/app/saqeel-components.css"), "utf8"),
+  fs.readFileSync(path.join(root, "src/app/saqeel-components-legacy.css"), "utf8"),
+].join("\n");
 const prismData = `data:image/svg+xml;base64,${fs.readFileSync(path.join(root, "public/saqeel-prism.svg")).toString("base64")}`;
 const evidenceRoot = "/Users/vikramindla/.codex/visualizations/2026/07/18/019f7494-823c-7091-bf3a-101272b4848c/inspector-shell-uplift";
 
@@ -43,31 +48,31 @@ function shellMarkup(locale: "en" | "ar") {
   const c = localeCopy[locale];
   const nav = buildShellNavigation(["inspector"]);
   const navMarkup = nav.map(group => `
-    <section class="ax-nav-group">
-      <button class="ax-nav-group__trigger" aria-expanded="true"><span class="ax-nav-label">${group.id === "inspection" ? c.group : locale === "ar" ? group.labelAr : group.labelEn}</span></button>
-      ${group.items.map((item, index) => `<a class="ax-nav-item" ${group.id === "inspection" && index === 0 ? 'aria-current="page"' : ""} href="#"><span class="ax-nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="${navIcons[item.icon] ?? navIcons.dashboard}" /></svg></span><span class="ax-nav-label">${locale === "ar" ? item.labelAr : item.labelEn}</span></a>`).join("")}
+    <section class="sq-nav-group">
+      <button class="sq-nav-group__trigger" aria-expanded="true"><span class="sq-nav-label">${group.id === "inspection" ? c.group : locale === "ar" ? group.labelAr : group.labelEn}</span></button>
+      ${group.items.map((item, index) => `<a class="sq-nav-item" ${group.id === "inspection" && index === 0 ? 'aria-current="page"' : ""} href="#"><span class="sq-nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="${navIcons[item.icon] ?? navIcons.dashboard}" /></svg></span><span class="sq-nav-label">${locale === "ar" ? item.labelAr : item.labelEn}</span></a>`).join("")}
     </section>`).join("");
-  const tabs = `<nav aria-label="${c.dashboard}" class="ax-field-taskbar">
-    <a href="#" class="ax-field-taskbar__item" aria-current="page"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 11h7v9h-7zM4 14h7v6H4z" /></svg>${c.dashboard}</a>
-    <a href="#visits" class="ax-field-taskbar__item"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>${c.visits}</a>
-    <a href="#" class="ax-field-taskbar__item"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM16 10l5-3v10l-5-3" /></svg>${c.virtual}</a>
-    <a href="#next" aria-label="${c.next}" class="ax-field-taskbar__primary"><span>${c.next}</span><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+  const tabs = `<nav aria-label="${c.dashboard}" class="sq-field-taskbar">
+    <a href="#" class="sq-field-taskbar__item" aria-current="page"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 11h7v9h-7zM4 14h7v6H4z" /></svg>${c.dashboard}</a>
+    <a href="#visits" class="sq-field-taskbar__item"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>${c.visits}</a>
+    <a href="#" class="sq-field-taskbar__item"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM16 10l5-3v10l-5-3" /></svg>${c.virtual}</a>
+    <a href="#next" aria-label="${c.next}" class="sq-field-taskbar__primary"><span>${c.next}</span><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
   </nav>`;
-  const stats = c.stats.map(([label, value]) => `<div class="ax-kpi"><span class="ax-caption">${label}</span><strong>${value}</strong></div>`).join("");
-  const rows = c.rows.map(([title, detail, state]) => `<a href="#" class="ax-surface ax-panel" style="padding:var(--ax-space-200);text-decoration:none;color:inherit"><div class="ax-row" style="justify-content:space-between"><strong>${title}</strong><span class="ax-lozenge ax-lozenge--ops">${state}</span></div><span class="ax-caption">${detail}</span></a>`).join("");
+  const stats = c.stats.map(([label, value]) => `<div class="sq-kpi"><span class="sq-caption">${label}</span><strong>${value}</strong></div>`).join("");
+  const rows = c.rows.map(([title, detail, state]) => `<a href="#" class="sq-surface sq-panel" style="padding:var(--space-2);text-decoration:none;color:inherit"><div class="sq-row" style="justify-content:space-between"><strong>${title}</strong><span class="sq-lozenge sq-lozenge--ops">${state}</span></div><span class="sq-caption">${detail}</span></a>`).join("");
   return `
-    <div class="ax-shell">
-      <nav class="ax-shell__nav" aria-label="${locale === "ar" ? "التنقل الرئيسي" : "Primary navigation"}">
-        <div class="ax-shell__brand"><img class="ax-shell__brand-mark" src="${prismData}" alt=""><span class="ax-shell__brand-lockup"><strong class="ax-shell__brand-wordmark">${c.brand}</strong><span class="ax-shell__brand-sub">${c.sub}</span></span></div>
-        <div class="ax-shell__groups">${navMarkup}</div>
-        <button class="ax-shell__collapse"><span class="ax-nav-label">${locale === "ar" ? "طي القائمة" : "Collapse navigation"}</span></button>
+    <div class="sq-shell">
+      <nav class="sq-shell__nav" aria-label="${locale === "ar" ? "التنقل الرئيسي" : "Primary navigation"}">
+        <div class="sq-shell__brand"><img class="sq-shell__brand-mark" src="${prismData}" alt=""><span class="sq-shell__brand-lockup"><strong class="sq-shell__brand-wordmark">${c.brand}</strong><span class="sq-shell__brand-sub">${c.sub}</span></span></div>
+        <div class="sq-shell__groups">${navMarkup}</div>
+        <button class="sq-shell__collapse"><span class="sq-nav-label">${locale === "ar" ? "طي القائمة" : "Collapse navigation"}</span></button>
       </nav>
-      <main class="ax-shell__main">
-        <header class="ax-pagehead">
-          <div class="ax-pagehead__topbar"><div class="ax-shell-search"><input aria-label="${c.search}" placeholder="${c.search}"></div><div class="ax-pagehead__actions"><button class="ax-topbar-icon" aria-label="${locale === "ar" ? "الإشعارات" : "Notifications"}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0" /></svg></button><button class="ax-shell-account__trigger"><span class="ax-shell-account__avatar">NA</span><span class="ax-shell-account__identity"><strong>${c.account}</strong><small>${c.role}</small></span></button></div></div>
-          <div class="ax-pagehead__row"><div class="ax-pagehead__context"><h2>${c.title}</h2><span class="ax-lozenge ax-lozenge--info">${c.context}</span></div></div>
+      <main class="sq-shell__main">
+        <header class="sq-pagehead">
+          <div class="sq-pagehead__topbar"><div class="sq-shell-search"><input aria-label="${c.search}" placeholder="${c.search}"></div><div class="sq-pagehead__actions"><button class="sq-topbar-icon" aria-label="${locale === "ar" ? "الإشعارات" : "Notifications"}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0" /></svg></button><button class="sq-shell-account__trigger"><span class="sq-shell-account__avatar">NA</span><span class="sq-shell-account__identity"><strong>${c.account}</strong><small>${c.role}</small></span></button></div></div>
+          <div class="sq-pagehead__row"><div class="sq-pagehead__context"><h2>${c.title}</h2><span class="sq-lozenge sq-lozenge--info">${c.context}</span></div></div>
         </header>
-        <div class="ax-content ax-field-page"><div class="ax-kpi-row">${stats}</div><section id="visits" style="display:grid;gap:var(--ax-space-200)">${rows}</section><details class="ax-field-performance"><summary>${locale === "ar" ? "نظرة عامة على الأداء" : "Performance overview"}</summary></details></div>
+        <div class="sq-content sq-field-page"><div class="sq-kpi-row">${stats}</div><section id="visits" style="display:grid;gap:var(--space-2)">${rows}</section><details class="sq-field-performance"><summary>${locale === "ar" ? "نظرة عامة على الأداء" : "Performance overview"}</summary></details></div>
         ${tabs}
       </main>
     </div>`;
@@ -75,7 +80,7 @@ function shellMarkup(locale: "en" | "ar") {
 
 async function mount(page: import("@playwright/test").Page, locale: "en" | "ar", theme: "light" | "dark") {
   const c = localeCopy[locale];
-  await page.setContent(`<html lang="${locale}" dir="${c.dir}" data-theme="${theme}"><head><style>${tokens}\n${css}\nbody{margin:0;background:var(--ax-color-canvas);color:var(--ax-color-text);font:var(--ax-text-body)}.ax-field-taskbar svg,.ax-nav-icon svg,.ax-topbar-icon svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}</style></head><body>${shellMarkup(locale)}</body></html>`);
+  await page.setContent(`<html lang="${locale}" dir="${c.dir}" data-theme="${theme}"><head><style>${tokens}\n${css}\nbody{margin:0;background:var(--surface-canvas);color:var(--text-primary);font:var(--type-body-font)}.sq-field-taskbar svg,.sq-nav-icon svg,.sq-topbar-icon svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}</style></head><body>${shellMarkup(locale)}</body></html>`);
 }
 
 test("changed inspector chrome reflows, retains 52px targets and exposes focus", async ({ page }) => {
@@ -89,11 +94,11 @@ test("changed inspector chrome reflows, retains 52px targets and exposes focus",
     await page.setViewportSize({ width: frame.width, height: frame.height });
     await mount(page, frame.locale, frame.theme);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    const targets = await page.locator(".ax-field-taskbar a").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().height));
+    const targets = await page.locator(".sq-field-taskbar a").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().height));
     expect(Math.min(...targets)).toBeGreaterThanOrEqual(52);
     await page.screenshot({ path: path.join(evidenceRoot, frame.file), fullPage: true });
-    await page.locator(".ax-field-taskbar__primary").focus();
+    await page.locator(".sq-field-taskbar__primary").focus();
     // SAQEEL focus indicator is a 2px outline (PR 1b: box-shadow ring retired).
-    expect(await page.locator(".ax-field-taskbar__primary").evaluate(node => getComputedStyle(node).outlineWidth)).toBe("2px");
+    expect(await page.locator(".sq-field-taskbar__primary").evaluate(node => getComputedStyle(node).outlineWidth)).toBe("2px");
   }
 });

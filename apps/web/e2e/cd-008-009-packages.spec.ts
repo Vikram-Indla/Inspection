@@ -25,20 +25,20 @@ test.describe("CD-008 package library — version-led runtime", () => {
     await page.goto("/admin/packages");
     await expect(page.getByRole("heading", { name: /Package (?:library & designer|& Form Designer)/i })).toBeVisible();
     await expect(page.getByText(/PKG-FS/).first()).toBeVisible();
-    await expect(page.locator(".ax-version", { hasText: "v2026.07.02" }).first()).toBeVisible();
+    await expect(page.locator(".sq-version", { hasText: "v2026.07.02" }).first()).toBeVisible();
     await expect(page.getByText(/source read/i).last()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-en-light-1440.png"), fullPage: true });
   });
 
   test("S05/S06 published versions remain immutable while the authorized writer sees draft controls", async ({ page }) => {
     await page.goto("/admin/packages");
-    const immutable = page.locator(".ax-banner--immutable:visible").first();
+    const immutable = page.locator(".sq-banner--immutable:visible").first();
     if (await immutable.count()) await expect(immutable).toContainText(/Published version — immutable/i);
     else {
-      const publishedSummary = page.locator("details.ax-panel > summary, details.panel > summary").filter({ hasText: /published/i }).first();
+      const publishedSummary = page.locator("details.sq-panel > summary, details.panel > summary").filter({ hasText: /published/i }).first();
       const publishedVersion = publishedSummary.locator("..");
       if (await publishedVersion.getAttribute("open") === null) await publishedSummary.click();
-      await expect(publishedVersion.locator(".ax-banner--immutable")).toContainText(/Published version — immutable/i);
+      await expect(publishedVersion.locator(".sq-banner--immutable")).toContainText(/Published version — immutable/i);
     }
     await expect(page.getByRole("button", { name: /Create draft/i })).toBeVisible();
   });
@@ -60,7 +60,7 @@ test.describe("CD-009 read-only field projection", () => {
     const preview = page.locator(".ipad-preview").first();
     await expect(preview).toBeVisible();
     await expect(preview.getByText(/read-only/i)).toBeVisible();
-    for (const chip of await preview.locator(".ax-btn--field, .btn-field").all()) await expect(chip).toHaveAttribute("aria-disabled", /.*/);
+    for (const chip of await preview.locator(".sq-btn--field, .btn-field").all()) await expect(chip).toHaveAttribute("aria-disabled", /.*/);
     for (const input of await preview.locator("input, textarea").all()) await expect(input).toBeDisabled();
     await expect(preview.getByRole("button", { name: /simulate|run|calculate|score/i })).toHaveCount(0);
     await page.screenshot({ path: join(EVIDENCE_DIR, "preview-readonly-en-light.png"), fullPage: true });
@@ -70,7 +70,7 @@ test.describe("CD-009 read-only field projection", () => {
 test.describe("CD-008 publish impact truth", () => {
   test("S08 impact failure is unavailable, never fabricated as numeric zero", async ({ page }) => {
     await page.goto("/admin/packages");
-    const impact = page.locator(".ax-impact").first();
+    const impact = page.locator(".sq-impact").first();
     await expect(impact).toBeVisible();
     const unavailable = impact.getByText(/unavailable|outside your read scope/i);
     if (await unavailable.count()) {

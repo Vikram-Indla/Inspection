@@ -165,7 +165,7 @@
 .mapTitle { font: var(--type-body-strong); color: var(--text-primary); }
 .mapScene { position: relative; flex: 1 1 auto; min-block-size: 420px; background: var(--surface-sunken); }
 .mapLegend { position: absolute; inset-block-start: var(--space-3); inset-inline-start: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--surface-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); box-shadow: var(--shadow-xs); }
-.legendTitle { font: var(--type-micro); text-transform: uppercase; letter-spacing: .06em; color: var(--text-secondary); margin-block-end: var(--space-1); }
+.legendTitle { font: var(--type-micro); letter-spacing: .06em; color: var(--text-secondary); margin-block-end: var(--space-1); }
 .legendRow { display: flex; align-items: center; gap: var(--space-1); font: var(--type-caption-font); color: var(--text-primary); }
 .legendNote { font: var(--type-micro); color: var(--text-secondary); margin-block-start: var(--space-1); }
 .swatch { inline-size: 10px; block-size: 10px; border-radius: 2px; flex: none; }
@@ -227,7 +227,7 @@
 .tableWrap { overflow-x: auto; }
 .table { inline-size: 100%; border-collapse: collapse; font: var(--type-caption-font); }
 .table th, .table td { text-align: start; padding: var(--space-2); border-block-end: 1px solid var(--border-subtle); vertical-align: top; }
-.table th { font: var(--type-micro); text-transform: uppercase; letter-spacing: .05em; color: var(--text-secondary); }
+.table th { font: var(--type-micro); letter-spacing: .05em; color: var(--text-secondary); }
 .linkAction { color: var(--action-primary); text-decoration: none; }
 .linkAction:hover { text-decoration: underline; }
 

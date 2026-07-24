@@ -28,7 +28,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-dark.png`, fullPage: false });
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
-    await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);
+    await expect(page.locator(".sq-shell")).toHaveClass(/is-collapsed/);
     await page.waitForTimeout(300); // evidence frame after the 200ms grid transition settles
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-collapsed.png`, fullPage: false });
   });
@@ -43,7 +43,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
     });
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.getByRole("button", { name: "فتح قائمة التنقل" }).click();
-    await expect(page.locator(".ax-shell")).toHaveClass(/is-drawer-open/);
+    await expect(page.locator(".sq-shell")).toHaveClass(/is-drawer-open/);
     // Same 10-entry admin gate set as the desktop leg (see above).
     await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(10);
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

@@ -48,7 +48,7 @@ test.describe("Prompt 01 shared shell source contract", () => {
     expect(shell).toContain("<ThemeToggle");
     expect(shell).toContain("<NotificationBell");
     expect(shell).toContain('href="/ai/suggestions"');
-    expect(shell).toContain("ax-shell-account__trigger");
+    expect(shell).toContain("sq-shell-account__trigger");
     expect(server).toContain("getShellRegions()");
     expect(persona).toContain('sb.from("factories").select("region")');
     expect(shell).not.toMatch(/\b(?:85%|92%|98%|1,250)\b/);

@@ -19,7 +19,7 @@ test("/reset: checking is an explicit status region, then times out to the combi
 
   // Next.js's own hidden route announcer (#__next-route-announcer__) also
   // carries role=alert — scope to the actual banner, not any alert on the page.
-  const alert = page.locator(".ax-banner--critical[role='alert']");
+  const alert = page.locator(".sq-banner--critical[role='alert']");
   await expect(alert).toBeVisible({ timeout: 6000 });
   await expect(alert).toContainText(/invalid or has expired/i);
   await expect(alert).not.toContainText(/only be used once|already used/i);
@@ -40,7 +40,7 @@ test("/login forgot: invalid email format is a field error, not a banner; valid 
   await page.locator("#email").fill("not-an-email");
   await page.getByRole("button", { name: /Send reset link/i }).click();
   await expect(page.locator("#email")).toHaveAttribute("aria-invalid", "true");
-  await expect(page.locator(".ax-banner--critical")).toHaveCount(0); // format error is not role=alert
+  await expect(page.locator(".sq-banner--critical")).toHaveCount(0); // format error is not role=alert
 
   await page.locator("#email").fill("nobody-at-all@example.com");
   await page.getByRole("button", { name: /Send reset link/i }).click();

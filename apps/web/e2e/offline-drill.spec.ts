@@ -47,13 +47,13 @@ test.beforeAll(async () => {
 
 test("offline answers queue locally, replay once on reconnect, offline submit never claims success", async ({ page, context }) => {
   await page.goto(`/field/inspection/${inspectionId}`);
-  const badge = page.locator(".ax-sync");
+  const badge = page.locator(".sq-sync");
   await expect(badge).toBeVisible();
 
   // --- go offline ---
   await context.setOffline(true);
   await page.evaluate(() => window.dispatchEvent(new Event("offline")));
-  await expect(badge).toHaveClass(/ax-sync--offline/);
+  await expect(badge).toHaveClass(/sq-sync--offline/);
   await expect(badge).toContainText("Offline — work saved locally");
 
   // Answer FS-101 while offline; UI reflects it instantly from the local draft.
@@ -71,12 +71,12 @@ test("offline answers queue locally, replay once on reconnect, offline submit ne
   // DEC-009 acknowledgement gate — offline submit still requires a signature.
   await signAndConfirm(page);
   // Never claims "submitted" while unsynced — the queued message is explicit.
-  await expect(page.locator(".ax-banner").first()).toContainText("Queued — will submit exactly once on reconnect");
+  await expect(page.locator(".sq-banner").first()).toContainText("Queued — will submit exactly once on reconnect");
 
   // --- reconnect ---
   await context.setOffline(false);
   await page.evaluate(() => window.dispatchEvent(new Event("online")));
-  await expect(badge).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
+  await expect(badge).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
 
   // Server truth: all three responses landed and exactly one immutable v1 exists.
   const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
