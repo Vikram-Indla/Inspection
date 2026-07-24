@@ -45,6 +45,12 @@ requirements, gate files, immutable events and screen ledgers remain authoritati
 
 ## Operating rhythm
 
+Live internal watch lanes are mandatory for Kimi, Claude Code and Claude
+Design. The two-hour control cycle remains the planning horizon, while the
+maximum passive-idle tolerance is two minutes. A worker waiting for an answer,
+lease or connector must record that dependency and move to a safe fallback
+packet.
+
 1. Worker reads canonical authority and emits a handshake.
 2. Codex issues one packet with exclusive output and file lease.
 3. Worker emits progress only at material checkpoints.

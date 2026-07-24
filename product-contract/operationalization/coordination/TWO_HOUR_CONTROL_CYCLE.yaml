@@ -4,6 +4,7 @@ automation_id: saqeel-two-hour-orchestration-review
 cadence: every_2_hours
 owner: Codex lead
 status: ACTIVE
+idle_tolerance_seconds: 120
 
 objective: >-
   Keep every connected actor on a bounded requirement-backed task, independently
@@ -18,6 +19,11 @@ non_negotiables:
     named owner, date and no unresolved blocker.
   - Only one actor may hold a product-code write lease for a file.
   - Missing design-tool access never authorizes invented design evidence.
+  - The two-hour cadence is a reconciliation horizon, not permission to leave
+    an actor idle between reviews.
+  - Kimi, Claude Code and Claude Design each have a live internal watch lane.
+  - More than 120 seconds without useful work, active handoff review or a
+    recorded external dependency is an orchestration defect.
 
 actor_utilization:
   kimi:
@@ -85,10 +91,14 @@ required_cycle_output:
   - decisions_needed_from_sponsor
 
 queue_health:
-  minimum_running_sessions: 1
+  minimum_running_sessions: 3
+  required_live_watch_lanes: [kimi, claude_code, claude_design]
   minimum_ready_packets_behind_active_work: 2
   exception: every_ready_packet_is_contract_blocked
   idle_response: assign_next_non_conflicting_requirement_backed_packet
+  blocked_response: >-
+    Record the dependency and immediately assign a safe non-conflicting
+    fallback packet; waiting alone is not a task.
 
 current_next_queue:
   - packet_id: KIMI-M4-TEST-GAP-002
