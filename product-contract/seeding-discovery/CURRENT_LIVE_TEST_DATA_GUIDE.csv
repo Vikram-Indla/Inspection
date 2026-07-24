@@ -1,0 +1,59 @@
+SECTION,ITEM,DETAIL 1,DETAIL 2,DETAIL 3,DETAIL 4,DETAIL 5,NOTES
+=== SECTION 1: LOGIN ACCOUNTS YOU CAN USE TODAY ===,,,,,,,
+Field,Role / Persona,Email to sign in with,Password,Display Name Shown In-App,Where You Land After Sign-In,Real Person or Test Fixture,Notes
+Account,Planner,planner@mim.gov.sa,MimPlan!2026,A. Planner,Planning module,Test account,"Use this to create visit plans, publish bulk/single visits, assign inspectors."
+Account,Inspector,inspector@mim.gov.sa,MimField!2026,عبدالله محمد القحطاني,Field app (/field),Test account,"This is the ONLY inspector account with real seeded work assigned to it. Every test visit/scenario below is assigned to this account. Use this to walk through inspections, evidence capture, submissions."
+Account,Reviewer,reviewer@mim.gov.sa,MimRev!2026,R. Al-Otaibi,Reviews module,Test account,"Use this to review submitted inspections, approve or return them for correction."
+Account,Administrator,admin@mim.gov.sa,MimAdmin!2026,C. Compliance Admin,Admin console,Test account,"Has the broadest access: compliance admin + form admin + workflow admin + security admin + GIS admin + risk owner all at once. Use this for any admin/config screen."
+Account,Operations,ops@mim.gov.sa,MimOps!2026,O. Operations,Operations dashboard,Test account,"Use this for the live operations map, dashboards, cross-visit monitoring."
+Account,Business Approver,approver@mim.gov.sa,(password not available to us — ask whoever set this account up),B. Business Approver,Compliance admin area,Test account,"This account exists in the system with a compliance-admin role, but no password for it is recorded anywhere in the test tooling we could find. Flagging so you know it exists rather than assuming it's missing."
+Account,(2 duplicate test-fixture accounts also exist),g10-inspector-...@mim.gov.sa (x2),unknown,G10 Journey Inspector,Field app,Leftover test fixture — not a real scenario,"These are throwaway accounts from an earlier automated test run. They have no real name, no region, and nothing meaningful is assigned to them. Ignore these for your testing — use inspector@mim.gov.sa instead."
+,,,,,,,
+=== SECTION 2: FACTORIES YOU CAN TEST AGAINST (24 clean, hand-curated) ===,,,,,,,
+Field,Factory Code,Factory Name,Region,City / Industrial Area,Industry Sector,Risk Level,Visits Already Seeded,Notes
+Factory,F-1101,Riyadh Advanced Petrochem Co.,Riyadh,2nd Industrial City,Petrochemical,High,2,
+Factory,F-1102,Al Watania Plastics,Riyadh,2nd Industrial City,Plastics,Medium,102,"This one factory carries most of the bulk 'published / not yet started' visit volume — good for testing lists/search/filter at scale, not for a single clean story."
+Factory,F-1103,Najd Steel Fabrication,Riyadh,3rd Industrial City,Steel,High,2,
+Factory,F-1104,Alkhorayef Industrial Equipment,Riyadh,1st Industrial City,Machinery,Low,1,
+Factory,F-1105,Saudi Dairy & Foodstuff (SADAFCO) Plant 2,Riyadh,Sudair,Food,Low,1,
+Factory,F-2201,Jeddah Chemical Industries,Makkah,Jeddah Industrial City 1,Chemical,High,1,
+Factory,F-2202,Red Sea Food Processing,Makkah,Jeddah Industrial City 2,Food,Low,1,
+Factory,F-2203,Arabian Paper Products,Makkah,Jeddah Industrial City 3,Paper,Medium,1,
+Factory,F-2204,Rabigh Polymers Complex,Makkah,Rabigh PlusTech Park,Petrochemical,High,1,
+Factory,F-2214,Al Amal Plastics Factory,Riyadh,2nd Industrial City,Plastics,Medium,1,Has a full product/raw-material profile attached — good for Factory 360 testing.
+Factory,F-2215,Gulf Steel Works,Riyadh,Sudair,Steel,High,2,Has a full product/raw-material profile attached — good for Factory 360 testing.
+Factory,F-2216,Najd Food Industries,Riyadh,3rd Industrial City,Food,Low,2,Has a full product/raw-material profile attached — good for Factory 360 testing.
+Factory,F-2217,Sudair Polymer Co.,Riyadh,Sudair,Plastics,Medium,267,"This factory carries almost all remaining bulk visit volume — same as F-1102, good for scale/list testing, not a curated single story."
+Factory,F-3301,Dammam Metal Works,Eastern,Dammam 1st Industrial City,Steel,Medium,1,
+Factory,F-3302,Gulf Cables & Electrical,Eastern,Dammam 2nd Industrial City,Electrical,Medium,1,
+Factory,F-3303,Jubail Fertilizer Co. (SAFCO IV),Eastern,Jubail Industrial City 1,Fertilizer,High,1,Has a full product/raw-material profile attached — good for Factory 360 testing.
+Factory,F-3304,Jubail Advanced Composites,Eastern,Jubail Industrial City 2,Composites,Medium,1,
+Factory,F-3305,Al Ahsa Beverage Industries,Eastern,Al Ahsa Industrial City,Food,Low,4,Best example for walking through a visit start-to-finish — see Section 3.
+Factory,F-4401,Yanbu Refining Support Industries,Madinah,Yanbu Industrial City,Petrochemical,High,1,
+Factory,F-4402,Madinah Dates Processing Co.,Madinah,Madinah Industrial City,Food,Low,0,No visit seeded yet — good if you want to test creating a brand-new plan from a clean factory.
+Factory,F-5501,Qassim Agricultural Machinery,Qassim,Qassim Industrial City,Machinery,Medium,1,
+Factory,F-5502,Hail Cement Products,Hail,Hail Industrial City,Cement,Medium,0,No visit seeded yet — good for testing a brand-new plan.
+Factory,F-6601,Asir Mineral Water Co.,Asir,Abha Industrial City,Food,Low,0,No visit seeded yet — good for testing a brand-new plan.
+Factory,F-6602,Jazan Aluminum Extrusions,Jazan,Jazan Economic City,Aluminum,Medium,0,No visit seeded yet — good for testing a brand-new plan.
+,,,,,,,
+=== SECTION 3: READY-TO-CLICK-THROUGH SCENARIOS (real, already seeded) ===,,,,,,,
+Field,Scenario Name,Factory,Where It Stands Today,Log In As,What You Can Test,Count Available,Notes
+Scenario,Unpublished draft plan,Al Watania Plastics,"Planner created it, has not published yet",planner@mim.gov.sa,"Editing/publishing a plan before it goes live",8 drafts waiting,
+Scenario,Published visit — not yet started,"Most of the 24 factories (358 total)","Published and assigned to the inspector, inspector has not left yet",planner@mim.gov.sa then inspector@mim.gov.sa,"The whole 'before departure' flow: assignment, prep, seeing it on the inspector's task list",358,
+Scenario,Expired / missed visit,"Najd Food Industries, Sudair Polymer Co. and others",Visit window passed without being completed,planner@mim.gov.sa,"How the system handles a missed window — rescheduling, expiry rules",11,
+Scenario,Inspector en route,"Sudair Polymer Co., Al Amal Plastics Factory, Al Ahsa Beverage Industries",Marked 'on the way' to the site,inspector@mim.gov.sa,"Travel/geolocation step, arrival confirmation flow",6,
+Scenario,Inspector arrived on-site,"Sudair Polymer Co., Gulf Cables & Electrical, Najd Steel Fabrication",Checked in at the factory,inspector@mim.gov.sa,"Geofence arrival, starting the inspection checklist",6,
+Scenario,Inspection in progress,"Jeddah Chemical Industries, Al Ahsa Beverage Industries",Actively being filled out on-site,inspector@mim.gov.sa,"The inspection form itself — checklist items, evidence photos, findings",2 visits / 52 inspection records mid-way,
+Scenario,Submitted — awaiting review,"Yanbu Refining Support Industries, Jubail Fertilizer Co. (SAFCO IV), Qassim Agricultural Machinery, Dammam Metal Works, Riyadh Advanced Petrochem Co. and 5 more",Inspector finished and submitted; sitting in the review queue,reviewer@mim.gov.sa,"The reviewer's queue and the approve/return decision screen",82 inspection records submitted,
+Scenario,Reviewed and approved,"Al Ahsa Beverage Industries, Jubail Fertilizer Co. (SAFCO IV), Yanbu Refining Support Industries, Qassim Agricultural Machinery, Al Watania Plastics and 8 more",Reviewer already approved it,reviewer@mim.gov.sa or admin@mim.gov.sa,"What an approved, closed-out inspection looks like end to end — compliance history, Factory 360",13,
+Scenario,Reviewed and sent back for correction,"Al Watania Plastics, Al Amal Plastics Factory",Reviewer returned it to the inspector with required changes,reviewer@mim.gov.sa then inspector@mim.gov.sa,"The 'scoped correction' flow — what the inspector sees when work is kicked back",2,
+Scenario,No visit yet on this factory,"Madinah Dates Processing Co., Hail Cement Products, Asir Mineral Water Co., Jazan Aluminum Extrusions",Nothing seeded — clean slate,planner@mim.gov.sa,"Starting a brand-new plan/visit from zero, with no prior history in the way",4 factories,
+,,,,,,,
+=== SECTION 4: HONEST CAVEATS — READ BEFORE YOU RELY ON THIS DATA ===,,,,,,,
+Field,Caveat,What It Means For You,,,,,
+Caveat,Most factories in the system are NOT in this list,"The database actually holds 1,946 factories total. 1,644 of those were bulk-imported from an old legacy export we have flagged as messy (missing names, wrong products for the sector, placeholder text, duplicate patterns) and were never cleaned up before import. Another ~400 are throwaway test/demo clutter created by automated test runs. The 24 factories in Section 2 are the only ones we're confident are clean and safe to build a demo or test plan around.",,,,,
+Caveat,Two factories carry almost all the bulk visit volume,"Al Watania Plastics (102 visits) and Sudair Polymer Co. (267 visits) are not curated stories — they're where repeated automated test runs piled up over time. Use them for testing search/filter/pagination at scale, not for a clean walkthrough.",,,,,
+Caveat,Factory master data is thin,"Even for the 24 clean factories, only 4 (F-2214, F-2215, F-2216, F-3303) have a real product/raw-material profile filled in. None of the 24 have a legal name, licence status, or CR status recorded. Don't expect Factory 360 to look fully populated except on those 4.",,,,,
+Caveat,Only one inspector account has real work assigned,"All 345 seeded visits/inspections against the 24 clean factories are assigned to a single inspector account (inspector@mim.gov.sa). There is no second inspector to test hand-off/reassignment between two real people today.",,,,,
+Caveat,No samples/seizure or factory-discrepancy scenarios exist,"These two workflow types have no database table yet, so nothing can be seeded for them at all — not a data gap, a feature not yet built.",,,,,
+Caveat,Trusted-device / biometric field login is visual only,"The new mobile field sign-in screen shows no fake 'trusted device' or fingerprint option, because there is no real feature behind it yet — that would have meant showing you something that doesn't work.",,,,,
