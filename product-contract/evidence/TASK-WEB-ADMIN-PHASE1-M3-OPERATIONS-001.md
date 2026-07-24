@@ -1,7 +1,7 @@
 # TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Evidence
 
-Date: 2026-07-24  
-Status: `OPERATIONS_CENTER_TECHNICAL_PASS_BROWSER_EVIDENCE_PENDING`
+Date: 2026-07-25
+Status: `OPERATIONS_CENTER_AND_LIVE_TECHNICAL_PASS_VISUAL_MATRIX_PENDING`
 Requirements: `CR-430..CR-448`  
 Acceptance: `WA-M3-AC-001..006`  
 Screens: `WA-DES-033-C3`, `WA-DES-034-C3`
@@ -81,9 +81,54 @@ Additional verification:
 ## Remaining M3 evidence
 
 The route-safety prerequisite and Operations Center source/runtime contract are
-closed. A real Chrome capture of the final integrated Operations Center remains
-pending because the independently corrected shared shell is still on a
-separate draft branch. Operations Live has not yet been reconciled to
-`WA-DES-034-C3`. Full RTL/theme/viewport, provider-failure, automated
-accessibility, protected-regression and sponsor visual evidence named by
-`WA-M3-AC-001..006` remain open. No module-complete or release claim is made.
+closed.
+
+## Operations Live C3 implementation
+
+`WA-DES-034-C3` is implemented within the route-local M3 lease:
+
+- direct-route access is derived from the canonical `buildShellNavigation`
+  contract before any operational reads;
+- the page GET performs RLS-scoped reads only and reports a full-panel
+  `Live map could not load` state when either source fails;
+- the exact `Projected route — not live GPS` disclosure and the explicit
+  unconfigured-staleness statement remain visible in normal, empty, error and
+  provider-failure states;
+- inspectors are fixed observation-time projections with operational state;
+  route lines, path animation, ETA, GPS claims and refresh timers are absent;
+- map markers and the keyboard-operable list share one selection state, and the
+  list names factory, region, inspector, state and since-time;
+- RLS-empty and no-active-inspector states retain the basemap with distinct
+  overlays; provider failure withdraws only the map while KPIs, list and
+  disclosure remain;
+- `?wallboard=1`, route-local light/dark tokens, logical RTL properties,
+  reduced-motion and 1024/430/340 responsive rules are present.
+
+The integrated browser critic also found two Center presentation regressions.
+The same M3 lease corrected the shared five-card KPI typography so both exact
+decision-required values fit at 1024 without horizontal or vertical overflow,
+replaced the developer-contract subtitle with sponsor-facing business copy,
+and removed underlines from M3-local links while retaining hover and visible
+keyboard-focus affordance.
+
+Verification:
+
+- M3 Operations source/runtime suite: **PASS, 17/17**.
+- Operations Live planner direct-route parity: **PASS**.
+- Operations Live list/map selection: **PASS**.
+- Wallboard route state and exact disclosure: **PASS**.
+- Basemap-provider withdrawal with retained context: **PASS**.
+- Operations Center five-card overflow check at 1024: **PASS**.
+- Typecheck: **PASS**.
+- Production build: **PASS**, 53/53 static pages; `/operations` and
+  `/operations/live` compiled.
+- `git diff --check`: **PASS**.
+
+The first focused-browser attempt reused the root orchestrator's older
+integration preview on port 3013 and was discarded. After that preview stopped,
+the recorded run started the current worktree build on the isolated test
+server.
+
+Final sponsor visual capture and the complete 1200/1024/412/390/320 EN/RTL
+light/dark, automated accessibility and protected-regression matrices remain
+open. No module-complete, promotion or release claim is made.

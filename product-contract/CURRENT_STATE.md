@@ -1,5 +1,36 @@
 # Current State
 
+## 2026-07-24 UPDATE 131 — M3 Operations Live technical slice verified
+
+`WA-DES-034-C3` is now source- and focused-runtime-complete on the isolated
+`codex/m3-operations-reconciliation` worktree. Operations Live is a read-only,
+RLS-scoped observation surface derived from the canonical shell navigation
+contract. It renders fixed operational markers and an accessible synchronized
+list with the exact `Projected route — not live GPS` disclosure, last-observed
+truth, and the explicit unconfigured-staleness statement. Route lines, path
+animation, ETA, GPS claims and refresh cadence are absent. Read failure and
+basemap-provider failure withdraw the map; scoped-empty and no-active-position
+states retain the basemap with distinct overlays. The bounded wallboard route,
+loading state, reduced motion and route-local responsive/RTL/theme styling are
+present.
+
+Real-browser review also found and corrected two Operations Center regressions:
+the exact unavailable KPI value no longer overflows the five-card layout at the
+1024 acceptance width, and the visible developer-contract subtitle is replaced
+with sponsor-facing business copy. M3-local links use the approved
+non-underlined action treatment with preserved hover and focus affordance.
+
+Verification on the isolated production build: typecheck PASS; production
+build PASS (53/53 static pages, `/operations` and `/operations/live` compiled);
+focused M3 source/runtime suite PASS 17/17, including planner route parity,
+list selection, wallboard, provider withdrawal and 1024 KPI overflow. A first
+attempt reused the root orchestrator's older integration preview on port 3013
+and was discarded; after that preview stopped, the recorded run used the
+current worktree build on the isolated test server. Final sponsor visual
+capture and the complete 1200/1024/412/390/320 EN/RTL light/dark and automated
+accessibility/protected-regression matrices remain open. M3 is not promoted;
+no merge, deployment, remote DDL or shared-data mutation occurred.
+
 ## 2026-07-24 UPDATE 130 — M3 Operations slice activated after rendered-design correction
 
 The Product Owner directed the module loop to continue, stated that all

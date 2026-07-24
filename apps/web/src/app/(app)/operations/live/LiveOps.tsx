@@ -1,80 +1,154 @@
 "use client";
-// Live Operations shell — real KPI counters (behind auth, so a genuine "LIVE"
-// claim), a colourblind-safe legend, and the animated national map. The map
-// itself is browser-only and loads via next/dynamic ssr:false.
-import { Suspense, useState } from "react";
+
+import { Suspense, useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import EmptyState from "@/components/EmptyState";
+import styles from "./live.module.css";
 
 export type LiveOpsStrings = {
   loading: string;
   enRoute: string;
   executing: string;
   completed: string;
-  legendTitle: string;
-  high: string;
-  medium: string;
-  low: string;
   inspector: string;
   projected: string;
+  freshnessPolicy: string;
+  lastObserved: string;
+  activeList: string;
+  since: string;
+  noScope: string;
+  noPositions: string;
+  loadError: string;
+  retry: string;
+  providerFailed: string;
   mapUnavailable: string;
   mapboxNotConfigured: string;
   mapAriaLabel: string;
+  wallboardExit: string;
 };
 
-// Module scope, not inside the component: next/dynamic must be called once
-// at module load — calling it inside a component/hook (even memoized)
-// re-registers the same chunk on every remount (Strict Mode dev double-mount,
-// Fast Refresh) and desyncs the loadable's chunk-id tracking from the
-// compiled bundle (ChunkLoadError that survives a full dev-server restart).
 const Map = dynamic(() => import("./LiveMapInner"), { ssr: false });
 
-export default function LiveOps({ factories, regions, inspectors, strings: s }: {
+export default function LiveOps({
+  factories,
+  regions,
+  inspectors,
+  strings: s,
+  observedAt,
+  wallboard,
+  hasReadError,
+}: {
   factories: LiveFactory[];
   regions: LiveRegion[];
   inspectors: LiveInspector[];
   strings: LiveOpsStrings;
+  observedAt: string;
+  wallboard: boolean;
+  hasReadError: boolean;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const enRoute = inspectors.filter(i => i.state === "on_the_way").length;
-  const executing = inspectors.filter(i => i.state === "executing" || i.state === "arrived").length;
+  const [providerFailed, setProviderFailed] = useState(false);
+  const markProviderFailed = useCallback(() => setProviderFailed(true), []);
+  const enRoute = inspectors.filter(inspector => inspector.state === "on_the_way").length;
+  const executing = inspectors.filter(inspector => inspector.state === "executing" || inspector.state === "arrived").length;
+  const noScopeRows = factories.length === 0 && inspectors.length === 0;
+  const hasNoPositions = factories.length > 0 && inspectors.length === 0;
+  const formattedObservedAt = new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "medium",
+    timeZone: "Asia/Riyadh",
+  }).format(new Date(observedAt));
 
   return (
-    <div className="lv-wrap">
-      <div className="lv-counters">
-        <div className="lv-counter lv-counter--live">
-          <span className="lv-counter__dot" /><strong>{enRoute}</strong><span>{s.enRoute}</span>
+    <div className={`${styles.page} ${wallboard ? styles.wallboard : ""}`} data-testid="operations-live">
+      <header className={styles.header}>
+        <div>
+          <p className={styles.disclosure}>{s.projected}</p>
+          <p className={styles.freshness}>
+            <span>{s.lastObserved}: <time dateTime={observedAt}>{formattedObservedAt}</time></span>
+            <span>{s.freshnessPolicy}</span>
+          </p>
         </div>
-        <div className="lv-counter">
-          <strong>{executing}</strong><span>{s.executing}</span>
-        </div>
-        <div className="lv-counter">
-          <strong>{factories.length}</strong><span>{s.completed}</span>
-        </div>
+        {wallboard ? <a className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</a> : null}
+      </header>
+
+      <div className={styles.counters} aria-label="Live operations totals">
+        <article className={styles.counter}><strong>{enRoute}</strong><span>{s.enRoute}</span></article>
+        <article className={styles.counter}><strong>{executing}</strong><span>{s.executing}</span></article>
+        <article className={styles.counter}><strong>{factories.length}</strong><span>{s.completed}</span></article>
       </div>
 
-      <div className="lv-map">
-        <Suspense fallback={
-          <div style={{ blockSize: "100%", display: "grid", placeItems: "center" }}>
-            <EmptyState glyph="…" title={s.loading} bare role="status" ariaBusy />
+      <div className={styles.workspace}>
+        <section className={styles.mapFrame} aria-label={s.mapAriaLabel}>
+          {hasReadError ? (
+            <EmptyState glyph="!" title={s.loadError} bare role="alert">
+              <button className="sq-btn sq-btn--secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
+            </EmptyState>
+          ) : providerFailed ? (
+            <EmptyState glyph="⌖" title={s.providerFailed} bare role="status" />
+          ) : (
+            <>
+              <Suspense fallback={<EmptyState glyph="…" title={s.loading} bare role="status" ariaBusy />}>
+                <Map
+                  factories={factories}
+                  regions={regions}
+                  inspectors={inspectors}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  onProviderFailure={markProviderFailed}
+                  strings={{
+                    unavailable: s.mapUnavailable,
+                    notConfigured: s.mapboxNotConfigured,
+                    ariaLabel: s.mapAriaLabel,
+                  }}
+                />
+              </Suspense>
+              {noScopeRows || hasNoPositions ? (
+                <p className={styles.mapNotice} role="status">{noScopeRows ? s.noScope : s.noPositions}</p>
+              ) : null}
+            </>
+          )}
+        </section>
+
+        <aside className={styles.list} aria-labelledby="live-inspector-list-title">
+          <div className={styles.listHeader}>
+            <h2 id="live-inspector-list-title">{s.activeList}</h2>
+            <span className="sq-lozenge sq-lozenge--neutral">{inspectors.length}</span>
           </div>
-        }>
-          <Map factories={factories} regions={regions} inspectors={inspectors}
-            selectedId={selectedId} onSelect={setSelectedId} strings={{
-              unavailable: s.mapUnavailable, notConfigured: s.mapboxNotConfigured, ariaLabel: s.mapAriaLabel,
-            }} />
-        </Suspense>
+          {inspectors.length ? (
+            <ul className={styles.listItems}>
+              {inspectors.map(inspector => (
+                <li key={inspector.id}>
+                  <button
+                    type="button"
+                    className={styles.listButton}
+                    aria-pressed={selectedId === inspector.id}
+                    onClick={() => setSelectedId(inspector.id)}
+                  >
+                    <span>
+                      <strong>{inspector.factoryName}</strong>
+                      <small>{inspector.region} · {inspector.inspector}</small>
+                    </span>
+                    <span>
+                      <span className="sq-lozenge sq-lozenge--info">{inspector.stateLabel}</span>
+                      <small>{s.since}: {inspector.sinceLabel}</small>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.emptyList}>{noScopeRows ? s.noScope : s.noPositions}</p>
+          )}
+        </aside>
       </div>
 
-      <div className="lv-legend" role="note">
-        <span className="lv-legend__title">{s.legendTitle}</span>
-        <span className="lv-legend__item"><span className="lv-glyph lv-glyph--high">▲</span>{s.high}</span>
-        <span className="lv-legend__item"><span className="lv-glyph lv-glyph--medium">◆</span>{s.medium}</span>
-        <span className="lv-legend__item"><span className="lv-glyph lv-glyph--low">●</span>{s.low}</span>
-        <span className="lv-legend__item lv-legend__item--sep"><span className="lv-glyph lv-glyph--insp">▲</span>{s.inspector}</span>
-        <span className="lv-legend__note">{s.projected}</span>
-      </div>
+      <footer className={styles.legend} role="note">
+        <span className={styles.marker} aria-hidden="true">●</span>
+        <span>{s.inspector}</span>
+        <strong>{s.projected}</strong>
+      </footer>
     </div>
   );
 }

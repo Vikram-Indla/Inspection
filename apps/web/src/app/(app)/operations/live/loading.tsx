@@ -1,8 +1,19 @@
-import RouteLoading from "@/components/RouteLoading";
+import styles from "./live.module.css";
 
-// K-017 — instant visual acknowledgement while the force-dynamic segment
-// renders server-side; shares the RouteLoading skeleton (design-system
-// consistent, bilingual, aria-busy).
 export default function Loading() {
-  return <RouteLoading en="Loading live operations…" ar="جارٍ تحميل العمليات المباشرة…" />;
+  return (
+    <div className={styles.page} role="status" aria-busy="true" aria-label="Loading live operations">
+      <div className={styles.header}>
+        <strong className={styles.disclosure}>Projected route — not live GPS</strong>
+        <span className={styles.skeletonLine} />
+      </div>
+      <div className={styles.counters}>
+        {Array.from({ length: 3 }, (_, index) => <span className={styles.skeletonCounter} key={index} />)}
+      </div>
+      <div className={styles.workspace}>
+        <span className={styles.skeletonMap} />
+        <span className={styles.skeletonList} />
+      </div>
+    </div>
+  );
 }

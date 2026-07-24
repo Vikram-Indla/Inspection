@@ -52,11 +52,13 @@
 }
 
 .kpiValue {
+  min-inline-size: 0;
   margin-block: var(--space-2);
   color: var(--text-primary);
-  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  font-size: clamp(1.125rem, 1.45vw, 1.5rem);
   font-weight: 720;
-  line-height: 1;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .kpiNote {
@@ -75,6 +77,22 @@
   background: var(--surface-sunken);
   color: var(--text-secondary);
   font: var(--type-caption-font);
+}
+
+.page :global(a.sq-link) {
+  border-radius: var(--radius-xs);
+  text-decoration: none;
+}
+
+.page :global(a.sq-link:hover) {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.page :global(a.sq-link:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  text-decoration: none;
 }
 
 .workspace {

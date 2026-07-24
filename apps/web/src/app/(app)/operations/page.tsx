@@ -752,7 +752,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   return (
     <Shell current="/operations" title={t("ops.title", "Operations Center")}
-      context={<span className="sq-lozenge sq-lozenge--info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("ops.context", "National inspection activity and decisions")}</span>}>
       {loadErrors.length > 0 && (
         <div className="sq-banner sq-banner--critical" role="alert"><div>
           <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")} — {t("ops.err.retry", "retry")}.
