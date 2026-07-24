@@ -1,115 +1,113 @@
-schema_version: "1.5"
-task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
-batch_id: "WA-P1-M1-DASHBOARD-001"
+schema_version: "1.6"
+task_id: "TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001"
+batch_id: "WA-P1-M3-OPERATIONS-001"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin M1 implementation and human screen approval"
-title: "Executive and Business Dashboard reconciliation"
-status: "CANONICALLY_PROMOTED"
+gate: "Web/Admin M3 implementation and human screen approval"
+title: "Operations Center and Operations Live reconciliation"
+status: "APPROVED_IN_PROGRESS"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
-branch: "codex/m1-dashboard-reconciliation"
-baseline_sha: "c8bdf6d1"
-worktree: "/Users/vikramindla/Developer/Inspection-codex-m1-dashboard"
+branch: "codex/m3-operations-reconciliation"
+baseline_sha: "9d8c4142"
+worktree: "/Users/vikramindla/Developer/Inspection-codex-m3-operations"
 
 approval:
   approved_by: "Vikram Indla / Product Owner"
   approved_on: "2026-07-24"
-  evidence: "Sponsor approved the complete M1 loop, then explicitly replied 'approved' to the bounded commit, push, PR/check and merge promotion request."
-  interpretation: "APPROVED AND EXECUTED — promote the independently released M1 Dashboard package to canonical main while retaining honest blocked states for unresolved policy contracts."
-  authorizes: "M1 leased application files, focused tests, local/runtime evidence, commit, branch push and canonical main promotion. No deployment, production mutation, Field/PWA/iPad work or invented policy value."
+  evidence: "The sponsor directed the module loop to continue, stated that all approvals were given, and then explicitly replied 'go' after the rendered M3 design correction and independent review."
+  interpretation: "APPROVED — implement and verify the bounded M3 Operations slice while preserving fail-closed product decisions and excluded files."
+  authorizes: "M3-local application files, focused tests, local/runtime evidence, commit, branch push and draft pull request. No canonical main merge, deployment, production mutation, remote DDL, remote seeding, Field/PWA/iPad work or invented policy value."
 
 process_ids: ["G2-P12"]
-requirement_ids: ["CR-001..CR-478"]
-acceptance_ids: ["WA-M1-AC-001..006"]
-evidence_ids: ["WA-M1-EV-001..006"]
-screen_ids: ["WA-DES-025", "WA-DES-046"]
-preservation_ids: ["WA-SP-010..028"]
-screens: ["Dashboard Strategic View", "Dashboard Operational View"]
-routes: ["/dashboard", "/dashboard?view=strategic", "/dashboard?view=operational"]
-authorized_roles: ["ops", "leadership"]
+requirement_ids: ["CR-430..CR-448"]
+acceptance_ids: ["WA-M3-AC-001..006"]
+evidence_ids: ["WA-M3-EV-001..006"]
+screen_ids: ["WA-DES-033-C3", "WA-DES-034-C3"]
+preservation_ids: ["WA-MIG-047", "WA-MIG-049"]
+screens: ["Operations Center", "Operations Live"]
+routes: ["/operations", "/operations/live"]
+authorized_roles: ["ops", "leadership", "inspector where the accepted route contract permits"]
+
+required_context:
+  - "product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml"
+  - "product-contract/web-admin-phase1/00_START_HERE.md"
+  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
+  - "product-contract/web-admin-phase1/ROUTE_INVENTORY.csv"
+  - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv"
+  - "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
+  - "product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv"
+  - "product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv"
+  - "/Users/vikramindla/Developer/Inspection/.claude/worktrees/m3-operations-design-0f2c11/design/claude-design-mvp1/outputs/m3-operations/00_M3_OPERATIONS_DESIGN_CORRECTION_PACKAGE.md"
+  - "/Users/vikramindla/Developer/Inspection/.claude/worktrees/m3-operations-design-0f2c11/design/claude-design-mvp1/outputs/m3-operations/01_OPERATIONS_CENTER_CORRECTION_SPEC.md"
+  - "/Users/vikramindla/Developer/Inspection/.claude/worktrees/m3-operations-design-0f2c11/design/claude-design-mvp1/outputs/m3-operations/02_OPERATIONS_LIVE_CORRECTION_SPEC.md"
+  - "/Users/vikramindla/Developer/Inspection/.claude/worktrees/m3-operations-design-0f2c11/design/claude-design-mvp1/outputs/m3-operations/03_REQUIRED_STATE_MATRIX.csv"
+  - ".codex-review/design-mapping-review.csv"
+  - ".codex-review/pilot-delta-review.md"
+  - ".codex-review/m3-implementation-readiness.md"
+  - ".codex-review/claude-revision-3-review.md"
+  - "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001.md"
+
 design_sources:
-  - "SAQEEL Executive Overview.html — SHA-256 0722d7438792a332fd533aae3c9276c54547ee29e1e7c9d80c5af17c47d078e1"
-  - "SAQEEL Web Dashboard.dc.html — SHA-256 d84d2a7cb916d0095954b005b096bc5c9342c848f649fb8c07b37ab0bcbc7088"
-  - "SAQEEL Design System.zip — SHA-256 cfdbfa1a7ff6c0cafe7c778f9a4d43fcf6c65841dc2652dcd7aa4e92b713df3c"
+  - "WA-DES-033-C3 — Claude Design project 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61"
+  - "WA-DES-034-C3 — Claude Design project 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61"
+  - "SAQEEL Operations Center.dc.html — source SHA-256 ea9dce0b775ba69eb1bea3ebe7a35c076de316c18f1b955b5b3d8a2e8c7988e1"
+  - "SAQEEL Operations Live.dc.html — source SHA-256 157b68c8ba4bbbdba4f61265b25ff98d097a810e5acb42f2aef67f4b4403452d"
+
 engines:
   - "Supabase SSR and RLS-scoped reads"
-  - "dashboard KPI registry and projection"
-  - "checklist compliance"
+  - "canonical visit and inspection state projections"
   - "shared GeoMap provider boundary"
-  - "audit/version/immutable submission reads"
+  - "immutable geo-event and override-approval reads"
+  - "audit, workflow and permission guards"
 
 backend_contracts_to_preserve:
-  - "Approved inspections only for compliance truth."
-  - "Canonical visit, inspection, review, violation and audit states only."
-  - "Partial, stale, empty, unavailable, not configured, decision required, unauthorized and provider-unavailable states remain explicit."
-  - "No target, threshold, risk band, cycle, SLA, capacity, lookback, license or AI policy is invented."
-  - "RLS/RBAC and geography visibility remain server enforced."
+  - "Page GETs are read-only and may not expire or mutate workflow records."
+  - "Operational state remains separate from workflow status."
+  - "Tracking history and submitted evidence remain immutable."
+  - "RLS/RBAC and authorized geography scope remain server enforced."
+  - "One failed widget must not break the full Operations Center."
+  - "Submitted Today and Active Alerts remain visibly unavailable until their governed definitions exist."
+  - "Operations Live uses markers and status only; no route line, path animation or ETA is invented."
+  - "No risk threshold, refresh cadence, SLA, alert taxonomy, KPI grain or AI recommendation is invented."
 
 implementation_lease:
   owner: "Codex root orchestrator"
   files:
-    - "apps/web/src/app/(app)/dashboard/page.tsx"
-    - "apps/web/src/app/(app)/dashboard/DashboardView.tsx"
-    - "apps/web/src/app/(app)/dashboard/dashboard.module.css"
-    - "apps/web/src/app/(app)/dashboard/MetricStrip.tsx"
-    - "apps/web/src/app/(app)/dashboard/DecisionCanvas.tsx"
-    - "apps/web/src/app/(app)/dashboard/dashboard-format.ts"
-    - "apps/web/e2e/web-admin-m1-dashboard.spec.ts"
-  optional_with_evidence:
-    - "apps/web/src/app/(app)/dashboard/metrics.ts"
-    - "apps/web/src/app/(app)/dashboard/loading.tsx"
-
-seeder_lease:
-  owner: "Dedicated Supabase seeder agent"
-  project_ref: "iiozvqntawxfwbgffzqu"
-  environment: "SPONSOR_CONFIRMED_NON_PRODUCTION"
-  scope: "Deterministic reversible source-record seeding, dry-run first; never seed displayed KPI totals or invent governed policy values."
-  remote_write_gate: "Batch provenance, cleanup, idempotency, RLS-negative validation and exact project-ref check must pass before a remote write."
+    - "apps/web/src/app/(app)/operations/page.tsx"
+    - "apps/web/src/app/(app)/operations/live/page.tsx"
+    - "apps/web/src/app/(app)/operations/loading.tsx"
+    - "apps/web/src/app/(app)/operations/live/loading.tsx"
+    - "new M3-local components or CSS under apps/web/src/app/(app)/operations/"
+    - "apps/web/e2e/web-admin-m3-route-safety.spec.ts"
+    - "apps/web/e2e/web-admin-m3-operations.spec.ts"
 
 verification:
   - "typecheck and production build"
-  - "focused M1 functional and negative-path tests"
+  - "focused M3 functional and negative-path tests"
+  - "repeated GET proof with zero override, visit and audit mutations"
   - "RLS/RBAC role-positive and role-negative tests"
-  - "partial-source, zero-denominator and provider-failure tests"
-  - "real GeoMap plus accessible fallback"
-  - "EN/LTR and AR/RTL light/dark at 1440x900, 1024x768, 412/390 and 320"
-  - "keyboard, focus and automated accessibility"
-  - "protected F0, adjacent-route and 478-requirement validator regression"
-  - "real Chrome implementation evidence"
+  - "partial-source, empty and provider-failure tests"
+  - "real GeoMap plus accessible synchronized list"
+  - "EN/LTR and AR/RTL light/dark at 1440x900, 1200x800, 1024x768, 412, 390 and 320"
+  - "keyboard, focus, reduced-motion and automated accessibility"
+  - "protected workflow, audit, override, adjacent-route and 478-requirement regression"
+  - "real Chrome implementation evidence after the mutating-GET correction passes"
 
 do_not_touch:
-  - "Canonical main modification is limited to the separately sponsor-approved M1 promotion recorded on 2026-07-24; do not modify setup/Inspection, existing stashes, deployment or production."
+  - "Do not modify main, setup/Inspection, existing stashes, deployment or production."
+  - "Do not edit /operations/exceptions or its tests."
   - "Do not edit /field/**, PWA, iPad, offline engines or service workers."
-  - "Do not modify the F0 shell, shared navigation, global tokens, global component CSS or shared GeoMap."
-  - "Do not add APIs, RPCs, migrations, schema, RLS/RBAC or provider configuration under the M1 application lease."
-  - "Do not turn an unresolved DEC-028 metric into a numeric or green state."
+  - "Do not modify the shared shell, shared navigation, global tokens, global CSS or shared GeoMap."
+  - "Do not add or modify APIs, RPCs, migrations, schema, RLS/RBAC or provider configuration."
+  - "Do not perform remote Supabase writes or seeding."
+  - "Do not turn an unresolved product definition into a numeric, healthy or AI-generated state."
 
 rollback:
-  method: "Revert the isolated M1 package commit or disable the guarded composition; F0 baseline c8bdf6d1 remains available."
+  method: "Revert the isolated M3 package commits or disable the guarded M3 composition; the current canonical implementation remains available."
   retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
 
 exit_condition: >-
-  SATISFIED. All WA-M1-AC-001..006 P0/P1 evidence passed or each externally
-  blocked contract is visibly and truthfully classified. Sponsor separately
-  approved commit, push and canonical promotion. Deployment and production
-  mutation remain unauthorized; another implementation module still requires
-  its own recorded lease.
-
-completion:
-  completed_on: "2026-07-24"
-  verdict: "RELEASE"
-  independent_visual_review: "RELEASE — no remaining P0/P1 issue in the targeted M1 scope."
-  tests:
-    - "Typecheck PASS"
-    - "Production build PASS"
-    - "Focused M1 functional, permission, responsive, RTL and accessibility suite 16/16 PASS (Inspector setup excluded because the pre-existing fixture returns HTTP 400)"
-    - "Final evidence refresh 3/3 PASS"
-    - "Web/Admin validator PASS at 478/478"
-    - "git diff --check PASS"
-  evidence: "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md"
-  seeding: "No remote write. The supplied handoff is discovery/design authority, not an executable governed seeder."
-  remaining_release_caveats:
-    - "Inspector authentication fixture remains an external test-infrastructure defect and is not claimed as passed."
-    - "DEC-028 and all unresolved policy-derived KPIs remain visibly blocked; no values were invented."
-    - "Implementation commit ed384241 was pushed and promoted to origin/main by GitHub merge commit 330f6cba after explicit sponsor approval; no deployment, production mutation, DDL, API, PWA, Field or iPad change occurred."
+  All WA-M3-AC-001..006 P0/P1 evidence passes or each externally blocked
+  contract remains visibly and truthfully classified. The Product Owner reviews
+  the real implementation in Chrome before any canonical promotion request.

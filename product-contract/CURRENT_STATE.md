@@ -1,5 +1,29 @@
 # Current State
 
+## 2026-07-24 UPDATE 130 — M3 Operations slice activated after rendered-design correction
+
+The Product Owner directed the module loop to continue, stated that all
+approvals were given, and explicitly replied `go`. The active slice is now
+`TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001` on the isolated
+`codex/m3-operations-reconciliation` worktree from canonical M1 baseline
+`330f6cba`.
+
+Claude Design produced rendered candidates `WA-DES-033-C3` and
+`WA-DES-034-C3`. Independent review returned the first pass for an Arabic
+wordmark in an EN/LTR frame and incorrect Operations Live navigation, then
+returned the second pass for omission of the distinct 390-pixel state. Claude
+Design corrected all three defects. Both pages now expose separate 412, 390 and
+320 states; Operations Live visibly reports `390×844 · Mobile · dark · EN/LTR`.
+The semantic and rendered revision is approved for sponsor consent in draft PR
+60; application implementation remains separately evidence-gated.
+
+The first implementation sublease corrects the existing mutating GET on
+`/operations` before any real-system browser capture. It is bounded to the
+Operations page and one focused route-safety test. `/operations/exceptions`,
+Field, PWA/iPad, shared shell, shared GeoMap, APIs, migrations and remote
+Supabase remain excluded. No application product code had changed at slice
+activation.
+
 ## 2026-07-24 UPDATE 129 — M1 Dashboard promoted to canonical main
 
 The Product Owner explicitly approved promotion of

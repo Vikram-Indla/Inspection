@@ -167,10 +167,11 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const city = typeof sp.city === "string" ? sp.city : "";
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  // Materialize elapsed requests before composing the actionable queue. The
-  // decision RPC also checks expiry inside its transaction.
-  const { error: overrideExpiryError } = await sb.rpc("expire_stale_geo_override_requests");
-  if (overrideExpiryError) console.error(`[operations] override expiry failed: ${overrideExpiryError.message}`);
+  // A page GET is read-only. Use one request-start timestamp to exclude elapsed
+  // requests from the actionable queue without materializing workflow state.
+  // decide_geo_override remains the database-authoritative race guard.
+  const now = Date.now();
+  const nowIso = new Date(now).toISOString();
   const [visitsRes, geoRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes, overrideRes, overrideEvidenceRes] = await Promise.all([
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
@@ -218,6 +219,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     sb.from("geo_override_requests")
       .select("id, visit_id, status, reason_label, explanation, safety_security_exception, observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at, requested_at, expires_at, visits(factories(name), assignments(profiles(full_name)))")
       .eq("status", "pending")
+      .gt("expires_at", nowIso)
       .order("expires_at", { ascending: true }),
     sb.from("evidence")
       .select("linked_id, storage_path")
@@ -391,9 +393,6 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   for (const g of scopedGeo) {
     if (g.geofence_result && !latestGeofence.has(g.visit_id)) latestGeofence.set(g.visit_id, g.geofence_result);
   }
-  const now = Date.now();
-  const nowIso = new Date(now).toISOString();
-
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
 
   // ---------- ENG-09 SLA watch: engine thresholds vs live visit windows ----------
