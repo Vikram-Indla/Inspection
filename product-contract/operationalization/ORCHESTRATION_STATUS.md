@@ -50,6 +50,24 @@ requirements, gate files, immutable events and screen ledgers remain authoritati
 6. Codex independently reviews and emits `ACK` or `RETURNED`.
 7. Sponsor sees only verified browser output and decisions requiring authority.
 
+The recurring heartbeat `saqeel-two-hour-orchestration-review` now runs this
+reconciliation every two hours. Idle is treated as a scheduling defect: the
+actor receives a new bounded packet or a recorded blocker before the cycle
+closes.
+
+## Active two-hour queue
+
+| Packet | Actor/session | Work | Write authority | State |
+|---|---|---|---|---|
+| `KIMI-M4-READINESS-001` | Kimi engineering session 1 | M4 requirement, screen, engine, route, service, permission and evidence map | None | Running |
+| `KIMI-M3-QA-001` | Kimi engineering session 2 | Independent M3 code, test, negative-path and evidence certification | None | Running |
+| `CLAUDE-M3-STATUS-001` | Claude Code M3 session | Five-lane status packet and exact next Claude Design prompt | None | Running |
+| M3 primary-view critique | ChatGPT editable chat | Adversarial IA and authority critique | None | Handoff received; Codex review |
+
+At the end of the cycle, Codex must ACK, RETURN or BLOCK each completed
+handoff, update dirty laundry, reconcile the Claude Design status board and
+issue the next queue.
+
 ## Verified actor facts
 
 - Kimi independently resolved the canonical repo top, branch `docs/saqeel-inspector-inventory`,

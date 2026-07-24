@@ -147,6 +147,28 @@ initial_lanes:
     implementation_lease: NONE
     output: revision_3_handoff_with_owned_files_decisions_and_next_review_action
 
+active_worker_packets:
+  - packet_id: KIMI-M4-READINESS-001
+    actor: Kimi
+    mode: READ_ONLY_ENGINEERING
+    status: RUNNING
+    scope: "CR-410..CR-429; WA-M4-AC-001..006"
+  - packet_id: KIMI-M3-QA-001
+    actor: Kimi
+    mode: READ_ONLY_INDEPENDENT_QA
+    status: RUNNING
+    scope: "CR-430..CR-448; WA-M3-AC-001..006"
+  - packet_id: CLAUDE-M3-STATUS-001
+    actor: Claude Code
+    mode: STATUS_AND_DESIGN_PROMPT_PACKET
+    status: RUNNING
+    scope: "M3 Revision 3; five independent status-board lanes"
+
+control_cycle:
+  automation_id: saqeel-two-hour-orchestration-review
+  cadence: every_2_hours
+  contract: ../TWO_HOUR_CONTROL_CYCLE.yaml
+
 stop_boundary: >-
   This batch authorizes access verification, coordination artifacts and read-only
   discovery only. It does not authorize new product implementation.

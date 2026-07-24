@@ -1,0 +1,89 @@
+schema_version: "1.0"
+control_cycle_id: SAQEEL-TWO-HOUR-CONTROL-001
+automation_id: saqeel-two-hour-orchestration-review
+cadence: every_2_hours
+owner: Codex lead
+status: ACTIVE
+
+objective: >-
+  Keep every connected actor on a bounded requirement-backed task, independently
+  review every handoff, expose blockers without stopping unrelated work, and
+  refresh the next two-hour workload without conflicting write ownership.
+
+non_negotiables:
+  - The 478 canonical requirements remain the behavioral baseline.
+  - Quality, requirement adherence, negative paths and evidence outrank throughput.
+  - No actor self-approves its design, implementation, test result or status.
+  - No green status exists without current revision or commit, current evidence,
+    named owner, date and no unresolved blocker.
+  - Only one actor may hold a product-code write lease for a file.
+  - Missing design-tool access never authorizes invented design evidence.
+
+actor_utilization:
+  kimi:
+    normal_capacity: 2_parallel_read_only_engineering_sessions
+    when_claude_design_unavailable:
+      - repository_mapping
+      - wiring_and_permission_analysis
+      - independent_QA_and_negative_path_review
+      - test_and_evidence_gap_analysis
+      - performance_security_and_regression_review
+    prohibited:
+      - connector_troubleshooting_as_primary_work
+      - design_revision_claims_without_stamped_evidence
+      - application_edits_without_an_exclusive_lease
+
+  claude_code:
+    idle_definition: no_running_packet_and_no_handoff_awaiting_review
+    immediate_reassignment_order:
+      - finish_or_correct_a_requirement_backed_design_handoff
+      - prepare_a_precise_Claude_Design_status_or_correction_packet
+      - prepare_a_source_marked_ChatGPT_critique_request
+      - perform_bounded_repository_mapping_or_test_gap_analysis
+    prohibited:
+      - unleased_application_edits
+      - self_acceptance
+      - unsourced_design_or_metric_invention
+
+  chatgpt:
+    role:
+      - adversarial_requirement_and_information_architecture_critic
+      - research_worker
+      - Claude_Design_prompt_author
+    completion: sourced_handoff_with_unverified_claims_marked
+
+  claude_design:
+    role:
+      - design_revision_owner
+      - visual_status_board_owner
+    status_board_rule: >-
+      Update Design, Frontend, Service Wiring, QA and Sponsor independently.
+      Every status includes its word, icon or shape, evidence or blocker ID,
+      date, owner and next action.
+
+cycle_steps:
+  - Re-read canonical authority, current slice, open decisions and leases.
+  - Inspect every actor and session for running, completed, blocked or idle state.
+  - Review completed handoffs and emit ACK, RETURNED or BLOCKED.
+  - Reassign idle capacity from the bounded ready queue.
+  - Move non-blocking defects into dirty laundry with owner and revisit trigger.
+  - Reconcile Design, Frontend, Service Wiring, QA and Sponsor lane statuses.
+  - Update the Claude Design status board only from verified evidence.
+  - Publish the next two-hour packet queue and sponsor-facing summary.
+
+required_cycle_output:
+  - actor_session_status
+  - completed_and_rejected_handoffs
+  - active_packet_queue
+  - requirement_and_acceptance_coverage
+  - dirty_laundry_changes
+  - status_board_delta
+  - decisions_needed_from_sponsor
+
+stop_conditions:
+  - conflicting_file_ownership
+  - missing_canonical_contract
+  - unapproved_backend_schema_RBAC_RLS_or_provider_work
+  - stale_or_untraceable_design_revision
+  - failed_P0_or_P1_acceptance
+  - evidence_does_not_match_current_commit_or_revision
