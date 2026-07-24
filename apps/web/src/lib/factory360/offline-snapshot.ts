@@ -61,6 +61,10 @@ export type Factory360SnapshotSummary = {
   activitySummary?: { activities: number; products: number; materials: number; machines: number; spareParts: number };
   discrepancyStates?: Record<string, number>;
   contractUnverifiedDomains?: string[];
+  // Senaei v3 public endpoints (chemicalcustoms.json) — optional for the same
+  // backward-compatibility reason as the block above.
+  chemicalPermitCount?: number;
+  customsExemptionCount?: number;
 };
 
 export type Factory360Snapshot = Factory360SnapshotMeta & { summary: Factory360SnapshotSummary };

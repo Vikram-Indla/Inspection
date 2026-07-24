@@ -61,20 +61,28 @@ export default async function Login() {
       ? "تعذّر تسجيل الدخول. حاول مرة أخرى أو أعد تعيين كلمة المرور."
       : "We could not sign you in. Try again or reset your password.",
     resetErrorGeneric: ar
-      ? "تعذّر إرسال رابط إعادة التعيين. تحقّق من الاتصال وحاول مرة أخرى."
-      : "We could not send the reset link. Check your connection and try again.",
+      ? "تعذّر إرسال رمز إعادة التعيين. تحقّق من الاتصال وحاول مرة أخرى."
+      : "We could not send the reset code. Check your connection and try again.",
     emailInvalid: ar ? "أدخل بريدًا إلكترونيًا صالحًا." : "Enter a valid email address.",
     forgotLink: ar ? "هل نسيت كلمة المرور؟" : "Forgot your password?",
     forgotTitle: ar ? "إعادة تعيين كلمة المرور" : "Reset your password",
     forgotSub: ar
-      ? "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور."
-      : "Enter your email and we'll send you a link to reset your password.",
-    forgotSend: ar ? "إرسال رابط إعادة التعيين" : "Send reset link",
+      ? "أدخل بريدك الإلكتروني وسنرسل لك رمزًا لإعادة تعيين كلمة المرور."
+      : "Enter your email and we'll send you a code to reset your password.",
+    forgotSend: ar ? "إرسال رمز إعادة التعيين" : "Send reset code",
     forgotSending: ar ? "جارٍ الإرسال…" : "Sending…",
     forgotSentTitle: ar ? "تحقّق من بريدك الإلكتروني" : "Check your email",
     forgotSentBody: ar
-      ? "إذا كان هناك حساب مرتبط بهذا البريد، فسيصل رابط لإعادة تعيين كلمة المرور. تحقّق من مجلد الرسائل غير المرغوبة أيضًا."
-      : "If an account exists for that address, a password-reset link is on its way. Check your spam folder too.",
+      ? "إذا كان هناك حساب مرتبط بهذا البريد، فسيصل رمز مكوّن من 6 أرقام لإعادة تعيين كلمة المرور. تحقّق من مجلد الرسائل غير المرغوبة أيضًا."
+      : "If an account exists for that address, a 6-digit password-reset code is on its way. Check your spam folder too.",
+    otpLabel: ar ? "رمز إعادة التعيين" : "Reset code",
+    otpPlaceholder: "000000",
+    otpInvalid: ar ? "أدخل الرمز المكوّن من 6 أرقام." : "Enter the 6-digit code.",
+    otpErrorGeneric: ar
+      ? "تعذّر التحقق من الرمز. تحقّق منه وحاول مرة أخرى، أو اطلب رمزًا جديدًا."
+      : "We could not verify that code. Check it and try again, or request a new code.",
+    otpVerify: ar ? "التحقق من الرمز" : "Verify code",
+    otpVerifying: ar ? "جارٍ التحقق…" : "Verifying…",
     back: ar ? "رجوع" : "Back",
     footTrust: ar ? "يتم تسجيل كل إجراء داخل جلستك ويمكن مراجعته" : "Every action inside your session is recorded and reviewable",
     footSecure: ar ? "اتصال مشفّر" : "Encrypted connection",

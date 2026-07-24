@@ -1,0 +1,114 @@
+/* TASK-EXECUTION-MODULE-001 · SCR-IPAD-610/620 startup + readiness/journey
+   screen — route-scoped layout for the SAQEEL design-system conversion.
+   Presentation only: replaces the former Astryx .ax-* layout helpers
+   (.ax-stack/.ax-row/.ax-grid-2/.ax-detail-grid/.ax-numeric/.ax-field__label)
+   with DS-token-only equivalents (var(--space-*), var(--font-body), --text-*).
+   Component surfaces/badges/alerts/buttons/inputs use the ported SAQEEL DS
+   classes linked by (app)/field/layout.tsx. No bare colors. */
+
+.page { display: flex; flex-direction: column; gap: var(--space-6); padding: var(--space-5) var(--space-5) 96px; max-inline-size: 860px; margin-inline: auto; }
+
+/* Two-up responsive grid (former .ax-grid-2). */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); }
+
+/* Key/value definition grid for the factory / visit context cards
+   (the former .ax-detail-grid, which had no ruleset — now a real DS grid). */
+.detailGrid { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2) var(--space-4); margin: 0; }
+.detailGrid dt { color: var(--text-muted); }
+.detailGrid dd { margin: 0; text-align: end; }
+
+/* Field label (former .ax-field__label). */
+.fieldLabel { font: 600 14px/1.5 var(--font-body); color: var(--text-primary); }
+
+/* Tabular numerals (former .ax-numeric). */
+.num { font-variant-numeric: tabular-nums lining-nums; }
+
+/* ── Header quick-action row ──────────────────────────────────────────────
+   The former "Open Factory 360" / "Journey to site" ghost links rendered as
+   flat, full-width centred text. They are now DS quick-action cards grouped in
+   a responsive row: icon + label + trailing chevron on a raised surface. */
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.quickAction {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+  color: var(--text-primary);
+  text-decoration: none;
+  font: 600 14px/1.4 var(--font-body);
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.quickAction:hover { border-color: var(--border-strong); background: var(--surface-raised); }
+
+.quickActionIcon {
+  flex: none;
+  inline-size: 34px;
+  block-size: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.quickActionIcon svg { inline-size: 18px; block-size: 18px; }
+
+.quickActionLabel { flex: 1; min-inline-size: 0; }
+
+.quickActionChevron {
+  flex: none;
+  inline-size: 16px;
+  block-size: 16px;
+  color: var(--text-muted);
+}
+
+/* ── Readiness checklist (SCR-IPAD-610) ───────────────────────────────────
+   The former bare bullet list of "✓ / ○" glyphs is now a clean checklist:
+   each item is a divided row with a circular status marker (done = compliant
+   token fill; pending = neutral outline). Text/data binding is unchanged. */
+.readyList { display: flex; flex-direction: column; }
+
+.readyRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-block-start: 1px solid var(--border-subtle);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.readyRow:first-child { border-block-start: none; }
+
+.readyMark {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.readyMarkDone {
+  background: var(--status-compliant-soft);
+  color: var(--status-compliant-text);
+  border-color: transparent;
+}
+
+.readyText { flex: 1; min-inline-size: 0; }

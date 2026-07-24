@@ -4,6 +4,11 @@ import { configurationMissing, degraded, failed, forwardUnavailable } from "./er
 import type { DomainResult, RequestOptions, SenaeiAuthMode, SenaeiClient, SenaeiClientConfig, SenaeiPublicEndpointAuthMode } from "./types";
 
 const API_ROOT = "/api/inspection";
+// Public (no-auth) v3 endpoints, chemicalcustoms.json contract — a separate
+// root from the bearer/api_key-gated /api/inspection/* family above. Every
+// call against this root must pass { auth: "none" } explicitly (see adapters/
+// factory360.ts) rather than relying on the client's configured auth mode.
+const API_ROOT_V3_PUBLIC = "/api/v3/inspection";
 const DEFAULT_TIMEOUT_MS = 8_000;
 const DEFAULT_MAX_JSON_BYTES = 2_000_000;
 const KNOWN_ENDPOINTS: readonly { method: "GET" | "POST"; path: RegExp }[] = [
@@ -14,6 +19,9 @@ const KNOWN_ENDPOINTS: readonly { method: "GET" | "POST"; path: RegExp }[] = [
   { method: "GET", path: /^\/api\/inspection\/tasks\/production-line$/ },
   { method: "GET", path: /^\/api\/inspection\/tasks\/[^/]+$/ },
   { method: "POST", path: /^\/api\/inspection\/tasks\/submit-inspection\/[^/]+$/ },
+  { method: "GET", path: /^\/api\/v3\/inspection\/plants$/ },
+  { method: "GET", path: /^\/api\/v3\/inspection\/plants\/[^/]+\/chemical-permits$/ },
+  { method: "GET", path: /^\/api\/v3\/inspection\/plants\/[^/]+\/customs-exemptions$/ },
 ];
 
 function positiveInt(value: string | undefined, fallback: number, maximum: number): number {
@@ -38,7 +46,8 @@ export function resolveSenaeiConfig(env: NodeJS.ProcessEnv = process.env): Domai
 }
 
 function validatePath(path: string, method: "GET" | "POST"): string | null {
-  if (!path.startsWith(`${API_ROOT}/`) && path !== API_ROOT) return null;
+  const onKnownRoot = path.startsWith(`${API_ROOT}/`) || path === API_ROOT || path.startsWith(`${API_ROOT_V3_PUBLIC}/`);
+  if (!onKnownRoot) return null;
   if (path.includes("?") || path.includes("#") || path.includes("\\") || path.split("/").includes("..")) return null;
   return KNOWN_ENDPOINTS.some(endpoint => endpoint.method === method && endpoint.path.test(path)) ? path : null;
 }

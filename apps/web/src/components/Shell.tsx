@@ -38,10 +38,11 @@ export async function AppShell({ children }: { children: ReactNode }) {
   const { t, locale, user, roles, regions } = await loadShellData();
   if (!user) {
     // SCR-PWA-001: a deep link into the field channel while signed out lands
-    // on the field-specific sign-in, matching the /field top-level entry —
-    // not the desktop /login story-panel surface.
+    // on the field-specific biometric sign-in (SAQEEL Field Login.dc.html),
+    // matching the /field top-level entry — not the desktop /login
+    // story-panel surface.
     const pathname = (await headers()).get("x-pathname") ?? "";
-    redirect(pathname.startsWith("/field") ? "/field-login" : "/login");
+    redirect(pathname.startsWith("/field") ? "/login/field" : "/login");
   }
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
@@ -82,11 +83,12 @@ export async function AppShell({ children }: { children: ReactNode }) {
     regionScope: t("shell.regionScope", locale === "ar" ? "نطاق المنطقة" : "Region scope"),
     allRegions: t("shell.allRegions", locale === "ar" ? "جميع المناطق" : "All Regions"),
     notApplicable: t("shell.notApplicable", locale === "ar" ? "غير منطبق على هذه الصفحة" : "Not applicable on this page"),
-    aiEntry: t("shell.aiEntry", locale === "ar" ? "فتح رؤى الذكاء الاصطناعي" : "Open AI Insights"),
+    aiEntry: t("shell.aiEntry", locale === "ar" ? "رؤى الذكاء الاصطناعي" : "AI Insights"),
     navigation: t("shell.navigation", locale === "ar" ? "وجهة" : "Navigation"),
     account: t("shell.account", locale === "ar" ? "الحساب" : "Account"),
     roles: t("shell.roles", locale === "ar" ? "الأدوار" : "Roles"),
     profileSettings: t("shell.profileSettings", locale === "ar" ? "إعدادات الملف الشخصي" : "Profile settings"),
+    fieldSettings: t("field.settings.title", locale === "ar" ? "إعدادات الميدان" : "Field settings"),
     signOut: t("nav.signout", locale === "ar" ? "تسجيل الخروج" : "Sign out"),
     themeLight: t("theme.light", locale === "ar" ? "الوضع الفاتح" : "Light mode"),
     themeDark: t("theme.dark", locale === "ar" ? "الوضع الداكن" : "Dark mode"),

@@ -32,12 +32,13 @@ test("protected Saqeel prism and Arabic wordmark remain the sole unchanged locku
   expect(css).not.toContain("--ax-color-prism-magenta");
 });
 
-test("SLR-AC-002/004/009 protected motion and authentication source contracts are unchanged", () => {
+test("SLR-AC-002/004/009 protected motion and OTP recovery authentication contracts", () => {
   const atlas = source("src/app/login/SaudiIndustrialAtlas.tsx");
   const motion = source("src/app/login/saudi-atlas-motion.ts");
   const story = source("src/app/login/StoryPanel.tsx");
   const css = source("src/app/login/login.css");
   const auth = source("src/app/login/LoginClient.tsx");
+  const reset = source("src/app/reset/ResetClient.tsx");
 
   for (const path of [
     "M180 150 L250 65 L480 55 L610 120 L600 220 L385 185 Z",
@@ -68,9 +69,16 @@ test("SLR-AC-002/004/009 protected motion and authentication source contracts ar
   expect(css).toContain("animation: lg-zone-readout-in 540ms 420ms cubic-bezier(.16,.84,.25,1)");
 
   expect(auth).toContain("auth.signInWithPassword({ email, password })");
-  expect(auth).toContain("auth.resetPasswordForEmail(email");
+  expect(auth).toContain("auth.resetPasswordForEmail(email);");
+  expect(auth).not.toContain("redirectTo:");
+  expect(auth).toContain('auth.verifyOtp({ email, token: otp, type: "recovery" })');
+  expect(auth).toContain('sessionStorage.setItem(RECOVERY_OTP_USER_KEY, data.session.user.id)');
+  expect(reset).toContain("auth.updateUser({ password: pw })");
+  expect(reset).not.toContain('event === "PASSWORD_RECOVERY"');
+  expect(reset).not.toContain("auth.onAuthStateChange");
   expect(auth).toContain('window.location.assign("/launch")');
   expect(auth).toContain('logAuthEvent("password_reset_requested", email)');
+  expect(reset).toContain('logAuthEvent("password_reset_completed", data.user.email)');
 });
 
 test("SLR-AC-008 vehicle dimensions are exactly baseline times 1.5 with centered anchors", () => {

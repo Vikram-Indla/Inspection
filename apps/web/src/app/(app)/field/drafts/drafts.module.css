@@ -1,0 +1,17 @@
+/* SAQEEL Field Drafts — route-scoped layout for the resume-drafts list.
+   Consumes only SAQEEL DS tokens linked by (app)/field/layout.tsx. */
+
+.page { flex: 1; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+
+.card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.head { display: flex; align-items: center; gap: var(--space-2); }
+.list { display: flex; flex-direction: column; gap: var(--space-2); }

@@ -1,0 +1,18 @@
+/* SAQEEL Field Trusted Devices — layout ported verbatim from
+   SAQEEL Field Trusted Devices.dc.html (td-wrap / td-card / td-icn).
+   Consumes the SAQEEL DS tokens linked by (app)/field/layout.tsx. Only
+   DS-token colors are used — no bare colors. */
+
+.wrap { max-width: 720px; margin: 0 auto; width: 100%; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 16px; }
+.intro { margin: 0; }
+
+.card { border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface-primary); box-shadow: var(--shadow-card); padding: 16px 18px; display: flex; align-items: flex-start; gap: 14px; }
+.icn { width: 42px; height: 42px; border-radius: 11px; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; flex: none; }
+.body { flex: 1; min-width: 0; }
+.name { display: flex; align-items: center; gap: 8px; }
+.nameText { font-weight: 600; font-size: 14.5px; }
+.meta { margin-block-start: 6px; }
+.id { margin-block-start: 2px; overflow-wrap: anywhere; }
+
+.hint { padding: 14px 16px; font-size: 12.5px; color: var(--text-secondary); display: flex; gap: 8px; align-items: flex-start; }
+.hintIcon { width: 16px; height: 16px; flex: none; margin-block-start: 1px; }

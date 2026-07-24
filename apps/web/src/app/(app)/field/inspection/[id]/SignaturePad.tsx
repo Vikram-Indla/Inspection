@@ -5,6 +5,7 @@
 // immutable version and survives offline queueing unchanged.
 import { useEffect, useRef, useState } from "react";
 import Modal from "@/components/Modal";
+import styles from "./factory-verification.module.css";
 
 export type SignaturePadStrings = {
   title: string; hint: string;
@@ -89,27 +90,22 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       title={strings.title}
       closeLabel={strings.cancel}
       footer={<>
-        <button type="button" className="sq-btn sq-btn--subtle" onClick={clear}>{strings.clear}</button>
-        <button type="button" className="sq-btn sq-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-        <button type="button" className="sq-btn sq-btn--prominent" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
+        <button type="button" className="btn btn-ghost" onClick={clear}>{strings.clear}</button>
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>{strings.cancel}</button>
+        <button type="button" className="btn btn-primary" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
       </>}
     >
-      <p className="sq-caption">{strings.hint}</p>
-      <label className="sq-field">
-        <span className="sq-field__label">{strings.nameLabel}<span className="sq-req">*</span></span>
-        <input className="sq-input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
+      <p className="t-caption">{strings.hint}</p>
+      <label className="field">
+        <span className={styles.fieldLabel}>{strings.nameLabel}<span className="req">*</span></span>
+        <input className="input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
       </label>
       <canvas
         ref={canvasRef}
+        className={styles.signatureCanvas}
         onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-        style={{
-          inlineSize: "100%", blockSize: 180, touchAction: "none", cursor: "crosshair",
-          background: "var(--surface-sunken)",
-          border: "1.5px dashed var(--border-strong)",
-          borderRadius: "var(--radius-sm)",
-        }}
       />
-      {err && <p className="sq-field__error">{err}</p>}
+      {err && <p className="field-error">{err}</p>}
     </Modal>
   );
 }

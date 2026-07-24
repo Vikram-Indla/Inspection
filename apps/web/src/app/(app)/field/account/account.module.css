@@ -1,0 +1,30 @@
+/* SAQEEL Field Account — profile layout ported verbatim from the isProfile
+   view of SAQEEL Field Account.dc.html. Consumes the SAQEEL design-system
+   tokens linked by (app)/field/layout.tsx. Only DS tokens — no bare colors. */
+
+.wrap {
+  max-width: 640px; margin: 0 auto; width: 100%; flex: 1;
+  padding: 18px 18px 40px; display: flex; flex-direction: column; gap: 14px;
+}
+
+.card {
+  border: 1px solid var(--border-subtle); border-radius: 14px;
+  background: var(--surface-primary); box-shadow: var(--shadow-card);
+}
+
+.profile { padding: 22px; display: flex; align-items: center; gap: 14px; }
+
+.groupLabel { padding: 10px 18px 6px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+.fieldRow {
+  display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+  border-block-start: 1px solid var(--border-subtle);
+}
+
+.linkRow {
+  display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+  border-block-start: 1px solid var(--border-subtle);
+  text-decoration: none; color: inherit; font-size: 14px;
+}
+.linkRow:hover { background: var(--surface-sunken); }
+.chev { color: var(--text-secondary); display: inline-flex; }

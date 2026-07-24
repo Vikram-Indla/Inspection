@@ -162,55 +162,55 @@ export default function PreExecution(props: {
   }
 
   return (
-    <div className="sq-surface" style={{ padding: "var(--space-6)" }} data-testid="pre-execution-panel">
-      <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
+    <div className="panel" style={{ padding: "var(--space-6)" }} data-testid="pre-execution-panel">
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
         <h4>{s.heading}</h4>
-        {ready && <span className="sq-lozenge sq-lozenge--success" data-testid="pre-execution-ready">{s.readyTitle}</span>}
+        {ready && <span className="badge badge-compliant" data-testid="pre-execution-ready"><span className="dot" />{s.readyTitle}</span>}
       </div>
 
       {/* 1 · read-only Planning + factory context */}
-      <div className="sq-stack" style={{ gap: 4, marginBlockEnd: "var(--space-4)" }}>
+      <div className="stack" style={{ gap: 4, marginBlockEnd: "var(--space-4)" }}>
         <h5 style={{ marginBlockEnd: 4 }}>{s.contextHeading}</h5>
-        <div className="sq-row" style={{ gap: 8, flexWrap: "wrap" }}>
-          <span className="sq-badge">{s.lblFactory}: {props.context.factoryName}{props.context.factoryCode ? ` (${props.context.factoryCode})` : ""}</span>
+        <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+          <span className="tag">{s.lblFactory}: {props.context.factoryName}{props.context.factoryCode ? ` (${props.context.factoryCode})` : ""}</span>
           {/* Phase 7 (§24) — unregistered immediate factory identity, existing
               temporary/unverified marker only (same copy as the visit detail). */}
-          {props.context.unverifiedLabel && <span className="sq-lozenge sq-lozenge--warning">{props.context.unverifiedLabel}</span>}
-          <span className="sq-badge">{s.lblVisitType}: {props.context.visitType}</span>
-          <span className="sq-badge">{s.lblWindow}: {props.context.windowLabel}</span>
-          <span className="sq-badge">{s.lblPriority}: {props.context.priority ?? "—"}</span>
+          {props.context.unverifiedLabel && <span className="badge badge-warning">{props.context.unverifiedLabel}</span>}
+          <span className="tag">{s.lblVisitType}: {props.context.visitType}</span>
+          <span className="tag">{s.lblWindow}: {props.context.windowLabel}</span>
+          <span className="tag">{s.lblPriority}: {props.context.priority ?? "—"}</span>
         </div>
       </div>
 
       {ready ? (
-        <div className="sq-stack" style={{ gap: "var(--space-3)" }}>
-          <div className="sq-row" style={{ gap: 8, flexWrap: "wrap" }}>
-            <span className="sq-badge">{s.dateHeading}: <span className="sq-numeric">{date ?? "—"}</span></span>
-            <span className="sq-badge">{s.modeHeading}: {modeWord(mode)}</span>
-            {activePackage && <span className="sq-badge">{packageLine(activePackage)}</span>}
+        <div className="stack" style={{ gap: "var(--space-3)" }}>
+          <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+            <span className="tag">{s.dateHeading}: <span className="id-code">{date ?? "—"}</span></span>
+            <span className="tag">{s.modeHeading}: {modeWord(mode)}</span>
+            {activePackage && <span className="tag">{packageLine(activePackage)}</span>}
           </div>
           {snapshot && (
-            <p className="sq-caption sq-numeric" data-testid="pre-execution-snapshot">
+            <p className="t-caption id-code" data-testid="pre-execution-snapshot">
               {fmt(s.readySnapshot, { n: snapshot.preparation_version, checksum: snapshot.checksum.slice(0, 12) })}
             </p>
           )}
-          <div className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <button className="sq-btn sq-btn--subtle" onClick={onReopen} disabled={busy} data-testid="prep-reopen">
+          <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <button className="btn btn-secondary" onClick={onReopen} disabled={busy} data-testid="prep-reopen">
               {busy ? s.working : s.reopen}
             </button>
-            <span className="sq-caption">{s.reopenCaption}</span>
+            <span className="t-caption">{s.reopenCaption}</span>
           </div>
-          {error && <div className="sq-banner sq-banner--critical" role="alert"><div>{error}</div></div>}
+          {error && <div className="alert alert-critical" role="alert"><div>{error}</div></div>}
         </div>
       ) : (
-        <div className="sq-stack" style={{ gap: "var(--space-5)" }}>
+        <div className="stack" style={{ gap: "var(--space-5)" }}>
           {/* 2 · Execution Date — window-constrained, per-day availability */}
           <section aria-label={s.dateHeading}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.dateHeading}</h5>
-            <p className="sq-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{s.dateCaption}</p>
-            {props.capacityNote === "unavailable" && <p className="sq-caption">{s.availabilityUnknown}</p>}
-            {props.capacityNote === "truncated" && <p className="sq-caption">{s.truncatedNote}</p>}
-            <div className="sq-row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label={s.dateHeading}>
+            <p className="t-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{s.dateCaption}</p>
+            {props.capacityNote === "unavailable" && <p className="t-caption">{s.availabilityUnknown}</p>}
+            {props.capacityNote === "truncated" && <p className="t-caption">{s.truncatedNote}</p>}
+            <div className="row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label={s.dateHeading}>
               {props.days.map(d => {
                 const full = d.remaining != null && d.remaining <= 0;
                 const disabled = d.past || full;
@@ -222,10 +222,10 @@ export default function PreExecution(props: {
                     aria-pressed={selected}
                     disabled={disabled}
                     data-testid={disabled ? "prep-day-disabled" : "prep-day-available"}
-                    className={`sq-btn ${selected ? "sq-btn--prominent" : "sq-btn--subtle"}`}
+                    className={`btn ${selected ? "btn-primary" : "btn-secondary"}`}
                     onClick={() => setDate(d.date)}
                   >
-                    <span className="sq-numeric">{d.label}</span>
+                    <span className="id-code">{d.label}</span>
                     {full ? ` · ${s.dayFull}` : d.remaining != null ? ` · ${fmt(s.dayLeft, { n: d.remaining })}` : ""}
                   </button>
                 );
@@ -236,24 +236,24 @@ export default function PreExecution(props: {
           {/* 3 · Visit Mode — planning-set mode + governed alternatives */}
           <section aria-label={s.modeHeading}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.modeHeading}</h5>
-            <div className="sq-stack" style={{ gap: 8 }}>
+            <div className="stack" style={{ gap: 8 }}>
               {(["physical", "virtual"] as const).map(m => {
                 const rule = props.modeRules[m];
                 const selected = mode === m;
                 return (
-                  <div key={m} className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <div key={m} className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                     <button
                       type="button"
                       aria-pressed={selected}
                       disabled={!rule.enabled}
                       data-testid={`prep-mode-${m}`}
-                      className={`sq-btn ${selected ? "sq-btn--prominent" : "sq-btn--subtle"}`}
+                      className={`btn ${selected ? "btn-primary" : "btn-secondary"}`}
                       onClick={() => setMode(m)}
                     >
                       {modeWord(m)}
                     </button>
-                    {m === props.plannedMode && <span className="sq-lozenge sq-lozenge--info">{s.plannedChip}</span>}
-                    {!rule.enabled && rule.reason && <span className="sq-caption">{rule.reason}</span>}
+                    {m === props.plannedMode && <span className="badge badge-info">{s.plannedChip}</span>}
+                    {!rule.enabled && rule.reason && <span className="t-caption">{rule.reason}</span>}
                   </div>
                 );
               })}
@@ -264,31 +264,31 @@ export default function PreExecution(props: {
           <section aria-label={s.packageHeading}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.packageHeading}</h5>
             {props.plannedPackage ? (
-              <div className="sq-stack" style={{ gap: 4 }}>
-                <div className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <div className="stack" style={{ gap: 4 }}>
+                <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                   <span>{packageLine(props.plannedPackage)}</span>
-                  <span className="sq-lozenge sq-lozenge--info">{s.packageByPlanning}</span>
-                  <span className="sq-caption sq-numeric">{fmt(s.sectionsCount, { n: props.plannedPackage.sections.length })}</span>
+                  <span className="badge badge-info">{s.packageByPlanning}</span>
+                  <span className="t-caption id-code">{fmt(s.sectionsCount, { n: props.plannedPackage.sections.length })}</span>
                 </div>
               </div>
             ) : (
-              <div className="sq-stack" style={{ gap: 8 }}>
-                <p className="sq-caption">{s.packageChoose}</p>
+              <div className="stack" style={{ gap: 8 }}>
+                <p className="t-caption">{s.packageChoose}</p>
                 {props.packageOptions.map(p => {
                   const selected = packageId === p.id;
                   return (
-                    <div key={p.id} className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <div key={p.id} className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                       <button
                         type="button"
                         aria-pressed={selected}
                         disabled={!p.hasSections}
                         data-testid="prep-package-option"
-                        className={`sq-btn ${selected ? "sq-btn--prominent" : "sq-btn--subtle"}`}
+                        className={`btn ${selected ? "btn-primary" : "btn-secondary"}`}
                         onClick={() => setPackageId(p.id)}
                       >
                         {packageLine(p)} · {fmt(s.sectionsCount, { n: p.sections.length })}
                       </button>
-                      {!p.hasSections && <span className="sq-caption">{s.packageNoSections}</span>}
+                      {!p.hasSections && <span className="t-caption">{s.packageNoSections}</span>}
                     </div>
                   );
                 })}
@@ -300,13 +300,13 @@ export default function PreExecution(props: {
           {activePackage && (
             <section aria-label={s.formsHeading}>
               <h5 style={{ marginBlockEnd: 4 }}>{s.formsHeading}</h5>
-              <div className="sq-stack" style={{ gap: 8 }}>
+              <div className="stack" style={{ gap: 8 }}>
                 {activePackage.hasOptionalityMetadata ? (
                   activePackage.sections.map(sec => (
-                    <div key={sec.key} className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <div key={sec.key} className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                       <span>{sec.title}</span>
                       {sec.removable ? (
-                        <label className="sq-row" style={{ gap: 6, alignItems: "center" }}>
+                        <label className="check">
                           <input
                             type="checkbox"
                             checked={removed.has(sec.key)}
@@ -316,22 +316,22 @@ export default function PreExecution(props: {
                               setRemoved(next);
                             }}
                           />
-                          <span className="sq-caption">{s.removeLabel}</span>
+                          <span className="t-caption">{s.removeLabel}</span>
                         </label>
                       ) : null}
-                      {sec.removable && <span className="sq-lozenge sq-lozenge--info">{s.optionalChip}</span>}
+                      {sec.removable && <span className="badge badge-info">{s.optionalChip}</span>}
                     </div>
                   ))
                 ) : (
-                  <p className="sq-caption">{s.noRemovableCopy}</p>
+                  <p className="t-caption">{s.noRemovableCopy}</p>
                 )}
                 {props.actionFormTemplates.length > 0 ? (
-                  <div className="sq-stack" style={{ gap: 6 }}>
-                    <span className="sq-caption">{s.addedFormsLabel}</span>
+                  <div className="stack" style={{ gap: 6 }}>
+                    <span className="t-caption">{s.addedFormsLabel}</span>
                     {props.actionFormTemplates
                       .filter(tpl => !activePackage.actionFormTemplateIds.includes(tpl.id))
                       .map(tpl => (
-                        <label key={tpl.id} className="sq-row" style={{ gap: 6, alignItems: "center" }}>
+                        <label key={tpl.id} className="check">
                           <input
                             type="checkbox"
                             checked={added.has(tpl.id)}
@@ -341,14 +341,14 @@ export default function PreExecution(props: {
                               setAdded(next);
                             }}
                           />
-                          <span>{tpl.title} · <span className="sq-numeric">{tpl.versionLabel}</span></span>
+                          <span>{tpl.title} · <span className="id-code">{tpl.versionLabel}</span></span>
                         </label>
                       ))}
                   </div>
                 ) : (
-                  <p className="sq-caption">{s.noTemplatesCopy}</p>
+                  <p className="t-caption">{s.noTemplatesCopy}</p>
                 )}
-                <label className="sq-row" style={{ gap: 6, alignItems: "center" }}>
+                <label className="check">
                   <input type="checkbox" checked={notifyFactory} onChange={e => setNotifyFactory(e.target.checked)} data-testid="prep-notify-factory" />
                   <span>{s.notifyFactory}</span>
                 </label>
@@ -357,16 +357,16 @@ export default function PreExecution(props: {
           )}
 
           {/* 6 · actions: save (no state change) + confirm Ready */}
-          <div className="sq-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <button className="sq-btn" onClick={onSave} disabled={busy} data-testid="prep-save">
+          <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <button className="btn btn-secondary" onClick={onSave} disabled={busy} data-testid="prep-save">
               {busy ? s.working : s.save}
             </button>
-            <button className="sq-btn sq-btn--prominent" onClick={onConfirm} disabled={busy} data-testid="prep-confirm">
+            <button className="btn btn-primary" onClick={onConfirm} disabled={busy} data-testid="prep-confirm">
               {busy ? s.working : s.confirm}
             </button>
           </div>
-          {status && <div className="sq-banner sq-banner--success" role="status" data-testid="prep-status"><div>{status}</div></div>}
-          {error && <div className="sq-banner sq-banner--critical" role="alert"><div>{error}</div></div>}
+          {status && <div className="alert alert-success" role="status" data-testid="prep-status"><div>{status}</div></div>}
+          {error && <div className="alert alert-critical" role="alert"><div>{error}</div></div>}
         </div>
       )}
     </div>

@@ -1,10 +1,14 @@
 import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
+import ThemeChannelSync from "@/components/ThemeChannelSync";
+import "./astryx.css";
 import "./saqeel-components-legacy.css";
 // SAQEEL Inspection Design System v1.0 component layer. saqeel-components.css is
 // the canonical layer; saqeel-components-legacy.css holds the .sq-* families not
-// yet redesigned into it. Both consume SAQEEL semantic tokens only; no legacy alias layer remains.
+// yet redesigned into it. astryx.css remains for the field-channel screens not
+// yet migrated off it (PR12's native-token migration landed on setup/Inspection
+// but not on this branch — tracked as follow-up, not silently forced here).
 import "./saqeel-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";
@@ -67,8 +71,8 @@ export const viewport = {
 export const metadata = {
   manifest: "/manifest.json",
   icons: {
-    icon: [{ url: "/saqeel-prism.svg", type: "image/svg+xml" }, { url: "/saqeel-prism-32.png", sizes: "32x32" }],
-    apple: "/saqeel-prism-180.png",
+    icon: [{ url: "/saqeel-favicon.svg", type: "image/svg+xml" }, { url: "/saqeel-favicon-32.png", sizes: "32x32" }],
+    apple: "/saqeel-favicon-180.png",
   },
   title: "Saqeel صقيل — Industrial Inspection Platform",
   description: "Saqeel (صقيل | صناعي) — the national industrial inspection platform. One platform. Every factory. Every inspection. Every decision.",
@@ -79,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={`${grotesk.variable} ${plexArabic.variable} ${jbMono.variable}`} suppressHydrationWarning>
       <head><ThemeScript /></head>
-      <body><PwaRegister />{children}</body>
+      <body><PwaRegister /><ThemeChannelSync />{children}</body>
     </html>
   );
 }

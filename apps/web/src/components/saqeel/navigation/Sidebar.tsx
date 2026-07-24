@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 
 export interface SidebarGroup {
   label?: string;
@@ -29,10 +30,7 @@ export function Sidebar({
     <nav className={"sidebar" + (collapsed ? " is-collapsed" : "")} aria-label="Main">
       <div className="sidebar-brand">
         {brandMark || (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" strokeWidth={1.5}>
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-            <path d="m9 12 2 2 4-4" />
-          </svg>
+          <SaqeelBrandMark className="sidebar-brand__mark" />
         )}
         <span className="brand-label">{brand}</span>
       </div>

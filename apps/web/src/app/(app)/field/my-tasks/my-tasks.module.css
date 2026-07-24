@@ -1,0 +1,67 @@
+/* SAQEEL Field My Tasks — master/detail layout ported verbatim from
+   SAQEEL Field My Tasks.dc.html. Consumes the SAQEEL design-system tokens
+   (var(--surface-*), var(--text-*), var(--action-primary), --border-subtle)
+   linked by (app)/field/layout.tsx. The design's one bare color (#fff on an
+   active chip) is replaced by the DS token var(--text-on-action). */
+
+.grid { display: grid; grid-template-columns: 340px 1fr; flex: 1; min-height: 0; }
+.list { border-inline-end: 1px solid var(--border-subtle); overflow-y: auto; background: var(--surface-primary); }
+.detail { overflow-y: auto; min-width: 0; display: flex; flex-direction: column; }
+.back { display: none; }
+
+@media (max-width: 899px) {
+  .grid { grid-template-columns: 1fr; }
+  .paneList .detail { display: none; }
+  .paneDetail .list { display: none; }
+  .paneDetail .back { display: inline-flex; }
+}
+
+.item {
+  display: flex; align-items: flex-start; gap: 12px; width: 100%; text-align: start;
+  padding: 15px 18px; border: 0; border-block-end: 1px solid var(--border-subtle);
+  background: none; cursor: pointer; font: inherit; text-decoration: none; color: inherit;
+}
+.item:hover { background: var(--surface-secondary); }
+.itemActive { background: var(--accent-soft); }
+
+.kv { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.kv dt, .kv .k { font-size: 11.5px; color: var(--text-muted); }
+.kv dd, .kv .v { margin: 0; font-size: 13.5px; font-weight: 500; }
+
+.hero {
+  margin: 18px 20px 0; height: 150px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--surface-sunken), var(--accent-soft));
+  display: grid; place-items: center; color: var(--text-muted);
+}
+
+.sec { padding: 18px 20px; border-block-end: 1px solid var(--border-subtle); }
+.sec h3 { font-size: 14px; font-weight: 600; margin: 0 0 14px; }
+.secHead { display: flex; align-items: center; gap: 10px; margin-block-end: 10px; }
+.secHead h3 { margin: 0; }
+.title { font-size: 19px; font-weight: 700; margin-block-end: 14px; }
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0; }
+
+.chiprow { display: flex; gap: 8px; overflow-x: auto; padding-block-end: 8px; margin-block-end: 14px; }
+.chip {
+  flex: none; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken); font: inherit; font-size: 13px; cursor: pointer;
+  white-space: nowrap; color: var(--text-secondary); text-decoration: none;
+}
+.chipActive { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
+
+.regstack { display: flex; flex-direction: column; gap: 10px; }
+.regcard { border: 1px solid var(--border-subtle); border-radius: 12px; padding: 14px 16px; }
+
+.map {
+  height: 160px; border-radius: 12px; background: var(--surface-sunken);
+  position: relative; overflow: hidden; display: grid; place-items: center;
+}
+/* real map fills the whole card; the governed fallback keeps the centering */
+.map :global([data-map-provider]) { position: absolute; inset: 0; }
+
+.actionbar {
+  position: sticky; bottom: 0; display: flex; gap: 12px; padding: 14px 20px;
+  padding-block-end: max(14px, env(safe-area-inset-bottom));
+  background: var(--surface-primary); border-block-start: 1px solid var(--border-subtle);
+}

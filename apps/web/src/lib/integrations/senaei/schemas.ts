@@ -1,4 +1,4 @@
-import type { CommercialRegistration, IndustrialLicense, IndustrialPlant, InspectionObservation, InspectionObservationWire, InspectionTaskDetail, LabelValue, PlantAddress, ProductionLineItem, ProductionLinePage, Regulation, RegulationItem, SenaeiLoginResult, SenaeiOperationResult, SenaeiTaskSummary, SenaeiUserProfile } from "./types";
+import type { ChemicalPermit, CommercialRegistration, CustomsExemption, IndustrialLicense, IndustrialPlant, InspectionObservation, InspectionObservationWire, InspectionTaskDetail, LabelValue, PlantAddress, ProductionLineItem, ProductionLinePage, Regulation, RegulationItem, SenaeiLoginResult, SenaeiOperationResult, SenaeiTaskSummary, SenaeiUserProfile } from "./types";
 
 type JsonRecord = Record<string, unknown>;
 const record = (value: unknown): JsonRecord | null => value !== null && typeof value === "object" && !Array.isArray(value) ? value as JsonRecord : null;
@@ -36,5 +36,21 @@ export function parseTaskList(payload: unknown): SenaeiTaskSummary[] {
     const row = record(value); if (!row) throw new Error("task summary is not an object");
     const visit = record(row.visit); const inspector = record(visit?.inspector);
     return { externalId: requiredId(row.id, "task"), number: text(row.number), workflow: text(row.workflow), status: text(record(row.status)?.value ?? row.status), createdAt: text(row.created_at), visit: visit ? { externalId: requiredId(visit.id, "visit"), type: labelValue(visit.type), method: labelValue(visit.method), visitDate: text(visit.visit_date), facilityName: text(visit.facility_name), crNumber: text(visit.cr_number), notes: text(visit.notes), inspector: inspector ? { externalId: text(inspector.id), name: text(inspector.name) } : null } : null };
+  });
+}
+
+export function parseChemicalPermitList(payload: unknown): ChemicalPermit[] {
+  const root = record(payload);
+  return array(root?.data).map(value => {
+    const row = record(value); if (!row) throw new Error("chemical permit is not an object");
+    return { externalId: requiredId(row.id, "chemical permit"), approvalNumber: text(row.approval_number), requestNumber: text(row.request_number), type: labelValue(row.type), decreeNumber: text(row.decree_number), decreeIsn: text(row.decree_ISN), fasahRefNumber: text(row.fasah_ref_number), approvedAt: text(row.approved_at), startsAt: text(row.starts_at), endsAt: text(row.ends_at), status: labelValue(row.status), plantId: text(row.plant_id), itemsCount: numeric(row.items_count) };
+  });
+}
+
+export function parseCustomsExemptionList(payload: unknown): CustomsExemption[] {
+  const root = record(payload);
+  return array(root?.data).map(value => {
+    const row = record(value); if (!row) throw new Error("customs exemption is not an object");
+    return { externalId: requiredId(row.id, "customs exemption"), requestNumber: text(row.request_number), type: labelValue(row.type), decreeNumber: numeric(row.decree_number), decreeIsn: numeric(row.decree_ISN), approvedAt: text(row.approved_at), startsAt: text(row.starts_at), endsAt: text(row.ends_at), status: labelValue(row.status), plantId: text(row.plant_id), itemsCount: numeric(row.items_count), productsCount: numeric(row.products_count) };
   });
 }

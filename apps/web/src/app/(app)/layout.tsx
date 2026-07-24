@@ -45,5 +45,13 @@ async function enforceChannelAccess() {
 
 export default async function AuthenticatedAppLayout({ children }: { children: ReactNode }) {
   await enforceChannelAccess();
+  // The field (inspector iPad) channel renders its OWN self-contained chrome
+  // from the SAQEEL field design system — each screen has its own header and a
+  // shared design bottom-nav (see (app)/field/layout.tsx). It deliberately does
+  // NOT sit inside the global AppShell topbar/sidebar, which the design has no
+  // equivalent for; wrapping it would double the navigation. Auth is enforced
+  // per field page (getVerifiedUser → /login) and by middleware.
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  if (isFieldPath(pathname)) return <>{children}</>;
   return <AppShell>{children}</AppShell>;
 }

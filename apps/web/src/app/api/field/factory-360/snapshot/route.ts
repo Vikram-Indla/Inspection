@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const { cr, selected, factory, currentCompliance, portfolioCounts, lines, government, docs, canonical } = dossier;
+  const { cr, selected, factory, currentCompliance, portfolioCounts, lines, government, docs, canonical, chemicalPermits, customsExemptions, chemicalPermitsError, customsExemptionsError } = dossier;
 
   const sectionsOmitted: string[] = [];
   if (!permissions["view_risk_details"]) sectionsOmitted.push("risk");
@@ -46,6 +46,8 @@ export async function GET(request: Request) {
   // never presents an absent integration as live.
   const providerGaps: string[] = [];
   if ((dossier.governmentResult.error) || government.length === 0) providerGaps.push("SENAEI_API_CONTRACT_NOT_SUPPLIED:government_services_incentives");
+  if (chemicalPermitsError) providerGaps.push(`SENAEI_UNAVAILABLE:chemical_permits:${chemicalPermitsError}`);
+  if (customsExemptionsError) providerGaps.push(`SENAEI_UNAVAILABLE:customs_exemptions:${customsExemptionsError}`);
 
   const summary: Factory360Snapshot["summary"] = {
     crNumber: cr.cr_number,
@@ -69,6 +71,8 @@ export async function GET(request: Request) {
     openViolationsNote: "Not Available — runtime violations have no governed open/closed state",
     industrialLineCount: lines.length,
     governmentRecordCount: government.length,
+    chemicalPermitCount: chemicalPermits.length,
+    customsExemptionCount: customsExemptions.length,
     documentCount: permissions["view_factory_documents"] ? docs.length : 0,
     sourceSystem: selected?.source_system ?? cr.source_system,
     sourceSyncedAt: selected?.source_synced_at ?? cr.source_synced_at,
