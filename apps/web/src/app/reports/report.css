@@ -56,8 +56,8 @@
 @media print {
   @page { size: A4; margin: 12mm; }
   .no-print { display: none !important; }
-  /* V2 print spec: grayscale-safe #111/#555/#999 ladder, never the dark-theme
-     palette — a reviewer may have the app in dark mode when they print/export
+  /* V2 print spec: grayscale-safe near-black/mid-grey/light-grey ladder, never
+     the dark-theme palette — a reviewer may have the app in dark mode when they print/export
      to PDF; the official document must not inherit that. Scoped to .rp-page
      so it can't leak into any other on-screen content. */
   .rp-page {

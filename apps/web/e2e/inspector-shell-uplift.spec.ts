@@ -28,23 +28,23 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
 
   test("UIU-ISP-AC-007..011 field task bar is labelled, restrained and touch sized", () => {
     const tabs = read("src/components/FieldTabs.tsx");
-    const css = read("src/app/astryx.css");
-    expect(tabs).toContain('className="ax-field-taskbar__primary"');
+    const css = read("src/app/saqeel-components-legacy.css");
+    expect(tabs).toContain('className="sq-field-taskbar__primary"');
     expect(tabs).toContain("{labels.fab}");
     expect(tabs).not.toContain("Raised center FAB");
     expect(tabs).not.toContain('href="/signout"');
-    expect(tabs).not.toContain("ax-radius-full");
-    expect(css).toContain("min-block-size: var(--ax-control-height-field)");
-    expect(css).toContain("border-block-start: 1px solid var(--ax-color-border)");
+    expect(tabs).not.toContain("sq-radius-full");
+    expect(css).toContain("min-block-size: var(--control-h-field)");
+    expect(css).toContain("border-block-start: 1px solid var(--border-subtle)");
     expect(css).toContain("padding-block-end: 104px");
-    expect(css).not.toContain(".ax-field-taskbar__primary { border-radius: var(--ax-radius-full)");
+    expect(css).not.toContain(".sq-field-taskbar__primary { border-radius: var(--radius-full)");
   });
 
   test("UIU-ISP-AC-012..013 active assignments precede notifications and analytics", () => {
     const page = read("src/app/(app)/field/page.tsx");
     const home = read("src/components/field/FieldHome.tsx");
     expect(page.indexOf("<FieldHome")).toBeGreaterThan(-1);
-    expect(page.indexOf("<FieldHome")).toBeLessThan(page.indexOf('<details className="ax-field-performance">'));
+    expect(page.indexOf("<FieldHome")).toBeLessThan(page.indexOf('<details className="sq-field-performance">'));
     expect(page).toContain('title={t("field.assignments.title", "My assignments")}');
     expect(page).not.toContain("SCR-IPAD-600 · assigned-only");
     expect(home.indexOf('<section id="visits"')).toBeLessThan(home.indexOf("M03-001 — inspector inbox remains available"));
@@ -52,16 +52,15 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
 
   test("UIU-ISP-AC-014..020 preserves theme, RTL, status, input and Atlas boundaries", () => {
     const tabs = read("src/components/FieldTabs.tsx");
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-components-legacy.css");
     const tokens = read("src/app/tokens.css");
     const login = read("src/app/login/login.css");
     expect(tabs).toContain('aria-current={active === "dashboard" ? "page" : undefined}');
     expect(tabs).toContain("<Icon d={GLYPHS.next} />");
     expect(css).toContain("inset-inline: 0");
     expect(css).toContain("var(--focus-ring)");
-    expect(tokens).toContain("--radius-sm: 3px");
-    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)");
-    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)");
+    expect(tokens).toContain("--radius-sm: 3px"); // input radius, direct token (--ax-* shim removed PR12)
+    expect(tokens).toContain("--type-input: 400 14px/1.5 var(--font-body)"); // input font, direct token
     expect(login).toContain("lg-atlas");
   });
 

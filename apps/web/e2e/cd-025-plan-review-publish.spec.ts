@@ -60,9 +60,9 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     // Readiness must resolve to a truthful, definite state — ready OR blocked —
     // and never remain a false "ready" while checking (no optimistic success).
     const readiness = page.locator(".cd-ready");
-    await expect(readiness.locator(".ax-lozenge--success, .badge-compliant, .ax-lozenge--critical, .badge-critical")).toBeVisible({ timeout: 15000 });
+    await expect(readiness.locator(".sq-lozenge--success, .badge-compliant, .sq-lozenge--critical, .badge-critical")).toBeVisible({ timeout: 15000 });
     // Publish reflects that state: enabled iff readiness is clear.
-    const ready = await readiness.locator(".ax-lozenge--success, .badge-compliant").count();
+    const ready = await readiness.locator(".sq-lozenge--success, .badge-compliant").count();
     const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
     if (ready) await expect(publish).toBeEnabled();
     else await expect(publish).toBeDisabled();
@@ -85,7 +85,7 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     await stageSelection(page);
     await page.goto("/planning/bulk/review");
     // the visible assignment-evidence heading (not the collapsed <option>)
-    await expect(page.locator(".ax-overline", { hasText: /chosen at publish/i })).toBeVisible();
+    await expect(page.locator(".sq-overline", { hasText: /chosen at publish/i })).toBeVisible();
     await expect(page.getByText(/first eligible Inspector available in the window/i)).toBeVisible();
     await expect(page.getByText(/round-robin/i)).toHaveCount(0);
     await expect(page.getByText(/contact support/i)).toHaveCount(0);

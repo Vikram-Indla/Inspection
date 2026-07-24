@@ -77,7 +77,7 @@ test.describe("TASK-G11 arrival evidence live replay", () => {
     await expect(page.getByRole("heading", { name: /Arrival evidence/i })).toBeVisible({ timeout: 15_000 });
     await page.getByLabel("Arrival comment").fill("G11 arrival replay 2026-07-16 b6b524c9");
     await page.getByRole("button", { name: /Save arrival evidence/i }).click();
-    await expect(page.locator(".ax-lozenge--success, .badge-compliant").filter({ hasText: /Arrival evidence saved or queued for sync/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator(".sq-lozenge--success, .badge-compliant").filter({ hasText: /Arrival evidence saved or queued for sync/i })).toBeVisible({ timeout: 15_000 });
   });
 });
 
@@ -115,7 +115,7 @@ test.describe("TASK-G11 remaining-requirements live read paths", () => {
       await expect(page.getByRole("heading", { name: /Visit management — map/i })).toBeVisible();
       await expect(page.getByLabel("Region")).toBeVisible();
       await expect(page.locator('[data-map-provider="mapbox"]')).toBeVisible();
-      await expect(page.locator("table.ax-table")).toBeVisible();
+      await expect(page.locator("table.sq-table")).toBeVisible();
     });
   });
 

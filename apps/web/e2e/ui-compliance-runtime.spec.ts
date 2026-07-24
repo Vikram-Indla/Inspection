@@ -62,7 +62,7 @@ for (const journey of journeys) {
       // Axe's wcag22aa target-size rule evaluates compact checkbox/radio
       // targets together with their spacing exception. This supplemental
       // geometry check covers controls whose painted box is the target.
-      const undersized = await page.locator("button:visible, input:not([type=checkbox]):not([type=radio]):visible, select:visible, textarea:visible, summary:visible, a.ax-nav-item:visible")
+      const undersized = await page.locator("button:visible, input:not([type=checkbox]):not([type=radio]):visible, select:visible, textarea:visible, summary:visible, a.sq-nav-item:visible")
         .evaluateAll(elements => elements.flatMap(element => {
           const rect = element.getBoundingClientRect();
           if (element.hasAttribute("disabled") || rect.width === 0 || rect.height === 0) return [];
@@ -111,7 +111,7 @@ test.describe("shared shell keyboard, RTL and reduced motion", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await setPresentation(page, "ar", "dark");
     await page.goto("/planning");
-    const nav = await page.locator("nav.ax-shell__nav").boundingBox();
+    const nav = await page.locator("nav.sq-shell__nav").boundingBox();
     const main = await page.locator("main#main-content").boundingBox();
     expect(nav).not.toBeNull();
     expect(main).not.toBeNull();

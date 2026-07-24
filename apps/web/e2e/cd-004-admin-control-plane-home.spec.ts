@@ -30,7 +30,7 @@ test.describe("CD-004 configuration evidence spine (ADM-QG-04/07, CD004-QG-02)",
   test("renders a true evidence-spine table: caption, four column headers, five family rows", async ({ page }) => {
     await page.goto("/admin");
     // The signature is a single table (control plane, not a KPI wall) — spec §3.
-    const table = page.locator("table.ax-table");
+    const table = page.locator("table.sq-table");
     await expect(table).toHaveCount(1);
     await expect(table.locator("caption")).toHaveText(/Configuration evidence spine/i);
     await expect(table.locator("thead th[scope=col]")).toHaveCount(4);
@@ -50,7 +50,7 @@ test.describe("CD-004 configuration evidence spine (ADM-QG-04/07, CD004-QG-02)",
     await page.goto("/admin");
     // Live reads succeed → verified state on the read-backed rows; no source failed
     // header lozenge, and no static 'live database' success verdict anywhere.
-    await expect(page.locator(".ax-lozenge--success, .badge-compliant").first()).toContainText(/read verified/i);
+    await expect(page.locator(".sq-lozenge--success, .badge-compliant").first()).toContainText(/read verified/i);
     await expect(page.getByText(/live database/i)).toHaveCount(0);
     // Header states a read fact, never a platform-health verdict.
     await expect(page.getByText(/page read/i)).toBeVisible();
@@ -59,7 +59,7 @@ test.describe("CD-004 configuration evidence spine (ADM-QG-04/07, CD004-QG-02)",
 
   test("action links resolve to existing module routes only; no approve/publish/edit affordance on the home", async ({ page }) => {
     await page.goto("/admin");
-    const spine = page.locator("table.ax-table");
+    const spine = page.locator("table.sq-table");
     // Each read-backed family that owns a route links to that module with a scoped name.
     for (const [name, href] of [
       ["Inspection Rules", "/admin/regulations"],
@@ -104,7 +104,7 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
 
   test("primary action targets are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin");
-    const links = page.locator("table.ax-table a.ax-btn, table.ax-table a.btn, nav a.ax-btn, nav a.btn");
+    const links = page.locator("table.sq-table a.sq-btn, table.sq-table a.btn, nav a.sq-btn, nav a.btn");
     const n = await links.count();
     expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) {
@@ -119,7 +119,7 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     await page.goto("/admin");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     // Codes/dates stay LTR-isolated (spec §12).
-    await expect(page.locator("table.ax-table bdi[dir=ltr]").first()).toBeVisible();
+    await expect(page.locator("table.sq-table bdi[dir=ltr]").first()).toBeVisible();
     // The visible section heading and the semantic table caption intentionally
     // share the same localized text; scope to the visible heading to avoid a
     // strict-mode collision between those two valid landmarks.
@@ -134,7 +134,7 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
       await page.setViewportSize({ width: w, height: h });
       for (const theme of ["light", "dark"] as const) {
         await page.emulateMedia({ colorScheme: theme });
-        await expect(page.locator("table.ax-table")).toBeVisible();
+        await expect(page.locator("table.sq-table")).toBeVisible();
         await page.screenshot({ path: join(EVIDENCE_DIR, `spine-en-${theme}-${w}.png`), fullPage: true });
       }
     }

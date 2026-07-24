@@ -84,16 +84,16 @@ test.describe("CD-044 access control plane (PLN-REQ-004)", () => {
     await page.selectOption("#role-cap-role-select", "inspector");
     await page.selectOption("#role-cap-grant-select", "planning.export");
     await page.getByRole("button", { name: "Grant capability to role" }).click();
-    await expect(page.locator(".ax-banner--success")).toBeVisible();
+    await expect(page.locator(".sq-banner--success")).toBeVisible();
     const granted = must(await rest("GET",
       "role_permissions?role_key=eq.inspector&permission_key=eq.planning.export&select=role_key", adminJwt),
       "verify role_permissions grant");
     expect(granted.length).toBe(1);
 
-    await page.locator(".ax-lozenge", { hasText: "planning.export" })
+    await page.locator(".sq-lozenge", { hasText: "planning.export" })
       .getByRole("button", { name: "Revoke" }).click();
     await page.getByRole("button", { name: "Confirm" }).click();
-    await expect(page.locator(".ax-banner--success")).toBeVisible();
+    await expect(page.locator(".sq-banner--success")).toBeVisible();
     const revoked = must(await rest("GET",
       "role_permissions?role_key=eq.inspector&permission_key=eq.planning.export&select=role_key", adminJwt),
       "verify role_permissions revoke");
@@ -106,7 +106,7 @@ test.describe("CD-044 access page read-only for non-security roles", () => {
 
   test("ops sees the roster without the management panels", async ({ page }) => {
     await page.goto("/admin/access");
-    await expect(page.locator("table.ax-table")).toBeVisible();
+    await expect(page.locator("table.sq-table")).toBeVisible();
     await expect(page.getByText(/This screen is read-only\./i)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Access management" })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: /Role capabilities/i })).toHaveCount(0);
@@ -137,7 +137,7 @@ test.describe("CD-044 planning lookups governance (PLN-CON-012)", () => {
     const row = page.locator("tr", { hasText: "m9_test_reason" });
     await expect(row).toBeVisible();
     await row.getByRole("button", { name: "Deactivate" }).click();
-    await expect(page.locator(".ax-banner--success")).toBeVisible();
+    await expect(page.locator(".sq-banner--success")).toBeVisible();
 
     const after = must(await rest("GET",
       "planning_lookups?kind=eq.return_reason&key=eq.m9_test_reason&select=is_active", adminJwt),
@@ -161,14 +161,14 @@ test.describe("CD-044 planning expiry rules governance (PLN-CON-013)", () => {
     await expect(v1).toBeVisible();
 
     await v1.getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator(".ax-banner--success")).toBeVisible();
+    await expect(page.locator(".sq-banner--success")).toBeVisible();
     let row = must(await rest("GET",
       `planning_expiry_rules?id=eq.${SEEDED_EXPIRY_RULE_ID}&select=enabled`, adminJwt),
       "verify disabled");
     expect(row[0].enabled).toBe(false);
 
     await section(page).locator("tr", { hasText: "v1" }).getByRole("button", { name: "Enable" }).click();
-    await expect(page.locator(".ax-banner--success")).toBeVisible();
+    await expect(page.locator(".sq-banner--success")).toBeVisible();
     row = must(await rest("GET",
       `planning_expiry_rules?id=eq.${SEEDED_EXPIRY_RULE_ID}&select=enabled`, adminJwt),
       "verify re-enabled");

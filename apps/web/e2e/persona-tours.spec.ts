@@ -67,7 +67,7 @@ test.describe("reviewer tour (web channel)", () => {
     await page.goto("/launch");
     await page.waitForURL(/\/reviews/);
     // Queue has either pending panels / history table or the clear state
-    await expect(page.locator(".ax-table, .ax-state").first()).toBeVisible();
-    await expect(page.locator(".ax-banner--immutable")).toBeVisible();
+    await expect(page.locator(".sq-table, .sq-state").first()).toBeVisible();
+    await expect(page.locator(".sq-banner--immutable")).toBeVisible();
   });
 });

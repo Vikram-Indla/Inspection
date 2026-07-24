@@ -77,7 +77,7 @@ test.describe("CD-031 source truth — governed risk/spatial wiring, masking, is
     const src = SRC(PAGE);
     // Four independent error flags, each rendered as its own banner in its own section.
     for (const flag of ["dErr", "rErr", "pErr", "mErr"]) {
-      expect(src).toMatch(new RegExp(`${flag} && <div className="ax-banner ax-banner--critical"`));
+      expect(src).toMatch(new RegExp(`${flag} && <div className="sq-banner sq-banner--critical"`));
     }
     expect(src).toMatch(/mapFactoryError\(dErr, "load"\)/);
     expect(src).toMatch(/mapFactoryError\(rErr, "load"\)/);
