@@ -16,6 +16,12 @@
 
 Independent visual verdict: **RELEASE**.
 
+Canonical promotion: implementation commit `ed384241` was pushed and promoted
+to `origin/main` by GitHub merge commit `330f6cba` after explicit Product Owner
+approval. GitHub's pull-request endpoint returned HTTP 500 despite the branch
+being exactly one commit and 22 files ahead, so the approved fallback used the
+GitHub merge endpoint and verified remote ancestry. No force push occurred.
+
 The module is source-backed and bounded. Operations and Leadership may open it;
 other personas are redirected by the server route boundary. Strategic
 compliance uses only eligible answers from inspections whose latest Level-2
@@ -80,5 +86,6 @@ External approved root:
 3. The supplied seeding handoff contains discovery/design files but no
    executable governed dry-run. Zero remote rows were inserted, updated or
    deleted.
-4. No push, merge, deploy, production mutation, remote DDL, API, Field, PWA,
-   iPad or stash operation occurred.
+4. Push and canonical merge occurred only after the separately recorded Product
+   Owner approval. No deployment, production mutation, remote DDL, API, Field,
+   PWA, iPad, stash operation or force push occurred.

@@ -4843,9 +4843,29 @@
       "commit_sha": "UNCOMMITTED — isolated Product Owner-controlled branch; baseline c8bdf6d185d0326454f8d95247cfbaab10f47ae4",
       "next_task": "Product Owner reviews the actual M1 runtime and authorizes promotion if desired; do not begin another module under the M1 lease.",
       "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md, execution/CURRENT_SLICE.yaml and evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md. M1 has an independent RELEASE verdict on codex/m1-dashboard-reconciliation from baseline c8bdf6d1. Preserve all DEC-028 blocked states. Do not seed, commit, push, merge, deploy, or touch Field/PWA/iPad without the separate governed action."
+    },
+    {
+      "session_id": "2026-07-24-web-admin-m1-dashboard-promotion-002",
+      "started_at": "2026-07-24",
+      "ended_at": "2026-07-24",
+      "branch": "codex/m1-dashboard-reconciliation",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001",
+      "gate": "Sponsor-approved canonical promotion",
+      "requirements": ["CR-001..CR-478 preserved", "No deployment or production mutation", "No Field/PWA/iPad implementation"],
+      "acceptance_ids": ["WA-M1-AC-001..006"],
+      "screens": ["WA-DES-025 Strategic Dashboard", "WA-DES-046 Operational Dashboard"],
+      "engines": ["GitHub branch push", "GitHub non-force merge endpoint", "Remote-main ancestry verification"],
+      "files_changed": ["M1 22-file implementation package promoted unchanged", "Promotion approval and evidence records"],
+      "tests": ["typecheck PASS", "production build PASS", "focused M1 16/16 PASS excluding pre-existing Inspector auth setup", "Web/Admin validator 478/478 PASS", "git diff check PASS", "origin/main ancestry verification PASS"],
+      "evidence": ["implementation commit ed384241", "origin/main merge commit 330f6cba", "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md"],
+      "decisions": ["Sponsor approved reconciliation, commit, push and merge", "GitHub PR endpoint HTTP 500 recorded", "Non-force merge endpoint used as the bounded fallback", "No deployment or data mutation"],
+      "blockers": ["Pre-existing Inspector authentication fixture HTTP 400", "Stale legacy Dashboard/performance assertions", "DEC-028 policy-derived KPIs remain fail closed"],
+      "commit_sha": "ed384241 promoted by 330f6cba",
+      "next_task": "Activate the next module only under its own accepted design, bounded implementation lease and evidence contract.",
+      "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md, execution/CURRENT_SLICE.yaml and evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md. M1 is canonically promoted at origin/main 330f6cba. Preserve its caveats and do not deploy or mutate production under the M1 authority."
     }
   ],
-  "last_session": "2026-07-24-web-admin-m1-dashboard-001",
+  "last_session": "2026-07-24-web-admin-m1-dashboard-promotion-002",
   "rules": {
     "append_only": true,
     "required_fields": [
