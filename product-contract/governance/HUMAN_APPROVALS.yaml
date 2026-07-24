@@ -237,6 +237,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-20"
     change_ref: "product-contract/governance/CC-SAQEEL-V5-IMPLEMENTATION-001.yaml"
+  - gate: "web-admin-m1-dashboard-canonical-promotion"
+    decision: "APPROVED AND EXECUTED — sponsor replied 'approved' to the bounded M1 promotion request covering reconciliation onto current main, commit, branch push, pull request and merge after checks. Typecheck, production build, focused M1 Playwright 16/16, Web/Admin validator 478/478 and diff integrity passed before promotion. GitHub's pull-request endpoint returned HTTP 500 with an empty response, so the authorized fallback used GitHub's non-force merge endpoint. Implementation commit ed384241 is verified as an ancestor of origin/main merge commit 330f6cba. This approval does not authorize deployment, production mutation, remote DDL, Supabase writes, API change, Field/PWA/iPad work, force push, or resolving DEC-028 by invention."
+    approver: "Vikram Indla"
+    date: "2026-07-24"
+    change_ref: "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

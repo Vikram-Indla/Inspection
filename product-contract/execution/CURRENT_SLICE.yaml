@@ -4,7 +4,7 @@ batch_id: "WA-P1-M1-DASHBOARD-001"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 gate: "Web/Admin M1 implementation and human screen approval"
 title: "Executive and Business Dashboard reconciliation"
-status: "TECHNICAL_RELEASE_READY"
+status: "CANONICALLY_PROMOTED"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
@@ -15,9 +15,9 @@ worktree: "/Users/vikramindla/Developer/Inspection-codex-m1-dashboard"
 approval:
   approved_by: "Vikram Indla / Product Owner"
   approved_on: "2026-07-24"
-  evidence: "Explicit sponsor direction: Please proceed; loop the operating procedure until this module is finished; consider all approvals given."
-  interpretation: "APPROVED — execute the complete M1 Dashboard loop, retaining honest blocked states for unresolved policy contracts."
-  authorizes: "M1 leased application files, focused tests, local/runtime evidence, and a separately bounded non-production seeder dry-run. No push merge deployment production mutation or Field/PWA/iPad work."
+  evidence: "Sponsor approved the complete M1 loop, then explicitly replied 'approved' to the bounded commit, push, PR/check and merge promotion request."
+  interpretation: "APPROVED AND EXECUTED — promote the independently released M1 Dashboard package to canonical main while retaining honest blocked states for unresolved policy contracts."
+  authorizes: "M1 leased application files, focused tests, local/runtime evidence, commit, branch push and canonical main promotion. No deployment, production mutation, Field/PWA/iPad work or invented policy value."
 
 process_ids: ["G2-P12"]
 requirement_ids: ["CR-001..CR-478"]
@@ -79,7 +79,7 @@ verification:
   - "real Chrome implementation evidence"
 
 do_not_touch:
-  - "Do not modify main, setup/Inspection, existing stashes, deployment or production."
+  - "Canonical main modification is limited to the separately sponsor-approved M1 promotion recorded on 2026-07-24; do not modify setup/Inspection, existing stashes, deployment or production."
   - "Do not edit /field/**, PWA, iPad, offline engines or service workers."
   - "Do not modify the F0 shell, shared navigation, global tokens, global component CSS or shared GeoMap."
   - "Do not add APIs, RPCs, migrations, schema, RLS/RBAC or provider configuration under the M1 application lease."
@@ -90,10 +90,11 @@ rollback:
   retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
 
 exit_condition: >-
-  M1 may be presented for sponsor acceptance only after all WA-M1-AC-001..006
-  P0/P1 evidence passes or each externally blocked contract is visibly and
-  truthfully classified. Do not push, merge, deploy, modify production, or
-  begin another implementation module without a separately recorded lease.
+  SATISFIED. All WA-M1-AC-001..006 P0/P1 evidence passed or each externally
+  blocked contract is visibly and truthfully classified. Sponsor separately
+  approved commit, push and canonical promotion. Deployment and production
+  mutation remain unauthorized; another implementation module still requires
+  its own recorded lease.
 
 completion:
   completed_on: "2026-07-24"
@@ -111,4 +112,4 @@ completion:
   remaining_release_caveats:
     - "Inspector authentication fixture remains an external test-infrastructure defect and is not claimed as passed."
     - "DEC-028 and all unresolved policy-derived KPIs remain visibly blocked; no values were invented."
-    - "No push, merge, deployment, production mutation, DDL, API, PWA, Field or iPad change occurred."
+    - "Implementation commit ed384241 was pushed and promoted to origin/main by GitHub merge commit 330f6cba after explicit sponsor approval; no deployment, production mutation, DDL, API, PWA, Field or iPad change occurred."

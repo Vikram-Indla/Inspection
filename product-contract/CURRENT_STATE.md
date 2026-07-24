@@ -1,5 +1,24 @@
 # Current State
 
+## 2026-07-24 UPDATE 129 — M1 Dashboard promoted to canonical main
+
+The Product Owner explicitly approved promotion of
+`TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001`. Implementation commit `ed384241`
+was pushed on `codex/m1-dashboard-reconciliation` and promoted to
+`origin/main` by GitHub merge commit `330f6cba`. The normal draft-pull-request
+path was attempted through both the GitHub connector and GitHub CLI, but
+GitHub's pull-request endpoint returned HTTP 500 with an empty response. The
+sponsor-approved fallback used GitHub's non-force merge endpoint; ancestry was
+then independently verified on the fetched remote main.
+
+The promoted scope remains exactly the independently released 22-file M1
+package. Typecheck, production build, focused M1 Playwright 16/16, Web/Admin
+authority validation 478/478 and `git diff --check` passed on the current-main
+dependency graph before promotion. No deployment, remote DDL, Supabase write,
+API change, Field/PWA/iPad change, stash operation or force push occurred.
+Inspector fixture HTTP 400, stale legacy Dashboard assertions and unresolved
+DEC-028 policy-derived KPIs remain explicit caveats rather than false passes.
+
 ## 2026-07-24 UPDATE 128 — M1 Dashboard independently released
 
 `TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001` is technically release-ready on the

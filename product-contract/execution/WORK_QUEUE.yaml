@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
     gate: "Web/Admin M1 implementation and screen certification"
     priority: "P0"
-    status: "TECHNICAL_RELEASE_READY"
+    status: "CANONICALLY_PROMOTED"
     owner: "Codex implementation and QA + Product Owner promotion authority"
     blocked_by: []
-    blocks: ["Canonical promotion of the isolated M1 branch"]
-    note: "Strategic and Operational Dashboard reconciliation is source-backed and independently released. Typecheck/build PASS; focused M1 16/16; final visual refresh 3/3; Web/Admin validator 478/478; Mapbox, desktop/mobile shell, Arabic governance copy, unsupported-view truth, route authorization and accessibility pass. Seeder stream made zero writes because the supplied ZIP is design/discovery authority, not an executable governed seeder. Inspector auth setup HTTP 400 and stale legacy Dashboard/performance assertions remain recorded caveats. No push, merge, deploy, DDL, production, Field, PWA or iPad action."
+    blocks: []
+    note: "Strategic and Operational Dashboard reconciliation is source-backed, independently released and promoted to origin/main at merge commit 330f6cba after explicit Product Owner approval. Typecheck/build PASS; focused M1 16/16; final visual refresh 3/3; Web/Admin validator 478/478; Mapbox, desktop/mobile shell, Arabic governance copy, unsupported-view truth, route authorization and accessibility pass. Seeder stream made zero writes because the supplied ZIP is design/discovery authority, not an executable governed seeder. Inspector auth setup HTTP 400 and stale legacy Dashboard/performance assertions remain recorded caveats. No deployment, DDL, production mutation, Field, PWA or iPad action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
     gate: "Web/Admin human screen approval"
     priority: "P0"
