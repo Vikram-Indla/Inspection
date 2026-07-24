@@ -38,7 +38,7 @@ const EVENT_KEYS = ["assignment", "reschedule", "review_decision", "virtual_clos
 const CHANNELS = ["inapp", "push", "sms", "email"];
 
 function Msg({ state }: { state: NotifRuleResult }) {
-  if (state.error) return <p className="t-caption" role="alert" style={{ color: "var(--ax-fg-critical, inherit)" }}>{state.error}</p>;
+  if (state.error) return <p className="t-caption" role="alert" style={{ color: "var(--text-on-action, inherit)" }}>{state.error}</p>;
   if (state.notice) return <p className="t-caption" role="status">{state.notice}</p>;
   return null;
 }
@@ -46,39 +46,39 @@ function Msg({ state }: { state: NotifRuleResult }) {
 function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]; l: Labels }) {
   const [state, action, pending] = useActionState<NotifRuleResult, FormData>(createNotificationRule, {});
   return (
-    <form action={action} className="stack" style={{ gap: "var(--ax-space-150)" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--ax-space-150)" }}>
-        <label className="ax-field"><span>{l.eventKey}</span>
+    <form action={action} className="stack" style={{ gap: "var(--space-3)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--space-3)" }}>
+        <label className="sq-field"><span>{l.eventKey}</span>
           <select name="event_key" required defaultValue="">
             <option value="" disabled>—</option>
             {EVENT_KEYS.map(k => <option key={k} value={k}>{k}</option>)}
           </select>
         </label>
-        <label className="ax-field"><span>{l.channel}</span>
+        <label className="sq-field"><span>{l.channel}</span>
           <select name="channel" required defaultValue="inapp">
             {CHANNELS.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
-        <label className="ax-field"><span>{l.recipientRole}</span>
+        <label className="sq-field"><span>{l.recipientRole}</span>
           <select name="recipient_role" required defaultValue="">
             <option value="" disabled>—</option>
             {roles.map(r => <option key={r.role_key} value={r.role_key}>{r.title}</option>)}
           </select>
         </label>
-        <label className="ax-field"><span>{l.slaMinutes}</span>
+        <label className="sq-field"><span>{l.slaMinutes}</span>
           <input type="number" name="sla_minutes" min={1} />
         </label>
-        <label className="ax-field"><span>{l.escalationRole}</span>
+        <label className="sq-field"><span>{l.escalationRole}</span>
           <select name="escalation_role" defaultValue="">
             <option value="">—</option>
             {roles.map(r => <option key={r.role_key} value={r.role_key}>{r.title}</option>)}
           </select>
         </label>
       </div>
-      <label className="ax-field"><span>{l.template}</span>
+      <label className="sq-field"><span>{l.template}</span>
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
       </label>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? l.creating : l.create}</button>
         <Msg state={state} />
       </div>
@@ -93,7 +93,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
   if (row.status === "draft") {
     return (
-      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--space-1)" }}>
         <form action={pubAction}><input type="hidden" name="rule_id" value={row.id} />
           <button type="submit" className="btn btn-primary btn-touch" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
         </form>
@@ -103,12 +103,12 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
   }
   if (row.status === "published") {
     return (
-      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--space-1)" }}>
         <form action={testAction}><input type="hidden" name="rule_id" value={row.id} />
           <button type="submit" className="btn btn-primary btn-touch" disabled={testPending}>{testPending ? l.testing : l.test}</button>
         </form>
         <Msg state={testState} />
-        <form action={deactAction} className="row" style={{ gap: "var(--ax-space-100)" }}>
+        <form action={deactAction} className="row" style={{ gap: "var(--space-2)" }}>
           <input type="hidden" name="rule_id" value={row.id} />
           <input type="text" name="deactivation_reason" placeholder={l.deactivationReason} required />
           <button type="submit" className="btn btn-primary btn-touch" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>
@@ -122,15 +122,15 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
 export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
-      <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
+      <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
         <CreateForm roles={roles} l={l} />
       </section>
 
       {rows.length === 0 ? (
         <EmptyState icon={<IconBell size={28} />} title={l.emptyTitle} body={l.emptyBody} role="status" />
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{l.colEvent}</th><th scope="col">{l.colChannel}</th><th scope="col">{l.colRecipient}</th>
             <th scope="col">{l.colSla}</th><th scope="col">{l.colStatus}</th><th scope="col">{l.colVersion}</th><th scope="col">{l.colActions}</th>
@@ -142,7 +142,7 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
                 <td>{r.channel}</td>
                 <td>{r.recipient_role || <span className="badge badge-warning">{l.missingRecipient}</span>}</td>
                 <td>{r.sla_minutes ? `${r.sla_minutes}m → ${r.escalation_role}` : "—"}</td>
-                <td><span className={`ax-lozenge ${r.status === "published" ? "ax-lozenge--success" : r.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
+                <td><span className={`sq-lozenge ${r.status === "published" ? "sq-lozenge--success" : r.status === "deactivated" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
                   {r.status === "published" ? l.statusPublished : r.status === "deactivated" ? l.statusDeactivated : l.statusDraft}
                 </span></td>
                 <td className="numeric">{r.version_label}</td>

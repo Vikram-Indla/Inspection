@@ -3,8 +3,12 @@ import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import ThemeChannelSync from "@/components/ThemeChannelSync";
 import "./astryx.css";
-// SAQEEL Inspection Design System v1.0 component layer (new components consume
-// this; supersedes .ax-* families as consumers migrate — Astryx removed at PR12).
+import "./saqeel-components-legacy.css";
+// SAQEEL Inspection Design System v1.0 component layer. saqeel-components.css is
+// the canonical layer; saqeel-components-legacy.css holds the .sq-* families not
+// yet redesigned into it. astryx.css remains for the field-channel screens not
+// yet migrated off it (PR12's native-token migration landed on setup/Inspection
+// but not on this branch — tracked as follow-up, not silently forced here).
 import "./saqeel-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";

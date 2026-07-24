@@ -76,39 +76,39 @@ export default async function PlanningStatus() {
 
   return (
     <Shell current="/admin/planning/status" title={t("admin.planning.status.title", "Planning status rules")}
-      context={<span className="ax-lozenge ax-lozenge--info">PLN-CON-014 · read-only</span>}>
-      <div className="ax-banner"><div>
+      context={<span className="sq-lozenge sq-lozenge--info">PLN-CON-014 · read-only</span>}>
+      <div className="sq-banner"><div>
         <strong>{t("admin.planning.status.banner.title", "These rules are governed by workflow configuration.")}</strong>{" "}
         {t("admin.planning.status.banner.body", "Status transitions are defined by the published workflow configuration and enforced by the database. This screen is read-only; changes go through the governed publish flow.")}{" "}
         <Link href="/admin/workflows">{t("admin.planning.status.banner.link", "Open workflow configuration →")}</Link>
       </div></div>
 
       {isFallback ? (
-        <div className="ax-banner ax-banner--warning" role="status"><div>
+        <div className="sq-banner sq-banner--warning" role="status"><div>
           {error
             ? t("admin.planning.status.fallback.error", "The published workflow configuration could not be read. The table below is a static copy of the canonical lifecycle (visit-lifecycle-v4) and may be out of date.")
             : t("admin.planning.status.fallback.none", "No published workflow configuration was found. The table below is a static copy of the canonical lifecycle (visit-lifecycle-v4) and may be out of date.")}
         </div></div>
       ) : (
-        <p className="ax-caption">
+        <p className="sq-caption">
           {t("admin.planning.status.source", "Source: config_versions · engine=workflow · status=published")}
           {data?.version_label ? ` · ${data.version_label}` : ""}
           {data?.effective_from ? ` · ${t("admin.planning.status.effectiveFrom", "effective from")} ${new Date(data.effective_from).toLocaleDateString()}` : ""}
         </p>
       )}
 
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="sq-surface" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.states", "States")}</h2>
-        <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
           {states.map(state => (
-            <span key={state} className="ax-lozenge ax-lozenge--info">{state}</span>
+            <span key={state} className="sq-lozenge sq-lozenge--info">{state}</span>
           ))}
         </div>
       </section>
 
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="sq-surface" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.transitions", "Transitions")}</h2>
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{t("admin.planning.status.col.id", "Rule")}</th>
             <th scope="col">{t("admin.planning.status.col.from", "From")}</th>
@@ -122,21 +122,21 @@ export default async function PlanningStatus() {
             {transitions.map((tr, index) => (
               <tr key={tr.id ?? index}>
                 <td><strong>{tr.id ?? "—"}</strong></td>
-                <td><span className="ax-lozenge">{tr.from ?? "—"}</span></td>
-                <td><span className="ax-lozenge ax-lozenge--info">{tr.to ?? "—"}</span></td>
+                <td><span className="sq-lozenge">{tr.from ?? "—"}</span></td>
+                <td><span className="sq-lozenge sq-lozenge--info">{tr.to ?? "—"}</span></td>
                 <td>{tr.actor ?? "—"}</td>
-                <td className="ax-caption">{tr.guard ?? "—"}</td>
+                <td className="sq-caption">{tr.guard ?? "—"}</td>
                 <td>{tr.terminal ? t("common.yes", "yes") : t("common.no", "no")}</td>
-                <td className="ax-caption">{tr.side_effects?.length ? tr.side_effects.join(" · ") : "—"}</td>
+                <td className="sq-caption">{tr.side_effects?.length ? tr.side_effects.join(" · ") : "—"}</td>
               </tr>
             ))}
           </tbody>
         </table></div>
       </section>
 
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="sq-surface" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.capabilities", "Planning capabilities")}</h2>
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{t("admin.planning.status.col.capability", "Capability")}</th>
             <th scope="col">{t("admin.planning.status.col.effect", "Effect")}</th>
@@ -150,7 +150,7 @@ export default async function PlanningStatus() {
             ))}
           </tbody>
         </table></div>
-        <p className="ax-caption" style={{ marginBlockEnd: 0 }}>
+        <p className="sq-caption" style={{ marginBlockEnd: 0 }}>
           {t("admin.planning.status.capabilitiesNote", "Capability grants per role are managed under Roles & permissions (admin.access.manage).")}
         </p>
       </section>

@@ -21,21 +21,21 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
 }) {
   const [state, act, pending] = useActionState<ActionResult, FormData>(updateVisitNotes, {});
   return (
-    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
-      <form action={act} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <form action={act} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
-        <div className="ax-field">
-          <label className="ax-field__label" htmlFor="visit-notes">{strings.label}</label>
-          <textarea className="ax-textarea" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
+        <div className="sq-field">
+          <label className="sq-field__label" htmlFor="visit-notes">{strings.label}</label>
+          <textarea className="sq-textarea" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
         </div>
-        <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ alignItems: "center", gap: "var(--space-3)" }}>
           <button className="btn btn-secondary btn-touch" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
           <span className="t-caption">{strings.hint}</span>
         </div>
       </form>
-      {state.error && <div className="ax-banner ax-banner--critical"><div>{state.error}</div></div>}
-      {state.ok && <div className="ax-banner ax-banner--success"><div>{state.ok}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical"><div>{state.error}</div></div>}
+      {state.ok && <div className="sq-banner sq-banner--success"><div>{state.ok}</div></div>}
     </div>
   );
 }

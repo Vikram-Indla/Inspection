@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { storageStatePath } from "./personas";
 
 // CD-028 / SCR-WEB-300 / P03 — Level 2 Review Queue (scan-first).
@@ -12,6 +12,17 @@ import { storageStatePath } from "./personas";
 // derivation) are proven by rendered behaviour + deterministic source truth
 // (.claude/rules/tests.md — a screenshot alone is not evidence).
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
+// Repo-root files (supabase/migrations) resolve by walking up from cwd so the
+// spec also works from a scratch certification copy outside the repo tree.
+const REPO_FILE = (rel: string) => {
+  let dir = process.cwd();
+  for (let i = 0; i < 6; i++) {
+    const p = join(dir, rel);
+    if (existsSync(p)) return readFileSync(p, "utf8");
+    dir = dirname(dir);
+  }
+  throw new Error(`${rel} not found above ${process.cwd()}`);
+};
 
 test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 
@@ -22,7 +33,9 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
     await page.goto("/reviews");
     await expect(page).toHaveURL(/\/reviews$/);
     // scan-first contract + immutability contract are always stated
-    await expect(page.getByText(/scan-first queue/i)).toBeVisible();
+    // (terminology consolidation: the governed lead is now "Read-only queue";
+    // "scan-first queue" is a banned legacy phrase — terminology-regression).
+    await expect(page.getByText(/Read-only queue/i)).toBeVisible();
     await expect(page.getByText(/Decisions are immutable/i)).toBeVisible();
     // NOT the unauthorized block (reviewer is authorized) — distinct from leg-11
     await expect(page.getByText(/don’t have access to the review queue/i)).toHaveCount(0);
@@ -41,7 +54,8 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
     const empty = await page.getByRole("heading", { name: /queue clear/i }).count();
     test.skip(empty > 0, "queue empty in this environment — fingerprint has no rows to assert");
     // labelled facts: the fingerprint legend + per-row fact labels carry meaning
-    await expect(page.getByRole("heading", { name: /Evidence readiness & SLA-risk fingerprint/i })).toBeVisible();
+    // (terminology consolidation: the governed heading is now "Review readiness").
+    await expect(page.getByRole("heading", { name: /Review readiness/i })).toBeVisible();
     await expect(page.locator(".cd-fpchip").first()).toBeVisible();
     // each fact chip reads "Label: value" — text, not colour alone
     await expect(page.locator(".cd-fpchip", { hasText: /Checklist:|Evidence:|Acknowledgement:|Factory verify:|SLA:/ }).first()).toBeVisible();
@@ -58,7 +72,7 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
 
   test("leg 5 — opening a review is read-only: no decision panel appears on open", async ({ page }) => {
     await page.goto("/reviews");
-    const open = page.getByRole("link", { name: /open workspace/i }).first();
+    const open = page.getByRole("link", { name: /open review/i }).first();
     const has = await open.count();
     test.skip(has === 0, "no rows to open in this environment");
     await open.click();
@@ -148,7 +162,7 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
     // separate rendering path, so filters/readiness/fingerprint apply unchanged
     expect(list).toMatch(/rows\.push/);
     // race guard: two reviewers claiming the same now-visible submission at once
-    const migration = SRC("../../supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql");
+    const migration = REPO_FILE("supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql");
     expect(migration).toContain("reviews_one_open_per_version");
     expect(migration).toMatch(/where decided_at is null/i);
     const actions = SRC("src/app/(app)/reviews/[id]/actions.ts");

@@ -4,8 +4,8 @@ import { getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
 
-const TONE: Record<string, string> = { approved: "ax-lozenge--success", returned: "ax-lozenge--warning", rejected: "ax-lozenge--critical", under_review: "ax-lozenge--info", pending_review: "ax-lozenge--warning" };
-const RISK_TONE: Record<string, string> = { low: "ax-lozenge--success", medium: "ax-lozenge--warning", high: "ax-lozenge--critical" };
+const TONE: Record<string, string> = { approved: "sq-lozenge--success", returned: "sq-lozenge--warning", rejected: "sq-lozenge--critical", under_review: "sq-lozenge--info", pending_review: "sq-lozenge--warning" };
+const RISK_TONE: Record<string, string> = { low: "sq-lozenge--success", medium: "sq-lozenge--warning", high: "sq-lozenge--critical" };
 
 // Working-day set derived from engine_settings.sla.calendar.days (e.g. "Sun-Thu").
 // Never invents the weekend — reads it from the accepted config, degrades to
@@ -157,10 +157,10 @@ export default async function Reviews() {
     return {
       slaState,
       slaLabel: slaState === "overdue" ? slaOverdueLabel : slaOnTimeLabel,
-      slaTone: slaState === "overdue" ? "ax-lozenge--critical" : "ax-lozenge--success",
+      slaTone: slaState === "overdue" ? "sq-lozenge--critical" : "sq-lozenge--success",
       riskBand: band,
       riskLabel: band ? t(`enum.${band}`, band) : "",
-      riskTone: band ? (RISK_TONE[band] ?? "ax-lozenge--info") : "",
+      riskTone: band ? (RISK_TONE[band] ?? "sq-lozenge--info") : "",
       criticalCount,
       criticalLabel: criticalLabel.replace("{n}", String(criticalCount)),
       priorityLabel: priority ? t(`enum.priority.${priority}`, priority) : null,
@@ -264,9 +264,9 @@ export default async function Reviews() {
 
   return (
     <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
       {!authorized ? (
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="sq-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h3>
               <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization.")}</p></div></div>
@@ -274,11 +274,11 @@ export default async function Reviews() {
       ) : (
         <>
           {/* opening is read-only now (CD-028 leg 5/10 resolved) — say so plainly */}
-          <div className="ax-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening a review is read-only. Starting and deciding happen in the workspace as explicit, audited actions. This queue never edits inspector content or mutates state.")}</div></div>
-          {missingSla && <div className="ax-banner ax-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "engine_settings has no review_business_days / working-day calendar, so no SLA state is derived. Rows show 'SLA unavailable' — never invented as on-time.")}</div></div>}
-          {degraded && <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but a linked source (evidence, factory-verification or violation counts) could not be read for some rows. Those facts read 'unavailable', never a default value.")}</div></div>}
+          <div className="sq-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening a review is read-only. Starting and deciding happen in the workspace as explicit, audited actions. This queue never edits inspector content or mutates state.")}</div></div>
+          {missingSla && <div className="sq-banner sq-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "engine_settings has no review_business_days / working-day calendar, so no SLA state is derived. Rows show 'SLA unavailable' — never invented as on-time.")}</div></div>}
+          {degraded && <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but a linked source (evidence, factory-verification or violation counts) could not be read for some rows. Those facts read 'unavailable', never a default value.")}</div></div>}
           {rows.length === 0 ? (
-            <section className="ax-surface cd-panelpad cd-result" role="status">
+            <section className="sq-surface cd-panelpad cd-result" role="status">
               <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--ok" aria-hidden="true">✅</div>
                 <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.empty", "No inspections awaiting review")}</h3>
                   <p>{t("review.list.emptyBody", "No reviews in your scope await a Level 2 decision.")}</p></div></div>
@@ -286,7 +286,7 @@ export default async function Reviews() {
           ) : (
             <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={queueStrings} />
           )}
-          <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— the database rejects edits to decided reviews (proven live: B3-EV-001 P10-NEG). Every resubmission creates a new version; v1 remains locked forever.")}</div></div>
+          <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— the database rejects edits to decided reviews (proven live: B3-EV-001 P10-NEG). Every resubmission creates a new version; v1 remains locked forever.")}</div></div>
         </>
       )}
     </Shell>

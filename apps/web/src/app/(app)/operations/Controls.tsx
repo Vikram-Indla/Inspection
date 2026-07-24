@@ -18,7 +18,7 @@ export type MarkHandledStrings = {
 export function ActionFormControls({ actionFormId, status, strings }: { actionFormId: string; status: string; strings: ActionFormControlsStrings }) {
   const [state, formAction, pending] = useActionState<OpsResult, FormData>(updateActionFormStatus, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="action_form_id" value={actionFormId} />
       {status === "open" && (
         <button className="btn btn-primary btn-touch" name="next_status" value="acknowledged" disabled={pending}>
@@ -28,7 +28,7 @@ export function ActionFormControls({ actionFormId, status, strings }: { actionFo
       <button className="btn btn-primary btn-lg btn-touch" name="next_status" value="closed" disabled={pending}>
         {pending ? "…" : strings.close}
       </button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.updated}</span>}
     </form>
   );
@@ -38,10 +38,10 @@ export function ActionFormControls({ actionFormId, status, strings }: { actionFo
 export function MarkNotificationHandled({ notificationId, strings }: { notificationId: string; strings: MarkHandledStrings }) {
   const [state, formAction, pending] = useActionState<OpsResult, FormData>(markNotificationHandled, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="notification_id" value={notificationId} />
       <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
-      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{strings.handled}</span>}
     </form>
   );

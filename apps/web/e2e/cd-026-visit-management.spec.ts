@@ -27,7 +27,7 @@ test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 // Reveal the bulk bar by selecting the first visible row checkbox (client-only,
 // no server mutation). Returns false when the scope is empty.
 async function selectFirstRow(page: Page): Promise<boolean> {
-  const rowCheckbox = page.locator('table.ax-table tbody tr td input[type="checkbox"]').first();
+  const rowCheckbox = page.locator('table.sq-table tbody tr td input[type="checkbox"]').first();
   if (await rowCheckbox.count() === 0) return false;
   await rowCheckbox.check();
   return true;
@@ -51,7 +51,7 @@ test.describe("CD-026 workspace shell + continuity spine (DSG-021)", () => {
 
   test("selecting a visit populates the continuity spine with its identity + allowed-action context", async ({ page }) => {
     await page.goto("/visits");
-    const preview = page.locator('table.ax-table tbody tr td button[aria-label^="Show visit"]').first();
+    const preview = page.locator('table.sq-table tbody tr td button[aria-label^="Show visit"]').first();
     test.skip(await preview.count() === 0, "no visits in planner scope to preview");
     await preview.click();
     await expect(preview).toHaveAttribute("aria-pressed", "true");

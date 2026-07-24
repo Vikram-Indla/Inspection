@@ -122,7 +122,7 @@ test.describe("CD-022 graded identity search", () => {
   test("EXACT badge only on governed identifier equality; rule text shown (M01-035)", async ({ page }) => {
     await search(page, exactFactory.cr_number);
     const row = page.locator("li", { hasText: exactFactory.name });
-    await expect(row.locator(".ax-lozenge--success", { hasText: "EXACT" })).toBeVisible();
+    await expect(row.locator(".sq-lozenge--success", { hasText: "EXACT" })).toBeVisible();
   });
 
   test("name search is a new leg — SIMILAR NAME always shows the differing identifier", async ({ page }) => {
@@ -131,7 +131,7 @@ test.describe("CD-022 graded identity search", () => {
     // rows while still exercising the name-only SIMILAR NAME path.
     await search(page, similarNameFactory.name);
     const row = page.locator("li", { hasText: similarNameFactory.name });
-    await expect(row.locator(".ax-lozenge--warning", { hasText: "SIMILAR NAME" })).toBeVisible();
+    await expect(row.locator(".sq-lozenge--warning", { hasText: "SIMILAR NAME" })).toBeVisible();
     await row.locator('input[type="radio"]').check();
     // The dossier always discloses the real (differing) identifier — scope to
     // the dossier region since the compact row label also shows the CR.
@@ -142,8 +142,8 @@ test.describe("CD-022 graded identity search", () => {
   test("DEGRADED flag independent of match grade — missing license/coordinates", async ({ page }) => {
     await search(page, degradedFactory.cr_number);
     const row = page.locator("li", { hasText: degradedFactory.name });
-    await expect(row.locator(".ax-lozenge--success", { hasText: "EXACT" })).toBeVisible();
-    await expect(row.locator(".ax-lozenge--critical", { hasText: "DEGRADED" })).toBeVisible();
+    await expect(row.locator(".sq-lozenge--success", { hasText: "EXACT" })).toBeVisible();
+    await expect(row.locator(".sq-lozenge--critical", { hasText: "DEGRADED" })).toBeVisible();
   });
 
   test("canonical licence search resolves CR → licence → plant portfolio (PLN-REQ-021)", async ({ page }) => {
@@ -247,7 +247,7 @@ test.describe("CD-022 graded identity search", () => {
     // Selection-time warning (informational, does not block continuing) —
     // must name the conflicting visit (parity with the publish-time block's
     // own visit-ID text), not just a generic message.
-    const warning = page.locator(".ax-banner--warning", { hasText: /active visit already exists/i });
+    const warning = page.locator(".sq-banner--warning", { hasText: /active visit already exists/i });
     await expect(warning).toBeVisible();
     await expect(warning).toContainText(/status:\s*draft/i);
     await expect(warning.locator("a")).toBeVisible();
@@ -264,7 +264,7 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="window_end"]').fill(end);
     await page.locator('select[name="inspector_id"]').selectOption("auto");
     await page.getByRole("button", { name: /publish visit/i }).click();
-    await expect(page.locator('.ax-validation[role="alert"]')).toContainText("M02-012");
+    await expect(page.locator('.sq-validation[role="alert"]')).toContainText("M02-012");
   });
 
   test("blocked publish preserves entered work and transfers focus to the error (M01-041, DSG-A11Y-001)", async ({ page }) => {
@@ -283,7 +283,7 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="window_start"]').fill(start);
     await page.locator('input[name="window_end"]').fill(end);
     await page.getByRole("button", { name: /publish visit/i }).click();
-    const alert = page.locator('.ax-validation[role="alert"]');
+    const alert = page.locator('.sq-validation[role="alert"]');
     await expect(alert).toContainText("M01-040");
     await expect(alert).toBeFocused();
     // Work preserved — the note is still there after the blocked-publish re-render.
@@ -340,7 +340,7 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('select[name="inspector_id"]').selectOption("auto");
     await page.locator('input[name="resume_visit_plan_id"]').evaluate((el: HTMLInputElement, id: string) => { el.value = id; }, foreignId);
     await page.getByRole("button", { name: /publish visit/i }).click();
-    await expect(page.locator('.ax-validation[role="alert"]')).toBeVisible();
+    await expect(page.locator('.sq-validation[role="alert"]')).toBeVisible();
     await expect(page.locator("body")).not.toContainText(/PGRST|violates row-level|duplicate key/i);
     const plansAfterForeign = must(await rest("GET", "visit_plans?select=id", plannerJwt), "plans after foreign resume");
     expect(plansAfterForeign.length).toBe(plansBeforeForeign.length); // no fresh plan silently created

@@ -89,7 +89,7 @@ export const KEYS: I18nKey[] = [
   { key: "landing.feature.risk.desc", en: "Governed risk weights drive factory bands and planning priority — configuration, not code.", context: "Landing feature card description (tag ENG-04)" },
   { key: "landing.feature.decisions.title", en: "Immutable decisions", context: "Landing feature card title (tag M06-009)" },
   { key: "landing.feature.decisions.desc", en: "Approved, returned or rejected — a Level-2 decision is locked forever. Resubmission always creates a new version.", context: "Landing feature card description (tag M06-009)" },
-  { key: "landing.footer.line", en: "Access is role-scoped (RBAC-001..014) · every session action is audited (ENG-12) · MIM Astryx design system", context: "Landing footer line — keep contract IDs untranslated" },
+  { key: "landing.footer.line", en: "Access is role-scoped (RBAC-001..014) · every session action is audited (ENG-12) · MIM Saqeel design system", context: "Landing footer line — keep contract IDs untranslated" },
 
   // ---- login.* — SCR-PUB-010 channel-aware sign-in ----
   { key: "login.pick", en: "Pick your channel — the same governed platform, four front doors.", context: "Login (no ?as=): caption above the 4-tile channel picker" },

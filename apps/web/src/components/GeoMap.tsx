@@ -288,8 +288,8 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
 
   if (!token || failed) {
     const ar = mapLocale === "ar";
-    return <div className="ax-state ax-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider="mapbox-unavailable">
-      <span className="ax-state__glyph">⌖</span><h4>{ar ? "خدمة الخريطة غير متاحة" : "Map service unavailable"}</h4>
+    return <div className="sq-state sq-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider="mapbox-unavailable">
+      <span className="sq-state__glyph">⌖</span><h4>{ar ? "خدمة الخريطة غير متاحة" : "Map service unavailable"}</h4>
       <p className="t-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
     </div>;
   }

@@ -51,7 +51,7 @@ test.describe("TASK-MVP3-RETROFIT-REGRESSION-001 integrated control planes", () 
     await expect(page.getByRole("heading", { name: "وحدة تحكم موثوقية التكامل" })).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
-    const theme = page.locator(".ax-pagehead__actions > button.ax-topbar-icon");
+    const theme = page.locator(".sq-pagehead__actions > button.sq-topbar-icon");
     const before = await page.locator("html").getAttribute("data-theme");
     await theme.click();
     await expect(page.locator("html")).not.toHaveAttribute("data-theme", before ?? "light");

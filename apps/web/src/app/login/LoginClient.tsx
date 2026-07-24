@@ -208,16 +208,16 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
               <p className="lg-card__sub">{s.cardSub}</p>
 
               <form className="lg-credentials" onSubmit={signIn}>
-                <div className="ax-field">
-                  <label className="ax-field__label" htmlFor="email">{s.idLabel}</label>
-                  <input id="email" className="ax-input lg-input--email" type="email" autoComplete="username"
+                <div className="sq-field">
+                  <label className="sq-field__label" htmlFor="email">{s.idLabel}</label>
+                  <input id="email" className="sq-input lg-input--email" type="email" autoComplete="username"
                     dir="ltr" placeholder={s.idPlaceholder} value={email}
                     onChange={e => setEmail(e.target.value)} required />
                 </div>
-                <div className="ax-field">
-                  <label className="ax-field__label" htmlFor="pw">{s.pwLabel}</label>
+                <div className="sq-field">
+                  <label className="sq-field__label" htmlFor="pw">{s.pwLabel}</label>
                   <div className="lg-pwwrap">
-                    <input id="pw" className="ax-input" type={showPw ? "text" : "password"}
+                    <input id="pw" className="sq-input" type={showPw ? "text" : "password"}
                       autoComplete="current-password" placeholder={s.pwPlaceholder} value={password}
                       onChange={e => setPassword(e.target.value)} required />
                     <button type="button" className="lg-pwtoggle" onClick={() => setShowPw(v => !v)}
@@ -226,7 +226,7 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
                     </button>
                   </div>
                 </div>
-                {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
+                {error && <div className="sq-banner sq-banner--critical" role="alert">{error}</div>}
                 <button className="btn btn-primary btn-lg lg-submit btn-touch" type="submit" disabled={busy}>
                   {busy ? s.signingIn : s.signIn}
                 </button>
@@ -244,16 +244,16 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
               <h1 className="lg-card__title" ref={forgotHeadingRef} tabIndex={-1}>{s.forgotTitle}</h1>
               <p className="lg-card__sub">{s.forgotSub}</p>
               <form className="lg-credentials" onSubmit={sendReset} noValidate>
-                <div className={`ax-field${emailFormatError ? " is-invalid" : ""}`}>
-                  <label className="ax-field__label" htmlFor="email">{s.idLabel}</label>
-                  <input id="email" className="ax-input lg-input--email" type="email" autoComplete="username"
+                <div className={`sq-field${emailFormatError ? " is-invalid" : ""}`}>
+                  <label className="sq-field__label" htmlFor="email">{s.idLabel}</label>
+                  <input id="email" className="sq-input lg-input--email" type="email" autoComplete="username"
                     dir="ltr" placeholder={s.idPlaceholder} value={email}
                     aria-invalid={emailFormatError ? true : undefined}
                     aria-describedby={emailFormatError ? "email-err" : undefined}
                     onChange={e => { setEmail(e.target.value); setEmailFormatError(null); }} required />
-                  {emailFormatError && <p id="email-err" className="ax-field__error">{emailFormatError}</p>}
+                  {emailFormatError && <p id="email-err" className="sq-field__error">{emailFormatError}</p>}
                 </div>
-                {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
+                {error && <div className="sq-banner sq-banner--critical" role="alert">{error}</div>}
                 <button className="btn btn-primary btn-lg lg-submit btn-touch" type="submit" disabled={busy} aria-busy={busy}>
                   {busy ? s.forgotSending : s.forgotSend}
                 </button>

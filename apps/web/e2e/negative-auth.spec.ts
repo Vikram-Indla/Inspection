@@ -10,7 +10,7 @@ test.describe("negative: authentication", () => {
     await page.locator("#email").fill(PERSONAS.inspector.email);
     await page.locator("#pw").fill("WrongPassword!0000");
     await submitCredentials(page);
-    const banner = page.locator(".ax-banner--critical[role=alert]");
+    const banner = page.locator(".sq-banner--critical[role=alert]");
     await expect(banner).toBeVisible();
     // Safe message: must not leak whether the account exists or echo credentials.
     await expect(banner).not.toContainText(PERSONAS.inspector.email);
@@ -23,7 +23,7 @@ test.describe("negative: authentication", () => {
     await page.locator("#email").fill("nobody@mim.gov.sa");
     await page.locator("#pw").fill("Whatever!2026");
     await submitCredentials(page);
-    await expect(page.locator(".ax-banner--critical[role=alert]")).toBeVisible();
+    await expect(page.locator(".sq-banner--critical[role=alert]")).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
   });
 

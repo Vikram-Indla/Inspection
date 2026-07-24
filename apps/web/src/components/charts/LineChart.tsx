@@ -5,15 +5,15 @@
 export type LineDatum = { label: string; value: number };
 
 const AXIS_TEXT: React.CSSProperties = {
-  font: "var(--ax-text-caption)",
+  font: "var(--type-caption-font)",
   fontSize: 10,
-  fill: "var(--ax-color-text-secondary)",
+  fill: "var(--text-secondary)",
 };
 const VALUE_TEXT: React.CSSProperties = {
-  font: "var(--ax-text-caption)",
+  font: "var(--type-caption-font)",
   fontSize: 10,
   fontWeight: 600,
-  fill: "var(--ax-color-text)",
+  fill: "var(--text-primary)",
   fontVariantNumeric: "tabular-nums lining-nums",
 };
 
@@ -38,15 +38,15 @@ export default function LineChart({ data, title, emptyLabel = "No data", height 
     <div dir="ltr" style={{ inlineSize: "100%" }}>
       <svg viewBox={`0 0 ${w} ${height}`} role="img" aria-label={title}
         style={{ inlineSize: "100%", blockSize: "auto", display: "block" }}>
-        <line x1={padX - 10} y1={baseline + 0.5} x2={w - padX + 10} y2={baseline + 0.5} stroke="var(--ax-color-border)" />
+        <line x1={padX - 10} y1={baseline + 0.5} x2={w - padX + 10} y2={baseline + 0.5} stroke="var(--border-subtle)" />
         {pts.length > 1 && (
-          <polyline points={path} fill="none" stroke="var(--ax-color-primary)"
+          <polyline points={path} fill="none" stroke="var(--action-primary)"
             strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
         )}
         {pts.map((p, i) => (
           <g key={`${p.label}-${i}`}>
-            <circle cx={p.x} cy={p.y} r={3.5} fill="var(--ax-color-surface)"
-              stroke="var(--ax-color-primary)" strokeWidth="2" />
+            <circle cx={p.x} cy={p.y} r={3.5} fill="var(--surface-primary)"
+              stroke="var(--action-primary)" strokeWidth="2" />
             <text x={p.x} y={p.y - 8} textAnchor="middle" className="numeric" style={VALUE_TEXT}>{p.value}</text>
             <text x={p.x} y={height - 6} textAnchor="middle" style={AXIS_TEXT}>{p.label}</text>
           </g>

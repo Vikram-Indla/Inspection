@@ -21,7 +21,7 @@ export default class WidgetBoundary extends Component<Props, State> {
   render() {
     if (this.state.failed) {
       return (
-        <div className="ax-banner ax-banner--warning" role="status">
+        <div className="sq-banner sq-banner--warning" role="status">
           <div>{this.props.label}</div>
         </div>
       );

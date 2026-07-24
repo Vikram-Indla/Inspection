@@ -78,7 +78,7 @@ test.describe("CD-021 evidence table + provenance (FND-011, FND-013, M02-012)", 
     await expect(page.getByRole("columnheader", { name: /Source \/ synced/i })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: /Data quality/i })).toBeVisible();
     // FND-011: eligibility status is not color-only — a glyph precedes the label
-    const elig = page.locator(".ax-lozenge, .badge", { hasText: /eligible|duplicate/i }).first();
+    const elig = page.locator(".sq-lozenge, .badge", { hasText: /eligible|duplicate/i }).first();
     await expect(elig).toContainText(/[✓⛔]/);
   });
 });
@@ -222,7 +222,7 @@ test.describe("CD-021 remediation — invalid criteria never silently drops (ERR
     // Scope to the banner, not Next's own `#__next-route-announcer__` (also role=alert).
     // M6: the bare page ALSO carries the at-least-one-criterion alert — match
     // the incomplete-condition banner by its content.
-    const alert = page.locator('[role="alert"].ax-banner', { hasText: /incomplete/i });
+    const alert = page.locator('[role="alert"].sq-banner', { hasText: /incomplete/i });
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/incomplete/i);
     // still on /planning/bulk — the blocked submit never navigated
@@ -231,7 +231,7 @@ test.describe("CD-021 remediation — invalid criteria never silently drops (ERR
 
   test("malformed ct query param shows a distinct alert instead of silently matching everything", async ({ page }) => {
     await page.goto("/planning/bulk?ct=not-json");
-    const alert = page.locator('[role="alert"].ax-banner');
+    const alert = page.locator('[role="alert"].sq-banner');
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/could not be read/i);
   });
@@ -244,7 +244,7 @@ test.describe("CD-021 remediation — invalid criteria never silently drops (ERR
       ],
     }));
     await page.goto(`/planning/bulk?ct=${mixed}`);
-    const alert = page.locator('[role="alert"].ax-banner');
+    const alert = page.locator('[role="alert"].sq-banner');
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/could not be read/i);
   });
@@ -312,14 +312,14 @@ test.describe("CD-021 remediation — Planner-only role guard (finding 8)", () =
 test.describe("M6 — at least one criterion is required (no match-all)", () => {
   test("bare /planning/bulk shows the honest banner, the builder, and no results", async ({ page }) => {
     await page.goto("/planning/bulk");
-    await expect(page.locator('[role="alert"].ax-banner').first()).toContainText(/at least one criterion/i);
+    await expect(page.locator('[role="alert"].sq-banner').first()).toContainText(/at least one criterion/i);
     await expect(page.getByRole("tree")).toBeVisible(); // builder still renders
     await expect(page.locator("tbody tr")).toHaveCount(0); // no results without a scope
   });
 
   test("an invalid ct link also yields no results instead of silent match-all", async ({ page }) => {
     await page.goto("/planning/bulk?ct=not-json");
-    await expect(page.locator('[role="alert"].ax-banner').first()).toContainText(/could not be read/i);
+    await expect(page.locator('[role="alert"].sq-banner').first()).toContainText(/could not be read/i);
     await expect(page.locator("tbody tr")).toHaveCount(0);
   });
 });
@@ -352,7 +352,7 @@ test.describe("M6 — criteria dictionary fields and typed operators", () => {
     // The reason is visible copy — never a silent absence, never a zero.
     // (The disabled <option> text is hidden; the legend lozenge is the visible tag.)
     await expect(page.getByText(/Employee count is recorded for 4 of 1,339 factories/)).toBeVisible();
-    await expect(page.locator(".ax-lozenge", { hasText: /CONTRACT_NOT_SUPPLIED/ }).first()).toBeVisible();
+    await expect(page.locator(".sq-lozenge", { hasText: /CONTRACT_NOT_SUPPLIED/ }).first()).toBeVisible();
   });
 });
 

@@ -34,14 +34,14 @@ export default async function VisitsMapPage() {
     }];
   });
   return (
-    <Shell current="/visits" title={t("visit.map.title", "Visit management — map")} context={<span className="ax-lozenge ax-lozenge--info">{t("visit.map.context", "Filtered to your access")}</span>}>
-      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-        <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
-        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/map">{t("visit.views.map", "Map")}</a>
+    <Shell current="/visits" title={t("visit.map.title", "Visit management — map")} context={<span className="sq-lozenge sq-lozenge--info">{t("visit.map.context", "Filtered to your access")}</span>}>
+      <div className="sq-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+        <a className="sq-btn sq-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
+        <a className="sq-btn sq-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+        <a className="sq-btn sq-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+        <a className="sq-btn sq-btn--secondary" aria-current="page" href="/visits/map">{t("visit.views.map", "Map")}</a>
       </div>
-      {error ? <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.map.error", "Map data is temporarily unavailable. Please try again.")}</div></div>
+      {error ? <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.map.error", "Map data is temporarily unavailable. Please try again.")}</div></div>
         : <VisitMap visits={rows} strings={{
             region: t("visit.map.region", "Region"), allRegions: t("visit.map.allRegions", "All regions"),
             factoryVisitLegend: t("visit.map.legendFactory", "factory / visit"), inspectorLegend: t("visit.map.legendInspector", "latest inspector position"),

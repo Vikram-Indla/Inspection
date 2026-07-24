@@ -195,7 +195,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
     context={<span className="id-code badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
     <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-      {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
+      {failedSources.length > 0 && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
       <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} partialSources={[]} />
       <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
       {view === "strategic"

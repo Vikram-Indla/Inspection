@@ -93,7 +93,7 @@ function Fingerprint({ r, s }: { r: QueueRow; s: FingerprintStrings }) {
         {r.slaState === "none"
           ? <span className="cd-fpchip cd-fpchip--unknown" title={fp.slaUnavailable}><span className="cd-fpchip__g" aria-hidden="true">◇</span>{fp.sla}: {fp.unavailable}</span>
           : <span className={`cd-fpchip cd-fpchip--${r.slaState === "overdue" ? "bad" : "ok"}`}><span className="cd-fpchip__g" aria-hidden="true">{r.slaState === "overdue" ? "▲" : "✓"}</span>{fp.sla}: {r.slaState === "overdue" ? fp.slaOverdue : fp.slaOnTime}</span>}
-        <span className={`ax-lozenge ${r.riskBand ? r.riskTone : ""}`}>{fp.risk}: {r.riskBand ? r.riskLabel : fp.unavailable}</span>
+        <span className={`sq-lozenge ${r.riskBand ? r.riskTone : ""}`}>{fp.risk}: {r.riskBand ? r.riskLabel : fp.unavailable}</span>
         {r.criticalCount > 0
           ? <span className="badge badge-critical">{r.criticalCount} {fp.critical}</span>
           : <span className="cd-sub">0 {fp.critical}</span>}
@@ -141,14 +141,14 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
       {/* M06-014/030 — client search + status + risk + overdue-only over the RLS page */}
       <div className="panel cd-filters">
         <label className="cd-fl cd-fl--search"><span className="cd-fl__k">{strings.searchPlaceholder}</span>
-          <input className="ax-input" value={q} onChange={e => setQ(e.target.value)} placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} /></label>
+          <input className="sq-input" value={q} onChange={e => setQ(e.target.value)} placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} /></label>
         <label className="cd-fl"><span className="cd-fl__k">{strings.allStatuses}</span>
-          <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
+          <select className="sq-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
             <option value="">{strings.allStatuses}</option>
             {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select></label>
         <label className="cd-fl"><span className="cd-fl__k">{strings.allRisks}</span>
-          <select className="ax-select" value={risk} onChange={e => setRisk(e.target.value)} aria-label={strings.allRisks}>
+          <select className="sq-select" value={risk} onChange={e => setRisk(e.target.value)} aria-label={strings.allRisks}>
             <option value="">{strings.allRisks}</option>
             {riskOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select></label>
@@ -164,7 +164,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
             <div className="cd-stack"><h3 tabIndex={-1}>{strings.noMatch}</h3><p>{strings.noMatchBody}</p></div></div>
         </section>
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table cd-table">
+        <div className="sq-tablewrap"><table className="sq-table cd-table">
           <thead><tr>
             <th scope="col">{strings.colFactory}</th>
             <th scope="col">{strings.colInspector}</th>
@@ -184,9 +184,9 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
                 </td>
                 <td>{r.inspectorName || "—"}</td>
                 <td className="cd-sub">{r.typeLabel} · {r.modeLabel}</td>
-                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono numeric">{r.submittedDisplay}</div></td>
+                <td><span className="sq-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono numeric">{r.submittedDisplay}</div></td>
                 <td><Fingerprint r={r} s={strings.fp} /></td>
-                <td><span className={`ax-lozenge ax-lozenge--review ${r.statusTone}`}>{r.statusLabel}</span></td>
+                <td><span className={`sq-lozenge sq-lozenge--review ${r.statusTone}`}>{r.statusLabel}</span></td>
                 <td><a className="btn btn-secondary btn-touch" href={r.href} title={strings.openHint}>{strings.open}</a></td>
               </tr>
             ))}

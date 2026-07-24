@@ -58,28 +58,28 @@ export default function OverrideQueue({ rows, strings, locale }: { rows: GeoOver
   }
 
   return (
-    <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="geo-override-queue-heading">
-      <h4 id="geo-override-queue-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.heading}</h4>
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-200)" }}>{strings.caption}</p>
+    <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="geo-override-queue-heading">
+      <h4 id="geo-override-queue-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.heading}</h4>
+      <p className="sq-caption" style={{ marginBlockEnd: "var(--space-4)" }}>{strings.caption}</p>
       {rows.length === 0 ? (
         <EmptyState glyph="✓" title={strings.emptyTitle} body={strings.emptyDesc} inline bare />
       ) : (
-        <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
+        <div className="sq-stack" style={{ gap: "var(--space-4)" }}>
           {rows.map(row => (
-            <div key={row.id} className="ax-surface" style={{ padding: "var(--ax-space-200)", borderColor: "var(--ax-color-warning)" }}>
-              <div className="ax-row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div key={row.id} className="sq-surface" style={{ padding: "var(--space-4)", borderColor: "var(--status-warning)" }}>
+              <div className="sq-row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div>
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>
-                  <p className="ax-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
+                  <p className="sq-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
                 </div>
-                <span className="ax-lozenge ax-lozenge--warning">{strings.expires}: {stamp(row.expires_at)}</span>
+                <span className="sq-lozenge sq-lozenge--warning">{strings.expires}: {stamp(row.expires_at)}</span>
               </div>
-              <p style={{ marginBlock: "var(--ax-space-150)" }}>{row.explanation}</p>
-              <div className="ax-row ax-caption" style={{ gap: 12, flexWrap: "wrap" }}>
-                <span>{strings.captured}: <span className="ax-numeric">{stamp(row.device_occurred_at)}</span></span>
-                <span className="ax-numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
-                <span>{strings.accuracy}: <span className="ax-numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
-                <span>{strings.distance}: <span className="ax-numeric">{Number(row.distance_m).toFixed(0)} m</span></span>
+              <p style={{ marginBlock: "var(--space-3)" }}>{row.explanation}</p>
+              <div className="sq-row sq-caption" style={{ gap: 12, flexWrap: "wrap" }}>
+                <span>{strings.captured}: <span className="sq-numeric">{stamp(row.device_occurred_at)}</span></span>
+                <span className="sq-numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
+                <span>{strings.accuracy}: <span className="sq-numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
+                <span>{strings.distance}: <span className="sq-numeric">{Number(row.distance_m).toFixed(0)} m</span></span>
                 {row.safety_security_exception ? <span>{strings.safetyException}</span> : <span>
                   {strings.evidence}: {row.evidence_count}{" "}
                   {row.evidence_url
@@ -87,15 +87,15 @@ export default function OverrideQueue({ rows, strings, locale }: { rows: GeoOver
                     : row.evidence_count > 0 ? <span>({strings.evidenceUnavailable})</span> : null}
                 </span>}
               </div>
-              <div className="ax-row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-150)" }}>
-                <label className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
-                  <span className="ax-field__label">{strings.rejectReason}</span>
-                  <input className="ax-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />
+              <div className="sq-row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--space-3)" }}>
+                <label className="sq-field" style={{ flex: 1, minInlineSize: 220 }}>
+                  <span className="sq-field__label">{strings.rejectReason}</span>
+                  <input className="sq-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />
                 </label>
-                <button className="ax-btn ax-btn--secondary" disabled={pending} onClick={() => decide(row, "rejected")}>{strings.reject}</button>
-                <button className="ax-btn ax-btn--field" disabled={pending} onClick={() => decide(row, "approved")}>{strings.approve}</button>
+                <button className="sq-btn sq-btn--secondary" disabled={pending} onClick={() => decide(row, "rejected")}>{strings.reject}</button>
+                <button className="sq-btn sq-btn--field" disabled={pending} onClick={() => decide(row, "approved")}>{strings.approve}</button>
               </div>
-              {message[row.id] && <p className="ax-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
+              {message[row.id] && <p className="sq-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
             </div>
           ))}
         </div>

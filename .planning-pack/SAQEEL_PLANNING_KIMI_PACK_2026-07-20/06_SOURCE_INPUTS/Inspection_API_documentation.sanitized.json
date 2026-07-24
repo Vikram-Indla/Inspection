@@ -1,0 +1,2104 @@
+{
+  "info": {
+    "_postman_id": "4a07fc22-664c-4066-8b27-9180130e4c7c",
+    "name": "API documentation",
+    "description": "# 📄 Get started here\n\nThis collection contains APIs for Inpections Project.\n\n## Authentication\n\n`it is required to access the API. Authorization token can be get by login API, steps are their to cover how to get it, and the relevant error codes.`\n\n### Authentication error response\n\nIf an API key is missing, malformed, or invalid, you will receive an HTTP 401 Unauthorized response code.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "11321968"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.environment.set('token', response.token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "<redacted-email>",
+                  "type": "text",
+                  "uuid": "c975b373-4949-43c4-a990-490bb6ddbda2"
+                },
+                {
+                  "key": "password",
+                  "value": "<redacted-password>",
+                  "description": "password",
+                  "type": "text",
+                  "uuid": "f21aee6f-c406-4910-8eac-35b2a12557d8"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/login",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "login"
+              ]
+            },
+            "description": "## Login\n\nAuthenticates a user and returns a bearer token to be used in subsequent API requests.\n\n---\n\n### Endpoint\n\n`POST https://sectorial-be.senaei.app/api/inspection/login`\n\n---\n\n### Headers\n\n| Key | Value | Description |\n|-----|-------|-------------|\n| `Accept-Language` | `en` | Specifies the response language. |\n\n---\n\n### Request Body\n\nSent as **multipart/form-data**.\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `email` | string | Yes | The user's registered email address. |\n| `password` | string | Yes | The user's password. |\n\n---\n\n### Response\n\nReturns a JSON object on successful authentication.\n\n| Field | Type | Description |\n|-------|------|-------------|\n| `success` | boolean | Indicates whether the login was successful. |\n| `token` | string | Bearer token to be used for authenticated requests. |\n| `user` | object | Details of the authenticated user. |\n\n#### User Object\n\n| Field | Type | Description |\n|-------|------|-------------|\n| `id` | string | Unique user identifier (ULID). |\n| `username` | string | The user's username. |\n| `first_name` | string | User's first name. |\n| `last_name` | string | User's last name. |\n| `national_id` | string | User's national ID number. |\n| `email` | string | User's email address. |\n| `mobile` | string | User's mobile number. |\n| `entity` | string | The entity the user belongs to. |\n| `date_of_birth` | string | User's date of birth (YYYY-MM-DD). |\n| `language` | string | Preferred language of the user. |\n| `last_login_at` | string | Timestamp of the user's last login. |\n\n---\n\n### Post-Response Behavior\n\nAfter a successful response, the `token` value is automatically saved to the **`token`** environment variable, making it available for use in subsequent authenticated requests."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "<redacted-email>",
+                      "type": "text",
+                      "uuid": "c975b373-4949-43c4-a990-490bb6ddbda2"
+                    },
+                    {
+                      "key": "password",
+                      "value": "<redacted-password>",
+                      "type": "text",
+                      "uuid": "f21aee6f-c406-4910-8eac-35b2a12557d8"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/login",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 11 Jun 2026 21:51:10 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTWANVKHHPWYGEE7TZ72R4FB"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X1f861aac9f6e1fab51dcd5fcf6a6f322"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"token\": \"<redacted-token>\",\n    \"user\": {\n        \"id\": \"01j5bqa5bb04jdqa0y8rc97sf9\",\n        \"old_id\": null,\n        \"username\": \"<redacted-username>\",\n        \"first_name\": \"<redacted-first-name>\",\n        \"last_name\": \"<redacted-last-name>\",\n        \"national_id\": \"<redacted-national-id>\",\n        \"email\": \"<redacted-email>\",\n        \"mobile\": \"<redacted-mobile>\",\n        \"entity\": \"mim\",\n        \"date_of_birth\": \"<redacted-date-of-birth>\",\n        \"language\": \"en\",\n        \"email_verified_at\": \"<redacted-email-verified-at>\",\n        \"mobile_verified_at\": \"<redacted-mobile-verified-at>\",\n        \"blocked_at\": null,\n        \"disabled_at\": null,\n        \"created_at\": \"<redacted-sensitive-value>\",\n        \"updated_at\": \"2026-06-11T19:40:04.000000Z\",\n        \"last_login_at\": \"2026-06-11 22:40:04\",\n        \"ndb_synched_at\": null,\n        \"ndb_last_ops_at\": null\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.environment.set('token', response.token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/logout",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "logout"
+              ]
+            },
+            "description": "Logs out the currently authenticated user by invalidating their active session or token.\n\n**Authentication:** Requires a valid `token` set in the environment (used for authorization).\n\n**Request Body:** None required.\n\n**Headers:**\n- `Accept-Language: en` — Specifies the language for the response.\n\n**Responses:**\n\n| Status | Description |\n|--------|-------------|\n| 200 OK | The user has been successfully logged out. Returns `{\"success\": true, \"message\": \"Logged out successfully.\"}` |"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/logout",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "logout"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 11 Jun 2026 21:22:23 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTW91520ZDSH3Y1WY5B6SQ99"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "Xbd1bd42255b0cf14605ca78ee964b8c4"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/profile",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "profile"
+              ]
+            },
+            "description": "## Profile\n\nRetrieves the authenticated user's profile information, including personal details, account status, and synchronization metadata.\n\n---\n\n### Authentication\n\nThis endpoint requires a Bearer token. The token is stored in the `{{token}}` environment variable and must be included in the request headers:\n\n```\nAuthorization: Bearer {{token}}\n\n ```\n\n---\n\n### Request\n\n| Property | Value |\n| --- | --- |\n| **Method** | `GET` |\n| **URL** | `https://sectorial-be.senaei.app/api/inspection/profile` |\n| **Body** | None |\n\n---\n\n### Response\n\n**Status:** `200 OK`\n\nReturns a JSON object containing a `user` key with the authenticated user's profile data.\n\n#### Response Structure\n\n``` json\n{\n  \"user\": { ... }\n}\n\n ```\n\n#### `user` Object Fields\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | `string` | Unique identifier for the user (ULID format). |\n| `old_id` | `string | null` | Legacy identifier from a previous system, if applicable. |\n| `username` | `string` | The user's login username. |\n| `first_name` | `string` | The user's first name. |\n| `last_name` | `string` | The user's last name. |\n| `national_id` | `string` | The user's national identification number. |\n| `email` | `string` | The user's email address. |\n| `mobile` | `string` | The user's mobile phone number. |\n| `entity` | `string` | The organizational entity the user belongs to (e.g., `mim`). |\n| `date_of_birth` | `string` | The user's date of birth in `YYYY-MM-DD` format. |\n| `language` | `string` | The user's preferred language code (e.g., `en`). |\n| `email_verified_at` | `string | null` | ISO 8601 timestamp of when the email was verified, or `null` if not verified. |\n| `mobile_verified_at` | `string | null` | ISO 8601 timestamp of when the mobile number was verified, or `null` if not verified. |\n| `blocked_at` | `string | null` | ISO 8601 timestamp of when the account was blocked, or `null` if not blocked. |\n| `disabled_at` | `string | null` | ISO 8601 timestamp of when the account was disabled, or `null` if not disabled. |\n| `created_at` | `string` | ISO 8601 timestamp of when the user account was created. |\n| `updated_at` | `string` | ISO 8601 timestamp of the last update to the user's profile. |\n| `last_login_at` | `string | null` | Timestamp of the user's most recent login (`YYYY-MM-DD HH:mm:ss` format). |\n| `ndb_synched_at` | `string | null` | ISO 8601 timestamp of the last successful sync with the NDB system, or `null` if never synced. |\n| `ndb_last_ops_at` | `string | null` | ISO 8601 timestamp of the last NDB operation, or `null` if no operations have occurred. |\n\n#### Example Response\n\n``` json\n{\n  \"user\": {\n    \"id\": \"01j5bqa5bb04jdqa0y8rc97sf9\",\n    \"old_id\": null,\n    \"username\": \"<redacted-sensitive-value>\",\n    \"first_name\": \"<redacted-sensitive-value>\",\n    \"last_name\": \"<redacted-sensitive-value>\",\n    \"national_id\": \"<redacted-sensitive-value>\",\n    \"email\": \"<redacted-sensitive-value>\",\n    \"mobile\": \"<redacted-sensitive-value>\",\n    \"entity\": \"mim\",\n    \"date_of_birth\": \"<redacted-sensitive-value>\",\n    \"language\": \"en\",\n    \"email_verified_at\": \"<redacted-sensitive-value>\",\n    \"mobile_verified_at\": null,\n    \"blocked_at\": null,\n    \"disabled_at\": null,\n    \"created_at\": \"<redacted-sensitive-value>\",\n    \"updated_at\": \"2026-06-11T19:40:04.000000Z\",\n    \"last_login_at\": \"2026-06-11 22:40:04\",\n    \"ndb_synched_at\": null,\n    \"ndb_last_ops_at\": null\n  }\n}\n\n ```"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/profile",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 11 Jun 2026 21:22:19 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTW9118W7ZHA8NQBEW0BM0ER"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "Xecfd570986f2a5472ab4dd3cd08a8935"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"user\": {\n        \"id\": \"01j5bqa5bb04jdqa0y8rc97sf9\",\n        \"old_id\": null,\n        \"username\": \"<redacted-username>\",\n        \"first_name\": \"<redacted-first-name>\",\n        \"last_name\": \"<redacted-last-name>\",\n        \"national_id\": \"<redacted-national-id>\",\n        \"email\": \"<redacted-email>\",\n        \"mobile\": \"<redacted-mobile>\",\n        \"entity\": \"mim\",\n        \"date_of_birth\": \"<redacted-date-of-birth>\",\n        \"language\": \"en\",\n        \"email_verified_at\": \"<redacted-email-verified-at>\",\n        \"mobile_verified_at\": \"<redacted-mobile-verified-at>\",\n        \"blocked_at\": null,\n        \"disabled_at\": null,\n        \"created_at\": \"<redacted-sensitive-value>\",\n        \"updated_at\": \"2026-06-11T19:40:04.000000Z\",\n        \"last_login_at\": \"2026-06-11 22:40:04\",\n        \"ndb_synched_at\": null,\n        \"ndb_last_ops_at\": null\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forget Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.environment.set('token', response.token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "<redacted-email>",
+                  "type": "text",
+                  "uuid": "c975b373-4949-43c4-a990-490bb6ddbda2"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/forgot-password",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "forgot-password"
+              ]
+            },
+            "description": "## 🔐 Forgot Password API (Send Reset Code)\n\n### 📌 Endpoint\n\n```\nPOST /api/inspection/forgot-password\n\n ```\n\n---\n\n### 📖 Description\n\nThis API sends a **6-digit password reset code** to the staff member’s registered email address. The code is valid for **10 minutes**.\n\n---\n\n### 🔐 Authentication\n\n❌ Not required\n\n---\n\n### 📥 Request Body (JSON)\n\n| Field | Type | Required | Description | Example |\n| --- | --- | --- | --- | --- |\n| email | string | Yes | Staff registered email address | [<redacted-email>](https://null) |\n\n---\n\n### 📌 Example Request\n\n```\n{  \"email\": \"<redacted-email>\"}\n\n ```\n\n---\n\n### 📤 Success Response (200 OK)\n\n```\n{  \"success\": true,  \"message\": \"Password reset code sent successfully.\"}\n\n ```\n\n---\n\n### ❌ Error Response (404 Not Found)\n\nReturned when no staff account exists with the provided email.\n\n```\n{  \"success\": false,  \"message\": \"No account found with this email.\"}\n\n ```\n\n---\n\n### ❌ Validation Error (422 Unprocessable Entity)\n\n```\n{  \"message\": \"The email field is required.\",  \"errors\": {    \"email\": [      \"The email field is required.\"    ]  }}\n\n ```"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "<redacted-email>",
+                      "type": "text",
+                      "uuid": "c975b373-4949-43c4-a990-490bb6ddbda2"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/forgot-password",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "forgot-password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 15 Jun 2026 11:53:16 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KV5J1V41WRQB1Z9WERVAZY6Q"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "Xcf84c249cdc0d7dc6f472ab4f7eba661"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Password reset code sent successfully.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.environment.set('token', response.token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "<redacted-email>",
+                  "type": "text",
+                  "uuid": "c975b373-4949-43c4-a990-490bb6ddbda2"
+                },
+                {
+                  "key": "code",
+                  "value": "<redacted-reset-code>",
+                  "type": "text",
+                  "uuid": "66c65ceb-496d-435e-8625-44733997339f"
+                },
+                {
+                  "key": "password",
+                  "value": "<redacted-password>",
+                  "type": "text",
+                  "uuid": "b75dcc8c-6fef-4262-a326-6fa30b99e719"
+                },
+                {
+                  "key": "password_confirmation",
+                  "value": "<redacted-password-confirmation>",
+                  "type": "text",
+                  "uuid": "dd5a070f-3bfd-49a8-af5d-5942a7b33378"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/reset-password",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "reset-password"
+              ]
+            },
+            "description": "## Login\n\nAuthenticates a user and returns a bearer token to be used in subsequent API requests.\n\n---\n\n### Endpoint\n\n`POST https://sectorial-be.senaei.app/api/inspection/login`\n\n---\n\n### Headers\n\n| Key | Value | Description |\n|-----|-------|-------------|\n| `Accept-Language` | `en` | Specifies the response language. |\n\n---\n\n### Request Body\n\nSent as **multipart/form-data**.\n\n| Field | Type | Required | Description |\n|-------|------|----------|-------------|\n| `email` | string | Yes | The user's registered email address. |\n| `password` | string | Yes | The user's password. |\n\n---\n\n### Response\n\nReturns a JSON object on successful authentication.\n\n| Field | Type | Description |\n|-------|------|-------------|\n| `success` | boolean | Indicates whether the login was successful. |\n| `token` | string | Bearer token to be used for authenticated requests. |\n| `user` | object | Details of the authenticated user. |\n\n#### User Object\n\n| Field | Type | Description |\n|-------|------|-------------|\n| `id` | string | Unique user identifier (ULID). |\n| `username` | string | The user's username. |\n| `first_name` | string | User's first name. |\n| `last_name` | string | User's last name. |\n| `national_id` | string | User's national ID number. |\n| `email` | string | User's email address. |\n| `mobile` | string | User's mobile number. |\n| `entity` | string | The entity the user belongs to. |\n| `date_of_birth` | string | User's date of birth (YYYY-MM-DD). |\n| `language` | string | Preferred language of the user. |\n| `last_login_at` | string | Timestamp of the user's last login. |\n\n---\n\n### Post-Response Behavior\n\nAfter a successful response, the `token` value is automatically saved to the **`token`** environment variable, making it available for use in subsequent authenticated requests."
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "<redacted-email>",
+                      "type": "text",
+                      "uuid": "c975b373-4949-43c4-a990-490bb6ddbda2"
+                    },
+                    {
+                      "key": "code",
+                      "value": "<redacted-reset-code>",
+                      "type": "text",
+                      "uuid": "66c65ceb-496d-435e-8625-44733997339f"
+                    },
+                    {
+                      "key": "password",
+                      "value": "<redacted-password>",
+                      "type": "text",
+                      "uuid": "b75dcc8c-6fef-4262-a326-6fa30b99e719"
+                    },
+                    {
+                      "key": "password_confirmation",
+                      "value": "<redacted-password-confirmation>",
+                      "type": "text",
+                      "uuid": "dd5a070f-3bfd-49a8-af5d-5942a7b33378"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/reset-password",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "reset-password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 15 Jun 2026 11:57:33 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KV5J9SAYM5CSA5X23T6P5ZBJ"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X9e47360d714698ee6beffc0fd50a73ba"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Password reset successfully.\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "The `/me` endpoints let you manage information about the authenticated user."
+    },
+    {
+      "name": "Regulation",
+      "item": [
+        {
+          "name": "List Regulation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/regulations",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "regulations"
+              ]
+            },
+            "description": "## Get All Regulations\n\nRetrieves a list of all regulations from the inspection module. The response includes full regulation details such as metadata, issuing authorities, associated documents, and detailed regulation items.\n\n---\n\n### Authentication\n\nThis request requires a bearer token. The token is read from the `{{token}}` environment variable and must be set before sending the request.\n\n---\n\n### Response Structure\n\nReturns a JSON object with the following top-level field:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `data` | array | List of regulation objects |\n\n#### Regulation Object\n\nEach object in the `data` array contains:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | string | Unique identifier of the regulation |\n| `name` | string | Name of the regulation |\n| `number` | string | Official regulation number |\n| `issue_date` | string (datetime) | Date the regulation was issued |\n| `status` | boolean | Whether the regulation is currently active |\n| `issuing_authorities` | array | List of issuing authorities (each with `value` and `label`) |\n| `documents` | array | Documents associated with the regulation |\n| `items` | array | Detailed regulation items (see below) |\n| `created_at` | string (ISO 8601) | Timestamp when the regulation was created |\n\n#### Regulation Item Object\n\nEach object in the `items` array contains:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | string | Unique identifier of the item |\n| `type` | object | Item type with `value` and `label` fields |\n| `entity_notification` | boolean | Whether entity notification is enabled |\n| `geographical_location` | string | Geographical location associated with the item |\n| `<redacted-sensitive-value>istrative_name` | object | Administrative name with `value` and `label` fields |\n| `name` | string | Name of the regulation item |\n| `appeared_in_self_assessment` | boolean | Whether the item appears in self-assessment |\n| `report_kind` | object | Report kind with `value` and `label` fields |\n| `description` | string | Detailed description of the item |\n| `approval_option` | object | Approval option with `value` and `label` fields |\n| `rejection_option` | object | Rejection option with `value` and `label` fields |\n| `status` | object | Item status with `value` and `label` fields |\n| `attachment_mode` | object | Attachment mode with `value` and `label` fields |\n| `is_mandatory_for_inspector` | boolean | Whether this item is mandatory for inspectors |\n| `report_types` | array | List of report types, each with `value` and `label` |\n| `associated_reports` | array | Associated reports, each with `value` and `label` |\n| `violations` | array | List of violations linked to this item |\n| `created_at` | string (ISO 8601) | Timestamp when the item was created |"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/regulations",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "regulations"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 11 Jun 2026 21:51:13 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTWANYG6XY9NXCRSG76EX922"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X005532157d7e7640a1c8d02bf1c08547"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": [\n        {\n            \"id\": \"01ktw7637mb0zjqq5cbx15setz\",\n            \"name\": \"asdfasdf\",\n            \"number\": \"4712258144\",\n            \"issue_date\": \"2026-05-24 00:00:00\",\n            \"status\": true,\n            \"issuing_authorities\": [\n                {\n                    \"value\": \"commerce\",\n                    \"label\": \"وزارة التجارة\"\n                }\n            ],\n            \"documents\": [],\n            \"items\": [\n                {\n                    \"id\": \"01ktw7637s3bc407yq3wheepj1\",\n                    \"type\": {\n                        \"value\": \"note\",\n                        \"label\": \"ملاحظة\"\n                    },\n                    \"entity_notification\": false,\n                    \"geographical_location\": \"Resolved from the system based on context (not editable).\",\n                    \"administrative_name\": {\n                        \"value\": \"product_quality\",\n                        \"label\": \"جودة المنتج\"\n                    },\n                    \"name\": \"asdfsadf\",\n                    \"appeared_in_self_assessment\": false,\n                    \"report_kind\": {\n                        \"value\": \"factory_closure\",\n                        \"label\": \"إغلاق مصنع\"\n                    },\n                    \"description\": \"asdfsad\",\n                    \"approval_option\": {\n                        \"value\": \"from_<redacted-sensitive-value>istrative_name\",\n                        \"label\": \"من اسم الإدارة\"\n                    },\n                    \"rejection_option\": {\n                        \"value\": \"none\",\n                        \"label\": \"لا يوجد\"\n                    },\n                    \"status\": {\n                        \"value\": \"active\",\n                        \"label\": \"Active\"\n                    },\n                    \"attachment_mode\": {\n                        \"value\": \"supporting_documents\",\n                        \"label\": \"مستندات داعمة\"\n                    },\n                    \"is_mandatory_for_inspector\": false,\n                    \"report_types\": [\n                        {\n                            \"value\": \"safety_report\",\n                            \"label\": \"تقرير السلامة\"\n                        }\n                    ],\n                    \"associated_reports\": [\n                        {\n                            \"value\": \"destruction\",\n                            \"label\": \"إتلاف (في حال وجود ضبط سابق)\"\n                        }\n                    ],\n                    \"violations\": [],\n                    \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n                },\n                {\n                    \"id\": \"01ktw7637vmks6w7ageax9gq6n\",\n                    \"type\": {\n                        \"value\": \"note\",\n                        \"label\": \"ملاحظة\"\n                    },\n                    \"entity_notification\": false,\n                    \"geographical_location\": \"Resolved from the system based on context (not editable).\",\n                    \"administrative_name\": {\n                        \"value\": \"product_quality\",\n                        \"label\": \"جودة المنتج\"\n                    },\n                    \"name\": \"sdfasdf\",\n                    \"appeared_in_self_assessment\": false,\n                    \"report_kind\": {\n                        \"value\": \"factory_closure\",\n                        \"label\": \"إغلاق مصنع\"\n                    },\n                    \"description\": \"sdfasdfas\",\n                    \"approval_option\": {\n                        \"value\": \"from_<redacted-sensitive-value>istrative_name\",\n                        \"label\": \"من اسم الإدارة\"\n                    },\n                    \"rejection_option\": {\n                        \"value\": \"none\",\n                        \"label\": \"لا يوجد\"\n                    },\n                    \"status\": {\n                        \"value\": \"active\",\n                        \"label\": \"Active\"\n                    },\n                    \"attachment_mode\": {\n                        \"value\": \"supporting_documents\",\n                        \"label\": \"مستندات داعمة\"\n                    },\n                    \"is_mandatory_for_inspector\": false,\n                    \"report_types\": [\n                        {\n                            \"value\": \"chemical_clearance_report\",\n                            \"label\": \"تقرير الفسح الكيميائي\"\n                        }\n                    ],\n                    \"associated_reports\": [\n                        {\n                            \"value\": \"destruction\",\n                            \"label\": \"إتلاف (في حال وجود ضبط سابق)\"\n                        }\n                    ],\n                    \"violations\": [],\n                    \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n                }\n            ],\n            \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Show Regulation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/regulations/{{regulationId}}",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "regulations",
+                "{{regulationId}}"
+              ]
+            },
+            "description": "## Get a Regulation\n\nRetrieves detailed information about a specific regulation by its unique identifier.\n\n### Path Variables\n\n| Variable | Description |\n| --- | --- |\n| `regulationId` | The unique ID of the regulation to retrieve. |\n\n### Authentication\n\nThis request requires a Bearer token passed via the `token` variable:\n\n```\nAuthorization: Bearer {{token}}\n\n ```\n\n### Response\n\nReturns a `data` object containing the regulation's full details.\n\n| Field | Type | Description |\n| --- | --- | --- |\n| `id` | string | Unique identifier of the regulation. |\n| `name` | string | Name of the regulation. |\n| `number` | string | Regulation number. |\n| `issue_date` | string | Date the regulation was issued (format: `YYYY-MM-DD HH:mm:ss`). |\n| `status` | boolean | Whether the regulation is currently active. |\n| `issuing_authorities` | array | List of authorities that issued the regulation, each with a `value` and `label`. |\n| `documents` | array | Attached documents related to the regulation. |\n| `items` | array | List of regulation items (notes, requirements, etc.). Each item includes type, <redacted-sensitive-value>istrative name, report kind, approval/rejection options, attachment mode, report types, associated reports, violations, and timestamps. |\n| `created_at` | string | ISO 8601 timestamp of when the regulation was created. |\n\n### Example Response\n\n``` json\n{\n  \"data\": {\n    \"id\": \"01ktw7637mb0zjqq5cbx15setz\",\n    \"name\": \"asdfasdf\",\n    \"number\": \"4712258144\",\n    \"issue_date\": \"2026-05-24 00:00:00\",\n    \"status\": true,\n    \"issuing_authorities\": [\n      { \"value\": \"commerce\", \"label\": \"وزارة التجارة\" }\n    ],\n    \"documents\": [],\n    \"items\": [...],\n    \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n  }\n}\n\n ```"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/regulations/{{regulationId}}",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "regulations",
+                    "{{regulationId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 11 Jun 2026 21:53:24 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTWASYJ7FFZF7FWZWFQNC2HR"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X1ba2d7b16485766a2c6763094efeab48"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": {\n        \"id\": \"01ktw7637mb0zjqq5cbx15setz\",\n        \"name\": \"asdfasdf\",\n        \"number\": \"4712258144\",\n        \"issue_date\": \"2026-05-24 00:00:00\",\n        \"status\": true,\n        \"issuing_authorities\": [\n            {\n                \"value\": \"commerce\",\n                \"label\": \"وزارة التجارة\"\n            }\n        ],\n        \"documents\": [],\n        \"items\": [\n            {\n                \"id\": \"01ktw7637s3bc407yq3wheepj1\",\n                \"type\": {\n                    \"value\": \"note\",\n                    \"label\": \"ملاحظة\"\n                },\n                \"entity_notification\": false,\n                \"geographical_location\": \"Resolved from the system based on context (not editable).\",\n                \"administrative_name\": {\n                    \"value\": \"product_quality\",\n                    \"label\": \"جودة المنتج\"\n                },\n                \"name\": \"asdfsadf\",\n                \"appeared_in_self_assessment\": false,\n                \"report_kind\": {\n                    \"value\": \"factory_closure\",\n                    \"label\": \"إغلاق مصنع\"\n                },\n                \"description\": \"asdfsad\",\n                \"approval_option\": {\n                    \"value\": \"from_<redacted-sensitive-value>istrative_name\",\n                    \"label\": \"من اسم الإدارة\"\n                },\n                \"rejection_option\": {\n                    \"value\": \"none\",\n                    \"label\": \"لا يوجد\"\n                },\n                \"status\": {\n                    \"value\": \"active\",\n                    \"label\": \"Active\"\n                },\n                \"attachment_mode\": {\n                    \"value\": \"supporting_documents\",\n                    \"label\": \"مستندات داعمة\"\n                },\n                \"is_mandatory_for_inspector\": false,\n                \"report_types\": [\n                    {\n                        \"value\": \"safety_report\",\n                        \"label\": \"تقرير السلامة\"\n                    }\n                ],\n                \"associated_reports\": [\n                    {\n                        \"value\": \"destruction\",\n                        \"label\": \"إتلاف (في حال وجود ضبط سابق)\"\n                    }\n                ],\n                \"violations\": [],\n                \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n            },\n            {\n                \"id\": \"01ktw7637vmks6w7ageax9gq6n\",\n                \"type\": {\n                    \"value\": \"note\",\n                    \"label\": \"ملاحظة\"\n                },\n                \"entity_notification\": false,\n                \"geographical_location\": \"Resolved from the system based on context (not editable).\",\n                \"administrative_name\": {\n                    \"value\": \"product_quality\",\n                    \"label\": \"جودة المنتج\"\n                },\n                \"name\": \"sdfasdf\",\n                \"appeared_in_self_assessment\": false,\n                \"report_kind\": {\n                    \"value\": \"factory_closure\",\n                    \"label\": \"إغلاق مصنع\"\n                },\n                \"description\": \"sdfasdfas\",\n                \"approval_option\": {\n                    \"value\": \"from_<redacted-sensitive-value>istrative_name\",\n                    \"label\": \"من اسم الإدارة\"\n                },\n                \"rejection_option\": {\n                    \"value\": \"none\",\n                    \"label\": \"لا يوجد\"\n                },\n                \"status\": {\n                    \"value\": \"active\",\n                    \"label\": \"Active\"\n                },\n                \"attachment_mode\": {\n                    \"value\": \"supporting_documents\",\n                    \"label\": \"مستندات داعمة\"\n                },\n                \"is_mandatory_for_inspector\": false,\n                \"report_types\": [\n                    {\n                        \"value\": \"chemical_clearance_report\",\n                        \"label\": \"تقرير الفسح الكيميائي\"\n                    }\n                ],\n                \"associated_reports\": [\n                    {\n                        \"value\": \"destruction\",\n                        \"label\": \"إتلاف (في حال وجود ضبط سابق)\"\n                    }\n                ],\n                \"violations\": [],\n                \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n            }\n        ],\n        \"created_at\": \"2026-06-11T20:50:08.000000Z\"\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "description": "The `/collections` endpoints let you manage your [collections](https://learning.postman.com/docs/sending-requests/intro-to-collections/)."
+    },
+    {
+      "name": "Task",
+      "item": [
+        {
+          "name": "List Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/tasks",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "tasks"
+              ]
+            },
+            "description": "# **Get All Inspector Tasks**\n\nRetrieves a list of inspection tasks assigned to the authenticated inspector.\n\nEach task includes workflow information along with the associated inspection visit details such as inspector, location, and metadata.\n\n---\n\n# **Authentication**\n\nThis request requires a **Bearer Token**.\n\nThe token must be included in the request headers:\n\n```\nAuthorization: Bearer {{token}}\n\n ```\n\nThe token is typically stored in the `{{token}}` environment variable and must be set before sending the request.\n\n---\n\n# **Response Structure**\n\nReturns a JSON array of task objects.\n\n### Top-level field:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| data | array | List of inspection task objects |\n\n---\n\n# **Task Object**\n\nEach object in the `data` array contains:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| id | string | Unique identifier of the inspection task |\n| number | string | Task reference number |\n| workflow | string | Workflow type of the task (e.g. Visit) |\n| status | string/object | Current status of the task |\n| created_at | string (ISO 8601) | Timestamp when the task was created |\n| visit | object | Associated inspection visit details |\n\n---\n\n# **Visit Object**\n\nEach task contains a `visit` object with the following fields:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| id | string | Unique identifier of the visit |\n| type | object | Visit type (value + label enum resource) |\n| method | object | Visit method (value + label enum resource) |\n| visit_date | string (date) | Scheduled date of the visit |\n| facility_name | string | Name of the facility (from plant or license) |\n| cr_number | string | Commercial registration number |\n| notes | string | Additional notes for the visit |\n| third_parties | array | List of third-party entities involved |\n| inspector | object |  |\n|  |  |  |\n|  |  |  |\n|  |  |  |\n|  |  |  |"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/tasks",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "tasks"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 12 Jun 2026 23:01:42 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTZ13QKDVHN1NCVKMV1MAM9J"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X449f867c302d0a0551336b5462461226"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": [\n        {\n            \"id\": \"01ktw5ccyhyr3yzde1cbyyhajn\",\n            \"number\": \"4712255593\",\n            \"workflow\": \"visit\",\n            \"status\": \"pending\",\n            \"created_at\": \"2026-06-11T20:18:37.000000Z\",\n            \"visit\": {\n                \"id\": \"01ktw5ccypj67mnep2wcht8424\",\n                \"type\": {\n                    \"value\": \"complaint\",\n                    \"label\": \"بلاغ\"\n                },\n                \"method\": {\n                    \"value\": \"registered\",\n                    \"label\": \"منشاة معرفة على صناعي\"\n                },\n                \"visit_date\": \"2026-06-25\",\n                \"facility_name\": \"شركة وطني للحديد والصلب\",\n                \"cr_number\": \"1010255409\",\n                \"notes\": \"asdfasdf\",\n                \"third_parties\": null,\n                \"inspector\": {\n                    \"id\": \"01kt92m88ezxpkgb3vqyq7vrep\",\n                    \"name\": \"<redacted-person-name>\"\n                }\n            }\n        },\n        {\n            \"id\": \"01ktw58z7bmkk57e7xbtmwf0z4\",\n            \"number\": \"4712258488\",\n            \"workflow\": \"visit\",\n            \"status\": \"pending\",\n            \"created_at\": \"2026-06-11T20:16:45.000000Z\",\n            \"visit\": null\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Show Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/tasks/{{taskId}}",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "# **Get Task Details**\n\nRetrieves detailed information about a single inspection task.  \n  \nThis includes workflow metadata and the full inspection visit information such as inspector details, facility data, location, and related documents.\n\n---\n\n# **Authentication**\n\nThis request requires a **Bearer Token**.\n\nThe token must be included in the request headers:\n\n```\nAuthorization: Bearer {{token}}\n\n ```\n\nThe token is stored in the `{{token}}` environment variable and must be set before sending the request.\n\n---\n\n# **URL Parameters**\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| task | string | Yes | Unique identifier of the inspection task |\n\n---\n\n# **Response Structure**\n\nReturns a JSON object representing a single task.\n\n### Top-level fields:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| id | string | Unique identifier of the task |\n| number | string | Task reference number |\n| workflow | string | Workflow type (e.g. Visit) |\n| status | string/object | Current status of the task |\n| created_at | string (ISO 8601) | Timestamp when task was created |\n| visit | object | Detailed inspection visit information |\n\n---\n\n# **Visit Object**\n\n| Field | Type | Description |\n| --- | --- | --- |\n| id | string | Unique identifier of the visit |\n| type | object | Visit type (value + label) |\n| method | object | Visit method (value + label) |\n| visit_date | string (date) | Scheduled visit date |\n| facility_name | string | Facility name (plant or license based) |\n| cr_number | string | Commercial registration number |\n| notes | string | Additional notes |\n| third_parties | array | Related third-party entities |\n| inspector | object | Assigned inspector details |\n| license | object | License details |\n| plant | object | Plant details |\n| city | object | City details |\n| region | object | Region details |\n| documents | array | Attached visit documents |"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/tasks/{{taskId}}",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "tasks",
+                    "{{taskId}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 12 Jun 2026 22:58:06 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTZ0X4DYTEBF2XVM3TK2JEK8"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X7782781ce6de6dedee50aea32433cb1c"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"data\": {\n        \"id\": \"01ktw5ccyhyr3yzde1cbyyhajn\",\n        \"number\": \"4712255593\",\n        \"workflow\": \"visit\",\n        \"status\": \"pending\",\n        \"created_at\": \"2026-06-11T20:18:37.000000Z\",\n        \"license\": {\n            \"id\": \"01k81herq13ekg9jz00rhpx7bj\",\n            \"license_number\": \"4704288660\",\n            \"license_type\": {\n                \"value\": \"gold\",\n                \"label\": \"ذهبي\"\n            },\n            \"status\": {\n                \"value\": \"active\",\n                \"label\": \"نشط\"\n            },\n            \"investment_type\": {\n                \"value\": \"national\",\n                \"label\": \"استثمار وطني\"\n            },\n            \"investment_size\": 300000\n        },\n        \"visit\": {\n            \"id\": \"01ktw5ccypj67mnep2wcht8424\",\n            \"type\": {\n                \"value\": \"complaint\",\n                \"label\": \"بلاغ\"\n            },\n            \"method\": {\n                \"value\": \"registered\",\n                \"label\": \"منشاة معرفة على صناعي\"\n            },\n            \"visit_date\": \"2026-06-25\",\n            \"cr_number\": \"1010255409\",\n            \"notes\": \"asdfasdf\",\n            \"third_parties\": null,\n            \"inspector\": {\n                \"id\": \"01kt92m88ezxpkgb3vqyq7vrep\",\n                \"name\": \"<redacted-person-name>\"\n            },\n            \"plant\": {\n                \"id\": \"01k81herryyca9bvvvsardw41q\",\n                \"plant_number\": 4704288739,\n                \"state\": {\n                    \"value\": \"new\",\n                    \"label\": \"التأسيس\"\n                },\n                \"main_activity_code_l2\": null,\n                \"main_activity_code_l4\": null,\n                \"has_approved_manpower\": null,\n                \"inside_industrial_city\": null,\n                \"started_production_at\": null,\n                \"closed_at\": null,\n                \"established_at\": null,\n                \"canceled_at\": null,\n                \"address\": {\n                    \"address_id\": \"01k81herqbrg9afe5dez635aj3\",\n                    \"type_code\": null,\n                    \"address_line_1\": null,\n                    \"land_mark\": null,\n                    \"district_en\": null,\n                    \"district_ar\": null,\n                    \"building_number\": null,\n                    \"additional_number\": null,\n                    \"zip_code\": null,\n                    \"unit_no\": null,\n                    \"street_name_ar\": null,\n                    \"street_name_en\": null,\n                    \"latitude\": null,\n                    \"longitude\": null,\n                    \"city\": {\n                        \"name_en\": \"Hurob\",\n                        \"name_ar\": \"هروب\"\n                    },\n                    \"region\": {\n                        \"name_en\": \"jizan area\",\n                        \"name_ar\": \"منطقة جيزان\"\n                    }\n                },\n                \"land_provider\": null,\n                \"industrial_city\": null,\n                \"license_number\": \"4704288660\",\n                \"hs_12_confirmed_at\": \"2025-10-20\",\n                \"city\": {\n                    \"id\": \"01j5bqa7z65gxgkqa43mbfh04q\",\n                    \"name_en\": \"Hurob\",\n                    \"name_ar\": \"هروب\"\n                },\n                \"commercial_entity\": {\n                    \"number\": \"1010255409\",\n                    \"unified_number\": \"7001657688\",\n                    \"name_en\": null,\n                    \"name_ar\": \"شركة وطني للحديد والصلب\"\n                }\n            },\n            \"city\": {\n                \"id\": \"01j5bqa7z65gxgkqa43mbfh04q\",\n                \"code\": 4125,\n                \"name_en\": \"Hurob\",\n                \"name_ar\": \"هروب\",\n                \"region_id\": \"01j5bqa7xme4n3yv230k79ptv4\"\n            },\n            \"region\": {\n                \"id\": \"01j5bqa7xme4n3yv230k79ptv4\",\n                \"name_en\": \"jizan area\",\n                \"name_ar\": \"منطقة جيزان\",\n                \"code\": 41\n            }\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Plant Production Line",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/tasks/production-line?plant_id=01k81herryyca9bvvvsardw41q&type=product",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "tasks",
+                "production-line"
+              ],
+              "query": [
+                {
+                  "key": "plant_id",
+                  "value": "01k81herryyca9bvvvsardw41q"
+                },
+                {
+                  "key": "type",
+                  "value": "product"
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "per_page",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "# **Get Plant Production Line**\n\nRetrieves a paginated list of production line items for a specific plant.\n\nThe response includes different production types such as products, raw materials, spare parts, and machines, along with their associated plant information and filtered product details.\n\n---\n\n# **Authentication**\n\nThis request requires a **Bearer Token**.\n\nThe token must be included in the request headers:\n\n```\nAuthorization: Bearer {{token}}\n\n ```\n\nThe token is stored in the `{{token}}` environment variable and must be set before sending the request.\n\n---\n\n# **Request Body Parameters**\n\n| Field | Type | Required | Description | Example |\n| --- | --- | --- | --- | --- |\n| plant_id | string/integer | Yes | ID of the plant to fetch production line for | 1 |\n| type | string | Yes | Type of production line | product, raw-material, spare-part, machine |\n| q | string | No | Search query applied on product fields (hs_code, name_en, name_ar) | FABRICS |\n| per_page | integer | No | Number of items per page (min: 1, max: 100) | 10 |\n\n---\n\n# **Production Types**\n\nThe `type` field controls which dataset is returned:\n\n| Type | Description |\n| --- | --- |\n| product | Finished products of the plant |\n| raw-material | Raw materials used in production |\n| spare-part | Spare parts associated with plant operations |\n| machine | Machines used in production |\n\n---\n\n# **Response Structure**\n\nThe API returns a **paginated response object**.\n\n### Top-level fields:\n\n| Field | Type | Description |\n| --- | --- | --- |\n| data | array | List of production line items |\n| current_page | integer | Current page number |\n| last_page | integer | Last page number |\n| per_page | integer | Items per page |\n| total | integer | Total number of records |"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "plant_id",
+                      "value": "01k81herryyca9bvvvsardw41q",
+                      "type": "text",
+                      "uuid": "8df8dea8-d0fc-4a95-bc12-d6fe7d4e5f0b"
+                    },
+                    {
+                      "key": "type",
+                      "value": "product",
+                      "type": "text",
+                      "uuid": "7d807fc3-7aa0-4c75-af3d-2e2e8a5fb1b6"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/tasks/production-line",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "tasks",
+                    "production-line"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 12 Jun 2026 22:57:45 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KTZ0WG7P9074XKBGS0X0C4PH"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X59118b3252f5562c6f0dfb28b7e32444"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"current_page\": 1,\n    \"data\": [\n        {\n            \"id\": \"01k81hers2gf55fncy3r2g0twq\",\n            \"old_id\": null,\n            \"plant_id\": \"01k81herryyca9bvvvsardw41q\",\n            \"product_id\": \"01j5bqgfhc1g27y902hf8hhjkv\",\n            \"unit_id\": \"01j5bq9xqvsp39wbqap1gsg3vm\",\n            \"quantity\": 0,\n            \"is_primary\": 0,\n            \"real_production\": \"0\",\n            \"maximum_production\": \"12\",\n            \"price\": \"0\",\n            \"created_at\": \"2025-10-20T20:27:35.000000Z\",\n            \"updated_at\": \"2025-10-20T20:27:35.000000Z\",\n            \"deleted_at\": null,\n            \"meta\": null,\n            \"hs10_product_id\": null,\n            \"ndb_synched_at\": null,\n            \"ndb_last_ops_at\": null,\n            \"plant\": {\n                \"id\": \"01k81herryyca9bvvvsardw41q\",\n                \"number\": 4704288739,\n                \"license\": null,\n                \"address\": null,\n                \"industrial_city\": null\n            },\n            \"product\": {\n                \"id\": \"01j5bqgfhc1g27y902hf8hhjkv\",\n                \"old_id\": 33250,\n                \"activity_id\": \"01j5bqacsr8pjy9d0zbd4jchfr\",\n                \"product_class_id\": null,\n                \"parent_id\": null,\n                \"hs_code\": \"321200000000\",\n                \"name_en\": \"Pigments (including metallic powders and flakes) dispersed in non-aqueous media- in liquid or paste form- of a kind used in the manufacture of paints (including enamels); stamping foils; dyes and other colouring matter put up in forms or packings for reta\",\n                \"name_ar\": \"\\\"ألوان سطحية (بما في ذلك المساحيق والرقائق المعدنية) مبددة في وسط غير مائي، بشكل سائل أو معجون، من الأنواع المستعملة في صناعـة الدهانات (بما في ذلك ألوان الميناء)؛ أوراق الختم؛ أصباغ ومواد ملونة أُخر مهيأة بأشكال أو في أغلفة للبيع بالتجزئة\\\"\",\n                \"quantity\": null,\n                \"hs_code_type\": \"12\",\n                \"standard_unit_id\": null,\n                \"unit_price\": null,\n                \"active\": 1,\n                \"is_export_category_active\": false,\n                \"export_category\": null,\n                \"last_updated_by\": null,\n                \"is_allowed\": true,\n                \"is_fully_manufactured\": false,\n                \"is_license_restricted\": false,\n                \"remark\": null,\n                \"is_spare_part\": false,\n                \"is_machine\": 0,\n                \"is_end_product\": true,\n                \"is_raw_material\": true,\n                \"is_industrial_auditing_product\": 1,\n                \"none_industrial_product\": 0,\n                \"exempted_percentage\": 100,\n                \"created_at\": \"2018-07-12T15:58:22.000000Z\",\n                \"updated_at\": \"2025-02-13T07:31:16.000000Z\",\n                \"deleted_at\": null,\n                \"hs12_product_id\": null,\n                \"ndb_synched_at\": null,\n                \"ndb_last_ops_at\": null,\n                \"name\": \"Pigments (including metallic powders and flakes) dispersed in non-aqueous media- in liquid or paste form- of a kind used in the manufacture of paints (including enamels); stamping foils; dyes and other colouring matter put up in forms or packings for reta\",\n                \"product_class\": null,\n                \"activity\": {\n                    \"id\": \"01j5bqacsr8pjy9d0zbd4jchfr\",\n                    \"old_id\": 3174,\n                    \"parent_id\": \"01j5bqacmjf3t09mvyaw7xr3rg\",\n                    \"isic_code\": \"241040\",\n                    \"name_en\": \"Manufacture of lacy sheets, rolls and coils and all types of rods, feathers, wires and angles\",\n                    \"name_ar\": \"صناعة صفائح وألواح ولفائف شريطية وقضبان وأسـياخ وزوايا وأسلاك ومقاطع بكافة أشكالها\",\n                    \"is_industrial\": true,\n                    \"is_medical\": false,\n                    \"is_military\": false,\n                    \"is_restricted\": false,\n                    \"is_gold\": true,\n                    \"show_warning_message\": 0,\n                    \"warning_message\": null,\n                    \"created_at\": \"2019-01-14T09:24:42.000000Z\",\n                    \"updated_at\": \"2025-10-20T19:48:56.000000Z\",\n                    \"deleted_at\": null,\n                    \"ndb_synched_at\": null,\n                    \"ndb_last_ops_at\": null,\n                    \"industrial_sector_id\": null,\n                    \"name\": \"Manufacture of lacy sheets, rolls and coils and all types of rods, feathers, wires and angles\"\n                }\n            },\n            \"unit\": {\n                \"id\": \"01j5bq9xqvsp39wbqap1gsg3vm\",\n                \"parent_id\": null,\n                \"code\": \"7\",\n                \"name_en\": \"kilow gram\",\n                \"name_ar\": \"كيلو غرام\",\n                \"is_thermal\": 0,\n                \"is_scanning\": 0,\n                \"is_for_gold_activity\": 1,\n                \"is_diesel\": 0,\n                \"is_natural_gas\": 0,\n                \"created_at\": null,\n                \"updated_at\": null,\n                \"ndb_synched_at\": null,\n                \"ndb_last_ops_at\": null,\n                \"name\": \"kilow gram\",\n                \"mapped_unit\": {\n                    \"id\": 43,\n                    \"system\": \"customs\",\n                    \"map_key\": \"unit\",\n                    \"source_code\": 7,\n                    \"target_code\": 1,\n                    \"created_at\": \"2024-08-15T22:25:08.000000Z\",\n                    \"updated_at\": \"2024-08-15T22:25:08.000000Z\",\n                    \"ndb_synched_at\": null,\n                    \"ndb_last_ops_at\": null\n                }\n            }\n        }\n    ],\n    \"first_page_url\": \"https://senaee.test/api/inspection/tasks/production-line?page=1\",\n    \"from\": 1,\n    \"last_page\": 1,\n    \"last_page_url\": \"https://senaee.test/api/inspection/tasks/production-line?page=1\",\n    \"links\": [\n        {\n            \"url\": null,\n            \"label\": \"&laquo; Previous\",\n            \"active\": false\n        },\n        {\n            \"url\": \"https://senaee.test/api/inspection/tasks/production-line?page=1\",\n            \"label\": \"1\",\n            \"active\": true\n        },\n        {\n            \"url\": null,\n            \"label\": \"Next &raquo;\",\n            \"active\": false\n        }\n    ],\n    \"next_page_url\": null,\n    \"path\": \"https://senaee.test/api/inspection/tasks/production-line\",\n    \"per_page\": 15,\n    \"prev_page_url\": null,\n    \"to\": 1,\n    \"total\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Inspection",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "<redacted-token>",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "en",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "inspection_type",
+                  "value": "onsite",
+                  "type": "text",
+                  "uuid": "a63b5bc4-6e3d-426f-83f0-b8c011a0f369"
+                },
+                {
+                  "key": "is_distrupted",
+                  "value": "0",
+                  "type": "text",
+                  "uuid": "cfafd3ae-49a1-4ff8-8d11-6c7dba97f0ab"
+                },
+                {
+                  "key": "distrubtion_reason",
+                  "value": "absent_responsible",
+                  "type": "text",
+                  "uuid": "936c8894-0058-4eb6-a3b6-0cf29d54d26e"
+                },
+                {
+                  "key": "other_distrubtion_reason",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "058f4397-2410-4ca4-b7aa-18d5a4d22398"
+                },
+                {
+                  "key": "factory_front_image[]",
+                  "type": "file",
+                  "uuid": "73c13521-f204-4bc8-9bba-94641b7418ed",
+                  "value": null
+                },
+                {
+                  "key": "distrubtion_report[]",
+                  "type": "file",
+                  "uuid": "e3b8642a-a2d8-48d7-bcb8-8e1c97d79ee2",
+                  "value": null
+                },
+                {
+                  "key": "distrubtion_report[]",
+                  "type": "file",
+                  "uuid": "c05f6582-edf0-4fe9-9961-bd17c5054975",
+                  "value": null
+                },
+                {
+                  "key": "factory_condition",
+                  "value": "production_stop",
+                  "type": "text",
+                  "uuid": "a69d5eca-9eae-4663-a5d2-f6e288a1fca0"
+                },
+                {
+                  "key": "used_fuel_type[]",
+                  "value": "diesel",
+                  "type": "text",
+                  "uuid": "06353b90-4b13-4330-9436-82466a20ea97"
+                },
+                {
+                  "key": "used_fuel_type[]",
+                  "value": "electricity",
+                  "type": "text",
+                  "uuid": "ad3b5a6c-4824-4e26-aa1b-85a64043d564"
+                },
+                {
+                  "key": "factory_stop_reason",
+                  "value": "fire",
+                  "type": "text",
+                  "uuid": "bad8c9b2-ce70-4e42-987d-4f055c4cf3df"
+                },
+                {
+                  "key": "production_date",
+                  "value": "2026-06-14",
+                  "type": "text",
+                  "uuid": "c36a50f6-4205-4d66-aa3c-39c0d27d1768"
+                },
+                {
+                  "key": "<redacted-sensitive-value>istrators_number",
+                  "value": "343",
+                  "type": "text",
+                  "uuid": "7ecd9ab8-7320-40a8-bee7-4b530e8f7cf6"
+                },
+                {
+                  "key": "specialized_professions_number",
+                  "value": "343",
+                  "type": "text",
+                  "uuid": "a919e715-68cd-441b-bccd-46f19362d794"
+                },
+                {
+                  "key": "technicians_number",
+                  "value": "53",
+                  "type": "text",
+                  "uuid": "34cb08d2-2bc3-4848-8524-bba202e0a56e"
+                },
+                {
+                  "key": "other_team_number",
+                  "value": "4",
+                  "type": "text",
+                  "uuid": "fb1bf9be-af22-4987-a3b2-51d96a6a764a"
+                },
+                {
+                  "key": "shifts_number",
+                  "value": "123",
+                  "type": "text",
+                  "uuid": "a11f2705-104b-4730-8196-363f12c3bc82"
+                },
+                {
+                  "key": "factory_operation_mechanism",
+                  "value": "asdf",
+                  "type": "text",
+                  "uuid": "2a88316e-c5f4-40f6-9424-9d75f77fde1c"
+                },
+                {
+                  "key": "production_lines_number",
+                  "value": "234234",
+                  "type": "text",
+                  "uuid": "e4ccdc39-7988-4761-b9bc-4191f083657f"
+                },
+                {
+                  "key": "licensed_products_number",
+                  "value": "234234",
+                  "type": "text",
+                  "uuid": "9ff911c7-7d43-46ef-8b2a-0118fbc964af"
+                },
+                {
+                  "key": "un_licensed_products_number",
+                  "value": "213",
+                  "type": "text",
+                  "uuid": "efb8598e-7fcb-44c9-a17d-dbbdd3b34620"
+                },
+                {
+                  "key": "actual_products_number",
+                  "value": "1231231",
+                  "type": "text",
+                  "uuid": "e1a0ce14-400a-40e0-bbcc-5b46a99c154b"
+                },
+                {
+                  "key": "is_exporting",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "316ca7d8-b101-436c-8960-b06716506fae"
+                },
+                {
+                  "key": "exported_products_number",
+                  "value": "23234",
+                  "type": "text",
+                  "uuid": "a328b84b-0851-4aa8-90c2-3b5248056503"
+                },
+                {
+                  "key": "tools_and_equipments_number",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "8ddd9439-bb12-4018-a716-19aa5167cc76"
+                },
+                {
+                  "key": "is_exmpted",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "511c3318-134a-4468-81a6-ae626d4d65a0"
+                },
+                {
+                  "key": "notes",
+                  "value": "notes",
+                  "type": "text",
+                  "uuid": "a4e78e04-0d93-4bb1-8ccf-db1d4d79ce18"
+                },
+                {
+                  "key": "checklist_items[01ktw7637s3bc407yq3wheepj1][applies]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "c6800fb0-4ebb-47ce-83d6-5bb3ce599afc"
+                },
+                {
+                  "key": "checklist_items[01ktw7637s3bc407yq3wheepj1][remarks]",
+                  "value": "okay remarks",
+                  "type": "text",
+                  "uuid": "cc911e74-f05e-4965-876a-7ae6f92da361"
+                },
+                {
+                  "key": "checklist_items[01ktw7637s3bc407yq3wheepj1][response_attachments][]",
+                  "type": "file",
+                  "uuid": "de57e866-0522-4d1e-bf05-a00e501e711e",
+                  "src": "/path/to/sample-file"
+                },
+                {
+                  "key": "selected_products[0][id]",
+                  "value": "01j5bqgfhc1g27y902hf8hhjkv",
+                  "type": "text",
+                  "uuid": "bf50c9be-1025-40f3-9d4b-d953824b5104"
+                },
+                {
+                  "key": "selected_products[0][name]",
+                  "value": "Pigments (including metallic powders",
+                  "type": "text",
+                  "uuid": "9abfc05b-0a14-4300-b012-b067e44c30ce"
+                },
+                {
+                  "key": "selected_products[0][hs_code]",
+                  "value": "321200000000",
+                  "type": "text",
+                  "uuid": "ef733fde-4a10-4edb-a563-b7a8b1775cd8"
+                },
+                {
+                  "key": "selected_products[0][is_regulated]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "26ba0283-9172-42a6-b266-aa7d9b1230d8"
+                },
+                {
+                  "key": "selected_products[1][id]",
+                  "value": "01j5bqgfhc1g27y902hf8hhuwn",
+                  "type": "text",
+                  "uuid": "3ba0a339-bade-4a1a-935a-a7b17148304c"
+                },
+                {
+                  "key": "selected_products[1][name]",
+                  "value": "test two",
+                  "type": "text",
+                  "uuid": "05ecc8df-ba83-4b93-b055-10b96c330146"
+                },
+                {
+                  "key": "selected_products[1][hs_code]",
+                  "value": "222222222222",
+                  "type": "text",
+                  "uuid": "66d603a3-1d0a-435f-a837-d206755019b3"
+                },
+                {
+                  "key": "selected_products[1][is_regulated]",
+                  "value": "0",
+                  "type": "text",
+                  "uuid": "b1e7a287-6bf4-4648-b60b-61c4add88833"
+                },
+                {
+                  "key": "products_images[]",
+                  "type": "file",
+                  "uuid": "25afd7fb-cf8d-4bfa-b851-45582116a9ab",
+                  "src": "/path/to/sample-file"
+                },
+                {
+                  "key": "selected_tools[0][id]",
+                  "value": "01j5bqgfhc1g27y902hfyyywq",
+                  "type": "text",
+                  "uuid": "1b352b21-1bd2-4262-aede-bbbf6b383a9f"
+                },
+                {
+                  "key": "selected_tools[0][name]",
+                  "value": "tool name",
+                  "type": "text",
+                  "uuid": "0a090a90-9198-4f62-b899-87c17e3c1615"
+                },
+                {
+                  "key": "selected_tools[0][is_passed]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "0b182a37-c587-4382-878b-f42e9ff21e74"
+                },
+                {
+                  "key": "tools_images[]",
+                  "type": "file",
+                  "uuid": "d35e935f-64db-446b-97d2-ff15b1d1f0ec",
+                  "src": "/path/to/sample-file"
+                },
+                {
+                  "key": "selected_raw_materials[0][id]",
+                  "value": "01j5bqgfhc1g27y902hf8hhmm3",
+                  "type": "text",
+                  "uuid": "0529d67e-7844-422e-8ade-9a66a6f4e0e0"
+                },
+                {
+                  "key": "selected_raw_materials[0][name]",
+                  "value": "raw material name",
+                  "type": "text",
+                  "uuid": "78f86e16-0713-4512-bd17-81d7f8df79f4"
+                },
+                {
+                  "key": "selected_raw_materials[0][quantity]",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "94b0d982-86fc-414d-b1a3-fb5a7484803b"
+                },
+                {
+                  "key": "selected_raw_materials[0][is_beneficiary]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "b69c5f5e-04f6-4b5e-b176-da818b905f83"
+                },
+                {
+                  "key": "selected_raw_materials[0][is_in_factory]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "947af590-4633-4d16-96aa-e0662166bdf2"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://sectorial-be.senaei.app/api/inspection/tasks/submit-inspection/{{task}}",
+              "protocol": "https",
+              "host": [
+                "sectorial-be",
+                "senaei",
+                "app"
+              ],
+              "path": [
+                "api",
+                "inspection",
+                "tasks",
+                "submit-inspection",
+                "{{task}}"
+              ]
+            },
+            "description": "# 📌 Submit Inspection API (Full Documentation)\n\n### Endpoint\n\n```\nPOST /api/inspection/tasks/submit-inspection/{task}\n\n ```\n\n---\n\n# 📥 Request Body\n\n## 🔹 inspection_type (enum)\n\n| Value | Label |\n| --- | --- |\n| onsite | On Site |\n| remote | Remote |\n\n---\n\n## 🔹 is_distrupted (boolean)\n\n| Value | Description |\n| --- | --- |\n| true | Inspection was disrupted |\n| false | Normal inspection |\n\n---\n\n## 🔹 distrubtion_reason (enum)\n\nRequired only if `is_distrupted = true`\n\n| Value | Label |\n| --- | --- |\n| closed | Closed Factory |\n| absent_responsible | Absent Responsible Person |\n| wrong_address | Wrong Address |\n\n---\n\n## 🔹 factory_condition (enum)\n\n> &lt;p &gt;Required when NOT disrupted&lt;/p&gt; \n  \n\n| Value | Label |\n| --- | --- |\n| production | Production Running |\n| production_stop | Production Stopped |\n| not_found | Factory Not Found |\n| closed | Closed |\n| transfere | Transferred |\n\n---\n\n## 🔹 factory_stop_reason (enum)\n\n> &lt;p &gt;Required when factory_condition is:&lt;/p&gt; \n  \n\n- not_found\n    \n- closed\n    \n- transfere\n    \n\n| Value | Label |\n| --- | --- |\n| fire | Fire |\n| theft | Theft |\n\n---\n\n## 🔹 used_fuel_type (array enum)\n\n| Value | Label |\n| --- | --- |\n| onsite | Natural Gas |\n| diesel | Diesel |\n| electricity | Electricity |\n| other | Other |\n\n---\n\n# 📦 Full Field Documentation\n\n## 🔹 Inspection Control\n\n| Field | Type | Description |\n| --- | --- | --- |\n| inspection_type | enum | onsite / remote |\n| is_distrupted | boolean | Inspection disruption flag |\n\n---\n\n## 🔹 Disruption Info\n\n| Field | Type | Description |\n| --- | --- | --- |\n| distrubtion_reason | enum | Reason of disruption |\n| other_distrubtion_reason | string | Custom reason |\n\n---\n\n## 🔹 Factory Info\n\n| Field | Type | Description |\n| --- | --- | --- |\n| factory_condition | enum | Factory status |\n| factory_stop_reason | enum | Stop reason if applicable |\n| production_date | date | Production date |\n| factory_operation_mechanism | string | Operation mechanism |\n\n---\n\n## 🔹 Fuel Types\n\n| Field | Type | Description |\n| --- | --- | --- |\n| used_fuel_type | array(enum) | Fuel types used |\n\n---\n\n## 🔹 Workforce\n\n| Field | Type |\n| --- | --- |\n| <redacted-sensitive-value>istrators_number | integer |\n| specialized_professions_number | integer |\n| technicians_number | integer |\n| other_team_number | integer |\n| shifts_number | integer |\n\n---\n\n## 🔹 Production\n\n| Field | Type |\n| --- | --- |\n| production_lines_number | integer |\n| licensed_products_number | integer |\n| un_licensed_products_number | integer |\n| actual_products_number | integer |\n| is_exporting | boolean |\n| exported_products_number | integer |\n\n---\n\n## 🔹 Selections\n\n| Field | Type |\n| --- | --- |\n| selected_products | array |\n| selected_tools | array |\n| selected_raw_materials | array |\n\n---\n\n## 🔹 Equipment\n\n| Field | Type |\n| --- | --- |\n| tools_and_equipments_number | integer |\n\n---\n\n## 🔹 Compliance\n\n| Field | Type |\n| --- | --- |\n| is_exmpted | boolean |\n| notes | string |\n\n---\n\n## 🔹 Checklist\n\n| Field | Type |\n| --- | --- |\n| checklist_items | array |\n\n### checklist_items structure\n\n| Field | Type |\n| --- | --- |\n| applies | boolean |\n| remarks | string |\n\n---\n\n# 📂 Media Upload Fields\n\n| Field | Type | Collection |\n| --- | --- | --- |\n| factory_front_image\\[\\] | file | factory_front_image |\n| distrubtion_report\\[\\] | file | distrubtion_report |\n| products_images\\[\\] | file | visit_product_images |\n| tools_images\\[\\] | file | visit_tools_images |\n| material_images\\[\\] | file | visit_raw_materials_images |\n\n---\n\n# 📤 Response\n\n## Success Response\n\n```\n{  \"success\": true,  \"message\": \"Inspection submitted successfully.\"}\n\n ```"
+          },
+          "response": [
+            {
+              "name": "Successful Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept-Language",
+                    "value": "en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "inspection_type",
+                      "value": "onsite",
+                      "type": "text",
+                      "uuid": "a63b5bc4-6e3d-426f-83f0-b8c011a0f369"
+                    },
+                    {
+                      "key": "is_distrupted",
+                      "value": "0",
+                      "type": "text",
+                      "uuid": "cfafd3ae-49a1-4ff8-8d11-6c7dba97f0ab"
+                    },
+                    {
+                      "key": "distrubtion_reason",
+                      "value": "absent_responsible",
+                      "type": "text",
+                      "uuid": "936c8894-0058-4eb6-a3b6-0cf29d54d26e"
+                    },
+                    {
+                      "key": "other_distrubtion_reason",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "058f4397-2410-4ca4-b7aa-18d5a4d22398"
+                    },
+                    {
+                      "key": "factory_front_image[]",
+                      "type": "file",
+                      "uuid": "73c13521-f204-4bc8-9bba-94641b7418ed",
+                      "value": null
+                    },
+                    {
+                      "key": "distrubtion_report[]",
+                      "type": "file",
+                      "uuid": "e3b8642a-a2d8-48d7-bcb8-8e1c97d79ee2",
+                      "value": null
+                    },
+                    {
+                      "key": "distrubtion_report[]",
+                      "type": "file",
+                      "uuid": "c05f6582-edf0-4fe9-9961-bd17c5054975",
+                      "value": null
+                    },
+                    {
+                      "key": "factory_condition",
+                      "value": "production_stop",
+                      "type": "text",
+                      "uuid": "a69d5eca-9eae-4663-a5d2-f6e288a1fca0"
+                    },
+                    {
+                      "key": "used_fuel_type[]",
+                      "value": "diesel",
+                      "type": "text",
+                      "uuid": "06353b90-4b13-4330-9436-82466a20ea97"
+                    },
+                    {
+                      "key": "used_fuel_type[]",
+                      "value": "electricity",
+                      "type": "text",
+                      "uuid": "ad3b5a6c-4824-4e26-aa1b-85a64043d564"
+                    },
+                    {
+                      "key": "factory_stop_reason",
+                      "value": "fire",
+                      "type": "text",
+                      "uuid": "bad8c9b2-ce70-4e42-987d-4f055c4cf3df"
+                    },
+                    {
+                      "key": "production_date",
+                      "value": "2026-06-14",
+                      "type": "text",
+                      "uuid": "c36a50f6-4205-4d66-aa3c-39c0d27d1768"
+                    },
+                    {
+                      "key": "<redacted-sensitive-value>istrators_number",
+                      "value": "343",
+                      "type": "text",
+                      "uuid": "7ecd9ab8-7320-40a8-bee7-4b530e8f7cf6"
+                    },
+                    {
+                      "key": "specialized_professions_number",
+                      "value": "343",
+                      "type": "text",
+                      "uuid": "a919e715-68cd-441b-bccd-46f19362d794"
+                    },
+                    {
+                      "key": "technicians_number",
+                      "value": "53",
+                      "type": "text",
+                      "uuid": "34cb08d2-2bc3-4848-8524-bba202e0a56e"
+                    },
+                    {
+                      "key": "other_team_number",
+                      "value": "4",
+                      "type": "text",
+                      "uuid": "fb1bf9be-af22-4987-a3b2-51d96a6a764a"
+                    },
+                    {
+                      "key": "shifts_number",
+                      "value": "123",
+                      "type": "text",
+                      "uuid": "a11f2705-104b-4730-8196-363f12c3bc82"
+                    },
+                    {
+                      "key": "factory_operation_mechanism",
+                      "value": "asdf",
+                      "type": "text",
+                      "uuid": "2a88316e-c5f4-40f6-9424-9d75f77fde1c"
+                    },
+                    {
+                      "key": "production_lines_number",
+                      "value": "234234",
+                      "type": "text",
+                      "uuid": "e4ccdc39-7988-4761-b9bc-4191f083657f"
+                    },
+                    {
+                      "key": "licensed_products_number",
+                      "value": "234234",
+                      "type": "text",
+                      "uuid": "9ff911c7-7d43-46ef-8b2a-0118fbc964af"
+                    },
+                    {
+                      "key": "un_licensed_products_number",
+                      "value": "213",
+                      "type": "text",
+                      "uuid": "efb8598e-7fcb-44c9-a17d-dbbdd3b34620"
+                    },
+                    {
+                      "key": "actual_products_number",
+                      "value": "1231231",
+                      "type": "text",
+                      "uuid": "e1a0ce14-400a-40e0-bbcc-5b46a99c154b"
+                    },
+                    {
+                      "key": "is_exporting",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "316ca7d8-b101-436c-8960-b06716506fae"
+                    },
+                    {
+                      "key": "exported_products_number",
+                      "value": "23234",
+                      "type": "text",
+                      "uuid": "a328b84b-0851-4aa8-90c2-3b5248056503"
+                    },
+                    {
+                      "key": "selected_products[]",
+                      "value": "01j5bqgfhc1g27y902hf8hhjkv",
+                      "type": "text",
+                      "uuid": "55b08f04-1409-473b-86e3-00495aeec859"
+                    },
+                    {
+                      "key": "products_images[]",
+                      "type": "file",
+                      "uuid": "5ef78e29-2b6b-49c6-882a-4bd642530655",
+                      "src": "/path/to/sample-file"
+                    },
+                    {
+                      "key": "products_images[]",
+                      "type": "file",
+                      "uuid": "99d4503a-32c5-45d8-afe3-98758c8ce9a3",
+                      "src": "/path/to/sample-file"
+                    },
+                    {
+                      "key": "tools_and_equipments_number",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "8ddd9439-bb12-4018-a716-19aa5167cc76"
+                    },
+                    {
+                      "key": "selected_tools[]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "6da68a06-ffea-4db6-beed-6ac7191bde2a"
+                    },
+                    {
+                      "key": "tools_images[]",
+                      "type": "file",
+                      "uuid": "2dc658d2-b487-47eb-b1c6-2adc7ebef9dd",
+                      "value": null
+                    },
+                    {
+                      "key": "selected_raw_materials[]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "000837cf-68f1-40a0-a2a0-26eecfe19669"
+                    },
+                    {
+                      "key": "is_exmpted",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "511c3318-134a-4468-81a6-ae626d4d65a0"
+                    },
+                    {
+                      "key": "notes",
+                      "value": "notes",
+                      "type": "text",
+                      "uuid": "a4e78e04-0d93-4bb1-8ccf-db1d4d79ce18"
+                    },
+                    {
+                      "key": "checklist_items[01ktw7637s3bc407yq3wheepj1][applies]",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "c6800fb0-4ebb-47ce-83d6-5bb3ce599afc"
+                    },
+                    {
+                      "key": "checklist_items[01ktw7637s3bc407yq3wheepj1][remarks]",
+                      "value": "okay remarks",
+                      "type": "text",
+                      "uuid": "cc911e74-f05e-4965-876a-7ae6f92da361"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "https://senaee.test/api/inspection/tasks/submit-inspection/{{task}}",
+                  "protocol": "https",
+                  "host": [
+                    "senaee",
+                    "test"
+                  ],
+                  "path": [
+                    "api",
+                    "inspection",
+                    "tasks",
+                    "submit-inspection",
+                    "{{task}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.27.3"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.3.15"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sun, 14 Jun 2026 01:15:24 GMT"
+                },
+                {
+                  "key": "X-Request-Id",
+                  "value": "01KV1V58TP6YS5WKHQNG2B18JJ"
+                },
+                {
+                  "key": "phpdebugbar-id",
+                  "value": "X2ac03c15ccf778b2720ce47056c3d8f9"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Inspection submitted successfully.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://farming-simulator.pstmn.io"
+    }
+  ]
+}

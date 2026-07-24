@@ -1,0 +1,61 @@
+route,persona,expected_seeded_precondition,smoke_assertion,failure_class_if_absent
+/login,any,at least one active persona per role,successful auth + redirect to role home via /launch,LIVE_DATABASE broken
+/launch,any,user_roles row for the persona,role-correct home redirect; no ERR-AUTH,LIVE_DATABASE broken
+/planning,planner,visit_plans in mixed draft/published/returned/cancelled/expired status,list renders all statuses; empty state never shown when seeded rows exist,LIVE_DATABASE broken
+/planning/single,planner,at least one factory eligible for a single physical visit,wizard completes and calls publish_single_visit RPC producing a real visits row,RPC path broken or PERSISTED_CONTRACT_STUB masquerading as live
+/planning/bulk,planner,a bulk-eligible factory set plus at least one ineligible factory,CriteriaBuilder correctly separates eligible/ineligible; publish_bulk_plan produces assignments only for eligible factories,business invariant violated
+/planning/immediate,planner or authorized inspector,at least one unregistered-establishment scenario factory,Immediate Inspection creation succeeds with correct urgency reason validation,LIVE_DATABASE broken
+/planning/plans,planner,multiple visit_plans across statuses,list + filter renders seeded plans,LIVE_DATABASE broken
+/planning/plans/[id],planner,a specific seeded plan id,detail page renders assignments/factories for that plan,LIVE_DATABASE broken
+/visits,planner or ops,visits across the full lifecycle (assigned/on the way/arrived/executing/completed),list renders every seeded lifecycle state,LIVE_DATABASE broken
+/visits/[id],planner or ops,a specific seeded visit,detail renders assignment/journey/geo_events history,LIVE_DATABASE broken
+/visits/calendar,planner,visits spread across a date range,calendar renders seeded dates correctly,LIVE_DATABASE broken
+/visits/map,planner or ops,visits with seeded coordinates within KSA_BOUNDS,map renders seeded factory/visit pins,depends on StubMapProvider or live tile layer
+/visits/workload,planner or ops,assignments distributed unevenly across inspectors including one at daily capacity,workload view shows the capacity-full inspector distinctly,business invariant violated
+/field,inspector,assignments for the seeded inspector persona across new/preparation/ready/on-the-way/arrived/executing states,field home lists only that inspector's own assignments (RLS),RLS or LIVE_DATABASE broken
+/field/[visitId],inspector,a specific seeded assignment,workspace renders package/checklist/evidence state for that visit,LIVE_DATABASE broken
+/field/inspection/[id],inspector,an inspection mid-execution with at least one Senaei-observation scenario,FactoryVerification renders source_value/observed_value pairs; writes only to inspection_factory_checks never factories,PERSISTED_CONTRACT_STUB path broken; would indicate a write-back regression
+/field/factory-360,inspector,a factory with full Factory 360 seeded story (license, plant, contacts, risk history),dossier loads all sections without blanking on any one BLOCKED_EXTERNAL industry-shared lead,BLOCKED_EXTERNAL fail-open regression (F360-ISH-AC-015)
+/api/field/factory-360/snapshot,inspector (offline path),a factory with an offline snapshot scenario,snapshot endpoint returns a coherent, versioned payload usable by factory360/offline-snapshot.ts,offline replay broken
+/api/routing/eta,inspector,field-integrations test_stub mode enabled,estimateFieldRoute returns a stub estimate labeled TEST_STUB_LABEL; never silently production-labeled,field-integrations.ts contract violated
+/reviews,reviewer,submission_versions across submitted/returned/resubmitted/under-review/approved/rejected,scan-only-open review queue shows only open items per CD-028 design,LIVE_DATABASE broken
+/reviews/[id],reviewer,a specific seeded submission under review,workspace renders scope rail + Senaei-observed factory fields,LIVE_DATABASE broken
+/virtual,ops or inspector,at least one virtual visit scenario,list renders seeded virtual sessions,LIVE_DATABASE broken
+/virtual/[id],ops or inspector,a seeded virtual_session with StagingVideoProvider outcome,SIMULATED VIDEO SESSION badge renders whenever provider=stub; OTP join uses real vp_request_otp/vp_verify_otp,adapter honesty violated if badge missing
+/dashboard,ops,12 months of seeded source facts across visits/inspections/violations/regions,KPI cards compute correctly from source facts, never from a hardcoded value,dashboard calculation violated (blueprint hard rule)
+/operations/live,ops,active journeys with seeded geo_events,live map renders seeded positions and geofence states,LIVE_DATABASE broken
+/operations/exceptions,ops,outside-geofence pending/approved/rejected/expired scenarios,exceptions queue shows all four seeded states distinctly,cross-channel handoff broken
+/factories,any authorized,20-30 seeded factories across regions/sectors,list/search renders full seeded set,LIVE_DATABASE broken
+/factories/[id],any authorized,a specific seeded factory,detail renders coherent license/product/raw-material/risk story,factory coherence rule violated
+/factories/cr,any authorized,a factory with a seeded synthetic CR/licence identifier,CR lookup resolves to the seeded factory without claiming an authentic government identifier,provenance mislabeling risk
+/admin/regulations,admin,published + draft regulation versions,version history renders both,LIVE_DATABASE broken
+/admin/items,admin,inspection_items linked to regulations,list renders correctly linked items,LIVE_DATABASE broken
+/admin/packages,admin,published package + one intentionally unpublished package,fail-closed behavior confirmed for the unpublished package on consuming screens,blueprint fail-closed test violated if unpublished package is usable
+/admin/violations,admin,violation_codes and penalty_mappings including the one accepted Phase-1 mapping,list renders seeded mapping without inventing a second mapping,penalty logic invention risk
+/admin/bulk-violations,admin,multiple seeded violations across factories,bulk view aggregates correctly,LIVE_DATABASE broken
+/admin/access,admin,15-20 seeded personas with distinct roles,access matrix reflects seeded role grants exactly,RLS/access matrix drift
+/admin/security-access,admin,same persona set,security access view consistent with access matrix,RLS/access matrix drift
+/admin/audit,admin,audit_events generated by canonical RPC calls during seeding,audit list shows real, RPC-attributed entries; zero direct-insert rows,audit strategy violated
+/admin/notifications,admin,notification_rules published + notifications generated via staging adapters,delivery_state shows staging:<channel> or not_configured, never a fabricated delivered-via-real-provider row,notification honesty violated
+/admin/integrations/factory-data,admin,Senaei and Industry Shared adapter states recorded post-seed,page shows Senaei not_configured/degraded/available per environment and Industry Shared not_configured for all 11 leads,ADAPTER_REPLACEMENT_PLAN.md contract violated if a lead shows fabricated availability
+/admin/operations,admin,SLA/workload seeded facts,operations control plane renders correct aggregates,LIVE_DATABASE broken
+/admin/planning,admin,plan-level admin oversight facts,admin planning view reflects same plans as /planning,cross-module consistency broken
+/admin/compliance-requests,admin,compliance/data-discrepancy proposal scenario,post-approval correction queue receives the seeded discrepancy,cross-channel handoff broken
+/admin/compliance-approvals,admin,pending compliance approval scenario,approval queue shows the seeded pending item,cross-channel handoff broken
+/admin/gis,admin,seeded factory coordinates within KSA bounds,GIS admin view renders correct region distribution,LIVE_DATABASE broken
+/admin/risk,admin,factories with seeded risk/compliance history,risk bands compute from seeded history not a hardcoded value,dashboard calculation violated
+/admin/enforcement-recommendations,admin,seeded violations feeding recommendation logic,recommendations reflect seeded violation severity,LIVE_DATABASE broken
+/admin/devices,admin,seeded trusted-device personas,device list reflects seeded trusted-device state,LIVE_DATABASE broken
+/admin/localization,admin,bilingual ui_strings for all seeded-facing labels,no key falls back silently to English when Arabic exists,localization gap (see i18n.ts pagination bug precedent in CURRENT_STATE.md UPDATE 41)
+/admin/templates,admin,configuration_templates seeded,template list renders correctly,LIVE_DATABASE broken
+/admin/workflows,admin,governed transitions exercised during seeding,workflow admin view reflects real transition history,workflow governance broken
+/committee,authorized committee persona,a seeded decision-dossier scenario,dossier renders signature state honestly (unavailable if DocuSign uncredentialed),signature adapter honesty violated
+/ai/suggestions,authorized persona,GEMINI_API_KEY unset in the seed environment,suggestion surface shows unavailable, never a fabricated suggestion,AI advisory-only rule violated
+/evidence-ocr,inspector or reviewer,seeded evidence documents,OCR surface processes seeded documents without inventing extracted text beyond real seeded fixture content,evidence integrity risk
+/incident-reports,inspector or ops,an incident-during-visit scenario,incident report renders and routes to the correct receiving queue,cross-channel handoff broken
+/enforcement,admin or ops,enforcement action scenario from an approved violation,enforcement view reflects seeded chain from violation to action,cross-channel handoff broken
+/cases,ops or admin,a case aggregating multiple related visits/violations,case view aggregates correctly,LIVE_DATABASE broken
+/tasks,any authorized,seeded task assignments,task list reflects seeded assignments,LIVE_DATABASE broken
+/portal,external/unregistered-establishment persona if applicable,unregistered establishment scenario,portal renders correct restricted view,LIVE_DATABASE broken
+/reports/inspection/[id],reviewer or admin,an approved inspection with Factory 360 verification checks,official report renders factory-verification before/after values correctly,factory-verification.ts contract violated
+/push,any authorized with a real browser PushSubscription,cannot be fully seeded (requires a live browser subscription per ADAPTER_REPLACEMENT_PLAN.md 2.7),documented as a seeding limitation not a failure,seeding limitation, not a defect

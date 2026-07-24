@@ -34,7 +34,7 @@ async function login(page) {
   await page.locator("#email").waitFor();
   await page.locator("#email").fill(INSPECTOR.email);
   await page.locator("#pw").fill(INSPECTOR.password);
-  await page.locator("form:has(#email) button.ax-btn--prominent").click();
+  await page.locator("form:has(#email) button.sq-btn--prominent").click();
   await page.waitForURL(url => url.pathname.startsWith(INSPECTOR.home), { timeout: 40_000 }).catch(() => {});
 }
 
@@ -70,9 +70,9 @@ async function checkPage(deviceName, path, selectors) {
   await context.close();
 }
 
-// Field-home view switch (.ax-segmented--field) — safe, display-only toggle, no data mutation.
-await checkPage("iPad Pro 11 landscape", "/field", [".ax-segmented--field button", ".ax-segmented--field a"]);
-await checkPage("iPad Pro 11", "/field", [".ax-segmented--field button", ".ax-segmented--field a"]);
+// Field-home view switch (.sq-segmented--field) — safe, display-only toggle, no data mutation.
+await checkPage("iPad Pro 11 landscape", "/field", [".sq-segmented--field button", ".sq-segmented--field a"]);
+await checkPage("iPad Pro 11", "/field", [".sq-segmented--field button", ".sq-segmented--field a"]);
 
 await browser.close();
 console.log(`\n${passCount}/${total} touch targets >= ${MIN_PX}px under real iPad touch-context device emulation`);

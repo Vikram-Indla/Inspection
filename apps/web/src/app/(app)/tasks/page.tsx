@@ -78,11 +78,11 @@ export default async function TasksPage() {
   return (
     <Shell current="/tasks" title={t("tasks.title", "Task workspace")}
       context={<span className="badge badge-info">CD-043 · MVP2-REQ-0032</span>}>
-      <div className="ax-banner"><div>
+      <div className="sq-banner"><div>
         <strong>{t("tasks.banner.title", "Governed task management.")}</strong> {t("tasks.banner.body", "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope (RLS).")}
       </div></div>
       {error && (
-        <div className="ax-banner ax-banner--critical" role="alert"><div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>
           <strong>{t("tasks.error", "Couldn’t load tasks. Nothing was changed. Try again.")}</strong>
         </div></div>
       )}

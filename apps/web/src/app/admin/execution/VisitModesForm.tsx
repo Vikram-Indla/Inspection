@@ -34,42 +34,42 @@ export default function VisitModesForm({ modes, labels }: { modes: VisitModesVal
   );
 
   return (
-    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <label className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <label className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <input type="checkbox" name="physical_enabled" defaultChecked={modes.physical.enabled} />
         <span>{labels.physical}</span>
       </label>
 
-      <label className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <label className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <input type="checkbox" name="virtual_enabled" defaultChecked={modes.virtual.enabled} />
         <span>{labels.virtual}</span>
       </label>
-      <div style={{ paddingInlineStart: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <label className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div style={{ paddingInlineStart: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+        <label className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <input type="checkbox" name="virtual_requires_otp" defaultChecked={modes.virtual.requires_otp} />
           <span>{labels.virtualOtp}</span>
         </label>
-        <label className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <label className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <input type="checkbox" name="virtual_requires_appointment" defaultChecked={modes.virtual.requires_appointment} />
           <span>{labels.virtualAppointment}</span>
         </label>
       </div>
 
-      <label className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <label className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <input type="checkbox" name="self_assessment_enabled" disabled checked={false} readOnly />
         <span>{labels.selfAssessment}</span>
-        <span className="ax-lozenge ax-lozenge--info">{labels.selfAssessmentGate}</span>
+        <span className="sq-lozenge sq-lozenge--info">{labels.selfAssessmentGate}</span>
       </label>
 
-      <p className="ax-caption" style={{ margin: 0 }}>{labels.failClosedNote}</p>
+      <p className="sq-caption" style={{ margin: 0 }}>{labels.failClosedNote}</p>
 
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending}>
+      <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
+        <button className="sq-btn sq-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
-        {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
+        {state.ok && !pending && <span className="sq-lozenge sq-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="sq-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

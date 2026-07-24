@@ -221,33 +221,33 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
       {/* S12 — closed session is immutable and read-only; the reason is preserved
           and continuation is a hand-off to the shared engine (submission → P08). */}
       {!open && (
-        <div className="ax-banner ax-banner--immutable" role="status">
+        <div className="sq-banner sq-banner--immutable" role="status">
           <div><strong>{t.closedTitle}</strong> — {t.closedBody} <span className="cd-sub">{t.closedHandoff}</span></div>
         </div>
       )}
       {/* S15 — offline: mutating actions disabled; nothing queued. */}
       {offline && (
-        <div className="ax-banner ax-banner--warning" role="alert">
+        <div className="sq-banner sq-banner--warning" role="alert">
           <div><strong>{t.offlineTitle}</strong> — {t.offlineBody}</div>
         </div>
       )}
       {/* S13 — stale: a concurrent change was detected; reload the true state. */}
       {isStale && (
-        <div className="ax-banner ax-banner--warning" role="alert">
+        <div className="sq-banner sq-banner--warning" role="alert">
           <div><strong>{t.staleTitle}</strong> — {t.staleBody}</div>
           <button className="btn btn-secondary btn-touch" onClick={() => { router.refresh(); }}>{t.reload}</button>
         </div>
       )}
-      {errors.map((e, i) => <div key={i} className="ax-banner ax-banner--critical" role="alert"><div>{e}</div></div>)}
-      {oks.map((m, i) => <div key={i} className="ax-banner ax-banner--success"><div>{m}</div></div>)}
+      {errors.map((e, i) => <div key={i} className="sq-banner sq-banner--critical" role="alert"><div>{e}</div></div>)}
+      {oks.map((m, i) => <div key={i} className="sq-banner sq-banner--success"><div>{m}</div></div>)}
       {degraded && (
-        <div className="ax-banner ax-banner--warning"><div><strong>{t.degraded}</strong> — {t.degradedBody}</div></div>
+        <div className="sq-banner sq-banner--warning"><div><strong>{t.degraded}</strong> — {t.degradedBody}</div></div>
       )}
 
       {/* decision bar — current state + the one allowed next transition */}
       <section className={`cd-decisionbar ${next.blocked ? "is-blocked" : "is-ready"}`} aria-label={t.transition}>
         <div className="cd-decisionbar__l">
-          <span className="cd-sub">{t.nowLabel}: <span className="ax-lozenge ax-lozenge--virtual">{stLabel[session.state] ?? session.state}</span></span>
+          <span className="cd-sub">{t.nowLabel}: <span className="sq-lozenge sq-lozenge--virtual">{stLabel[session.state] ?? session.state}</span></span>
           <strong className="cd-decisionbar__act">{t.next}: {next.label}</strong>
           {next.blocked ? <span className="cd-sub cd-warn">{next.why}</span> : <span className="cd-sub">{t.transHint}</span>}
         </div>
@@ -273,7 +273,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                   <div className="cd-kv"><span className="cd-kv__k">{t.visitWord}</span><span className="cd-mono">{session.visit_id.slice(0, 8)}</span></div>
                   <div className="cd-kv"><span className="cd-kv__k">{t.pkg}</span><span className="cd-mono">{v?.package_versions?.packages?.code ?? "—"} · {v?.package_versions?.version_label ?? "—"}</span></div>
                   <div className="cd-kv"><span className="cd-kv__k">{t.inspectionWord}</span><span>
-                    {v?.inspections ? <><span className="cd-mono">{v.inspections.id.slice(0, 8)}</span> <span className="ax-lozenge ax-lozenge--review">{v.inspections.status}</span></> : <span className="cd-sub">{t.inspNone}</span>}
+                    {v?.inspections ? <><span className="cd-mono">{v.inspections.id.slice(0, 8)}</span> <span className="sq-lozenge sq-lozenge--review">{v.inspections.status}</span></> : <span className="cd-sub">{t.inspNone}</span>}
                   </span></div>
                   <span className="cd-tag cd-tag--ok">{t.scopeOk}</span>
                 </div>
@@ -303,7 +303,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                 <span className="cd-link__n" aria-hidden="true">4</span>
                 <div className="cd-link__b">
                   <div className="cd-link__head"><h4>{t.stateLink}</h4><span className={`cd-linkstate ${session.state === "closed" ? "cd-linkstate--blocked" : "cd-linkstate--ready"}`}>{session.state === "closed" ? t.blocked : t.ready}</span></div>
-                  <div className="cd-kv"><span className="cd-kv__k">{t.nowLabel}</span><span><span className="ax-lozenge ax-lozenge--virtual">{stLabel[session.state] ?? session.state}</span></span></div>
+                  <div className="cd-kv"><span className="cd-kv__k">{t.nowLabel}</span><span><span className="sq-lozenge sq-lozenge--virtual">{stLabel[session.state] ?? session.state}</span></span></div>
                   <p className="cd-sub">{t.statePathHint}</p>
                 </div>
               </li>
@@ -346,8 +346,8 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                   <form action={reschedAction} className="cd-secact">
                     <input type="hidden" name="session_id" value={session.id} />
                     <input type="hidden" name="rev" value={rev} />
-                    <div className="ax-field"><label className="ax-field__label" htmlFor="virtual-reschedule-appt">{t.rescheduleLabel}</label>
-                      <input className="ax-input numeric" type="datetime-local" name="appointment_at" id="virtual-reschedule-appt" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
+                    <div className="sq-field"><label className="sq-field__label" htmlFor="virtual-reschedule-appt">{t.rescheduleLabel}</label>
+                      <input className="sq-input numeric" type="datetime-local" name="appointment_at" id="virtual-reschedule-appt" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
                     <button className="btn btn-secondary btn-touch" disabled={reschedPending || offline}>{reschedPending ? t.working : t.rescheduleSubmit}</button>
                   </form>
                 ) : (
@@ -356,14 +356,14 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
               </div>
             )}
             {open && (
-              <form action={closeAction} className="cd-closebox ax-field">
+              <form action={closeAction} className="cd-closebox sq-field">
                 <h4>{t.closeTitle}</h4>
                 <input type="hidden" name="session_id" value={session.id} />
                 <input type="hidden" name="rev" value={rev} />
-                <label className="ax-field__label" htmlFor="virtual-close-reason">{t.closeReason} <span className="ax-req">*</span></label>
-                <input className="ax-input" name="reason" id="virtual-close-reason" placeholder={t.reasonPh} required />
-                <label className="ax-field__label" htmlFor="virtual-close-comments">{t.closeComments}</label>
-                <textarea className="ax-textarea" name="comments" id="virtual-close-comments" rows={2} />
+                <label className="sq-field__label" htmlFor="virtual-close-reason">{t.closeReason} <span className="sq-req">*</span></label>
+                <input className="sq-input" name="reason" id="virtual-close-reason" placeholder={t.reasonPh} required />
+                <label className="sq-field__label" htmlFor="virtual-close-comments">{t.closeComments}</label>
+                <textarea className="sq-textarea" name="comments" id="virtual-close-comments" rows={2} />
                 <div className="row" style={{ justifyContent: "flex-end" }}>
                   <button className="btn btn-danger btn-touch" disabled={closePending || offline}>{closePending ? t.closeWorking : t.closeSubmit}</button>
                 </div>
@@ -418,8 +418,8 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                               {st?.has_active_code || (st?.resends_used ?? 0) > 0 ? t.resendOtp : t.sendOtp}
                             </button>
                             {otpInfo[p.id]?.dev_code && <span className="badge badge-warning">{t.devCode} {otpInfo[p.id].dev_code}</span>}
-                            <div className="ax-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="ax-field__label" htmlFor={`virtual-otp-code-${p.id}`}>{t.codeLabel}</label>
-                              <input className="ax-input numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
+                            <div className="sq-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="sq-field__label" htmlFor={`virtual-otp-code-${p.id}`}>{t.codeLabel}</label>
+                              <input className="sq-input numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
                             <button className="btn btn-primary btn-touch" onClick={() => verify(p)} disabled={busy || !!st?.locked}>{t.verify}</button>
                           </div>
                           {st?.status === "ok" && (
@@ -436,7 +436,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                       {isVerified
                         ? <span className="badge badge-compliant">{t.verified}</span>
                         : p.joined_at
-                          ? <span className="ax-lozenge ax-lozenge--virtual ax-lozenge--info">{t.joinedAwaiting}</span>
+                          ? <span className="sq-lozenge sq-lozenge--virtual sq-lozenge--info">{t.joinedAwaiting}</span>
                           : <span className="badge">{t.notJoined}</span>}
                     </div>
                   </li>
@@ -449,7 +449,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
           <section className="panel cd-side cd-room" aria-label={t.room}>
             <div className="cd-sectionhead"><h3>{t.room}</h3><span className="cd-tag cd-tag--blocked">{t.roomTag}</span></div>
             {simVideo ? (
-              <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
+              <div className="stack" style={{ gap: "var(--space-2)" }}>
                 <span className="badge badge-warning" role="status">{t.simulatedSession}</span>
                 <div className="cd-roombox" role="img" aria-label={simVideo.state}>
                   <span className="cd-roombox__glyph" aria-hidden="true">{simVideo.state === "connected" ? "●" : simVideo.state === "degraded" ? "▲" : "✕"}</span>

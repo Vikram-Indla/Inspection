@@ -80,16 +80,18 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
     await page.goto("/operations?region=Verification%20Fixtures&city=Dashboard%20KPI");
 
     await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
-    await expect(page.locator(".ax-kpi").first()).toBeVisible({ timeout: 20_000 });
+    // Operations Center KPI cards render as ".sq-mstrip > div" (label/value pair),
+    // not ".sq-kpi" — confirmed against src/app/(app)/operations/page.tsx.
+    await expect(page.locator(".sq-mstrip > div").first()).toBeVisible({ timeout: 20_000 });
     for (const state of STATES) {
       const label = state.replace(/_/g, " ");
-      const card = page.locator(".ax-kpi").filter({ hasText: new RegExp(`^${label}`, "i") });
+      const card = page.locator(".sq-mstrip > div").filter({ hasText: new RegExp(`^${label}`, "i") });
       await expect(card).toBeVisible();
-      const value = Number.parseInt(await card.locator(".ax-kpi__value").innerText(), 10);
+      const value = Number.parseInt(await card.locator(".sq-mstrip__value").innerText(), 10);
       expect(value, `${state} KPI includes its fixture`).toBeGreaterThanOrEqual(1);
     }
 
-    const monitoring = page.locator(".ax-surface, .panel").filter({ has: page.getByRole("heading", { name: /Live visit monitoring/ }) });
+    const monitoring = page.locator(".sq-surface, .panel").filter({ has: page.getByRole("heading", { name: /Live visit monitoring/ }) });
     const ops = await login(OPS.email, OPS.password);
     const fixtureVisits = must(await rest(
       "GET",
@@ -107,25 +109,25 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
       await expect(monitoring.getByText(/No published visits to monitor/i)).toBeVisible();
     }
 
-    const sla = page.locator(".ax-surface, .panel").filter({ has: page.getByRole("heading", { name: /SLA watch/ }) });
+    const sla = page.locator(".sq-surface, .panel").filter({ has: page.getByRole("heading", { name: /SLA watch/ }) });
     if (publishedNames.length > 0) {
       for (const name of publishedNames.filter((value: string) => /Prepared overdue|Executing overdue/.test(value))) {
         await expect(sla.getByText(name)).toBeVisible();
       }
     }
 
-    const risk = page.locator(".ax-surface, .panel").filter({ has: page.getByRole("heading", { name: /High-risk factories/ }) });
+    const risk = page.locator(".sq-surface, .panel").filter({ has: page.getByRole("heading", { name: /High-risk factories/ }) });
     await expect(risk.getByText("KPI Verify — Submitted")).toBeVisible();
 
-    const action = page.locator(".ax-surface, .panel").filter({ has: page.getByRole("heading", { name: /Corrective actions queue/ }) });
+    const action = page.locator(".sq-surface, .panel").filter({ has: page.getByRole("heading", { name: /Corrective actions queue/ }) });
     await expect(action.getByText("KPI Verify — Executing overdue").first()).toBeVisible();
-    await expect(action.locator(".ax-lozenge, .badge").filter({ hasText: /^blocking$/ }).first()).toBeVisible();
+    await expect(action.locator(".sq-lozenge, .badge").filter({ hasText: /^blocking$/ }).first()).toBeVisible();
 
-    const geo = page.locator(".ax-surface, .panel").filter({ has: page.getByRole("heading", { name: /Location events/ }) });
+    const geo = page.locator(".sq-surface, .panel").filter({ has: page.getByRole("heading", { name: /Location events/ }) });
     await expect(geo.getByText("checkin").first()).toBeVisible();
     await expect(geo.getByText("inside").first()).toBeVisible();
 
-    const notifications = page.locator(".ax-surface, .panel").filter({ has: page.getByRole("heading", { name: /^Notifications/ }) });
+    const notifications = page.locator(".sq-surface, .panel").filter({ has: page.getByRole("heading", { name: /^Notifications/ }) });
     await expect(notifications.getByText("assignment").first()).toBeVisible();
     await expect(notifications.getByText("review_decision").first()).toBeVisible();
 

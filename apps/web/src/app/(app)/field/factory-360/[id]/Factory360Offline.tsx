@@ -71,7 +71,7 @@ export default function Factory360Offline({ crId, licenseId, strings, locale }: 
     catch { return snapshot.generatedAt; }
   })() : "";
 
-  const tone = mode === "live" ? "ax-lozenge--success" : mode === "unavailable" ? "" : "ax-lozenge--warning";
+  const tone = mode === "live" ? "sq-lozenge--success" : mode === "unavailable" ? "" : "sq-lozenge--warning";
   const message =
     mode === "refreshing" ? strings.refreshing :
     mode === "live" ? strings.live.replace("{ts}", generatedAtLabel) :

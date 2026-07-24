@@ -9,7 +9,7 @@ import EmptyState from "@/components/EmptyState";
 // plan lives at /planning/plans/[id] (M02-017/036). RLS plans_read governs
 // visibility (planner/ops/reviewer/auditor/leadership).
 
-const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
+const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
 type PlanRow = {
   id: string; method: string; status: string; created_at: string; published_at: string | null;
@@ -30,7 +30,7 @@ export default async function PlanRegister() {
     console.error("[planning plan register]", error);
     return (
       <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
-        <div className="ax-banner ax-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
+        <div className="sq-banner sq-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
       </Shell>
     );
   }
@@ -39,47 +39,47 @@ export default async function PlanRegister() {
   for (const p of plans) counts[p.status] = (counts[p.status] ?? 0) + 1;
   return (
     <Shell current="/planning" title={t("plan.register.title", "Visit plans")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
-      <div className="ax-mstrip">
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
+      <div className="sq-mstrip">
         {["draft", "published", "returned", "cancelled"].map(s => (
           <div key={s}>
-            <div className="ax-mstrip__label">{t(`enum.${s}`, s)}</div>
-            <div className="ax-mstrip__value ax-numeric">{counts[s] ?? 0}</div>
+            <div className="sq-mstrip__label">{t(`enum.${s}`, s)}</div>
+            <div className="sq-mstrip__value sq-numeric">{counts[s] ?? 0}</div>
           </div>
         ))}
       </div>
       {plans.length === 0 ? (
         <EmptyState glyph="▦" title={t("plan.register.empty", "No plans yet")}
           body={t("plan.register.emptyDesc", "Bulk and single plans appear here the moment they are created (M01-002/034).")}>
-          <a className="ax-btn" href="/planning">{t("plan.register.createPlan", "Create a plan")}</a>
+          <a className="sq-btn" href="/planning">{t("plan.register.createPlan", "Create a plan")}</a>
         </EmptyState>
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{t("plan.register.colPlan", "Plan")}</th>
             <th scope="col">{t("plan.register.colMethod", "Method")}</th>
             <th scope="col">{t("plan.register.colStatus", "Status")}</th>
             <th scope="col">{t("plan.register.colCreatedBy", "Created by")}</th>
-            <th scope="col" className="ax-td-num">{t("plan.register.colCreated", "Created")}</th>
-            <th scope="col" className="ax-td-num">{t("plan.register.colPublished", "Published")}</th>
-            <th scope="col" className="ax-td-num">{t("plan.register.colVisits", "Child visits")}</th>
+            <th scope="col" className="sq-td-num">{t("plan.register.colCreated", "Created")}</th>
+            <th scope="col" className="sq-td-num">{t("plan.register.colPublished", "Published")}</th>
+            <th scope="col" className="sq-td-num">{t("plan.register.colVisits", "Child visits")}</th>
           </tr></thead>
           <tbody>
             {plans.map(p => (
               <tr key={p.id}>
-                <td className="ax-numeric"><a className="ax-link" href={`/planning/plans/${p.id}`}><strong>{p.id.slice(0, 8)}</strong></a></td>
-                <td><span className="ax-lozenge ax-lozenge--info">{t(`enum.${p.method}`, p.method)}</span></td>
-                <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[p.status] ?? ""}`}>{t(`enum.${p.status}`, p.status)}</span></td>
+                <td className="sq-numeric"><a className="sq-link" href={`/planning/plans/${p.id}`}><strong>{p.id.slice(0, 8)}</strong></a></td>
+                <td><span className="sq-lozenge sq-lozenge--info">{t(`enum.${p.method}`, p.method)}</span></td>
+                <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[p.status] ?? ""}`}>{t(`enum.${p.status}`, p.status)}</span></td>
                 <td>{p.profiles?.full_name ?? "—"}</td>
-                <td className="ax-td-num ax-numeric">{fmt(p.created_at)}</td>
-                <td className="ax-td-num ax-numeric">{p.published_at ? fmt(p.published_at) : "—"}</td>
-                <td className="ax-td-num ax-numeric">{p.visits?.[0]?.count ?? 0}</td>
+                <td className="sq-td-num sq-numeric">{fmt(p.created_at)}</td>
+                <td className="sq-td-num sq-numeric">{p.published_at ? fmt(p.published_at) : "—"}</td>
+                <td className="sq-td-num sq-numeric">{p.visits?.[0]?.count ?? 0}</td>
               </tr>
             ))}
           </tbody>
         </table></div>
       )}
-      <p className="ax-caption">{t("plan.register.drillHint", "Open a plan to see its child visits and per-plan progress (M02-017/036).")}</p>
+      <p className="sq-caption">{t("plan.register.drillHint", "Open a plan to see its child visits and per-plan progress (M02-017/036).")}</p>
     </Shell>
   );
 }

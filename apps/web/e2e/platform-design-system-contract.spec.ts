@@ -21,7 +21,8 @@ test.describe("Platform-wide government design-system contract", () => {
   test("PDS-AC-001..005 root layout governs typography, surfaces, theme and direction", () => {
     const layout = read("src/app/layout.tsx");
     expect(layout).toContain('import "./tokens.css"');
-    expect(layout).toContain('import "./astryx.css"');
+    expect(layout).toContain('import "./saqeel-components-legacy.css"');
+    expect(layout).toContain('import "./saqeel-components.css"');
     expect(layout).toContain('localFont({');
     expect(layout).toContain("ibm-plex-sans-arabic");
     expect(layout).toContain('dir={locale === "ar" ? "rtl" : "ltr"}');
@@ -65,20 +66,23 @@ test.describe("Platform-wide government design-system contract", () => {
 
   test("PDS-AC-017..021 inputs and Atlas retain their approved boundaries", () => {
     const tokens = read("src/app/tokens.css");
-    const css = read("src/app/astryx.css");
+    const css = read("src/app/saqeel-components.css");
     const login = read("src/app/login/login.css");
-    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // SAQEEL: inputs 3px (frozen 12px retired)
-    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)"); // SAQEEL body input, IBM Plex Sans
-    expect(css).toContain("border-radius: var(--ax-radius-input)");
+    expect(tokens).toContain("--radius-sm: 3px;"); // SAQEEL: inputs 3px (frozen 12px retired, --ax-* shim removed PR12)
+    expect(tokens).toContain("--type-input: 400 14px/1.5 var(--font-body)"); // SAQEEL body input, IBM Plex Sans
+    expect(css).toContain(".input, .select, textarea.input {");
+    expect(css).toContain("border-radius: var(--radius-sm)");
     expect(login).toContain("lg-atlas");
     expect(css).not.toContain("--ax-color-prism-magenta");
   });
 
   test("PDS-AC-022..025 authenticated CSS remains institutional and token-driven", () => {
-    // Page/module CSS only — the SAQEEL DS component sheet is a design-system
-    // layer (peer to tokens.css), not a page, and is excluded like login.css.
+    // Page/module CSS only — the SAQEEL DS component sheets (tokens.css peers:
+    // saqeel-components.css, saqeel-components-legacy.css, v2-components.css)
+    // are design-system layers, not pages, and are excluded like login.css.
+    const dsLayerFiles = ["tokens.css", "login.css", "saqeel-components.css", "saqeel-components-legacy.css", "v2-components.css"];
     const authenticated = files(appRoot, ".css")
-      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css") && !file.endsWith("saqeel-components.css"))
+      .filter(file => !dsLayerFiles.some(name => file.endsWith(name)))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);

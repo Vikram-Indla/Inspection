@@ -6,15 +6,15 @@
 export type BarDatum = { label: string; value: number };
 
 const AXIS_TEXT: React.CSSProperties = {
-  font: "var(--ax-text-caption)",
+  font: "var(--type-caption-font)",
   fontSize: 10,
-  fill: "var(--ax-color-text-secondary)",
+  fill: "var(--text-secondary)",
 };
 const VALUE_TEXT: React.CSSProperties = {
-  font: "var(--ax-text-caption)",
+  font: "var(--type-caption-font)",
   fontSize: 10,
   fontWeight: 600,
-  fill: "var(--ax-color-text)",
+  fill: "var(--text-primary)",
   fontVariantNumeric: "tabular-nums lining-nums",
 };
 
@@ -41,13 +41,13 @@ export default function BarChart({ data, title, emptyLabel = "No data", height =
             <g key={`${d.label}-${i}`}>
               <rect x={cx - slot * 0.32} y={y} width={slot * 0.64}
                 height={Math.max(h, d.value > 0 ? 2 : 0)} rx={3}
-                fill="var(--ax-color-primary)" />
+                fill="var(--action-primary)" />
               <text x={cx} y={y - 5} textAnchor="middle" className="numeric" style={VALUE_TEXT}>{d.value}</text>
               <text x={cx} y={height - 6} textAnchor="middle" style={AXIS_TEXT}>{d.label}</text>
             </g>
           );
         })}
-        <line x1={padX} y1={baseline + 0.5} x2={w - padX} y2={baseline + 0.5} stroke="var(--ax-color-border)" />
+        <line x1={padX} y1={baseline + 0.5} x2={w - padX} y2={baseline + 0.5} stroke="var(--border-subtle)" />
       </svg>
     </div>
   );

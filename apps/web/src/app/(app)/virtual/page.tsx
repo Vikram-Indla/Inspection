@@ -49,35 +49,35 @@ export default async function VirtualList() {
   };
   return (
     <Shell current="/virtual" title={t("virtual.list.title", "Virtual inspections")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("virtual.list.context", "SCR-VIR-700 · confirmed sessions only")}</span>}>
-      {error && <div className="ax-banner ax-banner--critical"><div>{t("virtual.list.loadError", "Couldn’t load sessions. Try again or contact support.")}</div></div>}
+      context={<span className="sq-lozenge sq-lozenge--info">{t("virtual.list.context", "SCR-VIR-700 · confirmed sessions only")}</span>}>
+      {error && <div className="sq-banner sq-banner--critical"><div>{t("virtual.list.loadError", "Couldn’t load sessions. Try again or contact support.")}</div></div>}
       {!error && rows.length === 0 && (
         <EmptyState icon={<IconVideo size={28} />} title={t("virtual.list.empty", "No virtual sessions in scope")} />
       )}
-      <div className="ax-tablewrap"><table className="ax-table">
-        <thead><tr><th scope="col">{t("virtual.list.colSession", "Session")}</th><th scope="col">{t("virtual.list.colFactory", "Factory")}</th><th scope="col" className="ax-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th scope="col">{t("virtual.list.colState", "State")}</th><th scope="col"></th></tr></thead>
+      <div className="sq-tablewrap"><table className="sq-table">
+        <thead><tr><th scope="col">{t("virtual.list.colSession", "Session")}</th><th scope="col">{t("virtual.list.colFactory", "Factory")}</th><th scope="col" className="sq-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th scope="col">{t("virtual.list.colState", "State")}</th><th scope="col"></th></tr></thead>
         <tbody>
           {rows.map(({ s, v }) => (
               <tr key={s.id}>
-                <td className="ax-numeric"><strong>{s.id.slice(0, 8)}</strong></td>
-                <td>{v.factories.name} <span className="ax-caption">{v.factories.factory_code}</span></td>
-                <td className="ax-td-num ax-numeric">{formatDateTime(s.appointment_at, dLang)}</td>
-                <td><span className={`ax-lozenge ax-lozenge--virtual ${s.state === "verified" ? "ax-lozenge--success" : "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span></td>
-                <td><a className="ax-link" href={`/virtual/${s.id}`}>{t("virtual.list.openRoom", "open room →")}</a></td>
+                <td className="sq-numeric"><strong>{s.id.slice(0, 8)}</strong></td>
+                <td>{v.factories.name} <span className="sq-caption">{v.factories.factory_code}</span></td>
+                <td className="sq-td-num sq-numeric">{formatDateTime(s.appointment_at, dLang)}</td>
+                <td><span className={`sq-lozenge sq-lozenge--virtual ${s.state === "verified" ? "sq-lozenge--success" : "sq-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span></td>
+                <td><a className="sq-link" href={`/virtual/${s.id}`}>{t("virtual.list.openRoom", "open room →")}</a></td>
               </tr>
           ))}
         </tbody>
       </table></div>
       {unscheduled.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h4>{t("virtual.list.scheduleHeading", "Schedule a session (M05-002)")}</h4>
-          <p className="ax-caption">{t("virtual.list.scheduleHint", "Published virtual visits without a session. Scheduling creates the room, binds participants and notifies the inspector; the factory representative row records its SMS delivery state honestly (provider adapter pending).")}</p>
+          <p className="sq-caption">{t("virtual.list.scheduleHint", "Published virtual visits without a session. Scheduling creates the room, binds participants and notifies the inspector; the factory representative row records its SMS delivery state honestly (provider adapter pending).")}</p>
           {unscheduled.map(v => (
-            <div key={v.id} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+            <div key={v.id} className="sq-stack" style={{ gap: "var(--space-2)" }}>
               <strong>{(v.factories as unknown as { name: string } | null)?.name}{" "}
-                <span className="ax-caption ax-numeric">{formatDate(v.window_start, dLang)}</span></strong>
+                <span className="sq-caption sq-numeric">{formatDate(v.window_start, dLang)}</span></strong>
               {readyById.get(v.id) === false && (
-                <span className="ax-caption">{t("virtual.list.preparationRequired", "Preparation required before the session can start")}</span>
+                <span className="sq-caption">{t("virtual.list.preparationRequired", "Preparation required before the session can start")}</span>
               )}
               <ScheduleForm visitId={v.id} strings={scheduleStrings} />
             </div>

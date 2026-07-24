@@ -11,7 +11,7 @@ import { IconCalendar } from "@/app/icons";
 // from persisted states — expire_lapsed_visits() runs first so 'expired' is a
 // database fact, not a client guess (M02-016 parity).
 
-const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
+const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
 type ChildVisit = {
   id: string; visit_type: string; execution_mode: string; planning_status: string;
@@ -42,7 +42,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   if (pErr || kErr) {
     console.error("[planning plan drill read]", pErr ?? kErr);
     return <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
-      <div className="ax-banner ax-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the plan. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
+      <div className="sq-banner sq-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the plan. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
     </Shell>;
   }
   if (!plan) {
@@ -67,47 +67,47 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   const expired = bucket("expired");
   const pct = (n: number) => total === 0 ? 0 : Math.round((n / total) * 100);
   const segments: { key: string; label: string; n: number; bg: string }[] = [
-    { key: "completed", label: t("plan.drill.completed", "completed"), n: completed, bg: "var(--ax-color-success)" },
-    { key: "published", label: t("enum.published", "published"), n: published, bg: "var(--ax-color-info)" },
-    { key: "draft", label: t("enum.draft", "draft"), n: draft, bg: "var(--ax-color-neutral-weak)" },
-    { key: "returned", label: t("enum.returned", "returned"), n: returned, bg: "var(--ax-color-warning)" },
-    { key: "cancelled", label: t("enum.cancelled", "cancelled"), n: cancelled, bg: "var(--ax-color-critical)" },
-    { key: "expired", label: t("enum.expired", "expired"), n: expired, bg: "var(--ax-color-critical-strong)" },
+    { key: "completed", label: t("plan.drill.completed", "completed"), n: completed, bg: "var(--status-compliant)" },
+    { key: "published", label: t("enum.published", "published"), n: published, bg: "var(--status-info)" },
+    { key: "draft", label: t("enum.draft", "draft"), n: draft, bg: "var(--border-subtle)" },
+    { key: "returned", label: t("enum.returned", "returned"), n: returned, bg: "var(--status-warning)" },
+    { key: "cancelled", label: t("enum.cancelled", "cancelled"), n: cancelled, bg: "var(--status-critical)" },
+    { key: "expired", label: t("enum.expired", "expired"), n: expired, bg: "var(--status-critical-text)" },
   ];
 
   return (
     <Shell current="/planning" title={t("plan.drill.title", "Plan {id}").replace("{id}", plan.id.slice(0, 8))}
       context={<>
-        <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>
-        <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
+        <span className="sq-lozenge sq-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>
+        <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
       </>}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-        <a className="ax-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Visit plans")}</a>
-        <span className="ax-caption ax-numeric">
+      <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <a className="sq-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Visit plans")}</a>
+        <span className="sq-caption sq-numeric">
           {t("plan.drill.createdBy", "created by")} <strong>{creator}</strong> · {fmt(plan.created_at)}
           {plan.published_at && <> · {t("plan.drill.publishedAt", "published")} {fmt(plan.published_at)}</>}
         </span>
       </div>
 
       {/* M02-036 — progress calculation + % bar over persisted child states */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <div className="sq-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
           <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress (M02-036)")}</h4>
-          <span className="ax-numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
+          <span className="sq-numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
         </div>
         {total > 0 && (
           <div role="img" aria-label={t("plan.drill.progressBarAria", "Progress by child-visit state")}
-            style={{ display: "flex", blockSize: 12, borderRadius: "var(--ax-radius-full)", overflow: "hidden", background: "var(--ax-color-neutral-tint)" }}>
+            style={{ display: "flex", blockSize: 12, borderRadius: "var(--radius-full)", overflow: "hidden", background: "var(--surface-secondary)" }}>
             {segments.filter(s => s.n > 0).map(s => (
               <div key={s.key} title={`${s.label}: ${s.n}`} style={{ inlineSize: `${(s.n / total) * 100}%`, background: s.bg }} />
             ))}
           </div>
         )}
-        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <div className="sq-row" style={{ flexWrap: "wrap", gap: "var(--space-4)" }}>
           {segments.map(s => (
-            <span key={s.key} className="ax-caption">
-              <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--ax-radius-full)", background: s.bg, marginInlineEnd: 6 }} />
-              {s.label} <span className="ax-numeric"><strong>{s.n}</strong></span>
+            <span key={s.key} className="sq-caption">
+              <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--radius-full)", background: s.bg, marginInlineEnd: 6 }} />
+              {s.label} <span className="sq-numeric"><strong>{s.n}</strong></span>
             </span>
           ))}
         </div>
@@ -118,7 +118,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
         <EmptyState icon={<IconCalendar size={28} />} title={t("plan.drill.noChildren", "No child visits under this plan")}
           body={t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan (M01-050).")} />
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{t("plan.drill.colVisit", "Visit")}</th>
             <th scope="col">{t("plan.drill.colFactory", "Factory")}</th>
@@ -126,19 +126,19 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
             <th scope="col">{t("plan.drill.colPlanning", "Planning status")}</th>
             <th scope="col">{t("plan.drill.colOperational", "Visit status")}</th>
             <th scope="col">{t("plan.drill.colInspector", "Inspector")}</th>
-            <th scope="col" className="ax-td-num">{t("plan.drill.colWindow", "Window")}</th>
+            <th scope="col" className="sq-td-num">{t("plan.drill.colWindow", "Window")}</th>
           </tr></thead>
           <tbody>
             {visits.map(v => (
               <tr key={v.id}>
-                <td className="ax-numeric"><a className="ax-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a></td>
-                <td>{v.factories ? <a className="ax-link" href={`/factories/${v.factories.id}`}>{v.factories.name}</a> : "—"}</td>
+                <td className="sq-numeric"><a className="sq-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a></td>
+                <td>{v.factories ? <a className="sq-link" href={`/factories/${v.factories.id}`}>{v.factories.name}</a> : "—"}</td>
                 <td>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)}</td>
-                <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
-                  {v.inspections?.status === "approved" && <> <span className="ax-lozenge ax-lozenge--success">{t("plan.drill.completed", "completed")}</span></>}</td>
-                <td><span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span></td>
+                <td><span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
+                  {v.inspections?.status === "approved" && <> <span className="sq-lozenge sq-lozenge--success">{t("plan.drill.completed", "completed")}</span></>}</td>
+                <td><span className="sq-lozenge sq-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span></td>
                 <td>{v.assignments?.[0]?.profiles?.full_name ?? "—"}</td>
-                <td className="ax-td-num ax-numeric">{fmt(v.window_start)}</td>
+                <td className="sq-td-num sq-numeric">{fmt(v.window_start)}</td>
               </tr>
             ))}
           </tbody>

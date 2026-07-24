@@ -1,5 +1,5 @@
 /**
- * Shared toast region. The .ax-toast/.ax-toast-region CSS existed but had no
+ * Shared toast region. The .sq-toast/.sq-toast-region CSS existed but had no
  * real consumer anywhere in the app before this. Auto-dismisses after `durationMs`.
  */
 "use client";
@@ -15,7 +15,7 @@ type ToastRegionProps = {
 
 export default function ToastRegion({ items, onDismiss, durationMs = 4000 }: ToastRegionProps) {
   return (
-    <div className="ax-toast-region" aria-live="polite">
+    <div className="sq-toast-region" aria-live="polite">
       {items.map(item => (
         <ToastEntry key={item.id} item={item} onDismiss={onDismiss} durationMs={durationMs} />
       ))}
@@ -30,6 +30,6 @@ function ToastEntry({ item, onDismiss, durationMs }: { item: ToastItem; onDismis
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.id]);
   return (
-    <div className={`ax-toast ax-toast--${item.tone}`} role="status">{item.message}</div>
+    <div className={`sq-toast sq-toast--${item.tone}`} role="status">{item.message}</div>
   );
 }
