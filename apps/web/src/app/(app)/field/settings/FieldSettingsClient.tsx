@@ -39,10 +39,12 @@ function GovernedRow({ label, note }: { label: string; note: string }) {
   );
 }
 
-// The Light/Dark segmented control was removed here: the field channel is fixed
-// dark (see ThemeScript), so the control had nothing to switch and writing
-// "saqeel-theme" from a field screen would only have changed the WEB console's
-// theme — a confusing side effect on a surface that never changes appearance.
+// The design's Light/Dark segmented control is not offered: ThemeScript pins
+// every /field route to dark, so the control would have nothing to switch, and
+// writing "saqeel-theme" from a field screen would only have changed the WEB
+// console's theme — a confusing side effect on a surface that never changes
+// appearance. The row itself is kept, stating that reason, so the section still
+// reads in the design's order.
 
 export default function FieldSettingsClient({
   locale,
@@ -99,11 +101,15 @@ export default function FieldSettingsClient({
 
   return (
     <div className={styles.wrap}>
-      {/* General — language is a REAL persisted control; text size is governed.
-          Appearance is not offered: the field channel is fixed dark
-          (see ThemeScript), so there would be nothing to switch. */}
+      {/* General — design row order is Appearance, Language, Text size. Language
+          is a REAL persisted control; the other two are governed elsewhere and
+          say so rather than offering a control that would do nothing. */}
       <SectionLabel>{copy(locale, "General", "عام")}</SectionLabel>
       <div className={styles.card}>
+        <GovernedRow
+          label={copy(locale, "Appearance", "المظهر")}
+          note={copy(locale, "Always dark in the field", "داكن دائمًا في الميدان")}
+        />
         <div className={styles.row}>
           <span className={styles.rowLabel}>{copy(locale, "Language", "اللغة")}</span>
           <div className="seg">

@@ -31,9 +31,12 @@ export default async function FieldAccountPage() {
     getUserRoles(user.id),
   ]);
   const roles = (roleRows.data ?? []).map(r => r.role_key);
-  const email = profile?.email ?? user.email ?? "—";
-  const initials = (email.split("@")[0].slice(0, 2) || "I").toUpperCase();
+  const email = profile?.email ?? user.email ?? null;
   const roleLine = roles.join(" · ") || "—";
+  // Avatar letters come from a real name, else the real email local part. With
+  // neither, the tile stays empty rather than showing an invented initial.
+  const initialSource = profile?.full_name?.trim() || email?.split("@")[0] || "";
+  const initials = initialSource.slice(0, 2).toUpperCase();
 
   // Design "Account" section fields. The profiles table (0001_foundation.sql)
   // carries only full_name/email/region/org_scope — there is NO national-id or
@@ -69,7 +72,7 @@ export default async function FieldAccountPage() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontWeight: 700, fontSize: 17 }}><bdi>{profile?.full_name ?? tr("field.account.nameUnset", "Inspector", "مفتش")}</bdi></div>
             <div className="t-caption"><bdi dir="ltr">{roleLine}</bdi>{profile?.region ? ` · ${profile.region}` : ""}</div>
-            <div className="t-caption id-code" style={{ marginBlockStart: 2 }}><bdi dir="ltr">{email}</bdi></div>
+            {email && <div className="t-caption id-code" style={{ marginBlockStart: 2 }}><bdi dir="ltr">{email}</bdi></div>}
           </div>
           <Link href="/field/settings" prefetch={false} className="btn btn-icon btn-ghost" aria-label={tr("field.account.settings", "Settings", "الإعدادات")}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ width: 20, height: 20 }}>
@@ -92,13 +95,42 @@ export default async function FieldAccountPage() {
           ))}
         </section>
 
-        {/* Settings section — link out to the appearance/language & devices screens */}
+        {/* Settings section. Design rows in design order: Appearance, Language,
+            Task notifications. Language is a REAL persisted control (/locale) so
+            it renders as the design's segmented control. Appearance has nothing
+            to switch — the field channel is pinned dark by ThemeScript — and
+            there is no in-app notification-preference store, so those two state
+            their governing reason instead of offering a control that would
+            silently do nothing (CLAUDE.md: no fabricated capability). */}
         <section className={styles.card} style={{ padding: "6px 0" }}>
           <div className={styles.groupLabel}>{tr("field.account.settings", "Settings", "الإعدادات")}</div>
-          <Link href="/field/settings" prefetch={false} className={styles.linkRow}>
-            <span style={{ flex: 1 }}>{tr("field.account.appearanceLanguage", "Appearance & language", "المظهر واللغة")}</span>
-            {chevron}
-          </Link>
+
+          <div className={styles.fieldRow}>
+            <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.appearance", "Appearance", "المظهر")}</span>
+            <span className="t-caption" style={{ flex: "none" }}>
+              {tr("field.account.appearanceFixed", "Always dark in the field", "داكن دائمًا في الميدان")}
+            </span>
+          </div>
+
+          <div className={styles.fieldRow}>
+            <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.language", "Language", "اللغة")}</span>
+            <div className="seg">
+              <a className="seg-opt" href="/locale?set=ar" lang="ar" aria-pressed={locale === "ar"}>العربية</a>
+              <a className="seg-opt" href="/locale?set=en" lang="en" aria-pressed={locale === "en"}>English</a>
+            </div>
+          </div>
+
+          <div className={styles.fieldRow}>
+            <span style={{ flex: 1, fontSize: 14 }}>{tr("field.account.taskNotifs", "Task & appointment notifications", "إشعارات المهام والمواعيد")}</span>
+            <span className="t-caption" style={{ flex: "none" }}>
+              {tr("field.account.managedByDevice", "Managed in device settings", "تُدار من إعدادات الجهاز")}
+            </span>
+          </div>
+
+          {/* Not in the design's Account card — the design reaches trusted
+              devices only through Settings. Kept because it is a real route and
+              removing a one-tap path to it on a field device is a usability
+              regression, which outranks the pixel gain. */}
           <Link href="/field/settings/devices" prefetch={false} className={styles.linkRow}>
             <span style={{ flex: 1 }}>{tr("field.account.devices", "Biometric & trusted devices", "البصمة والأجهزة الموثوقة")}</span>
             {chevron}
@@ -114,7 +146,8 @@ export default async function FieldAccountPage() {
         </div>
       </div>
 
-      <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
+      {/* No spacer here: FieldNav renders its own .field-nav-spacer, sized from
+          the real bar height + safe-area inset. A second one double-counted it. */}
       <FieldNav active="account" labels={{
         home: tr("field.tabs.home", "Home", "الرئيسية"),
         myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),

@@ -6,6 +6,7 @@ import { formatDateTime } from "@/lib/dates";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
+import { notificationIcon } from "./notification-meta";
 import styles from "./notifications.module.css";
 
 // SAQEEL Field Notifications.dc.html — the design's dedicated Notifications
@@ -21,28 +22,8 @@ type Row = {
   channel: string; delivery_state: string; read_at: string | null; created_at: string;
 };
 
-// Category → icon meta, tokens ported verbatim from the design's iconMeta()
-// (SAQEEL Field Notifications.dc.html). Only DS tokens — no bare colors.
-const ICONS = {
-  license: { path: "M9 12h6M9 16h6M9 8h3M6 4h9l3 3v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z", bg: "var(--accent-soft)", color: "var(--accent-text)" },
-  assign: { path: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11", bg: "var(--status-compliant-soft)", color: "var(--status-compliant-text)" },
-  return: { path: "M9 14l-4-4 4-4M5 10h11a4 4 0 0 1 0 8h-1", bg: "var(--status-warning-soft)", color: "var(--status-warning-text)" },
-  sync: { path: "M4 4v5h5M20 20v-5h-5M4.5 9a8 8 0 0 1 14.1-3.5M19.5 15a8 8 0 0 1-14.1 3.5", bg: "var(--surface-sunken)", color: "var(--text-secondary)" },
-  calendar: { path: "M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z", bg: "var(--accent-soft)", color: "var(--accent-text)" },
-  cancel: { path: "M12 9v4M12 16.5h.01M10.3 4.5 2.7 18a1.5 1.5 0 0 0 1.3 2.2h16a1.5 1.5 0 0 0 1.3-2.2L13.7 4.5a1.5 1.5 0 0 0-2.6 0z", bg: "var(--status-critical-soft)", color: "var(--status-critical-text)" },
-} as const;
-
-// Map the real notification event_key to one of the design's icon categories.
-function iconFor(eventKey: string): (typeof ICONS)[keyof typeof ICONS] {
-  switch (eventKey) {
-    case "assignment": case "visit_republished": return ICONS.assign;
-    case "visit_returned": case "review_decision": case "virtual_closed": return ICONS.return;
-    case "visit_cancelled": case "visit_expired": return ICONS.cancel;
-    case "reschedule": case "visit_rescheduled": case "virtual_scheduled": case "virtual_rescheduled": return ICONS.calendar;
-    case "otp_code": return ICONS.license;
-    default: return ICONS.sync;
-  }
-}
+// Icon meta now lives in ./notification-meta.ts so the list and the detail
+// screen share one event_key → glyph/category mapping.
 
 export default async function FieldNotificationsList({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
   const { filter } = await searchParams;
@@ -143,7 +124,7 @@ export default async function FieldNotificationsList({ searchParams }: { searchP
           rows.map(row => {
             const href = notificationHref(row.event_key, row.payload, true) ?? `/field/notifications/${row.id}`;
             const unread = isNotificationUnread(row);
-            const icon = iconFor(row.event_key);
+            const icon = notificationIcon(row.event_key);
             const message = detail(row.payload);
             const rowTitle = t(`enum.${row.event_key}`, row.event_key.replace(/_/g, " "));
             return (

@@ -36,3 +36,34 @@
 }
 
 .empty { padding: 60px 20px; text-align: center; color: var(--text-secondary); }
+
+/* --- Detail (design isDetail branch: .fn-wrap padding 20px 18px 60px, gap 16) */
+.detailWrap {
+  max-width: 720px; margin: 0 auto; width: 100%; flex: 1;
+  padding: 20px 18px 60px; display: flex; flex-direction: column; gap: 16px;
+}
+
+.hero { display: flex; align-items: center; gap: 12px; }
+/* Design hero tile: 46px, radius 12 — overrides the 38px/10px list tile. */
+.heroIcn { width: 46px; height: 46px; border-radius: 12px; }
+.heroTitle { margin: 0; font-weight: 700; font-size: 16px; }
+
+.message { padding: 16px 18px; white-space: pre-line; font-size: 14px; line-height: 1.7; }
+
+/* Design: grid-template-columns auto 1fr, gap 8px 12px, 13.5px. Declared in
+   full rather than overriding the global .desc, so the result does not depend
+   on which stylesheet the cascade happens to order last. */
+.desc { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; margin: 0; font-size: 13.5px; }
+.desc dt { color: var(--text-muted); font-weight: 400; }
+.desc dd { margin: 0; color: var(--text-primary); min-inline-size: 0; overflow-wrap: anywhere; }
+
+.payload { padding: 16px 18px; }
+.payloadTitle { margin: 0 0 12px; font-size: 14px; font-weight: 600; }
+
+/* Field-channel breakpoint is 600px. */
+@media (max-width: 600px) {
+  .detailWrap { padding-inline: 14px; }
+  /* A UUID key column cannot share a narrow row with its value. */
+  .desc { grid-template-columns: 1fr; gap: 2px 0; }
+  .desc dd { margin-block-end: 8px; }
+}

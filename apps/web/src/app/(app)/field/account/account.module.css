@@ -16,15 +16,26 @@
 
 .groupLabel { padding: 10px 18px 6px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
 
+/* Settled field-channel geometry: touch targets are never below 50px. These
+   rows compute to ~48px from the design's 14px padding alone. */
 .fieldRow {
   display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+  min-height: 50px;
   border-block-start: 1px solid var(--border-subtle);
 }
 
 .linkRow {
   display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+  min-height: 50px;
   border-block-start: 1px solid var(--border-subtle);
   text-decoration: none; color: inherit; font-size: 14px;
 }
 .linkRow:hover { background: var(--surface-sunken); }
 .chev { color: var(--text-secondary); display: inline-flex; }
+
+/* Field-channel breakpoint is 600px. The Account/Settings rows put a fixed
+   150px label beside a value; below 600px they stack instead of crushing it. */
+@media (max-width: 600px) {
+  .wrap { padding-inline: 14px; }
+  .fieldRow { flex-wrap: wrap; row-gap: 4px; }
+}
