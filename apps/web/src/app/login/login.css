@@ -696,89 +696,38 @@
 }
 
 /* ==========================================================================
-   PWA-CARD (2026-07-25, rev2) — the /login credential side reproduces the
-   SAQEEL PWA/field login card (SAQEEL PWA-Field Login.dc.html): ONE centred
-   column — shield hero → SAQEEL lockup → tagline → form — vertically centred
-   on the full-bleed --nav-bg surface, beside the atlas on wide screens.
-   Structure and spacing are transcribed from field-login.css (.fl-*). The
-   earlier revision left the brand pinned at the panel top (stranded, dead gap
-   before the form); this groups hero + form as a single unit. Scoped to
-   .lg-page--split so /reset is untouched. Auth, role-routing and the reset
-   flow are unchanged. Token-only — no bare colours.
+   UNIFIED /login (2026-07-25, rev3) — one page, two existing pieces:
+   the REAL field login card (FieldLoginClient → .fl-root, the SAQEEL PWA-Field
+   Login.dc implementation) as the credential column, plus the atlas
+   (StoryPanel → .lg-story) on wide screens. No card is rebuilt here — the .fl-*
+   card and its dark styling come from field-login.css. This block only wires
+   the two into the .lg-page--split grid and hides the atlas on narrow / iPad
+   so those get the card only. Token-only.
    ========================================================================== */
 
-/* Full-bleed dark surface (no raised console card), matching the DC. Panel is
-   left as a normal flex column so the utility row and footer stay full-width;
-   centring happens inside .lg-center only. */
-.lg-page--split { background: var(--nav-bg); }
-.lg-page--split .lg-panel { background: var(--nav-bg); }
+/* Field card is the start-side column; a hairline divides it from the atlas. */
+.lg-page--split .fl-root { min-inline-size: 0;
+  border-inline-end: 1px solid color-mix(in srgb, var(--nav-text) 14%, transparent); }
 
-/* Top utility row: language control only (dark-locked — no theme control). */
-.lg-page--split .lg-util { display: flex; align-items: center;
-  justify-content: flex-end; min-block-size: 40px; }
-
-/* The card: shield hero + form as ONE centred column in the panel's vertical
-   centre — the fix for the previous stranded-lockup layout. */
-.lg-page--split .lg-center { align-items: center; gap: 0; }
-
-/* .lg-cardhead — NOT .lg-hero: .lg-hero is already the SaqeelHero fallback SVG
-   (block-size:100%), and reusing it stretched this block to fill the column. */
-.lg-page--split .lg-cardhead { display: flex; flex-direction: column; align-items: center;
-  text-align: center; margin-block-end: var(--space-6); }
-.lg-page--split .lg-cardhead__mark { inline-size: 52px; block-size: 52px;
-  color: var(--nav-text-active); margin-block-end: 14px; }
-.lg-page--split .lg-cardhead__brand { display: flex; align-items: center; gap: var(--space-2); }
-.lg-page--split .lg-cardhead__ar { font: 700 24px/1 var(--font-body); color: var(--nav-text-active); }
-.lg-page--split .lg-cardhead__div { inline-size: 1px; block-size: 20px;
-  background: color-mix(in srgb, var(--nav-text) 40%, transparent); }
-.lg-page--split .lg-cardhead__latin { font: 700 22px/1 var(--font-body);
-  letter-spacing: 0.14em; color: var(--nav-text-active); }
-.lg-page--split .lg-cardhead__tagline { margin-block-start: 8px;
-  font: 600 10px/1.2 var(--font-mono); letter-spacing: 0.22em; color: var(--nav-text); }
-[dir="rtl"] .lg-page--split .lg-cardhead__tagline { font-family: var(--font-body); letter-spacing: 0; }
-
-.lg-page--split .lg-card { inline-size: 100%; max-inline-size: 340px;
-  align-items: stretch; text-align: center; }
-.lg-page--split .lg-card__title { color: var(--nav-text-active); }
-.lg-page--split .lg-card__sub { color: var(--nav-text); }
-.lg-page--split .lg-credentials { inline-size: 100%; text-align: start; }
-[dir="rtl"] .lg-page--split .lg-credentials { text-align: right; }
-.lg-page--split .lg-panel .sq-field__label { color: var(--nav-text-active); }
-/* Forgot link centred under the form. */
-.lg-page--split .lg-linkbtn { align-self: center; }
-
-/* Footer pinned at the bottom, centred to match the column and toned to the
-   nav ramp for legibility on --nav-bg. */
-.lg-page--split .lg-foot { align-items: center; text-align: center;
-  color: var(--nav-text);
-  border-block-start-color: color-mix(in srgb, var(--nav-text) 22%, transparent); }
-.lg-page--split .lg-foot__item { justify-content: center; }
-.lg-page--split .lg-foot__ministry-label { color: var(--nav-text); }
-
-/* Mobile: show only the PWA credential card — hide the atlas story panel
-   entirely. The single column is already produced by the base .lg-page--split
-   1fr rule at ≤960px; the panel keeps min-block-size:100dvh to fill the view. */
+/* Narrow (phones, iPad portrait): card only, atlas hidden. Base .lg-page--split
+   already collapses to one column at ≤960px. */
 @media (max-width: 960px) {
+  .lg-page--split .fl-root { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
 
-/* iPad (and any touch-primary device) → PWA card only, in BOTH orientations,
-   regardless of width. Interaction media queries reflect the hardware input,
-   so this detects iPad reliably where UA sniffing cannot (iPadOS 13+ reports a
-   desktop Mac UA). iPad landscape is wider than the 960px breakpoint above, so
-   this rule — not the width rule — is what makes landscape behave. A laptop
-   with a mouse/trackpad (pointer:fine / hover:hover), even a touchscreen one,
-   is unaffected and keeps the wide split + atlas. */
+/* iPad in BOTH orientations (and any touch-primary device): card only. The
+   interaction media query reflects the hardware input, so it catches iPad
+   landscape (wider than 960px) where UA sniffing cannot; a mouse/trackpad
+   laptop keeps the wide split + atlas. */
 @media (hover: none) and (pointer: coarse) {
   .lg-page--split { grid-template-columns: 1fr; }
-  .lg-page--split .lg-panel { border-inline-end: none; }
+  .lg-page--split .fl-root { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
 
-/* Belt-and-suspenders for iPad in "Request Desktop Website" mode, where the
-   pointer/hover media features above can report as a desktop mouse. DeviceScript
-   (in <head>, pre-paint) sets data-device="ipad" from navigator.maxTouchPoints +
-   platform, which stays reliable when the UA is spoofed to desktop Mac. */
+/* Belt-and-suspenders for iPad "Request Desktop Website" mode: DeviceScript
+   sets data-device="ipad" pre-paint from navigator.maxTouchPoints + platform. */
 :root[data-device="ipad"] .lg-page--split { grid-template-columns: 1fr; }
-:root[data-device="ipad"] .lg-page--split .lg-panel { border-inline-end: none; }
+:root[data-device="ipad"] .lg-page--split .fl-root { border-inline-end: none; }
 :root[data-device="ipad"] .lg-page--split .lg-story { display: none; }
