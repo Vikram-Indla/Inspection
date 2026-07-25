@@ -1,0 +1,106 @@
+schema_version: "1.0"
+task_id: "TASK-REPOSITORY-CONSOLIDATION-20260725"
+change_control_id: "CC-REPOSITORY-CONSOLIDATION-20260725"
+gate: "G11 repository administration"
+status: "COMPLETE"
+approved_by: "Product Owner"
+approved_at: "2026-07-25"
+approval_text: "approved"
+
+objective: >-
+  Re-establish /Users/vikramindla/Developer/Inspection and Git main as the
+  sole canonical source of shared project truth without losing, silently
+  accepting, or overwriting work held on concurrent branches and worktrees.
+
+canonical:
+  repository: "/Users/vikramindla/Developer/Inspection"
+  remote: "https://github.com/Vikram-Indla/Inspection.git"
+  branch: "main"
+  prohibited_retired_repository: "/Users/vikramindla/Documents/GitHub/Inspection"
+
+promotion_policy:
+  - "Main receives the current SAQEEL V3 contract and this consolidation record."
+  - "Accepted or independently verified product work may be promoted only through its recorded acceptance gate."
+  - "Unaccepted, superseded, preview, design, or evidence-only work remains on a named remote branch and is not presented as canonical runtime."
+  - "No branch, worktree, stash, reflog, or dirty source is deleted by this task."
+  - "Build output, dependency links, caches, and .next-corrupt artifacts are excluded from source promotion."
+
+canonical_promotion:
+  previous_main: "21f20e325cbe6320001a954eed786b5ef4a6328e"
+  contract_union: "27bce51eba89207137ea3f240796cab8ad922be8"
+  integration_branch: "codex/repository-consolidation"
+  first_main_promotion: "91afebfe"
+  promotion_method: "non-force fast-forward push"
+
+remote_preservation:
+  pushed_local_only_or_ahead_branches:
+    - "codex/saqeel-v3-contract-reset@27bce51e"
+    - "codex/m3-operations-reconciliation@b0df5c4d"
+    - "codex/orchestration-control-plane@81fd24d9"
+    - "codex/admin-localization-lookups@07f48ec1"
+    - "codex/f0-shell-authority-correction@c8bdf6d1"
+    - "codex/m3-browser-preview@9645ef9b"
+    - "codex/planning-m2-saqeel-correction@b5c0e521"
+    - "codex/saqeel-web-admin-convergence-discovery@f9a930f2"
+    - "design-sync/discovery@1f7baf51"
+    - "catalyst/m3-operations-design-0f2c11@11559b47"
+    - "catalyst/m3-operations-design-18299a@4b69d18e"
+
+retained_noncanonical_lines:
+  - branch: "codex/m3-operations-reconciliation"
+    disposition: "ACTIVE_PRODUCT_SLICE_NOT_YET_ACCEPTED"
+  - branch: "codex/admin-localization-lookups"
+    disposition: "REVIEW_WITH_OPEN_P1_ACCEPTANCE"
+  - branch: "codex/orchestration-control-plane"
+    disposition: "DIVERGENT_CONTROL_HISTORY_REQUIRES_SEPARATE_RECONCILIATION"
+  - branch: "codex/planning-m2-saqeel-correction"
+    disposition: "AWAITING_PRODUCT_OWNER_SCREEN_ACCEPTANCE"
+  - branch: "codex/m3-browser-preview"
+    disposition: "SUPERSEDED_PREVIEW_PRESERVED_FOR_PROVENANCE"
+  - branch: "catalyst/m3-operations-design-0f2c11"
+    disposition: "DESIGN_OUTPUT_PROVENANCE_ONLY"
+  - branch: "catalyst/m3-operations-design-18299a"
+    disposition: "CLAUDE_SESSION_PROVENANCE_ONLY"
+
+dirty_worktree_exclusions:
+  - path: "/Users/vikramindla/Developer/Inspection"
+    items:
+      - ".project-memory/audit/*.jsonl"
+      - "product-contract/sessions/LAST_SESSION.md"
+      - "apps/web/node_modules deletion"
+    disposition: "PRESERVED_IN_PLACE_NOT_PROMOTED"
+  - path: "/Users/vikramindla/Developer/Inspection-codex-f0-shell"
+    items: ["apps/web/node_modules deletion"]
+    disposition: "DEPENDENCY_LINK_ONLY_NOT_PROMOTED"
+  - path: "/Users/vikramindla/Developer/Inspection-codex-m3-operations"
+    items: ["apps/web/.next-corrupt-20260725-1154/"]
+    disposition: "CORRUPT_BUILD_OUTPUT_PRESERVED_NOT_PROMOTED"
+  - path: "/Users/vikramindla/Developer/Inspection-codex-planning-m2"
+    items: ["apps/web/node_modules modification"]
+    disposition: "DEPENDENCY_LINK_ONLY_NOT_PROMOTED"
+
+verification:
+  required:
+    - "git fsck --no-reflogs"
+    - "contract YAML parse for changed task/control files"
+    - "git diff --check"
+    - "main ancestry and remote-head verification"
+  product_regression_required: false
+  rationale: >-
+    The promoted union changes project authority and repository administration
+    records only; product branches remain isolated and no application source is
+    promoted by this task.
+
+completion_conditions:
+  - "The integration branch contains the current V3 contract lineage."
+  - "Every locally unique commit is reachable from a named remote branch."
+  - "Main is updated without force."
+  - "The active M3 product slice remains unaccepted and isolated."
+
+completion_evidence:
+  yaml_parse: "PASS"
+  diff_check: "PASS"
+  git_connectivity: "PASS — 0 non-dangling findings; historical dangling objects retained"
+  remote_preservation: "PASS"
+  main_fast_forward: "PASS"
+  remote_default_branch: "PASS — origin/HEAD points to main"

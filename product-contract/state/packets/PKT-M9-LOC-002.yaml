@@ -1,0 +1,13 @@
+packet_id: PKT-M9-LOC-002
+owner: codex
+lane: codex-r1
+purpose: Independent acceptance review of Admin Localization PR #63.
+requirements: [CR-001..CR-478]
+screens: [/admin/localization]
+engines: [browser, RLS/RBAC, audit-history]
+acceptance_ids: [WA-M9-AC-001..006]
+allowed_paths: [product-contract/evidence/**, product-contract/state/**]
+prohibited_paths: [apps/web/**, main, remote-database]
+expected_evidence: [current-HEAD, PR-63, independent-review, native-Arabic-quality]
+stop_conditions: [any-P1, stale-evidence, missing-sponsor-gate]
+definition_of_done: PR is ACKed, RETURNED or BLOCKED with evidence-backed reasons.

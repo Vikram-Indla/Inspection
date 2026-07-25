@@ -1,0 +1,13 @@
+packet_id: PKT-M4-DESIGN-001
+owner: claude-design
+lane: cd-r1
+purpose: Repair and fingerprint the existing Factory 360 design predecessor.
+requirements: [CR-001..CR-478]
+screens: [WA-DES-026, WA-DES-027, /factories, /factories/[id]]
+engines: [existing-claude-design-inventory]
+acceptance_ids: [WA-M4-DESIGN-001]
+allowed_paths: [design-specs/**, product-contract/operationalization/coordination/**]
+prohibited_paths: [apps/web/**, main, remote-database]
+expected_evidence: [stable-revision, export-fingerprint, no-raw-tokens, en-ar, responsive]
+stop_conditions: [invented-claims, missing-contract, broken-render]
+definition_of_done: A stable code-ready design revision exists or the lane is explicitly blocked.

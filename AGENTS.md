@@ -11,7 +11,10 @@ Read these files in order at every session start:
 4. `product-contract/execution/CURRENT_SLICE.yaml`
 5. `product-contract/execution/TASK_ROUTER.yaml`
 6. `product-contract/governance/OPEN_DECISIONS.yaml`
-7. The task-specific files listed in the current slice.
+7. `product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md`
+8. `product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml`
+9. `product-contract/state/CONTROL_BOARD.md`
+10. The active packet and task-specific files listed in the current slice.
 
 ## Repository location — fail fast
 - The only authoritative repository is `/Users/vikramindla/Developer/Inspection`.
@@ -34,6 +37,9 @@ Read these files in order at every session start:
 - Never remove or weaken an accepted requirement, field, rule, permission, state, audit event, offline behavior, or usability outcome.
 - Do not push, merge, or modify `main` without explicit human approval.
 - Do not edit frozen product-contract artifacts without an approved change-control task.
+- ChatGPT owns packet authoring and queue sequence. Codex owns safety, leases,
+  severity, browser acceptance and merge gating. Neither may hold a
+  product-code write lease.
 
 ## Work protocol
 Before work:

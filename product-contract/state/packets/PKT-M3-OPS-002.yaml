@@ -1,0 +1,13 @@
+packet_id: PKT-M3-OPS-002
+owner: claude-code
+lane: cc-r1
+purpose: Read-only Operations evidence refresh after the implementation handoff.
+requirements: [CR-001..CR-478]
+screens: [/operations, /operations/live]
+engines: [browser, evidence]
+acceptance_ids: [WA-M3-AC-001..006]
+allowed_paths: [product-contract/evidence/**, product-contract/state/**]
+prohibited_paths: [apps/web/**, main, remote-database]
+expected_evidence: [current-commit-browser-matrix]
+stop_conditions: [stale-commit, unresolved-P1]
+definition_of_done: Evidence is current and tied to the implementation HEAD.

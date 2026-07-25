@@ -1,0 +1,12 @@
+actor: claude-design
+lane: cd-w1
+session_id: replacement-pending
+state: READY
+packet_id: null
+branch: design-sync/discovery
+head: 3323a8ef
+dirty_paths: []
+blocked_on: DEP-GPT-QUEUE-001
+fallback_packet: null
+context_health: null
+updated_at: 2026-07-25T13:22:00+03:00

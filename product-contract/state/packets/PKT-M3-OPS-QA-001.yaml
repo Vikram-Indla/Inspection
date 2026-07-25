@@ -1,0 +1,13 @@
+packet_id: PKT-M3-OPS-QA-001
+owner: kimi
+lane: kimi-a-w1
+purpose: Independently test Operations Center and Live Operations.
+requirements: [CR-001..CR-478]
+screens: [/operations, /operations/live]
+engines: [browser, RLS/RBAC, Mapbox, Supabase]
+acceptance_ids: [WA-M3-AC-001..006]
+allowed_paths: [apps/web/e2e/**, product-contract/evidence/**]
+prohibited_paths: [apps/web/src/app/(app)/operations/**, main, remote-database]
+expected_evidence: [positive, negative, unauthorized, empty, error, degraded, en-ar, responsive, axe, console, network]
+stop_conditions: [cannot-reproduce, missing-contract, conflicting-lease]
+definition_of_done: Independent findings are tied to current commit and returned to Codex for ACK or RETURN.

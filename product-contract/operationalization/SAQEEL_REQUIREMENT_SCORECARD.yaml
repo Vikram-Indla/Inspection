@@ -1,0 +1,52 @@
+schema_version: "1.0"
+control_id: "SAQEEL-OS-REQUIREMENT-SCORECARD-001"
+authority: "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md section 4"
+purpose: >
+  Score source for the three sponsor delivery figures required by the
+  SAQEEL Operating System: built requirement rows / 478, independently
+  verified requirement rows / 478, fully accepted requirement rows / 478.
+  Row-level disposition here must trace to a stable requirement ID from
+  the canonical baseline; no row is entered without that trace.
+
+status: "UNINITIALIZED"
+note: >
+  Stub created 2026-07-25. Row-level scoring has not been run against
+  this file yet. total_source_rows is taken directly from the canonical
+  baseline (inspection_project_customer_rows) — no other count in this
+  file is populated or estimated. Populating rows requires walking the
+  478 canonical rows against actual commits, wiring and evidence per
+  SAQEEL_OPERATING_SYSTEM.md section 4 gates 1-9; that population is a
+  separate task, not part of this stub.
+
+canonical_source:
+  baseline_file: "product-contract/requirements-control/CURRENT_REQUIREMENTS_BASELINE.yaml"
+  total_source_rows: 478
+  requirement_index: "product-contract/requirements-control/REQUIREMENT_INDEX.csv"
+  requirement_traceability: "product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv"
+
+summary:
+  built_rows: null
+  independently_verified_rows: null
+  fully_accepted_rows: null
+  total_rows: 478
+  last_reconciled_at: null
+  last_reconciled_by: null
+
+rows: []
+
+row_schema:
+  requirement_id: "stable canonical requirement ID, must exist in requirement_index"
+  design_revision: "accepted Claude Design revision ID, or NOT_APPLICABLE with reason"
+  implementation_commit: "commit SHA implementing this row"
+  implementation_files: []
+  wiring_evidence: "path to real service/API/DB/RLS/audit/provider proof"
+  path_coverage: "list of positive/negative/unauthorized/empty/error/degraded/offline/conflict paths proven, where applicable"
+  evidence_ref: "path to evidence matching current commit, design revision, persona, locale, theme, viewport"
+  browser_review: "date and reviewer of real-system browser review"
+  acceptance_ref: "independent and sponsor acceptance record"
+  p0_p1_status: "NONE | list of open blocker IDs"
+  disposition: "BUILT | VERIFIED | ACCEPTED"
+
+references:
+  two_hour_control_cycle: "product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml"
+  operating_system: "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"

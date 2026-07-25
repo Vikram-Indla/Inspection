@@ -1,0 +1,13 @@
+packet_id: PKT-M3-OPS-QA-002
+owner: kimi
+lane: kimi-a-r1
+purpose: Security and negative-path review of Operations after re-authentication.
+requirements: [CR-001..CR-478]
+screens: [/operations, /operations/live]
+engines: [RLS, RBAC, browser]
+acceptance_ids: [WA-M3-AC-001..006]
+allowed_paths: [product-contract/evidence/**, product-contract/state/**]
+prohibited_paths: [apps/web/**, main, remote-database]
+expected_evidence: [unauthorized, empty, error, degraded, console, network]
+stop_conditions: [permission-bypass, fabricated-data, stale-evidence]
+definition_of_done: Independent QA results are linked to the tested commit.

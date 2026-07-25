@@ -31,20 +31,43 @@ export default function MetricStrip({
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+  const wasOpenRef = useRef(false);
   const entry = openId ? methodology[openId] : null;
 
   useEffect(() => {
-    if (!entry) return;
+    if (!entry) {
+      if (wasOpenRef.current) openerRef.current?.focus();
+      wasOpenRef.current = false;
+      return;
+    }
+    wasOpenRef.current = true;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpenId(null);
+      if (e.key === "Tab") {
+        const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusable?.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [entry]);
 
   return (
-    <div className={styles.metricStrip} role="group">
+    <div className={styles.metricStrip} role="group" aria-label={s.methodology}>
       {metrics.map((m) => {
         const hasMethod = !!methodology[m.metricId];
         return (
@@ -64,7 +87,10 @@ export default function MetricStrip({
                 type="button"
                 className={styles.methodBtn}
                 aria-haspopup="dialog"
-                onClick={() => setOpenId(m.metricId)}
+                onClick={(event) => {
+                  openerRef.current = event.currentTarget;
+                  setOpenId(m.metricId);
+                }}
               >
                 {m.kind === "status" ? s.why : s.methodology}
               </button>
@@ -77,6 +103,7 @@ export default function MetricStrip({
         <>
           <div className={styles.scrim} onClick={() => setOpenId(null)} aria-hidden="true" />
           <div
+            ref={drawerRef}
             className={styles.drawer}
             role="dialog"
             aria-modal="true"

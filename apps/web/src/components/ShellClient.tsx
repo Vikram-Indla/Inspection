@@ -330,18 +330,18 @@ export default function ShellClient({
   }
 
   function renderNavItem(item: ShellClientNavGroup["items"][number], child = false) {
-    const className = `sq-nav-item${child ? " sq-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
+    const className = `ax-nav-item${child ? " ax-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
     if (!item.enabled) {
       const accessibleLabel = `${item.label}. ${item.disabledReason ?? ""}`.trim();
       return (
         <span key={item.id} className={className} role="link" aria-disabled="true" aria-label={accessibleLabel}
           title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
-          <span className="sq-nav-icon"><Icon name={item.icon} /></span>
-          <span className="sq-nav-label">{item.label}</span>
-          <span className="sq-nav-lock" aria-hidden="true">
+          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+          <span className="ax-nav-label">{item.label}</span>
+          <span className="ax-nav-lock" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
           </span>
-          <span className="sq-sr-only">{item.disabledReason}</span>
+          <span className="ax-sr-only">{item.disabledReason}</span>
         </span>
       );
     }
@@ -350,8 +350,8 @@ export default function ShellClient({
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
         href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
         data-next-spa="true" prefetch={false}>
-        <span className="sq-nav-icon"><Icon name={item.icon} /></span>
-        <span className="sq-nav-label">{item.label}</span>
+        <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+        <span className="ax-nav-label">{item.label}</span>
       </Link>
     );
   }
@@ -403,9 +403,16 @@ export default function ShellClient({
           <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
             <div className="ax-shell__brand">
               <SaqeelBrandMark className="ax-shell__brand-mark" />
-              <span className="ax-shell__brand-lockup">
-                <span className="ax-shell__brand-wordmark" lang="ar">صقيل</span>
-                <span className="ax-shell__brand-sub" lang="ar">صناعي</span>
+              <span
+                className="ax-shell__brand-lockup"
+                aria-label={locale === "ar" ? "صقيل صناعي" : "SAQEEL Industrial"}
+              >
+                <span className="ax-shell__brand-wordmark" lang={locale === "ar" ? "ar" : "en"}>
+                  {locale === "ar" ? "صقيل" : "SAQEEL"}
+                </span>
+                <span className="ax-shell__brand-sub" lang={locale === "ar" ? "ar" : "en"}>
+                  {locale === "ar" ? "صناعي" : "Industrial"}
+                </span>
               </span>
               <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>

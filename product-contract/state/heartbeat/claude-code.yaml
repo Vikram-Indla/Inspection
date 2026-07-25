@@ -1,0 +1,12 @@
+actor: claude-code
+lane: cc-w1
+session_id: replacement-pending
+state: READY
+packet_id: null
+branch: codex/m3-operations-reconciliation
+head: b38930d4
+dirty_paths: [apps/web/.next-corrupt-20260725-1154/**, apps/web/src/app/(app)/operations/live/**, apps/web/e2e/web-admin-m3-operations.spec.ts]
+blocked_on: DEP-GPT-QUEUE-001
+fallback_packet: null
+context_health: null
+updated_at: 2026-07-25T13:22:00+03:00

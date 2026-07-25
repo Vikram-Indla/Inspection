@@ -1,5 +1,130 @@
 # Current State
 
+## 2026-07-25 UPDATE 131 — Repository consolidation activated
+
+The Product Owner explicitly approved `TASK-REPOSITORY-CONSOLIDATION-20260725`
+to restore `/Users/vikramindla/Developer/Inspection` and Git `main` as the one
+shared source of project truth. The isolated integration branch
+`codex/repository-consolidation` fast-forwarded from `main` `21f20e32` to the
+current SAQEEL V3 contract lineage at `27bce51e`.
+
+The verified administrative union was then promoted to `origin/main` by a
+non-force fast-forward at `91afebfe`. YAML parsing, diff checking and reachable
+Git-object connectivity pass. Every locally unique committed line named in the
+task record is remote-backed.
+
+GitHub's repository default branch and local `origin/HEAD` now point to `main`;
+the historical `setup/Inspection` branch remains available only as preserved
+history and is no longer the default source route.
+
+The audit found multiple concurrent product, control, preview, design and
+session-provenance branches based on different historical baselines. They are
+not interchangeable and are not silently accepted by this administrative
+task. Every locally unique committed line is being pushed to a named remote
+branch before promotion. Unaccepted M3 Operations, M9 Localization, M2
+Planning, preview and design outputs remain isolated with their existing
+acceptance state. Dirty audit/session records, dependency links and corrupt
+build output remain preserved in their original worktrees and are excluded
+from source promotion.
+
+No application source, database, provider, deployment, shared data, acceptance
+row or release status is changed by this consolidation. Exact inventory and
+promotion rules are recorded in
+`execution/TASK_REPOSITORY_CONSOLIDATION_20260725.yaml`.
+
+## 2026-07-24 UPDATE 130 — Shared Web/Admin brand regressions corrected
+
+The Product Owner reported that the English Operations runtime displays the
+Arabic-only `صقيل صناعي` identity. Repository tracing confirms a global
+authenticated-shell regression: `ShellClient.tsx` hard-codes that Arabic-only
+lockup for every locale even though approved batch `WA-P1-F0-CORR-001` requires
+the supplied bilingual `SAQEEL | صقيل` dark-surface asset in the expanded
+graphite rail and the supplied shield/check favicon when collapsed.
+
+`TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001` is implemented on isolated branch
+`codex/shared-brand-regression` from canonical main `9d8c4142`. The lease is
+limited to `ShellClient.tsx`, `astryx.css`, the focused F0 branding contract,
+and branch-local governance/evidence. The expanded rail now renders the
+approved `/saqeel-wordmark-dark-mode.svg` with accessible name
+`SAQEEL | صقيل`; collapsed desktop navigation renders
+`/saqeel-favicon.svg`; and the mobile drawer restores the expanded wordmark.
+No asset or locale-specific substitute was introduced.
+
+The first real-browser validation then exposed that the entire authenticated
+shell was unstyled: promoted `ShellClient.tsx` still emits `ax-*` classes while
+the root layout declared that family retired and did not import the existing
+`astryx.css` rules. The runtime HTML therefore had no matching compiled shell
+style layer. The bounded lease was expanded only to `app/layout.tsx`; it now
+loads the matching stylesheet and records the `ax-*` layer as transitional
+until a separately certified namespace migration occurs.
+
+Typecheck and production build pass. The focused F0 source and brand contract
+passes 4/4, including exact asset geometry, expanded/collapsed/mobile CSS, and
+absence of the hard-coded Arabic-only shell lettering. Runtime HTML links the
+compiled stylesheet that contains `.ax-shell` and the approved wordmark rules.
+The initially inherited
+dependency symlink loop was bypassed only for verification using an existing
+healthy dependency directory, then the worktree link was restored unchanged.
+No M3 page, Field/PWA/iPad, asset, backend, remote system, commit, push, merge
+or deployment changed. Codex then reloaded the real authenticated Planning
+route in Chrome at `127.0.0.1:3014/planning`: the graphite navigation, normal
+page layout and accessible `SAQEEL | صقيل` wordmark rendered together. Status:
+`TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF`.
+
+## 2026-07-24 UPDATE 129 — M1 Dashboard promoted to canonical main
+
+The Product Owner explicitly approved promotion of
+`TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001`. Implementation commit `ed384241`
+was pushed on `codex/m1-dashboard-reconciliation` and promoted to
+`origin/main` by GitHub merge commit `330f6cba`. The normal draft-pull-request
+path was attempted through both the GitHub connector and GitHub CLI, but
+GitHub's pull-request endpoint returned HTTP 500 with an empty response. The
+sponsor-approved fallback used GitHub's non-force merge endpoint; ancestry was
+then independently verified on the fetched remote main.
+
+The promoted scope remains exactly the independently released 22-file M1
+package. Typecheck, production build, focused M1 Playwright 16/16, Web/Admin
+authority validation 478/478 and `git diff --check` passed on the current-main
+dependency graph before promotion. No deployment, remote DDL, Supabase write,
+API change, Field/PWA/iPad change, stash operation or force push occurred.
+Inspector fixture HTTP 400, stale legacy Dashboard assertions and unresolved
+DEC-028 policy-derived KPIs remain explicit caveats rather than false passes.
+
+## 2026-07-24 UPDATE 128 — M1 Dashboard independently released
+
+`TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001` is technically release-ready on the
+isolated branch `codex/m1-dashboard-reconciliation` from baseline `c8bdf6d1`.
+The Strategic and Operational perspectives now use source-backed, RLS-scoped
+records; exact Operations/Leadership route authorization; approved-inspection
+compliance truth; canonical visit, review, violation and audit states; the
+shared Mapbox boundary with official coordinates; honest partial/unavailable
+states; and explicit fail-closed handling for every unresolved DEC-028 KPI.
+No target, threshold, risk class, SLA, capacity, cycle, licence, forecast or AI
+value was invented.
+
+The sponsor-rejected visual defects are closed: Mapbox evidence waits for idle
+and shows rendered tiles; the Operational map/activity row is balanced; Arabic
+product and governance copy is localized; audit verbs use business labels; the
+mobile drawer no longer leaks; 320px shell controls occupy readable stacked
+rows; and unsupported Analytics shows neither a selected Dashboard perspective
+nor a false Live state. The independent visual critic's final verdict is
+`RELEASE`.
+
+Verification: typecheck PASS; production build PASS; focused M1 functional,
+permission, RTL/responsive and accessibility suite 16/16 PASS; final evidence
+refresh 3/3 PASS; Web/Admin validator PASS with 478/478 dispositions; and
+`git diff --check` PASS. Seven final screenshots and their SHA-256 values are
+indexed in
+`product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md`.
+
+The dedicated seeder review made zero remote writes. The supplied seeding ZIP
+contains discovery and rollback design but no executable governed seeder; the
+required allow-list, run registry, complete provenance membership, idempotent
+rerun, targeted cleanup and RLS-negative evidence do not yet exist. The
+Inspector authentication fixture still returns HTTP 400 during setup and is
+recorded as external test debt. No push, merge, deployment, production
+mutation, remote DDL, API, Field, PWA, iPad or stash change occurred.
+
 ## 2026-07-23 UPDATE 127 — Field focus double border removed
 
 The Product Owner rejected the remaining double focus border on the Planning

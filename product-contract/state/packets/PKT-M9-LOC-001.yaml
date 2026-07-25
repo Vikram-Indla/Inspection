@@ -1,0 +1,13 @@
+packet_id: PKT-M9-LOC-001
+owner: independent-codex-delivery
+lane: codex-w1
+purpose: Review Admin Localization lifecycle implementation and PR evidence.
+requirements: [CR-001..CR-478]
+screens: [/admin/localization]
+engines: [Supabase-SSR, RLS/RBAC, audit-history]
+acceptance_ids: [WA-M9-AC-001..006]
+allowed_paths: [apps/web/src/app/(app)/admin/localization/**, apps/web/e2e/web-admin-m9-localization.spec.ts]
+prohibited_paths: [remote-database, main]
+expected_evidence: [8/8-focused-suite, typecheck, build, 478-validator, en-ar, rtl, responsive, axe]
+stop_conditions: [P1, stale-evidence, missing-role-guard]
+definition_of_done: PR #63 is independently reviewed and either ACKed or RETURNED with exact corrections.
