@@ -8,6 +8,7 @@ const pageSource = read("src/app/(app)/operations/page.tsx");
 const mapSource = read("src/app/(app)/operations/OperationsMapWorkspace.tsx");
 const previewSource = read("src/app/(app)/operations/OperationsPreview.tsx");
 const filterSource = read("src/app/(app)/operations/OperationsScopeFilter.tsx");
+const monitoringSource = read("src/app/(app)/operations/Monitoring.tsx");
 const loadingSource = read("src/app/(app)/operations/loading.tsx");
 const cssSource = read("src/app/(app)/operations/operations.module.css");
 const livePageSource = read("src/app/(app)/operations/live/page.tsx");
@@ -64,6 +65,8 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(pageSource).not.toContain("setInterval");
     expect(mapSource).not.toContain("setInterval");
     expect(filterSource).not.toContain("setInterval");
+    expect(monitoringSource).not.toContain("setInterval");
+    expect(monitoringSource).not.toContain("fetchMonitoringRows(");
     expect(loadingSource.match(/length: 5/)).not.toBeNull();
     const tabletRule = cssSource.match(/@media \(max-width: 1100px\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
     expect(tabletRule).not.toContain(".kpiGrid");
