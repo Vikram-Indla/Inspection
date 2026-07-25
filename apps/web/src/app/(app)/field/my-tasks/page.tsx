@@ -64,7 +64,7 @@ type RegChip = (typeof REG_CHIPS)[number];
 // would misread as "your scope has none" instead of "no source is wired yet".
 const NO_SOURCE_CHIPS: readonly RegChip[] = ["manufacturing", "contacts"];
 
-type SearchParams = { task?: string; reg?: string };
+type SearchParams = { task?: string; reg?: string; view?: string };
 
 export default async function FieldMyTasks({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
@@ -112,10 +112,17 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     );
   }
 
-  const tasks = (asg as unknown as Assignment[] ?? [])
+  const allTasks = (asg as unknown as Assignment[] ?? [])
     .map(a => a.visits)
     .filter((v): v is VisitRow => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status))
     .filter(v => !isTestFixtureEstablishment(v.factories));
+  // SCR-IPAD-600 completed-history entry point. This is a read-only projection
+  // of recorded terminal/submitted facts; it never advances workflow state.
+  const tasks = params.view === "completed"
+    ? allTasks.filter(v =>
+        ["submitted", "under_review"].includes(v.operational_state)
+        || ["submitted", "approved", "rejected"].includes(v.inspections?.status ?? ""))
+    : allTasks;
 
   const selected = tasks.find(v => v.id === params.task) ?? tasks[0] ?? null;
   const activeReg: RegChip = (REG_CHIPS as readonly string[]).includes(params.reg ?? "")
