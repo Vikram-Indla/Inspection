@@ -25,31 +25,86 @@ const items: { key: FieldNavKey; href: string; label: (l: FieldNavLabels) => str
 
 export default function FieldNav({ active, labels }: { active: FieldNavKey; labels: FieldNavLabels }) {
   return (
-    <nav aria-label={labels.home}
-      style={{
-        position: "fixed", insetInline: 0, bottom: 0, zIndex: 30, display: "flex",
-        background: "var(--nav-bg)", color: "var(--nav-text)",
-        paddingBlockEnd: "env(safe-area-inset-bottom)",
-        borderBlockStart: "1px solid var(--nav-border)",
-      }}>
-      {items.map(item => {
-        const isActive = item.key === active;
-        return (
-          <Link key={item.key} href={item.href} prefetch={false}
-            aria-current={isActive ? "page" : undefined}
-            style={{
-              flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
-              padding: "10px 0", textDecoration: "none",
-              color: isActive ? "var(--nav-text-active)" : "var(--nav-text)",
-            }}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-              strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              {item.icon}
-            </svg>
-            <span style={{ fontSize: "11px", fontWeight: isActive ? 600 : 500 }}>{item.label(labels)}</span>
-          </Link>
-        );
-      })}
-    </nav>
+    <>
+      <nav aria-label={labels.home} className="field-nav">
+        {items.map(item => {
+          const isActive = item.key === active;
+          return (
+            <Link key={item.key} href={item.href} prefetch={false}
+              aria-current={isActive ? "page" : undefined}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                {item.icon}
+              </svg>
+              <span>{item.label(labels)}</span>
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="field-nav-spacer" aria-hidden="true" />
+      <style>{`
+        .field-nav {
+          position: fixed;
+          inset-inline: 0;
+          bottom: 0;
+          z-index: 60;
+          display: flex;
+          padding-block-end: env(safe-area-inset-bottom);
+          padding-inline: max(0px, env(safe-area-inset-left)) max(0px, env(safe-area-inset-right));
+          border-block-start: 1px solid var(--nav-border);
+          background: var(--nav-bg);
+          color: var(--nav-text);
+          box-shadow: 0 -6px 22px -10px var(--shadow-color);
+          backdrop-filter: saturate(120%) blur(6px);
+        }
+        .field-nav > a {
+          position: relative;
+          flex: 1;
+          min-height: 56px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          padding: 9px 0 8px;
+          color: var(--nav-text);
+          font-size: 11px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .field-nav > a:hover {
+          background: var(--nav-hover);
+        }
+        .field-nav > a[aria-current="page"] {
+          color: var(--nav-text-active);
+        }
+        .field-nav > a[aria-current="page"]::before {
+          content: "";
+          position: absolute;
+          inset-block-start: 0;
+          inline-size: 34px;
+          block-size: 2px;
+          border-radius: 0 0 2px 2px;
+          background: var(--nav-indicator, var(--action-primary));
+        }
+        .field-nav > a:focus-visible {
+          outline: 2px solid var(--nav-indicator, var(--action-primary));
+          outline-offset: -3px;
+        }
+        .field-nav-spacer {
+          flex: none;
+          block-size: calc(56px + env(safe-area-inset-bottom));
+        }
+        @media (min-width: 834px) {
+          .field-nav > a {
+            min-height: 60px;
+            font-size: 11.5px;
+          }
+          .field-nav-spacer {
+            block-size: calc(60px + env(safe-area-inset-bottom));
+          }
+        }
+      `}</style>
+    </>
   );
 }
