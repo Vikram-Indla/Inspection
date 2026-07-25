@@ -21,11 +21,11 @@ QA, and Sponsor. A module never receives one overall colour.
 
 | Execution / contract | Module | Design | Frontend | Service wiring | QA | Sponsor | Current focus |
 |---|---|---|---|---|---|---|---|
-| Foundation / F0 | Shared SAQEEL foundation | GREEN | GREEN | GREEN | AMBER | N/A | Historical protected-aggregate gaps remain disclosed. |
-| Execution #1 / M2 | Planning & Visits | AMBER | AMBER | GREEN | AMBER | AMBER | Claude revision `WA-DES-036-r4` is now observable with named viewport controls, one authenticated shell header and a stacked five-lane sponsor board. Independent frame/theme/RTL verification and Claude's explicit stable completion handoff remain outstanding; no wiring has started. |
-| M1 | Dashboard | GREY | GREY | GREY | GREY | GREY | Design/code delta and KPI semantics `DEC-028`. |
-| M3 | Operations Center | GREY | GREY | GREY | GREY | GREY | Live/exception/ETA and provider review. |
-| M4 | Factories & Factory 360 | GREY | GREY | GREY | GREY | GREY | Industry Shared, privacy and provider contracts. |
+| Foundation / F0 | Shared SAQEEL foundation | GREEN | RED | AMBER | RED | AMBER | `WA-SHELL-r4` passed independent design evidence review across the six named frames, EN/AR, light/dark, mobile actions and representative negative states. Runtime remains `REGISTERED_NOT_IMPLEMENTED`; sponsor consent for a bounded frontend lease is pending. |
+| Execution #1 / M2 | Planning & Visits | AMBER | RED | AMBER | RED | AMBER | `WA-DES-036-r4` is observable, but Planning cannot be certified above a failed shared shell. Canonical HEAD also contains unloaded legacy styling and stale self-referential tests. No new wiring is authorized. |
+| M1 | Dashboard | AMBER | AMBER | AMBER | RED | GREY | Authority/workbook comparison active. Preserve the richer current runtime semantics while restoring the full Strategic/Operational IA and shell options. |
+| M3 | Operations Center | AMBER | GREY | GREY | GREY | GREY | Design correction active for Live Operations Map, Regional Performance Map and traceable Operational Highlights. |
+| M4 | Factories & Factory 360 | AMBER | GREY | GREY | GREY | GREY | Design correction active for the CR/license model, compliance, industrial/government data, documents, timeline and evidence-linked risk/AI. |
 | M5 | Reviews, Cases & Tasks | GREY | GREY | GREY | GREY | GREY | Maker-checker and immutable-version parity; depends on M2. |
 | M6 | Compliance, Enforcement, Committee & Risk | GREY | GREY | GREY | GREY | GREY | Roles, terminal policy, risk, GIS and SLA decisions. |
 | M7 | Reports, OCR, AI & Incidents | GREY | GREY | GREY | GREY | GREY | Provider-unavailable and report-state review. |
@@ -53,25 +53,54 @@ QA, and Sponsor. A module never receives one overall colour.
      accessibility and regression checks.
    - Show the real implementation in Chrome and stop for sponsor review.
 
+## Fixed control-room and execution order
+
+The sponsor-visible workspace is arranged as four persistent quadrants:
+
+1. Claude Design — design authority, revisions and visual evidence.
+2. Real SAQEEL runtime — implementation truth and regression comparison.
+3. ChatGPT challenge hub — independent RCA, product challenge and prompt
+   refinement.
+4. Claude Code — read-only repository preparation until an implementation
+   lease is approved.
+
+The execution order is fixed:
+
+1. F0 shared shell.
+2. M1 Dashboard.
+3. M3 Operations Center.
+4. M4 Factories and Factory 360.
+5. M2 Planning/Visits and the remaining modules only after their parent shell
+   and preceding dependencies are stable.
+
+Each module repeats the same drill: authority preflight, current-runtime
+inventory, design delta, independent visual challenge, sponsor consent,
+single-owner frontend lease, positive/negative testing and real Chrome proof.
+No module is allowed to skip directly from a clean mock to implementation.
+
 ## Planning checkpoint
 
-Completed material implementation:
+Material implementation already present:
 
-- Native SAQEEL shell/token reconciliation.
-- Read-only Planning preview using real RLS-scoped data.
-- Planning-owned Visits list/detail preview with audit/version preservation.
-- Typecheck and production build pass.
-- Focused F0 plus Planning M2: 16/16 pass.
-- Additional static sweep: 21/29; eight stale/unrelated contracts remain
-  recorded and are not waived.
+- Real RLS-scoped Dashboard, Planning and Visits behavior exists and must be
+  preserved.
+- Real search, notifications, theme, account, responsive drawer, RTL and
+  fail-closed AI behavior exists and must be preserved.
+- These capabilities do **not** certify F0 shell parity. The binding shell
+  acceptance rows remain `REGISTERED_NOT_IMPLEMENTED`.
+- Current focused tests are not sufficient evidence because some assertions
+  were copied from the drifting implementation rather than the authority.
 
 Current hold:
 
-- Do not implement the list-first redesign yet. `WA-DES-036-r4` is observable
-  with the requested named viewport controls, authenticated shell header and
-  responsive stacked five-lane status cards. The design turn has not supplied
-  its explicit stable completion handoff, and independent frame/theme/RTL
-  verification is not yet complete.
+- Do not implement a module correction until the shared-shell design contract,
+  preservation matrix and sponsor consent are complete.
+- Claude Design is correcting F0, Dashboard, Operations Center and Factory 360
+  as design-only work. Planning `WA-DES-036-r4` remains under the same shared
+  shell and cannot be marked implementation-ready independently.
+- No lane may turn green without runtime evidence derived from the authority,
+  including EN/AR, light/dark, responsive, permission-negative and `/field`
+  isolation checks.
 
 ## Non-negotiable ownership boundary
 
