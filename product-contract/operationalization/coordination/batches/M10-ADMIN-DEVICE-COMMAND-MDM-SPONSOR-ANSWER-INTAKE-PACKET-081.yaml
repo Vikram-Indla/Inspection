@@ -1,0 +1,446 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-INTAKE-PACKET-081
+title: Trusted Devices sponsor answer intake packet
+status: BLANK_INTAKE_ALL_ANSWERS_NULL
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_BLANK_SPONSOR_INTAKE
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  sponsor_answers: 0
+  decisions_recorded: 0
+  leases_granted: 0
+  reason: >-
+    This is a blank neutral intake. Every sponsor answer and authority/evidence
+    reference remains null. It supplies no policy, approval, provider
+    authority, design acceptance or implementation permission.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-INTAKE-PACKET-081
+  source_task: DEV-PRE-SPONSOR-02
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+    - M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-READINESS-SCORECARD-080
+  governed_decisions: 10
+  direct_requirement_ids: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+  do_not_touch:
+    - sponsor answer set and canonical decision register
+    - RBAC, transitions, provider hold/contract and design identity records
+    - live Claude Design, application, database, provider, data, tests and evidence
+    - current slice controls, branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Blank coordination packet only; no authority or implementation state changes.
+
+general_approval_handling:
+  prior_general_approval_is_policy_answer: false
+  explanation: >-
+    A general instruction to proceed does not identify roles, transitions,
+    terminal behavior, trust evidence, receipt stages, invalidation scope,
+    sync ownership, provider authority or stable design identity.
+  required_for_intake_ack:
+    - Exactly one allow-listed option per decision.
+    - Every unconditional and selected-option companion field is complete.
+    - Every authority reference resolves to a separately approved record.
+    - All ten answers are mutually compatible and preserve all 60 acceptance cases.
+  does_not_grant:
+    - governance change
+    - provider enablement or credentials
+    - Claude Design acceptance
+    - engineering, data, QA or evidence lease
+    - requirement completion
+
+sponsor_submission:
+  answer_set_revision: null
+  sponsor_identity: null
+  sponsor_authority_reference: null
+  answered_at_utc: null
+  preservation_floor_acknowledged: null
+  rationale_summary: null
+  requested_effective_date: null
+  signature_or_approval_reference: null
+
+preservation_floor:
+  - Only the assigned, enrolled, trusted and app-compliant device may download, open, replay or submit an official package.
+  - Pending, suspended, revoked, wipe-pending and wiped devices fail closed.
+  - A remote request, provider acceptance, device acknowledgement and verified effect are separate facts.
+  - Queued Resume cannot restore trust and ordinary Resume cannot revive revoked, wipe-pending or wiped identities.
+  - Package invalidation and remote wipe require genuine effect evidence; queueing is not cached-device deletion.
+  - Unauthorized, invalid, stale, duplicate, missing-provider and offline paths cannot corrupt records or silently restore access.
+  - Actor, device, command, reason, version, time, before/after and genuine evidence remain auditable.
+  - No provider, SLA, retry, freshness, retention, threshold, Arabic approval or evidence result may be invented.
+  - EN/AR, RTL/LTR, light/dark, responsive and accessibility outcomes remain mandatory.
+
+decision_intake:
+  - decision_id: DEV-CMD-DEC-01
+    subject: Role ownership and capability mapping
+    question: Who owns Device Admin and Mobile Admin capabilities?
+    current_fact: Canonical RBAC has no Device Admin or Mobile Admin role; current code uses Ops and Security Admin.
+    neutral_choices:
+      - option_id: D01-A
+        choice: Map bounded device capabilities to existing canonical roles.
+        consequence: Faster, but every read and command capability and the accepted breadth of each existing role must be explicit.
+      - option_id: D01-B
+        choice: Create a separately governed device-administration role.
+        consequence: Clearer least privilege, but adds role lifecycle, assignment, navigation, RLS/RPC and test change control.
+      - option_id: D01-C
+        choice: Split routine and high-impact capabilities across roles.
+        consequence: Stronger separation, but requires a complete per-command and escalation matrix.
+    sponsor_answer:
+      option_id: null
+      role_to_capability_matrix: null
+      rationale: null
+    authority_fields:
+      canonical_role_reference: null
+      governance_change_control_reference: null
+    evidence_fields:
+      future_RBAC_RLS_RPC_test_reference: null
+    prohibited:
+      - Inspector or Auditor receives mutation authority.
+      - Navigation visibility is treated as server authorization.
+      - Device/Mobile Admin appears without canonical meaning.
+    validation_refs: [ANS-D01-01, ANS-D01-02, ANS-D01-03, ANS-D01-04, ANS-D01-05]
+
+  - decision_id: DEV-CMD-DEC-02
+    subject: Command eligibility and source states
+    question: Which role may request each command, and from which device state?
+    neutral_choices:
+      - option_id: D02-A
+        choice: One administrative role owns every eligible command.
+        consequence: Simpler operation with broader privilege and misuse impact.
+      - option_id: D02-B
+        choice: Allocate each command independently by role and source state.
+        consequence: Better least privilege with a larger policy/test matrix.
+      - option_id: D02-C
+        choice: Separate routine requests from exceptional or destructive commands.
+        consequence: Faster routine work while restoration, revoke and wipe use stricter paths.
+    sponsor_answer:
+      option_id: null
+      per_command_role_and_source_state_matrix: null
+      rationale: null
+    authority_fields:
+      transition_policy_reference: null
+      capability_authority_reference: null
+    evidence_fields:
+      future_transition_negative_test_reference: null
+    prohibited:
+      - Ordinary Resume from revoked, wipe_pending or wiped.
+      - A command from an undocumented incompatible state.
+      - Revocation omitted because current code lacks it.
+    validation_refs: [ANS-D02-01, ANS-D02-02, ANS-D02-03, ANS-D02-04, ANS-D02-05]
+
+  - decision_id: DEV-CMD-DEC-03
+    subject: Independent approval
+    question: Which commands require an independent approver?
+    neutral_choices:
+      - option_id: D03-A
+        choice: No second approval for an otherwise authorized command.
+        consequence: Fastest response with the highest single-actor risk; confirmation and audit still apply.
+      - option_id: D03-B
+        choice: Independent approval for selected high-impact commands.
+        consequence: Balanced control; selected commands, approver boundary, expiry and emergencies must be named.
+      - option_id: D03-C
+        choice: Independent approval for every trust-restoring or destructive command.
+        consequence: Strongest separation with slower emergency response and more pending states.
+    sponsor_answer:
+      option_id: null
+      commands_requiring_approval: null
+      emergency_or_expiry_behavior: null
+      rationale: null
+    authority_fields:
+      approver_role_and_scope_reference: null
+      maker_checker_policy_reference: null
+    evidence_fields:
+      future_approval_lifecycle_test_reference: null
+    prohibited:
+      - Requester approves own command when independence is required.
+      - Provider/device acknowledgement counts as human approval.
+      - Expiry, withdrawal or emergency bypasses audit.
+    validation_refs: [ANS-D03-01, ANS-D03-02, ANS-D03-03, ANS-D03-04, ANS-D03-05]
+
+  - decision_id: DEV-CMD-DEC-04
+    subject: Terminal states and re-enrollment
+    question: Are Revoked and Wiped terminal for the enrolled device identity?
+    neutral_choices:
+      - option_id: D04-A
+        choice: Revoked and Wiped are terminal; return requires new governed enrollment and attestation.
+        consequence: Strongest containment with replacement/re-enrollment work.
+      - option_id: D04-B
+        choice: Revoked may use a separate governed reactivation; Wiped is terminal.
+        consequence: Reversible revocation with a distinct process and evidence burden.
+      - option_id: D04-C
+        choice: Both may use separately governed exceptional reactivation processes.
+        consequence: Maximum flexibility with maximum security and audit complexity.
+    sponsor_answer:
+      option_id: null
+      reactivation_process_owner_and_evidence: null
+      rationale: null
+    authority_fields:
+      terminal_transition_reference: null
+      re_enrollment_policy_reference: null
+    evidence_fields:
+      future_terminal_state_test_reference: null
+    prohibited:
+      - Ordinary Resume restores revoked, wipe_pending or wiped.
+      - Reactivation lacks fresh attestation, app compliance and assignment validation.
+      - Original terminal evidence is deleted or overwritten.
+    validation_refs: [ANS-D04-01, ANS-D04-02, ANS-D04-03, ANS-D04-04, ANS-D04-05]
+
+  - decision_id: DEV-CMD-DEC-05
+    subject: Trust evidence and freshness
+    question: What evidence is sufficient to mark a device Trusted?
+    neutral_choices:
+      - option_id: D05-A
+        choice: Automatically trust after every mandatory authoritative evidence check succeeds.
+        consequence: Faster activation, requiring exact continuously governed provider/policy evidence.
+      - option_id: D05-B
+        choice: Mandatory authoritative evidence plus one human administrative approval.
+        consequence: Additional accountability and delay with pending/expiry handling.
+      - option_id: D05-C
+        choice: Mandatory evidence plus independent administrative approval.
+        consequence: Strongest separation with the largest workflow/evidence burden.
+    sponsor_answer:
+      option_id: null
+      attestation_authority_and_freshness_rule: null
+      human_or_independent_approval_owner: null
+      rationale: null
+    authority_fields:
+      app_policy_reference: null
+      attestation_provider_or_authority_reference: null
+      freshness_policy_reference: null
+    evidence_fields:
+      future_trust_evidence_test_reference: null
+    prohibited:
+      - MDM reference text, app-compliant boolean or last-seen alone establishes trust.
+      - Queued Resume or manual database edit establishes trust.
+      - Evidence lacks source, governing version or time.
+    validation_refs: [ANS-D05-01, ANS-D05-02, ANS-D05-03, ANS-D05-04, ANS-D05-05]
+
+  - decision_id: DEV-CMD-DEC-06
+    subject: Acknowledgement, completion, correlation and receipts
+    question: What does each command stage mean, and who may assert it?
+    neutral_choices:
+      - option_id: D06-A
+        choice: Acknowledged means provider accepted; Completed means device-confirmed effect.
+        consequence: Clear two-party evidence requiring separate provider and device receipts.
+      - option_id: D06-B
+        choice: Acknowledged means device received; Completed means device-confirmed effect.
+        consequence: Provider acceptance remains transport metadata, not a command state.
+      - option_id: D06-C
+        choice: Use explicit provider-accepted, device-received and effect-applied stages.
+        consequence: Highest fidelity with the largest schema/UI/test surface.
+    sponsor_answer:
+      option_id: null
+      authoritative_actor_and_receipt_for_each_stage: null
+      correlation_and_idempotency_rule: null
+      duplicate_late_mismatched_unverifiable_receipt_rule: null
+      rationale: null
+    authority_fields:
+      receipt_schema_reference: null
+      receipt_authentication_reference: null
+      lifecycle_policy_reference: null
+    evidence_fields:
+      future_genuine_receipt_test_reference: null
+    prohibited:
+      - Requested/queued is called acknowledged, applied or completed.
+      - Privileged direct table update creates product acknowledgement.
+      - Completed lacks verified effect, time or tamper-evident receipt.
+    validation_refs: [ANS-D06-01, ANS-D06-02, ANS-D06-03, ANS-D06-04, ANS-D06-05, ANS-D06-06]
+
+  - decision_id: DEV-CMD-DEC-07
+    subject: Expire Packages scope and effect
+    question: What exactly must Expire Packages affect?
+    neutral_choices:
+      - option_id: D07-A
+        choice: Every official package assigned to the device.
+        consequence: Simple broad containment with larger operational impact.
+      - option_id: D07-B
+        choice: Explicitly selected packages or inspections.
+        consequence: Precise impact with selection validation and partial-failure handling.
+      - option_id: D07-C
+        choice: A versioned approved policy-defined scope.
+        consequence: Repeatable operation requiring policy authority before use.
+    sponsor_answer:
+      option_id: null
+      exact_scope_and_server_device_effects: null
+      in_progress_inspection_behavior: null
+      cached_offline_behavior: null
+      rationale: null
+    authority_fields:
+      invalidation_policy_reference: null
+      device_effect_receipt_reference: null
+    evidence_fields:
+      future_manifest_cache_replay_submit_test_reference: null
+    prohibited:
+      - A command row with no server package effect counts as expiry.
+      - Queueing is shown as cached-device deletion.
+      - Out-of-scope packages are silently invalidated.
+      - Immutable inspection/package history is lost.
+    validation_refs: [ANS-D07-01, ANS-D07-02, ANS-D07-03, ANS-D07-04, ANS-D07-05, ANS-D07-06]
+
+  - decision_id: DEV-CMD-DEC-08
+    subject: Sync-health and rescue ownership
+    question: Where should sync health, outbox, conflicts and replay be owned?
+    neutral_choices:
+      - option_id: D08-A
+        choice: Keep them within Trusted Devices.
+        consequence: One console, requiring approved sources, metrics, thresholds and rescue actions.
+      - option_id: D08-B
+        choice: Put them on a dedicated operational sync surface linked from Devices.
+        consequence: Cleaner trust administration with an additional governed route/design.
+      - option_id: D08-C
+        choice: Hold sync-health presentation until source and threshold authority exists.
+        consequence: Narrower Devices scope; requirement remains blocked and illustrative metrics are not runtime truth.
+    sponsor_answer:
+      option_id: null
+      source_owner_formula_threshold_and_actions: null
+      dedicated_route_business_owner_if_applicable: null
+      rationale: null
+    authority_fields:
+      source_lineage_reference: null
+      threshold_policy_reference: null
+      rescue_capability_reference: null
+    evidence_fields:
+      future_sync_health_rescue_test_reference: null
+    prohibited:
+      - Last-seen alone determines healthy/online/offline.
+      - Failed, stale or RLS-empty read displays healthy or zero.
+      - Hard-coded outbox/conflict/retry/replay values.
+    validation_refs: [ANS-D08-01, ANS-D08-02, ANS-D08-03, ANS-D08-04, ANS-D08-05, ANS-D08-06]
+
+  - decision_id: DEV-CMD-DEC-09
+    subject: MDM provider authority or formal hold
+    question: Is an MDM provider contract approved now, or must capability remain held?
+    neutral_choices:
+      - option_id: D09-A
+        choice: Keep MDM formally held.
+        consequence: Dependency-blocked design/runtime; no transport, acknowledgement, completion or trust-restoration claim.
+      - option_id: D09-B
+        choice: Approve a named provider through separate provider governance.
+        consequence: Requires credential boundary, attestation, transport, receipt, retry, privacy and release evidence.
+      - option_id: D09-C
+        choice: Approve a provider-neutral contract while selection remains held.
+        consequence: Internal contract work may proceed; provider-specific runtime and live completion remain blocked.
+    sponsor_answer:
+      option_id: null
+      separate_provider_governance_reference: null
+      rationale: null
+    authority_fields:
+      provider_or_hold_record_reference: null
+      credential_owner_reference: null
+      nonproduction_environment_reference: null
+    evidence_fields:
+      future_provider_contract_and_live_receipt_reference: null
+    prohibited:
+      - This answer alone enables/configures a provider.
+      - A provider is named without separate governance and credential authority.
+      - Held/provider-neutral state produces live completion claims.
+      - Seed/mock/arbitrary MDM reference counts as genuine evidence.
+    validation_refs: [ANS-D09-01, ANS-D09-02, ANS-D09-03, ANS-D09-04, ANS-D09-05, ANS-D09-06]
+
+  - decision_id: DEV-CMD-DEC-10
+    subject: Stable Devices design identity
+    question: How should corrected Devices design receive stable route authority?
+    current_fact: WA-DES-015 is nearest, but route-level CD-056 lineage/fingerprints are unresolved.
+    neutral_choices:
+      - option_id: D10-A
+        choice: Govern the existing WA-DES-015 Devices state as the route expression of CD-056.
+        consequence: Reuses inventory; corrections cannot change unrelated WA-DES-015 states or selector behavior.
+      - option_id: D10-B
+        choice: Allocate a governed route-specific child linked to WA-DES-015 and CD-056.
+        consequence: Stronger revision isolation with collision-checked identity allocation and separate inventory.
+    sponsor_answer:
+      option_id: null
+      rationale: null
+    authority_fields:
+      governed_identity_fingerprint_and_lineage: null
+      stable_page_revision_frame_reference: null
+      sponsor_design_acceptance_reference: null
+    evidence_fields:
+      future_design_export_and_visual_acceptance_reference: null
+    prohibited:
+      - Reuse WA-DES-004, WA-DES-043, WA-DES-011 or WA-DES-041 as the route design.
+      - Invent ID/filename/fingerprint outside governance.
+      - Treat illustrative device/person/outbox/health values as runtime truth.
+      - Start semantic design before decisions 01..09 are recorded.
+    validation_refs: [ANS-D10-01, ANS-D10-02, ANS-D10-03, ANS-D10-04, ANS-D10-05, ANS-D10-06]
+
+cross_decision_prohibitions:
+  - {check_id: ANS-X-01, prohibited: D04-A with ordinary Resume from revoked or wiped}
+  - {check_id: ANS-X-02, prohibited: D04-B/C without separate reactivation process and fresh D05 evidence}
+  - {check_id: ANS-X-03, prohibited: D03-B/C or D05-C while requester can approve own action}
+  - {check_id: ANS-X-04, prohibited: Any D05 option allows local fields or queued Resume alone to establish trust}
+  - {check_id: ANS-X-05, prohibited: Positive acknowledgement/completion without D09 authority and genuine receipt}
+  - {check_id: ANS-X-06, prohibited: D09-A with live attestation, receipt, completion or trust restoration}
+  - {check_id: ANS-X-07, prohibited: D09-C with provider-specific runtime or live completion}
+  - {check_id: ANS-X-08, prohibited: Any D07 option treats queueing as cached deletion or lacks manifest identities}
+  - {check_id: ANS-X-09, prohibited: D08-C while sync-health metrics are runtime truth or REQ-0186 is complete}
+  - {check_id: ANS-X-10, prohibited: Any D01 option grants Inspector or Auditor mutation}
+  - {check_id: ANS-X-11, prohibited: D01 and D02 role/capability matrices disagree}
+  - {check_id: ANS-X-12, prohibited: D02 permits a transition D04 declares terminal}
+  - {check_id: ANS-X-13, prohibited: D03 approval actors/order conflict with D06 lifecycle}
+  - {check_id: ANS-X-14, prohibited: D05 claims provider authority held or unauthorized by D09}
+  - {check_id: ANS-X-15, prohibited: D07 cache invalidation and D08 offline/replay lack one fail-closed boundary}
+  - {check_id: ANS-X-16, prohibited: D10 design is consumed before decisions 01..09 are compatible and recorded}
+
+intake_validation:
+  current_state:
+    result: NOT_SUBMITTED
+    answered_decisions: 0
+    null_answer_fields: all
+  future_evaluation:
+    global_checks: ANS-G-01..08
+    per_decision_checks: ANS-D01-01..ANS-D10-06
+    cross_decision_checks: ANS-X-01..16
+    acceptance_reconciliation:
+      negative_cases: 46
+      positive_cases: 14
+      total: 60
+    precedence: BLOCK_over_RETURN_over_ACK
+    ACK_condition: Every required/conditional field is complete, all references resolve and no RETURN/BLOCK check fails.
+  output_fields_after_submission:
+    - answer_set_revision
+    - overall_result
+    - passed_check_ids
+    - failed_return_check_ids
+    - failed_block_check_ids
+    - unresolved_references
+    - acceptance_case_reconciliation
+    - next_authorized_change_control_step
+
+post_submission_sequence:
+  - Sponsor submits all ten answers as one revision.
+  - Governance validates against checklist 067 without filling gaps.
+  - Failed checks return exact IDs; no implementation/design consumption occurs.
+  - ACK permits separate change-control recording only.
+  - Recorded governance/provider authority permits future design/interface work.
+  - Exact implementation leases still require preflight 079 and sponsor authorization.
+
+validation:
+  expected_decisions: 10
+  expected_cross_checks: 16
+  all_sponsor_answers_null: PASS_79_OF_79
+  option_sets_match_067: PASS
+  validation_refs_resolve: PASS
+  decision_ids_unique: PASS_10_OF_10
+  no_lease_or_policy_grant: PASS
+  yaml_parse: PASS
+  diff_check: PASS
+
+safe_successor:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-ANSWER-INTAKE-SELF-CHECK-082
+  mode: READ_ONLY
+  purpose: >-
+    Mechanically verify that intake 081 preserves all allow-lists, companion
+    fields, deterministic checks, cross-decision prohibitions and null
+    semantics from 062/067/072, without populating or recording answers.

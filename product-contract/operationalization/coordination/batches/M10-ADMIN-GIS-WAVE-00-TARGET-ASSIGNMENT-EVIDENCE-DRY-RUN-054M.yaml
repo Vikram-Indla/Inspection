@@ -1,0 +1,507 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-EVIDENCE-DRY-RUN-054M
+title: Admin GIS target-assignment evidence synthetic dry run
+status: SYNTHETIC_DRY_RUN_PASS_FAIL_COVERAGE_COMPLETE
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_SYNTHETIC_VALIDATION
+
+purpose: >
+  Exercise deterministic pass and fail examples for all 22 evidence checks,
+  five parallel lanes and ten closure steps in packet 054L. Every value in this
+  dry run is synthetic. The examples prove that missing or invalid assignment
+  receipts, authority evidence, hash drift, conflict, expiry and scope overreach
+  stop progression without creating an assignment, dispatch or implementation right.
+
+boundary:
+  checklist_source: M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-CLOSURE-EVIDENCE-CHECKLIST-054L
+  synthetic_only: true
+  real_people_named: 0
+  real_assignments_created: 0
+  real_channels_or_destinations_used: 0
+  requests_sent: 0
+  acknowledgements_recorded: 0
+  controlled_dispatch_ready: 0
+  authority_granted: false
+  implementation_lease_granted: false
+  product_design_data_control_mutation: NONE
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+canonical_source:
+  packet_id: M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-CLOSURE-EVIDENCE-CHECKLIST-054L
+  path: product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-CLOSURE-EVIDENCE-CHECKLIST-054L.yaml
+  sha256: abd842889b81dee9a9749f425d8a017442f348dcac4a6c35289bead983567407
+
+synthetic_semantics:
+  prefix: SYNTHETIC-
+  PASS: Evidence satisfies the specific check but grants no real authority.
+  RETURN_NO_PROCEED: Evidence is present but invalid or correctable; progression stops.
+  BLOCK: Required evidence is missing, prohibited or unverifiable; progression stops.
+  authorization_effect: NONE
+
+evidence_check_dry_run:
+  - evidence_id: EV-054L-001
+    category: source_hash
+    pass_example:
+      input: SYNTHETIC-EXISTING-FILE with computed hash equal to recorded hash
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-CHANGED-FILE with computed hash unequal to recorded hash
+      expected: BLOCK
+      proves: HASH_DRIFT_FAILS_CLOSED
+  - evidence_id: EV-054L-002
+    category: tuple_integrity
+    pass_example:
+      input: SYNTHETIC-SET of seven unique exact tuples
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-SET with one duplicate and one missing request tuple
+      expected: BLOCK
+      proves: TUPLE_DRIFT_FAILS_CLOSED
+  - evidence_id: EV-054L-003
+    category: assignment_receipt
+    pass_example:
+      input: SYNTHETIC-SEPARATE-RECEIPT with stable path, hash and non-null governed fields
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-BLANK-TEMPLATE presented as receipt
+      expected: BLOCK
+      proves: MISSING_ASSIGNMENT_RECEIPT_FAILS_CLOSED
+  - evidence_id: EV-054L-004
+    category: authority_source
+    pass_example:
+      input: SYNTHETIC-CANONICAL-AUTHORITY directly citing exact assignment scope
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-RUNTIME-ROLE-ONLY authority claim
+      expected: BLOCK
+      proves: INVALID_AUTHORITY_SOURCE_FAILS_CLOSED
+  - evidence_id: EV-054L-005
+    category: authority_hash
+    pass_example:
+      input: SYNTHETIC-AUTHORITY-SOURCE with matching computed hash
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-AUTHORITY-SOURCE with stale recorded hash
+      expected: RETURN_NO_PROCEED
+      proves: AUTHORITY_HASH_DRIFT_STOPS_PROGRESSION
+  - evidence_id: EV-054L-006
+    category: recipient_identity
+    pass_example:
+      input: SYNTHETIC-GOVERNED-IDENTITY-A supported by assignment authority
+      expected: PASS
+    fail_example:
+      input: null identity with SYNTHETIC-ROLE used as substitute
+      expected: BLOCK
+      proves: MISSING_IDENTITY_FAILS_CLOSED
+  - evidence_id: EV-054L-007
+    category: exact_scope
+    pass_example:
+      input: SYNTHETIC-SCOPE exactly equal to allowed template scope
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-SCOPE adds implementation and data-mutation authority
+      expected: BLOCK
+      proves: SCOPE_OVERREACH_FAILS_CLOSED
+  - evidence_id: EV-054L-008
+    category: exclusions
+    pass_example:
+      input: SYNTHETIC-EXCLUSIONS set exactly equal to template exclusions
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-EXCLUSIONS omit non-implementation boundary
+      expected: BLOCK
+      proves: EXCLUSION_WEAKENING_FAILS_CLOSED
+  - evidence_id: EV-054L-009
+    category: channel
+    pass_example:
+      input: SYNTHETIC-BOUNDED-CHANNEL plus SYNTHETIC-EXACT-DESTINATION
+      expected: PASS
+    fail_example:
+      input: null channel and inferred destination
+      expected: BLOCK
+      proves: MISSING_CHANNEL_FAILS_CLOSED
+  - evidence_id: EV-054L-010
+    category: sender
+    pass_example:
+      input: SYNTHETIC-SENDER-B with independent source and evidence
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-SENDER-B self-asserts authority without evidence
+      expected: BLOCK
+      proves: MISSING_SENDER_AUTHORITY_FAILS_CLOSED
+  - evidence_id: EV-054L-011
+    category: expiry
+    pass_example:
+      input: SYNTHETIC approval <= effective < future expiry
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC receipt expired before evaluation time
+      expected: RETURN_NO_PROCEED
+      proves: EXPIRED_RECEIPT_STOPS_PROGRESSION
+    missing_example:
+      input: null expiry and null one-request boundary
+      expected: BLOCK
+      proves: UNBOUNDED_RECEIPT_FAILS_CLOSED
+  - evidence_id: EV-054L-012
+    category: delegation
+    pass_example:
+      input: delegation false with explicit SYNTHETIC-NON-DELEGATION statement
+      expected: PASS
+    fail_example:
+      input: delegation implied with null delegator, delegate and evidence
+      expected: BLOCK
+      proves: IMPLIED_DELEGATION_FAILS_CLOSED
+  - evidence_id: EV-054L-013
+    category: conflict
+    pass_example:
+      input: SYNTHETIC-CONFLICT-CHECK proves no authorship, ownership or implementation overlap
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-REVIEWER is also future implementer
+      expected: BLOCK
+      proves: PROHIBITED_CONFLICT_FAILS_CLOSED
+  - evidence_id: EV-054L-014
+    category: approval
+    pass_example:
+      input: SYNTHETIC-STABLE-APPROVAL exact to assignment and authority
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC-UNRELATED-HISTORICAL-APPROVAL reused
+      expected: BLOCK
+      proves: UNRELATED_APPROVAL_FAILS_CLOSED
+  - evidence_id: EV-054L-015
+    category: non_authorization
+    pass_example:
+      input: SYNTHETIC receipt explicitly grants no dispatch, response, implementation or lease
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC receipt claims IMPLEMENT and COMPLETE
+      expected: BLOCK
+      proves: AUTHORITY_ESCALATION_FAILS_CLOSED
+  - evidence_id: EV-054L-016
+    category: validator_result
+    pass_example:
+      input: SYNTHETIC complete 054H results with all checks PASS
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC ACK label with omitted authority and conflict checks
+      expected: BLOCK
+      proves: UNSUPPORTED_ACK_FAILS_CLOSED
+  - evidence_id: EV-054L-017
+    category: sponsor_prerequisite
+    pass_example:
+      input: SYNTHETIC final GIS-ACK-W01-01 with verified hash after authorized dispatch
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC Sponsor assignment receipt treated as owner response
+      expected: BLOCK
+      proves: ASSIGNMENT_IS_NOT_RESPONSE
+  - evidence_id: EV-054L-018
+    category: product_owner_prerequisite
+    pass_example:
+      input: SYNTHETIC final GIS-ACK-W01-02 matching exact request scope and hash
+      expected: PASS
+    fail_example:
+      input: null GIS-ACK-W01-02 inferred from prior Product Owner decision
+      expected: BLOCK
+      proves: MISSING_PRODUCT_OWNER_RESPONSE_FAILS_CLOSED
+  - evidence_id: EV-054L-019
+    category: gis_operations_prerequisite
+    pass_example:
+      input: SYNTHETIC final GIS-ACK-W01-03 with joint/final rule and verified hash
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC GIS Admin runtime role used as policy response
+      expected: BLOCK
+      proves: RUNTIME_ROLE_IS_NOT_DOMAIN_RESPONSE
+  - evidence_id: EV-054L-020
+    category: security_privacy_prerequisite
+    pass_example:
+      input: SYNTHETIC final GIS-ACK-W01-04 preserving disclosure/hold scope and verified hash
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC Security role invents privacy retention values
+      expected: BLOCK
+      proves: INVENTED_PRIVACY_POLICY_FAILS_CLOSED
+  - evidence_id: EV-054L-021
+    category: joint_or_final_authority
+    pass_example:
+      input: SYNTHETIC canonical rule explicitly resolves joint versus final authority
+      expected: PASS
+    fail_example:
+      input: null rule inferred from which runtime account is active
+      expected: BLOCK
+      proves: UNRESOLVED_JOINT_AUTHORITY_FAILS_CLOSED
+  - evidence_id: EV-054L-022
+    category: closure_record
+    pass_example:
+      input: SYNTHETIC stable closure record referencing exact ACKed receipt hash with no authorization effect
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC validator ACK treated as gap closure and dispatch authority
+      expected: BLOCK
+      proves: ACK_IS_NOT_CLOSURE_OR_DISPATCH
+
+parallel_lane_dry_run:
+  - lane_id: lane_A_source_custody
+    pass_example:
+      synthetic_input: All lane-A preparation and receipt evidence PASS.
+      expected: PASS
+      authorization_effect: NONE
+    fail_example:
+      synthetic_input: Custodian source is SRC-CUST-001 only and identity is null.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-004
+        - EV-054L-006
+  - lane_id: lane_B_independent_governance
+    pass_example:
+      synthetic_input: Exact GIS assignment authority and independent conflict evidence PASS.
+      expected: PASS
+      authorization_effect: NONE
+    fail_example:
+      synthetic_input: DEC-012 is automatic appointment and reviewer authored packet.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-004
+        - EV-054L-013
+  - lane_id: lane_C_sponsor
+    pass_example:
+      synthetic_input: Exact Sponsor assignment receipt is current and request-bounded.
+      expected: PASS
+      authorization_effect: NONE
+    fail_example:
+      synthetic_input: Historical approval is reused and assignment is treated as packet-048 answer.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-014
+        - EV-054L-015
+        - EV-054L-017
+  - lane_id: lane_D_product_owner
+    pass_example:
+      synthetic_input: Exact Product Owner receipt preserves scope and non-counting boundary.
+      expected: PASS
+      authorization_effect: NONE
+    fail_example:
+      synthetic_input: Scope adds privacy authority and Admin GIS completion credit.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-007
+        - EV-054L-008
+  - lane_id: lane_E_domain_and_compatibility
+    pass_example:
+      synthetic_input: All exact domain/compatibility receipts, prerequisites and conflicts PASS.
+      expected: PASS
+      authorization_effect: NONE
+    fail_example:
+      synthetic_input: Sponsor prerequisite absent, authority inferred from runtime role, reviewer conflicts.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-004
+        - EV-054L-013
+        - EV-054L-017
+        - EV-054L-021
+
+closure_step_dry_run:
+  - step_id: CLS-054K-00
+    pass_example:
+      input: SYNTHETIC five source hashes match and seven tuples are unique.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC 054J hash drift.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-001
+  - step_id: CLS-054K-01
+    pass_example:
+      input: SYNTHETIC four preparation sets preserve scope, exclusions, conflict and non-authorization.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC preparation assigns a real recipient role and adds implementation.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-007
+        - EV-054L-015
+  - step_id: CLS-054K-02
+    pass_example:
+      input: SYNTHETIC four separate primary receipts have valid authority, identity, hash and approval.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC one of four receipts is a blank template.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-003
+  - step_id: CLS-054K-03
+    pass_example:
+      input: SYNTHETIC every 054H check passes for four primary receipts.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC Sponsor receipt is expired and source-custody scope overreaches.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-007
+        - EV-054L-011
+      precedence_note: Scope overreach BLOCK outranks expiry RETURN.
+  - step_id: CLS-054K-04
+    pass_example:
+      input: SYNTHETIC separately authorized dispatch yields final verified GIS-ACK-W01-01.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC assignment receipt is substituted for Sponsor response.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-017
+  - step_id: CLS-054K-05
+    pass_example:
+      input: SYNTHETIC two domain receipts exist after verified Sponsor response and resolve joint authority.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC GIS-ACK-W01-01 missing and joint authority rule null.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-017
+        - EV-054L-021
+  - step_id: CLS-054K-06
+    pass_example:
+      input: SYNTHETIC every 054H check passes for both domain receipts.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC Security/privacy receipt weakens legal hold and has sender conflict.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-008
+        - EV-054L-010
+        - EV-054L-013
+  - step_id: CLS-054K-07
+    pass_example:
+      input: SYNTHETIC four final owner ACKs all hash-verified.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC GIS-ACK-W01-03 is partial and GIS-ACK-W01-04 absent.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-019
+        - EV-054L-020
+  - step_id: CLS-054K-08
+    pass_example:
+      input: SYNTHETIC independent compatibility receipt and all four prerequisites pass.
+      expected: PASS
+    fail_example:
+      input: SYNTHETIC reviewer is future implementer and fills a missing response.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-013
+        - EV-054L-020
+  - step_id: CLS-054K-09
+    pass_example:
+      input: SYNTHETIC seven current receipts and seven closure records all pass with no authority effect.
+      expected: PASS
+      authorization_effect: NONE
+    fail_example:
+      input: SYNTHETIC one receipt expired and closure record claims dispatch authority.
+      expected: BLOCK
+      failed_evidence:
+        - EV-054L-011
+        - EV-054L-015
+        - EV-054L-022
+
+targeted_fail_closed_proofs:
+  - proof_id: PROOF-054M-01
+    condition: missing assignment receipt
+    covered_by:
+      - EV-054L-003
+      - CLS-054K-02
+    expected: BLOCK
+  - proof_id: PROOF-054M-02
+    condition: invalid or runtime-role-only authority
+    covered_by:
+      - EV-054L-004
+      - lane_A_source_custody
+      - lane_E_domain_and_compatibility
+    expected: BLOCK
+  - proof_id: PROOF-054M-03
+    condition: source or authority hash drift
+    covered_by:
+      - EV-054L-001
+      - EV-054L-005
+      - CLS-054K-00
+    expected: NO_PROCEED
+  - proof_id: PROOF-054M-04
+    condition: prohibited reviewer or sender conflict
+    covered_by:
+      - EV-054L-010
+      - EV-054L-013
+      - CLS-054K-06
+      - CLS-054K-08
+    expected: BLOCK
+  - proof_id: PROOF-054M-05
+    condition: expired or unbounded receipt
+    covered_by:
+      - EV-054L-011
+      - CLS-054K-03
+      - CLS-054K-09
+    expected: NO_PROCEED
+  - proof_id: PROOF-054M-06
+    condition: scope overreach or weakened exclusion
+    covered_by:
+      - EV-054L-007
+      - EV-054L-008
+      - CLS-054K-03
+      - CLS-054K-06
+    expected: BLOCK
+
+dry_run_summary:
+  evidence_checks:
+    total: 22
+    pass_examples: 22
+    fail_examples: 22
+    supplemental_missing_examples: 1
+  parallel_lanes:
+    total: 5
+    pass_examples: 5
+    fail_examples: 5
+  closure_steps:
+    total: 10
+    pass_examples: 10
+    fail_examples: 10
+  targeted_fail_closed_proofs: 6
+  synthetic_authority_effects: 0
+  real_assignments_created: 0
+  controlled_dispatch_ready: 0
+  verdict: ACK_SYNTHETIC_COVERAGE_NO_REAL_AUTHORITY
+
+validation:
+  evidence_ids_expected: 22
+  evidence_ids_exercised: 22
+  lanes_expected: 5
+  lanes_exercised: 5
+  steps_expected: 10
+  steps_exercised: 10
+  missing_receipt_proof: PASS
+  invalid_authority_proof: PASS
+  hash_drift_proof: PASS
+  conflict_proof: PASS
+  expiry_proof: PASS
+  scope_overreach_proof: PASS
+  real_identity_or_authority_inferred: 0
+  dispatch_ready: 0
+  review_result: ACK_DRY_RUN_FAIL_CLOSED_BEHAVIOR_PROVEN
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-DRY-RUN-COVERAGE-CERTIFICATE-054N
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Independently cross-check packet 054M for complete 22-check, five-lane and
+    ten-step coverage, valid evidence references, outcome precedence and zero
+    authorization effect. Produce a compact coverage certificate only; do not
+    create assignments, identify people, send requests, infer authority or
+    mutate product, design, data, evidence, controls, branches or leases.
+  non_overlap:
+    - no external communication or identity discovery
+    - no record population or authority inference
+    - no request dispatch or acknowledgement
+    - no product, design, data, test, fixture, evidence, shared control, branch or lease mutation

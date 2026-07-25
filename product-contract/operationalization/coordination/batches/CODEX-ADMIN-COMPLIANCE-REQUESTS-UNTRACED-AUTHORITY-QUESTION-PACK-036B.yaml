@@ -1,0 +1,786 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B
+title: Compliance Request unresolved-authority question pack
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: ACK_QUESTION_PACK_READY_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  packet_quality_gate: PASS
+  implementation_gate: BLOCKED
+  authority_answers_received: 0
+  questions_prepared: 9
+  questions_answered: 0
+  option_selection_state: ALL_23_OPTIONS_UNSELECTED
+  lease_authority_granted: false
+  implementation_authority_granted: false
+  migration_authority_granted: false
+  remote_ddl_authority_granted: false
+  shared_data_authority_granted: false
+  provider_authority_granted: false
+  design_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The nine unresolved inputs from packet 036A are now expressed as neutral,
+    answerable authority questions. Each question records business impact,
+    exact requirement and acceptance pressure, a fail-closed interim boundary,
+    prohibited assumptions and the evidence required for a valid response.
+    Nothing in this packet selects an option, supplies a missing policy value
+    or authorizes implementation.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  business_function: >-
+    Obtain explicit authority for the typed Compliance configuration,
+    effective lifecycle, legacy cutover, attachment custody and immutable
+    Package/Field projection needed to make published Compliance Requests
+    operational without weakening maker-checker or historical truth.
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A
+    source_sha256: c65b9764c3d7983db674efd91aeb37131a15789b122ea67eaefc2c9e4a16ee2a
+    source_status: ACK_TRACE_COMPLETE_IMPLEMENTATION_BLOCKED
+  upstream_decision_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+    source_sha256: 33e175516b95cc6f842d1dceb88f5c4395cd426ca735fc46c4545d55b960f668
+    selection_state: ALL_OPTIONS_UNSELECTED
+  dormant_receipt:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-RECEIPT-036
+    start_condition: >-
+      Only after recorded authority supplies complete selections, parameters,
+      evidence and signatures. This question pack is not a receipt.
+  only_writable_output:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B.yaml
+  prohibited:
+    - product code, tests, migrations, database objects or business data
+    - designs, design mappings or design authority
+    - branches, stashes, main, setup/Inspection, merge or deployment
+    - selecting, ranking, recommending or defaulting any answer
+    - granting a lease or inferring sponsor, product, legal, database or provider authority
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: 7b884c495e1f6ba4c0ce0d23e9e83790050fdd99
+  existing_untracked_source_preserved:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A.yaml
+  concurrent_orchestration_files_preserved:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-BLOCKER-DELTA-WATCH-082.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-READINESS-SCORECARD-080.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-CLOSURE-EVIDENCE-CHECKLIST-054L.yaml
+  concurrent_orchestration_files_observed_during_validation:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-NEXT-PROOF-ROUTER-083.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-INTAKE-PACKET-081.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-EVIDENCE-DRY-RUN-054M.yaml
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+authority_rules:
+  response_owner: >-
+    Sponsor or explicitly recorded product, legal, security, records,
+    database and operational authority appropriate to each question.
+  neutrality:
+    - Questions are ordered by UAI-001 through UAI-009, not priority or preference.
+    - Listed response fields define completeness; they do not suggest a value.
+    - Conditional questions may be answered NOT_APPLICABLE only when the incompatible option is explicitly selected in a signed decision receipt.
+    - A current implementation detail, demo value, locale, server setting or provider capability is evidence, never policy authority.
+  valid_response_floor:
+    - authority name, role and authority basis
+    - decision date and version
+    - direct answer to every required response field
+    - requirement and acceptance IDs preserved
+    - required evidence attached and internally consistent
+    - compatibility with every selected option and the preservation floor
+    - explicit treatment of all negative, failure and historical cases
+  invalid_response_conditions:
+    - incomplete, conditional or internally inconsistent response
+    - answer supplied only through chat implication or implementation convenience
+    - missing authority basis or evidence
+    - response that weakens maker-checker, RLS, audit, immutability, history or runtime locking
+    - response treated as implementation, DDL, data, provider, merge or release authority
+
+preservation_floor:
+  - All Regulation, Item, Violation and Penalty create or modify operations remain CCR-governed.
+  - Current approved truth remains operational until an approved successor is effective.
+  - Future-effective content remains unavailable before its effective boundary.
+  - Rejected, invalid or incomplete branches never publish.
+  - Historical Inspection, Enforcement, Package and attachment references never repoint.
+  - Published versions and Package projections are immutable and auditable.
+  - Package publication is maker-checker, transactional and concurrency-safe.
+  - Field and offline execution use only a pinned immutable Package version.
+  - Database privileges, RLS, storage policies and RPC guards enforce the boundary.
+  - No service-role client or client-supplied snapshot becomes business authority.
+
+evidence_catalogue:
+  planned_sql:
+    A: supabase/tests/compliance_request_operational_projection_probe.sql
+    B: supabase/tests/compliance_request_authoring_cutover_probe.sql
+    C: supabase/tests/compliance_package_snapshot_bridge_probe.sql
+  planned_browser:
+    projection: apps/web/e2e/compliance-request-operational-projection.spec.ts
+    downstream: apps/web/e2e/compliance-request-downstream-runtime.spec.ts
+  planned_evidence:
+    A: product-contract/evidence/LEASE-CCR-LIFECYCLE-PROJECTION-032A.md
+    B: product-contract/evidence/LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B.md
+    C: product-contract/evidence/LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C.md
+    D: product-contract/evidence/LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D.md
+    E: product-contract/evidence/CODEX-ADMIN-COMPLIANCE-REQUESTS-DOWNSTREAM-CERT-032E.md
+  rule: >-
+    These are future evidence destinations, not existing PASS evidence and not
+    authorized writable paths under this packet.
+
+authority_questions:
+  - question_id: CCR-036B-Q01
+    input_id: UAI-001
+    subject: Per-kind field, type, nullability and additional-property manifest
+    affected_options: [D1-O1, D1-O2, D1-O3]
+    authority_needed: [product_owner, compliance_business_owner, data_architecture_owner]
+    neutral_question: >-
+      For Regulation, Inspection Item, Violation and Penalty, what is the
+      authoritative field manifest that every approved immutable version must
+      contain, regardless of which D1 representation is selected?
+    required_response_fields:
+      - For every field: canonical name, business definition and owning entity kind.
+      - Data type, format, units, enum or vocabulary authority.
+      - Required versus optional, nullable versus non-null and allowed default behavior.
+      - Creation, modification and publication validation rules.
+      - Stable identity, version, predecessor and parent/child cardinality.
+      - Bilingual value behavior and whether Arabic/English are both required.
+      - Unknown/additional-property behavior.
+      - Write authority and immutable-after-publication rule.
+      - Library, Package, Planning, Field, audit and reporting projection needs.
+      - Attachment, clause, Template and dependency references by exact version.
+    why_it_matters: >-
+      The current CCR engine stores generic JSON. Without a signed per-kind
+      contract, malformed or incomplete content can appear valid and different
+      consumers can interpret the same version differently.
+    affected_requirements:
+      - CR-449
+      - CR-450
+      - CR-451
+      - CR-452
+      - CR-458
+      - CR-460
+      - REQ-R0C-01803
+      - REQ-R0C-01868..01872
+      - REQ-R0C-01894..01896
+    affected_acceptance:
+      - WA-AC-0449
+      - WA-AC-0450
+      - WA-AC-0451
+      - WA-AC-0452
+      - WA-AC-0458
+      - WA-AC-0460
+      - WA-M6-AC-001
+      - WA-M6-AC-002
+      - CMP-ACC-CCR-003
+      - CMP-ACC-CCR-004
+      - CMP-ACC-CCR-016
+    safe_interim_boundary: >-
+      Keep generic CCR snapshots non-operational. Do not create a new
+      projection or migration, and do not repoint Library, Package, Planning
+      or Field consumers. Existing approved operational truth remains unchanged.
+    prohibited_assumptions:
+      - Current JSON examples, route forms or database columns define the complete contract.
+      - Missing fields are nullable or may receive inferred defaults.
+      - One generic shape is sufficient for all four entity kinds.
+      - Unknown properties are accepted because a consumer currently ignores them.
+      - Package or Field may interpret an undeclared field.
+    required_evidence:
+      - Signed, versioned field manifest covering all four kinds.
+      - Source citation for every business field and validation rule.
+      - Valid and invalid canonical examples for each kind.
+      - Parent-child and one-Penalty-per-Violation cardinality matrix.
+      - Product and data-architecture approval with no unresolved field.
+      - Future SQL-A and browser-projection case mapping.
+    stop_condition: D1 and boundary A remain BLOCKED until the manifest is complete and signed.
+
+  - question_id: CCR-036B-Q02
+    input_id: UAI-002
+    subject: Schema format, owner and backward-compatibility policy
+    affected_options: [D1-O2, D1-O3]
+    authority_needed: [product_owner, data_architecture_owner, database_security_owner]
+    neutral_question: >-
+      If a schema-validated document representation is selected, what schema
+      standard, immutable schema identity, ownership and compatibility policy
+      govern current and historical entity documents?
+    required_response_fields:
+      - Schema language/format and supported version.
+      - Registry location, owner and change-control authority.
+      - Immutable schema identifier retained on every entity version.
+      - Required, nullable and additional-property behavior.
+      - Backward, forward and breaking-change classification.
+      - Migration or projection treatment for old schema versions.
+      - Historical schema availability and retention.
+      - Database validation boundary versus application validation.
+      - Query projection contract for Library, Package and audit.
+      - NOT_APPLICABLE rationale if a fully relational option is authoritatively selected.
+    why_it_matters: >-
+      A document is typed only if validation is deterministic and its historical
+      schema remains available. Unversioned or application-only validation
+      permits malformed publication and makes old versions uninterpretable.
+    affected_requirements:
+      - CR-458
+      - CR-460
+      - CR-463
+      - REQ-R0C-01868..01872
+      - REQ-R0C-01894..01896
+    affected_acceptance:
+      - WA-AC-0458
+      - WA-AC-0460
+      - WA-AC-0463
+      - WA-M6-AC-002
+      - CMP-ACC-CCR-003
+      - CMP-ACC-CCR-006
+      - CMP-ACC-CCR-016
+    safe_interim_boundary: >-
+      Do not claim typed documents or add schema-backed publication. Preserve
+      existing data unchanged and keep document-backed D1 choices blocked.
+    prohibited_assumptions:
+      - JSONB storage itself is schema validation.
+      - Latest schema may reinterpret or replace an older published schema.
+      - Application validation alone protects direct Data API or RPC paths.
+      - Additional properties are allowed by default.
+      - A library choice or schema registry exists because a package is installed.
+    required_evidence:
+      - Signed schema-governance contract and named owner.
+      - Immutable registry/versioning and compatibility matrix.
+      - Examples proving missing, wrong-type, unknown and incompatible fields fail.
+      - Historical-schema retrieval and projection evidence plan.
+      - Security review of exposed validation objects, grants and RLS.
+      - Future SQL-A negative-case mapping.
+    stop_condition: D1-O2 and D1-O3 remain BLOCKED until the schema contract is explicit.
+
+  - question_id: CCR-036B-Q03
+    input_id: UAI-003
+    subject: Release/effective timezone, boundary and trusted clock
+    affected_options: [D2-T1, D2-T2, D2-A1, D2-A2, D2-A3]
+    authority_needed: [product_owner, compliance_business_owner, legal_or_policy_owner, database_owner]
+    neutral_question: >-
+      What exact time contract governs Release and Effective values: date-only
+      or exact instant, which authoritative timezone and clock apply, and what
+      inclusive before/at/after boundary determines Scheduled versus Active?
+    required_response_fields:
+      - Explicit D2-T1 or D2-T2 selection in the signed decision receipt.
+      - Database data type and canonical stored representation.
+      - IANA timezone when local business meaning applies.
+      - Inclusive/exclusive start and end semantics.
+      - Trusted clock and handling of clock disagreement.
+      - Approval time versus future effective time distinction.
+      - Display, edit, export and audit representation in English and Arabic.
+      - Treatment of invalid, past, changed and conflicting effective values.
+      - Exact before-boundary, at-boundary and after-boundary examples.
+      - Package dependency-date comparison rule.
+    why_it_matters: >-
+      The product contract requires future-effective content to remain
+      unavailable until its effective boundary while the prior version stays
+      active. An unspecified timezone or hidden instant can activate content
+      early, late or differently across consumers.
+    affected_requirements:
+      - CR-449
+      - CR-458
+      - CR-459
+      - REQ-R0C-01627
+      - REQ-R0C-01638
+      - REQ-R0C-01879..01883
+      - REQ-R0C-01900
+      - REQ-R0C-01906
+      - REQ-R0C-01915
+      - REQ-R0C-01919
+    affected_acceptance:
+      - WA-AC-0449
+      - WA-AC-0458
+      - WA-AC-0459
+      - WA-M6-AC-001
+      - WA-M6-AC-002
+      - CMP-ACC-CCR-001
+      - CMP-ACC-CCR-016..018
+    safe_interim_boundary: >-
+      Do not implement automatic activation. Future-effective CCR publication
+      must not change operational heads; the current approved version remains
+      active. No timezone or browser/server clock is treated as authority.
+    prohibited_assumptions:
+      - Asia/Riyadh, UTC, server locale or browser locale is the business timezone without approval.
+      - Approval timestamp equals Release or Effective time.
+      - Midnight is inclusive without an explicit rule.
+      - Date-only UI may hide a stored exact instant.
+      - Client time determines operational availability.
+    required_evidence:
+      - Signed time contract with authority basis.
+      - Before/at/after examples for each entity and Package dependency.
+      - Data type, timezone conversion and display specification.
+      - Audit-event timestamp semantics.
+      - Future SQL-A boundary/concurrency cases and browser-projection locale cases.
+    stop_condition: All activation and time-basis choices remain BLOCKED.
+
+  - question_id: CCR-036B-Q04
+    input_id: UAI-004
+    subject: Scheduler, queue or runtime provider and operating ownership
+    affected_options: [D2-A2, D2-A3]
+    authority_needed: [platform_owner, database_owner, operations_owner, security_owner]
+    neutral_question: >-
+      If persisted database scheduling or a managed worker is selected, which
+      approved runtime executes activation and who owns deployment, permission,
+      monitoring, retry, idempotency and degraded-state response?
+    required_response_fields:
+      - Explicit D2-A2 or D2-A3 selection, or NOT_APPLICABLE if D2-A1 is selected.
+      - Runtime/provider identity and approved environment.
+      - Deployment and operational owner.
+      - Authentication, database role and least-privilege boundary.
+      - Schedule/queue trigger contract and trusted clock dependency.
+      - Idempotency key and duplicate-execution behavior.
+      - Stale-head/concurrency locking behavior.
+      - Retry, backoff, terminal failure and recovery procedure.
+      - Monitoring, alert ownership and degraded UI/API truth.
+      - Availability objective only if separately authorized.
+    why_it_matters: >-
+      Automatic activation is a required business outcome, but an unowned
+      scheduler can fail silently, duplicate transitions or remove the prior
+      Active version. Provider existence and service-role access cannot be
+      inferred.
+    affected_requirements:
+      - CR-459
+      - CR-463
+      - REQ-R0C-01881
+    affected_acceptance:
+      - WA-AC-0459
+      - WA-AC-0463
+      - WA-M6-AC-001
+      - WA-M6-AC-002
+      - WA-M6-AC-005
+      - CMP-ACC-CCR-011
+      - CMP-ACC-CCR-016..018
+    safe_interim_boundary: >-
+      No background or persisted transition is added. Prior Active truth stays
+      intact and provider/runtime unavailability remains fail-closed and visible.
+    prohibited_assumptions:
+      - Supabase Cron, a queue, Edge Functions or an application worker is approved and configured.
+      - A service-role client is acceptable for convenience.
+      - Retry is safe without an idempotency and stale-head contract.
+      - Monitoring or on-call ownership exists implicitly.
+      - Provider delay may expose a future version early.
+    required_evidence:
+      - Recorded provider/runtime approval and named owners.
+      - Architecture and least-privilege permission contract.
+      - Failure, retry, duplicate and stale-head matrix.
+      - Monitoring/degraded-state runbook.
+      - Future SQL-A idempotency and failure probes plus browser degraded-state cases.
+    stop_condition: D2-A2 and D2-A3 remain BLOCKED; no provider lease exists.
+
+  - question_id: CCR-036B-Q05
+    input_id: UAI-005
+    subject: Standalone deactivation distinct from successor activation
+    affected_options: [D2-A1, D2-A2, D2-A3, D3-A1, D3-A2]
+    authority_needed: [product_owner, compliance_business_owner, legal_or_policy_owner, security_owner]
+    neutral_question: >-
+      What is the governed standalone deactivation policy for an approved
+      version when no successor is becoming effective, including roles,
+      maker-checker, timing, dependency effects, reactivation and historical use?
+    required_response_fields:
+      - Entity kinds eligible for standalone deactivation.
+      - Whether deactivation must use a CCR or may use a signed lifecycle-only exception.
+      - Initiator, reviewer and publisher roles.
+      - Required reason, evidence and legal/policy authority.
+      - Immediate versus scheduled effective behavior and time contract.
+      - Effect on children, Packages, future Planning and active visits.
+      - Historical Inspection and Enforcement preservation.
+      - Reactivation versus new-version requirements.
+      - Emergency path, if any, with exact authority and controls.
+      - Audit events, notifications, rollback and concurrency behavior.
+    why_it_matters: >-
+      Deactivation prevents future use but must not masquerade as successor
+      replacement, edit immutable content or rewrite historical executions.
+      Its role and dependency behavior are not defined by implementation detail.
+    affected_requirements:
+      - CR-449
+      - CR-459
+      - CR-463
+      - REQ-R0C-01815
+    affected_acceptance:
+      - WA-AC-0449
+      - WA-AC-0459
+      - WA-AC-0463
+      - WA-M6-AC-002
+      - CMP-ACC-CCR-008..011
+    safe_interim_boundary: >-
+      Add no standalone deactivation path to the future CCR projection and do
+      not widen any current route, RPC or privilege. Existing business data and
+      historical references remain unchanged.
+    prohibited_assumptions:
+      - Deactivation may edit title, legal content, relationships, rules or attachments.
+      - Deactivation cascades to children or Packages automatically.
+      - Immediate means approval time or server time without the Q03 contract.
+      - Historical or active visits may be repointed.
+      - An emergency bypass exists without separately recorded authority.
+    required_evidence:
+      - Signed lifecycle transition table and role matrix.
+      - Dependency impact matrix for Library, Package, Planning and Field.
+      - Historical-preservation and reactivation rules.
+      - Audit/notification event contract.
+      - Future SQL-A/SQL-B positive, unauthorized, stale and negative cases.
+    stop_condition: Standalone deactivation remains unavailable in the new engine.
+
+  - question_id: CCR-036B-Q06
+    input_id: UAI-006
+    subject: Ambiguous or unreconstructible legacy lineage disposition
+    affected_options: [D2-B1, D2-B2, D2-B3]
+    authority_needed: [product_owner, compliance_business_owner, records_owner, data_owner, audit_owner]
+    neutral_question: >-
+      When a legacy record cannot be reconstructed into complete immutable
+      lineage without inference, how must it be classified, anchored, reviewed
+      and either withheld or admitted to the new model?
+    required_response_fields:
+      - Definitions for complete, partial, ambiguous, conflicting and unreconstructible records.
+      - Selected D2 backfill option and cutover unit.
+      - Required source evidence for reconstructed identity and predecessor links.
+      - Treatment of missing values without fabrication.
+      - Read-only legacy-anchor behavior.
+      - Manual adjudication authority and maker-checker, if allowed.
+      - Quarantine/withhold behavior for unresolved records.
+      - Parent-child cross-kind cutover gate.
+      - Historical read/report behavior during and after cutover.
+      - Reconciliation, rollback and immutable audit requirements.
+    why_it_matters: >-
+      Backfill can corrupt legal and execution history if versions are
+      fabricated, collapsed or repointed. The contract requires exact
+      historical configuration and permits no inferred missing business value.
+    affected_requirements:
+      - CR-458
+      - CR-463
+      - CR-478
+      - REQ-R0C-01655
+      - REQ-R0C-01673
+      - REQ-R0C-01726
+      - REQ-R0C-01785
+      - REQ-R0C-01923
+      - REQ-R0C-02210
+    affected_acceptance:
+      - WA-AC-0458
+      - WA-AC-0463
+      - WA-AC-0478
+      - WA-M6-AC-002
+      - WA-M6-AC-005
+      - CMP-ACC-CCR-018
+      - CMP-ACC-CCR-020
+      - CMP-ACC-CCR-021
+    safe_interim_boundary: >-
+      Perform no backfill, head switch, data correction or historical repoint.
+      Read-only lineage inventory is allowed only under a future bounded packet.
+    prohibited_assumptions:
+      - Missing values may be copied from the latest or nearest record.
+      - Same stable ID means two rows are the same version.
+      - Historical records may be deduplicated or collapsed.
+      - Partial hierarchy may cut over before its exact parents.
+      - Unresolved records can be omitted without an audit disposition.
+    required_evidence:
+      - Signed classification and disposition policy.
+      - Read-only lineage/ambiguity report with counts and immutable identifiers.
+      - Source-to-target reconciliation manifest and hashes.
+      - Dry-run showing zero writes and all unresolved records surfaced.
+      - Independent records/audit review and future SQL-A rollback cases.
+    stop_condition: All backfill and historical cutover mutation remains BLOCKED.
+
+  - question_id: CCR-036B-Q07
+    input_id: UAI-007
+    subject: Lifecycle-only exception field allow-list, roles and audit
+    affected_options: [D3-A2]
+    authority_needed: [product_owner, compliance_business_owner, security_owner, audit_owner]
+    neutral_question: >-
+      If D3-A2 is selected, which exact lifecycle fields and actions may occur
+      outside CCR content authoring, who may perform and review them, and what
+      reason, evidence and audit are mandatory?
+    required_response_fields:
+      - Exact allowed entity kinds, actions and database fields.
+      - Explicit denied content, relationship and attachment fields.
+      - Initiator, reviewer and publisher roles.
+      - Maker-checker requirement and self-action prohibition.
+      - Required reason/evidence vocabulary or authority.
+      - Effective-boundary validation.
+      - Route, RPC and database entry-point boundary.
+      - RLS, grants, trigger and storage-policy enforcement.
+      - Audit event, correlation, notification and rollback semantics.
+      - NOT_APPLICABLE rationale if D3-A1 is selected.
+    why_it_matters: >-
+      A broad lifecycle exception would restore the legacy authoring bypass and
+      defeat CCR-only governance. UI hiding is not authorization; the database
+      must reject every non-allowed field and persona.
+    affected_requirements:
+      - CR-449
+      - CR-459
+      - CR-463
+      - REQ-R0C-01815
+    affected_acceptance:
+      - WA-AC-0449
+      - WA-AC-0459
+      - WA-AC-0463
+      - WA-M6-AC-002
+      - CMP-ACC-CCR-008
+      - CMP-ACC-CCR-009
+      - CMP-ACC-CCR-010
+      - CMP-ACC-CCR-011
+      - CMP-ACC-CCR-029
+    safe_interim_boundary: >-
+      No new direct lifecycle exception is callable. Legacy privileges and RPCs
+      are not widened or treated as approved future authority.
+    prohibited_assumptions:
+      - Existing direct RPC behavior defines the allowed exception.
+      - Compliance Admin may self-review or self-publish.
+      - Client/UI field filtering is sufficient.
+      - A lifecycle exception may alter content, relationships or attachments.
+      - SECURITY DEFINER or service-role access may bypass RLS for convenience.
+    required_evidence:
+      - Signed action/field/role/reason matrix.
+      - Exact route, RPC, table, grant, RLS and trigger inventory.
+      - Database denial cases for every non-allowed field and persona.
+      - Audit/correlation/notification contract.
+      - Future SQL-B bypass probe and browser unauthorized cases.
+    stop_condition: D3-A2 and boundary B remain BLOCKED.
+
+  - question_id: CCR-036B-Q08
+    input_id: UAI-008
+    subject: Attachment retention, orphan disposal, reference counting and access revocation
+    affected_options: [D3-S2, D3-I2]
+    authority_needed: [records_owner, legal_or_policy_owner, security_owner, storage_owner, compliance_business_owner]
+    neutral_question: >-
+      For content-addressed approved documents or quarantined intake, what
+      retention, legal-hold, orphan, reference-count, disposal and access
+      revocation policy preserves immutable approved-version custody?
+    required_response_fields:
+      - Record classes and retention basis; exact duration only from recorded authority.
+      - Legal hold and investigation hold behavior.
+      - Quarantine adoption deadline and orphan classification.
+      - Who may view, adopt, supersede, revoke or dispose.
+      - Reference-count semantics and last-reference behavior.
+      - Whether bytes may ever be deleted while an approved/historical version references them.
+      - Content-hash, object-path and replacement prohibition.
+      - Access revocation without loss of authorized historical custody.
+      - Disposal approval, evidence and immutable audit.
+      - Storage region/provider constraint only if separately authorized.
+    why_it_matters: >-
+      Deduplicated or quarantined documents can become orphaned, overexposed or
+      deleted while still referenced. The product requires durable hash,
+      request/version linkage, access control and historical evidence.
+    affected_requirements:
+      - CR-449
+      - CR-458
+      - CR-463
+      - REQ-R0C-01623
+      - REQ-R0C-01903
+      - REQ-R0C-01916
+    affected_acceptance:
+      - WA-AC-0449
+      - WA-AC-0458
+      - WA-AC-0463
+      - WA-M6-AC-002
+      - CMP-ACC-CCR-003
+      - CMP-ACC-CCR-006
+      - CMP-ACC-CCR-011
+      - CMP-ACC-CCR-015..017
+    safe_interim_boundary: >-
+      Do not introduce content-addressed sharing or quarantine intake. Do not
+      delete, move, replace or reclassify existing attachment objects or metadata.
+    prohibited_assumptions:
+      - A retention duration can be inferred from storage defaults or another module.
+      - An unreferenced quarantine object may be silently deleted.
+      - Same hash permits path reuse or byte replacement.
+      - Revoking access permits destruction of historical custody.
+      - Storage owner, region, legal hold or disposal authority is implicit.
+    required_evidence:
+      - Signed records-retention and attachment-custody policy.
+      - Bucket/object/manifest/access inventory.
+      - Reference and orphan lifecycle matrix.
+      - Legal-hold, revoked-user, last-reference and disposal negative cases.
+      - Immutable disposal/audit evidence contract.
+      - Future SQL-B and storage-policy probe mapping.
+    stop_condition: D3-S2, D3-I2 and related boundary B work remain BLOCKED.
+
+  - question_id: CCR-036B-Q09
+    input_id: UAI-009
+    subject: CCR-to-Package field mapping and offline execution projection
+    affected_options: [D4-S1, D4-S2, D4-S3, D4-E1, D4-E2, D4-E3]
+    authority_needed: [product_owner, compliance_business_owner, package_owner, planning_owner, field_owner, data_architecture_owner]
+    neutral_question: >-
+      What exact, versioned mapping binds an approved CCR branch to an
+      immutable Package version and complete online/offline execution
+      projection, including provenance, ordering, dependencies and eligibility?
+    required_response_fields:
+      - Selected D4 storage and Scheduled-eligibility options.
+      - CCR request, revision, component, publication and correlation identities.
+      - Stable entity and exact version identities plus D1 schema identity and hashes.
+      - Regulation, clause and legal-source fields.
+      - Item text/guidance, response, visibility, evidence, scoring and exclusion fields.
+      - Exact Violation, Penalty and Template version mappings.
+      - Package section, order, report placement and usage information.
+      - Null, unknown, unsupported and rejected-component behavior.
+      - Transactional completeness and zero-partial-row validation.
+      - Package effective/dependency-date and selectability rule.
+      - Offline serialization/versioning, integrity verification and missing-snapshot behavior.
+      - Planning, Field, reporting and enforcement consumer signoff.
+    why_it_matters: >-
+      Current Package snapshots lack complete CCR provenance. A floating active
+      or latest lookup can change live/historical behavior after publication,
+      while an incomplete offline projection can force Field to fall back to
+      mutable legacy catalogues.
+    affected_requirements:
+      - CR-450
+      - CR-451
+      - CR-452
+      - CR-458
+      - CR-459
+      - CR-460
+      - CR-463
+      - CR-478
+      - REQ-R0C-01805
+      - REQ-R0C-01868..01889
+      - REQ-R0C-01894..01896
+    affected_acceptance:
+      - WA-AC-0450
+      - WA-AC-0451
+      - WA-AC-0452
+      - WA-AC-0458
+      - WA-AC-0459
+      - WA-AC-0460
+      - WA-AC-0463
+      - WA-AC-0478
+      - WA-M6-AC-001
+      - WA-M6-AC-002
+      - WA-M6-AC-005
+      - CMP-ACC-CCR-015..018
+      - CMP-ACC-CCR-021
+    safe_interim_boundary: >-
+      Do not connect CCR publication to Package or Field. Preserve current
+      Package and runtime behavior unchanged, but do not award completion
+      credit or allow fallback to serve as the future governed bridge.
+    prohibited_assumptions:
+      - Current Package snapshot shape is complete because it supports a happy path.
+      - Runtime may resolve current, active or latest component values after Package publication.
+      - Client-supplied snapshot JSON is authoritative.
+      - Missing governed fields may be fetched from mutable legacy catalogues.
+      - Scheduled components are eligible without signed cross-date rules.
+      - Reference-only storage proves offline availability.
+    required_evidence:
+      - Signed, versioned CCR-to-Package mapping manifest.
+      - Canonical valid and invalid Package projection fixtures.
+      - Source-version/hash and projection-equivalence rules.
+      - Planning, Field/offline, reporting and enforcement consumer approvals.
+      - Atomicity, concurrency, maker-checker and bypass-negative test map.
+      - Future SQL-C, browser-downstream, Evidence C/D/E and offline regression mapping.
+    stop_condition: Boundaries C, D and E remain BLOCKED.
+
+cross_question_dependencies:
+  - Q01 must be answered before Q02 or Q09 can be accepted.
+  - Q03 must be answered before Q04, Q05 or any D4 Scheduled-eligibility answer can be accepted.
+  - Q05 and Q07 must be internally consistent with the D3-A1 or D3-A2 selection.
+  - Q08 is mandatory when D3-S2 or D3-I2 is selected.
+  - Q09 requires compatible, recorded D1 and D2 decisions.
+  - No NOT_APPLICABLE response is valid without an explicit incompatible-option selection.
+  - An answer set that violates any prohibition in packet 036A is returned.
+
+response_record_template:
+  response_status: UNANSWERED
+  authority_name: REQUIRED
+  authority_role: REQUIRED
+  authority_basis: REQUIRED
+  answered_on: REQUIRED
+  response_version: REQUIRED
+  question_id: REQUIRED
+  direct_answers: REQUIRED
+  attached_evidence: REQUIRED
+  requirement_impact_confirmed: REQUIRED
+  preservation_floor_confirmed: REQUIRED
+  compatibility_confirmed: REQUIRED
+  unresolved_points: MUST_BE_EMPTY_FOR_ACK
+  signature_or_recorded_approval: REQUIRED
+  rule: >-
+    Completing this template records an authority response only. A separate
+    independent receipt validation is required before any contract update or
+    lease preflight.
+
+gate_check:
+  task_packet_result: PASS
+  implementation_result: BLOCKED
+  missing_evidence:
+    - Nine signed authority responses with all required evidence.
+    - Explicit selections for all nine choice sets in packet 035.
+    - Complete field, lifecycle, attachment and Package mapping manifests.
+    - Independent validation through dormant receipt packet 036.
+  next_allowed_action: >-
+    Present Q01 through Q09 to their recorded authorities. If no answers are
+    available, continue only with the safe read-only successor. If complete
+    answers arrive, validate rather than reinterpret them in packet 036.
+  browser_readiness: NOT_READY_DECISION_ONLY
+  p0_p1_truth: >-
+    Operational projection, legacy bypass closure, Package/Field integration
+    and complete evidence remain unresolved. This question pack removes no P0
+    or P1 and receives no requirement credit.
+
+global_stop_conditions:
+  - Any question or response field is presented with a preferred or default answer.
+  - A current database, provider, timezone, retention or route value is treated as authority.
+  - A partial response advances to receipt validation or implementation.
+  - NOT_APPLICABLE is used without a signed incompatible-option selection.
+  - A response weakens the preservation floor or omits negative/historical cases.
+  - A question response is treated as a lease, migration, data write, provider approval, merge or release.
+  - Product, test, design, database, data, branch, stash, main or setup is modified.
+
+rollback:
+  this_packet: Remove only this packet if returned; no product, test, design, database, data, branch or remote state changed.
+  authority_response: >-
+    An unimplemented response may be superseded only through recorded change
+    control. Implemented or published history is forward-only and may never be
+    deleted, reset or rewritten.
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-SCHEMA-036C
+  mode: READ_ONLY_CONTROL_PLANE
+  start_condition: No signed authority response is available.
+  scope: >-
+    Prepare a machine-checkable response schema for Q01 through Q09, including
+    completeness, authority, compatibility, evidence and rejection rules.
+    Preserve all questions unanswered and all options unselected. Do not
+    validate a real answer, grant a lease, implement or modify any product,
+    test, design, database, data, branch, stash, main or setup state.
+  safe_because: >-
+    It shortens later independent receipt validation without guessing a
+    business answer or overlapping implementation ownership.
+
+validation:
+  yaml_parse: PASS
+  source_sha_match: PASS
+  exact_nine_input_ids_match_source: PASS
+  unique_question_ids: PASS
+  all_questions_unanswered: PASS
+  every_question_has_why_it_matters: PASS
+  every_question_has_affected_requirements: PASS
+  every_question_has_safe_interim_boundary: PASS
+  every_question_has_prohibited_assumptions: PASS
+  every_question_has_required_evidence: PASS
+  every_question_has_stop_condition: PASS
+  cross_question_dependencies_present: PASS
+  no_answer_selection_or_lease_authority: PASS
+  completion_credit_zero: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS
