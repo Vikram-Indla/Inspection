@@ -11,7 +11,21 @@ import OperationsPreview, {
 } from "./OperationsPreview";
 import styles from "./operations.module.css";
 
-export type OperationsMapEntry = OpsPin & OperationsPreviewEntry;
+// M3-MAP-PROVENANCE-001 — list-capable: an entry may have no resolvable
+// coordinate at all (tier 3, "unavailable") and must still render in the
+// synchronized list. lat/lng are therefore nullable here even though the
+// shared OpsPin/GeoMap contract underneath still requires real numbers —
+// mappedEntries (below) is the type-guarded subset that satisfies that.
+export type OperationsPositionProvenance = "recorded" | "projected" | "unavailable";
+export type OperationsMapEntry = Omit<OpsPin, "lat" | "lng"> & OperationsPreviewEntry & {
+  lat: number | null;
+  lng: number | null;
+  provenance: OperationsPositionProvenance;
+  observedAt?: string;
+  accuracyM?: number;
+  scheduledAt?: string;
+  coordinateSource?: "planner" | "factory";
+};
 
 export type OperationsMapWorkspaceStrings = {
   mapLabel: string;
@@ -27,6 +41,9 @@ export type OperationsMapWorkspaceStrings = {
   visit: string;
   preview: string;
   previewStrings: OperationsPreviewStrings;
+  provenanceRecorded: string;
+  provenanceProjected: string;
+  provenanceUnavailable: string;
 };
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
@@ -43,14 +60,33 @@ export default function OperationsMapWorkspace({
   const [previewId, setPreviewId] = useState<string | null>(null);
   const selected = entries.find(entry => entry.id === selectedId) ?? null;
   const preview = entries.find(entry => entry.id === previewId) ?? null;
-  const markers = useMemo<GeoMarkerData[]>(() => entries.map(entry => ({
+  // M3-MAP-PROVENANCE-001 — the map surface may only ever receive a real
+  // coordinate; a tier-3 (unavailable) entry has no pin, but stays in the
+  // full `entries` list below (never dropped). Filtering here, not upstream,
+  // is what keeps null/NaN from ever reaching the shared GeoMap component.
+  const mappedEntries = useMemo(
+    () => entries.filter((entry): entry is OperationsMapEntry & { lat: number; lng: number } =>
+      entry.lat != null && entry.lng != null),
+    [entries],
+  );
+  const markers = useMemo<GeoMarkerData[]>(() => mappedEntries.map(entry => ({
     id: entry.id,
     lat: entry.lat,
     lng: entry.lng,
     label: entry.label,
     tone: entry.tone,
     radiusM: entry.radiusM,
-  })), [entries]);
+  })), [mappedEntries]);
+  const provenanceLabel = useCallback((entry: OperationsMapEntry) => {
+    if (entry.kind !== "visit") return null;
+    if (entry.provenance === "recorded") {
+      return `${s.provenanceRecorded}${entry.observedAt ? ` — ${new Date(entry.observedAt).toLocaleString()}` : ""}`;
+    }
+    if (entry.provenance === "projected") {
+      return `${s.provenanceProjected}${entry.scheduledAt ? ` — ${new Date(entry.scheduledAt).toLocaleString()}` : ""}`;
+    }
+    return s.provenanceUnavailable;
+  }, [s.provenanceRecorded, s.provenanceProjected, s.provenanceUnavailable]);
   const selectFromMap = useCallback((id: string) => {
     setSelectedId(id);
     setPreviewId(id);
@@ -94,6 +130,7 @@ export default function OperationsMapWorkspace({
                 aria-pressed={selectedId === entry.id}
                 data-entry-kind={entry.kind}
                 data-has-inspector={entry.inspectorName ? "true" : "false"}
+                data-provenance={entry.kind === "visit" ? entry.provenance : undefined}
                 onClick={() => {
                   setSelectedId(entry.id);
                   setPreviewId(entry.id);
@@ -104,6 +141,12 @@ export default function OperationsMapWorkspace({
                   <span className="sq-caption">
                     {[entry.region, entry.city].filter(Boolean).join(" · ") || "—"}
                   </span>
+                  {entry.kind === "visit" && (
+                    <>
+                      <br />
+                      <span className="sq-caption" data-testid="operations-entry-provenance">{provenanceLabel(entry)}</span>
+                    </>
+                  )}
                 </span>
                 <span className="sq-lozenge">{entry.state}</span>
               </button>

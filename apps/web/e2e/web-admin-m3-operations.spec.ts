@@ -15,6 +15,7 @@ const liveShellSource = read("src/app/(app)/operations/live/LiveOps.tsx");
 const liveMapSource = read("src/app/(app)/operations/live/LiveMapInner.tsx");
 const liveLoadingSource = read("src/app/(app)/operations/live/loading.tsx");
 const liveCssSource = read("src/app/(app)/operations/live/live.module.css");
+const liveTypesSource = read("src/app/(app)/operations/live/types.ts");
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", () => {
   test("renders exactly five governed KPI cards with two explicit decision blocks", () => {
@@ -107,7 +108,10 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
   });
 
   test("renders bounded markers and states without route, ETA, GPS or refresh invention", () => {
-    expect(livePageSource).toContain('"Projected route — not live GPS"');
+    expect(livePageSource).toContain('"Positions are last-recorded GPS, schedule-projected, or unavailable — never a live feed."');
+    expect(livePageSource).toContain('"Last recorded GPS — not guaranteed live"');
+    expect(livePageSource).toContain('"Projected from assignment/schedule — not live GPS"');
+    expect(livePageSource).toContain('"Location unavailable — no recorded GPS and no assignment/factory coordinate available"');
     expect(livePageSource).toContain('"Staleness cadence not yet configured — showing last-observed time only."');
     expect(livePageSource).toContain('"Live map could not load"');
     expect(livePageSource).toContain('"No active visits in your scope right now"');
@@ -138,6 +142,134 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(liveCssSource).toContain("@media (prefers-reduced-motion: reduce)");
     expect(liveCssSource).toContain("inset-inline");
     expect(liveCssSource).toContain('[dir="rtl"]');
+  });
+});
+
+// M3-MAP-PROVENANCE-001 — CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION. Static/
+// source-level proof for every regression-safe contract point that does not
+// require a seeded fixture. No Supabase seed or mutation is performed by
+// this describe block.
+test.describe("TASK-M3-MAP-PROVENANCE-001 source/query non-regression", () => {
+  test("geoRes/geo full-ledger query is unchanged — no kind filter, same WHERE/order/pagination", () => {
+    // Same request as before: no .in("kind", ...) / .eq("kind", ...) clause
+    // anywhere near the geo_events call — latestGeofence still sees the full
+    // ledger, including override/deviation rows.
+    const geoResStart = pageSource.indexOf('sb.from("geo_events")');
+    const geoResBlock = pageSource.slice(geoResStart, geoResStart + 400);
+    expect(geoResBlock).toContain('.select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at, observed_lat, observed_lng")');
+    expect(geoResBlock).toContain('.order("occurred_at", { ascending: false })');
+    expect(geoResBlock).toContain('.order("id", { ascending: true })');
+    expect(geoResBlock).not.toMatch(/\.(in|eq)\("kind"/);
+    // latestGeofence still reduces over the full, unfiltered geo/scopedGeo —
+    // not the kind-restricted positionGeo subset.
+    expect(pageSource).toContain("for (const g of scopedGeo) {");
+    expect(pageSource).toContain("if (g.geofence_result && !latestGeofence.has(g.visit_id))");
+  });
+
+  test("positionGeo is a separate in-memory subset restricted to permitted kinds, never filters the shared ledger", () => {
+    expect(pageSource).toContain('const POSITION_KINDS = ["telemetry", "arrival", "checkin"] as const;');
+    expect(pageSource).toContain("const positionGeo = geo");
+    expect(pageSource).toContain(".filter(g => monitoredVisitIds.has(g.visit_id) && (POSITION_KINDS as readonly string[]).includes(g.kind))");
+    expect(pageSource).toContain(".slice()");
+    // A fresh copy is sorted and reduced — the original `geo` array (and
+    // therefore `scopedGeo`/`latestGeofence`) is never reassigned or mutated.
+    expect(pageSource).not.toMatch(/geo\s*=\s*geo\.(sort|filter)\(/);
+  });
+
+  test("per-visit position precedence is deterministic: occurred_at desc, then id desc as the tiebreak", () => {
+    expect(pageSource).toContain("const byTime = Date.parse(b.occurred_at) - Date.parse(a.occurred_at);");
+    expect(pageSource).toContain("return byTime !== 0 ? byTime : (a.id < b.id ? 1 : a.id > b.id ? -1 : 0);");
+    expect(pageSource).toContain("const latestPositionByVisit = new Map<string, GeoRow>();");
+    expect(pageSource).toContain("if (!latestPositionByVisit.has(g.visit_id)) latestPositionByVisit.set(g.visit_id, g);");
+  });
+
+  test("tier 1 accepts only permitted kinds; override/deviation rows can never resolve as recorded", () => {
+    // resolveVisitPosition only ever reads from latestPositionByVisit, whose
+    // source (positionGeo) is already kind-restricted above — override/
+    // deviation rows are excluded before this function ever sees them.
+    expect(pageSource).toContain("function resolveVisitPosition(v: VisitRow, f: FactoryRow | undefined): PositionResolution {");
+    expect(pageSource).toContain("const recorded = latestPositionByVisit.get(v.id);");
+    expect(pageSource).toContain('provenance: "recorded"');
+  });
+
+  test("tier 2 requires a real assignment, window_start and a resolved planner/factory coordinate", () => {
+    expect(pageSource).toContain("const hasAssignment = (v.assignments?.length ?? 0) > 0;");
+    expect(pageSource).toContain("const coordLat = plannerLat ?? factoryLat;");
+    expect(pageSource).toContain("const coordLng = plannerLng ?? factoryLng;");
+    expect(pageSource).toContain("if (hasAssignment && v.window_start && coordLat != null && coordLng != null) {");
+    expect(pageSource).toContain('provenance: "projected"');
+    expect(pageSource).toContain("coordinateSource: plannerLat != null && plannerLng != null ? \"planner\" : \"factory\"");
+  });
+
+  test("tier 3 (neither resolves) returns null coordinates and provenance unavailable — never thrown or dropped", () => {
+    expect(pageSource).toContain('return { lat: null, lng: null, provenance: "unavailable" };');
+  });
+
+  test("mapEntries/regionalMapEntries are built from full monitored/scoped source entities, never from a coordinate-prefiltered pins array", () => {
+    expect(pageSource).not.toContain("const pins: OpsPin[]");
+    expect(pageSource).not.toContain('import type { OpsPin } from "./OpsMap"');
+    expect(pageSource).toContain("const mapEntries: OperationsMapEntry[] = [];");
+    expect(pageSource).toContain("for (const v of monitored) {");
+    expect(pageSource).toContain("const position = resolveVisitPosition(v, factory);");
+    // No coordinate-based skip/continue anywhere in the visit or factory
+    // entry-building loops — every monitored visit and scoped factory
+    // becomes a list entry regardless of whether a coordinate resolved.
+    const mapEntriesStart = pageSource.indexOf("const mapEntries: OperationsMapEntry[] = [];");
+    const regionalStart = pageSource.indexOf("const regionalMapEntries: OperationsMapEntry[] = scopedFactories.map(factory => {");
+    const entryBuildBlock = pageSource.slice(mapEntriesStart, regionalStart);
+    expect(entryBuildBlock).not.toMatch(/if \(!factory \|\| factory\.official_lat == null/);
+    expect(entryBuildBlock).not.toContain("official_lat == null) continue");
+    expect(pageSource).toContain("const regionalMapEntries: OperationsMapEntry[] = scopedFactories.map(factory => {");
+    expect(pageSource).not.toContain(".filter(factory => factory.official_lat != null && factory.official_lng != null)\n    .map(factory => ({");
+  });
+
+  test("OperationsMapEntry is list-capable with nullable coordinates and provenance metadata; mappedEntries type-guards the map-only subset", () => {
+    expect(mapSource).toContain('export type OperationsMapEntry = Omit<OpsPin, "lat" | "lng"> & OperationsPreviewEntry & {');
+    expect(mapSource).toContain("lat: number | null;");
+    expect(mapSource).toContain("lng: number | null;");
+    expect(mapSource).toContain('provenance: OperationsPositionProvenance;');
+    expect(mapSource).toContain("const mappedEntries = useMemo(");
+    expect(mapSource).toContain("entry.lat != null && entry.lng != null");
+    // markers (fed to the shared GeoMap) derive from mappedEntries; the list
+    // section below still maps over the full, unfiltered `entries`.
+    expect(mapSource).toContain("mappedEntries.map(entry => ({");
+    expect(mapSource).toContain("[mappedEntries]");
+    expect(mapSource).toContain("{entries.map(entry => (");
+  });
+
+  test("live: exactly one bounded, non-N+1 geo_events query, scoped to the full monitored visit set", () => {
+    expect(livePageSource.match(/sb\.from\("geo_events"\)/g)).toHaveLength(1);
+    expect(livePageSource).toContain('.select("id, visit_id, kind, observed_lat, observed_lng, accuracy_m, occurred_at")');
+    expect(livePageSource).toContain('.in("visit_id", monitoredVisitIds)');
+    expect(livePageSource).toContain('.in("kind", POSITION_KINDS as unknown as string[])');
+    expect(livePageSource).toContain('.order("occurred_at", { ascending: false })');
+    expect(livePageSource).toContain('.order("id", { ascending: false })');
+    // Never issued inside the visit-building loop.
+    const inspectorLoopStart = livePageSource.indexOf("for (const v of visitRows) {");
+    const inspectorLoopBlock = livePageSource.slice(inspectorLoopStart, inspectorLoopStart + 900);
+    expect(inspectorLoopBlock).not.toContain('sb.from("geo_events")');
+  });
+
+  test("live: factories/visits list-level reads no longer drop coordinate-less rows; only the map-pin step filters", () => {
+    expect(livePageSource).not.toMatch(/\.not\("official_lat"/);
+    expect(liveMapSource).toContain("factory.lat != null && factory.lng != null");
+    expect(liveMapSource).toContain("inspector.lat != null && inspector.lng != null");
+  });
+
+  test("live: a geo_events read failure is a distinct error state, never silently reinterpreted as confirmed-no-GPS", () => {
+    expect(livePageSource).toContain("if (geoEventsRes.error) console.error(");
+    expect(livePageSource).toContain("const hasReadError = Boolean(factoriesRes.error || visitsRes.error || geoEventsRes.error);");
+  });
+
+  test("live: types carry provenance, nullable coordinates and tier-specific metadata", () => {
+    expect(liveTypesSource).toContain('export type LivePositionProvenance = "recorded" | "projected" | "unavailable";');
+    expect(liveTypesSource).toContain("lat: number | null;");
+    expect(liveTypesSource).toContain("lng: number | null;");
+    expect(liveTypesSource).toContain("provenance: LivePositionProvenance;");
+    expect(liveTypesSource).toContain("observedAt?: string;");
+    expect(liveTypesSource).toContain("accuracyM?: number;");
+    expect(liveTypesSource).toContain("scheduledAt?: string;");
+    expect(liveTypesSource).toContain('coordinateSource?: "planner" | "factory";');
   });
 });
 
@@ -210,20 +342,41 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
 
   test("Operations Live exposes the bounded disclaimer, freshness and accessible list", async ({ page }) => {
     await page.goto("/operations/live");
-    await expect(page.getByText("Projected route — not live GPS", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("Positions are last-recorded GPS, schedule-projected, or unavailable — never a live feed.", { exact: true })).toHaveCount(2);
     await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Last observed:", { exact: false })).toBeVisible();
     const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
     if (await firstInspector.count()) {
+      // Structural, data-independent proof: whichever real tier this
+      // environment's live data happens to resolve to, the rendered label is
+      // always one of the three exact truthful strings — never the removed
+      // generic "Projected route" claim and never blank. Which specific tier
+      // appears is not asserted (it depends on real, unseeded data this
+      // lease has no authority to control).
+      const listProvenance = await firstInspector.getByTestId("live-list-provenance").textContent();
+      expect(listProvenance).toMatch(/^(Last recorded GPS — not guaranteed live|Projected from assignment\/schedule — not live GPS|Location unavailable — no recorded GPS and no assignment\/factory coordinate available)/);
+
       await firstInspector.click();
       await expect(firstInspector).toHaveAttribute("aria-pressed", "true");
       const details = page.getByTestId("live-inspector-details");
       await expect(details).toBeVisible();
       await expect(details.getByText("Inspector details", { exact: true })).toBeVisible();
       await expect(details.getByText("Visit reference", { exact: true })).toBeVisible();
+      const detailsProvenance = await details.getByTestId("live-inspector-provenance").textContent();
+      expect(detailsProvenance).toMatch(/^(Last recorded GPS — not guaranteed live|Projected from assignment\/schedule — not live GPS|Location unavailable — no recorded GPS and no assignment\/factory coordinate available)/);
       await page.getByRole("button", { name: "Close inspector details", exact: true }).click();
       await expect(details).toHaveCount(0);
+    } else {
+      // No inspector currently resolves in this environment's live data —
+      // honestly recorded, not silently skipped: the tier-specific runtime
+      // assertions above require at least one on_the_way/arrived/executing
+      // visit with an assigned inspector to exist, which this read-only
+      // lease has no seed-data authority to guarantee.
+      test.info().annotations.push({
+        type: "external-evidence-blocker",
+        description: "No live inspector entity present — tier-specific runtime proof not exercised this run (no seed-data lease held).",
+      });
     }
   });
 
@@ -232,14 +385,14 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     const page = await context.newPage();
     await page.goto("/operations/live");
     await expect(page.getByTestId("operations-live")).toBeVisible();
-    await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Positions are last-recorded GPS, schedule-projected, or unavailable — never a live feed.", { exact: true }).first()).toBeVisible();
     await context.close();
   });
 
   test("wallboard is a real route state and keeps the non-GPS disclosure", async ({ page }) => {
     await page.goto("/operations/live?wallboard=1");
     await expect(page.getByRole("link", { name: "Exit wallboard", exact: true })).toBeVisible();
-    await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Positions are last-recorded GPS, schedule-projected, or unavailable — never a live feed.", { exact: true }).first()).toBeVisible();
   });
 
   test("basemap provider failure withdraws only the map and keeps operational context", async ({ page }) => {
@@ -247,6 +400,6 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations/live");
     await expect(page.getByText("Live map unavailable — basemap provider failed.", { exact: true })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
-    await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Positions are last-recorded GPS, schedule-projected, or unavailable — never a live feed.", { exact: true }).first()).toBeVisible();
   });
 });

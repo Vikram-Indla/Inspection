@@ -12,7 +12,12 @@ export type LiveOpsStrings = {
   executing: string;
   completed: string;
   inspector: string;
-  projected: string;
+  // Three truthful per-entity provenance states (M3-MAP-PROVENANCE-001 §3),
+  // replacing the single generic "Projected route — not live GPS" claim.
+  positionLegend: string;
+  provenanceRecorded: string;
+  provenanceProjected: string;
+  provenanceUnavailable: string;
   freshnessPolicy: string;
   lastObserved: string;
   activeList: string;
@@ -67,12 +72,21 @@ export default function LiveOps({
     timeStyle: "medium",
     timeZone: "Asia/Riyadh",
   }).format(new Date(observedAt));
+  const provenanceLabel = useCallback((inspector: LiveInspector) => {
+    if (inspector.provenance === "recorded") {
+      return `${s.provenanceRecorded}${inspector.observedAt ? ` — ${new Date(inspector.observedAt).toLocaleString()}` : ""}`;
+    }
+    if (inspector.provenance === "projected") {
+      return `${s.provenanceProjected}${inspector.scheduledAt ? ` — ${new Date(inspector.scheduledAt).toLocaleString()}` : ""}`;
+    }
+    return s.provenanceUnavailable;
+  }, [s.provenanceRecorded, s.provenanceProjected, s.provenanceUnavailable]);
 
   return (
     <div className={`${styles.page} ${wallboard ? styles.wallboard : ""}`} data-testid="operations-live">
       <header className={styles.header}>
         <div>
-          <p className={styles.disclosure}>{s.projected}</p>
+          <p className={styles.disclosure}>{s.positionLegend}</p>
           <p className={styles.freshness}>
             <span>{s.lastObserved}: <time dateTime={observedAt}>{formattedObservedAt}</time></span>
             <span>{s.freshnessPolicy}</span>
@@ -143,7 +157,7 @@ export default function LiveOps({
                 <div><dt>{s.since}</dt><dd>{selectedInspector.sinceLabel}</dd></div>
                 <div><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
               </dl>
-              <p className={styles.selectionDisclosure}>{s.projected}</p>
+              <p className={styles.selectionDisclosure} data-testid="live-inspector-provenance">{provenanceLabel(selectedInspector)}</p>
             </section>
           ) : null}
           {inspectors.length ? (
@@ -154,11 +168,13 @@ export default function LiveOps({
                     type="button"
                     className={styles.listButton}
                     aria-pressed={selectedId === inspector.id}
+                    data-provenance={inspector.provenance}
                     onClick={() => setSelectedId(inspector.id)}
                   >
                     <span>
                       <strong>{inspector.factoryName}</strong>
                       <small>{inspector.region} · {inspector.inspector}</small>
+                      <small data-testid="live-list-provenance">{provenanceLabel(inspector)}</small>
                     </span>
                     <span>
                       <span className="sq-lozenge sq-lozenge--info">{inspector.stateLabel}</span>
@@ -177,7 +193,7 @@ export default function LiveOps({
       <footer className={styles.legend} role="note">
         <span className={styles.marker} aria-hidden="true">●</span>
         <span>{s.inspector}</span>
-        <strong>{s.projected}</strong>
+        <strong>{s.positionLegend}</strong>
       </footer>
     </div>
   );

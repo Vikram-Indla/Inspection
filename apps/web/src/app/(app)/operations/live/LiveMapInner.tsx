@@ -38,31 +38,43 @@ function updateSources(
   selectedId: string | null,
   canonical: KsaRegionCollection | null,
 ) {
+  // M3-MAP-PROVENANCE-001 — coordinate presence is a map-pin-only gate. A
+  // tier-3 (unavailable) inspector, or a factory with no official coordinate
+  // on file, is never dropped from the underlying data (see page.tsx/types.ts)
+  // — it simply has no pin here, and the accessible list is what still shows
+  // it. No null/NaN ever reaches a Mapbox GeoJSON geometry.
   const factoryData: GeoJSON.FeatureCollection<GeoJSON.Point> = {
     type: "FeatureCollection",
-    features: factories.map(factory => ({
-      type: "Feature",
-      properties: {
-        id: factory.id,
-        name: factory.name,
-        context: factory.city ?? factory.region ?? "",
-      },
-      geometry: { type: "Point", coordinates: [factory.lng, factory.lat] },
-    })),
+    features: factories
+      .filter((factory): factory is typeof factory & { lat: number; lng: number } =>
+        factory.lat != null && factory.lng != null)
+      .map(factory => ({
+        type: "Feature",
+        properties: {
+          id: factory.id,
+          name: factory.name,
+          context: factory.city ?? factory.region ?? "",
+        },
+        geometry: { type: "Point", coordinates: [factory.lng, factory.lat] },
+      })),
   };
   const inspectorData: GeoJSON.FeatureCollection<GeoJSON.Point> = {
     type: "FeatureCollection",
-    features: inspectors.map(inspector => ({
-      type: "Feature",
-      properties: {
-        id: inspector.id,
-        inspector: inspector.inspector,
-        state: inspector.stateLabel,
-        factory: inspector.factoryName,
-        selected: inspector.id === selectedId,
-      },
-      geometry: { type: "Point", coordinates: [inspector.lng, inspector.lat] },
-    })),
+    features: inspectors
+      .filter((inspector): inspector is typeof inspector & { lat: number; lng: number } =>
+        inspector.lat != null && inspector.lng != null)
+      .map(inspector => ({
+        type: "Feature",
+        properties: {
+          id: inspector.id,
+          inspector: inspector.inspector,
+          state: inspector.stateLabel,
+          factory: inspector.factoryName,
+          provenance: inspector.provenance,
+          selected: inspector.id === selectedId,
+        },
+        geometry: { type: "Point", coordinates: [inspector.lng, inspector.lat] },
+      })),
   };
   const regionLabels: GeoJSON.FeatureCollection<GeoJSON.Point> = {
     type: "FeatureCollection",

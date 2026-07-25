@@ -7,7 +7,6 @@ import {
   type ActionFormControlsStrings, type MarkHandledStrings,
 } from "./Controls";
 import { MonitoringTable, type MonitoringStrings } from "./Monitoring";
-import type { OpsPin } from "./OpsMap";
 import EmptyState from "@/components/EmptyState";
 import { IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
@@ -40,10 +39,30 @@ type VisitRow = {
   window_start: string;
   window_end: string;
   factory_id: string | null;
+  planner_lat: number | null;
+  planner_lng: number | null;
   factories: FactoryEmbed;
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
-type GeoRow = { id: string; visit_id: string; kind: string; geofence_result: string | null; accuracy_m: number; occurred_at: string };
+// M3-DEC-PROJECTED-ROUTE-001 / M3-MAP-PROVENANCE-001 — observed_lat/observed_lng
+// are additive SELECT columns on the existing geo_events ledger read (same
+// request, same WHERE, same order, same pagination). They carry real position
+// data already stored on the row; adding them does not filter or reorder the
+// shared full ledger that latestGeofence depends on.
+type GeoRow = {
+  id: string; visit_id: string; kind: string; geofence_result: string | null;
+  accuracy_m: number; occurred_at: string;
+  observed_lat: number | null; observed_lng: number | null;
+};
+type PositionProvenance = "recorded" | "projected" | "unavailable";
+type PositionResolution = {
+  lat: number | null; lng: number | null; provenance: PositionProvenance;
+  observedAt?: string; accuracyM?: number; scheduledAt?: string; coordinateSource?: "planner" | "factory";
+};
+// Permitted tier-1 kinds — override/deviation rows can never qualify as a
+// recorded position (M3-MAP-PROVENANCE-001 §3). "as const" so the readonly
+// tuple can be handed to Array.prototype.includes cleanly below.
+const POSITION_KINDS = ["telemetry", "arrival", "checkin"] as const;
 type ActionRow = {
   id: string;
   form_type: string;
@@ -208,15 +227,18 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
     collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
-      .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
+      .select("id, operational_state, planning_status, window_start, window_end, factory_id, planner_lat, planner_lng, factories(id, name, region, city), assignments(profiles(full_name))")
       .order("window_start", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
     // M08-014 location history must not silently disappear once the table
     // exceeds an arbitrary recent-row limit. Page the immutable ledger using a
-    // stable order, then scope it to the monitored visits below.
+    // stable order, then scope it to the monitored visits below. UNCHANGED
+    // WHERE/order/pagination — latestGeofence needs the full ledger including
+    // override/deviation rows; observed_lat/observed_lng are additive columns
+    // only, read by the separate in-memory positionGeo derivation below.
     collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
-      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at")
+      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at, observed_lat, observed_lng")
       .order("occurred_at", { ascending: false })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>),
@@ -427,6 +449,51 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   }
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
 
+  // M3-MAP-PROVENANCE-001 — a separate, in-memory-only subset of the SAME
+  // already-fetched full `geo` ledger, scoped to monitored visits and
+  // restricted to permitted position kinds. Does not mutate or filter `geo`
+  // or `scopedGeo` (latestGeofence above still reads the unfiltered ledger,
+  // including override/deviation rows). Sorted as a fresh copy — occurred_at
+  // descending, then id descending as the deterministic tiebreak — so the
+  // first-seen row per visit is unambiguously the latest.
+  const positionGeo = geo
+    .filter(g => monitoredVisitIds.has(g.visit_id) && (POSITION_KINDS as readonly string[]).includes(g.kind))
+    .slice()
+    .sort((a, b) => {
+      const byTime = Date.parse(b.occurred_at) - Date.parse(a.occurred_at);
+      return byTime !== 0 ? byTime : (a.id < b.id ? 1 : a.id > b.id ? -1 : 0);
+    });
+  const latestPositionByVisit = new Map<string, GeoRow>();
+  for (const g of positionGeo) {
+    if (!latestPositionByVisit.has(g.visit_id)) latestPositionByVisit.set(g.visit_id, g);
+  }
+
+  /** Tier 1 (recorded) → tier 2 (projected from assignment/schedule) → tier 3
+   * (unavailable). Never drops the entity — callers keep it in the list with
+   * lat/lng null and provenance "unavailable" rather than filtering it out. */
+  function resolveVisitPosition(v: VisitRow, f: FactoryRow | undefined): PositionResolution {
+    const recorded = latestPositionByVisit.get(v.id);
+    if (recorded && recorded.observed_lat != null && recorded.observed_lng != null) {
+      return {
+        lat: Number(recorded.observed_lat), lng: Number(recorded.observed_lng), provenance: "recorded",
+        observedAt: recorded.occurred_at, accuracyM: recorded.accuracy_m ?? undefined,
+      };
+    }
+    const hasAssignment = (v.assignments?.length ?? 0) > 0;
+    const plannerLat = v.planner_lat, plannerLng = v.planner_lng;
+    const factoryLat = f?.official_lat ?? null, factoryLng = f?.official_lng ?? null;
+    const coordLat = plannerLat ?? factoryLat;
+    const coordLng = plannerLng ?? factoryLng;
+    if (hasAssignment && v.window_start && coordLat != null && coordLng != null) {
+      return {
+        lat: Number(coordLat), lng: Number(coordLng), provenance: "projected",
+        scheduledAt: v.window_start,
+        coordinateSource: plannerLat != null && plannerLng != null ? "planner" : "factory",
+      };
+    }
+    return { lat: null, lng: null, provenance: "unavailable" };
+  }
+
   // ---------- ENG-09 SLA watch: engine thresholds vs live visit windows ----------
   const slaFlags = computeSlaFlags(monitored, slaConf, now);
   // Phase 6 (§22, D-022) — resubmission deadlines for returned inspections
@@ -434,35 +501,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const resubSlaAvailable = typeof slaConf.resubmission_business_days === "number";
   const resubFlags = computeResubmissionFlags(resubmissionSources, slaConf, now);
 
-  // ---------- M08-002 KSA map pins ----------
+  // ---------- M08-002 KSA map scope ----------
   const scopedFactories = factories.filter(f =>
     (!region || f.region === region) && (!city || f.city === city));
   const gisDefault = typeof gisConf.geofence_default_radius_m === "number" ? gisConf.geofence_default_radius_m : undefined;
-  const pins: OpsPin[] = [];
-  const pinnedFactoryIds = new Set<string>();
-  for (const v of monitored) {
-    const tone = ACTIVE_TONE[v.operational_state];
-    if (!tone) continue;
-    const f = scopedFactories.find(x => x.id === (v.factories?.id ?? v.factory_id));
-    if (!f || f.official_lat == null || f.official_lng == null) continue;
-    pinnedFactoryIds.add(f.id);
-    pins.push({
-      id: `v:${v.id}`, kind: "visit",
-      lat: Number(f.official_lat), lng: Number(f.official_lng),
-      label: `${f.name} · ${enumLabel(v.operational_state)}`,
-      tone, radiusM: f.geofence_radius_m ?? gisDefault,
-      href: `/visits/${v.id}`,
-    });
-  }
-  for (const f of scopedFactories) {
-    if (pinnedFactoryIds.has(f.id) || f.official_lat == null || f.official_lng == null) continue;
-    pins.push({
-      id: `f:${f.id}`, kind: "factory",
-      lat: Number(f.official_lat), lng: Number(f.official_lng),
-      label: f.name, tone: "neutral",
-      href: `/factories/${f.id}`,
-    });
-  }
 
   // ---------- M08-010 filter option lists (region-scoped cities) ----------
   const regions = [...new Set(factories.map(f => f.region).filter((r): r is string => !!r))].sort();
@@ -521,6 +563,9 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     factory: t("ops.map.factory", "Factory 360"),
     visit: t("ops.map.visit", "visit"),
     preview: t("ops.map.preview", "Preview"),
+    provenanceRecorded: t("ops.map.provenance.recorded", "Last recorded GPS — not guaranteed live"),
+    provenanceProjected: t("ops.map.provenance.projected", "Projected from assignment/schedule — not live GPS"),
+    provenanceUnavailable: t("ops.map.provenance.unavailable", "Location unavailable — no recorded GPS and no assignment/factory coordinate available"),
     previewStrings: {
       inspectorTitle: t("ops.preview.inspector", "Inspector preview"),
       factoryTitle: t("ops.preview.factory", "Factory quick card"),
@@ -610,31 +655,65 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       openActionCount: factory ? actionCountForFactory(factory.id) : 0,
     };
   };
-  const mapEntries: OperationsMapEntry[] = pins.map(pin => {
-    const visit = pin.kind === "visit"
-      ? monitored.find(item => `v:${item.id}` === pin.id)
-      : undefined;
-    const factoryId = visit?.factories?.id ?? visit?.factory_id ?? pin.id.replace(/^f:/, "");
-    const factory = scopedFactories.find(item => item.id === factoryId);
+  // M3-MAP-PROVENANCE-001 — built from the full monitored/scoped source
+  // entities (not from a coordinate-prefiltered pins array), so a tier-3
+  // (unavailable) entity is included with lat/lng null rather than dropped.
+  // OperationsMapWorkspace's own mappedEntries derivation is what keeps
+  // coordinate-less entries off the map while the synchronized list still
+  // renders every one of them.
+  const mapEntries: OperationsMapEntry[] = [];
+  const pinnedFactoryIds = new Set<string>();
+  for (const v of monitored) {
+    const tone = ACTIVE_TONE[v.operational_state];
+    if (!tone) continue;
+    const factory = scopedFactories.find(x => x.id === (v.factories?.id ?? v.factory_id));
+    if (factory) pinnedFactoryIds.add(factory.id);
+    const position = resolveVisitPosition(v, factory);
+    mapEntries.push({
+      id: `v:${v.id}`, kind: "visit",
+      lat: position.lat, lng: position.lng,
+      label: factory ? `${factory.name} · ${enumLabel(v.operational_state)}` : enumLabel(v.operational_state),
+      tone, radiusM: factory?.geofence_radius_m ?? gisDefault,
+      href: `/visits/${v.id}`,
+      provenance: position.provenance,
+      observedAt: position.observedAt, accuracyM: position.accuracyM,
+      scheduledAt: position.scheduledAt, coordinateSource: position.coordinateSource,
+      ...previewFields(factory, v),
+      state: enumLabel(v.operational_state),
+    });
+  }
+  for (const factory of scopedFactories) {
+    if (pinnedFactoryIds.has(factory.id)) continue;
+    const hasCoord = factory.official_lat != null && factory.official_lng != null;
+    mapEntries.push({
+      id: `f:${factory.id}`, kind: "factory",
+      lat: hasCoord ? Number(factory.official_lat) : null,
+      lng: hasCoord ? Number(factory.official_lng) : null,
+      label: factory.name, tone: "neutral",
+      href: `/factories/${factory.id}`,
+      // Factory pins are static official-record coordinates, never a
+      // GPS-derived tier — "recorded" here means "on file," distinct from
+      // the visit-position recorded/projected/unavailable GPS semantics.
+      provenance: hasCoord ? "recorded" : "unavailable",
+      ...previewFields(factory, undefined),
+      state: t("ops.map.factoryState", "Factory"),
+    });
+  }
+  const regionalMapEntries: OperationsMapEntry[] = scopedFactories.map(factory => {
+    const hasCoord = factory.official_lat != null && factory.official_lng != null;
     return {
-      ...pin,
-      ...previewFields(factory, visit),
-      state: visit ? enumLabel(visit.operational_state) : t("ops.map.factoryState", "Factory"),
-    };
-  });
-  const regionalMapEntries: OperationsMapEntry[] = scopedFactories
-    .filter(factory => factory.official_lat != null && factory.official_lng != null)
-    .map(factory => ({
       id: `regional:${factory.id}`,
       kind: "factory",
-      lat: Number(factory.official_lat),
-      lng: Number(factory.official_lng),
+      lat: hasCoord ? Number(factory.official_lat) : null,
+      lng: hasCoord ? Number(factory.official_lng) : null,
       label: factory.name,
       tone: "neutral",
       href: `/factories/${factory.id}`,
+      provenance: hasCoord ? "recorded" : "unavailable",
       ...previewFields(factory, undefined),
       state: t("ops.map.factoryState", "Factory"),
-    }));
+    };
+  });
   const scopedQuery = [
     region ? `region=${encodeURIComponent(region)}` : "",
     city ? `city=${encodeURIComponent(city)}` : "",

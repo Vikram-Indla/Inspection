@@ -19,17 +19,52 @@ type FactoryRow = {
 type VisitRow = {
   id: string; operational_state: string; planning_status: string;
   window_start: string | null; window_end: string | null; factory_id: string | null;
+  planner_lat: number | null; planner_lng: number | null;
   factories: { id: string; name: string; region: string | null; city: string | null;
     official_lat: number | null; official_lng: number | null } | null;
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
+// M3-MAP-PROVENANCE-001 — the one bounded, non-N+1 geo_events read for this
+// page: a single call scoped to the full monitored visit-id set, never a
+// per-visit loop.
+type GeoEventRow = {
+  id: string; visit_id: string; kind: string;
+  observed_lat: number | null; observed_lng: number | null;
+  accuracy_m: number | null; occurred_at: string;
+};
+const POSITION_KINDS = ["telemetry", "arrival", "checkin"] as const;
 
-// Deterministic 0..1 from a string — a stable phase/direction per inspector so
-// the projected routes fan out instead of marching in lockstep.
-function hash01(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return ((h >>> 0) % 10000) / 10000;
+type PositionResolution = {
+  lat: number | null; lng: number | null; provenance: "recorded" | "projected" | "unavailable";
+  observedAt?: string; accuracyM?: number; scheduledAt?: string; coordinateSource?: "planner" | "factory";
+};
+
+/** Tier 1 (recorded) → tier 2 (projected from assignment/schedule) → tier 3
+ * (unavailable). Never drops the inspector entity — caller keeps lat/lng null
+ * and provenance "unavailable" instead of filtering it out. */
+function resolveLivePosition(
+  v: VisitRow,
+  f: { official_lat: number | null; official_lng: number | null },
+  recorded: GeoEventRow | undefined,
+): PositionResolution {
+  if (recorded && recorded.observed_lat != null && recorded.observed_lng != null) {
+    return {
+      lat: Number(recorded.observed_lat), lng: Number(recorded.observed_lng), provenance: "recorded",
+      observedAt: recorded.occurred_at, accuracyM: recorded.accuracy_m ?? undefined,
+    };
+  }
+  const hasAssignment = (v.assignments?.length ?? 0) > 0;
+  const plannerLat = v.planner_lat, plannerLng = v.planner_lng;
+  const coordLat = plannerLat ?? f.official_lat;
+  const coordLng = plannerLng ?? f.official_lng;
+  if (hasAssignment && v.window_start && coordLat != null && coordLng != null) {
+    return {
+      lat: Number(coordLat), lng: Number(coordLng), provenance: "projected",
+      scheduledAt: v.window_start,
+      coordinateSource: plannerLat != null && plannerLng != null ? "planner" : "factory",
+    };
+  }
+  return { lat: null, lng: null, provenance: "unavailable" };
 }
 
 export default async function LiveOperations({ searchParams }: {
@@ -67,13 +102,16 @@ export default async function LiveOperations({ searchParams }: {
 
   const observedAt = new Date();
   const [factoriesRes, visitsRes] = await Promise.all([
+    // M3-MAP-PROVENANCE-001 — the prior official-coordinate WHERE-clause
+    // exclusion is removed: a factory without an official coordinate on file
+    // is still a real, counted record. Only the map-pin step (LiveMapInner)
+    // skips a coordinate-less factory; this list-level read never drops it.
     collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng")
-      .not("official_lat", "is", null)
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
     collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
-      .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city, official_lat, official_lng), assignments(profiles(full_name))")
+      .select("id, operational_state, planning_status, window_start, window_end, factory_id, planner_lat, planner_lng, factories(id, name, region, city, official_lat, official_lng), assignments(profiles(full_name))")
       .in("operational_state", ["on_the_way", "arrived", "executing"])
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
@@ -85,20 +123,45 @@ export default async function LiveOperations({ searchParams }: {
   const factoryRows = (factoriesRes.data ?? []) as unknown as FactoryRow[];
   const visitRows = (visitsRes.data ?? []) as unknown as VisitRow[];
 
-  const hasReadError = Boolean(factoriesRes.error || visitsRes.error);
+  // M3-MAP-PROVENANCE-001 — the one bounded, non-N+1 geo_events read: a
+  // single call scoped to the full monitored visit-id set (never a per-visit
+  // loop), restricted to permitted position kinds at the query level since
+  // this page has no pre-existing unfiltered consumer of geo_events to
+  // protect (unlike /operations's shared geoRes/latestGeofence).
+  const monitoredVisitIds = visitRows.map(v => v.id);
+  const geoEventsRes = monitoredVisitIds.length > 0
+    ? await sb.from("geo_events")
+        .select("id, visit_id, kind, observed_lat, observed_lng, accuracy_m, occurred_at")
+        .in("visit_id", monitoredVisitIds)
+        .in("kind", POSITION_KINDS as unknown as string[])
+        .order("occurred_at", { ascending: false })
+        .order("id", { ascending: false })
+    : { data: [] as GeoEventRow[], error: null };
+  if (geoEventsRes.error) console.error(`[operations live] geo_events read failed: ${geoEventsRes.error.message}`);
+  const geoEventRows = (geoEventsRes.data ?? []) as unknown as GeoEventRow[];
+  const latestPositionByVisit = new Map<string, GeoEventRow>();
+  for (const g of geoEventRows) {
+    if (!latestPositionByVisit.has(g.visit_id)) latestPositionByVisit.set(g.visit_id, g);
+  }
+
+  // A geo_events read failure must surface as its own error state, never be
+  // silently reinterpreted as "confirmed no GPS" (every entity would
+  // otherwise falsely downgrade to tier 2/3).
+  const hasReadError = Boolean(factoriesRes.error || visitsRes.error || geoEventsRes.error);
   const factories: LiveFactory[] = factoryRows.map(f => ({
     id: `f:${f.id}`, rawId: f.id, name: f.name, region: f.region, city: f.city,
-    lat: Number(f.official_lat), lng: Number(f.official_lng),
+    lat: f.official_lat != null ? Number(f.official_lat) : null,
+    lng: f.official_lng != null ? Number(f.official_lng) : null,
   }));
 
   const byRegion = new Map<string, LiveFactory[]>();
   for (const f of factories) {
-    if (!f.region) continue;
+    if (!f.region || f.lat == null || f.lng == null) continue;
     (byRegion.get(f.region) ?? byRegion.set(f.region, []).get(f.region)!).push(f);
   }
   const regions: LiveRegion[] = [...byRegion.entries()].map(([name, fs]) => {
-    const lat = fs.reduce((a, f) => a + f.lat, 0) / fs.length;
-    const lng = fs.reduce((a, f) => a + f.lng, 0) / fs.length;
+    const lat = fs.reduce((a, f) => a + (f.lat as number), 0) / fs.length;
+    const lng = fs.reduce((a, f) => a + (f.lng as number), 0) / fs.length;
     return {
       id: name, name, lat, lng,
     };
@@ -109,29 +172,18 @@ export default async function LiveOperations({ searchParams }: {
   for (const v of visitRows) {
     const f = v.factories;
     const name = v.assignments?.[0]?.profiles?.full_name;
-    if (!f || f.official_lat == null || f.official_lng == null || !name) continue;
-    const destLat = Number(f.official_lat);
-    const destLng = Number(f.official_lng);
-    const h = hash01(v.id);
-    const ang = h * Math.PI * 2;
-    const dist = 1.1 + hash01(v.id + "d") * 0.5;
-    const originLat = destLat + Math.sin(ang) * dist;
-    const originLng = destLng + Math.cos(ang) * dist;
-    let fraction = 0.15 + h * 0.5;
-    const ws = v.window_start ? Date.parse(v.window_start) : NaN;
-    const we = v.window_end ? Date.parse(v.window_end) : NaN;
-    if (!Number.isNaN(ws) && !Number.isNaN(we) && we > ws) {
-      fraction = Math.min(0.9, Math.max(0.08, (observedAt.getTime() - ws) / (we - ws)));
-    }
-    if (v.operational_state !== "on_the_way") fraction = 1;
+    if (!f || !name) continue;
+    const position = resolveLivePosition(v, f, latestPositionByVisit.get(v.id));
     inspectors.push({
       id: `i:${v.id}`, visitId: v.id, inspector: name,
       factoryId: `f:${f.id}`, factoryName: f.name,
       region: f.region ?? f.city ?? t("ops.live.regionUnknown", "Region not recorded"),
       state: v.operational_state as LiveInspector["state"],
       stateLabel: enumLabel(v.operational_state),
-      lat: originLat + (destLat - originLat) * fraction,
-      lng: originLng + (destLng - originLng) * fraction,
+      lat: position.lat, lng: position.lng,
+      provenance: position.provenance,
+      observedAt: position.observedAt, accuracyM: position.accuracyM,
+      scheduledAt: position.scheduledAt, coordinateSource: position.coordinateSource,
       sinceLabel: v.window_start
         ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
             dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh",
@@ -146,7 +198,10 @@ export default async function LiveOperations({ searchParams }: {
     executing: t("ops.live.executing", "On site now"),
     completed: t("ops.live.factories", "Factories monitored"),
     inspector: t("ops.live.inspectorLegend", "Operational position marker"),
-    projected: t("ops.live.projectedNote", "Projected route — not live GPS"),
+    positionLegend: t("ops.live.positionLegend", "Positions are last-recorded GPS, schedule-projected, or unavailable — never a live feed."),
+    provenanceRecorded: t("ops.map.provenance.recorded", "Last recorded GPS — not guaranteed live"),
+    provenanceProjected: t("ops.map.provenance.projected", "Projected from assignment/schedule — not live GPS"),
+    provenanceUnavailable: t("ops.map.provenance.unavailable", "Location unavailable — no recorded GPS and no assignment/factory coordinate available"),
     freshnessPolicy: t("ops.live.freshnessPolicy", "Staleness cadence not yet configured — showing last-observed time only."),
     lastObserved: t("ops.live.lastObserved", "Last observed"),
     activeList: t("ops.live.activeList", "Active inspectors"),
