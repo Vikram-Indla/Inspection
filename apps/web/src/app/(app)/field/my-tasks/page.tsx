@@ -77,7 +77,7 @@ type RegChip = (typeof REG_CHIPS)[number];
 // would misread as "your scope has none" instead of "no source is wired yet".
 const NO_SOURCE_CHIPS: readonly RegChip[] = ["manufacturing", "contacts"];
 
-type SearchParams = { task?: string; reg?: string };
+type SearchParams = { task?: string; reg?: string; view?: string };
 
 export default async function FieldMyTasks({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
@@ -137,10 +137,17 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     .filter((a): a is Assignment & { visits: VisitRow } => !!a.visits && !!a.visits.factories)
     .filter(a => ["published", "expired"].includes(a.visits.planning_status))
     .filter(a => !isTestFixtureEstablishment(a.visits.factories));
-  const tasks = assignments
+  const allTasks = assignments
     .map(a => a.visits)
     .filter((v): v is VisitRow => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status))
     .filter(v => !isTestFixtureEstablishment(v.factories));
+  // SCR-IPAD-600 completed-history entry point. This is a read-only projection
+  // of recorded terminal/submitted facts; it never advances workflow state.
+  const tasks = params.view === "completed"
+    ? allTasks.filter(v =>
+        ["submitted", "under_review"].includes(v.operational_state)
+        || ["submitted", "approved", "rejected"].includes(v.inspections?.status ?? ""))
+    : allTasks;
   const unreadAlertsByVisit = new Map<string, number>();
   if (!notificationRead.error) {
     for (const row of notificationRead.data ?? []) {
