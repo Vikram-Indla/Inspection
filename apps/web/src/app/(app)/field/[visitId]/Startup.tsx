@@ -1325,6 +1325,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         )}
       </div>
       {/* F3 M03-006 inspector return for blocked visits (request + notify planner). */}
+      <span id="return-assignment" className="sq-anchor-target" aria-hidden="true" />
       <div className="panel" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.returnHeading}</h4>
         <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.returnCaption}</p>
