@@ -1,0 +1,230 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+status: READ_ONLY_VISIBILITY_RECONCILIATION_COMPLETE_BLOCKED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Define how every worker proves the same authoritative product queue/current
+  slice and coordination lease registry by immutable Git ref and content hash,
+  even when those files are not simultaneously present in the worker's
+  checkout.
+
+authority:
+  live_collision_audit: KIMI-M11-LIVE-COLLISION-RECHECK-MATERIALIZATION-ORDER-AUDIT-060
+  conformance_spec: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+
+hard_boundary:
+  - "Read-only Git object/ref and control-file inspection plus this one owned coordination packet."
+  - "No file move, merge, push, fetch, checkout, branch/worktree creation or shared-control edit."
+  - "No decision, owner or lease inference; no implementation, QA, product, test, SQL, data, seed, provider, design or stash mutation."
+  - "No requirement credit."
+
+live_ref_snapshot:
+  product_control_ref:
+    ref: origin/main
+    commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    local_main_match: true
+    queue:
+      path: product-contract/execution/WORK_QUEUE.yaml
+      sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+    current_slice:
+      path: product-contract/execution/CURRENT_SLICE.yaml
+      sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      task_id: TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001
+      status: CANONICALLY_PROMOTED
+      M11_authority_effect: NONE
+  coordination_control_ref:
+    ref: origin/codex/orchestration-control-plane
+    commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+    local_branch_match: true
+    lease_registry:
+      path: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+      sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+  canonical_checkout:
+    branch: docs/saqeel-inspector-inventory
+    commit: 3323a8ef3d788c1c157a9bf0d63e32a3d9334e42
+    queue_sha256: aff5b85b4571c5b061db221c047106843846b3dd4f2f2c6e5728b678c18d744f
+    current_slice_sha256: 26ea731defb1b40db610229f95f6189ba70899715fc4858a7a5847b1f8ff0be1
+    current_slice_task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+    lease_registry_present: false
+    classification: STALE_PRODUCT_CONTROL_VIEW_AND_ABSENT_LEASE_VIEW
+  orchestration_checkout:
+    branch: codex/orchestration-control-plane
+    commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+    queue_sha256: aff5b85b4571c5b061db221c047106843846b3dd4f2f2c6e5728b678c18d744f
+    current_slice_sha256: 26ea731defb1b40db610229f95f6189ba70899715fc4858a7a5847b1f8ff0be1
+    lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+    classification: CURRENT_LEASE_VIEW_WITH_STALE_PRODUCT_CONTROL_VIEW
+
+correction_to_060:
+  finding: >-
+    Packet 060 reported CURRENT_SLICE as M2 because it read the canonical
+    checkout's current branch. The current origin/main slice is M1 Dashboard
+    CANONICALLY_PROMOTED.
+  corrected_result: CURRENT_PRODUCT_SLICE_IS_M1_NOT_M11
+  authority_effect_changed: false
+  reason: "Neither M1 nor the stale M2 slice grants M11 implementation or QA authority."
+  invariant_preserved: "M11 remains blocked with zero credit and no exact lease."
+
+visibility_findings:
+  - id: M11-VIS-061-001
+    result: BLOCK_SINGLE_CHECKOUT_IS_NOT_COMPLETE_CONTROL_TRUTH
+    evidence: >-
+      No inspected worker checkout simultaneously exposes current origin/main
+      queue/slice content and the current orchestration lease registry.
+  - id: M11-VIS-061-002
+    result: RETURN_PRODUCT_CONTROL_REF_DRIFT
+    evidence: >-
+      WORK_QUEUE and CURRENT_SLICE on the canonical/orchestration checkout
+      branches differ by hash from origin/main.
+  - id: M11-VIS-061-003
+    result: RETURN_LEASE_REGISTRY_REF_SPLIT
+    evidence: >-
+      ACTIVE_WORKTREE_LEASES.csv exists on the orchestration-control branch and
+      is absent from the canonical checkout/current product ref.
+  - id: M11-VIS-061-004
+    result: ACK_IMMUTABLE_OBJECT_READ_IS_AVAILABLE
+    evidence: >-
+      All required blobs are readable from their pinned refs with reproducible
+      SHA-256 values; workers need not switch branches or move files to verify
+      them.
+  - id: M11-VIS-061-005
+    result: BLOCK_ABSENCE_MUST_NOT_MEAN_EMPTY
+    evidence: >-
+      A missing lease-registry path in a checkout is an incomplete control
+      view, never proof that no lease exists.
+
+mandatory_two_ref_bootstrap:
+  name: SAQEEL_M11_CONTROL_BOOTSTRAP_V1
+  step_order:
+    - order: 1
+      action: VERIFY_CANONICAL_REPOSITORY_IDENTITY
+      required:
+        - "Git common directory belongs to /Users/vikramindla/Developer/Inspection."
+        - "Retired checkout is not accessed."
+    - order: 2
+      action: RESOLVE_PRODUCT_CONTROL_REF
+      source: origin/main
+      required:
+        - "Record exact commit."
+        - "Read WORK_QUEUE.yaml and CURRENT_SLICE.yaml as Git blobs from that commit."
+        - "Hash both contents and compare with the dispatch manifest."
+    - order: 3
+      action: RESOLVE_COORDINATION_CONTROL_REF
+      source: origin/codex/orchestration-control-plane
+      required:
+        - "Record exact commit."
+        - "Read ACTIVE_WORKTREE_LEASES.csv as a Git blob from that commit."
+        - "Hash content and compare with the dispatch manifest."
+    - order: 4
+      action: RECONCILE_TASK_AND_LEASE
+      required:
+        - "Find exact task ID in the product queue."
+        - "Find exact actor/task/worktree/branch/path row in the lease registry."
+        - "Require current slice compatibility but never treat it as a lease."
+    - order: 5
+      action: FAIL_CLOSED_ON_ANY_MISMATCH
+      required:
+        - "Missing ref, missing blob, hash drift, ambiguous task, absent exact lease, path overlap or stale dispatch means STOP."
+    - order: 6
+      action: RECORD_BOOTSTRAP_EVIDENCE_BEFORE_WRITE
+      required:
+        - "Record refs, commits, hashes, task ID, lease row and collision result."
+        - "A worker may write only after an independent reviewer reproduces the same view."
+
+dispatch_manifest_required_fields:
+  - canonical_repository
+  - product_control_ref
+  - product_control_commit
+  - work_queue_path
+  - work_queue_sha256
+  - current_slice_path
+  - current_slice_sha256
+  - coordination_control_ref
+  - coordination_control_commit
+  - lease_registry_path
+  - lease_registry_sha256
+  - task_id
+  - actor
+  - worktree
+  - branch
+  - exact_leased_paths
+  - exact_database_objects
+  - mode
+  - expiry_or_release_condition
+  - independent_reviewer
+  - preservation_floor
+  - requirement_credit
+
+worker_acceptance_rules:
+  ACK:
+    exact_result: ACK_SHARED_CONTROL_VIEW_REPRODUCED
+    all_required:
+      - "Both refs and commits resolve exactly."
+      - "All three content hashes match the dispatch manifest."
+      - "Task, actor, worktree, branch, mode and exact paths/objects match one active lease row."
+      - "No overlapping active lease exists."
+      - "Preservation floor is 20/361/18/9/12 and credit is zero."
+    effect: "Control view is reproducible; separate task prerequisites still govern whether work may start."
+  RETURN:
+    exact_result: RETURN_FOR_STALE_OR_INCOMPLETE_CONTROL_VIEW
+    triggers:
+      - "Checkout-local queue/slice differs from pinned product ref."
+      - "Checkout-local lease registry is missing or differs from pinned coordination ref."
+      - "Manifest omits a required field but no unauthorized write has begun."
+  BLOCK:
+    exact_result: BLOCK_DUE_TO_CONTROL_AUTHORITY_OR_COLLISION_FAILURE
+    triggers:
+      - "Any ref/blob/hash cannot be proven."
+      - "Exact active lease row is absent or ambiguous."
+      - "Any path/object collision exists."
+      - "A missing registry is interpreted as an empty registry."
+      - "Any write begins before independent bootstrap reproduction."
+
+current_M11_result:
+  verdict: BLOCK
+  exact_reason: BLOCK_SPLIT_REF_BOOTSTRAP_NOT_MATERIALIZED_FOR_M11
+  product_control_ref_proven: true
+  coordination_control_ref_proven: true
+  combined_dispatch_manifest_exists: false
+  exact_M11_write_lease_exists: false
+  exact_M11_QA_lease_exists: false
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-LIVE-CONTROL-REF-DRIFT-MONITOR-062
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Re-resolve the two pinned refs, recompute all three control hashes and
+    identify any task/lease drift, with an immediate read-only fallback
+    cross-check of the 22-field dispatch manifest if no ref changes.
+  prohibited:
+    - "No fetch, checkout, merge, push, file move, shared-control edit, authority choice, lease issuance, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  control_refs: 2
+  control_files: 3
+  dispatch_manifest_fields: 22
+  worker_verdict_classes: 3
+  requirement_floor: 20
+  test_case_floor: 361
+  proof_cluster_floor: 18
+  QA_path_floor: 9
+  blocker_floor: 12
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS
