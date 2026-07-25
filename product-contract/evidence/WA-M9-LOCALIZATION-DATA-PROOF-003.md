@@ -1,40 +1,55 @@
-# WA-M9 Admin Localization — leased data-proof preflight
+# WA-M9 Admin Localization — leased data proof
 
-## Identity and authority
+## Identity and verdict
 
 - Task / lease: `DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003`
 - Date: 2026-07-25 Asia/Riyadh
 - Project: `iiozvqntawxfwbgffzqu` (non-production verification project)
-- Route: `/admin/localization`
-- Key: `admin.items.form.guidancePlaceholder`
+- Route / key: `/admin/localization` /
+  `admin.items.form.guidancePlaceholder`
 - Process / screen / engine: `G2-P00` / `SCR-ADM-100` / `SB19`
 - Requirements: `MVP1-FND-001`, `MVP1-FND-003`, `MVP1-FND-010`,
   `MVP1-FND-011`
 - Acceptance: `WA-M9-AC-001..006`
-- Branch / commit at preflight:
-  `codex/admin-localization-lookups` / `b1f80205`
+- Branch / starting commit:
+  `codex/admin-localization-lookups` / `fc50d51d`
 - Draft PR: `https://github.com/Vikram-Indla/Inspection/pull/63`
-- Verdict: **STOPPED BEFORE WRITE — exact restoration cannot be proven through
-  the governed UI.**
+- Verdict: **REAL UI JOURNEY PASS — exact semantic business state restored;
+  append-only history retained; awaiting independent review.**
 
 No service-role client, Management API, SQL write, schema change, policy
-change, provider change, bulk operation or unrelated key was used. The exact
-project identity was derived from the configured public Supabase URL, and the
-read-only database baseline used only the public anonymous client key under the
-existing select policies.
+change, provider change, bulk operation or unrelated key was used. All writes
+ran through the real authenticated Admin Localization UI and its existing
+Config Admin action/RLS path. Read-only verification used only the public
+anonymous client key under the existing select policies.
 
-## Exact baseline and collision preflight
+## Authoritative clarification
 
-Two complete read-only captures were taken at
-`2026-07-25T00:13:20.901Z` and `2026-07-25T00:13:23.260Z`.
-The canonical serialization of the row plus complete revision chain produced
-the same SHA-256 both times:
+The first lease preflight correctly stopped before writing because the original
+wording could have required deletion or falsification of `updated_by`,
+`updated_at` and append-only history. The sponsor then clarified:
+
+- exact restoration means exact semantic business state;
+- the original Arabic value and workflow status must return exactly;
+- actor, time and append-only revision/history rows must remain as truthful
+  audit evidence and must not be reset, deleted or hidden.
+
+The clarification authorized a fresh preflight and one single-key UI journey.
+
+## Baseline and collision preflight
+
+The original complete baseline was captured at
+`2026-07-25T00:13:20.901Z`, `00:13:23.260Z` and `00:14:47.802Z`.
+All three row-plus-history captures had SHA-256:
 
 `2105fc619c3455f6c10471031b5fff558ce2be5d2b75c30ccaa1890cd8dfb90a`
 
-This proves no observed drift between the two bounded reads. A postflight read
-at `2026-07-25T00:14:47.802Z` produced the same hash after the browser and
-denied-user checks. The primary-key query returned exactly one row:
+Immediately before the authorized write, two fresh captures at
+`2026-07-25T00:18:45.331Z` and `00:18:47.461Z` produced the same hash. The
+leased row therefore showed no observed drift and still matched the recorded
+baseline.
+
+Exact original semantic state:
 
 - key: `admin.items.form.guidancePlaceholder`
 - English: `What the inspector verifies`
@@ -42,94 +57,132 @@ denied-user checks. The primary-key query returned exactly one row:
 - status: `draft`
 - context: `null`
 - orphaned: `false`
+
+Original metadata:
+
 - updated_by: `null`
 - updated_at: `2026-07-11T23:01:19.069404+00:00`
-
-The complete baseline revision chain contains exactly one row:
-
-- ID: `b60eba67-eee9-4185-9cd5-7da52407cac3`
-- English: `What the inspector verifies`
-- Arabic: `null`
-- status / orphaned: `draft` / `false`
-- changed_by: `null`
-- source: `sync`
-- changed_at: `2026-07-11T23:01:19.069404+00:00`
+- row count for the exact primary key: `1`
+- revision count: `1`
+- revision ID:
+  `b60eba67-eee9-4185-9cd5-7da52407cac3`
+- revision state: Arabic `null`, status `draft`, actor `null`, source `sync`,
+  changed at `2026-07-11T23:01:19.069404+00:00`
 
 The real Config Admin UI independently showed the same key, English, Arabic,
-draft status and one history entry. The route displayed all 2,844 keys and the
-approved persona roles before the candidate was narrowed to one search result.
+draft status and one history entry. The route showed the approved Config Admin
+roles and all 2,844 registry rows before search isolated the one leased key.
 
-## Restore-path proof
+## Real UI journey
 
-The governed workflow is internally consistent for business values:
+Temporary proof value:
 
-1. Save writes the temporary Arabic value, forces `draft`, and stamps the
-   current user and time.
-2. The versioning trigger snapshots the old business row into
-   `ui_string_revisions`.
-3. Review writes `reviewed` and stamps the current user and time.
-4. History reads the trigger-written snapshots.
-5. Restore reads only the selected revision's `key` and `ar`, then writes that
-   Arabic value with status `draft` and stamps the current user and time.
+`ما يتحقق منه المفتش — إثبات مؤقت 003`
 
-The path cannot restore the exact complete baseline:
+Only the leased key was used.
 
-| State | Exact restoration through UI |
-|---|---|
-| key / English / context / orphaned | Preserved because this journey does not change them |
-| Arabic | Restorable from the pre-save snapshot |
-| status | Restorable to baseline `draft` |
-| updated_by | **Not restorable**; restore stamps the acting Admin user |
-| updated_at | **Not restorable**; the touch trigger stamps a new time |
-| revision chain | **Not restorable**; history is append-only by design |
+1. **Save**
+   - The Arabic textbox was changed to the unique temporary value.
+   - The real Save action returned `تم الحفظ`.
+   - A full route refresh showed the same temporary value with status `draft`.
+   - The database recorded revision
+     `ddb9adcc-d1ab-4722-81a8-c833378055c0`, containing the exact original
+     Arabic and `draft` before-state.
+2. **Review**
+   - The real `اعتماد المراجعة` action changed the UI status to `مُراجَع`.
+   - A full route refresh preserved the temporary Arabic and reviewed status.
+   - The database recorded revision
+     `a99880e4-7a26-411a-8ed2-bcbae9b1b2b6`, containing the temporary Arabic
+     and `draft` before-state.
+3. **History**
+   - The real history panel showed the original Arabic revision and the
+     temporary draft revision with timestamp and source.
+   - A read-only database capture at `2026-07-25T00:19:57.009Z` confirmed the
+     current row was reviewed and both new revision IDs belonged to the same
+     Admin actor.
+4. **Restore**
+   - The Restore action was selected on the revision containing the exact
+     original Arabic value, not the older sync revision whose Arabic was null.
+   - The UI returned `تمت الاستعادة (كمسودة)`.
+   - A full route refresh showed Arabic `ما يتحقق منه المفتش` and status
+     `مسودة`.
+   - The database recorded revision
+     `a91d3466-9e04-4772-aa42-c3f266401b09`, preserving the temporary Arabic
+     and `reviewed` before-state.
 
-The generic `audit_events` trigger list does not include `ui_strings`.
-Localization's domain audit evidence is its append-only
-`ui_string_revisions` chain, including actor, source and timestamp. Deleting or
-rewriting those rows would weaken the accepted audit design and was not
-authorized.
+## Final semantic state and residue check
 
-The existing baseline revision is not itself a usable full-baseline restore
-target because its Arabic value is `null`. A Save would first create a
-restorable snapshot containing the current Arabic value, but that Save would
-already make the irreversible metadata/history changes described above.
+The expected and actual semantic objects were byte-equivalent:
 
-## Stop decision
+```text
+key       admin.items.form.guidancePlaceholder
+English   What the inspector verifies
+Arabic    ما يتحقق منه المفتش
+status    draft
+context   null
+orphaned  false
+```
 
-The lease required all restoration and isolation conditions to be proven
-before any write and directed the worker to stop if exact restoration could not
-be proven. Therefore:
+Both produced SHA-256:
 
-- Save was not clicked.
-- Review was not clicked.
-- Restore was not clicked.
-- No temporary value exists.
-- The candidate remains `draft`, non-orphaned and unchanged.
-- The key remains unique.
-- The revision chain remains at its single baseline row.
-- No permission or policy changed.
+`d1ee876bbb513538e0e2b1b2ca40d6cbe21c96f67107453e6907335ce9a959c7`
 
-## Read-only verification
+Two final reads at `2026-07-25T00:21:17.707Z` and
+`2026-07-25T00:21:20.231Z` remained stable.
 
-- Real Config Admin route and candidate/history inspection — PASS
-- Two-read collision comparison — PASS, identical SHA-256
-- Exact project/key/row uniqueness — PASS
-- Focused production localization suite — PASS, 6/6
-- Denied reviewer receives a fail-closed boundary before localization data
-  loads — PASS
-- Exact complete-state restoration proof — **FAIL / STOP**
-- Save → review → history → restore journey — **NOT RUN**
+Final safety checks:
 
-## Exact unblock condition
+- exact leased-key row count: `1`;
+- current rows containing the temporary Arabic value: `0`;
+- orphaned: `false`;
+- final Arabic: exact original value;
+- final workflow status: exact original `draft`;
+- English/context/key unchanged;
+- no Add key or Sync action used;
+- no schema, policy, grant or application source changed;
+- denied reviewer remained blocked before localization data loaded.
 
-A future write requires an explicit sponsor clarification that “exact restore”
-means exact business state (`key`, English, Arabic, status, context and
-orphaned) while the new `updated_by`, `updated_at` and append-only revision
-rows are required audit residue. That clarification must not authorize deleting
-history, falsifying timestamps or resetting actor attribution.
+Required audit residue:
 
-Without that clarification, the safe status is `BLOCKED_PREWRITE` and service
-wiring remains `AMBER`.
+- final updated_by: `f9067e24-99f7-40e7-8421-4717de9ca2db`;
+- final updated_at: `2026-07-25T00:20:01.847763+00:00`;
+- final revision count: `4` — one original sync revision plus exactly three
+  journey revisions;
+- all three journey revisions have the same Admin actor and preserve the
+  original draft, temporary draft, and temporary reviewed before-states in
+  chronological order.
+
+The temporary value remains only inside the required append-only history. It
+does not remain in the live business row.
+
+## Audit-label observation
+
+The immutable domain history proves actor, time, before-state and sequence.
+All three UI writes currently carry `change_source = 'panel'`; the restore
+action does not emit a distinct `restore` source label even though the
+migration comment lists `panel | sync | restore`. This was not altered under
+the no-schema/no-policy/no-product-code lease. It is disclosed for independent
+review rather than hidden or upgraded.
+
+## Verification
+
+- Real Config Admin save → refresh → review → refresh → history → restore →
+  refresh — PASS
+- Exact semantic-state hash comparison — PASS
+- Unique key / no current temporary value / no orphan — PASS
+- Append-only actor/time/before-state chain — PASS
+- Focused production localization suite after restoration — PASS, 6/6
+- Denied reviewer boundary after restoration — PASS
+- Permission widening — none; no policy/grant/code change and denied runtime
+  remains fail-closed
+- Protected F0/shell selection — 11/12; the unchanged, separately leased stale
+  shared-shell expected-list assertion remains the only failure
+
+## Review position
+
+The real data-behavior proof requested by
+`DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003` is built and browser-verified, but
+this implementer does not self-accept it. Stop at independent review.
 
 The separate P1s remain unchanged:
 

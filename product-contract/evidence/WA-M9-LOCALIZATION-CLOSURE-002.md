@@ -14,9 +14,10 @@
   `11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d`
 - Branch / draft PR: `codex/admin-localization-lookups` /
   `https://github.com/Vikram-Indla/Inspection/pull/63`
-- Closure verdict: **not fully accepted**. The bounded frontend is built and
-  independently exercised, but three P1 stops remain. No self-approval, merge
-  or deployment is authorized.
+- Closure verdict: **not fully accepted**. The bounded frontend and real
+  single-key data journey are built and browser-verified, but independent
+  review plus the separate shell and native-Arabic P1s remain. No
+  self-approval, merge or deployment is authorized.
 
 ## Product defect found and closed
 
@@ -39,8 +40,10 @@ Real production-browser result after the fix:
 - Arabic/RTL narrow view has no document horizontal overflow;
 - browser console has no warning or error entries.
 
-No API, database schema, provider, migration, shared shell source, shared
-Supabase row or unrelated function changed.
+No API, database schema, provider, migration, shared shell source or unrelated
+function changed. One explicitly leased Supabase row completed a real
+save/review/restore journey and returned to its exact original semantic state;
+the required actor/time and append-only history evidence remain.
 
 ## Stop 1 — protected shell/navigation regression
 
@@ -76,10 +79,10 @@ Exact lease needed:
 - Exit: the same protected selection passes at the PR dependency base and at
   PR head.
 
-## Stop 2 — real save/review/history/restore proof
+## Data proof — real save/review/history/restore
 
-**Verdict: safely prepared; not executed because no exclusive shared-data
-lease exists.**
+**Verdict: executed under the exclusive lease; exact semantic state restored;
+awaiting independent review.**
 
 The live action and RLS contracts are present. Config Admin roles may update
 `ui_strings`; the database trigger appends old values to
@@ -103,7 +106,7 @@ Read-only candidate baseline captured on 2026-07-25:
 An orphaned key was considered first, but the real UI correctly prevents
 review promotion for orphaned records; it cannot prove the complete workflow.
 
-Exact lease needed:
+Executed lease controls:
 
 - Lease ID: `DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003`
 - Exclusive target:
@@ -132,22 +135,31 @@ Exact lease needed:
   to their original metadata through the governed UI. The lease owner must
   explicitly accept that residue before execution.
 
-Until that lease is granted, service-wiring proof remains `AMBER`; static
-wiring and read behavior do not substitute for this real mutation cycle.
+The sponsor granted the lease and later clarified that audit metadata/history
+must remain while the semantic business state is restored exactly.
 
 ### Lease result — 2026-07-25
 
-The sponsor issued `DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003`, but its mandatory
-pre-write restoration proof found a hard stop. The real restore action restores
-the selected Arabic value and sets status to `draft`; it does not and cannot
-restore the original `updated_by` or `updated_at`. Each business-field change
-also creates an append-only `ui_string_revisions` row by design. Because the
-issued lease required the exact original state and explicitly required stopping
-if exact restoration could not be proven, no Save, Review or Restore button was
-used and no remote row changed.
+The sponsor issued `DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003`. Its first
+preflight stopped before writing because complete-row restoration would have
+required falsifying actor/time and deleting required history. The sponsor then
+clarified that restoration means exact semantic business state while
+`updated_by`, `updated_at` and append-only revision rows must remain as truthful
+audit evidence.
 
-The complete read-only preflight, stable baseline hash, Admin UI evidence,
-denied-user result and exact unblock condition are recorded in
+A fresh collision preflight matched the original row-plus-history SHA-256.
+The real Config Admin UI then completed Save → refresh → Review → refresh →
+History → Restore → refresh on the one leased key. The final Arabic and
+`draft` status exactly match the original semantic state; the temporary value
+exists in zero current rows; the key remains unique and non-orphaned; and the
+three new revision rows truthfully preserve original-draft, temporary-draft and
+temporary-reviewed before-states for one Admin actor. The focused production
+suite passed 6/6 after restoration, including the denied reviewer boundary.
+
+All three writes currently use `change_source = 'panel'`; restore does not
+carry a distinct source label. This audit-label observation is disclosed for
+independent review. The complete preflight, journey, hashes, revision IDs,
+denied-user result and final residue check are recorded in
 `product-contract/evidence/WA-M9-LOCALIZATION-DATA-PROOF-003.md`.
 
 ## Stop 3 — native-Arabic certification
@@ -218,14 +230,12 @@ External screenshots:
 - Independently verified source-requirement rows out of 478: `0` newly
   adjudicated in the canonical scorecard by this task.
 - Fully accepted source-requirement rows out of 478: `0`.
-- Route-level result: the frontend implementation and focused runtime evidence
-  exist for `WA-M9-AC-001..006`, but `WA-M9-AC-005` and the data/Arabic
-  evidence gates above prevent full acceptance.
+- Route-level result: the frontend implementation, real data journey and
+  focused runtime evidence exist for `WA-M9-AC-001..006`. Independent review,
+  the protected-shell `WA-M9-AC-005` dependency and native-Arabic certification
+  still prevent full acceptance.
 
-## Queued safe follow-on
+## Data-proof follow-on position
 
-`CODEX-ADMIN-LOCALIZATION-DATA-PROOF-003` is queued as
-`READY_AFTER_DATA_LEASE`. It owns only the exact leased key and the real
-save/refresh/review/history/restore/rollback evidence described above. It
-must not begin a write until `DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003` is
-recorded and collision preflight passes.
+`CODEX-ADMIN-LOCALIZATION-DATA-PROOF-003` has completed its bounded execution
+and is `AWAITING_INDEPENDENT_REVIEW`. No further write is authorized.
