@@ -1,0 +1,492 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-035
+title: Admin Audit Flight Recorder design authority review
+status: BLOCKED_PENDING_CD-054_FRAME_AND_SCREEN_IDENTITY_GOVERNANCE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+predecessor_acknowledgement:
+  packet_id: M8-ADMIN-ACCESS-DESIGN-AUTHORITY-REVIEW-034
+  disposition: APPROVE_PRIMARY_RETURN_SECONDARY_FOR_CONTRACT_DECISION
+  status: BLOCKED_NO_DESIGN_WRITE_AUTHORITY
+  rule: >-
+    WA-DES-043 remains the Access primary and WA-DES-011 remains conditional.
+    No design write or implementation authority transfers into this packet.
+
+task_contract:
+  task_id: M8-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-035
+  gate: Admin Audit Flight Recorder design authority governance
+  route: /admin/audit
+  channel: ADMIN
+  process_ids: ["G2-P00"]
+  web_admin_package: M9
+  module_id: M3-04
+  module_design_id: CD-054
+  predecessor_module_id: M2-05
+  requirement_ids:
+    module: [MVP2-REQ-0230, MVP2-REQ-0237, MVP2-REQ-0254]
+    ontology_range: MVP2-REQ-0137_THROUGH_MVP2-REQ-0172
+    cross_cutting_access_context: [MVP2-REQ-0192, MVP2-REQ-0241, MVP2-REQ-0256]
+  acceptance_ids:
+    module: [MVP2-AC-0230, MVP2-AC-0237, MVP2-AC-0254]
+    ontology_range: MVP2-AC-0137_THROUGH_MVP2-AC-0172
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+  dependencies:
+    - CD-054_M3-04_R2_package_identity_and_fingerprint_verification
+    - exact_CD-054_route_frame_manifest
+    - exact_screen_identity_decision_for_/admin/audit
+    - WA-DES-015_audit_state_secondary_lineage_decision
+    - M8_CD-050_to_M9_CD-054_authority_correction
+    - persona_RLS_object_scope_reconciliation
+    - generic_and_semantic_event_coexistence_contract
+    - export_retention_redaction_legal_policy_decisions
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design, CD-054, CD-050, WA-DES-015, WA-DES-020, or exported designs
+    - frozen design, route, screen, requirement, acceptance, evidence, ontology, or wiring mappings
+    - Audit, Access, Security Access, shared shell, replay, export, print, retention, or provider application code
+    - tests, evidence, Supabase, migrations, RPCs, credentials, environment, seeds, or data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: ace13522
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-SPONSOR-AUTHORITY-DEPENDENCY-MATRIX-035.yaml
+    - product-contract/operationalization/coordination/batches/M2-B002-R4-EVIDENCE-PLAN-OPTIMIZATION-001.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-DESIGN-AUTHORITY-REVIEW-034.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    Read-only authority analysis only. It changes no design, application,
+    ontology, mapping, backend, test, evidence, branch, lease or shared data.
+
+authority:
+  module_and_requirements:
+    - product-contract/mvp2/m2-05/DESIGN_AND_IMPLEMENTATION_REVIEW.md
+    - product-contract/mvp2/m2-05/EVENT_ONTOLOGY.csv
+    - product-contract/mvp2/m2-05/REQUIREMENT_WIRING_MAP.csv
+    - product-contract/mvp2/MVP2_LOCAL_SOURCE_CERTIFICATE.md
+    - product-contract/mvp3/README.md
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  route_and_design_inventory:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+  live_code_mapping:
+    - apps/web/src/app/(app)/admin/audit/page.tsx
+    - apps/web/src/app/(app)/admin/audit/loading.tsx
+    - apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+    - apps/web/src/lib/audit-replay.ts
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0019_w5_records.sql
+    - supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql
+  current_tests:
+    - apps/web/e2e/mvp2-m2-05-audit-replay.spec.ts
+    - apps/web/e2e/mvp2-m2-05-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+  external_registered_designs_read_only:
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+      design_id: WA-DES-015
+      bytes: 42071
+      sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+      reference_viewport: 1440x900
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Control Panel.dc.html
+      design_id: WA-DES-020
+      bytes: 17009
+      sha256: 387114f67318fc3d8d0022b72f711a4b952dce588a66ba5875fd8a5d675125d2
+      reference_viewport: 1200x900
+
+authority_correction:
+  requested_premise: CD-050_AND_M8_AUTHORITY
+  validation: INCORRECT_FOR_ROUTE_PRIMARY_AUTHORITY
+  corrected:
+    web_admin_package: M9
+    module: M3-04
+    design: CD-054
+    predecessor: M2-05_CD-031
+  adjacent_only:
+    M8: Access/identity package whose changes produce audit evidence.
+    CD-050: Security/IAM family whose governed actions may feed the audit spine.
+  evidence:
+    - M3-04 build sequence names Audit history and replay.
+    - CD-054 R2 covers MVP2-REQ-0230, 0237 and 0254.
+    - MVP3 implementation status maps M3-04/CD-054 directly to /admin/audit.
+    - Web/Admin package manifest places /admin/audit in M9.
+  rule: Do not consume CD-050 or M8 as the route design authority.
+
+screen_identity_truth:
+  exact_screen_catalogue_row: NONE
+  historical_label_found: ADM-AUDIT
+  historical_label_status: NOT_A_GOVERNED_SCREEN_CATALOGUE_ID
+  code_badges: [MVP2-M2-05, ENG-12]
+  screen_identity: UNRESOLVED
+  prohibited:
+    - Inventing a SCR-ADM number.
+    - Promoting ADM-AUDIT, ENG-12, M2-05, CD-031 or CD-054 into a screen ID.
+
+design_boundary_resolution:
+  primary:
+    design_id: CD-054
+    module: M3-04
+    classification: BINDING_LOGICAL_AND_INTERACTION_AUTHORITY_UNVERIFIABLE_FRAME
+    repository_reference: CD-054_M3-04_R2_FINAL with renders 01 through 06
+    package_dc_html_present: false
+    package_sha256_present: false
+    exact_frame_manifest_present: false
+    implication: >-
+      CD-054 is binding but the exact frame identity and fingerprint cannot be
+      independently verified from the available repository package. It is not
+      consumable for a design write until retrieved and registered.
+  secondary:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    state_key: audit
+    title: Audit Trail — replay
+    subtitle: append-only · object-scoped · deterministic replay
+    classification: NEAREST_REGISTERED_VISUAL_ANCESTOR_NOT_SUFFICIENT_ROUTE_AUTHORITY
+    reusable_boundary:
+      - Audit navigation state and concise replay hierarchy.
+      - Chronological event presentation.
+      - Append-only, object-scoped and non-mutating replay disclosure.
+    conflicts_or_gaps:
+      - Export scoped is shown as enabled although export remains policy-held and unimplemented.
+      - Four hard-coded events, actors, dates, hashes and outcomes are fixtures only.
+      - It has no case/object search, portfolio search or RLS/partial-scope truth.
+      - It has no recorder, point-in-time, compare, completeness, custody or print-safe modes.
+      - It has no generic-versus-semantic provenance or integrity/chain state.
+      - It has no bounded-history, degraded ontology, source-error, unauthorized or zero-disclosure states.
+  catalogue_only:
+    design_id: WA-DES-020
+    classification: NAVIGATION_CATALOGUE_NOT_ROUTE_AUTHORITY
+    evidence: Its Activity Log card links elsewhere and contains no replay workspace.
+  validation_status: INSUFFICIENT_EVIDENCE_FOR_PRIMARY_FRAME
+  recommendation:
+    - Retrieve and fingerprint CD-054 R2 as primary.
+    - Link WA-DES-015 Audit only as a secondary visual ancestor.
+    - Disable or remove its Export scoped control until a policy-backed export contract exists.
+
+real_route_and_component_truth:
+  route_exists: true
+  primary_component: apps/web/src/app/(app)/admin/audit/page.tsx
+  loading_component: apps/web/src/app/(app)/admin/audit/loading.tsx
+  workspace: apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+  replay_library: apps/web/src/lib/audit-replay.ts
+  title: Inspection Flight Recorder
+  modes: [recorder, reconstruct, compare, ledger, custody, print]
+  page_size: 250
+  reads:
+    generic:
+      table: audit_events
+      fields: [id, actor, object_type, object_id, action, before_state, after_state, occurred_at]
+      ordering: occurred_at_desc_then_id_desc
+      limit: 250
+    semantic_portfolio:
+      table: audit_semantic_events
+      ordering: occurred_at_desc_then_id_desc
+      limit: 250
+    semantic_case:
+      rpc: audit_replay_case
+      keyset_page_size: 250
+      maximum_pages: 20
+      maximum_rows: 5000
+    ontology:
+      tables:
+        - audit_event_ontology_versions
+        - audit_event_ontology_entries
+        - audit_event_registry
+        - audit_event_order_constraints
+      required_expected_rows: 36
+  search:
+    case_filter:
+      generic: Exact UUID object_id only; non-UUID case forces impossible UUID.
+      semantic: Exact case_ref through replay RPC.
+    q_filter:
+      implementation: Client-side over already-returned bounded rows.
+      fields: [event_type, aggregate_type, aggregate_id, actor, correlation_id]
+      limitation: Not a server-wide search and no total-match count.
+  export:
+    implemented: false
+    print_safe_view: true
+    policy_truth: Export, reveal, redaction, retention, watermark, purge and legal-evidence claims are held.
+
+persona_and_rls_truth:
+  route_group: AUTHENTICATED_NON_FIELD_CHANNEL
+  navigation_roles:
+    source: adminRoles_shared_navigation_group
+    exact_expansion: MUST_BE_RECORDED_BEFORE_DESIGN_ACCEPTANCE
+  application_authorized_roles:
+    - auditor
+    - ops
+    - security_admin
+    - leadership
+    - reviewer
+    - planner
+    - compliance_admin
+  generic_audit_read_roles:
+    - auditor
+    - ops
+    - security_admin
+    - leadership
+    - reviewer
+    - planner
+    - compliance_admin
+  semantic_read:
+    eligible_roles: [auditor, ops, security_admin, leadership, reviewer, planner, compliance_admin]
+    object_scope: can_read_semantic_audit_object
+    unrestricted_roles: [auditor, ops, security_admin]
+    scoped_roles: [leadership, reviewer, planner, compliance_admin]
+  explicit_denied_example: inspector
+  route_specific_redirect_or_guard: NONE
+  zero_disclosure: Unauthorized workspace renders no events, but queries rely on RLS before the UI denial.
+  partial_scope_flag: >-
+    The application labels planner, reviewer and leadership as partial, but not
+    compliance_admin even though object-scoped RLS also applies to it.
+  rule: Navigation, application role label, generic RLS and semantic object RLS must be represented separately.
+
+audit_immutability_and_provenance_truth:
+  generic_events:
+    classification: GENERIC_ONLY
+    canonical_promotion: PROHIBITED
+    update_delete: blocked by existing audit immutability controls
+  semantic_events:
+    append_path: server-authorized append_semantic_audit_event
+    required_source: authenticated generic audit_event proving actor/object/action
+    idempotency: server-derived from source audit ID, event type and schema version
+    caller_claimed_integrity_or_chain: PROHIBITED
+    stored_initial_integrity: not_assessed
+    stored_initial_chain: incomplete
+    update_delete: trigger-blocked
+  replay:
+    order: occurred_at_then_id
+    conflict_detection:
+      - same timestamp with different state
+      - stale before-state
+      - invalid or cross-correlation causation
+    completeness: Only a selected non-truncated case with a published 36-row ontology.
+  coexistence_gap: >-
+    The UI concatenates semantic and generic rows without deduplicating a
+    semantic event from its proven source generic row. Provenance labels avoid
+    false promotion, but event counts can represent two records for one
+    governed business change and must not be called unique business events.
+
+pagination_search_and_data_truth:
+  generic_case:
+    completeness: BOUNDED_TO_250_WITH_NO_NEXT_PAGE
+    risk: A case with more than 250 generic events is partial but the generic limit alone does not independently set historyTruncated beyond exact-cap detection.
+  semantic_case:
+    completeness: KEYSET_UP_TO_5000
+    truncation: Explicit after page 20 or exact cap.
+  portfolio:
+    completeness: BOUNDED_250_PER_SOURCE
+    certification: Never certify portfolio completeness.
+  search:
+    rule: q results are matches within the bounded loaded snapshot, not all records.
+  time:
+    rule: occurred_at and recorded_at are distinct; reconstruction orders on occurred_at.
+  sensitive_payload:
+    rule: Before/after/payload can contain sensitive fields; design must preserve object RLS, purpose and safe disclosure.
+
+current_truth_gaps:
+  - Generic read error is shown; semantic failure becomes degraded but does not surface a separate neutral error.
+  - Ontology, registry or constraint read errors collapse into semanticUnavailable without naming the failed source.
+  - Unauthorized users still reach the route and issue RLS-filtered queries before the explicit denial frame.
+  - compliance_admin object-scoped results are not labelled partialScope.
+  - Generic and portfolio pagination stop at 250 with no next-page control.
+  - Client search can look global while it covers only loaded bounded rows.
+  - No export exists despite WA-DES-015's visible Export scoped button.
+  - Print-safe is not an evidence export, signed pack or legal artifact.
+  - No source-backed as-of/freshness timestamp or total exists.
+  - Event detail focus trapping forces every Tab back to Close instead of cycling through all interactive elements.
+
+provider_and_policy_truth:
+  holds:
+    - {id: MVP3-HOLD-001, scope: digital_signature, effect: Acknowledgement stays unverified and is never PKI/legal signature proof.}
+    - {id: MVP3-HOLD-004, scope: data_exchange, effect: No external export transmission or receipt claim.}
+    - {id: MVP3-HOLD-006, scope: retention_and_backup, effect: No retention, purge, legal-hold, backup or restore value may be invented.}
+    - {id: MVP3-HOLD-008, scope: production_release, effect: Local or staging evidence is not production certification.}
+  additional_policy_holds: [DEC-006, DEC2-009]
+  held_features:
+    - export pack
+    - reveal
+    - redaction
+    - retention
+    - watermark
+    - purge
+    - legal evidence status
+
+required_design_states:
+  route_and_scope:
+    - LOADING
+    - AUDITOR_FULL_SCOPE
+    - OPS_FULL_SCOPE
+    - SECURITY_ADMIN_FULL_SCOPE
+    - LEADERSHIP_PARTIAL_OBJECT_SCOPE
+    - REVIEWER_PARTIAL_OBJECT_SCOPE
+    - PLANNER_PARTIAL_OBJECT_SCOPE
+    - COMPLIANCE_ADMIN_PARTIAL_OBJECT_SCOPE
+    - INSPECTOR_UNAUTHORIZED_ZERO_DISCLOSURE
+    - SESSION_EXPIRED
+  data_and_contracts:
+    - VERIFIED_EMPTY
+    - GENERIC_ONLY_DEGRADED
+    - SEMANTIC_SOURCE_UNAVAILABLE
+    - GENERIC_SOURCE_UNAVAILABLE
+    - ONTOLOGY_UNAVAILABLE
+    - REGISTRY_OR_CONSTRAINT_UNAVAILABLE
+    - MULTIPLE_SOURCES_UNAVAILABLE
+    - PORTFOLIO_BOUNDED
+    - GENERIC_CASE_BOUNDED
+    - SEMANTIC_CASE_TRUNCATED
+    - SEARCH_WITHIN_BOUNDED_SNAPSHOT
+  replay:
+    - RECORDER
+    - RECONSTRUCT_NO_EVENT
+    - RECONSTRUCTED
+    - COMPARE_CHANGED
+    - COMPARE_UNCHANGED
+    - CONFLICT
+    - COMPLETENESS_UNAVAILABLE
+    - COMPLETENESS_PARTIAL
+    - COMPLETENESS_CERTIFIABLE
+    - CUSTODY_NOT_ASSESSED
+    - CHAIN_INCOMPLETE
+    - INTEGRITY_MISMATCH
+  policy:
+    - PRINT_SAFE_OPERATIONAL_ONLY
+    - EXPORT_HELD
+    - REDACTION_HELD
+    - RETENTION_HELD
+    - LEGAL_STATUS_HELD
+    - DIGITAL_SIGNATURE_UNVERIFIED
+
+responsive_theme_language_accessibility:
+  viewports:
+    - {viewport: 1440x900, expectation: Recorder lanes, chronology and dossier remain bounded and readable.}
+    - {viewport: 1200x900, expectation: CD-054/WA-DES-015 comparison preserves truthful hierarchy.}
+    - {viewport: 1024x768, expectation: Modes and filters wrap without clipped chronology or shell.}
+    - {viewport: 768x1024, expectation: Case, provenance, event, state and policy truth form one task order.}
+    - {viewport: 412x915, expectation: No horizontal page overflow; labelled event records replace wide layouts.}
+    - {viewport: 390x844, expectation: Arabic/RTL modes, conflict, custody and held-policy states remain visible.}
+    - {viewport: 320x568, expectation: No clipping, overlap, hidden event detail or two-dimensional scroll.}
+  themes:
+    - LIGHT_WITH_TOKEN_AND_CONTRAST_PARITY
+    - DARK_WITH_TOKEN_AND_CONTRAST_PARITY
+  languages:
+    - ENGLISH_LTR_COMPLETE
+    - APPROVED_ARABIC_RTL_COMPLETE
+  accessibility:
+    - keyboard and visible focus order
+    - skip link and mode navigation names
+    - non-color provenance, integrity, chain and completeness states
+    - dialog open, close, Escape and full focus-cycle behavior
+    - status, degraded, truncation, conflict and error announcements
+    - semantic headings and ordered chronology
+    - zoom, reflow, print and reduced-motion parity
+
+p0_gates:
+  - {id: AUD-DES-P0-01, criterion: No screen or design identity is invented.}
+  - {id: AUD-DES-P0-02, criterion: M9 and M3-04/CD-054 replace the incorrect M8/CD-050 route premise.}
+  - {id: AUD-DES-P0-03, criterion: CD-054 R2 package, exact frame and fingerprint are retrieved and registered.}
+  - {id: AUD-DES-P0-04, criterion: WA-DES-015 Audit is secondary only and WA-DES-020 remains catalogue-only.}
+  - {id: AUD-DES-P0-05, criterion: Export scoped is disabled or removed until a governed export contract exists.}
+  - {id: AUD-DES-P0-06, criterion: Every design event, actor, date, count, hash and outcome is labelled fixture-only.}
+  - {id: AUD-DES-P0-07, criterion: Exact M3-04, ontology, cross-cutting and 478-preservation scopes stay distinct.}
+  - {id: AUD-DES-P0-08, criterion: Application authorization, generic RLS and semantic object RLS are reconciled per persona.}
+  - {id: AUD-DES-P0-09, criterion: Generic-only records never become semantic or canonical facts.}
+  - {id: AUD-DES-P0-10, criterion: Append-only, idempotency, source proof, integrity, chain and conflict truth is exact.}
+  - {id: AUD-DES-P0-11, criterion: Bounded portfolio, generic case, semantic keyset and client-search limits are explicit.}
+  - {id: AUD-DES-P0-12, criterion: Completeness is available only for a selected non-truncated case and published ontology.}
+  - {id: AUD-DES-P0-13, criterion: Sensitive before/after/payload disclosure remains purpose- and object-RLS-scoped.}
+  - {id: AUD-DES-P0-14, criterion: Error, unavailable, partial, degraded and verified-empty states cannot collapse.}
+  - {id: AUD-DES-P0-15, criterion: Provider, retention, export, redaction and legal holds remain fail-closed.}
+  - {id: AUD-DES-P0-16, criterion: Design acceptance makes no runtime, production, legal or all-478 completion claim.}
+
+p1_gates:
+  - {id: AUD-DES-P1-01, criterion: All route, source, mode, replay, custody, conflict, bounded and policy states are specified.}
+  - {id: AUD-DES-P1-02, criterion: All seven viewports preserve hierarchy, provenance and event-detail access.}
+  - {id: AUD-DES-P1-03, criterion: English/LTR and approved Arabic/RTL have semantic and task-order parity.}
+  - {id: AUD-DES-P1-04, criterion: Light/dark modes preserve contrast and non-color status meaning.}
+  - {id: AUD-DES-P1-05, criterion: Keyboard, focus cycle, skip link, dialog and announcements pass.}
+  - {id: AUD-DES-P1-06, criterion: Zoom, reflow, print and reduced motion preserve all audit truth.}
+  - {id: AUD-DES-P1-07, criterion: RLS scope, provenance, bounds, as-of and policy holds are visible.}
+  - {id: AUD-DES-P1-08, criterion: Evidence includes exact fingerprints and complete state/responsive/theme/RTL comparisons.}
+
+remaining_governance_decisions:
+  - id: AUD-DES-DEC-01
+    decision: Correct route ownership to M9 and M3-04/CD-054; retain CD-050 only as adjacent access context.
+  - id: AUD-DES-DEC-02
+    decision: Retrieve/fingerprint CD-054 R2 and identify the exact route frame.
+  - id: AUD-DES-DEC-03
+    decision: Allocate or reconcile a governed screen identity for /admin/audit.
+  - id: AUD-DES-DEC-04
+    decision: Register WA-DES-015 Audit as secondary visual lineage only.
+  - id: AUD-DES-DEC-05
+    decision: Reconcile navigation, application authorization, generic RLS and semantic object-RLS persona scope.
+  - id: AUD-DES-DEC-06
+    decision: Define unique-business-event versus generic-plus-semantic record counting.
+  - id: AUD-DES-DEC-07
+    decision: Define pagination, search scope, totals, freshness and certification bounds.
+  - id: AUD-DES-DEC-08
+    decision: Approve or continue holding export, reveal, redaction, watermark, retention, purge and legal status.
+  - id: AUD-DES-DEC-09
+    decision: Define safe disclosure for before/after/payload and printed operational views.
+  - id: AUD-DES-DEC-10
+    decision: After all prior decisions, name exactly one design writer; design consent is not implementation consent.
+
+collision_safe_design_lease:
+  prerequisite_sequence:
+    - Governance corrects authority and resolves exact CD-054 frame and screen identity.
+    - Governance closes persona, counting, pagination/search, disclosure and held-policy decisions.
+    - Orchestrator rechecks CD-054, WA-DES-015 all states, WA-DES-020, shared Admin shell and every active writer.
+    - Sponsor names exactly one writer and one bounded Audit design lease.
+  writer_boundary:
+    primary_source: CD-054 exact route frame after registration
+    secondary_source: WA-DES-015 Audit state only after lineage acceptance
+    must_preserve:
+      - every other WA-DES-015 state and selector
+      - M3-04/CD-054 and M9 authority
+      - generic-only versus semantic provenance
+      - append-only and fail-closed policy truth
+    prohibited_parallel_writers:
+      - any writer touching CD-054
+      - any writer touching SAQEEL Admin.dc.html or its Audit state/selector
+      - any writer touching shared Admin shell, replay ontology or the same evidence index
+  closeout:
+    - Independent reviewer verifies P0 and P1 evidence.
+    - Sponsor accepts, returns or rejects the design correction.
+    - Any later implementation lease separately records exact application and migration ownership.
+
+recommendation:
+  reviewer_recommendation: BLOCK_DUE_TO_MISSING_PRIMARY_DESIGN_FRAME_AND_SCREEN_IDENTITY
+  sponsor_business_decision: >-
+    Correct the authority to M9/M3-04/CD-054, retrieve the exact CD-054 frame,
+    govern a screen identity, and keep WA-DES-015 as secondary only. Do not
+    authorize a design writer or implementation from this packet.
+
+safe_follow_on:
+  task_id: M10-ADMIN-INTEGRATIONS-DESIGN-AUTHORITY-REVIEW-036
+  objective: >-
+    Read-only validate /admin/integrations and its registered design against
+    real endpoint/event/export/error contracts, provider holds and CD-050
+    authority without allocating an identity or granting a lease.
+  constraints:
+    - No live design, code, tests, data, mapping, branch, lease, main, setup/Inspection or stash mutation.
