@@ -68,6 +68,10 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
     }
     expect(actions).toContain('.from("ui_string_revisions")');
     expect(actions).toContain('status: "draft"');
+    expect(actions).toContain("requireLocalizationManager");
+    expect(actions.split('.eq("updated_at", expectedUpdatedAt)').length - 1).toBe(3);
+    expect(actions).toContain("missingPlaceholders");
+    expect(actions).toContain("changed_by");
     expect(actions).not.toMatch(/service_role|SUPABASE_SERVICE_ROLE|bypassRls/i);
   });
 
@@ -86,6 +90,23 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
     expect(pageSource).toContain("UI_STRINGS_PAGE_SIZE = 1000");
     expect(pageSource).toContain(".range(from, from + UI_STRINGS_PAGE_SIZE - 1)");
     expect(pageSource).toContain("if (page.length < UI_STRINGS_PAGE_SIZE) break");
+    expect(pageSource).toContain("updated_at");
+  });
+
+  test("loading, empty, degraded and unexpected-error states remain explicit and bilingual", () => {
+    const pageSource = source("src/app/(app)/admin/localization/page.tsx");
+    const manager = source("src/app/(app)/admin/localization/Manager.tsx");
+    const loading = source("src/app/(app)/admin/localization/loading.tsx");
+    const unexpectedError = source("src/app/(app)/admin/localization/error.tsx");
+
+    expect(pageSource).toContain("loadFailed");
+    expect(pageSource).toContain("Nothing was changed");
+    expect(manager).toContain("rows.length === 0");
+    expect(manager).toContain("filtered.length === 0");
+    expect(loading).toContain("Loading localization registry");
+    expect(loading).toContain("جارٍ تحميل سجل الترجمات");
+    expect(unexpectedError).toContain("Identity, permission, or registry data could not be verified");
+    expect(unexpectedError).toContain("تعذّر التحقق من الهوية أو الصلاحيات أو تحميل البيانات");
   });
 });
 
@@ -133,6 +154,38 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     expect(a11y.violations).toEqual([]);
     expectHealthyBrowser();
     await page.screenshot({ path: join(EVIDENCE_DIR, "after-admin-localization-en-light-1440x900.png"), fullPage: true });
+
+    await page.getByRole("button", { name: "التبديل إلى العربية", exact: true }).click();
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByRole("heading", { name: "سجل الترجمات", exact: true })).toBeVisible();
+  });
+
+  test("the restored governed key exposes persisted business state, version guard and immutable history", async ({ page }) => {
+    const expectHealthyBrowser = watchBrowserHealth(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await setPresentation(page, "en", "light");
+
+    const search = page.getByRole("textbox", { name: /Search key, English or Arabic/ });
+    await search.fill("admin.items.form.guidancePlaceholder");
+    const row = page.locator('[data-saqeel-design="WA-DES-010"] article').filter({
+      hasText: "admin.items.form.guidancePlaceholder",
+    });
+    await expect(row).toHaveCount(1);
+    await expect(row.getByRole("textbox", { name: /Arabic: admin.items.form.guidancePlaceholder/ }))
+      .toHaveValue("ما يتحقق منه المفتش");
+    await expect(row.getByText("draft", { exact: true }).first()).toBeVisible();
+
+    const versionInputs = row.locator('input[name="expected_updated_at"]');
+    await expect(versionInputs.first()).toHaveValue(/^\d{4}-\d{2}-\d{2}T/);
+    await row.getByRole("button", { name: "history", exact: true }).click();
+    await expect(row.locator('[id^="localization-history-"]')).toBeVisible();
+    await expect(row.getByRole("button", { name: "Restore", exact: true }).first()).toBeVisible();
+    expect(await row.locator('form:has(input[name="revision_id"])').count())
+      .toBeGreaterThanOrEqual(4);
+    await expect(row.getByText(/Changed by:/).first()).toBeVisible();
+
+    expectHealthyBrowser();
   });
 
   test("Arabic RTL, dark theme, tablet and narrow layouts preserve every control", async ({ page }) => {
@@ -151,6 +204,14 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     await page.reload();
     await expect(page.locator('[data-saqeel-design="WA-DES-010"]')).toBeVisible();
     await expectNoHorizontalOverflow(page);
+
+    await page.setViewportSize({ width: 320, height: 800 });
+    await setPresentation(page, "ar", "light");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByText("النص العربي طويل — تحقّق من عرضه في الشاشات الضيقة").first()).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    const a11y = await new AxeBuilder({ page }).analyze();
+    expect(a11y.violations).toEqual([]);
     expectHealthyBrowser();
   });
 });

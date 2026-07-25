@@ -11,6 +11,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { redirect } from "next/navigation";
 import Manager, { type Labels, type UiString } from "./Manager";
+import LocaleSwitch from "./LocaleSwitch";
 
 export const dynamic = "force-dynamic";
 const UI_STRINGS_PAGE_SIZE = 1000;
@@ -68,7 +69,7 @@ export default async function Localization() {
   let loadFailed = false;
   for (let from = 0; ; from += UI_STRINGS_PAGE_SIZE) {
     const result = await sb.from("ui_strings")
-      .select("key, en, ar, status, context, orphaned")
+      .select("key, en, ar, status, context, orphaned, updated_at")
       .order("key")
       .range(from, from + UI_STRINGS_PAGE_SIZE - 1);
     if (result.error) {
@@ -132,7 +133,7 @@ export default async function Localization() {
     restore: t("l10n.restore", "Restore"),
     restoring: t("l10n.restoring", "Restoring…"),
     restored: t("l10n.restored", "restored (as draft)"),
-    riskLong: t("l10n.risk.long", "Arabic runs long — check narrow layouts"),
+    riskLong: t("l10n.risk.long", copy("Arabic runs long — check narrow layouts", "النص العربي طويل — تحقّق من عرضه في الشاشات الضيقة")),
     orphanNote: t("l10n.orphan.note", "No longer found in the last code scan — kept and restorable, not deleted."),
     placeholderErr: t("l10n.placeholder.err", "Placeholder {token} is missing from the Arabic — Save is disabled until placeholders match."),
     registryTitle: t("l10n.registry.title", copy("Translation registry", "سجل الترجمات")),
@@ -166,6 +167,11 @@ export default async function Localization() {
     next: t("common.next", copy("Next", "التالي")),
     page: t("common.page", copy("Page", "صفحة")),
     filteredResults: t("l10n.filtered.results", copy("filtered results", "نتائج تمت تصفيتها")),
+    changedBy: t("l10n.history.actor", copy("Changed by", "غيّرها")),
+    systemActor: t("l10n.history.system", copy("system", "النظام")),
+    sourcePanel: t("l10n.history.source.panel", copy("admin panel", "لوحة الإدارة")),
+    sourceSync: t("l10n.history.source.sync", copy("source sync", "مزامنة المصدر")),
+    sourceRestore: t("l10n.history.source.restore", copy("restore", "استعادة")),
   };
 
   return (
@@ -173,9 +179,7 @@ export default async function Localization() {
       context={
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>
-          {locale === "ar"
-            ? <a className="sq-link" href="/locale?set=en">English</a>
-            : <a className="sq-link" href="/locale?set=ar" lang="ar">العربية</a>}
+          <LocaleSwitch locale={locale} />
         </span>
       }>
       {loadFailed ? (
@@ -190,7 +194,7 @@ export default async function Localization() {
             <div className="sq-kpi"><span className="sq-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
             <div className="sq-kpi"><span className="sq-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
           </div>
-          <Manager rows={rows} labels={labels} />
+          <Manager rows={rows} labels={labels} locale={locale} />
         </>
       )}
     </Shell>
