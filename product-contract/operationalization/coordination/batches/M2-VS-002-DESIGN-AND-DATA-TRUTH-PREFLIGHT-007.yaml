@@ -1,0 +1,508 @@
+packet_id: M2-VS-002-DESIGN-AND-DATA-TRUTH-PREFLIGHT-007
+packet_type: independent_design_and_data_truth_preflight
+created_at: "2026-07-25"
+reviewed_packet: M2-VS-002-READ-ONLY-VISIT-LIST-CANDIDATE-006
+module: M2_PLANNING
+slice_id: M2-VS-002
+gate_result: BLOCKED
+review_recommendation: RETURN_FOR_DESIGN_AND_QUERY_CORRECTION
+implementation_authorized: false
+lease_issued: false
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+  credit_granted: false
+
+review_boundary:
+  authoritative_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/Developer/Inspection-codex-planning-m2
+  product_branch: codex/planning-m2-saqeel-correction
+  observed_product_head: 48c58863a183c80171025c5770c4e3440392802b
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  product_design_test_data_mutation: NONE
+  browser_or_Claude_surface_control: NONE_NOT_LEASED
+  M3_status: BLOCKED
+
+requirement_boundary_validation:
+  result: CONDITIONAL_BOUNDARY_CONFIRMED
+  completion_candidate:
+    requirement_id: CR-053
+    acceptance_id: WA-AC-0053
+    evidence_id: WA-EV-0053
+    exact_claim: >
+      An authorized planner opens one centralized read-only Visit Management
+      workspace containing truthful planning KPIs, search, combinable filters
+      and a complete paginated list of RLS-visible Planning-lifecycle visits.
+  adjacent_semantic_constraints:
+    - requirement_id: CR-054
+      required_truth: >
+        KPI cards are Draft, Published, Returned, Cancelled and Expired;
+        validated folds into Draft; execution statuses are excluded.
+      completion_credit_in_this_packet: NONE
+    - requirement_id: CR-055
+      required_truth: >
+        Case-insensitive partial search covers Visit ID/reference, Factory Name,
+        CR Number, Industrial License and Inspector.
+      completion_credit_in_this_packet: NONE
+    - requirement_id: CR-056
+      required_truth: >
+        Status, Business Visit Type, Region, City, Visit Window and Inspector
+        filters can be combined.
+      completion_credit_in_this_packet: NONE
+    - requirement_id: CR-075
+      required_truth: >
+        The list's total, page count and stable sort must be truthful; selection,
+        grouping, configurable grid and AI highlighting are outside this slice.
+      completion_credit_in_this_packet: NONE
+  excluded_requirement:
+    requirement_id: CR-071
+    excluded:
+      - planner_actions
+      - operational_alerts
+      - selection
+      - bulk_reschedule
+      - bulk_reassign
+      - bulk_cancel
+      - bulk_edit
+    completion_credit: NONE
+  future_boundary: >
+    CR-053 attention highlighting, CR-054 trend highlighting and CR-055/056
+    suggestions are explicitly Future and must not be fabricated or counted.
+
+WA_DES_045_validation:
+  immutable_identity: WA-DES-045@sha256:74fc7af27cfa7ce7a3f458ae42ac5464aefcfa79471eb8c9f2f9b083ba25e2d2
+  source_pointer: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Visits.dc.html
+  hash_match: true
+  current_authority_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+  result: RETURN
+  confirmed_conflicts:
+    - id: DES-KPI-001
+      observed: "Published, Executing now, Expiring <=48h and Returned."
+      required: "Draft, Published, Returned, Cancelled and Expired."
+      implication: >
+        Executing is an operational status forbidden from planning KPI grain;
+        Draft and Cancelled are missing.
+    - id: DES-POLICY-002
+      observed: "Expiring <=48h."
+      required: "No threshold without governed policy authority."
+      implication: "The prototype threshold cannot become a production rule."
+    - id: DES-ACTION-003
+      observed: "Checkboxes plus Reschedule, Reassign and Cancel bulk bar."
+      required: "No selection or mutation affordance in M2-VS-002."
+      implication: "Those controls belong to CR-071/CR-075 and exceed the lease."
+    - id: DES-FILTER-004
+      observed: "Published, Executing, Returned, Expired, Type Bulk and This week chips."
+      required: >
+        Planning Status, Business Visit Type, Region, City, Visit Window and
+        Inspector with combinable URL-backed state.
+      implication: "The design does not represent the required filter contract."
+    - id: DES-SEARCH-005
+      observed: "Search prompt exists."
+      required: "Exact partial-match dimensions and error/zero states."
+      implication: "Visual presence alone does not define complete search behavior."
+    - id: DES-PAGE-006
+      observed: "Six fixture rows with no pagination state."
+      required: "Exact total, page count, previous/next and out-of-range behavior."
+      implication: "The design cannot be accepted as complete list authority."
+    - id: DES-IDENTITY-007
+      observed: "English surface uses generated Arabic-only wordmark text."
+      required: "Approved bilingual F0 wordmark asset."
+      implication: "Child design must inherit F0; it cannot redefine identity."
+    - id: DES-STATE-008
+      observed: "Populated fixture state dominates."
+      required: "Loading, RLS-zero, no-match, unavailable and unauthorized states."
+      implication: "Hard-state visual acceptance is incomplete."
+
+five_KPI_semantics:
+  result: CONFIRMED_FROM_CR_054
+  cards:
+    Draft:
+      predicate: "planning_status IN ('draft','validated')"
+      note: "validated is internal and is displayed/counted as Draft"
+    Published:
+      predicate: "planning_status = 'published'"
+    Returned:
+      predicate: "planning_status = 'returned'"
+    Cancelled:
+      predicate: "planning_status = 'cancelled'"
+    Expired:
+      predicate: "planning_status = 'expired'"
+  common_grain:
+    - current_authenticated_user
+    - business_staff_and_planning.view
+    - existing_RLS
+    - current_search
+    - current_non_status_filters
+  excluded_grain:
+    - operational_state
+    - inspection_status
+    - journey_state
+  selection_behavior:
+    - set_status_tab
+    - preserve_search_and_non_status_filters
+    - reset_page_to_1
+  evidence_rule: "Each card equals a direct RLS count query at the identical grain."
+
+search_completeness_validation:
+  result: FAIL_CURRENT_SERVICE
+  ready:
+    - local visit reference and internal reference search
+    - exact UUID support
+    - factory, CR, license, plan and inspector dimensions
+    - escaped wildcard/group syntax
+    - deterministic merge sort
+    - fail-closed error result
+  defects:
+    - >
+      Factory and plan prequeries use limit(500); Inspector prequery uses
+      limit(200). Matches beyond those positions silently disappear.
+    - >
+      Source comments claim COMPLETE search while the implementation retains
+      the exact capped behavior those comments prohibit.
+  exact_correction:
+    - use collectPostgrestPages for every related search dimension
+    - retain bounded URL chunks only after complete id enumeration
+    - deduplicate stable visit identifiers
+    - fail the entire search to unavailable if any dimension fails
+    - prove sentinel matches beyond former 500/200 boundaries
+
+filter_completeness_validation:
+  result: FAIL_CURRENT_CONSUMER
+  required_filters:
+    - planning_status
+    - business_visit_type
+    - region
+    - city
+    - visit_window_overlap
+    - inspector
+  query_logic_ready:
+    - filters_combine_with_AND
+    - region_city_and_inspector_embeds_become_inner_when_filtered
+    - visit_window_uses_overlap_semantics
+  defects:
+    - >
+      Region and city options derive from factory reads capped at 1000 rows;
+      valid options beyond the cap can disappear.
+    - >
+      Inspector options rely on a provider-default row ceiling rather than
+      explicit complete pagination.
+    - >
+      The candidate may omit non-required package, priority, planning-method,
+      creation-date and bulk-plan filters to remain small; if rendered, each
+      needs the same complete-option and degraded-state proof.
+  exact_correction:
+    - page every required option source to exhaustion
+    - deduplicate after complete RLS-scoped retrieval
+    - constrain city options by selected region
+    - distinguish option-source failure from legitimate no-options
+    - reset page to 1 on any criteria change
+
+counts_pagination_and_status_validation:
+  result: FAIL_CURRENT_SERVICE
+  defects:
+    - id: TOTAL-001
+      evidence: >
+        Non-search row query does not request exact count; total falls back to
+        rows.length, so a 25-row page can claim the complete total.
+    - id: OUT-OF-RANGE-002
+      evidence: >
+        A requested page beyond the last page returns no rows. The UI clamps
+        the displayed page number after the query but does not re-query the last
+        valid page, producing false empty content.
+    - id: STATUS-WHITELIST-003
+      evidence: >
+        The All tab has no explicit governed status predicate, so an
+        out-of-contract value can enter the certified Planning workspace.
+  exact_correction:
+    total: "Use the already computed exact counts[current_tab] at the same search/filter grain."
+    out_of_range: >
+      Resolve exact total before the final row range, then redirect/requery the
+      last valid page; never render false empty while total is positive.
+    governed_status_whitelist:
+      - draft
+      - validated
+      - published
+      - returned
+      - cancelled
+      - expired
+    stable_order: "Whitelisted sort plus visit id as deterministic tie-break."
+    page_truth:
+      - page_size_25
+      - exact_total
+      - exact_total_pages
+      - no_gap_or_duplicate
+      - criteria_change_resets_to_page_1
+
+planning_view_validation:
+  result: FAIL_CURRENT_WRAPPER
+  ready_basis:
+    - apps/web/src/lib/planning/access.ts
+    - apps/web/src/app/(app)/planning/page.tsx
+  current_defect: >
+    /planning/visits checks only SAQEEL_M2_PREVIEW and wa_preview before
+    delegating to the legacy Visits page.
+  exact_correction:
+    - verify identity
+    - resolve getPlanningAccess with planning.view
+    - require business_staff
+    - fail closed before list/count/option queries
+    - retain existing RLS for rows, counts and options
+    - keep admin, inspector and anonymous denied
+    - keep DEC-025 open and unchanged
+
+read_only_component_split:
+  result: REQUIRED
+  prohibited_reuse: >
+    VisitsBoard cannot be the rendered candidate because it imports and binds
+    bulk server actions, renders row/select-all checkboxes and exposes mutation
+    forms.
+  required_shape:
+    route: apps/web/src/app/(app)/planning/visits/page.tsx
+    component: apps/web/src/app/(app)/planning/visits/VisitList.tsx
+    styles: apps/web/src/app/(app)/planning/visits/VisitList.module.css
+    service: apps/web/src/lib/planning/visit-list.ts
+  invariant: >
+    VisitList must not import, bind, serialize, hide or render a write-capable
+    Server Action. It may only change URL-backed read criteria and open the
+    separately leased read-only dossier.
+  no_write_proof:
+    - no_action_or_selection_control
+    - no_POST_PATCH_PUT_DELETE
+    - no_expire_lapsed_visits
+    - no_workflow_or_notification_RPC
+    - visits_assignments_audit_notifications_unchanged_before_after
+
+deterministic_data_prerequisites:
+  result: BLOCKED_NOT_CREATED
+  owner: separate_approved_seeder_lane
+  mutation_authority_in_this_packet: NONE
+  dataset_contract:
+    isolation: dedicated_test_organization
+    idempotency: stable_fixture_keys_and_upsert_without_overwriting_unrelated_rows
+    cleanup: explicit_fixture_manifest_and_recoverable_cleanup
+    RLS_personas:
+      - authorized_business_staff
+      - admin_denied
+      - inspector_denied
+      - cross_organization_business_staff
+    minimum_visits: 60
+    status_distribution:
+      draft: 5
+      validated_counted_as_draft: 3
+      published: 30
+      returned: 8
+      cancelled: 7
+      expired: 7
+    pagination:
+      - equal_primary_sort_values_to_exercise_id_tiebreak
+      - at_least_three_pages_at_page_size_25
+    search:
+      - partial_visit_reference
+      - partial_factory_name
+      - partial_CR_number
+      - partial_industrial_license
+      - partial_inspector_name
+      - sentinel_after_former_factory_or_plan_500_boundary
+      - sentinel_after_former_inspector_200_boundary
+    filters:
+      - every_required_filter_has_multiple_values
+      - one_known_multi_filter_intersection
+      - one_valid_zero_match_combination
+    failure_states:
+      - controlled_query_failure_fixture_or_test_double
+      - controlled_option_source_failure_fixture_or_test_double
+    invalid_status_rule: >
+      Do not seed invalid production state. Exercise unknown-status quarantine
+      through a service-layer test double unless the canonical schema permits a
+      governed test value.
+
+test_preflight:
+  result: BLOCKED_NOT_EXECUTED
+  exact_spec: apps/web/e2e/web-admin-m2-readonly-visit-list.spec.ts
+  non_skippable: true
+  prohibited:
+    - test.skip
+    - absent_data_bypass
+    - current_implementation_as_visual_oracle
+    - fixture_counts_without_direct_query_comparison
+  required:
+    - five_KPI_counts_equal_direct_RLS_queries
+    - validated_folds_into_Draft_only
+    - operational_states_do_not_change_KPI_counts
+    - every_required_partial_search_dimension
+    - sentinel_search_beyond_former_caps
+    - every_required_filter
+    - combined_filter_intersection
+    - exact_total_and_three_page_navigation
+    - out_of_range_page_normalized_without_false_empty
+    - stable_sort_no_gap_or_duplicate
+    - URL_state_refresh_and_back_navigation
+    - RLS_rows_counts_and_options
+    - admin_inspector_anonymous_denied
+    - access_RPC_failure_before_data_queries
+    - query_failure_not_empty_success
+    - option_failure_not_empty_options
+    - no_actions_selection_or_write_requests
+    - before_after_database_snapshot_unchanged
+    - EN_AR_light_dark_1440_1024_390_320
+    - keyboard_single_focus_screen_reader_table_and_axe
+    - no_horizontal_page_overflow
+    - canonical_planning_visits_F0_Field_and_M2_VS_001A_regression
+
+browser_preflight:
+  result: NOT_EXECUTED_NOT_LEASED
+  environment_note: "The Mac is reported unlocked, but this task has no browser-capture lease."
+  required_after_implementation_and_lease:
+    - exact corrected_WA-DES-045 versus real runtime at 1440x900
+    - five_KPI_to_filtered_list
+    - search_sentinel
+    - combined_filters
+    - three_page_navigation
+    - zero_match_state
+    - RLS_zero_state
+    - query_unavailable_state
+    - unauthorized_state
+    - keyboard_focus
+    - zero_write_network_log
+    - EN_AR_light_dark_1440_1024_390_320
+  evidence_metadata:
+    - CR-053
+    - WA-AC-0053
+    - WA-EV-0053
+    - WA-DES-045_hash
+    - F0_revision
+    - route
+    - persona
+    - locale
+    - theme
+    - viewport
+    - dataset_id
+    - commit_sha
+
+F0_dependency_validation:
+  result: BLOCKED_FOR_FINAL_VISUAL_CERTIFICATION
+  wordmark_authority:
+    required: approved_bilingual_dark_surface_wordmark_asset
+    source: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+    defect_in_WA_DES_045: generated_Arabic_only_wordmark_on_English_surface
+  focus_authority:
+    technical_correction_commit: 31baf2f8
+    ancestry_at_product_head: true
+    requirement: "One visible contiguous focus treatment on all list controls."
+  unresolved:
+    - exact_certified_F0_runtime_commit
+    - single_authoritative_F0_frontend_and_QA_status
+    - sponsor_accepted_F0_base_for_M2_evidence
+  M2_boundary: "No shared-shell, global wordmark, token, localization or focus file enters the M2 lease."
+
+lease_and_non_overlap_validation:
+  result: PROPOSED_PATHS_DO_NOT_OVERLAP_M2_VS_001A
+  M2_VS_002_paths:
+    - apps/web/src/app/(app)/planning/visits/page.tsx
+    - apps/web/src/app/(app)/planning/visits/VisitList.tsx
+    - apps/web/src/app/(app)/planning/visits/VisitList.module.css
+    - apps/web/src/lib/planning/visit-list.ts
+    - apps/web/e2e/web-admin-m2-readonly-visit-list.spec.ts
+  M2_VS_001A_paths:
+    - apps/web/src/app/(app)/planning/visits/[id]/page.tsx
+    - apps/web/src/app/(app)/planning/visits/[id]/VisitDossier.tsx
+    - apps/web/src/app/(app)/planning/visits/[id]/VisitDossier.module.css
+    - apps/web/src/lib/planning/visit-dossier.ts
+    - apps/web/e2e/web-admin-m2-readonly-visit-dossier.spec.ts
+  intersection: []
+  central_lease_status: NOT_ISSUED
+  issuance_gate: >
+    Sponsor consent, corrected design acceptance, deterministic-data readiness
+    and an independent PASS are required before exact central lease issuance.
+
+design_correction_packet:
+  recipient: Claude_Design
+  action: CORRECT_WA_DES_045_CR053_READ_ONLY_LIST_VARIANT
+  preserve:
+    - premium_SAQEEL_visual_language
+    - dual_planning_and_operational_state_visibility_in_rows
+    - stable_visit_identity
+    - open_detail_affordance
+    - responsive_accessible_table_or_card_reflow
+  replace:
+    KPI_cards:
+      from:
+        - Published
+        - Executing_now
+        - Expiring_within_48_hours
+        - Returned
+      to:
+        - Draft
+        - Published
+        - Returned
+        - Cancelled
+        - Expired
+    filter_chips:
+      to:
+        - Planning_Status
+        - Business_Visit_Type
+        - Region
+        - City
+        - Visit_Window
+        - Inspector
+    wordmark: "Use inherited approved bilingual F0 asset; do not draw text."
+  remove:
+    - executing_KPI
+    - expiring_48h_KPI
+    - unsupported_threshold
+    - row_and_select_all_checkboxes
+    - bulk_action_bar
+    - reschedule_reassign_cancel_edit_controls
+    - operational_alerts
+  add:
+    - exact_partial_search_dimensions_in_interaction_notes
+    - combined_filter_and_URL_state_notes
+    - page_size_25_and_exact_total_pagination
+    - loading_state
+    - RLS_zero_state
+    - no_match_state_with_criteria_preserved
+    - data_unavailable_state
+    - filter_options_unavailable_state
+    - unauthorized_state
+    - EN_AR_light_dark_1440_1024_390_320_frames
+    - keyboard_focus_and_screen_reader_notes
+  prohibit:
+    - product_code
+    - API_or_backend_change
+    - invented_policy_or_provider
+    - completion_or_cutover_claim
+  return_required:
+    - immutable_revision_identifier
+    - exported_hash
+    - exact_route_component_mapping
+    - state_viewport_matrix
+    - sponsor_disposition_packet
+
+exact_prerequisites:
+  sponsor:
+    - accept_CR053_only_and_no_CR071_credit
+    - accept_corrected_WA_DES_045_revision
+    - retain_business_staff_plus_planning.view_and_DEC025_open
+    - record_exact_certified_F0_base
+  technical:
+    - remove_all_search_and_filter_option_caps
+    - correct_exact_total_and_out_of_range_pagination
+    - whitelist_governed_planning_statuses
+    - enforce_planning.view_before_queries
+    - render_separate_read_only_component_without_action_imports
+    - prepare_idempotent_isolated_deterministic_dataset
+    - pass_non_skippable_test_matrix
+    - independently_verify_exact_non_overlapping_file_lease
+    - capture_real_browser_only_under_later_explicit_lease
+
+next_allowed_action: >
+  Return the design correction packet to Claude Design and prepare the
+  deterministic-data manifest in the separate approved seeder lane. Do not
+  issue an M2 product lease or implement until a fresh independent preflight
+  returns PASS.
+
+queued_follow_on:
+  task_id: M2-VS-002-CORRECTED-DESIGN-AND-LEASE-RECHECK
+  status: QUEUED_NOT_DISPATCHED
+  trigger: "Corrected immutable WA-DES-045 revision plus deterministic-data manifest available."
+  mutation_authority: NONE

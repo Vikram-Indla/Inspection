@@ -219,13 +219,16 @@ prohibited_content:
       - verification_record
       - reset_or_invitation_token
     handling: "Do not export and do not retain a value-derived hash; quarantine and BLOCK."
-  bodies_and_expressions:
+  prohibited_bodies:
     fields:
       - pg_get_functiondef_output
       - function_body
       - procedure_body
       - view_definition
       - materialized_view_definition
+    handling: "Never collect or transform for this bundle; quarantine and BLOCK."
+  transient_definitions_and_expressions:
+    fields:
       - raw_trigger_definition
       - raw_policy_using_expression
       - raw_policy_check_expression
