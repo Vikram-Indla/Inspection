@@ -265,10 +265,13 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
     { id: "compliance", label: copy(locale, "Compliance classification", "تصنيف الامتثال"), available: false },
     { id: "risk", label: copy(locale, "Risk classification", "تصنيف المخاطر"), available: false },
   ];
+  // SAQEEL Executive Overview — the regional rail is the leadership read of the
+  // national picture, so every in-scope region is listed (the design's "13
+  // منطقة" ranked list). Truncating to a top-N silently hid governed regions
+  // from the only surface that ranks them; the rail already scrolls.
   const ranking: CanvasRankRow[] = regionRows
     .slice()
     .sort((a, b) => (a.rate ?? 101) - (b.rate ?? 101))
-    .slice(0, 8)
     .map(row => ({
       key: row.label,
       name: row.label,
@@ -279,7 +282,7 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
   const canvasStrings: DecisionCanvasStrings = {
     panelTitle: copy(locale, "National factory map", "الخريطة الوطنية للمصانع"),
     rankTitle: copy(locale, "Regional compliance", "الامتثال حسب المنطقة"),
-    syncedToMap: copy(locale, "RLS-scoped records", "سجلات مقيّدة حسب الصلاحيات"),
+    syncedToMap: copy(locale, `${ranking.length} regions · RLS-scoped records`, `${ranking.length} منطقة · سجلات مقيّدة حسب الصلاحيات`),
     provider: copy(locale, "Map source: Mapbox", "مصدر الخريطة: Mapbox"),
     loadingTitle: copy(locale, "Loading factory map", "جارٍ تحميل خريطة المصانع"),
     loadingBody: copy(locale, "Loading governed official coordinates.", "جارٍ تحميل الإحداثيات الرسمية المعتمدة."),
