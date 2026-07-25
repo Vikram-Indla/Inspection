@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r17",
-  "updated": "2026-07-26T00:45:00+03:00",
+  "revision": "SB-r18",
+  "updated": "2026-07-26T01:35:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1477,7 +1477,7 @@
       "code": 70,
       "wiring": 50,
       "designPage": "pwa/SAQEEL PWA-Field Reports.dc.html · Reports Library · Challenge Report",
-      "route": "none — no /field/reports route in the repo",
+      "route": "web/src/app/(app)/field/reports/page.tsx · reports/[id]/page.tsx · reports.module.css",
       "pwa": {
         "state": "break",
         "note": "Three designed report screens with NO repo route. Inspectors cannot reach their own report history in the app."
