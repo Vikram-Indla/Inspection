@@ -1,0 +1,259 @@
+schema_version: "1.0"
+packet_id: CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001
+status: READY_TO_DISPATCH_AFTER_MANUAL_MAC_UNLOCK
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+review_decision: RETURN_FOR_DELTA_CORRECTION
+
+business_function: >-
+  Correct the first implementation pass for M3 map provenance before any
+  commit, push, pull request or review-ready claim. The corrected implementation
+  must expose truthful position provenance on /operations and /operations/live,
+  retain coordinate-less entities in accessible lists, and treat a geo-event
+  read failure as an explicit fourth state rather than false projected or
+  unavailable data.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  implementation_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-map-provenance
+  implementation_branch: codex/m3-map-provenance-correction
+  implementation_base: c48f71cc46ce027927224109f7b070ca489f2b15
+  source_contract: >-
+    /Users/vikramindla/Developer/Inspection/.claude/worktrees/
+    m3-operations-design-0f2c11/design/claude-design-mvp1/outputs/
+    m3-operations/13_CLAUDE-M3-MAP-PROVENANCE-CORRECTION-008.md
+  sponsor_direction: M3-MAP-PROVENANCE-001
+
+observed_first_pass:
+  claude_status_claimed: REVIEW_READY
+  reviewer_status: REJECTED
+  reviewer_reason: FOUR_OPEN_P1_DELTA_DEFECTS
+  commit_created: false
+  push_performed: false
+  pull_request_created: false
+  changed_files:
+    - apps/web/e2e/web-admin-m3-operations.spec.ts
+    - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+    - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+    - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+    - apps/web/src/app/(app)/operations/live/page.tsx
+    - apps/web/src/app/(app)/operations/live/types.ts
+    - apps/web/src/app/(app)/operations/page.tsx
+  diff_stat: "7 files changed, 489 insertions(+), 115 deletions(-)"
+  retained_positive_findings:
+    - "Existing /operations geo_events ledger read remains unfiltered by event kind."
+    - "Permitted position kinds are telemetry, arrival and checkin only."
+    - "The in-memory position selection uses occurred_at descending and id descending."
+    - "List-capable entries have nullable coordinates; only map-bound entries require coordinates."
+    - "Fabricated hash/origin/fraction route simulation was removed from /operations/live."
+    - "The new /operations/live geo_events read is one non-N+1 monitored-visit query."
+    - "Route authorization remains before protected data reads."
+
+authorized_lease:
+  lease_type: EXACT_EIGHT_FILE_CORRECTION
+  original_files:
+    - apps/web/e2e/web-admin-m3-operations.spec.ts
+    - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+    - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+    - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+    - apps/web/src/app/(app)/operations/live/page.tsx
+    - apps/web/src/app/(app)/operations/live/types.ts
+    - apps/web/src/app/(app)/operations/page.tsx
+  expanded_file:
+    - apps/web/src/app/(app)/operations/live/loading.tsx
+  expansion_reason: >-
+    The loading UI still renders the fabricated "Projected route — not live
+    GPS" claim. A conflict check found no current worktree modifying this file,
+    so the orchestrator authorized this one-file expansion.
+  prohibited:
+    - "Any ninth file."
+    - "Shared GeoMap.tsx or OpsMap.tsx."
+    - "Supabase migrations, schema, RPC, RLS, seed or shared data."
+    - "Product-contract, shell, navigation, Field or unrelated application files."
+    - "PR #60 branch/worktree, main, setup/Inspection or any stash."
+    - "Commit, push, pull request or REVIEW READY before independent re-review."
+
+required_corrections:
+  - correction_id: M3-MAP-R01
+    severity: P1
+    subject: "Truthful loading disclosure"
+    finding: >-
+      apps/web/src/app/(app)/operations/live/loading.tsx still renders
+      "Projected route — not live GPS", and the updated test explicitly
+      preserves that obsolete claim.
+    required_outcome:
+      - "Replace the loading claim with truthful neutral/provenance loading copy."
+      - "Do not claim a route, live GPS, ETA, drift, refresh cadence or animation."
+      - "Update the focused test to prove the obsolete projected-route claim is absent from loading.tsx."
+    completion_bar: >-
+      No rendered /operations/live state, including loading, contains the
+      fabricated projected-route claim.
+
+  - correction_id: M3-MAP-R02
+    severity: P1
+    subject: "Tier-1 accuracy disclosure"
+    finding: >-
+      accuracyM is carried through the types and data construction but is not
+      rendered by OperationsMapWorkspace or LiveOps. The accepted tier-1
+      contract requires recorded timestamp and accuracy when present.
+    required_outcome:
+      - "Render accuracy when accuracyM is present on /operations."
+      - "Render accuracy when accuracyM is present on /operations/live."
+      - "Do not invent an accuracy value or unit when the field is absent."
+      - "Add source-level assertions and bounded runtime proof where the real fixture permits."
+    completion_bar: >-
+      A tier-1 entity shows the exact Last recorded GPS label, recorded time and
+      the stored accuracy when present on both surfaces.
+
+  - correction_id: M3-MAP-R03
+    severity: P1
+    subject: "Tier-2 resolving-source disclosure"
+    finding: >-
+      coordinateSource is carried but not rendered. The accepted tier-2
+      contract requires the actual resolving source plus scheduled time.
+    required_outcome:
+      - "Render planner-set dispatch point when both planner coordinates resolve."
+      - "Render factory official location when the planner pair is absent and the factory pair resolves."
+      - "Preserve the canonical per-coordinate coalesce behavior without falsely labelling a mixed or incomplete pair as purely planner or factory."
+      - "Render scheduledAt and add source-level assertions plus bounded runtime proof where the real fixture permits."
+    completion_bar: >-
+      Every tier-2 label on both surfaces identifies the truthful coordinate
+      source and scheduled time, with no ambiguous or fabricated source.
+
+  - correction_id: M3-MAP-R04
+    severity: P1
+    subject: "Geo-event read failure as an explicit fourth state"
+    finding: >-
+      On /operations and /operations/live, a geo-event error is surfaced by a
+      banner or map-only error, but the empty fallback array is still reduced
+      into projected/unavailable provenance and rendered in the accessible
+      list. That falsely treats a failed read as confirmed absence.
+    required_outcome:
+      - "Model or propagate a dedicated position-read-error state on /operations."
+      - "Model or propagate a dedicated position-read-error state on /operations/live."
+      - "Do not construct or render projected/unavailable provenance from an empty fallback after geoRes or geoEventsRes errors."
+      - "Apply the error state across both map and accessible list wherever provenance would otherwise be communicated."
+      - "Unrelated successfully loaded context may remain visible only when it cannot communicate false position provenance."
+      - "Add tests proving that a geo-event error cannot downgrade entities to tier 2 or tier 3."
+    completion_bar: >-
+      A failed geo-event read is visibly and structurally distinct from zero
+      permitted rows on both surfaces; no false provenance remains visible.
+
+test_evidence_before_return:
+  typescript:
+    command: "npx tsc --noEmit -p tsconfig.json"
+    result: PASS
+  production_build:
+    command: "npm run build"
+    result: PASS
+    routes_compiled:
+      - /operations
+      - /operations/live
+  focused_auth_setup:
+    command: >-
+      npx playwright test --project=setup
+      --grep "authenticate ops|authenticate planner" --reporter=line
+    result: "PASS (2) FAIL (0)"
+  focused_e2e:
+    command: >-
+      npx playwright test e2e/web-admin-m3-operations.spec.ts
+      --project=e2e --no-deps --reporter=line
+    final_result: "PASS (29) FAIL (0)"
+    prior_transient: >-
+      The National Performance navigation assertion failed on two cold/full
+      runs but passed in isolation and on the final full focused run. Do not
+      weaken or delete that assertion; re-run it after the corrections.
+  external_runtime_limit:
+    inspector_auth: >-
+      Full all-persona setup independently reproduced the existing inspector
+      timeout/HTTP-400 boundary. This is outside the eight-file lease.
+    tier_fixtures: >-
+      No seed-data lease is held in this correction. Tier-specific seeded
+      runtime proof must remain an explicit external evidence blocker when the
+      live environment lacks the necessary tier-1, tier-2 or tier-3 fixture.
+  reviewer_interpretation: >-
+    Passing tests do not clear the four P1 contract defects. The current diff
+    is not review-ready until corrected and independently reviewed again.
+
+required_verification_after_correction:
+  - "git diff --check"
+  - "npx tsc --noEmit -p tsconfig.json"
+  - "npm run build"
+  - >-
+    npx playwright test --project=setup
+    --grep "authenticate ops|authenticate planner" --reporter=line
+  - >-
+    npx playwright test e2e/web-admin-m3-operations.spec.ts
+    --project=e2e --no-deps --reporter=line
+  - "Confirm exactly the eight leased files are modified."
+  - "Report seeded tier-specific runtime evidence as blocked when the fixture is absent; do not claim an unexercised branch passed."
+
+stop_condition:
+  required_status: REVIEW_READY_FOR_INDEPENDENT_RE_REVIEW
+  no_commit: true
+  no_push: true
+  no_pull_request: true
+  no_merge: true
+  no_main_modification: true
+  no_stash_touch: true
+
+current_blocker:
+  code: MANUAL_MAC_UNLOCK_REQUIRED
+  state: BLOCKED_FOR_DISPATCH_ONLY
+  detail: >-
+    Claude Code completed its first pass and stopped at an incorrect
+    REVIEW READY claim. The Mac locked before the reviewer return could be
+    dispatched. Lock-safe transcript and worktree monitoring continue.
+  operational_truth:
+    claude_active: false
+    claude_status: STOPPED_AT_REJECTED_REVIEW_READY
+    correction_dispatched: false
+  unblock_condition: >-
+    Sponsor manually unlocks the Mac. The reviewer sends the exact dispatch
+    message below to the existing Claude Code conversation and confirms a new
+    first token or running status before reporting Claude active.
+
+dispatch_message: |-
+  RETURN FOR DELTA CORRECTION — M3-MAP-PROVENANCE-001.
+
+  Re-load and obey the SAQEEL session-start command and operating system. Stay
+  in `/Users/vikramindla/Developer/Inspection-codex-m3-map-provenance` on
+  `codex/m3-map-provenance-correction`. Keep the current seven-file diff.
+
+  Your lease is expanded by exactly one conflict-checked file:
+  `apps/web/src/app/(app)/operations/live/loading.tsx`.
+  No ninth file. No shared GeoMap/OpsMap, backend, migration, schema, RLS, RPC,
+  seed/data, product-contract, shell/navigation, Field, PR #60 worktree,
+  main, setup/Inspection or stash change. No commit, push or PR.
+
+  Apply every correction in:
+  `product-contract/operationalization/coordination/batches/CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml`
+
+  Required P1 outcomes:
+  1. Remove the fabricated projected-route claim from loading.tsx and prove it
+     is absent.
+  2. Show tier-1 accuracy when present on both /operations and
+     /operations/live.
+  3. Show the truthful tier-2 resolving coordinate source and scheduled time on
+     both surfaces.
+  4. Treat geo-event read failure as a dedicated fourth state across both map
+     and accessible list on both surfaces. Never render projected/unavailable
+     provenance from an empty error fallback.
+
+  Keep the National Performance navigation assertion; do not weaken or delete
+  it. Re-run diff-check, TypeScript, production build, targeted ops/planner auth
+  setup and the full focused e2e spec. Report exact results and any honest
+  fixture/auth blockers. Stop at REVIEW READY FOR INDEPENDENT RE-REVIEW. Do not
+  commit, push or open a PR.
+
+validation:
+  yaml_parse: PASS
+  exact_eight_file_lease_checked: PASS
+  source_paths_checked: PASS
+  current_diff_checked: PASS
+  no_commit_boundary_checked: PASS
+  dispatch_status: NOT_DISPATCHED
