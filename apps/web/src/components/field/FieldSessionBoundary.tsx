@@ -6,7 +6,7 @@ import { bootstrapFieldSession, safeFieldReturnPath } from "@/lib/field-auth";
 
 function recoveryUrl(reason: "expired" | "unauthorized"): string {
   const intended = safeFieldReturnPath(`${window.location.pathname}${window.location.search}${window.location.hash}`);
-  return `/login/field?reason=${reason}&next=${encodeURIComponent(intended)}`;
+  return `/login?reason=${reason}&next=${encodeURIComponent(intended)}`;
 }
 
 export default function FieldSessionBoundary({ children }: { children: ReactNode }) {

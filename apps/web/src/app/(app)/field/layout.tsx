@@ -20,12 +20,12 @@ export default async function FieldLayout({ children }: { children: ReactNode })
   const pathname = safeFieldReturnPath((await headers()).get("x-pathname"));
   const { data: { user }, error } = await getVerifiedUser(sb);
   if (error || !user) {
-    redirect(`/login/field?reason=expired&next=${encodeURIComponent(pathname)}`);
+    redirect(`/login?reason=expired&next=${encodeURIComponent(pathname)}`);
   }
   const roleRead = await getUserRoles(user.id);
   const inspector = !roleRead.error && (roleRead.data ?? []).some(row => row.role_key === "inspector");
   if (!inspector) {
-    redirect(`/login/field?reason=unauthorized&next=${encodeURIComponent(pathname)}`);
+    redirect(`/login?reason=unauthorized&next=${encodeURIComponent(pathname)}`);
   }
   const { locale } = await useT();
   return (

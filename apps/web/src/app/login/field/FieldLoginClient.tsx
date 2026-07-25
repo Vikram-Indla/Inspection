@@ -299,7 +299,7 @@ export default function FieldLoginClient({
 
   const localeHref = useMemo(
     () => localeHrefProp
-      ?? `/login/field?lang=${lang === "ar" ? "en" : "ar"}&next=${encodeURIComponent(safeReturnTo)}`,
+      ?? `/login?lang=${lang === "ar" ? "en" : "ar"}&next=${encodeURIComponent(safeReturnTo)}`,
     [localeHrefProp, lang, safeReturnTo],
   );
 
