@@ -1,0 +1,386 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SAFE-FALLBACK-WORK-QUEUE-072
+status: READ_ONLY_FALLBACK_QUEUE_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Convert the 12 blocker proof routes into a prioritized, dependency-aware,
+  non-conflicting read-only fallback queue with exact outputs, owner-type
+  boundaries, stop conditions and ready successors while mutable authority is
+  absent.
+
+authority:
+  proof_router: KIMI-M11-BLOCKER-NEXT-PROOF-ROUTER-071
+  blocker_delta: KIMI-M11-BLOCKER-EVIDENCE-DELTA-070
+  control_visibility: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+
+hard_boundary:
+  - "Queue design and uniquely named read-only coordination outputs only."
+  - "Owner boundaries are capability types, not real owner appointments."
+  - "No real dispatch, worktree, branch, owner, lease, provider call, catalog query or shared-control mutation."
+  - "No product, test, SQL, migration, data, seed, design, stash, merge, push, implementation, QA execution or requirement credit."
+  - "Event-gated work never occupies or blocks a ready read-only lane."
+
+queue_rules:
+  - "Every task maps to exactly one frozen blocker."
+  - "Every task produces one uniquely named coordination packet and no other write."
+  - "Mutable closure proof is never claimed from fallback analysis."
+  - "A lane always has one active-ready task and one ready successor when possible."
+  - "Tasks sharing a source may read concurrently; no task may write the source."
+  - "Any ref/hash drift, unexpected secret/PII, required live query/call or ownership ambiguity stops that task."
+  - "Requirement credit remains zero."
+
+lanes:
+  - lane_id: FALLBACK-REPOSITORY-INVENTORY
+    concurrency_domain: READ_ONLY_CANONICAL_SOURCE
+    first_task: FQ-072-01
+    ready_successor: FQ-072-02
+    collision_rule: "No source edits; each task writes only its unique coordination packet."
+  - lane_id: FALLBACK-CONTRACTS
+    concurrency_domain: READ_ONLY_CONTRACT_AND_MIGRATION_TEXT
+    first_task: FQ-072-03
+    ready_successor: FQ-072-04
+    collision_rule: "No database query, provider call, configuration or credential access."
+  - lane_id: FALLBACK-ASSURANCE
+    concurrency_domain: READ_ONLY_CASE_AND_EVIDENCE_INDEX
+    first_task: FQ-072-05
+    ready_successor: FQ-072-06
+    collision_rule: "No test creation/execution or evidence fabrication."
+  - lane_id: FALLBACK-DATA-RELEASE
+    concurrency_domain: READ_ONLY_FIXTURE_AND_MIGRATION_SPEC
+    first_task: FQ-072-07
+    ready_successor: FQ-072-08
+    collision_rule: "No seed, SQL, migration allocation or runtime rehearsal."
+  - lane_id: FALLBACK-HUMAN-KIMI
+    concurrency_domain: EVENT_TRIGGERED_VISIBLE_SESSION
+    first_task: FQ-072-09
+    ready_successor: FQ-072-10
+    later_successors: [FQ-072-11, FQ-072-12]
+    collision_rule: "Manual unlock only; unseen or partial Kimi output is rejected."
+    non_blocking_rule: "If the event is absent, immediately continue another ready lane."
+
+fallback_queue:
+  - queue_id: FQ-072-01
+    blocker_id: BLK-M11-AUDIT-CONSUMERS
+    priority: P0
+    readiness: READY_READ_ONLY
+    exact_output: KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+    evidence_goal:
+      - "Enumerate every canonical repository call site, query, export, report and service consuming raw or safe audit data."
+      - "Record exact path, symbol/query, fields, persona and redaction/compatibility need."
+      - "Produce an unresolved-consumer register; do not claim zero unknowns without full search coverage."
+    authoritative_sources:
+      - "Pinned canonical product ref."
+      - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+      - KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+      - KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048
+    owner_boundary: READ_ONLY_REPOSITORY_INVESTIGATOR
+    dependencies: []
+    stop_conditions:
+      - "Product ref/hash changes during inventory."
+      - "Search reaches an unavailable generated/external source."
+      - "Any edit or runtime query would be required."
+    successor: FQ-072-02
+    closure_effect: "Planning evidence only; blocker remains open until accepted inventory and runtime compatibility proof."
+
+  - queue_id: FQ-072-02
+    blocker_id: BLK-M11-IMPLEMENTATION
+    priority: P1
+    readiness: READY_AFTER_FQ_072_01_OR_PARALLEL_IF_SEPARATE_REVIEWER
+    exact_output: KIMI-M11-IMPLEMENTATION-PATH-OBJECT-COLLISION-REFRESH-074
+    evidence_goal:
+      - "Refresh exact virtual application paths, database objects, function signatures, migration order and current branch/worktree collision state."
+      - "Cross-reference every audit-consumer path from 073."
+    authoritative_sources:
+      - KIMI-M11-EXECUTION-TASK-TO-M11-PATH-CROSSWALK-056
+      - KIMI-M11-LIVE-COLLISION-RECHECK-MATERIALIZATION-ORDER-AUDIT-060
+      - "Pinned refs and lease blob."
+    owner_boundary: READ_ONLY_CONTROL_AND_PATH_REVIEWER
+    dependencies: [FQ-072-01]
+    stop_conditions:
+      - "Any authority blob changes."
+      - "An actual implementation option/lease appears."
+      - "A source edit would be needed."
+    successor: FQ-072-05
+    closure_effect: "Collision evidence only; no implementation authority or blocker closure."
+
+  - queue_id: FQ-072-03
+    blocker_id: BLK-M11-CATALOG
+    priority: P0
+    readiness: READY_SPEC_ONLY
+    exact_output: KIMI-M11-LIVE-CATALOG-QUERY-EVIDENCE-PACK-073
+    evidence_goal:
+      - "Freeze exact read-only queries and evidence columns for owner, BYPASSRLS, extensions, ACLs, policies, triggers, indexes, dependencies and default privileges."
+      - "Map every query result to M11-MIGSEC and 050 cases."
+    authoritative_sources:
+      - KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+      - KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050
+      - "Canonical migrations at pinned product ref."
+    owner_boundary: READ_ONLY_DATABASE_SECURITY_SPEC_REVIEWER
+    dependencies: []
+    stop_conditions:
+      - "Any live database connection/query would be attempted."
+      - "A query requires unknown privilege or unsafe search_path."
+      - "Secrets or direct identifiers would enter evidence."
+    successor: FQ-072-04
+    closure_effect: "Query-pack readiness only; catalog blocker remains open until authorized live execution."
+
+  - queue_id: FQ-072-04
+    blocker_id: BLK-M11-PROVIDER
+    priority: P0
+    readiness: READY_SUCCESSOR_AFTER_FQ_072_03_OR_PARALLEL_IF_SEPARATE_REVIEWER
+    exact_output: KIMI-M11-PROVIDER-CONTRACT-GAP-AND-ACCEPTANCE-MAP-074
+    evidence_goal:
+      - "Map required provider identity, authentication, callbacks, signatures, idempotency, timeout, degraded behavior, delivery evidence, retention and redaction to 044/049 cases."
+      - "List exact missing contract fields without selecting or calling a provider."
+    authoritative_sources:
+      - KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+      - KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049
+      - "Any future signed provider contract only when supplied."
+    owner_boundary: READ_ONLY_PROVIDER_CONTRACT_REVIEWER
+    dependencies: []
+    stop_conditions:
+      - "Provider/API call, configuration or credential would be required."
+      - "Contract value would need to be invented."
+    successor: FQ-072-07
+    closure_effect: "Contract gap evidence only; provider blocker remains open."
+
+  - queue_id: FQ-072-05
+    blocker_id: BLK-M11-QA-LEASES
+    priority: P0
+    readiness: READY_READ_ONLY
+    exact_output: KIMI-M11-QA-CASE-PATH-EVIDENCE-TRACE-073
+    evidence_goal:
+      - "Revalidate all 361 case IDs, 18 proof clusters and nine QA paths."
+      - "Map every case to prerequisite fixture, implementation surface, expected evidence and negative/rollback result."
+    authoritative_sources:
+      - KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+      - KIMI-M11-DISPATCH-VALIDATOR-COVERAGE-CERTIFICATE-065
+    owner_boundary: READ_ONLY_INDEPENDENT_QA_PLANNER
+    dependencies: []
+    stop_conditions:
+      - "Any test file creation/execution or owner assignment would occur."
+      - "A case, path or cluster is missing, duplicated or waived."
+    successor: FQ-072-06
+    closure_effect: "Traceability evidence only; no QA lease or executed proof."
+
+  - queue_id: FQ-072-06
+    blocker_id: BLK-M11-EVIDENCE
+    priority: P1
+    readiness: READY_AFTER_FQ_072_05
+    exact_output: KIMI-M11-RUNTIME-EVIDENCE-BUNDLE-SCHEMA-074
+    evidence_goal:
+      - "Define the exact database, browser, provider, catalog, persona, redaction, audit, rollback, quiesce and deployment evidence index."
+      - "Bind all 361 cases and 18 clusters to hashes, environment/build identity, failures and review fields."
+    authoritative_sources:
+      - KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+      - KIMI-M11-CATALOG-EVIDENCE-REDACTION-CHECKLIST-039
+      - FQ-072-05
+    owner_boundary: READ_ONLY_EVIDENCE_SCHEMA_REVIEWER
+    dependencies: [FQ-072-05]
+    stop_conditions:
+      - "Placeholder or fabricated runtime evidence would be introduced."
+      - "A required case lacks an evidence slot."
+    successor: FQ-072-08
+    closure_effect: "Evidence schema only; runtime evidence blocker remains open."
+
+  - queue_id: FQ-072-07
+    blocker_id: BLK-M11-FIXTURES
+    priority: P0
+    readiness: READY_SPEC_ONLY
+    exact_output: KIMI-M11-FIXTURE-PROVENANCE-TEARDOWN-BLUEPRINT-073
+    evidence_goal:
+      - "Define synthetic persona/data rows for every required positive and negative case."
+      - "Specify project pin, provenance, idempotency, dry-run, rollback, redaction and deterministic teardown."
+    authoritative_sources:
+      - KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+      - KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+      - "Seeder governance requirements without executing a seed."
+    owner_boundary: READ_ONLY_FIXTURE_AND_DATA_GOVERNANCE_DESIGNER
+    dependencies: []
+    stop_conditions:
+      - "Any seed, database write or personal/governed value invention would occur."
+      - "Exact project/environment authority is required."
+    successor: FQ-072-08
+    closure_effect: "Fixture blueprint only; no fixture authority or data proof."
+
+  - queue_id: FQ-072-08
+    blocker_id: BLK-M11-QUIESCE
+    priority: P1
+    readiness: READY_AFTER_FQ_072_07
+    exact_output: KIMI-M11-QUIESCE-DRAIN-MIGRATION-DEPENDENCY-GRAPH-074
+    evidence_goal:
+      - "Map expand/switch/quiesce/contract order, maintenance gate, in-flight counter, zero-drain assertion, unsafe intervals, rollback and recovery."
+      - "Bind every step to 045/051 cases and fixture prerequisites."
+    authoritative_sources:
+      - KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045
+      - KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051
+      - FQ-072-07
+    owner_boundary: READ_ONLY_DATABASE_RELEASE_PLANNER
+    dependencies: [FQ-072-07]
+    stop_conditions:
+      - "Migration filename allocation, SQL execution or runtime rehearsal would occur."
+      - "Any unsafe interval lacks an explicit stop."
+    successor: FQ-072-06
+    closure_effect: "Static release plan only; quiesce blocker remains open."
+
+  - queue_id: FQ-072-09
+    blocker_id: BLK-M11-MAC-CAPTURE
+    priority: P0_EVENT
+    readiness: EVENT_TRIGGERED_NON_BLOCKING
+    exact_output: KIMI-M11-MAC-UNLOCK-CAPTURE-CHECKPOINT-073
+    evidence_goal:
+      - "Record lock state, visible conversation identity, timestamp and response capture hash after manual unlock."
+    authoritative_sources:
+      - "Human-visible macOS session."
+    owner_boundary: HUMAN_OPERATOR_PLUS_READ_ONLY_CAPTURE_REVIEWER
+    dependencies: []
+    stop_conditions:
+      - "Mac remains locked."
+      - "Unlock would require automation."
+      - "Conversation identity is ambiguous."
+    successor: FQ-072-10
+    fallback_when_event_absent: "Yield immediately to FQ-072-01, 03, 05 or 07."
+    closure_effect: "Only validated visible capture may close this blocker."
+
+  - queue_id: FQ-072-10
+    blocker_id: BLK-M11-KIMI-RETURN
+    priority: P0_EVENT
+    readiness: READY_PREVALIDATION_EVENT_GATED
+    exact_output: KIMI-M11-KIMI-RETURN-MANIFEST-VALIDATION-074
+    evidence_goal:
+      - "Validate six complete payloads, order, hashes, fingerprints, collision stops and no-write/no-claim flags."
+    authoritative_sources:
+      - KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+      - KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029
+      - "Visible captured Kimi response."
+    owner_boundary: READ_ONLY_RETURN_VALIDATOR_NOT_THE_RESPONSE_AUTHOR
+    dependencies: [FQ-072-09]
+    stop_conditions:
+      - "Capture is absent, partial, title-only, malformed or fingerprint-mismatched."
+    successor: FQ-072-11
+    fallback_when_event_absent: "Revalidate schemas/hashes only; yield to another ready lane."
+    closure_effect: "Only complete accepted return may close this blocker."
+
+  - queue_id: FQ-072-11
+    blocker_id: BLK-M11-REVIEW-025
+    priority: P0_EVENT
+    readiness: READY_PREFLIGHT_EVENT_GATED
+    exact_output: KIMI-M11-REVIEW-025-PRECONDITION-AND-ACTUAL-VERDICT-075
+    evidence_goal:
+      - "Prove actual corrected inputs exist, then execute the declared independent review and record one allowed verdict."
+    authoritative_sources:
+      - KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+      - FQ-072-10
+    owner_boundary: INDEPENDENT_CONTROL_REVIEWER_NOT_THE_RETURN_AUTHOR
+    dependencies: [FQ-072-10]
+    stop_conditions:
+      - "Any corrected packet or manifest is absent/unaccepted."
+      - "Reviewer independence is unproven."
+    successor: FQ-072-12
+    fallback_when_event_absent: "Run precondition-only check; keep review not dispatched."
+    closure_effect: "Only actual review verdict may close this blocker."
+
+  - queue_id: FQ-072-12
+    blocker_id: BLK-M11-009R
+    priority: P0_EVENT
+    readiness: READY_CROSSWALK_EVENT_GATED
+    exact_output: KIMI-M11-009R-CASE-FIXTURE-QA-BOUNDARY-CROSSWALK-076
+    evidence_goal:
+      - "Map corrected 009r to 361 cases, nine QA paths, fixtures, rollback and evidence with one independent QA boundary."
+    authoritative_sources:
+      - KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+      - KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+      - FQ-072-11
+    owner_boundary: READ_ONLY_QA_AUTHORITY_REVIEWER
+    dependencies: [FQ-072-11]
+    stop_conditions:
+      - "Corrected 009r or review 025 acceptance is absent."
+      - "A real QA owner/lease would be inferred."
+    successor: FQ-072-05
+    fallback_when_event_absent: "Crosswalk existing case IDs only; do not accept 009r."
+    closure_effect: "Only accepted corrected authority and QA boundary may close this blocker."
+
+priority_schedule:
+  immediately_ready:
+    - FQ-072-01
+    - FQ-072-03
+    - FQ-072-05
+    - FQ-072-07
+  ready_successors:
+    - FQ-072-02
+    - FQ-072-04
+    - FQ-072-06
+    - FQ-072-08
+  event_triggered_non_blocking:
+    - FQ-072-09
+    - FQ-072-10
+    - FQ-072-11
+    - FQ-072-12
+  recommended_first_safe_execution: FQ-072-01
+  reason: >-
+    The audit-consumer static inventory is fully read-only, reduces a concrete
+    unknown needed before implementation and has no external, database or
+    human-session dependency.
+
+collision_audit:
+  task_count: 12
+  blockers_covered: 12
+  duplicate_blocker_routes: []
+  real_write_paths: []
+  real_owner_assignments: []
+  real_leases: []
+  source_read_overlap_allowed: true
+  output_path_rule: "Each task may create only its unique named coordination packet."
+  result: PASS_NON_CONFLICTING_READ_ONLY_QUEUE
+
+result:
+  verdict: ACK
+  exact_reason: ACK_12_TASK_NON_CONFLICTING_FALLBACK_QUEUE_READY
+  immediately_ready_tasks: 4
+  ready_successor_tasks: 4
+  event_triggered_tasks: 4
+  blockers_closed: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  source_queue_id: FQ-072-01
+  purpose: "Execute the highest-priority immediately-ready repository inventory fallback."
+  prohibited:
+    - "No source edit, runtime query, fetch, dispatch, owner, lease, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  blockers_expected: 12
+  blockers_covered: 12
+  queue_tasks_expected: 12
+  queue_tasks_observed: 12
+  unique_queue_ids: 12
+  unique_output_names: 12
+  immediately_ready_tasks: 4
+  ready_successor_tasks: 4
+  event_triggered_tasks: 4
+  tasks_with_exact_evidence_goal: 12
+  tasks_with_owner_boundary: 12
+  tasks_with_stop_conditions: 12
+  tasks_with_successor: 12
+  real_owners_assigned: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

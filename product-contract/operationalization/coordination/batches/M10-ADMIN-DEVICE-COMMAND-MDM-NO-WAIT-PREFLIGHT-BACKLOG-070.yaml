@@ -1,0 +1,350 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-NO-WAIT-PREFLIGHT-BACKLOG-070
+title: Trusted Devices no-wait pre-decision preflight backlog
+status: READ_ONLY_BACKLOG_READY_MUTATION_REMAINS_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_NO_WAIT_PLANNING
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  implementation_tasks_authorized: 0
+  test_results: 0
+  leases_granted: 0
+  reason: >-
+    Backlog tasks inventory facts and readiness only. They cannot approve,
+    implement, seed, execute acceptance, promote evidence or earn completion.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-NO-WAIT-PREFLIGHT-BACKLOG-070
+  predecessor: M10-ADMIN-DEVICE-COMMAND-MDM-HAZARD-TO-CHANGE-BOUNDARY-069
+  route: /admin/devices
+  module_id: M3-06
+  change_boundaries: 12
+  hazards: 26
+  acceptance_cases: 60
+  do_not_touch:
+    - design, application, database, provider, data, test or evidence files
+    - governance, RBAC, transition, provider-hold, decision, acceptance or status registers
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only preparation only; no file authority or lease is allocated.
+
+queue_rules:
+  SAFE_NOW:
+    definition: Read-only inspection, crosswalk or template preparation that does not encode an unanswered outcome.
+    allowed_output: New coordination packet in the owning review namespace only.
+  BLOCKED:
+    definition: Any action that selects policy, changes authority, mutates design/product/data/tests, contacts a provider, uses credentials, executes shared live fixtures or promotes completion.
+  completion_rule: A SAFE_NOW task closes only its readiness question and remains 0/478.
+  handoff_rule: Each output names exact unresolved facts and never converts absence into a default.
+  collision_rule: Only the orchestrator dispatches one owned coordination packet at a time per boundary; reviewers do not edit source.
+
+safe_now_backlog:
+  - task_id: DEV-PRE-GOV-01
+    boundary: DEV-CHG-GOV-01
+    owner_role: GOVERNANCE_REVIEWER
+    objective: Inventory exact canonical files and fields that would receive each of the ten approved answers.
+    reads:
+      - product-contract/governance
+      - product-contract/mvp3
+      - canonical RBAC and transition sources
+    output: Read-only change-control target map with current values and contradictions.
+    dependencies: [checklist_067, boundary_map_069]
+    collisions: Does not edit any listed authority or answer sponsor questions.
+    stop: Stop at the first missing authority and record it; do not create a substitute.
+    blocked_successor: DEV-BLK-GOV-01
+
+  - task_id: DEV-PRE-GOV-02
+    boundary: DEV-CHG-GOV-01
+    owner_role: GOVERNANCE_REVIEWER
+    objective: Prepare empty schemas for role/capability, transition, approval, evidence, invalidation, sync and provider-hold records.
+    reads: [decision_brief_062, checklist_067]
+    output: Field-level template with null sponsor-controlled values and validation rules.
+    dependencies: [DEV-PRE-GOV-01]
+    collisions: Template stays in coordination; no canonical control file is edited.
+    stop: Any default that would imply a sponsor answer is prohibited.
+    blocked_successor: DEV-BLK-GOV-01
+
+  - task_id: DEV-PRE-DES-01
+    boundary: DEV-CHG-DES-01
+    owner_role: CLAUDE_DESIGN_REVIEWER
+    objective: Inventory existing WA-DES-015 and CD-056 reusable frames, selectors, tokens and already represented states.
+    reads:
+      - registered design exports and fingerprints
+      - design mapping/review packets 033 and 060
+    output: Existing-state inventory with reuse/collision classification.
+    dependencies: [boundary_map_069]
+    collisions: No live design session, frame, filename, ID or mapping is modified.
+    stop: Unverifiable frame identity is marked unknown, not reconstructed.
+    blocked_successor: DEV-BLK-DES-01
+
+  - task_id: DEV-PRE-DES-02
+    boundary: DEV-CHG-DES-01
+    owner_role: CLAUDE_DESIGN_REVIEWER
+    objective: Crosswalk the 60 cases to required visual/state slots without supplying role, provider, threshold or lifecycle values.
+    reads: [negative_matrix_064, test_crosswalk_065, hazard_register_068]
+    output: State-slot checklist for EN/AR, theme, viewports and accessibility.
+    dependencies: [DEV-PRE-DES-01]
+    collisions: State slots are descriptive placeholders; not accepted design.
+    stop: Any slot whose semantics depend on D01..D09 remains explicitly blocked.
+    blocked_successor: DEV-BLK-DES-01
+
+  - task_id: DEV-PRE-DB1-01
+    boundary: DEV-CHG-DB-01
+    owner_role: DATABASE_REVIEWER
+    objective: Produce current schema/RPC/trigger/grant/RLS impact and call-site inventory for device commands.
+    reads:
+      - Supabase migrations and tests
+      - generated types and server call sites
+    output: File/object/call graph plus additive migration collision notes.
+    dependencies: [hazard_register_068, boundary_map_069]
+    collisions: No migration, schema, generated type or test is edited or executed.
+    stop: Does not propose allowed transitions or approval values.
+    blocked_successor: DEV-BLK-DB1-01
+
+  - task_id: DEV-PRE-DB2-01
+    boundary: DEV-CHG-DB-02
+    owner_role: DATABASE_REVIEWER
+    objective: Inventory every download/open/cached-open/sync/submit enforcement call and current trust/package data dependency.
+    reads:
+      - package manifests and access RPCs
+      - Field package/offline/submission call sites
+    output: Enforcement-path gap graph and proposed migration serialization constraint.
+    dependencies: [hazard_register_068, boundary_map_069]
+    collisions: Read-only; no DB-01/DB-02 migration order is enacted.
+    stop: Does not invent platform, freshness or invalidation policy.
+    blocked_successor: DEV-BLK-DB2-01
+
+  - task_id: DEV-PRE-PRV-01
+    boundary: DEV-CHG-PRV-01
+    owner_role: PROVIDER_SECURITY_REVIEWER
+    objective: Reconcile repository evidence for MDM provider, hold, environment, credential-owner and receipt-contract authority.
+    reads:
+      - provider/policy hold register
+      - integration/provider governance files
+      - MVP3 evidence certificates
+    output: Fact-only authority inventory with contradiction and missing-reference list.
+    dependencies: [evidence_inventory_063, hazard_register_068]
+    collisions: No provider is selected/contacted and no credential or environment is accessed.
+    stop: Absence remains absence; no provider-neutral schema is authored.
+    blocked_successor: DEV-BLK-PRV-01
+
+  - task_id: DEV-PRE-SVC1-01
+    boundary: DEV-CHG-SVC-01
+    owner_role: PROVIDER_SERVICE_REVIEWER
+    objective: Inventory current integration adapter conventions and safe service seams reusable only after provider approval.
+    reads:
+      - existing integration service interfaces
+      - error/correlation/audit patterns
+    output: Candidate interface seam map with reuse risks; no provider fields or behavior.
+    dependencies: [DEV-PRE-PRV-01, DEV-PRE-DB1-01]
+    collisions: No provider code, environment, database or shared service file is edited.
+    stop: If no approved provider exists, runtime design remains blocked.
+    blocked_successor: DEV-BLK-SVC1-01
+
+  - task_id: DEV-PRE-SVC2-01
+    boundary: DEV-CHG-SVC-02
+    owner_role: ADMIN_SERVICE_REVIEWER
+    objective: Trace Devices form-to-action-to-RPC flow, raw errors, session expiry, pending state and shared-action collisions.
+    reads:
+      - Admin Devices route
+      - Mvp3ActionForm
+      - mvp3-actions and Supabase server helper
+    output: Exact call/exception/revalidation and shared-file collision inventory.
+    dependencies: [DEV-PRE-DB1-01]
+    collisions: No route/action/component/i18n source is edited.
+    stop: Does not design new API messages or retry policy.
+    blocked_successor: DEV-BLK-SVC2-01
+
+  - task_id: DEV-PRE-UI-01
+    boundary: DEV-CHG-UI-01
+    owner_role: ADMIN_UI_REVIEWER
+    objective: Inventory current fields, actions, statuses, failures, pagination, source truth and responsive/a11y behaviors on /admin/devices.
+    reads:
+      - route-local source
+      - shell/i18n/common component dependencies
+      - existing route tests/evidence
+    output: Current-to-required UI delta tied to hazards 011..015 and 021.
+    dependencies: [DEV-PRE-DES-02, DEV-PRE-SVC2-01]
+    collisions: No application/design/shared presentation file is edited.
+    stop: Missing design state remains blocked rather than improvised.
+    blocked_successor: DEV-BLK-UI-01
+
+  - task_id: DEV-PRE-FLD1-01
+    boundary: DEV-CHG-FLD-01
+    owner_role: FIELD_REVIEWER
+    objective: Trace official package download/open/cached-open/sync/submit and device identity enforcement end to end.
+    reads:
+      - Field package and submission routes
+      - package access RPCs
+      - existing Field/device tests
+    output: Trust-boundary call graph and uncovered path list.
+    dependencies: [DEV-PRE-DB2-01]
+    collisions: No Field/offline/package/database/test file is edited.
+    stop: Does not treat adjacent tests as cross-certification.
+    blocked_successor: DEV-BLK-FLD1-01
+
+  - task_id: DEV-PRE-FLD2-01
+    boundary: DEV-CHG-FLD-02
+    owner_role: OFFLINE_SYNC_REVIEWER
+    objective: Inventory offline stores, queue, replay, conflict, last-confirmed, error and rescue source ownership.
+    reads:
+      - offline and sync engine
+      - Field offline tests
+      - current Devices/Operations projections
+    output: Source/action ownership graph and shared offline-file collision map.
+    dependencies: [DEV-PRE-FLD1-01]
+    collisions: No offline data, fixture, code or test execution.
+    stop: No health formula, threshold, count or rescue action is invented.
+    blocked_successor: DEV-BLK-FLD2-01
+
+  - task_id: DEV-PRE-TST-01
+    boundary: DEV-CHG-TST-01
+    owner_role: QA_REVIEWER
+    objective: Map the 60 cases to existing reusable specs, missing future spec files, fixture types and execution environments.
+    reads:
+      - test crosswalk 065
+      - current test inventory and evidence certificates
+    output: Test manifest with NOT_RUN/BLOCKED status and no expected value beyond approved requirements.
+    dependencies: [all_read_only_source_inventories]
+    collisions: No test, fixture, live environment or implementation file is changed or run.
+    stop: Unknown policy/provider behavior stays blocked; no skipped test is counted as evidence.
+    blocked_successor: DEV-BLK-TST-01
+
+  - task_id: DEV-PRE-EVD-01
+    boundary: DEV-CHG-EVD-01
+    owner_role: EVIDENCE_REVIEWER
+    objective: Inventory required evidence slots, naming, hashes, storage paths and producer ownership for all 60 cases.
+    reads:
+      - documentation storage policy
+      - evidence gap inventory 063
+      - test crosswalk 065
+    output: Empty evidence manifest schema with producer and acceptance identifiers.
+    dependencies: [DEV-PRE-TST-01]
+    collisions: No evidence certificate or external binary is created, moved, relabeled or promoted.
+    stop: Empty slots stay empty; existing lower-grade proof is not upgraded.
+    blocked_successor: DEV-BLK-EVD-01
+
+blocked_backlog:
+  - task_id: DEV-BLK-GOV-01
+    boundary: DEV-CHG-GOV-01
+    blocked_work: Record roles, transitions, approval, trust, invalidation, sync or provider-hold policy.
+    unblock: Ten sponsor answers pass checklist 067 and change control is authorized.
+  - task_id: DEV-BLK-DES-01
+    boundary: DEV-CHG-DES-01
+    blocked_work: Modify Claude Design or allocate/govern a route design identity.
+    unblock: D01..D09 are recorded, one collision-free design lease exists and sponsor accepts the input contract.
+  - task_id: DEV-BLK-DB1-01
+    boundary: DEV-CHG-DB-01
+    blocked_work: Add or change device-command schema, RLS, RPC, transition, audit or test.
+    unblock: Governance/provider interface accepted and one ordered DB lease granted.
+  - task_id: DEV-BLK-DB2-01
+    boundary: DEV-CHG-DB-02
+    blocked_work: Change trust evidence, platform/package guards or invalidation.
+    unblock: Trust/invalidation contract accepted and migration order/DB ownership recorded.
+  - task_id: DEV-BLK-PRV-01
+    boundary: DEV-CHG-PRV-01
+    blocked_work: Select/contact/configure a provider, access credentials or claim provider authority.
+    unblock: Sponsor D09 answer plus separate security/provider governance authorization.
+  - task_id: DEV-BLK-SVC1-01
+    boundary: DEV-CHG-SVC-01
+    blocked_work: Implement provider dispatch, callbacks, polling, receipts or retry.
+    unblock: Named/provider-neutral execution is authorized, interfaces stable and service lease granted.
+  - task_id: DEV-BLK-SVC2-01
+    boundary: DEV-CHG-SVC-02
+    blocked_work: Modify Devices server action, error text, pending/retry or shared action module.
+    unblock: Accepted DB/provider/design contract and collision-safe service/UI lease.
+  - task_id: DEV-BLK-UI-01
+    boundary: DEV-CHG-UI-01
+    blocked_work: Modify /admin/devices, route components/styles, shell or i18n.
+    unblock: Sponsor-accepted design, stable service interfaces and exact UI/shared-file leases.
+  - task_id: DEV-BLK-FLD1-01
+    boundary: DEV-CHG-FLD-01
+    blocked_work: Modify package download/open/cached/sync/submit trust enforcement.
+    unblock: Accepted trust/package contract, stable DB interface and Field lease.
+  - task_id: DEV-BLK-FLD2-01
+    boundary: DEV-CHG-FLD-02
+    blocked_work: Modify offline stores, replay, conflicts, health sources or rescue actions.
+    unblock: Accepted sync ownership/source/action contract and collision-safe offline lease.
+  - task_id: DEV-BLK-TST-01
+    boundary: DEV-CHG-TST-01
+    blocked_work: Add/modify/run acceptance tests or mutate fixtures/live environments.
+    unblock: Approved expected outcomes, implementation revisions, isolated fixtures and QA lease.
+  - task_id: DEV-BLK-EVD-01
+    boundary: DEV-CHG-EVD-01
+    blocked_work: Create/promote completion evidence or certify a case.
+    unblock: Immutable producer outputs, QA runs and independent review exist.
+
+parallel_dispatch_plan:
+  wave_1:
+    independent_safe_tasks:
+      - DEV-PRE-GOV-01
+      - DEV-PRE-DES-01
+      - DEV-PRE-DB1-01
+      - DEV-PRE-DB2-01
+      - DEV-PRE-PRV-01
+    restriction: Each writes only its own coordination packet.
+  wave_2:
+    after_wave_1:
+      - DEV-PRE-GOV-02
+      - DEV-PRE-DES-02
+      - DEV-PRE-SVC1-01
+      - DEV-PRE-SVC2-01
+      - DEV-PRE-FLD1-01
+  wave_3:
+    after_relevant_wave_2_inputs:
+      - DEV-PRE-UI-01
+      - DEV-PRE-FLD2-01
+  wave_4:
+    after_all_source_inventories:
+      - DEV-PRE-TST-01
+      - DEV-PRE-EVD-01
+    order_within_wave: DEV-PRE-TST-01 precedes DEV-PRE-EVD-01.
+
+collision_matrix:
+  governance_and_design:
+    risk: Design encodes unanswered policy.
+    control: DES-02 uses null state slots only; D01..D09 semantics stay blocked.
+  DB1_and_DB2:
+    risk: Same tables/RPCs/migrations.
+    control: Read-only inventories may run in parallel; future mutations combine or serialize under one DB owner.
+  service_and_UI:
+    risk: Shared mvp3-actions, action form and error/i18n files.
+    control: Preflights read only; future shared files have one integration owner.
+  Field1_and_Field2:
+    risk: Shared offline store/replay/package files.
+    control: Read-only call graphs may run in parallel only after DB2 inventory; future mutations serialize shared files.
+  QA_and_seeder:
+    risk: Shared live fixtures and cleanup.
+    control: This backlog authorizes neither; future runs require namespaces and one fixture coordinator.
+  evidence:
+    risk: Lower-grade evidence relabeled as acceptance.
+    control: EVD-01 defines empty slots and preserves evidence grades.
+
+review:
+  disposition: ACK
+  code: ACK_READ_ONLY_PREFLIGHT_BACKLOG_ONLY
+  validation_summary:
+    change_boundaries_covered: 12
+    safe_now_tasks: 14
+    blocked_tasks: 12
+    implementation_or_test_execution_authorized: 0
+    leases_granted: 0
+  caveat: ACK applies only to read-only preflight execution, not to any blocked successor.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-REPOSITORY-AUTHORITY-TARGET-MAP-071
+    mode: READ_ONLY
+    source_task: DEV-PRE-GOV-01
+    objective: >-
+      Execute the first no-wait preflight by inventorying exact canonical
+      authority files/fields for each of the ten future sponsor answers and
+      current contradictions, without editing those authorities.
