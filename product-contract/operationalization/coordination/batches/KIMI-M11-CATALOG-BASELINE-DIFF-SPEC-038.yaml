@@ -1,0 +1,524 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CATALOG-BASELINE-DIFF-SPEC-038
+status: DOCUMENTATION_ONLY_COMPLETE_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Define the canonical expected-catalog baseline, deterministic normalization,
+  difference classes, severity and PASS/RETURN/BLOCKED decision contract for
+  future authorized comparison of catalog-proof outputs Q01-Q08. This packet
+  does not authorize or perform a database connection, SQL execution, test,
+  dispatch, lease, migration or product/data change.
+
+authority:
+  catalog_capture_pack: KIMI-M11-FUTURE-CATALOG-PROOF-PACK-037
+  source_inventory: KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+  dependency_matrix: KIMI-M11-SPONSOR-AUTHORITY-DEPENDENCY-MATRIX-035
+  correction_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  security_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+
+hard_boundary:
+  - "No SQL or test execution and no database connection."
+  - "No expected baseline may be generated from the observed live output."
+  - "No difference may be hidden by normalization, row-order changes or null coercion."
+  - "No secrets, OTPs, tokens, row data, verification_record, function bodies or view definitions."
+  - "No implicit allowlist; catalog drift is forbidden unless an exact approved change-control entry exists before capture."
+  - "Zero change to the 478-row completion count."
+
+canonical_baseline_contract:
+  encoding: UTF-8
+  container_format: canonical_json
+  manifest_id_format: M11-CATALOG-BASELINE-YYYYMMDD-NNN
+  required_top_level_fields:
+    - manifest_id
+    - manifest_schema_version
+    - accepted_on
+    - accepted_by
+    - authority_packet_ids
+    - authority_packet_checksums
+    - repository_commit
+    - migration_revision_manifest
+    - postgres_server_version_num
+    - expected_objects
+    - explicit_allowlist
+    - manifest_sha256
+  provenance_rules:
+    - "Expected objects are derived from independently reviewed corrected source packets and migration definitions."
+    - "accepted_by must identify the authorized reviewer; self-acceptance by the implementation owner is invalid."
+    - "repository_commit and every authority checksum are immutable inputs to comparison."
+    - "postgres_server_version_num must match the isolated capture target because catalog deparsing can be version-sensitive."
+    - "manifest_sha256 is calculated only after canonical normalization and excludes its own value."
+  invalid_baseline_conditions:
+    - "Missing required field or checksum."
+    - "Expected manifest derived by copying Q01-Q08 observed results."
+    - "Placeholder, wildcard, regex or 'any' value in a security-relevant field."
+    - "Unresolved owner, function identity, ACL, policy, trigger, dependency, extension schema or function hash."
+    - "Allowlist entry without pre-existing change-control authority."
+
+expected_objects_schema:
+  functions:
+    primary_key: [function_schema, function_name, identity_arguments]
+    required_fields:
+      - result_type
+      - owner_name
+      - owner_is_superuser
+      - owner_bypasses_rls
+      - owner_can_login
+      - security_mode
+      - leakproof
+      - volatility
+      - parallel_mode
+      - function_settings
+      - definition_hash_algorithm
+      - definition_hash
+      - direct_acl_manifest
+      - effective_anon_execute
+      - effective_authenticated_execute
+    constraints:
+      - "One row per exact signature; name-only identities are invalid."
+      - "definition_hash_algorithm and definition_hash are required; an unhashed body is prohibited evidence."
+      - "function_settings preserves null versus empty-array distinction."
+  extensions:
+    primary_key: [extension_name]
+    required_fields: [extension_version, extension_schema, extension_owner]
+  extension_functions:
+    primary_key: [function_schema, function_name, identity_arguments]
+    required_fields: [function_owner, owning_extension]
+  types:
+    primary_key: [type_schema, type_name]
+    required_fields: [type_owner, type_kind, type_category]
+  relations:
+    primary_key: [relation_schema, relation_name]
+    required_fields:
+      - relation_kind
+      - relation_owner
+      - rls_enabled
+      - rls_forced
+  policies:
+    primary_key: [table_schema, table_name, policy_name]
+    required_fields:
+      - policy_mode
+      - command_code
+      - policy_roles
+      - using_expression
+      - check_expression
+  table_acls:
+    primary_key: [table_schema, table_name, grantee, privilege_type, grantor]
+    required_fields: [is_grantable]
+  triggers:
+    primary_key: [table_schema, table_name, trigger_name]
+    required_fields:
+      - enabled_mode
+      - for_each_row
+      - is_before
+      - is_instead_of
+      - fires_insert
+      - fires_delete
+      - fires_update
+      - fires_truncate
+      - function_schema
+      - function_name
+      - function_arguments
+      - trigger_definition_hash_algorithm
+      - trigger_definition_hash
+      - same_kind_execution_order_key
+  dependencies:
+    primary_key: [dependent_function, dependency_type, referenced_object]
+    required_fields: []
+    caveat: "Catalog-tracked dependency rows must be paired with accepted static qualified-name review."
+  database_audit_consumers:
+    primary_key: [consumer_kind, consumer_identity]
+    required_fields: [definition_hash_algorithm, definition_hash, owner_or_role, field_contract, adaptation_decision]
+    caveat: "Database catalog consumers do not replace application/static/runtime consumer inventories."
+
+explicit_allowlist_schema:
+  default: EMPTY
+  required_fields:
+    - allowlist_id
+    - exact_object_key
+    - exact_field
+    - expected_baseline_value
+    - permitted_observed_value
+    - rationale
+    - change_control_id
+    - approved_by
+    - approved_on
+    - expires_on
+  rules:
+    - "Entry must exist in the accepted baseline before observed capture begins."
+    - "Wildcard object keys, fields or values are prohibited."
+    - "Owner privilege, PUBLIC/anon access, raw-audit access, missing safe trigger, extension namespace and function hash changes cannot be auto-allowed."
+    - "Expired entries are forbidden drift."
+    - "An allowed value is reported as ALLOWED_CHANGE, never silently discarded."
+
+deterministic_normalization:
+  common:
+    - "Decode source files as UTF-8 and reject invalid byte sequences."
+    - "Use Unicode NFC for identifiers and controlled text values."
+    - "Preserve case and compare PostgreSQL identifiers exactly as returned."
+    - "Represent booleans only as true or false."
+    - "Represent SQL NULL as JSON null; never coerce null to empty string, false, zero or empty array."
+    - "Represent numeric server versions as base-10 integers."
+    - "Remove transport-only CSV line endings and quoting; do not trim catalog field values."
+    - "Serialize JSON object keys in ascending Unicode code-point order with no insignificant whitespace."
+  arrays:
+    - "ACL arrays sort by grantee, privilege_type, is_grantable."
+    - "Policy role arrays sort lexically after mapping OID zero to PUBLIC."
+    - "function_settings arrays preserve element text exactly and sort only when the accepted manifest declares the settings order-insensitive."
+    - "Do not deduplicate repeated values; duplicates are evidence."
+  row_sort_order:
+    functions: [function_schema, function_name, identity_arguments]
+    extensions: [extension_name]
+    extension_functions: [function_schema, function_name, identity_arguments]
+    types: [type_schema, type_name]
+    relations: [relation_schema, relation_name]
+    policies: [table_schema, table_name, policy_name]
+    table_acls: [table_schema, table_name, grantee, privilege_type, grantor]
+    triggers: [table_schema, table_name, trigger_name]
+    dependencies: [dependent_function, dependency_type, referenced_object]
+    database_audit_consumers: [consumer_kind, consumer_identity]
+  expression_rule: >-
+    Compare pg_get_expr and catalog-returned definitions exactly after JSON
+    escaping only. Do not collapse whitespace, reorder predicates, simplify
+    boolean expressions or treat logically similar expressions as equal.
+  hash_rule:
+    evidence_integrity_algorithm: SHA-256
+    evidence_integrity_input: "Canonical JSON UTF-8 bytes with a terminal LF."
+    catalog_definition_fingerprint: >-
+      Preserve the algorithm emitted by pack 037 with the hash value and
+      compare only like-for-like algorithms. PostgreSQL MD5 definition
+      fingerprints are drift signals, not evidence-integrity checksums.
+    raw_trigger_definition_handling: >-
+      Hash the Q06 trigger definition locally with SHA-256 during normalization,
+      discard the raw definition from the retained bundle, and retain only the
+      algorithm and hash.
+    prohibited_substitution: "Never label an MD5 catalog fingerprint as SHA-256 or use it as an evidence-file integrity checksum."
+
+comparison_algorithm:
+  ordered_steps:
+    - id: C01
+      action: "Validate baseline structure, provenance, checksums, reviewer and server version."
+      failure: BLOCKED
+    - id: C02
+      action: "Validate observed pack completeness, Q01-Q08 checksums, read-only envelope and target identity."
+      failure: BLOCKED
+    - id: C03
+      action: "Redaction-scan both inputs before normalization."
+      failure: BLOCKED
+    - id: C04
+      action: "Normalize baseline and observed rows independently under this specification."
+      failure: BLOCKED
+    - id: C05
+      action: "Reject duplicate primary keys in either input."
+      failure: BLOCKED
+    - id: C06
+      action: "Perform a full outer join by each object-type primary key."
+      failure: BLOCKED
+    - id: C07
+      action: "Emit MISSING_EXPECTED or UNEXPECTED_OBJECT for one-sided keys."
+      failure: NONE
+    - id: C08
+      action: "Compare every required field exactly and emit one difference row per unequal field."
+      failure: NONE
+    - id: C09
+      action: "Evaluate exact, unexpired allowlist entries; retain matches as ALLOWED_CHANGE."
+      failure: BLOCKED_IF_ALLOWLIST_AMBIGUOUS
+    - id: C10
+      action: "Assign difference class, severity, owner route and final outcome mechanically."
+      failure: BLOCKED
+  difference_id: >-
+    SHA-256 of class + object_type + canonical_object_key + field +
+    canonical_expected_value + canonical_observed_value.
+  no_short_circuit_rule: >-
+    Once input integrity is proven, report every difference in the same run;
+    do not stop after the first object mismatch.
+
+generic_difference_classes:
+  - class: BASELINE_INVALID
+    severity: S0_BLOCKER
+    outcome: BLOCKED
+  - class: OBSERVED_EVIDENCE_INCOMPLETE
+    severity: S0_BLOCKER
+    outcome: BLOCKED
+  - class: WRONG_OR_AMBIGUOUS_TARGET
+    severity: S0_BLOCKER
+    outcome: BLOCKED
+  - class: SECRET_OR_ROW_DATA_DETECTED
+    severity: S0_BLOCKER
+    outcome: BLOCKED
+  - class: DUPLICATE_PRIMARY_KEY
+    severity: S0_BLOCKER
+    outcome: BLOCKED
+  - class: MISSING_EXPECTED_OBJECT
+    severity: S1_CRITICAL
+    outcome: BLOCKED
+  - class: UNEXPECTED_OBJECT
+    severity: S1_CRITICAL
+    outcome: BLOCKED
+  - class: ALLOWED_CHANGE
+    severity: S3_INFORMATIONAL
+    outcome: PASS_ELIGIBLE
+  - class: NON_SECURITY_METADATA_MISMATCH
+    severity: S2_HIGH
+    outcome: RETURN
+
+specific_difference_classes:
+  ownership:
+    classes:
+      - class: OWNER_NAME_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: OWNER_SUPERUSER_ESCALATION
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: OWNER_BYPASSRLS_ESCALATION
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: OWNER_LOGIN_CAPABILITY_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+    routing: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  ACL:
+    classes:
+      - class: PUBLIC_EXECUTE_OR_TABLE_PRIVILEGE
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: ANON_EXECUTE_OR_TABLE_PRIVILEGE
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: AUTHENTICATED_HELPER_EXECUTE
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: REQUIRED_CALLER_RPC_GRANT_MISSING
+        severity: S2_HIGH
+        outcome: RETURN
+      - class: ACL_GRANT_OPTION_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: ACL_OTHER_MISMATCH
+        severity: S2_HIGH
+        outcome: RETURN
+    routing: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  search_path_and_security:
+    classes:
+      - class: SECURITY_MODE_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: DEFINER_SEARCH_PATH_MISSING_OR_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: LEAKPROOF_VOLATILITY_OR_PARALLEL_MISMATCH
+        severity: S2_HIGH
+        outcome: RETURN
+      - class: FUNCTION_SETTING_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+    routing: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  trigger:
+    classes:
+      - class: SAFE_PARTICIPANT_TRIGGER_MISSING_OR_DISABLED
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: GENERIC_SECRET_BEARING_TRIGGER_ACTIVE
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: TRIGGER_ORDER_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: TRIGGER_EVENT_OR_FUNCTION_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: UNEXPECTED_TRIGGER
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+    routing: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  policy:
+    classes:
+      - class: RLS_DISABLED_OR_FORCE_STATE_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: UNEXPECTED_PERMISSIVE_POLICY
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: POLICY_COMMAND_ROLE_OR_MODE_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: POLICY_USING_OR_CHECK_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: REQUIRED_POLICY_MISSING
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+    routing: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  function_hash:
+    classes:
+      - class: FUNCTION_DEFINITION_HASH_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: TRIGGER_DEFINITION_HASH_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: CONSUMER_DEFINITION_HASH_MISMATCH
+        severity: S2_HIGH
+        outcome: RETURN
+    routing: [EXACT_FUNCTION_OR_CONSUMER_PACKET_OWNER]
+  namespace_and_dependency:
+    classes:
+      - class: EXTENSION_SCHEMA_OR_OWNER_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: EXTENSION_VERSION_MISMATCH
+        severity: S2_HIGH
+        outcome: RETURN
+      - class: TYPE_SCHEMA_OR_OWNER_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: DEPENDENCY_ADDED_REMOVED_OR_CHANGED
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+    routing: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  audit_consumers:
+    classes:
+      - class: UNOWNED_AUDIT_CONSUMER
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: RAW_AUDIT_ACCESS_OR_FIELD_CONTRACT_MISMATCH
+        severity: S1_CRITICAL
+        outcome: BLOCKED
+      - class: REQUIRED_SAFE_CONSUMER_MISSING
+        severity: S2_HIGH
+        outcome: RETURN
+      - class: AUDIT_CONSUMER_ADAPTATION_MISMATCH
+        severity: S2_HIGH
+        outcome: RETURN
+    routing: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+
+severity_contract:
+  S0_BLOCKER:
+    meaning: "Evidence or comparison integrity is insufficient; no trustworthy result can be produced."
+    required_action: "Repair the evidence/baseline process and recapture under authorization."
+  S1_CRITICAL:
+    meaning: "Observed catalog state violates or cannot establish an accepted security, audit or atomicity boundary."
+    required_action: "Keep the affected capability fail-closed and return to the exact packet owner."
+  S2_HIGH:
+    meaning: "Comparison is trustworthy but observed state differs from the accepted functional/consumer contract."
+    required_action: "Return for bounded source or manifest correction; do not certify."
+  S3_INFORMATIONAL:
+    meaning: "Exact pre-approved allowlist entry matched; retain for traceability."
+    required_action: "No correction, but preserve the row and authority."
+
+allowed_and_forbidden_drift:
+  allowed_by_default:
+    evidence_metadata_only:
+      - capture_run_id
+      - capture_timestamp
+      - evidence_file_sha256
+    note: "These fields live outside expected_objects and never suppress a catalog difference."
+  conditionally_allowed:
+    rule: "Only an exact, unexpired explicit_allowlist entry accepted before capture."
+    reporting: "Emit ALLOWED_CHANGE with authority; include in totals."
+  forbidden:
+    - "Any unlisted expected_objects change."
+    - "Any extra/missing overload, relation, policy, trigger, dependency or consumer."
+    - "Any owner, superuser, BYPASSRLS or login-capability change."
+    - "Any function/table ACL or effective privilege change."
+    - "Any SECURITY DEFINER/INVOKER, search_path or function-setting change."
+    - "Any extension/type schema or owner change."
+    - "Any policy predicate, role, command or permissive/restrictive change."
+    - "Any trigger event, enablement, function or order change."
+    - "Any function or trigger definition hash change."
+    - "Any raw-audit exposure or unowned consumer."
+
+output_schema:
+  run_summary_required_fields:
+    - comparison_run_id
+    - packet_037_sha256
+    - spec_038_sha256
+    - baseline_manifest_id
+    - baseline_sha256
+    - observed_bundle_sha256
+    - repository_commit
+    - target_identity_redacted
+    - started_at
+    - completed_at
+    - difference_counts_by_class
+    - difference_counts_by_severity
+    - allowed_change_count
+    - final_outcome
+    - reviewer
+  difference_row_required_fields:
+    - difference_id
+    - object_type
+    - canonical_object_key
+    - field
+    - difference_class
+    - severity
+    - expected_value_redacted
+    - observed_value_redacted
+    - allowlist_id
+    - routed_packet_owner
+    - required_action
+  deterministic_order:
+    - severity_rank
+    - difference_class
+    - object_type
+    - canonical_object_key
+    - field
+    - difference_id
+  secret_rule: "If a value cannot be safely represented, record only its SHA-256 and BLOCKED redaction status."
+
+final_outcome_rules:
+  PASS:
+    all_required:
+      - "Baseline and observed evidence integrity pass."
+      - "No S0, S1 or S2 differences."
+      - "Every remaining row is an exact S3 ALLOWED_CHANGE."
+      - "Non-catalog gates remain explicitly outside this result."
+    statement: "CATALOG_BASELINE_PASS"
+  RETURN:
+    all_required:
+      - "Baseline and observed evidence integrity pass."
+      - "At least one S2 difference exists."
+      - "No S0 or S1 difference exists."
+    statement: "RETURN_FOR_BOUNDED_CATALOG_OR_MANIFEST_CORRECTION"
+  BLOCKED:
+    any_sufficient:
+      - "Any S0 difference."
+      - "Any S1 difference."
+      - "Wrong/ambiguous target, incomplete capture or secret-bearing evidence."
+      - "Outcome cannot be derived mechanically."
+    statement: "BLOCKED_FAIL_CLOSED"
+  precedence: "BLOCKED overrides RETURN; RETURN overrides PASS."
+  scope_limit: >-
+    PASS means only that the isolated catalog equals the accepted baseline.
+    It does not certify runtime personas, concurrency, rollback, audit-secret
+    sentinel, provider delivery, browser behavior or quiescence.
+
+queued_safe_follow_on:
+  queue_id: KIMI-M11-CATALOG-EVIDENCE-REDACTION-CHECKLIST-039
+  status: QUEUED_DOCUMENTATION_ONLY_NOT_DISPATCHED
+  purpose: >-
+    Define the secret/row-data redaction review and hash-manifest checklist for
+    future Q01-Q08 evidence without executing queries or inspecting live data.
+  activation_conditions:
+    - "Parent orchestrator explicitly assigns the documentation-only task."
+    - "No database connection, SQL/test execution, dispatch, lease or product/data mutation."
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  baseline_schema_defined: PASS
+  deterministic_comparison_defined: PASS
+  allowed_forbidden_drift_defined: PASS
+  requested_difference_classes_defined: PASS
+  severity_defined: PASS
+  outcomes_defined: PASS
+  safe_follow_on_queued: PASS
+  executed: false

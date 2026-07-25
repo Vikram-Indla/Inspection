@@ -1,0 +1,313 @@
+packet_id: M2-VS-001-AUTHORITY-AND-READONLY-PREFLIGHT-004
+packet_type: independent_preflight_review
+created_at: "2026-07-25"
+reviewed_packet: M2-VS-001-READ-ONLY-VISIT-TRACE-CANDIDATE-003
+module: M2_PLANNING
+gate_result: BLOCKED
+review_disposition: RETURN_FOR_SCOPE_AND_AUTHORITY_CORRECTION
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+  credit_granted: false
+
+review_boundary:
+  repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/Developer/Inspection-codex-planning-m2
+  product_branch: codex/planning-m2-saqeel-correction
+  product_head: 48c58863a183c80171025c5770c4e3440392802b
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  product_mutation: NONE
+  lease_issued: false
+  tests_run: NONE_READ_ONLY_REVIEW
+  browser_capture: NONE_MAC_LOCKED
+  M3_status: BLOCKED
+
+eight_row_scope_validation:
+  verdict: RETURN
+  reason: >
+    The eight rows are not a valid atomic claim for the deliberately reduced
+    read-only trace. Two workspace rows require explicitly excluded features,
+    and four timeline/audit rows require completeness and system-wide audit
+    proof that the current limited queries and evidence do not establish.
+  rows:
+    - requirement_id: CR-053
+      result: RETURN
+      evidence: "Requires KPIs, search, filters and the visit list."
+      conflict: "Candidate explicitly excludes KPI, search and filter claims."
+    - requirement_id: CR-057
+      result: CONDITIONAL
+      evidence: "Supports a read-only complete visit-detail claim."
+      missing:
+        - complete factory profile
+        - location
+        - assignment
+        - visit information
+        - timeline
+        - audit history
+        - explicit planning.view authorization
+        - no mutation controls
+    - requirement_id: CR-065
+      result: BLOCKED
+      evidence: "Requires all visit events and complete visit history."
+      conflict: "Current lifecycle read is descending and capped at 50; completeness is not proven."
+    - requirement_id: CR-066
+      result: BLOCKED
+      evidence: "Requires every planning action to record before/after, actor and timestamp, with immutable records."
+      conflict: "A latest-30 read-only display is not system-wide audit coverage evidence."
+    - requirement_id: CR-071
+      result: RETURN
+      evidence: "Requires KPIs, filters, search, visit list, planner actions and operational alerts."
+      conflict: "Candidate explicitly excludes those capabilities and all mutation actions."
+    - requirement_id: CR-076
+      result: CONDITIONAL
+      evidence: "Supports a complete read-only visit-detail claim until Edit is selected."
+      missing:
+        - factory profile
+        - assignment
+        - planning information
+        - location
+        - timeline
+        - read-only attachment list/download
+        - audit history
+        - no attachment or note mutation
+    - requirement_id: CR-096
+      result: BLOCKED
+      evidence: "Requires every planning activity chronologically and immutable."
+      conflict: "Current lifecycle read is capped at 50 and does not prove every planning activity."
+    - requirement_id: CR-097
+      result: BLOCKED
+      evidence: "Requires every data modification and immutable audit history."
+      conflict: "Current audit read is capped at 30 and does not distinguish denied/unavailable from zero history."
+
+corrected_scope_options:
+  recommended:
+    slice_id: M2-VS-001A
+    name: Read-only Visit Dossier
+    requirement_ids:
+      - CR-057
+      - CR-076
+    acceptance_ids:
+      - WA-AC-0057
+      - WA-AC-0076
+    evidence_ids:
+      - WA-EV-0057
+      - WA-EV-0076
+    route: /planning/visits/:id?wa_preview=1
+    entry_dependency: >
+      May be reached from the existing Planning/Visits navigation, but no
+      workspace, KPI, search, filter, pagination, action, or audit-completeness
+      completion credit is claimed.
+    backend_change: NONE
+  alternative:
+    action: EXPAND_ORIGINAL_SLICE
+    effect: >
+      Retain all eight rows only by adding the complete KPI/search/filter/list/
+      action/alert contract and full timeline/audit completeness evidence.
+    recommendation: NOT_SMALLEST_COHERENT_SLICE
+
+design_authority_validation:
+  result: BLOCKED
+  findings:
+    - >
+      WA-DES-045 has a registered source identity and SHA-256, but
+      DESIGN_ROUTE_MAP.csv still marks it REQUIRES_PRODUCT_OWNER_APPROVAL.
+    - >
+      WA-DES-036-r4 is described as observable, but commit 48c58863 explicitly
+      records that its stable completion handoff and independent frame/theme/RTL
+      verification remain outstanding.
+    - >
+      No stable, immutable R4 handoff uniquely identifies the accepted Visit
+      list/detail design revision for this candidate.
+    - >
+      WA-P1-M2-BATCH-002 remains AWAITING_PRODUCT_OWNER_APPROVAL and is not
+      approved for cutover.
+  required_authority:
+    - immutable design page/revision identifier
+    - content hash or exported immutable handoff
+    - exact route and component mapping
+    - named state and viewport matrix
+    - explicit sponsor design disposition
+
+business_staff_boundary_validation:
+  result: CONDITIONAL
+  proven:
+    - "planning_access_class returns admin, inspector, business_staff or anonymous."
+    - "planning.view is available to business_staff and denied as a class default to inspector/admin."
+    - "The canonical Planning page already fails closed unless class=business_staff and planning.view=true."
+  not_proven:
+    - "The Planning Visits wrappers do not call getPlanningAccess."
+    - "The wrappers rely only on preview environment/query gates before delegating to legacy pages."
+  decision_boundary:
+    - >
+      This slice may remain business_staff-only without resolving Inspector
+      selector behavior, but it must explicitly state that DEC-025 remains open
+      and grants no Inspector access.
+    - >
+      Sponsor/product authority must record the limited business_staff-only
+      disposition; the reviewer cannot self-approve it.
+
+F0_dependency_validation:
+  result: BLOCKED_FOR_FINAL_VISUAL_CERTIFICATION
+  focus_finding: >
+    Commit 31baf2f8 is an ancestor of the product worktree head and records the
+    single contiguous focus correction with passing focused checks.
+  unresolved_dependency: >
+    The current M2 review record still treats shared-shell runtime certification
+    and sponsor acceptance as incomplete. M2 may not claim final visual parity
+    on an uncertified shared-shell base.
+  ownership: "F0 owns shared shell, global tokens, focus behavior, localization and cutover."
+
+lease_validation:
+  result: BLOCKED
+  central_register: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+  finding: "No M2 product-write lease is present."
+  correction_to_candidate_lease:
+    remove_as_unnecessary:
+      - apps/web/src/app/(app)/planning/PlanningPreview.tsx
+      - apps/web/src/app/(app)/visits/page.tsx
+      - apps/web/src/app/(app)/visits/VisitsBoard.tsx
+      - apps/web/src/app/(app)/visits/[id]/DualStateRibbon.tsx
+    proposed_exact_paths_for_M2_VS_001A_only:
+      - apps/web/src/app/(app)/planning/visits/[id]/page.tsx
+      - apps/web/src/app/(app)/visits/[id]/page.tsx
+      - apps/web/src/app/(app)/visits/[id]/VisitDetailPreview.module.css
+      - apps/web/e2e/web-admin-m2-readonly-visit-dossier.spec.ts
+    conditional_new_component:
+      - apps/web/src/app/(app)/visits/[id]/VisitDetailReadOnly.tsx
+  do_not_lease:
+    - apps/web/src/app/(app)/visits/[id]/actions.ts
+    - apps/web/src/app/(app)/visits/[id]/ActionBar.tsx
+    - apps/web/src/app/(app)/visits/[id]/Attachments.tsx
+    - apps/web/src/app/(app)/visits/[id]/NotesEditor.tsx
+    - F0 shared-shell files
+    - Field or Execution mutation files
+
+planning_view_enforcement:
+  result: FAIL_CURRENT_IMPLEMENTATION
+  required:
+    - "Resolve getPlanningAccess(sb, ['planning.view']) on the server."
+    - "Require accessClass=business_staff and planning.view=true."
+    - "Treat resolver/RPC errors as neutral unavailable, never permissive fallback."
+    - "Return neutral denial before any visit or related-record query."
+    - "Retain RLS as the row-level data boundary."
+
+mutation_surface_validation:
+  result: FAIL_CURRENT_IMPLEMENTATION
+  detected:
+    - "VisitsBoard imports four bulk server actions and binds useActionState unconditionally."
+    - "Target preview renders row and select-all checkboxes."
+    - "Selected rows expose reschedule, reassign, cancel and edit forms."
+    - "Visit detail always renders NotesEditor."
+    - "Visit detail always renders Attachments, including mutation behavior."
+    - "Visit detail always renders ActionBar and management actions."
+  required_correction:
+    - >
+      Use a separate read-only component path that does not import, bind, render,
+      serialize or expose mutation server actions.
+    - "Render attachment metadata/download only; no upload, delete or edit."
+    - "Do not render notes editing or ActionBar."
+    - "Prove no write request and no before/after database change during the journey."
+
+audit_state_validation:
+  result: FAIL_CURRENT_IMPLEMENTATION
+  detected:
+    - "audit_events query discards the error result."
+    - "Zero rows and denied/unavailable audit access share one message."
+    - "Audit history is capped at 30."
+    - "Lifecycle and location history are capped at 50."
+  required_correction_for_detail_only:
+    - "Represent audit unavailable/denied separately from legitimate zero history."
+    - "Render honest truncation and continuation state if a bounded query remains."
+    - "Do not claim CR-065/066/096/097 completion from a partial history."
+  required_if_audit_rows_are_retained:
+    - complete cursor-based history or bounded-contract authority
+    - before/after actor timestamp coverage
+    - update/delete denial evidence
+    - planning-action-to-audit coverage matrix
+
+test_acceptance_validation:
+  result: BLOCKED
+  current_test_defects:
+    - >
+      Existing M2 test expects visit-management actions to be visible, which
+      conflicts with the proposed read-only slice.
+    - >
+      Existing list/detail tests skip when planner-visible visits are absent,
+      so they cannot prove the candidate.
+    - "Existing checks do not assert an explicit wrapper planning.view gate."
+    - "Existing checks do not assert zero writes before/after the full journey."
+  minimum_non_skippable_suite:
+    - planner_business_staff_allowed
+    - reviewer_business_staff_boundary_explicit
+    - admin_denied
+    - inspector_denied_and_DEC025_unchanged
+    - anonymous_denied
+    - capability_RPC_failure_neutral_unavailable
+    - cross_org_visit_id_neutral_not_found
+    - visit_query_failure_not_empty_success
+    - audit_denied_distinct_from_zero_history
+    - no_mutation_controls_in_DOM_or_RSC_payload
+    - no_write_network_request
+    - before_after_database_snapshot_unchanged
+    - read_only_attachment_list_and_download
+    - EN_AR_RTL_light_dark
+    - viewport_1440_1024_390_320
+    - keyboard_visible_focus_and_axe
+    - canonical_visits_regression
+    - Field_and_Execution_semantics_unchanged
+
+browser_acceptance_validation:
+  result: BLOCKED
+  environment_evidence:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+  rule: "Do not bypass the lock or capture through a locked Mac session."
+  required_after_unlock:
+    - exact accepted design versus real runtime at fixed viewport
+    - authorized and denied personas
+    - read-only detail including attachment display and audit states
+    - EN/AR, light/dark, desktop/tablet/mobile
+    - keyboard focus and responsive overflow
+    - browser/network proof of zero mutations
+    - exact commit, route, persona, dataset and viewport in every evidence record
+
+exact_sponsor_prerequisites:
+  - id: S1
+    decision: >
+      Choose corrected two-row M2-VS-001A, or explicitly authorize the larger
+      feature-complete eight-row workspace scope. Recommended: M2-VS-001A.
+  - id: S2
+    decision: >
+      Accept one immutable Visit-detail design revision mapped to WA-DES-045,
+      or return it to Claude Design with the exact missing state/viewport matrix.
+  - id: S3
+    decision: >
+      Record business_staff-only for this slice while DEC-025 remains open and
+      Inspector access remains denied.
+  - id: S4
+    decision: >
+      Confirm the certified F0 shell revision that M2 browser evidence must use.
+
+exact_technical_prerequisites:
+  - "Register the exact collision-free M2-VS-001A file lease centrally."
+  - "Use a clean pinned product base while preserving all existing dirt and stashes."
+  - "Enforce business_staff plus planning.view at the server wrapper."
+  - "Create a mutation-free detail rendering path with read-only attachments."
+  - "Separate audit unavailable/denied from legitimate zero history."
+  - "Remove CR-065/066/096/097 claims unless complete-history and audit coverage is added."
+  - "Provide deterministic RLS-visible data without skipped assertions."
+  - "Pass the non-skippable test matrix."
+  - "Unlock the Mac and capture the real runtime only after the exact build commit."
+
+next_allowed_action: >
+  Produce a corrected M2-VS-001A authority packet and sponsor consent request;
+  do not issue a product lease or begin implementation.
+
+queued_follow_on:
+  task_id: M2-VS-001A-CORRECTED-SCOPE-AND-SPONSOR-CONSENT
+  status: QUEUED_NOT_DISPATCHED
+  purpose: >
+    Reframe the candidate to CR-057 and CR-076 only, bind one immutable
+    WA-DES-045 Visit-detail revision, record the business_staff-only boundary,
+    and request the four exact sponsor decisions before technical lease preflight.
+  mutation_authority: NONE
