@@ -922,7 +922,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
   const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
   return (
-    <div className={`stack ${a11y.scope}`} style={{ gap: "var(--space-4)" }}>
+    <div className={`${styles.page} ${a11y.scope}`}>
       {/* A11y — polite screen-reader mirror of the transient status message. */}
       <LiveRegion message={msg} />
       <div className={styles.toolbar}>

@@ -8,11 +8,14 @@
    (app)/field/layout.tsx. No bare colors. */
 
 .page {
+  inline-size: 100%;
+  max-inline-size: 880px;
+  min-inline-size: 0;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  padding-block-end: 48px;
+  gap: 18px;
+  padding: 18px 18px 130px;
 }
 
 /* Surface card (was ax-surface). Padding stays inline at call sites so the
@@ -20,13 +23,15 @@
 .card {
   background: var(--surface-primary);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
 }
 /* Nested panel (was ax-panel). */
 .panel {
   background: var(--surface-secondary);
   border: var(--border-w) solid var(--border-subtle);
   border-radius: var(--radius-md);
+  box-shadow: none;
 }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
@@ -48,15 +53,28 @@
 
 /* Checklist item card (was .ipad-q). */
 .question {
-  border: var(--border-w) solid var(--border-subtle);
+  border: 1.5px solid var(--border-input);
   border-radius: var(--radius-md);
-  padding: var(--space-4);
-  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: 14px 16px;
+  min-block-size: 54px;
+  background: var(--surface-primary);
+  display: flex; flex-direction: column; gap: var(--space-3);
   scroll-margin-block-start: var(--space-8);
 }
-.questionAnswered { border-inline-start: 4px solid var(--status-compliant); }
+.questionAnswered {
+  border-color: var(--action-primary);
+  border-inline-start-width: 4px;
+  background: var(--accent-soft);
+}
 
-.title { font-size: var(--type-compact-size); font-weight: 600; margin: 0; }
+.title {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: var(--type-compact-size);
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0;
+}
 
 /* Evidence grid (was ax-evidence-grid / ax-evidence). */
 .evidenceGrid { display: flex; flex-wrap: wrap; gap: var(--space-2); }
@@ -121,8 +139,11 @@
 .actionbar {
   position: sticky; inset-block-end: 0; z-index: 10;
   background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-subtle);
   border-block-start: var(--border-w) solid var(--border-subtle);
-  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 12px 16px;
   /* Safe-area: keep the sticky submit bar clear of the iPad home indicator in
      both orientations. */
   padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
@@ -134,8 +155,11 @@
   position: sticky; inset-block-start: 0; z-index: 10;
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--space-2); flex-wrap: wrap;
-  background: var(--surface-canvas);
-  padding-block: var(--space-2);
+  background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 12px 14px;
 }
 
 /* Per-section progress track (was inline blockSize/background). */
@@ -143,10 +167,11 @@
 .trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }
 
 .sectionNavigator {
-  padding: var(--space-4);
+  padding: 12px 18px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 10px;
+  overflow: hidden;
 }
 .sectionNavigatorHead {
   display: flex;
@@ -159,44 +184,44 @@
 .sectionTabs {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(210px, 1fr);
-  gap: var(--space-2);
+  grid-auto-columns: minmax(180px, 1fr);
+  gap: 6px;
   overflow-x: auto;
   padding-block-end: var(--space-1);
   scroll-snap-type: inline proximity;
 }
 .sectionTab {
-  min-block-size: 64px;
+  min-block-size: 38px;
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  color: var(--text-primary);
+  padding: 7px 13px;
+  color: var(--text-muted);
   text-align: start;
-  background: var(--surface-secondary);
-  border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  border: 0;
+  border-radius: var(--radius-full);
   cursor: pointer;
   scroll-snap-align: start;
 }
 .sectionTabActive {
-  border-color: var(--action-primary);
-  background: var(--action-primary-soft);
+  color: var(--text-on-action);
+  background: var(--action-primary);
 }
 .sectionNumber {
-  inline-size: 30px;
-  block-size: 30px;
-  flex: 0 0 30px;
+  inline-size: 18px;
+  block-size: 18px;
+  flex: 0 0 18px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  background: var(--surface-primary);
+  background: var(--surface-sunken);
   font-family: var(--font-mono);
   font-size: var(--type-caption-size);
   font-weight: 600;
 }
 .sectionTabActive .sectionNumber {
-  color: var(--action-primary);
+  color: var(--text-on-action);
 }
 .sectionTabCopy {
   min-inline-size: 0;
@@ -214,6 +239,7 @@
   color: var(--text-muted);
   font-size: var(--type-caption-size);
 }
+.sectionTabActive .sectionTabCopy span { color: inherit; }
 .sectionFooter {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -225,6 +251,10 @@
 .sectionFooter > :last-child { justify-self: end; }
 
 @media (max-width: 640px) {
+  .page { padding: 14px 12px 130px; }
   .sectionNavigatorHead { flex-direction: column; }
-  .sectionTabs { grid-auto-columns: minmax(180px, 85%); }
+  .sectionTabs { grid-auto-columns: minmax(168px, 85%); }
+  .toolbar { align-items: stretch; }
+  .actionbar { flex-wrap: wrap; }
+  .actionbar > :first-child { flex: 1 1 100%; }
 }
