@@ -61,6 +61,8 @@ function updateSources(
         inspector: inspector.inspector,
         state: inspector.stateLabel,
         factory: inspector.factoryName,
+        positionSource: inspector.positionSourceLabel ?? "",
+        positionObservedAt: inspector.positionObservedAt ?? "",
         selected: inspector.id === selectedId,
       },
       geometry: { type: "Point", coordinates: [inspector.lng!, inspector.lat!] },
@@ -219,6 +221,8 @@ export default function LiveMapInner({
             String(feature.properties?.inspector ?? ""),
             String(feature.properties?.factory ?? ""),
             String(feature.properties?.state ?? ""),
+            String(feature.properties?.positionSource ?? ""),
+            String(feature.properties?.positionObservedAt ?? ""),
           ].filter(Boolean).join("\n"))
           .addTo(map);
       });

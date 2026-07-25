@@ -41,12 +41,14 @@ export type LiveOpsStrings = {
   positionSourceField: string;
   positionObservedField: string;
   openVisit: string;
-};
-
-export type LiveInspectorWithPosition = LiveInspector & {
-  positionObservedAt: string | null;
-  positionObservedLabel: string;
-  positionSourceLabel: string | null;
+  active: string;
+  arrived: string;
+  recordedState: string;
+  unavailableState: string;
+  rejectedState: string;
+  partialSource: string;
+  factorySourceUnavailable: string;
+  sourceNotRecorded: string;
 };
 
 const Map = dynamic(() => import("./LiveMapInner"), { ssr: false });
@@ -59,19 +61,23 @@ export default function LiveOps({
   snapshotAt,
   positionObservedAt,
   wallboard,
-  hasReadError,
+  visitReadError,
+  positionReadError,
+  factoryReadError,
   excludedRecordCount,
   outOfScopeRecordCount,
   locale,
 }: {
   factories: LiveFactory[];
   regions: LiveRegion[];
-  inspectors: LiveInspectorWithPosition[];
+  inspectors: LiveInspector[];
   strings: LiveOpsStrings;
   snapshotAt: string;
   positionObservedAt: string | null;
   wallboard: boolean;
-  hasReadError: boolean;
+  visitReadError: boolean;
+  positionReadError: boolean;
+  factoryReadError: boolean;
   excludedRecordCount: number;
   outOfScopeRecordCount: number;
   locale: "en" | "ar";
@@ -80,7 +86,7 @@ export default function LiveOps({
   const [providerFailed, setProviderFailed] = useState(false);
   const markProviderFailed = useCallback(() => setProviderFailed(true), []);
   const enRoute = inspectors.filter(inspector => inspector.state === "on_the_way").length;
-  const executing = inspectors.filter(inspector => inspector.state === "executing" || inspector.state === "arrived").length;
+  const arrived = inspectors.filter(inspector => inspector.state === "arrived").length;
   const selectedInspector = inspectors.find(inspector => inspector.id === selectedId) ?? null;
   const noScopeRows = factories.length === 0 && inspectors.length === 0;
   const hasNoPositions = factories.length > 0
@@ -94,12 +100,22 @@ export default function LiveOps({
   const formattedPositionObservedAt = positionObservedAt
     ? dateFormatter.format(new Date(positionObservedAt))
     : null;
+  const provenanceLabel = (inspector: LiveInspector) => inspector.positionState === "recorded"
+    ? s.recordedState
+    : inspector.positionState === "rejected" ? s.rejectedState : s.unavailableState;
+  const provenanceClass = (inspector: LiveInspector) => inspector.positionState === "recorded"
+    ? styles.provenanceRecorded
+    : inspector.positionState === "rejected" ? styles.provenanceRejected : styles.provenanceUnavailable;
 
   return (
     <div className={`${styles.page} ${wallboard ? styles.wallboard : ""}`} data-testid="operations-live">
       <header className={styles.header}>
         <div>
-          <p className={styles.disclosure}>{s.projected}</p>
+          <div className={styles.provenanceLegend} aria-label={s.dataIntegrity}>
+            <span className={`${styles.provenance} ${styles.provenanceRecorded}`}>{s.recordedState}</span>
+            <span className={`${styles.provenance} ${styles.provenanceUnavailable}`}>{s.unavailableState}</span>
+            <span className={`${styles.provenance} ${styles.provenanceRejected}`}>{s.rejectedState}</span>
+          </div>
           <p className={styles.freshness}>
             <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{formattedSnapshotAt}</time></span>
             <span>{formattedPositionObservedAt
@@ -117,19 +133,21 @@ export default function LiveOps({
               {s.outOfScopeGeography} <strong>{outOfScopeRecordCount}</strong>
             </p>
           ) : null}
+          {positionReadError ? <p className={styles.partialSource} role="alert">{s.partialSource}</p> : null}
+          {factoryReadError ? <p className={styles.partialSource} role="status">{s.factorySourceUnavailable}</p> : null}
         </div>
         {wallboard ? <a className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</a> : null}
       </header>
 
       <div className={styles.counters} aria-label={s.totalsLabel}>
+        <article className={styles.counter}><strong>{inspectors.length}</strong><span>{s.active}</span></article>
         <article className={styles.counter}><strong>{enRoute}</strong><span>{s.enRoute}</span></article>
-        <article className={styles.counter}><strong>{executing}</strong><span>{s.executing}</span></article>
-        <article className={styles.counter}><strong>{factories.length}</strong><span>{s.completed}</span></article>
+        <article className={styles.counter}><strong>{arrived}</strong><span>{s.arrived}</span></article>
       </div>
 
       <div className={styles.workspace}>
         <section className={styles.mapFrame} aria-label={s.mapAriaLabel}>
-          {hasReadError ? (
+          {visitReadError ? (
             <EmptyState glyph="!" title={s.loadError} bare role="alert">
               <button className="sq-btn sq-btn--secondary" type="button" onClick={() => window.location.reload()}>{s.retry}</button>
             </EmptyState>
@@ -189,7 +207,7 @@ export default function LiveOps({
                 <div><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
                 <div>
                   <dt>{s.positionSourceField}</dt>
-                  <dd>{selectedInspector.positionSourceLabel ?? selectedInspector.positionObservedLabel}</dd>
+                  <dd>{selectedInspector.positionSourceLabel ?? s.sourceNotRecorded}</dd>
                 </div>
                 <div>
                   <dt>{s.positionObservedField}</dt>
@@ -198,7 +216,9 @@ export default function LiveOps({
                     : selectedInspector.positionObservedLabel}</dd>
                 </div>
               </dl>
-              <p className={styles.selectionDisclosure}>{s.projected}</p>
+              <p className={`${styles.provenance} ${provenanceClass(selectedInspector)}`}>
+                {provenanceLabel(selectedInspector)}
+              </p>
               <a className="sq-btn sq-btn--secondary" href={`/visits/${selectedInspector.visitId}`}>{s.openVisit}</a>
             </section>
           ) : null}
@@ -215,6 +235,16 @@ export default function LiveOps({
                     <span>
                       <strong>{inspector.factoryName}</strong>
                       <small>{inspector.region} · <bdi dir="auto">{inspector.inspector}</bdi></small>
+                      <span className={`${styles.provenance} ${provenanceClass(inspector)}`}>
+                        {provenanceLabel(inspector)}
+                      </span>
+                      <small>
+                        {s.positionSourceField}: {inspector.positionSourceLabel ?? s.sourceNotRecorded}
+                        {" · "}
+                        {s.positionObservedField}: {inspector.positionObservedAt
+                          ? <time dateTime={inspector.positionObservedAt}>{inspector.positionObservedLabel}</time>
+                          : inspector.positionObservedLabel}
+                      </small>
                     </span>
                     <span>
                       <span className="sq-lozenge sq-lozenge--info">{inspector.stateLabel}</span>
@@ -237,7 +267,7 @@ export default function LiveOps({
       <footer className={styles.legend} role="note">
         <span className={styles.marker} aria-hidden="true">●</span>
         <span>{s.inspector}</span>
-        <strong>{s.projected}</strong>
+        <strong>{s.freshnessPolicy}</strong>
       </footer>
     </div>
   );

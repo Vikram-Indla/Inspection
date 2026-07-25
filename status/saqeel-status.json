@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r7",
-  "updated": "2026-07-25",
+  "revision": "SB-r8",
+  "updated": "2026-07-25T23:07:50+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -336,9 +336,9 @@
       "channel": "web",
       "group": "console",
       "name": "M3 Operations Center + Live",
-      "design": 55,
+      "design": 92,
       "code": 100,
-      "wiring": 85,
+      "wiring": 95,
       "designPage": "SAQEEL M3 Operations Center - WA-DES-033-C3.dc.html · …Live - WA-DES-034-C3.dc.html",
       "route": "web/src/app/(app)/operations (+ live, exceptions) · OpsMap.tsx · sla.ts · region-posture.ts",
       "pwa": {
@@ -348,11 +348,11 @@
       "pending": [
         {
           "lane": "design",
-          "text": "ACTIVE_PARTIAL_NOT_ACCEPTED — P1 open: scannable Active-inspector list, source-backed detail hierarchy, fail-closed timestamps, locale-specific person names, distinct hard states."
+          "text": "Final pixel-level sponsor comparison remains for 1200/1024/412/390/320 across EN/LTR and AR/RTL; source composition and governed hard-state hierarchy now match WA-DES-033-C3 / WA-DES-034-C3."
         },
         {
-          "lane": "design",
-          "text": "Fixture-heavy rows and projected-route disclosure still visible in runtime."
+          "lane": "wiring",
+          "text": "Provider-failure and authenticated geography boundaries are source-complete and build-verified; live-provider runtime evidence remains a separate acceptance activity."
         }
       ],
       "phase": 8,
