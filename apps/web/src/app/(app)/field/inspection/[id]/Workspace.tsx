@@ -11,6 +11,9 @@ import {
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
+import LiveRegion from "@/components/field/LiveRegion";
+import { focusAndScrollTo, firstBlocker } from "@/components/field/a11y";
+import a11y from "@/components/field/field-a11y.module.css";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
@@ -98,6 +101,7 @@ export type WorkspaceStrings = {
   // — Phase 5 manual action forms (§18) —
   afAddTitle: string; afAddHint: string; afAddPick: string; afAddBtn: string; afAddedMsg: string; afNone: string;
   valTitle: string; valUnanswered: string; valEvidence: string; valForms: string;
+  valGoToFirst: string; valGoToSection: string;
   ready: string; notReady: string;
   sig: SignaturePadStrings;
   // — Slice F2 evidence & media depth —
@@ -150,6 +154,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [conflicts, setConflicts] = useState([] as Conflict[]);
   const [msg, setMsg] = useState(null as string | null);
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
+  // A11y — when submit is refused, move focus to the grouped-blocker summary so
+  // keyboard/screen-reader users land on what needs fixing (not left on submit).
+  const validationRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => { if (validation && validation.length) validationRef.current?.focus(); }, [validation]);
   const [signing, setSigning] = useState(false);
   const [submitted, setSubmitted] = useState(inspection.status === "submitted");
   // Phase 4B / D-016 — active-session cancellation is NON-BLOCKING until
@@ -851,7 +859,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
   const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
   return (
-    <div className="stack" style={{ gap: "var(--space-4)" }}>
+    <div className={`stack ${a11y.scope}`} style={{ gap: "var(--space-4)" }}>
+      {/* A11y — polite screen-reader mirror of the transient status message. */}
+      <LiveRegion message={msg} />
       <div className={styles.toolbar}>
         <span className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
           <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
@@ -1355,12 +1365,26 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Grouped validation results by section (M04-200/201-lite) */}
       {!submitted && validation && validation.length > 0 && (
-        <div className={styles.validation}>
-          <strong>{strings.valTitle}</strong>
+        <div className={styles.validation} role="alert" tabIndex={-1} ref={validationRef} data-testid="submit-blockers">
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
+            <strong>{strings.valTitle}</strong>
+            {(() => {
+              const first = firstBlocker(validation);
+              return first ? (
+                <button type="button" className="btn btn-secondary btn-sm" data-testid="jump-first-blocker"
+                  onClick={() => focusAndScrollTo(`ax-section-${first.sectionKey}`)}>
+                  {strings.valGoToFirst}
+                </button>
+              ) : null;
+            })()}
+          </div>
           <ul>
             {validation.map(g => (
               <li key={g.key}>
-                <strong>{g.title}</strong>
+                <button type="button" className={styles.valJump} onClick={() => focusAndScrollTo(`ax-section-${g.key}`)}
+                  aria-label={fmt(strings.valGoToSection, { title: g.title })}>
+                  <strong>{g.title}</strong>
+                </button>
                 {g.unanswered.length > 0 && <div className="t-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
                 {g.evidence.length > 0 && <div className="t-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
                 {g.forms.length > 0 && <div className="t-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}

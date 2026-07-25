@@ -12,6 +12,9 @@ import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { isNotificationUnread } from "@/lib/notification-read";
 import AssignmentTaskBrowser, { type AssignmentTask } from "./AssignmentTaskBrowser";
 import styles from "./my-tasks.module.css";
+// SCR-IPAD a11y hardening — reduced-motion, coarse-pointer touch targets,
+// focus-visible and the global RTL directional-icon flip, applied via the scope.
+import a11y from "@/components/field/field-a11y.module.css";
 
 // SAQEEL Field My Tasks.dc.html — the design's real "My Tasks" screen: a
 // master/detail surface (assigned task list → full establishment dossier with
@@ -332,7 +335,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
         subtitle={tr("field.myTasks.sub", "Tasks assigned to you · authority-scoped", "المهام المسندة إليك · نطاق محكوم بالصلاحية")}
         langHref={langHref} langLabel={langLabel}
       />
-      <div className={`${styles.grid} ${pane}`}>
+      <div className={`${styles.grid} ${pane} ${a11y.scope}`}>
         {/* LEFT — assigned task list */}
         <div className={styles.list}>
           <AssignmentTaskBrowser

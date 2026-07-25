@@ -1,0 +1,56 @@
+/* SCR-IPAD accessibility & interaction hardening — reusable, opt-in via the
+   `.scope` class on a journey root. DS-token / logical-property only; changes NO
+   layout structure or business logic. DS button classes are matched with
+   [class~="btn"] attribute selectors so they resolve globally (CSS-module class
+   selectors would otherwise be hashed). Importing this module also installs the
+   global RTL directional-icon flip at the bottom. */
+
+/* Visible keyboard focus for every interactive control inside the scope
+   (keyboard / focus-order support). */
+.scope :is(a, button, [role="button"], input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--action-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* Reduced-motion: honor the OS setting across the whole journey — no animated
+   transitions and no smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  .scope *,
+  .scope *::before,
+  .scope *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* iPad touch targets: on coarse (touch) pointers, real controls get a ≥44px hit
+   area. Scoped to buttons / DS button classes / form fields — bare inline text
+   links and checkboxes/radios are left alone to avoid reflowing prose. */
+@media (pointer: coarse) {
+  .scope :is(button, [role="button"], [class~="btn"], select, textarea,
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])) {
+    min-block-size: 44px;
+  }
+  .scope :is([class~="btn-icon"], [class~="btn-sm"]) {
+    min-inline-size: 44px;
+  }
+}
+
+/* Safe-area: keep opted-in interactive content clear of the iPad home indicator
+   and rounded corners in either orientation. */
+.safe {
+  padding-inline: max(0px, env(safe-area-inset-left)) max(0px, env(safe-area-inset-right));
+  padding-block-end: max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+/* RTL correctness: flip directional glyphs (chevrons/arrows) inside the scope
+   under right-to-left. `dir="rtl"` sits on the field layout root (an ancestor),
+   so it is matched globally while the rule stays anchored on the local scope
+   class. No existing rule flips these today, so directional icons currently
+   point the wrong way in Arabic. */
+:global([dir="rtl"]) .scope [data-directional] {
+  transform: scaleX(-1);
+}
