@@ -305,8 +305,18 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   // needs to sit above the Mapbox canvas, and using a pseudo-element instead
   // of a wrapper keeps callers that position the map by [data-map-provider]
   // working. The class is dropped once the map reports idle.
+  // The label is handed to CSS as a custom property rather than rendered as a
+  // child. Mapbox owns the DOM inside this container, and a wrapper element is
+  // not safe either: my-tasks lays its map card out with place-items:center, so
+  // a wrapper would centre to its content instead of filling the card. A quoted
+  // string in a custom property lets ::before carry localised text with no
+  // structural change. JSON.stringify supplies the CSS quoting.
+  const loadingLabel = mapLocale === "ar" ? "جارٍ تحميل الخريطة…" : "Loading map…";
   return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox"
     className={ready ? undefined : "sq-map-loading"}
     data-map-ready={ready ? "true" : "false"} aria-busy={ready ? undefined : "true"}
-    style={{ blockSize: height, inlineSize: "100%" }} />;
+    style={{
+      blockSize: height, inlineSize: "100%",
+      ...(ready ? null : { ["--sq-map-loading-label" as string]: JSON.stringify(loadingLabel) }),
+    }} />;
 }
