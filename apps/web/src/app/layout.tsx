@@ -71,6 +71,10 @@ export const viewport = {
     { media: "(prefers-color-scheme: light)", color: "#F5F7F8" },
     { media: "(prefers-color-scheme: dark)", color: "#101317" },
   ],
+  // iPad standalone PWA: draw under the status bar / home indicator so the field
+  // chrome's env(safe-area-inset-*) padding (FieldHeader/FieldNav) governs the
+  // inset. The field app is fullscreen, not a reduced web portal (design policy).
+  viewportFit: "cover" as const,
 };
 export const metadata = {
   manifest: "/manifest.json",
@@ -80,6 +84,13 @@ export const metadata = {
   },
   title: "Saqeel صقيل — Industrial Inspection Platform",
   description: "Saqeel (صقيل | صناعي) — the national industrial inspection platform. One platform. Every factory. Every inspection. Every decision.",
+  // Installed-to-home-screen presentation on iPadOS/Safari and Android/Chromium.
+  // appleWebApp.capable + mobile-web-app-capable make the launched app run
+  // standalone (no browser chrome); black-translucent lets content extend under
+  // the status bar, paired with viewportFit:"cover" above.
+  appleWebApp: { capable: true, title: "Saqeel", statusBarStyle: "black-translucent" as const },
+  formatDetection: { telephone: false },
+  other: { "mobile-web-app-capable": "yes" },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

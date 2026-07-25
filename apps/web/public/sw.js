@@ -1,10 +1,23 @@
 /* MIM Field — app-shell service worker (FND-005: field app survives offline).
    Static assets: cache-first. Navigations: network-first, fallback to cached shell.
-   Data writes are NOT handled here — the IndexedDB outbox owns them (idempotent replay). */
-const SHELL = "saqeel-shell-v6";
+   Data writes are NOT handled here — the IndexedDB outbox owns them (idempotent replay).
+
+   CONTROLLED UPDATE LIFECYCLE: a newly deployed worker installs and then WAITS
+   (no automatic skipWaiting). The page keeps running the shell/chunks it started
+   with — swapping assets under a live session was the source of post-deploy
+   stale-chunk failures. The client (lib/pwa/client.ts) detects the waiting
+   worker, offers an explicit reload, and only then posts SKIP_WAITING below.
+   Activation still purges old caches and claims clients so the reload lands on
+   a clean shell. Draft/outbox state (IndexedDB) is never touched here. */
+const SHELL = "saqeel-shell-v7";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/field", "/manifest.json", "/saqeel-favicon.svg"])));
-  self.skipWaiting();
+  // No skipWaiting(): the new worker waits until the user accepts the update.
+});
+// The client posts {type:"SKIP_WAITING"} when the inspector taps "Reload" on the
+// update prompt; only then does the waiting worker take over.
+self.addEventListener("message", (e) => {
+  if (e.data && e.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 self.addEventListener("activate", (e) => {
   // Purge every cache from a previous shell version so cache-first can never
