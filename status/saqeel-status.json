@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r6",
-  "updated": "2026-07-25T22:55:00+03:00",
+  "revision": "SB-r7",
+  "updated": "2026-07-25T23:00:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1442,8 +1442,8 @@
       "group": "pwareport",
       "name": "Reports library & challenge report",
       "design": 60,
-      "code": 0,
-      "wiring": 0,
+      "code": 70,
+      "wiring": 50,
       "designPage": "pwa/SAQEEL PWA-Field Reports.dc.html · Reports Library · Challenge Report",
       "route": "none — no /field/reports route in the repo",
       "pwa": {
@@ -1452,12 +1452,16 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "Build /field/reports (library + detail). Challenge Report has no route and no schema reference."
+          "lane": "wiring",
+          "text": "Runtime acceptance remains: authenticated clean-factory data, RLS/error/empty states, EN/LTR, AR/RTL, responsive library, and canonical detail handoff. Browser setup timed out twice; typecheck and diff checks pass."
         },
         {
           "lane": "design",
-          "text": "Confirm whether Reports Library duplicates Drafts or is a separate submitted-history surface."
+          "text": "Reports Library is implemented as separate submitted history: the design says prior visit reports/read-only documents, while /field/drafts owns editable in-progress work."
+        },
+        {
+          "lane": "code",
+          "text": "Challenge Report remains a hard stop: no route and no schema reference. No schema, table, or UI was fabricated."
         }
       ],
       "phase": 7,
