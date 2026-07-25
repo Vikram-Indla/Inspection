@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
-import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   isFieldOnlyPersona,
@@ -402,18 +401,8 @@ export default function ShellClient({
           <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
           <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
             <div className="ax-shell__brand">
-              <SaqeelBrandMark className="ax-shell__brand-mark" />
-              <span
-                className="ax-shell__brand-lockup"
-                aria-label={locale === "ar" ? "صقيل صناعي" : "SAQEEL Industrial"}
-              >
-                <span className="ax-shell__brand-wordmark" lang={locale === "ar" ? "ar" : "en"}>
-                  {locale === "ar" ? "صقيل" : "SAQEEL"}
-                </span>
-                <span className="ax-shell__brand-sub" lang={locale === "ar" ? "ar" : "en"}>
-                  {locale === "ar" ? "صناعي" : "Industrial"}
-                </span>
-              </span>
+              <span className="ax-shell__brand-mark" role="img" aria-label="SAQEEL" />
+              <span className="ax-shell__brand-lockup" role="img" aria-label="SAQEEL" />
               <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
               </button>
