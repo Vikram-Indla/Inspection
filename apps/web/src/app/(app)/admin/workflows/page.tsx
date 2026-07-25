@@ -5,6 +5,7 @@ import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
 import { WfDeck, type WfDeckStrings } from "./WfDeck";
+import type { SlaConf } from "@/app/(app)/operations/sla";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +15,15 @@ export default async function Workflows() {
   const { t } = await useT();
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
-  const { data: wfs, error } = await sb.from("config_versions")
-    .select("id, version_label, status, payload, effective_from, created_at, created_by, approved_by")
-    .eq("engine", "workflow").order("effective_from", { ascending: false });
+  const [{ data: wfs, error }, { data: slaRow, error: slaError }] = await Promise.all([
+    sb.from("config_versions")
+      .select("id, version_label, status, payload, effective_from, created_at, created_by, approved_by")
+      .eq("engine", "workflow").order("effective_from", { ascending: false }),
+    sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
+  ]);
   if (error) console.error("[admin workflows] load failed", error);
+  if (slaError) console.error("[admin workflows] sla load failed", slaError);
+  const sla = (slaRow?.settings ?? {}) as SlaConf;
   // Approval-chain visibility (RBAC-002 maker-checker): resolve maker/checker names.
   const chainIds = [...new Set((wfs ?? []).flatMap(w => [w.created_by, w.approved_by]).filter((x): x is string => !!x))];
   const profRes = chainIds.length ? await sb.from("profiles").select("user_id, full_name").in("user_id", chainIds) : null;
@@ -50,12 +56,60 @@ export default async function Workflows() {
     selectHint: t("admin.wf.deck.selectHint", "Select a state to filter its outgoing transitions; select a transition row to inspect it."),
     none: t("admin.wf.deck.none", "—"),
   };
+
+  const hasSla = !!slaRow && !slaError;
+  const slaRows = [
+    { label: t("admin.wf.sla.review", "Review deadline"), value: sla.review_business_days, unit: t("admin.wf.sla.days", "business days") },
+    { label: t("admin.wf.sla.resubmission", "Resubmission deadline"), value: sla.resubmission_business_days, unit: t("admin.wf.sla.days", "business days") },
+    { label: t("admin.wf.sla.actionDue", "Action due period"), value: sla.action_due_calendar_days, unit: t("admin.wf.sla.calendarDays", "calendar days") },
+  ];
+
   return (
     <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow configuration")}
       context={<span className="badge badge-info">SCR-ADM-050/051 · ENG-03</span>}>
       <div className="sq-banner"><div>
         <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
       </div></div>
+
+      {/* SLA model — read-only, governed by engine_settings.sla (ENG-09). */}
+      <section className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }} aria-labelledby="wf-sla-h">
+        <h4 id="wf-sla-h" style={{ margin: 0 }}>{t("admin.wf.sla.title", "SLA model")}</h4>
+        {!hasSla && (
+          <p className="t-caption" role="status">
+            {t("admin.wf.sla.unavailable", "SLA configuration unavailable — not configured or outside read scope.")}
+          </p>
+        )}
+        {hasSla && (
+          <div className="sq-tablewrap">
+            <table className="sq-table">
+              <thead>
+                <tr>
+                  <th scope="col">{t("admin.wf.sla.col.rule", "Rule")}</th>
+                  <th scope="col">{t("admin.wf.sla.col.value", "Value")}</th>
+                  <th scope="col">{t("admin.wf.sla.col.calendar", "Calendar")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {slaRows.map((row) => (
+                  <tr key={row.label}>
+                    <td>{row.label}</td>
+                    <td className="numeric">{typeof row.value === "number" ? row.value : <span className="badge badge-warning">{t("admin.wf.sla.notConfigured", "Not configured")}</span>}</td>
+                    <td className="t-caption">{typeof row.value === "number" ? row.unit : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {hasSla && sla.calendar?.days && (
+          <p className="t-caption" role="status">
+            {t("admin.wf.sla.calendarNote", "Working-day calendar:")} <bdi dir="ltr">{sla.calendar.days}</bdi>
+            {sla.calendar.hours && <> · <bdi dir="ltr">{sla.calendar.hours}</bdi></>}
+            {sla.calendar.tz && <> · <bdi dir="ltr">{sla.calendar.tz}</bdi></>}
+          </p>
+        )}
+      </section>
+
       {error && (
         <div className="sq-banner sq-banner--critical"><div>
           <strong>{t("admin.wf.error.title", "Couldn’t load workflow configuration. Nothing was changed. Try again.")}</strong>
