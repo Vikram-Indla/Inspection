@@ -1,0 +1,348 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
+status: READ_ONLY_SECURITY_NEGATIVE_PATH_REVIEW_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Independently determine whether the current M11 source and future catalog
+  proof plan can establish permission, redaction, audit, neutral-error,
+  provider, concurrency and rollback safety. This is a fail-closed
+  orchestration verdict, not an implementation, database or test result.
+
+authority:
+  consolidated_security_correction:
+    packet: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+    sha256: 384ed1fe0bceacd4bcb3bea2fd665c28a750f9084cb875a5ebfb15eba4b07546
+  correction_readiness_review:
+    packet: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+    sha256: aa9beb6787536b73803467e6c47130358e991557b66593539167bcb9fc433e75
+  source_packet_blueprint:
+    packet: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+    sha256: 70013fa37f25231eb4a9e4520c415e914d814b601f6a450addb7889436c6fe96
+  ownership_collision_preflight:
+    packet: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+    sha256: 35d23cea16d13b7dff29376280645067556f2e53e6d0d46f3f89bd3d927252da
+  source_inventory:
+    packet: KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+    sha256: 3cf16e200356fbfd325b32be0dc33f9f4bd8d55000217471eeebb52015a13a28
+  queued_test_gap_map:
+    packet: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+    sha256: 7a0f276b017a86cee6116dc41931819aebf8d50ec191f4edcc00a115cb5eeb92
+
+hard_boundary:
+  - "No SQL was executed and no live database catalog was queried."
+  - "No product, application, migration, test, design, data or seed file was modified."
+  - "No branch, stash, protected branch, implementation lease or ownership row was changed."
+  - "Only this owned orchestration verdict file was created."
+  - "Kimi response acceptance remains blocked until the Mac is unlocked and the returned payload is captured and validated."
+  - "Zero change to the 478-row completion count."
+
+review_scope:
+  contradiction_ids:
+    - 024-X01
+    - 024-X02
+    - 024-X03
+    - 024-X04
+    - 024-X05
+    - 024-X06
+  migration_security_ids:
+    - M11-MIGSEC-001
+    - M11-MIGSEC-002
+    - M11-MIGSEC-003
+    - M11-MIGSEC-004
+    - M11-MIGSEC-005
+    - M11-MIGSEC-006
+    - M11-MIGSEC-007
+    - M11-MIGSEC-008
+    - M11-MIGSEC-009
+    - M11-MIGSEC-010
+    - M11-MIGSEC-011
+    - M11-MIGSEC-012
+  preserved_authority_ids:
+    - RBAC-007
+    - CR-337
+    - DEC-005
+
+overall_verdict:
+  result: BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+  reviewer_recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+  implementation_ready: false
+  security_certified: false
+  review_025_ready: false
+  explanation: >-
+    Authority 022 defines a coherent target, but current source evidence does
+    not prove the required owner, ACL, dependency, RLS, safe-audit, neutral
+    boundary, provider, concurrency, quiesce or rollback contracts. Corrected
+    Kimi payloads have not yet been captured and validated. Even a valid
+    correction return cannot substitute for isolated live-catalog proof or
+    sponsor-issued non-overlapping implementation and QA leases.
+
+negative_path_verdicts:
+  ACL_OWNER_DEPENDENCY:
+    result: BLOCK
+    covered_ids:
+      - M11-MIGSEC-001
+      - M11-MIGSEC-002
+      - M11-MIGSEC-003
+      - M11-MIGSEC-009
+      - M11-MIGSEC-010
+      - 024-X01
+      - 024-X02
+      - 024-X03
+      - 024-X04
+      - 024-X06
+    evidence:
+      - "No relevant migration declares ALTER FUNCTION ... OWNER TO; exact live owners and BYPASSRLS effects are unknown."
+      - "pgcrypto is installed without an explicit schema while OTP functions call unqualified digest() under search_path public, extensions."
+      - "Current function ACLs are incomplete: multiple functions have no exact PUBLIC/anon revoke and intended authenticated regrant."
+      - "virtual_sessions and virtual_participants use PUBLIC-implicit broad FOR ALL policies rather than explicit per-command authenticated policies."
+      - "Final table ACLs, pg_policy permissive-OR effects, overload cleanup and nested helper dependencies are not catalog-proven."
+    required_proof:
+      - "Exact pg_proc identity, owner, owner superuser/BYPASSRLS/login flags, prosecdef, proconfig and proacl."
+      - "Exact pg_depend graph, pgcrypto namespace and fully qualified dependency identities."
+      - "Exact table ACL and pg_policy manifest for PUBLIC, anon and authenticated."
+      - "One-way session/participant policy dependency and safe-helper proof."
+
+  RAW_AUDIT_SECRET_REDACTION_AND_EXPORT:
+    result: BLOCK
+    covered_ids:
+      - M11-MIGSEC-004
+      - M11-MIGSEC-005
+      - M11-MIGSEC-011
+      - 024-X05
+    evidence:
+      - "virtual_participants currently uses global audit_row_change, which persists complete before/after JSON including verification_record."
+      - "audit_read and audit_read_compliance expose raw audit rows through permissive SELECT policies to multiple authenticated personas."
+      - "vs_audit_trail returns generic after_state and can expose code_hash or verification_record."
+      - "No specialized redacting participant trigger or safe projection precedes OTP."
+      - "Global admin, dashboard, visit, review and workflow audit consumers remain only partially inventoried and unadapted."
+    prohibited_release:
+      - dev_code
+      - OTP_plaintext_or_derivative
+      - verification_record
+      - code_hash
+      - raw_participant_before_state
+      - raw_participant_after_state
+      - runtime_query_text
+      - raw_function_or_view_body
+    required_proof:
+      - "Specialized participant trigger installed before any hardened OTP execution."
+      - "No authenticated application persona can SELECT raw participant secret-bearing JSON."
+      - "Safe projection contains only approved facts and no secret sentinel in rows, RPC JSON, DOM, logs or exported evidence."
+      - "Historical audit rows remain immutable and checksum-stable."
+      - "Every global and maker-checker audit consumer remains safe and functional."
+
+  PERSONA_AND_UNAUTHORIZED_ACCESS:
+    result: BLOCK
+    covered_ids:
+      - RBAC-007
+      - M11-MIGSEC-002
+      - M11-MIGSEC-003
+      - M11-MIGSEC-009
+      - 024-X01
+      - 024-X03
+      - 024-X04
+    evidence:
+      - "Current participant policy grants direct mutation to Operations, Reviewer, Auditor, compliance_admin, Planner and assigned Inspector."
+      - "Current OTP predicates admit broad staff roles rather than the final assigned-Inspector-only authority."
+      - "Planner scheduling authority may be used only where exact RBAC-007 mapping is proven."
+      - "Operations authority remains blocked unless an exact canonical citation exists."
+    required_matrix:
+      - "Assigned Inspector allowed only for exact governed actions and resource relationship."
+      - "Unassigned Inspector denied without resource enumeration."
+      - "Reviewer and Auditor limited to safe view-only evidence."
+      - "Planner limited to exactly cited RBAC-007 planning actions."
+      - "Operations denied unless exact action authority is cited."
+      - "anon, PUBLIC and unauthenticated callers denied."
+      - "No owner, service_role or BYPASSRLS execution substitutes for ordinary-session evidence."
+
+  DIRECT_DML_AND_GENERIC_APPEND:
+    result: BLOCK
+    covered_ids:
+      - M11-MIGSEC-002
+      - M11-MIGSEC-003
+      - M11-MIGSEC-009
+      - 024-X01
+      - 024-X04
+      - 024-X05
+    evidence:
+      - "Current creation inserts virtual_sessions and virtual_participants sequentially."
+      - "Reschedule, waiting, join, begin and close still use direct table actions and multiple calls."
+      - "Begin can fall back from set_operational_state to direct visit CAS."
+      - "vs_append_event remains broadly executable by authenticated callers and accepts arbitrary event text/detail."
+    required_proof:
+      - "Direct INSERT, UPDATE and DELETE denied for PUBLIC, anon and authenticated after governed application switch."
+      - "Every action uses an exact governed RPC with in-function authorization and state checks."
+      - "Generic append authority removed only after all semantic event producers switch."
+      - "No direct-CAS or multi-write fallback remains."
+
+  NEUTRAL_MISSING_OUT_OF_SCOPE_ERRORS:
+    result: BLOCK
+    covered_ids:
+      - M11-MIGSEC-002
+      - M11-MIGSEC-003
+      - M11-MIGSEC-010
+      - 024-X02
+      - 024-X03
+      - 024-X04
+      - 024-X05
+    exact_authority_token: VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE
+    evidence:
+      - "Current vp_otp_status distinguishes not_found from unauthorized outcomes."
+      - "No final governed RPC set proves an identical status, token and body for missing and out-of-scope resources."
+      - "Existing UI sweep checks raw-provider text but not byte-equivalent database and application boundaries."
+    required_proof:
+      - "Every public governed RPC returns the same normalized boundary for missing and out-of-scope resources."
+      - "No raw SQL, RLS, function, owner or provider exception reaches the client."
+      - "Browser, RPC and direct ordinary-session negative tests agree."
+
+  PROVIDER_FAIL_CLOSED:
+    result: BLOCK
+    covered_ids:
+      - M11-MIGSEC-005
+      - M11-MIGSEC-007
+      - 024-X04
+      - 024-X05
+      - 024-X06
+    evidence:
+      - "vp_request_otp generates a code in the database, stores its hash and returns dev_code."
+      - "Provider is recorded as DEV-CONSOLE; no approved configured delivery adapter or callback is invoked."
+      - "Notification rows or provider labels are not delivery proof."
+    required_behavior:
+      - "Remove dev_code without inventing a provider or permanent secret seam."
+      - "Runtime CR-350/CR-351 completion remains BLOCKED until an approved configured provider proves delivery."
+      - "Use only a separately authorized, transaction-local isolated injection mechanism for engine proof."
+      - "Never invent OTP digits, expiry, attempts, resend, cooldown, escalation or provider values."
+
+  CONCURRENCY_ROLLBACK_EVENT_CARDINALITY:
+    result: BLOCK
+    covered_ids:
+      - M11-MIGSEC-006
+      - M11-MIGSEC-007
+      - M11-MIGSEC-008
+      - M11-MIGSEC-011
+      - M11-MIGSEC-012
+      - 024-X01
+      - 024-X03
+      - 024-X04
+      - 024-X05
+      - 024-X06
+    evidence:
+      - "No atomic governed creation, window, join, begin or close function exists in current source."
+      - "OTP request/verify lacks participant-row locking and final concurrent counter/event proof."
+      - "No M11 maintenance gate, in-flight counter, drain assertion or uninterrupted 013-to-015 no-traffic hook exists."
+      - "Current evidence does not coordinate duplicate create, join/reschedule, begin/begin, request/request or verify/verify transactions."
+    required_proof:
+      - "Deterministic visit to session to participant-UUID to inspection lock order."
+      - "Forced rollback leaves no state, participant, visit or audit residue."
+      - "Concurrent operations produce one valid state transition and exact final cardinality."
+      - "One transition produces one semantic event, separate from any safe generic row fact."
+      - "Expand, application switch with OTP disabled, quiesce/drain, uninterrupted 013 then 015 contract, and certification are rehearsed."
+      - "Post-contract recovery is roll-forward and fail-closed without privilege widening."
+
+authority_isolation:
+  CR-337:
+    result: PRESERVED_OUT_OF_SCOPE
+    rule: "List/filter semantics cannot enter this security remediation stack."
+  DEC-005:
+    result: PRESERVED_BLOCKED
+    rule: "Representative-access implementation remains blocked and cannot enter this stack."
+  RBAC-007:
+    result: USE_ONLY_WITH_EXACT_ACTION_MAPPING
+    rule: "Planner authority cannot be inferred from broad current RLS or from role labels."
+
+contradiction_disposition:
+  024-X01: OPEN_PENDING_VALIDATED_CORRECTED_010
+  024-X02: OPEN_PENDING_VALIDATED_CORRECTED_011
+  024-X03: OPEN_PENDING_VALIDATED_CORRECTED_014
+  024-X04: OPEN_PENDING_VALIDATED_CORRECTED_013
+  024-X05: OPEN_PENDING_VALIDATED_CORRECTED_015
+  024-X06: OPEN_PENDING_VALIDATED_CORRECTED_017
+
+migration_security_disposition:
+  M11-MIGSEC-001: BLOCK
+  M11-MIGSEC-002: BLOCK
+  M11-MIGSEC-003: BLOCK
+  M11-MIGSEC-004: BLOCK
+  M11-MIGSEC-005: BLOCK
+  M11-MIGSEC-006: BLOCK
+  M11-MIGSEC-007: BLOCK
+  M11-MIGSEC-008: BLOCK
+  M11-MIGSEC-009: BLOCK
+  M11-MIGSEC-010: BLOCK
+  M11-MIGSEC-011: BLOCK
+  M11-MIGSEC-012: BLOCK
+
+collision_and_ownership:
+  current_result: NO_M11_WRITE_COLLISION_OBSERVED
+  implementation_owner: UNASSIGNED
+  QA_owner: UNASSIGNED
+  catalog_capture_owner: UNASSIGNED
+  global_audit_consumer_owner: UNASSIGNED
+  rule: >-
+    Re-read ACTIVE_WORKTREE_LEASES.csv and assign exact non-overlapping file,
+    migration, function, policy and trigger ownership immediately before any
+    future lease. No filename or implementation owner is allocated here.
+
+Kimi_return_gate:
+  Mac_state_at_review: LOCKED
+  Kimi_process_alive_before_visibility_loss: true
+  corrected_payload_captured: false
+  corrected_payload_accepted: false
+  required_validation_before_acceptance:
+    - "Exactly six ordered corrected YAML payloads: 010, 011, 014, 013, 015, 017."
+    - "Exactly one response manifest."
+    - "Every YAML parses and preserves its packet_id."
+    - "All 16 collision stops are acknowledged."
+    - "repository_write_attempted=false."
+    - "implementation_claimed=false."
+    - "lease_issued_or_claimed=false."
+    - "review_025_run=false."
+    - "No SOURCE_FINGERPRINT_MISMATCH."
+  acceptance_effect: >-
+    A valid response may close packet-definition contradictions only. It does
+    not close live owner, ACL, extension, provider, runtime-consumer, lease or
+    executed-test blockers.
+
+queued_follow_on:
+  packet: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+  state: QUEUED_READ_ONLY_NOT_DISPATCHED
+  current_truth:
+    future_rows_with_complete_current_proof: 0
+    future_rows_with_reusable_candidate_assets: 25
+    future_rows_with_no_direct_current_candidate: 6
+    proposed_non_overlapping_test_paths: 9
+  dispatch_preconditions:
+    - "Corrected packets captured, validated and accepted by review 025."
+    - "Corrected 009r accepted with one QA owner."
+    - "Fresh lease collision check."
+    - "Exact final function, policy, trigger, application and provider manifests."
+
+release_conditions:
+  - "Validated corrected 010/011/014/013/015/017 and response manifest."
+  - "Review 025 returns an allowed verdict."
+  - "Isolated catalog proof closes owner, BYPASSRLS, extension, dependency, ACL, policy, trigger and index unknowns."
+  - "Approved provider exists or runtime completion remains explicitly blocked."
+  - "Exact implementation and QA leases are sponsor-approved and non-overlapping."
+  - "All positive, negative, unauthorized, concurrency, audit, provider and rollback tests execute with retained evidence."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  negative_path_category_count: 7
+  migration_security_disposition_count: 12
+  contradiction_disposition_count: 6
+  authority_hashes_captured: PASS
+  frozen_ids_covered: PASS
+  ACL_owner_dependency_reviewed: PASS
+  raw_audit_secret_redaction_reviewed: PASS
+  persona_and_direct_DML_reviewed: PASS
+  neutral_error_reviewed: PASS
+  provider_fail_closed_reviewed: PASS
+  concurrency_rollback_event_cardinality_reviewed: PASS
+  CR_337_DEC_005_isolated: PASS
+  Kimi_acceptance_deferred_until_capture: PASS
+  no_implementation_claim: PASS
+  non_mutating_boundary_checked: PASS
