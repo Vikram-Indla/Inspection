@@ -1,0 +1,19 @@
+{
+  "page_id": "WA-DES-036",
+  "page_name": "SAQEEL Planning",
+  "design_path": "SAQEEL Planning.dc.html",
+  "project_id": "5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61",
+  "observed_revision": "1784904309230874",
+  "observed_hash": null,
+  "accepted_revision": "1784904309230874",
+  "accepted_hash": null,
+  "mapped_route": "/planning (canonical); /planning?wa_preview=1 (design-comparable preview)",
+  "mapped_component": "apps/web/src/app/(app)/planning/page.tsx; apps/web/src/app/(app)/planning/PlanningPreview.tsx",
+  "consent_status": "APPROVED_FOR_SPONSOR_COMPARISON",
+  "consent_packet": "consent/WA-DES-036/1784806070831883/consent-packet.md",
+  "implementation_status": "NOT_APPLICABLE_DESIGN_ONLY_CHANGE",
+  "verification_status": "NOT_APPLICABLE_NO_RUNTIME_CHECK_THIS_PASS",
+  "notes": "Bounded orchestrated task, Planning landing only. 16-item delta, 7 substantive DESIGN CORRECTION items proposed, 0 wiring-required, 2 blocked-by-scope. Canonical /planning (CD-020 list-first) and PlanningPreview.tsx (design-comparable, wa_preview=1) are two distinct real surfaces; delta compared against PlanningPreview.tsx as the design-traceable one. No design or app changes applied this pass. Design-only correction applied 2026-07-24 (7 items, see consent packet). Prior revision 1784806070831883 now historical; accepted_revision 1784901048581707 is the first accepted baseline for this page. New List frame added 2026-07-24 (revision 1784901048581707 -> 1784903934723797), informed by real runtime screenshot evidence. Prior Methods/Bulk/Single/Immediate/Plans frames unchanged. Awaiting Codex design-delta review against real /planning runtime. Two bounded visual corrections applied 2026-07-24 (1784903934723797 -> 1784904309230874): directional arrows removed from Continue/Visit management labels; lightning emoji replaced with stroke-SVG bolt icon (matching real PlanningMethodIcon shape) on both Home and List frames. Zero-trace verified by direct grep.",
+  "accepted_at": "2026-07-24",
+  "acceptance_record": "deltas/WA-DES-036/1784903934723797/semantic-delta.md"
+}

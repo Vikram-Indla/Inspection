@@ -1,0 +1,29 @@
+# Repository Discovery — SAQEEL-DSYNC-001
+
+- Repository root: `/Users/vikramindla/Developer/Inspection` (this pass ran from isolated worktree `/Users/vikramindla/Developer/Inspection-design-sync-discovery`, branch `design-sync/discovery`, HEAD `3323a8ef` = `origin/setup/Inspection` tip at session start).
+- Remote: `https://github.com/Vikram-Indla/Inspection.git`.
+- Canonical branch per `CLAUDE.md`: `setup/Inspection`. `main` is a ff-only mirror.
+- Other live worktrees at discovery time: `Inspection` (main, branch `docs/saqeel-inspector-inventory`, stashed clean before this work), `Inspection-ipad-field-delivery` (branch `feat/ipad-field-channel-delivery`).
+- Framework: Next.js 15.1.0 (App Router), TypeScript, monorepo app at `apps/web`.
+- Auth/backend: Supabase (`@supabase/supabase-js` via `apps/web/src/lib/supabase.ts`, env `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`). No custom auth server — Supabase Auth `signInWithPassword` is the credential path.
+- Commands (from `apps/web/package.json`):
+  - dev: `next dev -H 127.0.0.1`
+  - build: `next build`
+  - typecheck: `tsc --noEmit`
+  - e2e: `playwright test` (6 distinct Playwright configs already exist: `playwright.config.ts`, `.performance.config.ts`, `.performance-visual.config.ts`, `.inspector-visual.config.ts`, `.static.config.ts`, `.ui-compliance.config.ts` — a visual/UI-compliance harness already exists and should be reused rather than invented fresh for design-sync verification).
+  - design-system lint: `check:design-system-v5` (`scripts/check-design-system-v5.mjs`).
+- Field channel routes relevant to the pilot:
+  - `apps/web/src/app/login/field/page.tsx` + `FieldLoginClient.tsx` — the pilot page.
+  - `apps/web/src/app/(app)/field/[visitId]/page.tsx` — post-login field shell.
+  - `apps/web/src/app/(app)/field/settings/devices/{page.tsx,TrustedDevicesClient.tsx}` — real device-trust enrollment UI (`selfEnrollFieldDevice`, `readFieldDeviceEnrollment`).
+  - `apps/web/src/app/(app)/field/settings/actions.ts` — server actions backing device trust (`trustStatus`, backed by a real DB row per `row.trust_status`).
+  - `apps/web/src/lib/field-device.ts` — per-install device identifier (localStorage-based, explicitly documented as *not* claiming hardware-serial authority).
+  - `apps/web/src/lib/field-biometric-unlock.ts` — WebAuthn platform-authenticator local opt-in, explicitly never asserts device trust itself.
+  - `apps/web/src/components/ThemeScript.tsx` / `ThemeChannelSync.tsx` — field channel is hard-locked to dark theme (matches commit `75486695`, "default the field channel to the dark theme").
+- Web console login (`/login`, unrelated to this pilot) is governed by a separate, already-closed task `TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001` per `FieldLoginClient.tsx`'s own header comment — do not conflate the two.
+- Design-system CSS: `apps/web/src/app/login/field/field-login.css` (scoped to this route) plus shared tokens elsewhere in `apps/web` (not fully mapped this pass — out of Phase 1–11 scope).
+- Git history relevant to this exact page (from `git log`):
+  - `1b86cad3` — Revert of an earlier `feat(field-login): implement SCR-PWA-001 field-inspector sign-in` (stale OTP CSS in `field-login.css` — classes `.fl-otp-*` — is a remnant of this reverted work; no OTP markup consumes them in the current `FieldLoginClient.tsx`, i.e. dead CSS, not a hidden feature).
+  - `68ee0a23` — `feat(field): SAQEEL field login implemented from Claude Design DC` — the current implementation's origin, explicitly citing the same Claude Design project ID as source of truth.
+  - `75486695` (branch tip) — `feat(field): default the field channel to the dark theme`.
+- No existing `.design-sync/` directory, design-sync config, or watcher artifacts existed anywhere in the repo before this session created them in the isolated worktree.
