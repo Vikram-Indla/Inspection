@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r7",
-  "updated": "2026-07-25",
+  "revision": "SB-r8",
+  "updated": "2026-07-25T22:52:33+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1323,23 +1323,23 @@
       "channel": "pwa",
       "group": "pwaexec",
       "name": "Inspection workspace & form",
-      "design": 50,
+      "design": 70,
       "code": 90,
       "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Inspection Form.dc.html · Inspection · Visit Results",
       "route": "web/src/app/(app)/field/inspection/[id]/Workspace.tsx · runtime.ts · GatedRepeaterSection.tsx",
       "pwa": {
         "state": "gap",
-        "note": "DS-idiom conversion, not a pixel match. Form widths were corrected design-side; repo not re-diffed."
+        "note": "Workspace geometry now follows the vendored form/checklist authority: 880px form width, compact execution density, 18px rhythm, 14px mobile gutters, token-only selected states, sticky safe-area action bar and logical RTL properties. Separate Visit Results and shared gated-repeater parity remain open."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Pixel pass outstanding on Workspace and the repeater/gated sections."
+          "text": "Runtime pixel-diff evidence is still required at every declared width in EN/LTR and AR/RTL; no browser/Playwright capture was authorized for this card."
         },
         {
-          "lane": "wiring",
-          "text": "Immutable submit and the M04 source-vs-observed model must stay untouched by any presentation change."
+          "lane": "design",
+          "text": "Visit Results is a separate composition in the design authority, while the shipped route is one config-driven workspace; the actual shared GatedRepeaterSection.tsx sits outside this lease under src/components/field, so neither gap was silently restructured."
         }
       ],
       "phase": 5,
