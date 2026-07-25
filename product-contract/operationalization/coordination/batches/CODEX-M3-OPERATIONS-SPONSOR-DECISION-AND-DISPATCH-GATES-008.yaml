@@ -1,0 +1,493 @@
+packet:
+  id: CODEX-M3-OPERATIONS-SPONSOR-DECISION-AND-DISPATCH-GATES-008
+  title: Independent review, sponsor-decision application checklist, and dispatch gates
+  status: RETURN_SEQUENCE_FOR_GOVERNANCE_CORRECTION
+  created_by: Codex independent reviewer
+  reviewed_packet: CODEX-M3-OPERATIONS-AUTHORIZATION-CONFLICT-FREE-SEQUENCE-007.yaml
+  review_scope:
+    - accepted product contract
+    - rejected Claude M3 map-provenance correction
+    - active worktree lease registry
+    - current slice and package ownership
+    - current branch bases and ancestry
+  review_outcome: CONFIRMED_WITH_MANDATORY_CORRECTIONS
+  executable_now: false
+  implementation_authority_created: false
+
+repository_and_lock_evidence:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  review_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  review_branch: codex/orchestration-control-plane
+  review_head: 053cebddca98069862f2f6e971130ca2623153d8
+  mac_lock_check:
+    source: ioreg Root console-session state
+    result:
+      IOConsoleLocked: true
+      CGSSessionScreenIsLocked: true
+    implication: Claude Code correction remains dispatch-blocked by manual Mac unlock.
+  interaction_performed:
+    claude_code: false
+    claude_design: false
+    chatgpt: false
+
+authority_evidence:
+  repository_hierarchy:
+    - product-contract/00_START_HERE.md
+    - product-contract/CURRENT_STATE.md
+    - product-contract/GATE_STATUS.md
+    - product-contract/execution/CURRENT_SLICE.yaml
+    - product-contract/execution/TASK_ROUTER.yaml
+    - product-contract/governance/OPEN_DECISIONS.yaml
+  current_slice:
+    task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+    batch_id: WA-P1-M2-BATCH-002
+    title: Planning landing and Planning-owned Visits list/detail
+    status: AWAITING_PRODUCT_OWNER_APPROVAL
+    branch: revamp
+    baseline_sha: cf705db0
+    requirement_ids:
+      - CR-001..CR-098
+    acceptance_ids:
+      - WA-M2-AC-001..006
+      - WA-SHELL-AC-002
+      - WA-SHELL-AC-013
+  m3_package_contract:
+    source: product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+    module: M3
+    scope: Operations Center
+    routes:
+      - /operations/**
+      - /api/routing/eta
+    requirement_ids:
+      - CR-430..CR-448
+    acceptance_ids:
+      - WA-M3-AC-001..006
+    shared_ownership_rule: Shared shell, localization, global CSS, and migrations remain F0-owned; request an F0 follow-up.
+    cutover_rule: Product Owner approval and complete acceptance gates precede canonical cutover.
+  accepted_requirement_rows:
+    requirement_ids:
+      - CR-430
+      - CR-431
+      - CR-432
+      - CR-433
+      - CR-434
+      - CR-435
+      - CR-436
+      - CR-437
+      - CR-438
+      - CR-439
+      - CR-440
+      - CR-441
+      - CR-442
+      - CR-443
+      - CR-444
+      - CR-445
+      - CR-446
+      - CR-447
+      - CR-448
+    baseline_status: BASELINED_NOT_IMPLEMENTED
+    evidence_source: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+
+independent_findings:
+  - id: SEQ-REV-001
+    severity: P0
+    subject: Current-slice mismatch
+    finding: >-
+      The authoritative current slice is M2 Planning, not M3 Operations
+      authorization. Sequence 007 cannot create implementation authority for S1
+      through S6 until an approved task-router and current-slice transition or
+      explicit concurrent-slice record exists.
+    required_correction:
+      - Record an approved M3 authorization change-control task.
+      - Bind CR-430..CR-448 and WA-M3-AC-001..006.
+      - State whether M2 is paused, retained, or concurrently owned with disjoint paths.
+    current_disposition: BLOCK_AUTHORIZATION_DISPATCH
+
+  - id: SEQ-REV-002
+    severity: P0
+    subject: Claude correction lease absent from active registry
+    finding: >-
+      CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001 describes an exact
+      eight-file lease, but ACTIVE_WORKTREE_LEASES.csv has no corresponding
+      Claude Code row for the map-provenance worktree and branch.
+    required_correction:
+      - Atomically register the worktree, branch, base, actor, packet, exact eight files, exclusions, existing seven-file dirt, and status before or with dispatch.
+      - Re-run collision checks at dispatch time.
+    current_disposition: BLOCK_DISPATCH_UNTIL_REGISTRY_MATCHES_PACKET
+
+  - id: SEQ-REV-003
+    severity: P0
+    subject: Conflicting map truth acceptance
+    finding: >-
+      SPECIAL_COMPONENT_ACCEPTANCE.csv SPC-LIVE-001 and SPC-CMD-005, plus the
+      current authenticated-live-map prompt, require projected movement to be
+      labelled as not live GPS. The sponsor correction requires removing
+      fabricated projected-route behavior and presenting recorded GPS,
+      truthful scheduled/factory fallback, unavailable, and read-error states.
+      Both cannot remain simultaneously authoritative.
+    required_correction:
+      - Record a versioned sponsor supersession or amendment.
+      - Preserve the prohibition on fabricated route, ETA, drift, animation, or live claims.
+      - Replace the obsolete always-projected rule with accepted tiered provenance acceptance.
+      - Preserve the future-telemetry privacy, timestamp, accuracy, freshness, and connection safeguards.
+    current_disposition: BLOCK_FINAL_ACCEPTANCE_UNTIL_SUPERSESSION_RECORDED
+
+  - id: SEQ-REV-004
+    severity: P1
+    subject: Shared navigation ownership conflict
+    finding: >-
+      Sequence 007 assigns shell-navigation.ts and shell-navigation.spec.ts to
+      S3, while the M3 package manifest states shared shell and navigation work
+      remains F0-owned. The F0 branch already changes both files.
+    required_correction:
+      - Remove those files from the M3 route-consumer lease.
+      - Dispatch a separate F0 follow-up after the current F0 commit is accepted, or explicitly supersede it through change control.
+      - Integrate the accepted F0 commit by immutable SHA before M3 route certification.
+    current_disposition: RETURN_S3_OWNERSHIP_FOR_CORRECTION
+
+  - id: SEQ-REV-005
+    severity: P1
+    subject: Access Administration belongs to M9
+    finding: >-
+      Sequence 007 assigns admin/access files to S5 under the M3 sequence. The
+      package manifest assigns the Admin surface to M9 and makes M3 an
+      Operations-route package.
+    required_correction:
+      - Treat S5 as a separately approved M9 cross-package dependency.
+      - Keep M3 limited to consuming granted authority.
+      - Do not lease admin/access files under an M3-only task.
+    current_disposition: RETURN_S5_TO_M9_CHANGE_CONTROL
+
+  - id: SEQ-REV-006
+    severity: P1
+    subject: Branch anchors are divergent, not stack-ready
+    finding: >-
+      The map branch base c48f71cc is not an ancestor of the current F0 head
+      c8bdf6d1 or orchestration head 053cebdd. Both comparisons merge at
+      3323a8ef. A branch name or a list of SHAs is therefore insufficient as a
+      downstream base.
+    required_correction:
+      - Produce one explicit reconciled integration commit after each required upstream is accepted.
+      - Branch consumers from that exact commit.
+      - Record conflict resolution evidence; do not rebase unpublished active work.
+    current_disposition: REQUIRE_RECONCILED_BASE_BEFORE_S1_OR_CONSUMERS
+
+  - id: SEQ-REV-007
+    severity: P1
+    subject: Authorization sequence does not bind the complete M3 preservation contract
+    finding: >-
+      Sequence 007 focuses on CR-430, CR-433, CR-439, CR-447 and selected RBAC
+      rules, but every authorization lane can affect the complete CR-430..CR-448
+      Operations surface and WA-M3-AC-001..006.
+    required_correction:
+      - Add all nineteen CR rows and six M3 acceptance rows to every integration gate.
+      - Preserve monitoring, alerts, drilldowns, immutable tracking history, timeline, KPI, export, partial failure, and audit behavior.
+      - Require the Web/Admin 478-row validator at integration.
+    current_disposition: RETURN_GATE_COVERAGE_FOR_CORRECTION
+
+  - id: SEQ-REV-008
+    severity: P1
+    subject: Proposed migration paths are not reservations
+    finding: >-
+      The four exact migration filenames in Sequence 007 are proposals only.
+      Other active work is producing migration/security coordination packets,
+      and the lease registry is not proof that no unpublished migration exists.
+    required_correction:
+      - Resolve the latest canonical migration tail immediately before lease creation.
+      - Reserve exact filenames only inside the approved lease registry.
+      - Require one independently revertible commit per work-package migration.
+    current_disposition: DO_NOT_USE_PROPOSED_TIMESTAMPS_AS_AUTHORITY
+
+  - id: SEQ-REV-009
+    severity: P1
+    subject: Database lane rollback granularity
+    finding: >-
+      S1 combines scope, national grants, write alignment, and location
+      projection. One writer avoids collision, but a mixed commit would prevent
+      bounded review and rollback.
+    required_correction:
+      - Keep one database writer.
+      - Require ordered, isolated commits and acceptance evidence per WP-04, WP-05 database portion, WP-03 database portion, and WP-02 database portion.
+      - Do not begin a later database portion until the previous portion passes its negative gate.
+    current_disposition: CONFIRMED_WITH_COMMIT_AND_GATE_SPLIT
+
+  - id: SEQ-REV-010
+    severity: P1
+    subject: Open refresh governance
+    finding: >-
+      CR-431 requires a configurable refresh interval while DEC-002 leaves
+      telemetry frequency open. Existing 30-second monitoring behavior cannot
+      be promoted into the governed map policy.
+    required_correction:
+      - Sponsor assigns the policy owner and configuration source.
+      - Until decided, the correction must not add or certify a refresh cadence.
+    current_disposition: EXTERNAL_CONTRACT_BLOCK_FOR_REFRESH_CLAIM
+
+sponsor_decision_application_checklist:
+  instructions: >-
+    Each item requires a recorded decision ID and authoritative repository
+    update. A verbal or chat approval is not considered applied until the
+    corresponding contract record exists.
+  decisions:
+    - decision_id: M3-SPONSOR-APPLY-001
+      business_question: >-
+        Do you approve replacing the obsolete always-projected map rule with
+        truthful tiered provenance from recorded GPS, approved scheduling or
+        factory fallback, unavailable, and explicit read-error states?
+      recommended_answer: APPROVE
+      application_targets:
+        - design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+        - design/claude-design-mvp1/prompts/systems/AUTHENTICATED_LIVE_OPERATIONS_MAP.md
+        - approved M3 design correction record
+      must_preserve:
+        - no fabricated route
+        - no fabricated ETA or drift
+        - no projected animation presented as real
+        - recorded timestamp, accuracy, privacy, freshness, and connection truth
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-002
+      business_question: >-
+        Should M3 authorization become the active implementation slice now,
+        with M2 retained but paused, or should it remain queued after M2?
+      recommended_answer: ACTIVATE_M3_AND_RECORD_M2_AS_PAUSED_WITHOUT_CHANGING_M2_WORKTREE
+      application_targets:
+        - product-contract/execution/CURRENT_SLICE.yaml
+        - product-contract/execution/TASK_ROUTER.yaml
+        - product-contract/CURRENT_STATE.md
+        - product-contract/sessions/SESSION_LEDGER.json
+        - product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-003
+      business_question: >-
+        Which personas may open Operations, and which are monitoring-only?
+      required_exact_values:
+        operations_view:
+          current_database_default:
+            - ops
+            - planner
+            - leadership
+          contract_personas_to_reconcile:
+            - Supervisor
+            - Operations Manager
+            - Executive
+            - Auditor for specific monitoring/history capabilities
+        monitoring_only: MUST_BE_EXPLICIT
+        action_capabilities: MUST_BE_EXPLICIT_PER_ACTION
+      recommended_rule: >-
+        Keep navigation reachability distinct from data and action authority;
+        map repository role keys to contract personas without inventing a
+        supervisor key.
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-004
+      business_question: What are the canonical region, branch, and organization scope identifiers and hierarchy?
+      required_exact_values:
+        - user-to-scope cardinality
+        - factory-to-scope linkage
+        - visit-to-scope linkage
+        - inspector-to-scope linkage
+        - case and risk-exception linkage
+        - temporary cross-scope access
+        - transfer and historical-record behavior
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-005
+      business_question: Who may see precise inspector identity and coordinates?
+      required_exact_values:
+        - capability name
+        - eligible roles and direct grantees
+        - active journey and execution states
+        - freshness and stale thresholds
+        - masking and aggregate resolution
+        - zero-row, invalid-coordinate, and read-error behavior
+        - privacy, retention, and audit dependencies
+      proposed_capability_not_yet_authority: operations.view_precise_location_identity
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-006
+      business_question: Which Operations actions may each persona perform on which records?
+      required_actions:
+        - resolve action form
+        - acknowledge or handle notification
+        - decide GPS override
+        - decide active cancellation
+        - export operational data
+      required_exact_values:
+        - capability
+        - record scope
+        - workflow guard
+        - audit event
+        - denial behavior
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-007
+      business_question: Who may receive exceptional national visibility, for how long, and through which approval?
+      required_exact_values:
+        - grantor
+        - grantee
+        - reason
+        - expiry
+        - review
+        - revocation
+        - active-session and cache behavior
+        - immutable audit
+      proposed_capability_not_yet_authority: operations.view_all_regions
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-008
+      business_question: Who owns and configures the CR-431 map refresh interval?
+      required_exact_values:
+        - policy owner
+        - configuration source
+        - permitted range
+        - offline, reconnect, and stale behavior
+      prohibited_interim_action: Do not treat an existing client constant as policy.
+      status: NOT_APPLIED
+
+    - decision_id: M3-SPONSOR-APPLY-009
+      business_question: Do you authorize separate F0 and M9 follow-ups needed by M3?
+      recommended_answer:
+        F0: Authorize navigation follow-up only after current F0 work is accepted.
+        M9: Authorize national-grant administration only after database grant governance passes.
+      ownership:
+        F0:
+          - apps/web/src/lib/shell-navigation.ts
+          - apps/web/e2e/shell-navigation.spec.ts
+        M9:
+          - apps/web/src/app/(app)/admin/access/**
+          - apps/web/src/lib/execution/capabilities.ts
+      status: NOT_APPLIED
+
+decision_application_gate:
+  gate_id: G-M3-SPONSOR-APPLICATION
+  pass_only_if:
+    - All nine sponsor decisions have repository-backed decision IDs.
+    - Stale design acceptance is amended or explicitly superseded.
+    - An M3 current or concurrent slice is authoritative.
+    - F0 and M9 ownership is separated from the M3 application lease.
+    - CR-430..CR-448 and WA-M3-AC-001..006 are bound to the task.
+    - No P0 or P1 open decision is silently defaulted.
+  on_fail: BLOCK_S1_THROUGH_S6
+
+claude_correction_pre_dispatch_gate:
+  gate_id: G-M3-CLAUDE-DISPATCH
+  target_packet: CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+  target_surface: CLAUDE_CODE_ONLY
+  pass_checks:
+    - Mac is manually unlocked.
+    - Existing Claude Code conversation is confirmed; do not type into Claude Design.
+    - Worktree is /Users/vikramindla/Developer/Inspection-codex-m3-map-provenance.
+    - Branch is codex/m3-map-provenance-correction.
+    - HEAD remains c48f71cc46ce027927224109f7b070ca489f2b15.
+    - Existing dirt is exactly the seven first-pass files in the return packet.
+    - live/loading.tsx is clean before dispatch and is the sole lease expansion.
+    - ACTIVE_WORKTREE_LEASES.csv contains an exact matching eight-file Claude row.
+    - No active or dirty worktree has an unresolved overlapping write claim.
+    - Dispatch text is byte-for-byte the packet's dispatch_message.
+  current_results:
+    mac_unlocked: FAIL
+    claude_code_conversation_confirmed: BLOCKED_BY_LOCK
+    worktree_branch_head: PASS
+    seven_file_first_pass_dirt: PASS
+    loading_file_clean: PASS
+    lease_registry_match: FAIL
+    collision_free: FAIL_OLD_PREVIEW_OVERLAP_REQUIRES_RECORDED_EXCLUSION
+    exact_dispatch_text_ready: PASS
+  current_decision: DO_NOT_DISPATCH
+  after_pass_action:
+    - Send only to the existing Claude Code conversation.
+    - Confirm a new first token or active-running state within two minutes.
+    - Report dispatch and active state to the orchestrator immediately.
+    - Do not interact with Claude Design.
+
+claude_correction_return_gate:
+  gate_id: G-M3-CLAUDE-RETURN
+  accepted_return_status: REVIEW_READY_FOR_INDEPENDENT_RE_REVIEW
+  file_gate:
+    exact_changed_files:
+      - apps/web/e2e/web-admin-m3-operations.spec.ts
+      - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+      - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+      - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/types.ts
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/live/loading.tsx
+    no_ninth_file: true
+    no_commit: true
+    no_push: true
+    no_pull_request: true
+  correction_gate:
+    required_ids:
+      - M3-MAP-R01
+      - M3-MAP-R02
+      - M3-MAP-R03
+      - M3-MAP-R04
+      - M3-MAP-R05
+      - M3-MAP-R06
+      - M3-MAP-R07
+      - M3-MAP-R08
+      - M3-MAP-R09
+      - M3-MAP-R10
+    all_must_pass: true
+  contract_gate:
+    requirements:
+      - CR-430..CR-448
+      - RBAC-008
+      - RBAC-013
+    acceptance:
+      - WA-M3-AC-001..006
+      - corrected tiered-provenance acceptance after sponsor application
+    no_refresh_claim_without_decision: true
+  verification_gate:
+    - git diff --check
+    - TypeScript typecheck
+    - production build
+    - targeted ops and planner authentication setup
+    - complete focused web-admin-m3-operations spec
+    - latest-per-visit proof beyond PostgREST cap
+    - unauthorized actor denied before protected reads
+    - zero-row distinct from read-error
+    - two visits at one factory resolve independently
+    - non-position override event excluded from tier 1
+    - invalid coordinates excluded from map but retained in list
+    - English and Arabic, LTR and RTL
+    - desktop, 1024, 412 or 390, and 320 widths
+    - keyboard, focus, and accessibility
+  return_decisions:
+    pass: FORWARD_TO_INDEPENDENT_RE_REVIEW
+    failed_correction: RETURN_FOR_DELTA_CORRECTION
+    missing_contract_or_catalogue: BLOCK_DUE_TO_MISSING_CONTRACT
+    file_overlap: BLOCK_DUE_TO_CONCURRENT_FILE_OWNERSHIP
+    fabricated_or_weakened_behavior: REJECT
+
+authorization_sequence_acceptance_gate:
+  gate_id: G-M3-SEQUENCE-REISSUE
+  reissue_required: true
+  mandatory_changes_to_sequence_007:
+    - Add authoritative M3 slice and change-control prerequisite.
+    - Add exact lease-registry application gate.
+    - Add map-truth acceptance supersession gate.
+    - Remove F0-owned navigation files from M3 ownership.
+    - Move admin/access ownership to an M9 follow-up.
+    - Replace multi-SHA branch-base language with one reconciled immutable base commit.
+    - Bind all CR-430..CR-448 and WA-M3-AC-001..006.
+    - Mark migration filenames unreserved until dispatch-time collision check.
+    - Split database work into isolated ordered commits and per-portion negative gates.
+    - Preserve CR-431 refresh as decision-blocked.
+  accepted_reissue_status: READY_FOR_SPONSOR_APPLICATION
+  current_status: RETURN_FOR_GOVERNANCE_CORRECTION
+
+no_change_attestation:
+  product_code_modified: false
+  tests_modified: false
+  migrations_modified: false
+  data_or_seeds_modified: false
+  design_modified: false
+  branches_created_or_changed: false
+  leases_modified: false
+  main_modified: false
+  setup_inspection_modified: false
+  stashes_touched: false

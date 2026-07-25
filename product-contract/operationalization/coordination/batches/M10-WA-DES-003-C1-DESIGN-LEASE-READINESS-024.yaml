@@ -1,0 +1,484 @@
+schema_version: "1.0"
+packet_id: M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024
+title: WA-DES-003-C1 Admin Execution design-write lease readiness
+status: DRAFT_NON_CONSUMABLE_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_write_authorized: false
+implementation_authorized: false
+
+task_contract:
+  task_id: M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024
+  gate: "M10 Admin design correction consent"
+  process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P07", "G2-P08", "G2-P09"]
+  requirement_basis: CONTEXTUAL_SECTION_TRACEABILITY_ONLY
+  acceptance_ids:
+    - WA-M10-AC-001
+    - WA-M10-AC-002
+    - WA-M10-AC-003
+    - WA-M10-AC-004
+    - WA-M10-AC-005
+    - WA-M10-AC-006
+  screen_id: null
+  screen_id_status: NO_SCREEN_CATALOGUE_MATCH_DO_NOT_INVENT
+  route: /admin/execution
+  engine_rows: [execution, field, gis, evidence]
+  dependencies:
+    - M10-ADMIN-EXECUTION-DESIGN-READINESS-014
+    - M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+    - TASK-EXECUTION-MODULE-001
+    - product-contract/execution/EXECUTION_DECISION_LOG.md
+    - sponsor_consent_for_SD-023-03
+    - explicit_named_Claude_Design_write_lease
+  open_decisions_and_boundaries:
+    - "Governance must decide whether /admin/execution receives a screen identity or remains a route with contextual traceability."
+    - "D-004: engine_settings remain direct-but-audited; no maker-checker design may be added."
+    - "D-005: offline retry and autosave overrides remain honestly unset until business-supplied."
+    - "DEC-002 prevents invented GIS accuracy or geofence policy values."
+  do_not_touch:
+    - live Claude Design before both consent and a named write lease
+    - frozen design mapping
+    - product code
+    - tests and evidence
+    - Supabase, migrations, providers, seeds, or shared data
+    - current application slice and preview routes
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 053cebdd
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-AUTHORIZATION-CONFLICT-FREE-SEQUENCE-007.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-STACK-SECURITY-RETURN-020.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This packet is documentation-only and does not start another application
+    batch, mutate a live design, or alter the active Planning/Visits slice.
+
+authority:
+  design_workspace:
+    - design/claude-design-mvp1/00_START_HERE.md
+    - design/claude-design-mvp1/prompts/00_MASTER_DESIGN_CONSTITUTION.md
+    - design/claude-design-mvp1/acceptance/DESIGN_SIGNOFF_CHECKLIST.md
+    - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  current_mapping: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  execution_decisions: product-contract/execution/EXECUTION_DECISION_LOG.md
+  application_sources:
+    - apps/web/src/app/admin/execution/page.tsx
+    - apps/web/src/app/admin/execution/actions.ts
+    - apps/web/src/app/admin/execution/CapacityForm.tsx
+    - apps/web/src/app/admin/execution/VisitModesForm.tsx
+    - apps/web/src/app/admin/execution/ReasonsManager.tsx
+    - apps/web/src/app/admin/execution/GisRulesForm.tsx
+    - apps/web/src/app/admin/execution/EvidencePolicyForm.tsx
+    - apps/web/src/app/admin/execution/OfflinePolicyForm.tsx
+    - apps/web/src/app/admin/execution/RawJsonDetails.tsx
+    - apps/web/src/lib/execution/capabilities.ts
+  current_source_test: apps/web/e2e/execution-admin-contract.spec.ts
+  source_test_limit: >-
+    Source-contract evidence only. It does not prove browser behavior, live
+    authorization, data persistence, audit, responsive layout, RTL, theme, or
+    accessibility.
+
+stable_identity:
+  logical_design_id: WA-DES-003
+  correction_revision: WA-DES-003-C1
+  title: SAQEEL Execution Settings
+  filename: SAQEEL Admin Execution - WA-DES-003-C1.dc.html
+  route: /admin/execution
+  predecessor:
+    filename: SAQEEL Admin Execution.dc.html
+    sha256: 47a54a5b2dc9863310496ccbd14695bdc9795b887ed8b29256a2fd712047c0b8
+    bytes: 13248
+    reference_viewport: 1160x900
+  lineage_kind: CORRECTIVE_SUCCESSOR
+  identity_rule: >-
+    WA-DES-003-C1 is a revision of WA-DES-003, not a new page identity. It may
+    not be remapped, renamed, or treated as accepted until export fingerprint,
+    independent review, sponsor approval, and controlled mapping update exist.
+
+collision_check:
+  checked_scope:
+    - repository design and product-contract files
+    - design route map
+    - operational coordination packets
+  exact_successor_identity_matches_outside_predecessor_packets: 0
+  route_collisions:
+    - route: /admin/execution
+      result: UNIQUE_REAL_ROUTE_FOR_THIS_SUCCESSOR
+  design_authority_collisions:
+    - candidate: WA-DES-003-C1
+      result: NO_COMPETING_DESIGN_ID_FOUND
+    - candidate: WA-DES-015
+      result: EXCLUDED_DIFFERENT_ROUTE_/admin
+    - candidate: WA-DES-020
+      result: EXCLUDED_ORPHANED_CONTROL_PANEL
+  filename_collision_found: false
+  conclusion: READY_FOR_IDENTITY_RESERVATION_ONLY_AFTER_SPONSOR_CONSENT
+
+design_write_lease:
+  current_state: NOT_ISSUED
+  owner: null
+  permitted_artifact:
+    design_id: WA-DES-003-C1
+    filename: SAQEEL Admin Execution - WA-DES-003-C1.dc.html
+  permitted_work:
+    - Correct the existing Admin Execution design under the stable successor identity.
+    - Produce the complete screen and state evidence matrix named in this packet.
+    - Export and fingerprint the corrected design for independent review.
+  prohibited_work:
+    - Create another route, screen identity, role, capability, provider, engine, policy, workflow, or data field.
+    - Edit application code, tests, backend contracts, database objects, seeds, or mapping files.
+    - Reuse WA-DES-015, WA-DES-020, or an unallocated identity.
+    - Mark the design accepted, consumable, implemented, or complete.
+  issue_preconditions:
+    - Sponsor approves SD-023-03 or an equivalent explicit WA-DES-003-C1 correction consent.
+    - One named Claude Design writer is recorded.
+    - No concurrent writer owns WA-DES-003 or /admin/execution design files.
+    - The designer acknowledges every P0 return gate and do-not-invent boundary.
+  expiry: End of the single corrected export and evidence return.
+
+primary_user_job:
+  user: A capability-authorized configuration administrator
+  job: >-
+    Review and change only the execution configuration sections they are
+    entitled to manage, understand what is stored versus unset, and obtain
+    truthful versioned and audited feedback without exposing other sections.
+  failure_cost:
+    - unauthorized configuration disclosure
+    - invented policy entering operational use
+    - silent concurrent overwrite
+    - an invalid field configuration blocking inspector execution
+    - a false success message masking a failed or unaudited write
+
+contextual_requirement_traceability:
+  rule: >-
+    These rows describe downstream behavior influenced by the configuration.
+    They are not direct ownership by this screen and must not replace the
+    frozen CR-001..CR-478 mapping until governance approves the expression.
+  sections:
+    - section: DAILY_CAPACITY_AND_JOURNEY
+      requirement_ids: [CR-007, CR-018, CR-028, CR-040, CR-048, CR-114..CR-133]
+      acceptance_ids: [WA-AC-0007, WA-AC-0018, WA-AC-0028, WA-AC-0040, WA-AC-0048, WA-AC-0114..0133]
+    - section: VISIT_MODE_ELIGIBILITY
+      requirement_ids: [CR-111, CR-112, CR-337..CR-356]
+    - section: CANCELLATION_AND_EXCEPTION_REASONS
+      requirement_ids: [CR-033, CR-062, CR-063, CR-080, CR-086, CR-169..CR-174, CR-341, CR-342, CR-441]
+    - section: ARRIVAL_AND_GEOFENCE_DEFAULTS
+      requirement_ids: [CR-145, CR-150..CR-162]
+    - section: EVIDENCE_POLICY
+      requirement_ids: [CR-158, CR-171, CR-221, CR-236, CR-259, CR-267..CR-283, CR-292, CR-309, CR-325, CR-453, CR-473]
+    - section: OFFLINE_AND_SYNC_POLICY
+      requirement_ids: [CR-120, CR-126, CR-142, CR-143, CR-184, CR-280, CR-281]
+
+functional_preservation_contract:
+  capabilities:
+    - admin.execution_workflow
+    - admin.execution_lookups
+    - admin.mode_eligibility
+    - admin.evidence_policy
+    - admin.offline_policy
+  visibility:
+    - Render each section only after its server-side capability check passes.
+    - With zero capabilities, show one confidentiality-preserving no-access state and no values.
+  writes:
+    - saveDailyCapacity
+    - saveVisitModes
+    - saveReasons
+    - saveGisRules
+    - saveEvidencePolicy
+    - saveOfflinePolicy
+  controls:
+    - Verify the user before every server action.
+    - Check the relevant capability RPC before every write.
+    - Preserve engine_write RLS as authoritative.
+    - Merge only the governed keys owned by the submitted section.
+    - Bump version_label and record updated_by on success.
+    - Append execution_config_update audit evidence with before and after governed keys.
+  invariants:
+    - Self-assessment remains disabled for Release 1.
+    - Protected reason keys remain visible and non-removable.
+    - Shared GIS defaults remain distinct from per-factory /admin/gis overrides.
+    - Missing values remain unset or unavailable, never zero or assumed.
+    - Stored engine rows remain read-only advanced disclosure.
+    - No maker-checker flow is introduced.
+
+screen_structure:
+  shell:
+    brand: Approved SAQEEL | صقيل bilingual wordmark
+    forbidden_branding: ["صقيل صناعي as the English identity", "SAQEEL Industrial sub-brand"]
+    title: Execution Settings
+    route_context: Admin execution control plane
+    navigation: Current Admin shell only; no Risk Settings or invented destination.
+  sections:
+    - Daily capacity and journey
+    - Visit mode eligibility
+    - Cancellation and exception reasons
+    - Arrival and geofence rules
+    - Evidence policy
+    - Offline and sync policy
+    - Stored engine rows
+  hierarchy:
+    - Lead with purpose, current stored version when supplied, and configuration truth.
+    - Keep each capability-owned form and its feedback bounded to one section.
+    - Place read-only invariants beside the affected control, not in decorative footnotes.
+    - Keep raw JSON closed by default and subordinate to governed forms.
+
+required_state_matrix:
+  route_states:
+    - loading
+    - configured
+    - partially_configured
+    - empty
+    - error
+    - unauthorized
+    - degraded_one_engine_row
+    - stale_or_conflict
+  action_states:
+    - idle
+    - dirty
+    - saving
+    - saved_with_returned_version
+    - validation_error_with_preserved_input
+    - authorization_denied
+    - RLS_denied
+    - service_failure_with_preserved_input
+  invariant_states:
+    - protected_reason
+    - read_only_journey_policy
+    - self_assessment_release_2
+    - absent_evidence_type_not_permitted
+    - offline_override_unset_platform_default
+  truth_rule: >-
+    The stale/conflict state is a required design and an acknowledged
+    implementation gap. The design must not imply that the current runtime
+    already prevents stale writes.
+
+responsive_matrix:
+  required_viewports:
+    - id: DESKTOP_1440
+      viewport: 1440x900
+      expectation: Persistent shell; readable one- or two-column section grid; no horizontal page scroll.
+    - id: TABLET_LANDSCAPE
+      viewport: 1024x768
+      expectation: Compact shell; controls and action feedback remain complete and unclipped.
+    - id: TABLET_PORTRAIT
+      viewport: 768x1024
+      expectation: Logical card reflow; no hidden labels, values, actions, or validation summary.
+    - id: MOBILE_412
+      viewport: 412x915
+      expectation: Single column; full-width controls; no peeking submenu icons.
+    - id: MOBILE_390
+      viewport: 390x844
+      expectation: Same information and action parity as desktop.
+    - id: MINIMUM_REFLOW
+      viewport: 320x568
+      expectation: No two-dimensional page scroll, clipping, overlap, or inaccessible action.
+  tables_and_reason_rows: Reflow to labelled cards or a named scroll region; never clip columns.
+  raw_json: Wrap safely and remain keyboard operable at every width.
+
+theme_matrix:
+  modes: [dark, light]
+  evidence_required_for_each:
+    - body, heading, caption, placeholder, and disabled text contrast
+    - borders, focus, surface hierarchy, and status contrast
+    - error, warning, success, informational, and unavailable states
+    - shell brand and icons
+  failure_rule: >-
+    A dark-only frame, color inversion, washed-out map/control surface, or
+    unreadable disabled/placeholder text is a P1 return.
+
+language_and_bidi_matrix:
+  modes:
+    - locale: en
+      direction: ltr
+    - locale: ar
+      direction: rtl
+  requirements:
+    - Use logical layout and spacing properties.
+    - Mirror navigation and directional layout where semantic.
+    - Keep stable keys, engine names, hashes, versions, units, and identifiers isolated LTR.
+    - Preserve bilingual reason labels without reversing their internal text.
+    - Do not place Arabic-only branding inside the English identity line.
+    - Localize action, status, help, validation, no-access, unavailable, and recovery copy.
+  release_boundary: Qualified native-Arabic review remains required before acceptance.
+
+accessibility_contract:
+  structure:
+    - Exactly one h1 with ordered section headings.
+    - Every form control has a programmatic label, hint, error, and required-state association.
+    - Each section action has a unique accessible name and bounded result region.
+  keyboard:
+    - Logical tab and reading order in LTR and RTL.
+    - Visible single focus treatment in both themes.
+    - 44px minimum interactive targets.
+    - Keyboard-operable reason reordering with announced result.
+    - Raw JSON disclosure exposes expanded state and returns focus predictably.
+    - Validation focuses the section summary or first invalid field without losing input.
+  perception:
+    - Status is never conveyed by color alone.
+    - Icons supplement rather than replace text.
+    - Error and unavailable states identify the affected section.
+  reflow_and_zoom:
+    - Prove 200 percent zoom.
+    - Prove 400 percent or 320 CSS-pixel equivalent reflow.
+    - No clipped content or two-dimensional page scrolling.
+
+action_feedback_contract:
+  saving: Disable only the submitted section action and announce "Saving".
+  success: >-
+    Name the exact saved section and display the returned/current version only
+    when it is returned. Do not use an unsupported "effective immediately" claim.
+  validation_error: Preserve values, show field errors and a section summary, and move focus predictably.
+  authorization_error: Neutral denial with no values or policy internals leaked.
+  service_error: Neutral recoverable message; keep the draft and do not expose provider internals.
+  stale_or_conflict: Block silent overwrite in the design and label runtime support as pending implementation proof.
+
+acceptance_evidence_plan:
+  design_evidence:
+    - Corrected editable design export with stable filename and SHA-256 fingerprint.
+    - Component disposition and annotation sheet for every preserved component and server action.
+    - State inventory proving every required route, action, and invariant state.
+    - Side-by-side predecessor versus corrected decision record.
+    - Design-to-code delta stating existing behavior, missing behavior, and prohibited backend expansion.
+  visual_evidence:
+    - EN/LTR and AR/RTL at every required viewport.
+    - Dark and light themes at desktop, tablet, mobile, and minimum reflow.
+    - Populated, partially configured, empty, unauthorized, degraded, validation, failure, and stale/conflict frames.
+    - Keyboard focus sequence and reason-reorder interaction evidence.
+    - Light-mode contrast and focus evidence.
+  later_runtime_evidence_not_granted_by_this_packet:
+    - Authorized read/save proof for each of six sections against governed test data.
+    - Partial-capability and zero-capability confidentiality proof.
+    - Direct server-action denial and RLS-denial data-unchanged proof.
+    - Protected-key, duplicate-key, bilingual-label, and self-assessment rejection proof.
+    - Missing-row and one-row-failure isolation proof.
+    - Offline clear-to-platform-default proof.
+    - Before/after, actor, version, and audit proof.
+    - Two-editor stale-write proof or explicit blocked-gap record.
+    - Browser accessibility, RTL, theme, zoom, reflow, and regression proof.
+
+acceptance_mapping:
+  - id: WA-M10-AC-001
+    priority: P0
+    design_return_evidence: Six sections, real actions/services, capability boundaries, and truth-labelled gaps annotated.
+    runtime_required_later: true
+  - id: WA-M10-AC-002
+    priority: P0
+    design_return_evidence: Unauthorized, validation, stale/conflict, provider/service, and RLS/RBAC negative states designed.
+    runtime_required_later: true
+  - id: WA-M10-AC-003
+    priority: P1
+    design_return_evidence: Corrected reference export and zero-unapproved-delta comparison at its declared fixed viewport.
+    runtime_required_later: true
+  - id: WA-M10-AC-004
+    priority: P1
+    design_return_evidence: EN/AR, RTL, dark/light, desktop/tablet/mobile/minimum-reflow, keyboard, and accessibility frames.
+    runtime_required_later: true
+  - id: WA-M10-AC-005
+    priority: P0
+    design_return_evidence: Preservation annotations for RLS, RBAC, workflow, audit, version, D-004, D-005, and adjacent GIS/Compliance ownership.
+    runtime_required_later: true
+  - id: WA-M10-AC-006
+    priority: P1
+    design_return_evidence: Stable IDs, route, contextual requirements, export fingerprint, evidence index, limitations, and change record.
+    runtime_required_later: true
+
+p0_return_gates:
+  - id: P0-IDENTITY
+    return_if: Design identity, route, predecessor lineage, or filename differs from this packet.
+  - id: P0-AUTHORITY
+    return_if: Any section is visible or writable without its real capability boundary, or zero-capability state leaks values.
+  - id: P0-POLICY
+    return_if: Any capacity, geofence, GPS, telemetry, evidence, retention, retry, autosave, SLA, provider, or version value is invented.
+  - id: P0-WRITE
+    return_if: Design removes governed-key merge, version bump, audit, RLS, validation, or server action boundaries.
+  - id: P0-SAFETY
+    return_if: Self-assessment can be enabled, protected keys can be removed, or missing evidence types appear permitted.
+  - id: P0-STATE
+    return_if: Unauthorized, validation, write failure, partial-engine failure, or stale/conflict states are absent or falsely shown as implemented.
+  - id: P0-SCOPE
+    return_if: Design adds maker-checker, new backend objects, a provider, another route, per-factory GIS editing, or Compliance item-rule editing.
+  - id: P0-TRACEABILITY
+    return_if: The screen claims ownership of all 478 requirements or invents a screen ID.
+
+p1_return_gates:
+  - id: P1-RESPONSIVE
+    return_if: Any required viewport clips, overlaps, horizontally scrolls the page, hides an action, or exposes peeking submenu icons.
+  - id: P1-RTL
+    return_if: Arabic is untranslated, directionally broken, or reverses stable LTR identifiers.
+  - id: P1-THEME
+    return_if: Light or dark mode has unreadable text, controls, focus, status, border, placeholder, or disabled states.
+  - id: P1-A11Y
+    return_if: Heading, label, hint, error, focus, target-size, status, or keyboard-reorder semantics are missing.
+  - id: P1-FEEDBACK
+    return_if: Success does not name the section and returned version truth, or failure loses entered data.
+  - id: P1-EVIDENCE
+    return_if: Export fingerprint, state index, visual matrix, annotations, limitations, or predecessor comparison is missing.
+  - id: P1-QUALITY
+    return_if: The design is a generic card checklist, introduces more than one unjustified signature pattern, or does not explain superiority over the predecessor.
+
+review_sequence:
+  - step: 1
+    owner: sponsor
+    action: Approve or decline the bounded WA-DES-003-C1 correction lease.
+  - step: 2
+    owner: orchestrator
+    action: Record one named design writer and confirm no collision.
+  - step: 3
+    owner: Claude Design writer
+    action: Produce the corrected design and all design evidence without application changes.
+  - step: 4
+    owner: Codex independent reviewer
+    action: Apply every P0/P1 return gate and return defects without modifying the design.
+  - step: 5
+    owner: sponsor
+    action: Accept, return, or reject the corrected design.
+  - step: 6
+    owner: governance
+    action: Fingerprint and update mapping only through approved change control.
+  - step: 7
+    owner: implementation lease holder
+    action: Implement only after accepted design authority and explicit non-overlapping file ownership.
+
+readiness_decision:
+  identity_ready: true
+  requirements_ready: CONTEXTUAL_ONLY
+  design_contract_ready: true
+  acceptance_evidence_ready: true
+  sponsor_consent_present: false
+  named_write_lease_present: false
+  live_design_write_allowed: false
+  implementation_allowed: false
+  reviewer_recommendation: APPROVE_BOUNDED_DESIGN_LEASE_FOR_SPONSOR_CONSENT
+  consumable_status: NON_CONSUMABLE
+  block_reason: >-
+    The correction contract is ready, but sponsor consent and one named,
+    collision-free Claude Design write lease are not recorded. The screen-ID
+    and exact primary-requirement ownership question also remains governance
+    work and must not be invented by the designer.
+
+rollback:
+  action: Delete only this draft packet if rejected.
+  product_or_design_rollback_required: false
+  unrelated_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-WA-DES-006-C1-DESIGN-LEASE-READINESS-025
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  route: /admin/gis
+  design_identity: WA-DES-006-C1
+  scope: >-
+    Prepare the exact correction lease boundary and P0/P1 design-return gates
+    for Admin GIS, preserving DEC-002 and MVP3-HOLD-002 as unresolved and
+    making no live design, mapping, code, test, provider, data, or branch change.
+  collision_check_required_before_dispatch: true

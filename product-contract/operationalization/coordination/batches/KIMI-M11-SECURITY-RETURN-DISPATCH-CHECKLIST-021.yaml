@@ -1,0 +1,313 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SECURITY-RETURN-DISPATCH-CHECKLIST-021
+status: FOLLOW_ON_ADDENDUM_READY_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+validated_packet: KIMI-M11-REMEDIATION-STACK-SECURITY-RETURN-020
+validated_against:
+  - KIMI-M11-ATOMIC-FIX-LEASE-010
+  - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  - KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+  - KIMI-M11-MIGRATION-SECURITY-REVIEW-019
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  - product-contract/domain/rbac_matrix.csv
+
+independent_verdict:
+  result: HOLD_020_FOR_ADDENDUM
+  dispatch_rule: >-
+    Do not dispatch 020 alone. After manual Mac unlock, dispatch 020 and this
+    021 addendum together. Kimi must revise orchestration packets only and return
+    a closure matrix before any implementation lease is issued.
+  reason: >-
+    020 correctly addresses all 12 migration-security findings at a high level,
+    but eight P0 and five P1 dispatch details remain ambiguous or absent. Those
+    gaps can recreate secret exposure, break OTP runtime, preserve unsafe nested
+    helpers, or cause a contract-deployment outage.
+
+confirmed_complete_in_020:
+  - check_id: 021-C01
+    status: PASS
+    proof: "All source packets 010/011/013/014/015/017 are named for revision."
+  - check_id: 021-C02
+    status: PASS
+    proof: "All 8 P0 and 4 P1 MIGSEC-019 findings are named and mapped to 020-R01..R12."
+  - check_id: 021-C03
+    status: PASS
+    proof: "New/replaced SECURITY DEFINER functions require search_path='' and fully qualified objects."
+  - check_id: 021-C04
+    status: PASS
+    proof: "Exact signature ACL revoke/grant and obsolete overload inventory are required."
+  - check_id: 021-C05
+    status: PASS
+    proof: "Governed replacements are assigned for create/reschedule/waiting/join/begin/verify/close before table DML contraction."
+  - check_id: 021-C06
+    status: PASS
+    proof: "013→015 sequential OTP function ownership is stated."
+  - check_id: 021-C07
+    status: PASS
+    proof: "Raw audit policy inventory, historical immutability and specialized future participant audit are stated."
+  - check_id: 021-C08
+    status: PASS
+    proof: "Expand→application switch→contract→certification rollout replaces one-step promotion."
+  - check_id: 021-C09
+    status: PASS
+    proof: "Post-contract rollback is roll-forward/fail-closed and never widens privileges."
+  - check_id: 021-C10
+    status: PASS
+    proof: "CR-337 and DEC-005 remain isolated."
+
+required_P0_addendum:
+  - check_id: 021-P0-01
+    subject: "Exact OTP persona authority"
+    omission: >-
+      020 freezes 013's role/assignment predicate but does not restate the
+      canonical final persona matrix. That leaves room to preserve the current
+      Planner/Operations/Reviewer/Auditor OTP allowlist.
+    required_dispatch_text:
+      - "OTP request, verify and status execution: assigned Inspector only."
+      - "Reviewer/Auditor: safe verification audit read only."
+      - "Planner/Operations: no OTP execution/status unless a new explicit sponsor authority is recorded."
+      - "Unassigned Inspector: neutral denial with zero mutation/audit success fact."
+    evidence_gate: "Final function-source and persona runtime matrix proves the exact role set."
+
+  - check_id: 021-P0-02
+    subject: "OTP runtime after dev_code removal"
+    omission: >-
+      020 correctly removes dev_code but does not resolve how a representative
+      receives the OTP when the configured provider is unavailable. Removing the
+      only current delivery seam can make the canonical OTP journey impossible.
+    required_dispatch_text:
+      - "No dev_code or secret may return to application/client."
+      - "Production/runtime OTP completion remains BLOCKED unless an approved configured provider delivers the code."
+      - "Isolated tests may inject/observe a code only through an automatically removed transaction-local test harness, never an application flag/shared setting/permanent RPC."
+      - "Do not claim CR-350/CR-351 runtime completion from stored not_configured notification evidence."
+    evidence_gate: "Provider-backed runtime proof or truthful blocked state plus isolated rollback-only test proof."
+
+  - check_id: 021-P0-03
+    subject: "Raw audit denial must cover every authenticated application persona"
+    omission: >-
+      020 uses 'ordinary staff' and leaves privileged application roles
+      ambiguous. code_hash is brute-forceable and cannot remain available to a
+      security_admin/leadership/compliance role through normal Data API access.
+    required_dispatch_text:
+      - "No authenticated application persona, including security_admin, leadership, compliance_admin, Planner, Operations, Reviewer or Auditor, may SELECT raw secret-bearing virtual_participant before_state/after_state."
+      - "Only an out-of-band database operational authority may retain physical-row access, governed outside the application Data API."
+      - "All application personas use the safe projection."
+    evidence_gate: "Direct table query as every application role returns no raw participant audit JSON."
+
+  - check_id: 021-P0-04
+    subject: "Stop future secret capture before hardened OTP runs"
+    migration_order_risk: >-
+      020 schedules the specialized participant audit trigger in phase-3
+      contract, after phase-1 013 OTP expansion. Every OTP run before phase 3 can
+      still duplicate code_hash into immutable audit.
+    required_dispatch_text:
+      - "Move the specialized safe virtual-participant audit trigger to phase-1 expansion before any new 013 OTP definition is exercised."
+      - "Installing the specialized trigger must preserve old application compatibility."
+      - "Raw historical-policy contraction may remain after the application switch."
+    evidence_gate: "First OTP call after expansion produces no secret sentinel in audit_events."
+
+  - check_id: 021-P0-05
+    subject: "Table ACL contraction must include anon and PUBLIC"
+    omission: >-
+      020 explicitly revokes ordinary authenticated direct DML but does not
+      explicitly require table INSERT/UPDATE/DELETE revokes from anon and PUBLIC.
+      RLS denial alone is not the complete privilege contract.
+    required_dispatch_text:
+      - "Catalog and revoke direct virtual_sessions/virtual_participants INSERT/UPDATE/DELETE from PUBLIC and anon as well as authenticated where not required."
+      - "Retain only SELECT grants needed by final RLS-scoped reads."
+      - "Trigger/function owners receive no broader role grant than required."
+    evidence_gate: "relacl/table_privileges plus anon/authenticated direct DML matrix match the manifest."
+
+  - check_id: 021-P0-06
+    subject: "Neutral error contract for every governed resource boundary"
+    omission: >-
+      020 specifies neutral errors for OTP/audit but does not give stable
+      missing/out-of-scope behavior for create/reschedule/waiting/join/verify/
+      begin/close RPCs. Definer functions can otherwise become existence oracles.
+    required_dispatch_text:
+      - "Define one stable not-found-or-out-of-scope token per public resource family, with identical safe response shape for missing and unauthorized IDs."
+      - "Do not expose row state, assignment, factory, participant or visit existence before authorization."
+      - "Validation/state/window failures may remain distinct only after caller scope is proven."
+    evidence_gate: "Paired missing/out-of-scope tests for every public RPC have identical normalized status/token/body."
+
+  - check_id: 021-P0-07
+    subject: "Contract deployment drain and in-flight request safety"
+    migration_order_risk: >-
+      Phase 3 contains separate 013 and 015 contract migrations. In-flight old
+      application requests can call direct DML/generic append while grants and
+      functions are changing.
+    required_dispatch_text:
+      - "Quiesce M11 mutating endpoints and drain in-flight M11 requests before phase-3 contraction."
+      - "Apply 013 then 015 contract migrations without reopening traffic between them."
+      - "Run the final catalog/health smoke before resuming traffic."
+      - "If controlled quiescence is unavailable, block deployment rather than accept a skew window."
+    evidence_gate: "Deployment rehearsal shows no old-path call succeeds or partially fails across the contract boundary."
+
+  - check_id: 021-P0-08
+    subject: "Global admin audit consumer preservation"
+    ownership_collision: >-
+      015 restricts raw virtual_participant audit rows, but 020 switches only the
+      M11 room audit renderer. The global admin audit surface may still depend
+      on audit_events and could lose required virtual-session evidence.
+    required_dispatch_text:
+      - "Inventory every application consumer of audit_events before raw-policy contraction."
+      - "Move any virtual_participant consumer to the safe projection or show an explicit truthful restricted state."
+      - "Do not weaken maker-checker/general audit visibility for unrelated object types."
+    evidence_gate: "Admin audit, Reviewer audit and maker-checker audit regressions pass after contraction."
+
+required_P1_addendum:
+  - check_id: 021-P1-01
+    subject: "Unsafe nested legacy helpers"
+    contradiction: >-
+      New definer functions may call public.has_role/has_any_role/
+      is_assigned_inspector, whose canonical definitions are themselves
+      SECURITY DEFINER with search_path=public.
+    required_dispatch_text:
+      - "New M11 definers must not depend on an unsafe nested legacy helper."
+      - "Inline fully qualified role/assignment predicates, or separately harden the helper under an explicitly reviewed global lease."
+      - "Do not silently broaden 020 into an unreviewed platform-wide helper rewrite."
+    evidence_gate: "Function dependency graph contains no unsafe search_path definer below an M11 public RPC."
+
+  - check_id: 021-P1-02
+    subject: "Exact role authority for reschedule, waiting and close"
+    omission: >-
+      020 assigns governed RPC owners but leaves final persona sets implicit.
+      Current broad RLS behavior and CR-338/CR-341 Inspector personas are not a
+      sufficient executable role matrix.
+    required_dispatch_text:
+      - "For each RPC, cite the exact requirement/RBAC authority for Planner, Operations and assigned Inspector."
+      - "Where authority is absent or conflicting, fail closed and return for sponsor decision rather than preserve broad current behavior."
+    evidence_gate: "Per-RPC role matrix has an authority citation and positive/negative proof for every persona."
+
+  - check_id: 021-P1-03
+    subject: "Deterministic multi-record lock order"
+    omission: >-
+      020 locks OTP participants but does not freeze a consistent lock order for
+      creation, reschedule, join and begin transactions touching visit, session,
+      participant and inspection rows.
+    required_dispatch_text:
+      - "Document and reuse one lock order for every overlapping governed RPC."
+      - "Bound lock waits through the environment's accepted database defaults; do not invent a timeout value."
+    evidence_gate: "Concurrent mixed-action test proves no deadlock and deterministic loser behavior."
+
+  - check_id: 021-P1-04
+    subject: "Function owner and extension qualification manifest"
+    omission: >-
+      020 requests owner catalog proof but does not require the corrected packet
+      to declare the intended owner or qualification of digest/gen_random_uuid
+      and enum/types used with search_path=''.
+    required_dispatch_text:
+      - "Declare intended owner and bypass-RLS consequence for every definer."
+      - "Qualify extensions.digest/gen_random_uuid (as installed), auth.uid, public types/tables and private helpers."
+      - "Verify against the actual isolated database namespaces; do not guess extension schema."
+    evidence_gate: "pg_proc owner/proconfig/dependency catalog matches source and no name resolution depends on caller search_path."
+
+  - check_id: 021-P1-05
+    subject: "Policy predicate indexes and zero-row semantics"
+    omission: >-
+      020 covers recursion but not the index/RETURNING proof needed to
+      distinguish denial/stale state and avoid policy joins degrading or silently
+      returning zero rows.
+    required_dispatch_text:
+      - "Verify indexes for every final assignment/session/participant policy join."
+      - "Every governed update checks affected-row count and maps zero rows only after caller scope is proven."
+      - "No raw SQL/RLS message reaches the client."
+    evidence_gate: "Explain/catalog index proof plus stale/denied zero-row negative tests."
+
+source_packet_contradictions_to_be_closed:
+  - contradiction_id: 021-X01
+    source: KIMI-M11-ATOMIC-FIX-LEASE-010
+    conflict: "010 still leaves exact definer/invoker/ACL/final-013 model undeclared."
+    closure: "Revise under 020-R01 and 021-P0-05/P0-06/P1-01/P1-04."
+  - contradiction_id: 021-X02
+    source: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    conflict: "011 owns direct application paths but does not yet own governed reschedule/open-waiting RPC replacements."
+    closure: "Revise under 020-R02 with exact persona/neutral/lock contracts."
+  - contradiction_id: 021-X03
+    source: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    conflict: "014 does not yet declare the final post-013 privilege model or neutral resource boundary."
+    closure: "Revise under 020-R03 and 021-P0-06/P1-01/P1-03."
+  - contradiction_id: 021-X04
+    source: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    conflict: "013 is currently one-stage and does not own close/verify expansion, OTP locking or sequential 015 handoff."
+    closure: "Revise under 020-R04/R08 and exact OTP persona rules."
+  - contradiction_id: 021-X05
+    source: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    conflict: "015 currently redacts one RPC but does not close all raw policies/future secret capture/global consumers."
+    closure: "Revise under 020-R05/R09/R10 and 021-P0-03/P0-04/P0-08."
+  - contradiction_id: 021-X06
+    source: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    conflict: "017 still defines one conceptual promotion, 013 sole OTP ownership and no traffic-drain contract."
+    closure: "Revise under 020-R06 and 021-P0-07."
+
+exact_dispatch_checklist:
+  before_dispatch:
+    - id: D01
+      status: PASS
+      item: "020 and 021 YAML parse and diff-check clean."
+    - id: D02
+      status: PASS
+      item: "Canonical worktree and Git common directory belong to /Users/vikramindla/Developer/Inspection."
+    - id: D03
+      status: PASS
+      item: "No product/migration/test/database/UI/branch/lease/protected-branch/stash mutation occurred."
+    - id: D04
+      status: BLOCKED
+      item: "Mac manually unlocked."
+    - id: D05
+      status: BLOCKED
+      item: "Existing Kimi conversation available for dispatch."
+  dispatch_payload:
+    - id: D06
+      status: READY
+      item: "Send 020 plus 021 together; do not summarize away mandatory text."
+    - id: D07
+      status: READY
+      item: "Instruction: orchestration packet corrections only, zero implementation writes."
+    - id: D08
+      status: READY
+      item: "Request revised 010/011/013/014/015/017 plus closure matrix for 020-R01..R12 and 021-P0/P1/X items."
+    - id: D09
+      status: READY
+      item: "Require fresh SAQEEL session bootstrap and exact source commit/worktree confirmation."
+  after_dispatch:
+    - id: D10
+      status: PENDING
+      item: "Confirm Kimi running/first token; do not claim active from message submission alone."
+    - id: D11
+      status: PENDING
+      item: "Independently review returned packet revisions before issuing implementation lease."
+    - id: D12
+      status: PENDING
+      item: "Keep CR-337 and DEC-005 isolated and zero 478-row completion change."
+
+safe_follow_on_dispatch_message: >-
+  SECURITY RETURN ADDENDUM — read
+  KIMI-M11-REMEDIATION-STACK-SECURITY-RETURN-020 together with
+  KIMI-M11-SECURITY-RETURN-DISPATCH-CHECKLIST-021. Revise only orchestration
+  packets 010/011/013/014/015/017. Close every 020-R01..R12,
+  021-P0-01..08, 021-P1-01..05 and 021-X01..06 item in an exact closure
+  matrix. Do not write application, migration, test or database code. Do not
+  change CR-337 or DEC-005. Return the revised packets for independent review.
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  evidence: "CGSSessionScreenIsLocked=Yes"
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+  kimi_status: COMPLETED
+  monitor_rule: "Recheck read-only lock state before dispatch; never automate unlock."
+
+validation:
+  yaml_parse: PASS
+  source_packet_crosscheck: PASS
+  canonical_security_crosscheck: PASS
+  P0_P1_evidence_crosscheck: PASS
+  collision_and_order_crosscheck: PASS
+  dispatch_safety_crosscheck: PASS
