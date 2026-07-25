@@ -20,6 +20,6 @@ final class SaqeelTokenTests: XCTestCase {
     }
 
     func test_fontFamilyIsIBMPlexSansArabic() {
-        XCTAssertEqual(SaqeelTypography.fontFamily, "IBMPlexSansArabic")
+        XCTAssertEqual(SaqeelTypography.fontFamily, "IBM Plex Sans Arabic")
     }
 }

@@ -45,6 +45,11 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         UILaunchScreen: {}
         UIRequiresFullScreen: true
+        UIAppFonts:
+          - IBMPlexSansArabic-Regular.ttf
+          - IBMPlexSansArabic-Medium.ttf
+          - IBMPlexSansArabic-SemiBold.ttf
+          - IBMPlexSansArabic-Bold.ttf
         SUPABASE_URL: $(SUPABASE_URL)
         SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
         NSCameraUsageDescription: Capture inspection evidence photos and videos.

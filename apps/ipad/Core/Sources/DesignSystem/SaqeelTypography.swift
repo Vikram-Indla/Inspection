@@ -1,7 +1,10 @@
 import SwiftUI
 
 public enum SaqeelTypography {
-    public static let fontFamily = "IBMPlexSansArabic"
+    // Matches the bundled fonts' typographic family (name ID 16). The four
+    // weights (400/500/600/700) are registered under this one family so
+    // `.weight(...)` resolves to the correct face.
+    public static let fontFamily = "IBM Plex Sans Arabic"
 
     private static func plex(_ size: CGFloat, _ weight: Font.Weight) -> Font {
         // Falls back to system if the bundled font is unavailable in a test host.
