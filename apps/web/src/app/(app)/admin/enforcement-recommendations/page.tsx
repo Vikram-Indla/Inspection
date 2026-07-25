@@ -7,6 +7,13 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import DecideForm from "./DecideForm";
 
+const CLEAN_FACTORY_CODES = [
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204", "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+] as const;
+
 // DEC-F — Unlicensed-establishment enforcement recommendation review.
 // Inspector-submitted recommendations (planning/immediate/actions.ts) land
 // here as 'pending'; only ops/compliance_admin can decide (RLS-enforced,
@@ -26,12 +33,7 @@ export default async function EnforcementRecommendations() {
   const isDecider = roles.includes("ops") || roles.includes("compliance_admin");
   const isReader = isDecider || roles.includes("inspector") || roles.includes("planner") || roles.includes("auditor") || roles.includes("reviewer") || roles.includes("leadership");
 
-  const actionLabel = (a: string) => ({
-    fine: tr("admin.enf.rec.fine", "Financial fine", "غرامة مالية"),
-    committee: tr("admin.enf.rec.committee", "Refer to committee", "تحويل للجنة"),
-    warning: tr("admin.enf.rec.warning", "Final warning", "إنذار نهائي"),
-    closure: tr("admin.enf.rec.closure", "Immediate closure", "إغلاق فوري"),
-  }[a] ?? a);
+  const actionLabel = () => tr("admin.enf.rec.measureNotConfigured", "Not configured", "غير مهيأ");
 
   if (!isReader) {
     return (
@@ -44,14 +46,17 @@ export default async function EnforcementRecommendations() {
 
   const { data: pending, error: pendingError } = await sb
     .from("enforcement_recommendations")
-    .select("id, factory_id, visit_id, recommended_action, recommendation_notes, recommended_by, recommended_at, factories(name, factory_code, city, region)")
+    .select("id, factory_id, visit_id, recommended_action, recommendation_notes, recommended_by, recommended_at, factories!inner(name, factory_code, city, region)")
     .eq("status", "pending")
+    .in("factories.factory_code", [...CLEAN_FACTORY_CODES])
     .order("recommended_at", { ascending: true });
 
   const { data: decided } = isDecider
     ? await sb.from("enforcement_recommendations")
-        .select("id, factories(name), recommended_action, status, decided_at, decision_reason")
-        .neq("status", "pending").order("decided_at", { ascending: false }).limit(20)
+        .select("id, factories!inner(name,factory_code), recommended_action, status, decided_at, decision_reason")
+        .neq("status", "pending")
+        .in("factories.factory_code", [...CLEAN_FACTORY_CODES])
+        .order("decided_at", { ascending: false }).limit(20)
     : { data: [] as { id: string; factories: { name: string } | null; recommended_action: string; status: string; decided_at: string | null; decision_reason: string | null }[] };
 
   const readOnlyBanner = !isDecider ? (
@@ -71,6 +76,7 @@ export default async function EnforcementRecommendations() {
     <Shell current="/admin/enforcement-recommendations" title={t("admin.enf.rec.title", "Enforcement recommendations")}
       context={<span className="badge badge-info">DEC-F</span>}>
       {roleError && <div className="sq-banner sq-banner--warning" role="alert"><div>{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>}
+      <div className="sq-banner sq-banner--warning" role="note"><div><strong>{tr("admin.enf.rec.configTitle", "Enforcement policy: Not configured.", "سياسة الإنفاذ: غير مهيأة.")}</strong>{" "}{tr("admin.enf.rec.configBody", "The sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including the published instrument and version. No amount, escalation ladder, citation or Arabic legal wording is asserted until supplied.", "يجب على الراعي تزويد كتالوج تدابير الإنفاذ المعتمد والصياغة الموثوقة للأساس القانوني لكل تدبير، بما في ذلك الأداة المنشورة وإصدارها. لا تُعرض مبالغ أو سلالم تصعيد أو استشهادات أو صياغة قانونية عربية حتى يتم توفيرها.")}</div></div>
       {readOnlyBanner}
       {pendingError && <div className="sq-banner sq-banner--warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
 
@@ -85,7 +91,7 @@ export default async function EnforcementRecommendations() {
                 <strong>{row.factories?.name ?? row.factory_id}</strong>
                 <div className="t-caption">{row.factories?.city ?? "—"}{row.factories?.region ? `, ${row.factories.region}` : ""} · {row.factories?.factory_code ?? tr("admin.enf.rec.unregistered", "unregistered/temporary", "غير مسجّلة/مؤقتة")}</div>
               </div>
-              <span className="badge badge-warning">{actionLabel(row.recommended_action)}</span>
+              <span className="badge badge-warning">{tr("admin.enf.rec.measureLabel", "Recommended measure", "التدبير الموصى به")}: {actionLabel()}</span>
             </div>
             {row.recommendation_notes && <p className="t-caption">{row.recommendation_notes}</p>}
             <p className="t-caption numeric">{new Date(row.recommended_at).toLocaleString()}</p>
@@ -93,7 +99,7 @@ export default async function EnforcementRecommendations() {
               ? <DecideForm id={row.id} strings={{
                   approve: tr("admin.enf.rec.approve", "Approve", "الموافقة"),
                   reject: tr("admin.enf.rec.reject", "Reject", "رفض"),
-                  reasonLabel: tr("admin.enf.rec.reasonLabel", "Decision reason (optional)", "سبب القرار (اختياري)"),
+                  reasonLabel: tr("admin.enf.rec.reasonLabel", "Decision basis (required)", "أساس القرار (مطلوب)"),
                   reasonPlaceholder: tr("admin.enf.rec.reasonPlaceholder", "Recorded with the audit event", "يُسجَّل مع حدث التدقيق"),
                   submit: tr("admin.enf.rec.submit", "Record decision", "تسجيل القرار"),
                   recording: tr("admin.enf.rec.recording", "Recording…", "جارٍ التسجيل…"),
@@ -111,7 +117,7 @@ export default async function EnforcementRecommendations() {
               {(decided ?? []).map(d => (
                 <tr key={d.id}>
                   <td>{(d.factories as unknown as { name: string } | null)?.name ?? "—"}</td>
-                  <td>{actionLabel(d.recommended_action)}</td>
+                  <td>{actionLabel()}</td>
                   <td><span className={`sq-lozenge ${d.status === "approved" ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>{d.status}</span></td>
                   <td className="t-caption numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString() : "—"}</td>
                 </tr>

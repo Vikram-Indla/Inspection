@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r8",
-  "updated": "2026-07-25T22:52:33+03:00",
-  "updatedBy": "claude-code",
-  "branch": "feature/ipad-field-channel-delivery",
+  "revision": "SB-r9",
+  "updated": "2026-07-25T23:34:09+03:00",
+  "updatedBy": "codex",
+  "branch": "saqeel/m6-enforcement",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -541,19 +541,19 @@
       "group": "m6",
       "name": "Violations, recommendations, bulk",
       "design": 60,
-      "code": 85,
-      "wiring": 75,
+      "code": 93,
+      "wiring": 86,
       "designPage": "SAQEEL M6 Compliance Control Plane.dc.html · SAQEEL Enforcement.dc.html · SAQEEL Establishment Violations.dc.html",
       "route": "web/src/app/(app)/enforcement · admin/violations · admin/bulk-violations · admin/enforcement-recommendations",
       "pwa": null,
       "pending": [
         {
-          "lane": "code",
-          "text": "/enforcement has page.tsx only — no actions.ts, so it reads but records no decision."
+          "lane": "wiring",
+          "text": "Sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including its published instrument and version. Until supplied, the routes render Not configured and assert no measure, amount, escalation ladder, citation or Arabic legal wording."
         },
         {
-          "lane": "wiring",
-          "text": "Enforcement measure catalogue and legal-basis wording are source-governed — still unsupplied."
+          "lane": "code",
+          "text": "Focused real-service decision and audit evidence remains for independent verification; this card was verified only by tsc --noEmit and next build as directed, without Playwright or a remote data mutation."
         }
       ],
       "phase": 6,

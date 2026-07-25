@@ -18,7 +18,7 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
       </div>
       <label className="sq-field">
         <span className="sq-field__label">{strings.reasonLabel}</span>
-        <textarea className="sq-textarea" name="decision_reason" rows={2} placeholder={strings.reasonPlaceholder} />
+        <textarea className="sq-textarea" name="decision_reason" rows={2} required maxLength={2000} placeholder={strings.reasonPlaceholder} />
       </label>
       {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       <button type="submit" className="btn btn-primary btn-lg btn-touch" aria-disabled={pending}>{pending ? strings.recording : strings.submit}</button>
