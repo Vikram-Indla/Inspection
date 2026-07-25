@@ -1,0 +1,506 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077
+title: Trusted Devices cross-runtime enforcement test plan
+status: PLAN_COMPLETE_EXECUTION_BLOCKED_BY_CONTRACT_AND_IMPLEMENTATION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_FUTURE_TEST_DEFINITION
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  tests_added: 0
+  tests_executed: 0
+  lifecycle_outcomes_proven: 0
+  reason: >-
+    This packet defines future proof only. It does not approve policy, create
+    implementation, exercise a provider/device, seed data or certify runtime.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077
+  source_task: DEV-PRE-QA1-01
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+    - M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    - M10-ADMIN-DEVICE-COMMAND-MDM-PACKAGE-OFFLINE-CALL-PATH-INVENTORY-076
+  route: /admin/devices
+  field_routes:
+    - /field/[visitId]
+    - /field/inspection/[id]
+    - /field/settings
+  direct_requirement_ids: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+  acceptance_ids: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-001..006]
+  do_not_touch:
+    - application, database, offline engine, provider, seed, test and evidence files
+    - live Claude Design, design authority and acceptance records
+    - governance decisions, current slice controls, branches and leases
+    - main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Test planning only. No test, runtime, provider, design, code, data or
+    authority artifact is changed.
+
+unresolved_authority:
+  package_invalidation_scope: null
+  in_progress_inspection_exception: null
+  cached_package_post_invalidation_rule: null
+  outbox_post_trust_change_rule: null
+  submission_post_trust_change_rule: null
+  remote_wipe_local_data_scope: null
+  remote_wipe_completion_receipt_schema: null
+  suspension_provider_effect_rule: null
+  provider_and_authenticated_endpoint: null
+  provider_retry_and_timeout_rule: null
+  command_correlation_and_idempotency: null
+  sync_health_source_and_freshness: null
+  operator_rescue_authority: null
+  audit_retention_rule: null
+  future_test_lease_owner: null
+
+preservation_floor:
+  - Only the assigned, enrolled, trusted and app-compliant device may download, open, replay or submit an official package.
+  - Pending, suspended, revoked, wipe-pending and wiped devices fail closed.
+  - Package invalidation must govern server open, cached open, replay and submit without silently destroying recoverable work.
+  - A remote request, provider acceptance, device acknowledgement and verified effect are separate facts.
+  - Queued work is retained until an approved policy explicitly authorizes another outcome.
+  - No provider behavior, timeout, retry, purge, grace period, exception or completion may be inferred.
+  - Every denial proves zero unauthorized state change and zero duplicate provider effect.
+  - Every accepted effect proves actor, device, command, correlation, reason, governing version, before/after, time and genuine receipt.
+
+proof_environments:
+  database:
+    requirement: Real disposable Supabase test database with production-equivalent migrations, RLS and authenticated personas.
+    prohibited: Service-role mutation used as proof of a persona-authorized operation.
+  admin_browser:
+    requirement: Real /admin/devices browser session with approved requester/approver identities and persisted backend rows.
+    prohibited: DOM-only fixtures cited as command or provider proof.
+  field_browser:
+    requirement: Real browser IndexedDB, real authenticated Field session and installed-PWA-capable context.
+    prohibited: In-memory cache substitute cited as offline proof.
+  field_device:
+    requirement: Approved non-production enrolled iPad/device for provider acknowledgement, wipe and local-data-effect certification.
+    prohibited: Browser storage deletion or database mutation cited as genuine remote device effect.
+  provider:
+    requirement: Approved authenticated non-production provider endpoint and signed/verifiable receipts.
+    prohibited: Mock, seed, hand-written receipt or intercepted success cited as provider runtime proof.
+  network:
+    requirement: Controlled browser/device offline mode and transport interruption with real local storage and server reconciliation.
+    prohibited: Fabricated healthy/completed response during an outage.
+
+no_mock_certification_rules:
+  - Mocks may validate adapter parsing, UI state rendering and zero-dispatch negative paths only.
+  - Mock/provider-spy success cannot certify accepted, acknowledged, applied, wiped, invalidated or completed.
+  - Seeded command and receipt rows may prepare visual fixtures but cannot certify provider delivery or device effect.
+  - Screenshots prove presentation only; they require matching database, local-store and receipt evidence.
+  - Browser route interception cannot certify RLS, RPC atomicity, package denial, replay denial or submission denial.
+  - A genuine receipt must authenticate issuer, correlation, device identity, command, stage, occurrence time and integrity.
+  - Completion requires the real Field/device observable effect plus the correlated immutable server evidence.
+
+future_test_targets:
+  - target: supabase/tests/mvp3_device_package_enforcement_probe.sql
+    purpose: RLS, lifecycle, version, idempotency, package guards, atomic audit and zero-side-effect negatives.
+  - target: apps/web/e2e/mvp3-device-package-admin.spec.ts
+    purpose: Admin requester/approver, command stages, degraded source, evidence history and safe recovery.
+  - target: apps/web/e2e/mvp3-device-package-field.spec.ts
+    purpose: Download/open/cache/replay/submit enforcement using real IndexedDB and authenticated Field personas.
+  - target: apps/web/e2e/mvp3-device-package-offline.spec.ts
+    purpose: Offline command arrival, reconnect, held work, conflict and rescue.
+  - target: apps/web/e2e/mvp3-device-provider-live.spec.ts
+    purpose: Genuine non-production provider dispatch/receipt and real device effect; skipped, not mocked, when dependency is unavailable.
+  - target: product-contract/evidence/m3-06-device-package/
+    purpose: Future run receipts only; no evidence is created by this packet.
+
+test_cases:
+  foundation:
+    - case_id: DEV-XRT-FND-01
+      state: connected
+      layers: [DB_LIFECYCLE, ADMIN_BROWSER, FIELD_BROWSER]
+      precondition: Assigned enrolled trusted app-compliant device, current manifest bound to the immutable execution snapshot, empty outbox.
+      stimulus: Download, open, cache, add one response, replay and submit from that device.
+      assertions:
+        - Every stage uses the same device, manifest, snapshot/hash and governing version.
+        - One opened event, one replay effect and one immutable submission occur.
+        - Admin and Field display source-backed current state.
+      receipt_rule: Provider receipt is required only if approved trust policy depends on provider attestation.
+      evidence: Admin trace, Field trace, IndexedDB envelope, database rows, audit and hashes.
+    - case_id: DEV-XRT-FND-02
+      state: connected
+      layers: [DB_RLS, FIELD_BROWSER]
+      precondition: Unregistered device with an otherwise valid assigned inspector session.
+      stimulus: Attempt download, open, replay and submit.
+      assertions:
+        - All four operations fail closed.
+        - No manifest content, server mutation, submission or provider dispatch occurs.
+        - Recoverable local draft facts are not silently deleted.
+      receipt_rule: No provider receipt is needed; prove zero dispatch.
+      evidence: Denial trace, zero-delta database snapshot, IndexedDB preservation and dispatch log.
+    - case_id: DEV-XRT-FND-03
+      state: connected
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Assigned trusted device whose app version is non-compliant.
+      stimulus: Attempt download, cached open, replay and submit.
+      assertions:
+        - All official-package operations are denied with app-policy evidence.
+        - Existing local work remains recoverable but not reported synchronized/submitted.
+      receipt_rule: No positive provider receipt may override app-policy denial unless the approved contract explicitly defines it.
+      evidence: Device policy version, Field denial, local queue and zero server side effect.
+    - case_id: DEV-XRT-FND-04
+      state: connected
+      layers: [DB_LIFECYCLE, FIELD_BROWSER, REGRESSION]
+      precondition: Readiness snapshot and device-governed manifest exist for one inspection.
+      stimulus: Compare manifest identity/hash, snapshot checksum and the cache envelope before execution.
+      assertions:
+        - The approved canonical binding is byte/reproducibly verifiable.
+        - A mismatch blocks download/open/start and cannot fall back to raw package_versions.
+      receipt_rule: Not provider-dependent.
+      evidence: Immutable snapshot, manifest, cache envelope and mismatch negative result.
+    - case_id: DEV-XRT-FND-05
+      state: degraded
+      layers: [FIELD_BROWSER, REGRESSION]
+      precondition: Two authenticated Field users have separate IndexedDB stores and one cached official package each.
+      stimulus: Change session during replay and inspect both stores.
+      assertions:
+        - Replay stops before cross-user mutation.
+        - Neither user's package, draft, outbox or conflict data becomes visible to the other.
+      receipt_rule: Not provider-dependent.
+      evidence: Browser storage inventory, session trace and zero cross-user server changes.
+    - case_id: DEV-XRT-FND-06
+      state: degraded
+      layers: [SERVER_ACTION, ADMIN_BROWSER, FIELD_BROWSER]
+      precondition: Device/package authority source is unavailable while cached work exists.
+      stimulus: Open Admin and Field, attempt a dependent action and retry after recovery.
+      assertions:
+        - Unknown is not rendered trusted, healthy, invalidated or completed.
+        - Mutation is held; cached work is preserved; recovery requires a fresh authoritative read.
+      receipt_rule: Absence of source/receipt cannot be treated as success.
+      evidence: Source failure trace, disabled actions, local preservation and recovered authoritative state.
+
+  suspension:
+    - case_id: DEV-XRT-SUS-01
+      state: connected
+      layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER]
+      precondition: Trusted device with current manifest, no conflicting command and approved suspension authority.
+      stimulus: Authorized actor requests Suspend once.
+      assertions:
+        - Exactly one versioned/idempotent command is created with actor, reason and before-state.
+        - Request is not displayed as acknowledged/applied/completed without the required real evidence.
+      receipt_rule: Follow the approved suspension effect contract; no invented provider stage.
+      evidence: Action result, command row, audit, correlation and provider dispatch/hold fact.
+    - case_id: DEV-XRT-SUS-02
+      state: connected
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Suspension is authoritative before a new package download/open.
+      stimulus: Assigned device attempts download and open.
+      assertions:
+        - Both operations are denied as suspended.
+        - No cache write and no false opened event occur.
+      receipt_rule: Use the authoritative suspension stage defined by the approved contract.
+      evidence: Device/command state, access denial event, empty cache delta and browser denial.
+    - case_id: DEV-XRT-SUS-03
+      state: connected
+      layers: [FIELD_BROWSER]
+      precondition: Device cached a valid package before authoritative suspension.
+      stimulus: Reopen the cached package while online.
+      assertions:
+        - Fresh authority check denies official cached open.
+        - Cache is preserved/quarantined only according to approved policy and is never labeled current.
+      receipt_rule: No local UI state may substitute for authoritative suspension.
+      evidence: Cache envelope before/after, denial event and no execution mutation.
+    - case_id: DEV-XRT-SUS-04
+      state: degraded
+      layers: [FIELD_BROWSER]
+      precondition: Package is cached, device goes offline, suspension becomes authoritative elsewhere.
+      stimulus: Device attempts cached open and new official execution while it cannot refresh authority.
+      assertions:
+        - Authorization is shown unverified and new official execution fails closed.
+        - Existing recoverable work is retained without claiming the suspension was received.
+      receipt_rule: Offline absence is not a device acknowledgement.
+      evidence: Offline trace, cache/outbox preservation and no server mutation.
+    - case_id: DEV-XRT-SUS-05
+      state: reconnect
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Suspended device has queued response/evidence operations.
+      stimulus: Restore connectivity and trigger replay.
+      assertions:
+        - Authoritative preflight denies the governed operations before mutation.
+        - FIFO queue remains recoverable; Field shows held/denied, not synced.
+      receipt_rule: Denial requires no fake provider success.
+      evidence: Queue before/after, zero server changes, device authority and Field status.
+    - case_id: DEV-XRT-SUS-06
+      state: reconnect
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Suspended device has a queued immutable submission operation.
+      stimulus: Restore connectivity and replay submission.
+      assertions:
+        - Submission is denied before creating submission_versions or changing inspection status.
+        - The queued submission and local snapshot remain recoverable.
+      receipt_rule: Not provider-completion dependent once suspension is authoritative.
+      evidence: Zero submission delta, unchanged inspection, retained outbox and denial audit.
+    - case_id: DEV-XRT-SUS-07
+      state: connected
+      layers: [PROVIDER_CONTRACT, ADMIN_BROWSER]
+      precondition: Suspend request exists; provider accepts but device acknowledgement/effect is absent.
+      stimulus: Ingest the genuine accepted receipt and refresh Admin.
+      assertions:
+        - Admin shows accepted/not-confirmed, not completed.
+        - Package effects follow only the approved authoritative stage.
+      receipt_rule: Genuine authenticated non-production receipt mandatory; mock result cannot pass.
+      evidence: Raw verified receipt, normalized immutable evidence, command stage and Admin trace.
+
+  package_expiry:
+    - case_id: DEV-XRT-EXP-01
+      state: connected
+      layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER]
+      precondition: Device has multiple manifests covering in-scope and out-of-scope inspections.
+      stimulus: Authorized actor requests Expire Packages for the approved scope.
+      assertions:
+        - Versioned command records the exact selected scope and governing version.
+        - No out-of-scope manifest/cache becomes invalidated.
+      receipt_rule: Scope and effective stage must come from approved authority.
+      evidence: Before/after manifest set, command, audit, correlation and Admin confirmation.
+    - case_id: DEV-XRT-EXP-02
+      state: connected
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Target manifest is authoritatively invalidated before download/open.
+      stimulus: Attempt download and open from the otherwise trusted assigned device.
+      assertions:
+        - Both operations deny invalidated, not generic missing.
+        - No cache write, opened event or inspection mutation occurs.
+      receipt_rule: Invalidation effect stage must be real and approved.
+      evidence: Manifest/invalidation evidence, denial event, browser trace and zero cache delta.
+    - case_id: DEV-XRT-EXP-03
+      state: connected
+      layers: [FIELD_BROWSER]
+      precondition: Target package is cached before authoritative invalidation.
+      stimulus: Open cached package while online.
+      assertions:
+        - Fresh validity check blocks official use.
+        - UI distinguishes locally stored from currently authorized.
+      receipt_rule: Cache presence never proves authority.
+      evidence: Cache envelope, validity response, denial UI and no execution change.
+    - case_id: DEV-XRT-EXP-04
+      state: degraded
+      layers: [FIELD_BROWSER]
+      precondition: Target package is cached; invalidation occurs while device is offline.
+      stimulus: Attempt cached open, then reconnect.
+      assertions:
+        - Offline state does not claim current authorization.
+        - On reconnect the invalidation is applied once and the cache follows the approved preserve/quarantine/remove rule.
+      receipt_rule: Cache effect cannot be certified until the invalidation authority and local policy are approved.
+      evidence: Offline/online trace, cache before/after and correlated invalidation fact.
+    - case_id: DEV-XRT-EXP-05
+      state: reconnect
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Invalidated package has queued response/evidence work.
+      stimulus: Reconnect and replay.
+      assertions:
+        - Governed preflight blocks unauthorized replay before server mutation.
+        - Local work remains recoverable and visible to the approved rescue role only.
+      receipt_rule: Rescue behavior is blocked until operator authority is approved.
+      evidence: Queue/server deltas, denial audit and rescue visibility trace.
+    - case_id: DEV-XRT-EXP-06
+      state: reconnect
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Invalidated package has a queued submission.
+      stimulus: Reconnect and submit/replay.
+      assertions:
+        - No immutable submission version or submitted status is created.
+        - Local final snapshot remains retained pending approved resolution.
+      receipt_rule: In-progress exception must be approved; test remains blocked while null.
+      evidence: Database zero delta, retained outbox/snapshot and source-backed denial.
+    - case_id: DEV-XRT-EXP-07
+      state: connected
+      layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER]
+      precondition: Same expiry command is retried and a duplicate/late receipt arrives.
+      stimulus: Submit duplicate request and ingest duplicate/late receipt.
+      assertions:
+        - One correlation identity and at most one invalidation effect exist.
+        - Original evidence is immutable; duplicate/late fact is retained without second effect.
+      receipt_rule: Genuine receipt needed for provider-path certification.
+      evidence: Command/effect counts, receipt evidence, audit and Admin history.
+
+  remote_wipe:
+    - case_id: DEV-XRT-WIP-01
+      state: connected
+      layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER]
+      precondition: Trusted device with cached package and queued local work.
+      stimulus: Authorized actor confirms Remote Wipe with approved scope/reason.
+      assertions:
+        - Exactly one wipe command enters the approved initial stage.
+        - UI says request/pending and does not claim local destruction.
+      receipt_rule: No completion without genuine provider and device evidence.
+      evidence: Confirmation trace, command/audit/correlation and unchanged completion fields.
+    - case_id: DEV-XRT-WIP-02
+      state: connected
+      layers: [PROVIDER_CONTRACT, ADMIN_BROWSER]
+      precondition: Wipe command dispatched to real non-production provider.
+      stimulus: Provider returns authenticated accepted receipt without device completion.
+      assertions:
+        - Command advances only to accepted/not-confirmed.
+        - Device remains fail-closed; Admin never shows wiped/completed.
+      receipt_rule: Genuine provider receipt mandatory.
+      evidence: Verified provider receipt, normalized evidence, device state and Admin trace.
+    - case_id: DEV-XRT-WIP-03
+      state: connected
+      layers: [PROVIDER_CONTRACT, FIELD_BROWSER, ADMIN_BROWSER]
+      precondition: Approved non-production enrolled device receives wipe.
+      stimulus: Device applies wipe and returns authenticated completion evidence.
+      assertions:
+        - Only the approved local-data scope is affected exactly once.
+        - Device becomes wiped/completed only after verified effect.
+        - Former identity, command and immutable receipt history remain available to authorized audit.
+      receipt_rule: Real enrolled device and genuine completion evidence mandatory; mocks/seeds cannot pass.
+      evidence: Device observation, storage inventory before/after, provider/device receipts, server state and audit.
+    - case_id: DEV-XRT-WIP-04
+      state: degraded
+      layers: [ADMIN_BROWSER, FIELD_BROWSER, PROVIDER_CONTRACT]
+      precondition: Wipe command exists while device is offline and no device receipt exists.
+      stimulus: Observe Admin and attempt Field cached open/replay/submit.
+      assertions:
+        - Admin shows wipe pending with last proven stage.
+        - Field operations fail closed; local destruction is not claimed.
+      receipt_rule: Offline/non-response is not acknowledgement or completion.
+      evidence: Pending command, absent receipt, Field denials and local-store preservation.
+    - case_id: DEV-XRT-WIP-05
+      state: reconnect
+      layers: [PROVIDER_CONTRACT, FIELD_BROWSER]
+      precondition: Offline device has pending wipe, cached package and queued work.
+      stimulus: Device reconnects and receives the command twice through transport retry.
+      assertions:
+        - Idempotency causes one wipe effect and one terminal transition.
+        - Duplicate delivery/receipt remains traceable without repeated effect.
+      receipt_rule: Genuine provider/device retry evidence mandatory.
+      evidence: Two deliveries, one effect, one terminal state, receipts and local-store result.
+    - case_id: DEV-XRT-WIP-06
+      state: reconnect
+      layers: [FIELD_BROWSER, REGRESSION]
+      precondition: Wipe completion is verified and pre-wipe local package/draft/outbox data existed.
+      stimulus: Relaunch Field and inspect local/server recovery surfaces.
+      assertions:
+        - Local data matches the approved wipe scope exactly.
+        - Data required to remain immutable server-side is unchanged.
+        - No pre-wipe official package can be opened, replayed or submitted.
+      receipt_rule: Local purge/preservation assertions remain blocked until scope authority is approved.
+      evidence: Local inventory, server hashes, launch trace and denied operations.
+    - case_id: DEV-XRT-WIP-07
+      state: connected
+      layers: [DB_LIFECYCLE, FIELD_BROWSER]
+      precondition: Device is wipe_pending or wiped with a formerly valid cached package.
+      stimulus: Attempt cached open, evidence sync and submission.
+      assertions:
+        - Every operation fails closed with no server mutation.
+        - Prior immutable evidence remains intact and restricted to approved viewers.
+      receipt_rule: Not dependent on invented provider success; source state must be authoritative.
+      evidence: Denial traces, zero-delta rows and immutable evidence hashes.
+    - case_id: DEV-XRT-WIP-08
+      state: degraded
+      layers: [PROVIDER_CONTRACT, ADMIN_BROWSER]
+      precondition: Provider times out or returns unverifiable/mismatched completion.
+      stimulus: Ingest the response and invoke approved retry/recovery.
+      assertions:
+        - Receipt is rejected/quarantined and cannot mark wiped/completed.
+        - Retry is bounded by the approved idempotency policy.
+        - Device and package access remain fail-closed.
+      receipt_rule: Genuine malformed/mismatched non-production response required for live contract proof; a fixture tests parser shape only.
+      evidence: Raw response, verification failure, quarantine evidence, retry correlation and Admin state.
+
+  cross_cutting:
+    - case_id: DEV-XRT-XCT-01
+      state: connected
+      layers: [DB_LIFECYCLE, ADMIN_BROWSER, FIELD_BROWSER]
+      precondition: Two authorized actors concurrently submit contradictory commands while Field has active cached work.
+      stimulus: Commit both requests at the same device version.
+      assertions:
+        - One governed transition wins and the other returns a version conflict.
+        - Field observes only the authoritative result; no duplicate or contradictory package effect occurs.
+      receipt_rule: Provider sees at most the winning dispatch.
+      evidence: Concurrent transaction trace, provider dispatch count, Field state and audit.
+    - case_id: DEV-XRT-XCT-02
+      state: degraded
+      layers: [DB_LIFECYCLE, ADMIN_BROWSER, FIELD_BROWSER, REGRESSION]
+      precondition: Audit write is forced to fail during command/effect transaction.
+      stimulus: Request Suspend, Expire Packages and Remote Wipe separately.
+      assertions:
+        - Each transaction fails atomically with no command, state, invalidation or provider dispatch.
+        - Admin reports failure and Field behavior remains based on the prior authoritative state.
+      receipt_rule: Zero dispatch must be proven.
+      evidence: Transaction rollback, audit failure, provider log and unchanged Field state.
+
+coverage:
+  total_cases: 30
+  by_group:
+    foundation: 6
+    suspension: 7
+    package_expiry: 7
+    remote_wipe: 8
+    cross_cutting: 2
+  by_connectivity:
+    connected: 17
+    degraded: 7
+    reconnect: 6
+  mandatory_operation_coverage:
+    admin_command: [DEV-XRT-SUS-01, DEV-XRT-EXP-01, DEV-XRT-WIP-01, DEV-XRT-XCT-01, DEV-XRT-XCT-02]
+    package_download_open: [DEV-XRT-FND-01, DEV-XRT-FND-02, DEV-XRT-FND-03, DEV-XRT-SUS-02, DEV-XRT-SUS-03, DEV-XRT-SUS-04, DEV-XRT-EXP-02, DEV-XRT-EXP-03, DEV-XRT-EXP-04, DEV-XRT-WIP-04, DEV-XRT-WIP-07]
+    cache: [DEV-XRT-FND-01, DEV-XRT-FND-04, DEV-XRT-FND-05, DEV-XRT-FND-06, DEV-XRT-SUS-03, DEV-XRT-SUS-04, DEV-XRT-EXP-03, DEV-XRT-EXP-04, DEV-XRT-WIP-03, DEV-XRT-WIP-04, DEV-XRT-WIP-06, DEV-XRT-WIP-07]
+    replay: [DEV-XRT-FND-01, DEV-XRT-FND-02, DEV-XRT-FND-03, DEV-XRT-FND-05, DEV-XRT-SUS-05, DEV-XRT-EXP-05, DEV-XRT-WIP-04, DEV-XRT-WIP-07]
+    submission: [DEV-XRT-FND-01, DEV-XRT-FND-02, DEV-XRT-FND-03, DEV-XRT-SUS-06, DEV-XRT-EXP-06, DEV-XRT-WIP-04, DEV-XRT-WIP-07]
+    genuine_receipt: [DEV-XRT-SUS-07, DEV-XRT-EXP-07, DEV-XRT-WIP-02, DEV-XRT-WIP-03, DEV-XRT-WIP-05, DEV-XRT-WIP-08]
+    atomic_audit: [DEV-XRT-SUS-01, DEV-XRT-EXP-01, DEV-XRT-WIP-01, DEV-XRT-XCT-02]
+
+execution_gates:
+  - gate_id: DEV-XRT-GATE-01
+    requirement: Sponsor records all null policy answers used by a test; no test substitutes a guessed expected result.
+  - gate_id: DEV-XRT-GATE-02
+    requirement: Database command/package/device schema and generated types are implemented under one recorded lease.
+  - gate_id: DEV-XRT-GATE-03
+    requirement: Field consumes the canonical manifest/device authority at open, cache, replay and submit.
+  - gate_id: DEV-XRT-GATE-04
+    requirement: Approved provider and authenticated receipt contract exist, or provider-live tests remain skipped and completion remains blocked.
+  - gate_id: DEV-XRT-GATE-05
+    requirement: Deterministic seeded fixtures exist, but genuine provider/device evidence is produced only by the real non-production integration.
+  - gate_id: DEV-XRT-GATE-06
+    requirement: Stable accepted CD-056 states exist for all covered Admin and Field outcomes.
+  - gate_id: DEV-XRT-GATE-07
+    requirement: Independent reviewer confirms test isolation, negative paths, evidence naming and no-mock boundaries before execution.
+
+pass_rule:
+  - Every case must pass all listed layers; a browser-only or database-only result is incomplete.
+  - A skipped provider-live case blocks provider-dependent completion rather than becoming a pass.
+  - Any unauthorized server mutation, silent local-data loss, duplicate effect, false completion or missing immutable evidence is a P0 failure.
+  - Existing readiness, execution, submission, offline isolation and immutable evidence regressions must remain green.
+  - Completion requires the accepted design revision, exact code revision, database migration set, provider contract version and evidence bundle.
+
+disposition:
+  result: READY_AS_FUTURE_PLAN_NOT_EXECUTABLE
+  blockers:
+    - unresolved authority fields remain null
+    - cross-runtime enforcement implementation is absent
+    - provider/receipt contract is absent
+    - real enrolled non-production device evidence is absent
+    - stable accepted CD-056 route states are absent
+
+validation:
+  expected_cases: 30
+  expected_groups: 5
+  expected_connected: 17
+  expected_degraded: 7
+  expected_reconnect: 6
+  case_ids_unique: PASS_30_OF_30
+  coverage_references_resolve: PASS
+  yaml_parse: PASS
+  diff_check: PASS
+
+safe_successor:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-BUNDLE-SCHEMA-078
+  mode: READ_ONLY
+  purpose: >-
+    Define the exact future evidence manifest tying each cross-runtime case to
+    code/database/provider/design revisions, browser traces, local-store facts,
+    immutable audit and genuine receipts without creating evidence.

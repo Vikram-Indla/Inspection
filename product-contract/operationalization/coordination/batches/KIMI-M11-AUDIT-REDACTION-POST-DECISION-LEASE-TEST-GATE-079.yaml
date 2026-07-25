@@ -1,0 +1,456 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079
+status: READ_ONLY_POST_DECISION_GATE_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Define the exact post-decision separation among implementation, independent
+  QA, controlled fixture data and final review; protect shared paths and
+  objects; sequence dependencies; and require the 35-case acceptance gate,
+  evidence and rollback proof before any completion credit.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+  - KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+  - KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+  - KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+
+activation_precondition:
+  required_receipt_result: VALID_DECISIONS_ONLY_POST_GATES_REQUIRED
+  current_receipt_present: false
+  current_state: DORMANT_READ_ONLY_SKELETON
+  rule: >-
+    This packet cannot be activated, converted into leases or used as write
+    authority until a future receipt passes gate 078 and current refs are
+    revalidated.
+
+hard_boundary:
+  - "Read-only lease/test-gate design plus this one uniquely owned packet."
+  - "No actor is assigned and no lease, dispatch or migration filename is created."
+  - "No code, SQL, database, data, seed, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+  - "No requirement credit."
+
+separation_principles:
+  - "Implementation, QA, data operations and final review use distinct identities and non-overlapping write surfaces."
+  - "QA may execute implementation artifacts but may not edit implementation-leased files."
+  - "Data operators may create only approved fixture rows in the approved non-production environment and may not change schema or application code."
+  - "The reviewer is read-only and may return work but may not repair it."
+  - "No lane may edit historical migrations, immutable audit rows or another lane's evidence."
+  - "A missing lane or lease is blocking, not an invitation for another lane to absorb it."
+
+lane_contracts:
+  - lane_id: LANE-079-IMPLEMENTATION
+    role: IMPLEMENTATION_OWNER
+    identity: UNASSIGNED
+    mode: WRITE_EXACT_PATHS_AND_OBJECTS_ONLY
+    minimum_paths:
+      - apps/web/src/app/(app)/virtual/[id]/page.tsx
+      - "supabase/migrations/<reserved_timestamp>_m11_audit_consumer_redaction.sql"
+    conditional_paths:
+      - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+      - apps/web/src/app/(app)/virtual/[id]/AuditTimeline.tsx
+      - apps/web/src/app/(app)/admin/audit/page.tsx
+    minimum_database_objects:
+      - public.vs_audit_trail(uuid)
+    conditional_database_objects:
+      - public.vp_rw
+      - "new redacted Admin Audit read seam with an allocated name"
+    allowed_outputs:
+      - "Forward-only database read-boundary migration."
+      - "Bounded Virtual UI audit wiring."
+      - "M11-specific Admin Audit redaction only when decision SD-077-03-A is selected."
+      - "Implementation notes and self-check results in the implementation worktree."
+    prohibited:
+      - "Editing QA test or certification evidence paths."
+      - "Changing test fixture data in shared environments."
+      - "Granting itself requirement credit."
+    release_condition:
+      - "Implementation commit is stable and source-diff reviewed."
+      - "No file or object outside the lease changed."
+      - "Migration identity and object replacement are recorded."
+
+  - lane_id: LANE-079-QA
+    role: INDEPENDENT_QA_OWNER
+    identity: UNASSIGNED_DISTINCT_FROM_IMPLEMENTATION
+    mode: WRITE_TEST_AND_QA_EVIDENCE_ONLY
+    new_test_paths:
+      - apps/web/e2e/m11-audit-consumer-redaction.spec.ts
+      - apps/web/e2e/m11-audit-direct-table-secret-negative.spec.ts
+      - supabase/tests/m11_audit_consumer_redaction_security.sql
+    protected_existing_tests_execute_only:
+      - apps/web/e2e/cd-041-virtual-backend.spec.ts
+      - apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+      - apps/web/e2e/cd-042-audit-read-seam.spec.ts
+      - apps/web/e2e/cd-042-otp-status-authz.spec.ts
+      - apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+      - apps/web/e2e/execution-crossmodule-contract.spec.ts
+      - apps/web/e2e/neutral-error-sweep.spec.ts
+    evidence_path:
+      - product-contract/evidence/M11_AUDIT_CONSUMER_REDACTION_CERTIFICATION.md
+    allowed_outputs:
+      - "Independent 35-case execution record."
+      - "Recursive forbidden-key/value scans."
+      - "Historical immutability comparison."
+      - "No-exclusion protected regression result."
+      - "Browser, DOM and network evidence manifests."
+    prohibited:
+      - "Editing implementation application or migration paths."
+      - "Editing protected existing tests to make the implementation pass."
+      - "Changing shared fixture data outside the data lease."
+      - "Self-approving failed or unevidenced cases."
+    release_condition:
+      - "All evidence is immutable by hash and attributable to exact refs."
+      - "Failures are returned to implementation; QA does not repair product files."
+
+  - lane_id: LANE-079-DATA
+    role: CONTROLLED_FIXTURE_OPERATOR
+    identity: UNASSIGNED_DISTINCT_FROM_IMPLEMENTATION_AND_QA
+    mode: NON_PRODUCTION_FIXTURE_ROWS_ONLY
+    repository_paths: []
+    approved_environment: UNSELECTED_NON_PRODUCTION_ONLY
+    shared_preprod_allowed_rows:
+      - public.visits
+      - public.assignments
+      - public.virtual_sessions
+      - public.virtual_participants
+    generated_immutable_rows:
+      - public.audit_events
+    generated_by:
+      - "Normal row triggers."
+      - public.vp_request_otp(uuid)
+      - public.vp_verify_otp(uuid,text)
+    isolated_transaction_only:
+      - "Synthetic historical audit row containing forbidden nested keys."
+      - "Direct secret-column authorization probes requiring privileged setup."
+    allowed_outputs:
+      - "Fixture manifest with environment, scenario, stable row IDs and timestamps."
+      - "SCN-025 positive virtual flow."
+      - "SCN-026 provider-unavailable/degraded truth flow."
+      - "Cleanup result for mutable fixture rows."
+    prohibited:
+      - "Production data."
+      - "DDL, policy, grant or function changes."
+      - "Direct UPDATE or DELETE of audit_events."
+      - "Live OTP, real participant identity or unapproved provider metadata in evidence."
+      - "Using a permanent mock and claiming completion."
+      - "Editing repository seeder code; no M11 seeder implementation path exists on origin/main."
+    release_condition:
+      - "Every mutable fixture row has a manifest and cleanup disposition."
+      - "Immutable generated audit rows are retained and listed, never silently removed."
+
+  - lane_id: LANE-079-REVIEW
+    role: FINAL_INDEPENDENT_REVIEWER
+    identity: UNASSIGNED_DISTINCT_FROM_IMPLEMENTATION_QA_AND_DATA
+    mode: READ_ONLY
+    readable_scope:
+      - "Implementation diff and migration."
+      - "Database object definitions."
+      - "QA tests and evidence."
+      - "Fixture manifest and cleanup record."
+      - "Real browser implementation."
+      - "Decision receipt and all gates."
+    writable_paths: []
+    allowed_outputs:
+      - APPROVE_FOR_SPONSOR_REVIEW
+      - RETURN_FOR_IMPLEMENTATION_CORRECTION
+      - RETURN_FOR_QA_CORRECTION
+      - RETURN_FOR_DATA_CLEANUP
+      - BLOCK_AUTHORITY_OR_EVIDENCE
+    prohibited:
+      - "Editing leased files or fixing findings."
+      - "Accepting design screenshots as implementation evidence."
+      - "Granting completion credit."
+    release_condition:
+      - "One explicit verdict with evidence references and unresolved blockers."
+
+lease_separation_matrix:
+  - writer: LANE-079-IMPLEMENTATION
+    may_write:
+      - implementation application paths
+      - one allocated forward migration
+    must_not_write:
+      - QA tests
+      - QA evidence
+      - shared fixture data
+      - reviewer verdict
+  - writer: LANE-079-QA
+    may_write:
+      - allocated new test paths
+      - one allocated QA certification path
+    must_not_write:
+      - implementation application paths
+      - migration
+      - shared fixture data
+      - reviewer verdict
+  - writer: LANE-079-DATA
+    may_write:
+      - approved non-production fixture rows
+      - fixture/cleanup manifest through its separately allocated evidence path
+    must_not_write:
+      - repository source
+      - schema
+      - tests
+      - implementation evidence
+      - reviewer verdict
+  - writer: LANE-079-REVIEW
+    may_write:
+      - "No product, test, data or evidence path; verdict returned through the assigned review record only."
+    must_not_write:
+      - all leased implementation paths
+      - all QA paths
+      - all data
+
+protected_paths_and_objects:
+  historical_migrations:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0005_audit_absolute_immutability.sql
+    - supabase/migrations/0018_w4_notifications_reviews.sql
+    - supabase/migrations/0019_w5_records.sql
+    - supabase/migrations/0021_fix_broad_rls.sql
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+  database_objects:
+    - public.audit_events
+    - public.audit_row_change()
+    - public.trg_audit_virtual_participants
+    - public.trg_audit_virtual_sessions
+    - public.vp_request_otp(uuid)
+    - public.vp_verify_otp(uuid,text)
+    - public.vp_otp_status(uuid)
+    - public.vs_append_event(uuid,text,jsonb)
+    - public.vs_mark_session_verified(uuid,uuid)
+    - public.set_operational_state(uuid,operational_state)
+  application_paths:
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/actions.ts
+  evidence_paths:
+    - product-contract/evidence/B6-EV-001-otp-flow.txt
+    - product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
+    - product-contract/evidence/CD-043_D2L_WIRING_CLOSURE_2026-07-15.md
+    - product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md
+    - product-contract/evidence/EVIDENCE_STATUS.md
+    - product-contract/evidence/SAQEEL-DSYNC-001.md
+  rule: >-
+    Protected items are read/execute-only unless a new sponsor decision,
+    collision refresh and exact expanded lease explicitly authorize one.
+
+dependency_order:
+  - order: 1
+    gate: VALID_SAFE_DECISION_RECEIPT
+    input: KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+    stop_if: "Receipt is absent, invalid, unsafe, stale or routed to hold/scope expansion."
+  - order: 2
+    gate: ACCEPTED_DESIGN_AUTHORITY
+    input: "Claude Design timeline placement, responsive states and bounded paging."
+    stop_if: "Design or paging remains unapproved."
+  - order: 3
+    gate: CURRENT_REF_AND_COLLISION_REFRESH
+    input: "Current product/coordination refs, lease blob, dirty paths, migration namespace and objects."
+    stop_if: "Any overlap, stale pin or unowned dirty path exists."
+  - order: 4
+    gate: FOUR_LANE_IDENTITY_ALLOCATION
+    input: "Distinct implementation, QA, data and review identities."
+    stop_if: "Any identity is missing or combines conflicting roles."
+  - order: 5
+    gate: EXACT_LEASES
+    input: "Path/object/data/evidence boundaries from this packet."
+    stop_if: "Any lease is broad, overlapping, ambiguous or lacks release conditions."
+  - order: 6
+    gate: IMPLEMENTATION
+    input: "Accepted decisions, design and implementation lease."
+    stop_if: "Protected path/object changes or scope expansion occurs."
+  - order: 7
+    gate: IMPLEMENTATION_SELF_CHECK
+    input: "Typecheck/build/static contract and migration lint in the implementation worktree."
+    stop_if: "Any failure or unexplained diff exists."
+  - order: 8
+    gate: CONTROLLED_DATA_FIXTURE
+    input: "Approved non-production environment and data lease."
+    stop_if: "Environment, row manifest, cleanup or secret-safety boundary is missing."
+  - order: 9
+    gate: INDEPENDENT_QA_35_CASES
+    input: KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+    stop_if: "Any P0 fails, any required P1 is unsafe, or any case is excluded."
+  - order: 10
+    gate: EVIDENCE_FREEZE
+    input: "Seven evidence rows plus source, fixture and artifact hashes."
+    stop_if: "Evidence is incomplete, mutable, secret-bearing or unattributable."
+  - order: 11
+    gate: FINAL_INDEPENDENT_REVIEW
+    input: "Implementation, QA, data and evidence."
+    stop_if: "Reviewer returns or blocks."
+  - order: 12
+    gate: REAL_BROWSER_SPONSOR_REVIEW
+    input: "Actual Virtual and Admin Audit implementations."
+    stop_if: "Only design imagery is available or sponsor does not accept."
+  - order: 13
+    gate: COMPLETION_CREDIT
+    input: "Accepted evidence and authorized control-plane update."
+    stop_if: "Any P0/P1 requirement remains failed or unevidenced."
+
+acceptance_execution_gate:
+  source: KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+  categories:
+    positive: 5
+    direct_query: 3
+    negative: 4
+    unauthorized: 5
+    historical: 3
+    admin_audit: 4
+    virtual_UI: 3
+    recursive_forbidden_key: 4
+    duplicate_and_bounds: 2
+    immutability_and_regression: 2
+  total_cases: 35
+  execution_rules:
+    - "All P0 cases pass."
+    - "P1 cases pass or receive an accepted requirement-safe disposition."
+    - "No case is skipped, quarantined as flaky or replaced with static inspection."
+    - "Every persona case uses the declared identity and session relationship."
+    - "Direct-query cases use the external API boundary used by the app."
+    - "Historical checks compare row count, stable IDs and raw stored hashes."
+    - "Recursive secret scans cover API, serialization, network, DOM/state, logs and evidence."
+    - "Protected regressions run unchanged with no exclusion."
+  absolute_zero_thresholds:
+    forbidden_key_or_value_findings: 0
+    historical_audit_row_mutations: 0
+    protected_regression_exclusions: 0
+    unauthorized_data_rows_returned: 0
+    application_code_repairs_by_QA: 0
+
+evidence_gate:
+  required_rows:
+    - evidence_id: EV-076-01
+      subject: "Direct query denial with safe-field and OTP-function preservation."
+    - evidence_id: EV-076-02
+      subject: "Authorized and unauthorized persona/session audit matrix."
+    - evidence_id: EV-076-03
+      subject: "Historical row count, ID and raw hash preservation."
+    - evidence_id: EV-076-04
+      subject: "Admin Audit redaction and non-M11 comparison."
+    - evidence_id: EV-076-05
+      subject: "Virtual UI immutable history, empty state and bounded paging."
+    - evidence_id: EV-076-06
+      subject: "Recursive forbidden-key/value scan."
+    - evidence_id: EV-076-07
+      subject: "Duplicate presentation and protected regression."
+  every_row_requires:
+    - product_commit
+    - coordination_commit
+    - implementation_commit
+    - migration_identity
+    - test_identity
+    - environment_identity
+    - persona
+    - fixture_manifest
+    - reviewed_result
+    - artifact_hashes
+    - owner_identity
+    - timestamp
+  browser_requirement:
+    - "Show the real /virtual/:id implementation."
+    - "Show the real /admin/audit implementation."
+    - "Capture DOM/network proof that forbidden fields are absent."
+    - "Do not substitute Claude Design images."
+
+rollback_and_recovery:
+  implementation:
+    before_acceptance:
+      - "Disable or revert the bounded application commit if the existing route remains safe and functional."
+      - "Do not roll back by editing main or historical migrations."
+    database:
+      - "Use a new forward corrective migration for a defective deployed function/policy."
+      - "Never delete or rewrite audit_events."
+      - "Preserve the previous function definition and grants as reviewed rollback evidence."
+    stop_condition: "Rollback that weakens secret protection, OTP enforcement or audit immutability is prohibited."
+  QA:
+    - "Failed evidence is retained and superseded, not edited into a pass."
+    - "A corrected run receives new artifact hashes and a link to the failed run."
+  data:
+    - "Delete only mutable fixture rows listed in the cleanup manifest when relationship constraints allow."
+    - "Retain immutable generated audit rows and list their object IDs."
+    - "Dispose the isolated transaction/database used for synthetic historical-secret cases."
+    - "Never use broad cleanup targets, unresolved variables or production."
+  review:
+    - "A returned verdict remains in history; a later review supersedes it with new evidence."
+
+completion_credit_gate:
+  current_credit: 0
+  maximum_before_all_gates: 0
+  credit_authority: "Authorized product-contract control owner after sponsor acceptance."
+  required_before_any_credit:
+    - "Valid safe sponsor receipt."
+    - "Accepted design placement and bounds."
+    - "Exact implementation, QA, data and review separation."
+    - "35/35 acceptance cases executed under the P0/P1 rules."
+    - "7/7 evidence rows complete."
+    - "Zero secret findings, audit mutations and regression exclusions."
+    - "Independent reviewer approval."
+    - "Real-browser sponsor acceptance."
+  full_requirement_qualification: >-
+    Even a complete audit-redaction slice cannot close full CR-347 or CR-348
+    until real provider leave, disconnect and reconnect producers and
+    consumers are contracted and proven.
+
+preflight_verdict:
+  valid_safe_receipt_present: false
+  design_gate_passed: false
+  implementation_identity_allocated: false
+  QA_identity_allocated: false
+  data_identity_allocated: false
+  reviewer_identity_allocated: false
+  leases_created: 0
+  tests_executed: 0
+  evidence_rows_complete: 0
+  completion_credit: 0
+  state: DORMANT_BLOCKED_NO_AUTHORITY
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-LEASE-MANIFEST-DRY-RUN-080
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Build synthetic, non-authorizing lease-manifest examples for the four
+    lanes and mutate their separation fields to prove every overlap and
+    protected-path breach fails closed.
+  prohibited:
+    - "No real identity, answer, owner, lease, dispatch, code, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  lanes: 4
+  lease_matrix_rows: 4
+  dependency_gates: 13
+  acceptance_categories: 10
+  acceptance_cases: 35
+  evidence_rows: 7
+  zero_thresholds: 5
+  real_identities_allocated: 0
+  real_leases_created: 0
+  tests_executed: 0
+  evidence_captured: 0
+  completion_credit: 0
+  commits_created: 0
+  pushes_created: 0
+  blockers_closed: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS
