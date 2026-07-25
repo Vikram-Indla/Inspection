@@ -1,0 +1,227 @@
+schema_version: "1.0"
+packet_id: M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019
+status: REVIEWER_READY_READ_ONLY_ROUTE_DECISION_REQUIRED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+mapping_writes_performed: false
+application_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Resolve design ownership for the Administration catalogue and M10 child
+  routes. WA-DES-020 is a broad navigation catalogue, not Platform Operations.
+  The real /admin route is already owned by WA-DES-015 and implements a
+  Configuration Evidence Spine. Therefore WA-DES-020 currently has no proven
+  route/component owner and must not be silently reassigned.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: efa6349805ef5f0f5106feb9df85b972abce9633
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-AUTHORIZATION-DECISION-BOUNDARY-003.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-OPERATIONS-DESIGN-READINESS-018.yaml
+  dirty_path_ownership: "Other active/preceding lanes; preserved and not modified."
+  task: M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019
+  process_ids: ["G2-P00"]
+  requirement_ids:
+    phase_1_admin: "Exact module-specific rows; never CR-001..CR-478 for one screen."
+    transferred_m10: "Exact M3-00/M3-05 contextual rows where applicable."
+  acceptance_ids: ["WA-M9-AC-001..006", "WA-M10-AC-001..006"]
+  do_not_touch:
+    - "Every design, mapping, requirement and acceptance artifact."
+    - "Application, tests, data, providers and migrations."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  current_admin_home: apps/web/src/app/(app)/admin/page.tsx
+  mapped_admin_home_design: WA-DES-015
+  disputed_design:
+    logical_id: WA-DES-020
+    filename: "SAQEEL Control Panel.dc.html"
+    sha256: "387114f67318fc3d8d0022b72f711a4b952dce588a66ba5875fd8a5d675125d2"
+    semantic_role: ADMINISTRATION_NAVIGATION_CATALOGUE
+
+route_design_component_matrix:
+  - route: /admin
+    component: apps/web/src/app/(app)/admin/page.tsx
+    current_design: WA-DES-015
+    design_name: "SAQEEL Admin.dc.html"
+    capability: "Approval & Configuration overview / Configuration Evidence Spine."
+    validation: CONFIRMED
+    requirement_ownership: "M9 admin configuration families; per-source reads only."
+    correction: "Do not add WA-DES-020 as a second competing authority."
+  - route: /admin/operations
+    component: apps/web/src/app/(app)/admin/operations/page.tsx
+    current_design: WA-DES-020
+    capability: "Platform operations, error retry requests and feature-flag publication."
+    validation: INCORRECT_MAPPING
+    requirement_ownership: "M3-00 transferred operations/resilience rows."
+    correction: "Remove WA-DES-020; assign new governed ID only after approval."
+  - route: /admin/execution
+    component: apps/web/src/app/admin/execution/page.tsx
+    current_design: WA-DES-003
+    validation: CONFIRMED_WITH_CORRECTION
+    requirement_ownership: "Section-level execution-context requirements; no 478-row ownership."
+    packet: M10-ADMIN-EXECUTION-DESIGN-READINESS-014
+  - route: /admin/gis
+    component: apps/web/src/app/(app)/admin/gis/page.tsx
+    current_design: WA-DES-006
+    validation: CONFIRMED_WITH_CORRECTION
+    requirement_ownership: "Contextual GIS/arrival rows plus transferred M3-05."
+    packet: M10-ADMIN-GIS-DESIGN-READINESS-015
+  - route: /admin/integrations/factory-data
+    component: apps/web/src/app/(app)/admin/integrations/factory-data/page.tsx
+    current_design: WA-DES-007
+    validation: CONFIRMED_WITH_CORRECTION
+    requirement_ownership: "CR-410..CR-429 contextual; no direct 478 control-plane row."
+    packet: M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+  - route: /admin/integrations
+    component: apps/web/src/app/(app)/admin/integrations/page.tsx
+    current_design: WA-DES-008
+    validation: CONFIRMED_WITH_CORRECTION
+    requirement_ownership: "Exact 14 transferred M3-00 rows."
+    packet: M10-INTEGRATION-HUB-DESIGN-READINESS-017
+  - route: /admin/gis/spatial
+    component: apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    current_design: NONE_EXACT
+    validation: NO_DESIGN_MATCH
+    requirement_ownership: "Transferred M3-05; feature/provider held."
+    correction: "Do not borrow WA-DES-006 without explicit companion-design acceptance."
+  - route: /admin/integrations/senaei
+    component: NONE
+    current_design: WA-DES-012
+    validation: NO_CODE_MATCH
+    correction: "Keep design non-consumable; no new route without approved implementation task."
+  - route: /admin/virtual
+    component: NONE
+    current_design: WA-DES-013
+    validation: NO_CODE_MATCH
+    correction: "Keep design non-consumable; no new route/provider claim."
+
+wa_des_020_ownership_result:
+  current_route_claim: /admin/operations
+  current_claim_valid: false
+  nearest_real_route: /admin
+  nearest_route_usable: false
+  reason:
+    - "/admin already has WA-DES-015 authority."
+    - "Current /admin is an evidence spine with verified/zero/unavailable reads, not the card catalogue."
+    - "Replacing it with WA-DES-020 would remove per-source truth, lifecycle evidence and scope explanation."
+  final_status: ORPHANED_DESIGN_PENDING_ROUTE_DECISION
+  permitted_options:
+    - option: RETIRE_AS_NON_CONSUMABLE_REFERENCE
+      effect: "Preserve export/inventory but map to no product route."
+    - option: CREATE_DISTINCT_ADMIN_CATALOGUE_ROUTE
+      effect: "Requires approved route, component, requirements, tests, navigation and design mapping."
+    - option: REVISE_AS_WA-DES-015_COMPANION
+      effect: "Requires explicit consolidation decision; may not replace evidence-spine behavior."
+  prohibited_option: "Silently map WA-DES-020 to /admin or /admin/operations."
+
+overlap_risks:
+  - id: CP-OWN-001
+    severity: CRITICAL
+    risk: "Two designs claim /admin and one removes verified source-state behavior."
+  - id: CP-OWN-002
+    severity: CRITICAL
+    risk: "Catalogue card is treated as implemented operations/resilience UI."
+  - id: CP-OWN-003
+    severity: HIGH
+    risk: "Design filenames become navigation routes although no component exists."
+  - id: CP-OWN-004
+    severity: HIGH
+    risk: "CR-001..478 is counted repeatedly across unrelated M10 screens."
+  - id: CP-OWN-005
+    severity: HIGH
+    risk: "Card visibility is mistaken for authorization."
+  - id: CP-OWN-006
+    severity: HIGH
+    risk: "Senaei/virtual/provider-held designs authorize new routes or live states."
+
+requirement_ownership_rules:
+  - "One route owns only requirements directly implemented or explicitly contextualized."
+  - "A catalogue link does not own the linked module's requirements."
+  - "WA-DES-015 owns /admin overview behavior, not every child capability."
+  - "WA-DES-020 owns no requirement completion while it has no accepted route."
+  - "New design IDs are assigned only by governance from a collision-checked inventory."
+  - "Child routes retain their own role, service, test and acceptance boundaries."
+
+required_mapping_corrections:
+  immediate_proposal_only:
+    - "Remove WA-DES-020 from /admin/operations."
+    - "Record WA-DES-020 as ORPHANED_PENDING_DECISION, not deleted."
+    - "Keep WA-DES-015 as sole /admin authority."
+    - "Replace seven-design M10 bundles with each route's exact design."
+    - "Replace CR-001..CR-478 with approved exact/contextual expressions."
+    - "Record NO_CODE_MATCH for WA-DES-012 and WA-DES-013."
+    - "Record NO_DESIGN_MATCH for /admin/gis/spatial and /admin/operations."
+  application_condition: "Frozen mapping may change only through approved change control."
+
+design_truth_for_any_admin_catalogue:
+  preserve:
+    - "Real routes only."
+    - "Role-derived act scope; visibility grants nothing."
+    - "Per-source verified, genuinely empty and unavailable distinctions."
+    - "No provider health, counts, dates or completion invented."
+    - "EN/AR, light/dark, responsive and keyboard navigation."
+  reject:
+    - "Design-file hrefs as application routes."
+    - "Fictional Admin/Map Admin/Technical Admin role labels."
+    - "Locked icon as authorization proof."
+    - "Cards for unimplemented routes without unavailable/held truth."
+    - "Removal of the current Configuration Evidence Spine."
+
+new_authority_boundaries:
+  admin_operations:
+    state: BLOCKED_PENDING_NEW_ID
+    title: "SAQEEL Platform Operations and Resilience"
+    filename_pattern: "SAQEEL Platform Operations and Resilience - <APPROVED-ID>-C1.dc.html"
+  spatial_canvas:
+    state: BLOCKED_PENDING_COMPANION_DECISION
+    title: "SAQEEL Spatial Canvas"
+    rule: "May be a governed companion to WA-DES-006 only if explicitly approved."
+  no_id_invention: true
+
+do_not_build:
+  - "No new Admin catalogue, Operations, Senaei, Virtual or Spatial route."
+  - "No reuse, renumbering or invention of WA-DES IDs."
+  - "No replacement of /admin evidence-spine behavior."
+  - "No design-file hyperlink copied into application navigation."
+  - "No role, permission, provider, health, count or requirement ownership inferred from cards."
+  - "No mapping, product, tests, data, branch or stash mutation."
+
+recommended_reviewer_action: RETURN_FOR_MAPPING_CORRECTION
+recommended_sponsor_decision:
+  preferred: RETIRE_WA_DES_020_AS_NON_CONSUMABLE_REFERENCE
+  rationale: >-
+    The current /admin evidence spine is materially stronger and already has
+    WA-DES-015 authority. Creating a second catalogue route adds navigation and
+    maintenance without delivering a missing business capability.
+  separate_decision: "Assign a new ID for /admin/operations design authority."
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-SPATIAL-CANVAS-DESIGN-AUTHORITY-020
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    route: /admin/gis/spatial
+    design_id: UNASSIGNED_OR_COMPANION_DECISION_REQUIRED
+  scope: >-
+    Determine whether Spatial Canvas should receive a new design ID or an
+    approved WA-DES-006 companion revision. Map the held provider, layers,
+    locations, exact requirements, roles, states and tests without creating a
+    design or changing product/mapping.
+  collision_check: "Distinct route/component; no overlap with /admin/gis readiness."
