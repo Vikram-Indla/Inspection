@@ -10,6 +10,13 @@ import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission }
 import styles from "./field-factory360.module.css";
 
 const text = (value: string | number | null | undefined) => value == null || value === "" ? "—" : String(value);
+const CLEAN_FACTORY_CODES = new Set([
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204",
+  "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+]);
 
 // TASK-FACTORY-360-IPAD-011 · SCR-IPAD Factory 360 · F360IPAD-NATIVE-003
 // Field-native, read-only Factory 360 for the Inspector iPad channel. Renders
@@ -75,7 +82,7 @@ export default async function FieldFactory360({ params, searchParams }: {
   );
 
   const dossier = await loadFactory360Dossier(sb, id, requestedLicense, permissions);
-  if (!dossier.found || !dossier.cr) return (
+  if (!dossier.found || !dossier.cr || !dossier.factory || !CLEAN_FACTORY_CODES.has(dossier.factory.factory_code)) return (
     <>
       {header(t("f360.notFound.title", "Factory 360 profile unavailable"))}
       <div className={styles.page}>

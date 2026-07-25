@@ -4,6 +4,14 @@ import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 
+const CLEAN_FACTORY_CODES = [
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204",
+  "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+] as const;
+
 // TASK-FACTORY-360-IPAD-011 · F360IPAD-ENTRY-001 · CHUNK 1
 // Field Factory 360 entry resolver. Any inspector entry point (assigned visit,
 // immediate inspection, search, map, notification, report, risk/compliance
@@ -20,28 +28,48 @@ export default async function FieldFactory360Resolver({ searchParams }: {
 
   const sb = await supabaseServer();
 
-  if (cr) go(cr, license);
+  async function goIfClean(crId: string, licenseId?: string | null) {
+    let query = sb.from("industrial_licenses")
+      .select("id, commercial_registration_id, factory_id")
+      .eq("commercial_registration_id", crId);
+    if (licenseId) query = query.eq("id", licenseId);
+    const { data: candidates } = await query.order("license_number").limit(50);
+    const factoryIds = (candidates ?? []).map(row => row.factory_id).filter(Boolean);
+    if (!factoryIds.length) return false;
+    const { data: cleanFactories } = await sb.from("factories")
+      .select("id")
+      .in("id", factoryIds)
+      .in("factory_code", [...CLEAN_FACTORY_CODES]);
+    const cleanIds = new Set((cleanFactories ?? []).map(row => row.id));
+    const match = (candidates ?? []).find(row => cleanIds.has(row.factory_id));
+    if (!match) return false;
+    go(match.commercial_registration_id, match.id);
+  }
 
   if (license) {
     const { data } = await sb.from("industrial_licenses").select("id, commercial_registration_id").eq("id", license).maybeSingle();
-    if (data?.commercial_registration_id) go(data.commercial_registration_id, data.id);
+    if (data?.commercial_registration_id) await goIfClean(data.commercial_registration_id, data.id);
   }
   if (factory) {
-    const { data } = await sb.from("industrial_licenses").select("id, commercial_registration_id").eq("factory_id", factory).order("license_number").limit(1).maybeSingle();
-    if (data?.commercial_registration_id) go(data.commercial_registration_id, data.id);
+    const { data: cleanFactory } = await sb.from("factories").select("id").eq("id", factory).in("factory_code", [...CLEAN_FACTORY_CODES]).maybeSingle();
+    if (cleanFactory) {
+      const { data } = await sb.from("industrial_licenses").select("id, commercial_registration_id").eq("factory_id", cleanFactory.id).order("license_number").limit(1).maybeSingle();
+      if (data?.commercial_registration_id) go(data.commercial_registration_id, data.id);
+    }
   }
   if (plant) {
     const { data } = await sb.from("industrial_licenses").select("id, commercial_registration_id").eq("plant_number", plant).order("license_number").limit(1).maybeSingle();
-    if (data?.commercial_registration_id) go(data.commercial_registration_id, data.id);
+    if (data?.commercial_registration_id) await goIfClean(data.commercial_registration_id, data.id);
   }
   if (license_no) {
     const { data } = await sb.from("industrial_licenses").select("id, commercial_registration_id").eq("license_number", license_no).order("license_number").limit(1).maybeSingle();
-    if (data?.commercial_registration_id) go(data.commercial_registration_id, data.id);
+    if (data?.commercial_registration_id) await goIfClean(data.commercial_registration_id, data.id);
   }
   if (cr_no) {
     const { data } = await sb.from("commercial_registrations").select("id").eq("cr_number", cr_no).maybeSingle();
-    if (data?.id) go(data.id, license ?? null);
+    if (data?.id) await goIfClean(data.id, license ?? null);
   }
+  if (cr) await goIfClean(cr, license);
 
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => (locale === "ar" ? ar : t(key, en));
