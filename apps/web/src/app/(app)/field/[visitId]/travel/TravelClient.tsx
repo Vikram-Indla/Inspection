@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import FieldHeader from "@/components/field/FieldHeader";
+import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import EmptyState from "@/components/EmptyState";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
 import styles from "./travel.module.css";
@@ -33,10 +34,13 @@ export type TravelStrings = {
   etaUnavailable: string; noCoords: string; noCoordsBody: string;
   notFound: string; notFoundBody: string; youLabel: string; mapAria: string;
   continueCheckin: string; checkinCaption: string;
+  connectivityOffline: string; connectivityWeak: string;
+  updated: string; updatedAgo: string; updatedNow: string;
+  openInMaps: string; privacyNote: string;
 };
 
 type LatLng = { lat: number; lng: number };
-type Fix = { lat: number; lng: number; acc: number; speed: number | null };
+type Fix = { lat: number; lng: number; acc: number; speed: number | null; ts: number };
 
 // Haversine straight-line metres — identical to the governed distM in
 // Startup.tsx (M04-004). Used only for the honest geofence range display; the
@@ -76,6 +80,12 @@ export default function TravelClient({
   const [geoDenied, setGeoDenied] = useState(false);
   const [eta, setEta] = useState<{ minutes: number; distanceM: number } | null>(null);
   const [etaUnavailable, setEtaUnavailable] = useState(false);
+  const [nowTs, setNowTs] = useState(0);
+  // Initialised true so server render and first client paint agree; corrected
+  // from navigator.onLine on mount and kept current via the online/offline
+  // events. The road ETA is a network fact, so losing connectivity must revert
+  // it immediately — not only when the next throttled fetch happens to fail.
+  const [online, setOnline] = useState(true);
   const lastEtaAtRef = useRef(0);
 
   const back = (
@@ -96,13 +106,38 @@ export default function TravelClient({
     const watch = navigator.geolocation.watchPosition(
       p => {
         setGeoDenied(false);
-        setFix({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, speed: p.coords.speed });
+        setFix({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, speed: p.coords.speed, ts: p.timestamp });
       },
       () => setGeoDenied(true),
       { enableHighAccuracy: true, maximumAge: 10_000, timeout: 15_000 },
     );
     return () => navigator.geolocation.clearWatch(watch);
   }, [destination]);
+
+  // Honest location-freshness clock. GPS is device hardware and keeps fixing
+  // even offline, so a growing "updated N ago" is the only truthful signal that
+  // the shown position has stalled — we never invent a policy "stale" cutoff,
+  // we just show the real elapsed time since the last fix.
+  useEffect(() => {
+    if (!fix) return;
+    setNowTs(Date.now());
+    const id = setInterval(() => setNowTs(Date.now()), 1_000);
+    return () => clearInterval(id);
+  }, [fix]);
+
+  // Live connectivity — GPS keeps working offline, but the road ETA/distance
+  // cannot be current without the network, so we track it and gate the route
+  // display below on it.
+  useEffect(() => {
+    const sync = () => setOnline(typeof navigator === "undefined" ? true : navigator.onLine);
+    sync();
+    window.addEventListener("online", sync);
+    window.addEventListener("offline", sync);
+    return () => {
+      window.removeEventListener("online", sync);
+      window.removeEventListener("offline", sync);
+    };
+  }, []);
 
   // Real road-network ETA/distance from the server Mapbox Directions endpoint.
   // Throttled to at most once every 20 s per fix; honest unavailable state on
@@ -152,14 +187,34 @@ export default function TravelClient({
     : fix ? [fix.lat, fix.lng] : KSA_CENTER;
 
   // Distance stat prefers the real road-network distance from routing; falls
-  // back to the honest straight-line metres when routing is unavailable.
-  const distanceLabel = eta
+  // back to the honest straight-line metres when routing is unavailable. The
+  // road ETA/distance are only ever shown while routing is genuinely live —
+  // once the provider is unavailable (or the device is offline) we must NOT
+  // keep presenting the last figures as if current (the "never fabricate ETA"
+  // contract), so ETA reverts to a dash and distance to the live straight line.
+  const routeLive = eta != null && !etaUnavailable && online;
+  const distanceLabel = routeLive
     ? `${(eta.distanceM / 1000).toFixed(1)} ${strings.kmUnit}`
     : straightM != null ? `${Math.round(straightM)} ${strings.mUnit}` : strings.dash;
-  const etaLabel = eta ? `${eta.minutes} ${strings.minUnit}` : strings.dash;
+  const etaLabel = routeLive ? `${eta.minutes} ${strings.minUnit}` : strings.dash;
   const speedLabel = fix && fix.speed != null && fix.speed >= 0
     ? `${Math.round(fix.speed * 3.6)} ${strings.kmhUnit}` : strings.dash;
   const accuracyLabel = fix ? `±${Math.round(fix.acc)} ${strings.mUnit}` : strings.dash;
+
+  // Truthful elapsed time since the last real GPS fix (0 s until the first
+  // second elapses); never rendered when there is no fix at all.
+  const freshnessLabel = fix
+    ? (() => {
+        const secs = Math.max(0, Math.round((nowTs - fix.ts) / 1000));
+        return secs <= 0 ? strings.updatedNow : fmt(strings.updatedAgo, { n: secs });
+      })()
+    : strings.dash;
+
+  // Native navigation handoff for the iPad field device (Apple Maps driving
+  // directions to the official coordinates only — never a fabricated point).
+  const mapsHref = destination
+    ? `https://maps.apple.com/?daddr=${destination.lat},${destination.lng}&dirflg=d`
+    : null;
 
   const stateBadge = !destination || geoDenied
     ? "badge-warning"
@@ -191,6 +246,9 @@ export default function TravelClient({
     <>
       {header}
       <div className={styles.page}>
+        {/* Honest connectivity: offline/weak network only stalls the road ETA;
+            device GPS and the geofence range below stay live. */}
+        <FieldConnectivityBanner offline={strings.connectivityOffline} weak={strings.connectivityWeak} />
         {destination ? (
           <>
             {/* Live route map (shared Mapbox GeoMap) + real ETA/distance/speed. */}
@@ -209,7 +267,7 @@ export default function TravelClient({
               </div>
               <div className={styles.stats}>
                 <div className={styles.stat}>
-                  <div className={`id-code ${styles.statValue}`}>{etaLabel}</div>
+                  <div className={`id-code ${styles.statValue}`} data-testid="travel-eta">{etaLabel}</div>
                   <div className="t-caption">{strings.eta}</div>
                 </div>
                 <div className={styles.stat}>
@@ -254,7 +312,9 @@ export default function TravelClient({
                 <span>{strings.geofenceRadius}: <span className="id-code">{fenceRadiusM} {strings.mUnit}</span></span>
                 <span>{strings.accuracy}: <span className="id-code">{accuracyLabel}</span></span>
                 {straightM != null && <span>{strings.straightLine}: <span className="id-code">{Math.round(straightM)} {strings.mUnit}</span></span>}
+                {fix && <span data-testid="travel-freshness">{strings.updated}: <span className="id-code">{freshnessLabel}</span></span>}
               </div>
+              <p className={`t-caption ${styles.privacyNote}`}>{strings.privacyNote}</p>
             </section>
           </>
         ) : (
@@ -267,6 +327,20 @@ export default function TravelClient({
           (M04-004). No state mutation, no parallel arrival path. */}
       <div className={styles.footer}>
         <div className={styles.footerInner}>
+          {mapsHref && (
+            <a
+              href={mapsHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost btn-block"
+              data-testid="travel-open-maps"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true" style={{ inlineSize: 16, blockSize: 16 }}>
+                <path d="M9 18l-6 3V6l6-3m0 15 6 3m-6-3V3m6 18 6-3V3l-6 3m0 15V6" />
+              </svg>
+              {strings.openInMaps}
+            </a>
+          )}
           <Link href={backHref} prefetch={false} className="btn btn-primary btn-block">{strings.continueCheckin}</Link>
           <p className={`t-caption ${styles.checkinCaption}`}>{strings.checkinCaption}</p>
         </div>

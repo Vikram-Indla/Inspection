@@ -79,6 +79,13 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     mapAria: tr("field.travel.mapAria", "Live route map to the establishment", "خريطة المسار المباشر إلى المنشأة"),
     continueCheckin: tr("field.travel.continueCheckin", "Continue to check-in", "المتابعة إلى تسجيل الوصول"),
     checkinCaption: tr("field.travel.checkinCaption", "Arrival is confirmed on the governed geofence check-in (M04-004). This screen only shows your route — it does not record arrival.", "يتم تأكيد الوصول عبر تسجيل الدخول الجغرافي المحكوم (M04-004). تعرض هذه الشاشة مسارك فقط ولا تسجّل الوصول."),
+    connectivityOffline: tr("field.travel.connectivityOffline", "Offline — the live route ETA can't refresh. Your GPS position and geofence range below stay live.", "غير متصل — لا يمكن تحديث الوقت المتوقع للمسار. يبقى موقعك عبر GPS ونطاق التسييج أدناه محدّثين مباشرةً."),
+    connectivityWeak: tr("field.travel.connectivityWeak", "Weak connection — the live route ETA may be delayed.", "اتصال ضعيف — قد يتأخر تحديث الوقت المتوقع للمسار."),
+    updated: tr("field.travel.updated", "Fix age", "عمر التحديد"),
+    updatedAgo: tr("field.travel.updatedAgo", "{n}s ago", "قبل {n} ثانية"),
+    updatedNow: tr("field.travel.updatedNow", "just now", "الآن"),
+    openInMaps: tr("field.travel.openInMaps", "Open in Maps", "فتح في الخرائط"),
+    privacyNote: tr("field.travel.privacyNote", "Your live location is used only during this journey to draw your route and range. This screen does not record or store your position.", "يُستخدم موقعك المباشر أثناء هذه الرحلة فقط لرسم مسارك ونطاقك. لا تسجّل هذه الشاشة موقعك ولا تخزّنه."),
   };
 
   const factory = (v?.factories ?? null) as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null; risk_band: string | null } | null;
