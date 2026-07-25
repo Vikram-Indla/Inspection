@@ -1,5 +1,16 @@
 schema_version: "1.0"
 items:
+  - task_id: "SAQEEL-DSYNC-001"
+    gate: "Concurrent Web/Admin convergence discovery and sponsor consent"
+    priority: "P0"
+    status: "DISCOVERY_PACKET_READY_AWAITING_SPONSOR_DECISIONS"
+    owner: "Codex independent discovery lane + Sponsor consent authority"
+    blocked_by:
+      - "SHARED_GOVERNANCE.md referenced by the resume prompt was not supplied"
+      - "Claude Design read-only live inventory returned HTTP 401"
+      - "Sponsor landing/navigation decisions and cross-review authorization"
+    blocks: ["Landing-page implementation lease", "Any Web/Admin convergence application change"]
+    note: "Fourteen-output discovery packet ready under artifacts/saqeel-convergence/codex. Verified: 478 requirement-management rows, 39 Phase 1 Web routes, 32 Phase 1 Admin routes, 46 approved design exports/45 unique payloads, and supplied screenshot count of 98 pages. Live native page identities remain blocked by HTTP 401. Principal P0: Web Execution points to /field while Planning-owned /planning/visits is not yet a working target. Typecheck, CSV structural validation, and diff check pass. No application/design mutation, accepted-baseline advance, stash access, cross-lane file reuse, push, merge, deploy, remote DDL, or shared-data mutation."
   - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
     gate: "Web/Admin human screen approval"
     priority: "P0"

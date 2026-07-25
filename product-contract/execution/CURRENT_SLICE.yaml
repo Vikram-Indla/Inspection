@@ -19,6 +19,33 @@ approval:
   interpretation: "APPROVED — PROCEED after WA-P1-F0-CORR-001"
   authorizes: "WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement"
 
+concurrent_tasks:
+  - task_id: "SAQEEL-DSYNC-001"
+    change_control_id: "CC-SAQEEL-DSYNC-001"
+    status: "DISCOVERY_PACKET_READY_AWAITING_SPONSOR_DECISIONS"
+    branch: "codex/saqeel-web-admin-convergence-discovery"
+    worktree: "/Users/vikramindla/Developer/Inspection-codex-web-admin-convergence"
+    baseline_sha: "3323a8ef3d788c1c157a9bf0d63e32a3d9334e42"
+    application_implementation_allowed: false
+    authority: "product-contract/governance/CC-SAQEEL-DSYNC-001.yaml"
+    discovery_outputs: "artifacts/saqeel-convergence/codex/README.md"
+    required_context:
+      - "product-contract/governance/CC-SAQEEL-DSYNC-001.yaml"
+      - "product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml"
+      - "product-contract/web-admin-phase1/00_START_HERE.md"
+      - "product-contract/web-admin-phase1/BASELINE_SUMMARY.json"
+      - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
+      - "product-contract/web-admin-phase1/ROUTE_INVENTORY.csv"
+      - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv"
+      - "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
+      - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
+      - "product-contract/screens/screen_route_catalogue.csv"
+      - "product-contract/domain/rbac_matrix.csv"
+      - "product-contract/domain/state_transitions.csv"
+      - "product-contract/governance/decision_register.csv"
+    evidence:
+      - "artifacts/saqeel-convergence/codex/"
+
 process_ids: ["G2-P01", "G2-P02", "G2-P03"]
 requirement_ids: ["CR-001..CR-098"]
 acceptance_ids: ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"]

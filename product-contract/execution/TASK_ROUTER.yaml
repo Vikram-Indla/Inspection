@@ -1,6 +1,23 @@
 schema_version: "1.0"
 project: "MIM Inspection Platform MVP1"
 routing_rules:
+  - intent: saqeel_web_admin_convergence_discovery
+    id_pattern: "SAQEEL-DSYNC-*"
+    required_context:
+      - product-contract/governance/CC-SAQEEL-DSYNC-001.yaml
+      - product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml
+      - product-contract/web-admin-phase1/00_START_HERE.md
+      - product-contract/web-admin-phase1/BASELINE_SUMMARY.json
+      - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+      - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+      - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+      - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+      - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+      - product-contract/screens/screen_route_catalogue.csv
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/domain/state_transitions.csv
+      - product-contract/governance/decision_register.csv
+      - artifacts/saqeel-convergence/codex/
   - intent: web_admin_phase1_shell_authority
     id_pattern: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-*"
     required_context:

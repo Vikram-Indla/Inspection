@@ -237,6 +237,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-20"
     change_ref: "product-contract/governance/CC-SAQEEL-V5-IMPLEMENTATION-001.yaml"
+  - gate: "SAQEEL-DSYNC-001"
+    decision: "APPROVED DISCOVERY ONLY — sponsor authorized a separate Codex-owned worktree and branch from canonical commit 3323a8ef to register SAQEEL-DSYNC-001 as a concurrent governed discovery lane for business Web/Admin inventory, landing/navigation reconciliation, Planning and Operations Centre discovery, and read-only shared backend/API synergy analysis. PWA/iPad are reference-only; Field Login is deferred evidence; Claude Code's worktree and stashes are protected. No application or design mutation, accepted-baseline advance, cross-review, implementation lease, commit, push, merge, deploy, remote DDL, provider activation, or shared-data mutation is authorized."
+    approver: "Vikram Indla"
+    date: "2026-07-24"
+    change_ref: "product-contract/governance/CC-SAQEEL-DSYNC-001.yaml"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
