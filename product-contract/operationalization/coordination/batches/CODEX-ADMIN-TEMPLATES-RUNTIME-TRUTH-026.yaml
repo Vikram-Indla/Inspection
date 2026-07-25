@@ -1,0 +1,685 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-TEMPLATES-RUNTIME-TRUTH-026
+title: Independent Admin Templates runtime truth and acceptance-credit review
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY
+status: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+    accepted_designs: 0
+  rationale: >-
+    A real bilingual template registry, database table, audit trigger and
+    maker-checker RPC exist, but an authorized table writer can bypass the RPC,
+    effective dating is inconsistent across consumers, template type and schema
+    meaning are not governed, and Field does not persist or render the selected
+    template version. The current UI therefore cannot prove that the correct
+    active template is used at runtime. No P0/P1 completion claim is safe.
+
+task_contract:
+  task_id: CODEX-ADMIN-TEMPLATES-RUNTIME-TRUTH-026
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  package_id: M9
+  channel: ADMIN
+  business_capability: Dynamic Form and Template Builder registry
+  real_route: /admin/packages
+  absent_route: /admin/templates
+  screen_context:
+    - SCR-ADM-030
+    - SCR-ADM-031
+  engines:
+    - ENG-02
+    - ENG-08
+    - ENG-12
+    - VERSION
+    - IMMUTABLE
+  do_not_touch_observed:
+    - product application code
+    - product tests
+    - design files or design mappings
+    - local or shared product data
+    - Supabase project, schema, policies or providers
+    - branches, leases, stashes, main or setup/Inspection
+    - peer-owned orchestration packets
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_write: bdbe23244a2f2d1547caf429449705d1026f9adf
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_data_mutation: false
+  browser_mutation: false
+  note: >-
+    Browser locale and theme were exercised through reversible client state and
+    restored to English/LTR/light. No form was submitted and no remote write was
+    attempted.
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/domain/atomic_scope.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/evidence/AC_LEDGER.csv
+  route_and_design:
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+    - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+  runtime:
+    - apps/web/src/app/(app)/admin/packages/layout.tsx
+    - apps/web/src/app/(app)/admin/packages/page.tsx
+    - apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+    - apps/web/src/app/(app)/admin/templates/actions.ts
+    - apps/web/src/app/(app)/admin/packages/actions.ts
+    - apps/web/src/app/(app)/admin/violations/page.tsx
+    - apps/web/src/app/(app)/field/[visitId]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/Workspace.tsx
+  database:
+    - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+    - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+  tests:
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/cd-008-009-packages.spec.ts
+    - apps/web/e2e/execution-workspace-contract.spec.ts
+    - apps/web/e2e/execution-preexecution-ui-contract.spec.ts
+  peer_evidence_not_authority:
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-FORMS-DESIGN-AUTHORITY-REVIEW-038.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PACKAGES-RUNTIME-PERMISSION-MAPPING-028.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PACKAGES-RUNTIME-REMEDIATION-PREFLIGHT-029.yaml
+    - product-contract/operationalization/coordination/batches/M9-PACKAGE-DESIGNER-NO-CODE-MATCH-RESOLUTION-019.yaml
+    - product-contract/operationalization/coordination/batches/M9-PACKAGE-DESIGNER-INLINE-SUCCESSOR-020.yaml
+
+canonical_scope:
+  primary:
+    - capability_id: CAP-R0C-0456
+      requirement_ids:
+        - MVP1-M09-008
+        - CR-456
+        - REQ-R0C-01132
+        - REQ-R0C-01133
+        - REQ-R0C-01134
+      acceptance_ids:
+        - WA-AC-0456
+        - AC-0456
+      evidence_id: WA-EV-0456
+      acceptance: Correct template is used at runtime.
+      credit: DENIED
+      reason: >-
+        Consumers do not share one effective-version resolver; wrong template
+        types can be selected; manual Field forms do not persist template
+        version identity and do not render the stored schema.
+    - capability_id: CAP-R0C-0457
+      requirement_ids:
+        - MVP1-M09-009
+        - CR-457
+        - REQ-R0C-01135
+        - REQ-R0C-01136
+        - REQ-R0C-01137
+      acceptance_ids:
+        - WA-AC-0457
+        - AC-0457
+      evidence_id: WA-EV-0457
+      acceptance: Correct action form is generated.
+      credit: DENIED
+      reason: >-
+        A template ID may be linked, but the runtime creates a generic
+        action_forms row from the key/title and does not retain the selected
+        template version or consume its field schema.
+  direct_dependencies:
+    - capability_id: CAP-R0C-0454
+      requirement_ids: [MVP1-M09-006, CR-454, REQ-R0C-01125, REQ-R0C-01126, REQ-R0C-01127]
+      acceptance_ids: [WA-AC-0454, AC-0454]
+      evidence_id: WA-EV-0454
+      credit: DENIED
+      reason: Package use cannot be complete while selected template semantics are not consumed in execution.
+    - capability_id: CAP-R0C-0458
+      requirement_ids: [MVP1-M09-010, CR-458, REQ-R0C-01138, REQ-R0C-01139]
+      acceptance_ids: [WA-AC-0458, AC-0458]
+      evidence_id: WA-EV-0458
+      credit: DENIED
+      reason: Template authority fields and lifecycle remain bypassable and runtime traceability is incomplete.
+    - capability_id: CAP-R0C-0459
+      requirement_ids: [MVP1-M09-011, CR-459, REQ-R0C-01140, REQ-R0C-01141, REQ-R0C-01142]
+      acceptance_ids: [WA-AC-0459, AC-0459]
+      evidence_id: WA-EV-0459
+      credit: DENIED
+      reason: Direct table paths can publish without the canonical validation and maker-checker RPC.
+    - capability_id: CAP-R0C-0460
+      requirement_ids: [MVP1-M09-012, CR-460, REQ-R0C-01143, REQ-R0C-01144]
+      acceptance_ids: [WA-AC-0460, AC-0460]
+      evidence_id: WA-EV-0460
+      credit: DENIED
+      reason: Template type, schema semantics and all downstream compatibility are not validated in the publish transaction.
+    - capability_id: CAP-R0C-0461
+      requirement_ids: [MVP1-M09-013, CR-461, REQ-R0C-01145, REQ-R0C-01146, REQ-R0C-01147]
+      acceptance_ids: [WA-AC-0461, AC-0461]
+      evidence_id: WA-EV-0461
+      credit: DENIED
+      reason: The template registry has no usage, affected-package, active-visit or future-execution impact view.
+    - capability_id: CAP-R0C-0462
+      requirement_ids: [MVP1-M09-014, CR-462, REQ-R0C-01148, REQ-R0C-01149]
+      acceptance_ids: [WA-AC-0462, AC-0462]
+      evidence_id: WA-EV-0462
+      credit: DENIED
+      reason: Status changes immediately even for a future effective_to and the guard permits unrelated authority-field changes during deactivation.
+    - capability_id: CAP-R0C-0463
+      requirement_ids: [MVP1-M09-015, CR-463, REQ-R0C-01150, REQ-R0C-01151]
+      acceptance_ids: [WA-AC-0463, AC-0463]
+      evidence_id: WA-EV-0463
+      credit: DENIED
+      reason: An append-only trigger exists, but authors have no template-scoped audit read and the UI exposes no history or evidence custody.
+    - capability_id: CAP-R0C-0475
+      requirement_ids: [MVP1-M09-027, CR-475, REQ-R0C-01186, REQ-R0C-01187, REQ-R0C-01188, REQ-R0C-01189]
+      acceptance_ids: [WA-AC-0475, AC-0475]
+      evidence_id: WA-EV-0475
+      credit: DENIED
+      reason: Blocking flags exist, but generated forms do not consume the selected template schema/version.
+    - capability_id: CAP-R0C-0477
+      requirement_ids: [MVP1-M09-029, CR-477, REQ-R0C-01192, REQ-R0C-01193, REQ-R0C-01194]
+      acceptance_ids: [WA-AC-0477, AC-0477]
+      evidence_id: WA-EV-0477
+      credit: DENIED
+      reason: Template dependency validation is application-only and checks identity/status/date, not type/schema/runtime compatibility.
+    - capability_id: CAP-R0C-0478
+      requirement_ids: [MVP1-M09-030, CR-478, REQ-R0C-01195, REQ-R0C-01196]
+      acceptance_ids: [WA-AC-0478, AC-0478]
+      evidence_id: WA-EV-0478
+      credit: DENIED
+      reason: Package snapshots can contain template data, but the Field action form row and renderer do not consume that immutable version.
+  web_admin_quality:
+    - acceptance_id: WA-M9-AC-001
+      priority: P0
+      result: FAIL
+      reason: Required source-backed behavior is incomplete at downstream runtime.
+    - acceptance_id: WA-M9-AC-002
+      priority: P0
+      result: FAIL
+      reason: Direct lifecycle bypass, overbroad reads and missing negative proof remain.
+    - acceptance_id: WA-M9-AC-003
+      priority: P1
+      result: BLOCKED
+      reason: No accepted template-specific design authority exists.
+    - acceptance_id: WA-M9-AC-004
+      priority: P1
+      result: PARTIAL_NOT_ACCEPTED
+      reason: EN/LTR and AR/RTL plus themes were observed, but template-specific tablet/narrow/keyboard/zoom certification is absent.
+    - acceptance_id: WA-M9-AC-005
+      priority: P0
+      result: FAIL
+      reason: The focused package browser file is 14/16 and no template lifecycle/consumer regression exists.
+    - acceptance_id: WA-M9-AC-006
+      priority: P1
+      result: FAIL
+      reason: No accepted screen/design identity or complete template evidence manifest exists.
+
+route_and_design_truth:
+  standalone_template_route:
+    catalogue_row: ABSENT
+    application_page: ABSENT
+    browser_result: HTTP_404_RENDERED
+  actual_capability:
+    route: /admin/packages
+    component: apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+    rendering_rule: Writers only, inside the Package Library and Designer page.
+    route_roles:
+      - compliance_admin
+      - form_admin
+  screen_authority:
+    package_library:
+      screen_id: SCR-ADM-030
+      route: /admin/packages
+      nearest_registered_design: WA-DES-002
+      design_hash: 65b98dfc952d2737260c5c49f432c74cdb85a18f1fdec3e0f2af29ac9dea957d
+      design_acceptance_id: DSG-005
+      design_acceptance_status: not_started
+    embedded_designer:
+      screen_id: SCR-ADM-031
+      catalogue_route: /admin/packages/:id/designer
+      implemented_route: /admin/packages
+      mapping: Consolidated
+      nearest_registered_design: WA-DES-005
+      design_hash: 9f33c90405b4b134756848ebe4a6c7fc5a4df29e0a411d4cbb369d1e6583b5f0
+      design_acceptance_id: DSG-006
+      design_acceptance_status: not_started
+  template_specific_design:
+    accepted_identity: NONE
+    finding: >-
+      WA-DES-002 and WA-DES-005 are the nearest registered page/designer
+      predecessors, not accepted Template Registry authority. Proposed C1 labels
+      in peer packets are non-consumable until separately created and accepted.
+    implementation_rule: Do not invent a new design ID or treat the current raw-JSON registry as accepted design.
+
+observed_runtime:
+  built:
+    - A writer-only bilingual registry is embedded at the top of /admin/packages.
+    - Writers can create a draft with key, type, version, effective_from, bilingual title and JSON object schema.
+    - Draft titles and schema can be edited through guarded server actions.
+    - A publish RPC checks distinct maker/checker, effective_from and JSON object shape.
+    - Published/locked rows have a database immutability guard and can be reason-deactivated.
+    - The configuration_templates table has unique key/version, one-open-version and effective-window constraints.
+    - An append-only generic audit trigger is attached to configuration_templates.
+    - Package publication can freeze explicitly referenced template rows into template_snapshot.
+    - English and Arabic template strings exist.
+  independently_verified:
+    - Route boundary permits only compliance_admin and form_admin.
+    - An authorized seeded Admin rendered the real package page and expanded registry.
+    - The live registry currently returned no template records and supplied no template-specific empty-state explanation.
+    - An authenticated Reviewer reached the Arabic role-denied boundary with no configuration data loaded.
+    - Authorized Arabic rendered registry labels under document lang=ar and dir=rtl.
+    - Light and dark document themes both rendered; the browser state was restored.
+    - /admin/templates rendered the framework 404 page.
+    - Source, migration and consumer inspection confirms all P0/P1 findings below.
+  fully_accepted:
+    requirements: []
+    acceptance_ids: []
+    reason: No row has complete runtime, negative, audit, design and browser evidence.
+
+permission_and_lifecycle_truth:
+  route_guard:
+    roles: [compliance_admin, form_admin]
+    result: PASS
+    evidence: apps/web/src/app/(app)/admin/packages/layout.tsx:5
+  server_action_guard:
+    roles: [compliance_admin, form_admin]
+    result: PASS_FOR_UI_ACTION_PATHS
+    evidence: apps/web/src/app/(app)/admin/templates/actions.ts:13-84
+  rls_read:
+    policy: Any authenticated user can select every draft and published template.
+    result: FAIL_LEAST_PRIVILEGE
+    evidence: supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql:126-138
+  rls_write:
+    policy: compliance_admin and form_admin receive INSERT, UPDATE and DELETE through a FOR ALL policy.
+    result: FAIL_NON_BYPASSABLE_LIFECYCLE
+    evidence: supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql:128-138
+  maker_checker:
+    rpc_path: Distinct auth.uid is enforced.
+    direct_table_path: BYPASSABLE
+    result: FAIL
+  immutability:
+    delete_non_draft: BLOCKED
+    generic_published_update: BLOCKED
+    governed_deactivation: PARTIAL
+    omitted_authority_fields:
+      - template_type
+      - effective_from
+      - created_by
+      - approved_by
+      - published_at
+      - supersedes_id
+    result: FAIL
+    evidence: supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql:143-169
+  concurrency:
+    package_key_publication_lock: PARTIAL_ROW_LOCK
+    draft_expected_revision_or_CAS: ABSENT
+    updated_at_or_revision_column: ABSENT
+    recoverable_conflict_UI: ABSENT
+    result: FAIL
+
+consumer_truth:
+  package_admin:
+    choice_filter: status published or locked only
+    missing_filters:
+      - effective_from
+      - effective_to
+      - template_type_for_action_form_slot
+    validation: Checks ID, status and effective_from, but not type or schema meaning.
+    snapshot: Freezes only explicit template_refs and package action-form template_version_id references.
+  penalty_admin:
+    finding: Published/locked template choices are not restricted to penalty or action-form compatible types/effective windows.
+    impact: A wrong template class can be bound to a penalty mapping.
+  package_dependency_closure:
+    finding: >-
+      A template referenced only through a penalty mapping is not automatically
+      added to package template_snapshot unless separately present in
+      template_refs or package action_forms.
+    result: INCOMPLETE
+  field_pre_execution:
+    query: action_form plus status=published
+    missing_filters:
+      - effective_from
+      - effective_to
+    result: FUTURE_VERSION_CAN_APPEAR_EARLY
+  field_workspace:
+    query_fields:
+      - id
+      - template_key
+      - title_en
+      - title_ar
+    ignored_fields:
+      - version_label
+      - schema
+      - effective_from
+      - effective_to
+    inserted_action_form_fields:
+      - id
+      - inspection_id
+      - item_id
+      - violation_id
+      - form_type
+      - status
+    missing_runtime_custody:
+      - template_version_id
+      - immutable template schema snapshot
+      - rendered dynamic fields
+    evidence:
+      - apps/web/src/app/(app)/field/inspection/[id]/page.tsx:121-126
+      - apps/web/src/app/(app)/field/inspection/[id]/Workspace.tsx:367-391
+    result: FAIL_CORRECT_TEMPLATE_RUNTIME
+  form_report_penalty_types:
+    finding: >-
+      The registry offers form, report, action_form and penalty types, but source
+      search found no report/form schema renderer and only key/title consumption
+      for manual action forms. A penalty mapping can store a template ID but no
+      downstream schema renderer was found.
+    result: INVENTED_OR_UNCONSUMED_CAPABILITY
+
+p0_findings:
+  - id: TPL-P0-001
+    finding: Template publication and maker-checker are bypassable.
+    evidence: >-
+      RLS grants compliance_admin/form_admin FOR ALL. A direct INSERT can supply
+      status=published and approved_by, while a direct UPDATE from an old draft
+      to published is not rejected by the guard. The maker-checker constraint
+      proves only that two UUIDs differ, not that approved_by is auth.uid.
+    impact: Published business authority can be forged outside the validated RPC.
+    blocks:
+      - WA-M9-AC-001
+      - WA-M9-AC-002
+      - WA-M9-AC-005
+      - WA-AC-0458
+      - WA-AC-0459
+  - id: TPL-P0-002
+    finding: Template schema and type compatibility are not governed.
+    evidence: >-
+      UI and RPC accept any JSON object. Package validation checks template ID,
+      status and effective_from only. Package and penalty choices are not
+      type-restricted.
+    impact: A structurally meaningless or wrong-class template can be published and linked.
+    blocks:
+      - WA-AC-0456
+      - WA-AC-0457
+      - WA-AC-0460
+      - WA-AC-0477
+  - id: TPL-P0-003
+    finding: Effective-time publication is internally inconsistent.
+    evidence: >-
+      Publishing a future successor immediately marks the old row deactivated
+      and the new row published. Field selects published action_form templates
+      without effective dates, so the future version can be used early while the
+      predecessor is no longer selectable.
+    impact: Future-only activation and stable current-version resolution are violated.
+    blocks:
+      - WA-AC-0456
+      - WA-AC-0458
+      - WA-AC-0459
+      - WA-AC-0462
+      - WA-AC-0478
+  - id: TPL-P0-004
+    finding: Field does not preserve or render the selected template version.
+    evidence: >-
+      Field loads only template ID/key/title and inserts a generic action_forms
+      row without template_version_id or schema. Workspace rendering therefore
+      cannot reproduce the immutable template fields.
+    impact: The exact acceptance claims "correct template is used at runtime" and "correct action form is generated" are unproven and contradicted.
+    blocks:
+      - WA-AC-0454
+      - WA-AC-0456
+      - WA-AC-0457
+      - WA-AC-0475
+      - WA-AC-0478
+  - id: TPL-P0-005
+    finding: Published package dependency closure can omit penalty-linked templates.
+    evidence: >-
+      freezeDefinition collects definition.template_refs and package
+      action_forms.template_version_id; it does not traverse each frozen penalty
+      mapping's template_version_id into template_snapshot.
+    impact: A package may be published without a complete immutable template dependency set.
+    blocks:
+      - WA-AC-0460
+      - WA-AC-0477
+      - WA-AC-0478
+  - id: TPL-P0-006
+    finding: Release evidence does not test the governed template lifecycle or bypass paths.
+    evidence: >-
+      Existing tests assert source tokens and adjacent package behavior. There is
+      no isolated create/edit/checker-publish/effective-selection/deactivate/
+      history/runtime-render journey and no direct REST/RPC negative probe for
+      templates.
+    impact: Security, audit and runtime claims cannot be independently accepted.
+    blocks:
+      - WA-M9-AC-002
+      - WA-M9-AC-005
+      - WA-M9-AC-006
+
+p1_findings:
+  - id: TPL-P1-001
+    finding: No accepted template-specific design or screen identity exists.
+    evidence: >-
+      No Templates row exists in the screen catalogue. DSG-005 and DSG-006 are
+      not_started, and registered WA-DES-002/005 are nearest Package page/designer
+      predecessors rather than exact Template Registry authority.
+  - id: TPL-P1-002
+    finding: Draft edits can silently overwrite another writer.
+    evidence: >-
+      configuration_templates has no revision or updated_at token and
+      updateTemplateDraft predicates only by id and status=draft.
+  - id: TPL-P1-003
+    finding: Template history and evidence custody are not reviewer-visible.
+    evidence: >-
+      The audit trigger exists, but admin_configuration_audit omits
+      configuration_templates from its whitelist and TemplateRegistry has no
+      history/audit/actor/source-evidence view.
+  - id: TPL-P1-004
+    finding: Read scope exposes all template statuses to every authenticated user.
+    evidence: configuration_templates_read checks only auth.uid() is not null.
+  - id: TPL-P1-005
+    finding: Loading, empty, error and degraded template states are not distinct.
+    evidence: >-
+      The live empty registry showed only the create form. No empty explanation
+      was present, and the page does not isolate a template read failure from a
+      true empty result.
+  - id: TPL-P1-006
+    finding: Template-specific responsive, keyboard, focus and native-Arabic acceptance is incomplete.
+    evidence: >-
+      Desktop EN/AR and light/dark were observed, but the existing browser file
+      exercises the combined Packages page and contains no template lifecycle,
+      focus recovery, error summary or qualified native-Arabic review.
+  - id: TPL-P1-007
+    finding: The existing Packages browser contract is not clean.
+    evidence: >-
+      The focused file passed 14/16. One assertion uses a non-unique Create draft
+      locator; one assumes copy containing "active visit(s)" although the
+      truthful zero-state says no active visits or inspections. The full
+      dependency run is also blocked by the pre-existing Inspector auth HTTP 400.
+    classification: TEST_AND_FIXTURE_DEFECTS_NOT_TEMPLATE_PRODUCT_PROOF
+
+test_and_browser_evidence:
+  static_and_compiler:
+    - command: npm run typecheck
+      result: PASS
+    - command: node scripts/validate_web_admin_phase1.mjs
+      result: PASS_478_OF_478_TRACEABILITY
+      limitation: Planning traceability is not implementation acceptance.
+  focused:
+    - scope: authoritative M09 template source assertion
+      result: PASS_1_OF_1
+      limitation: Static source-token assertion only.
+    - scope: Packages source wiring and Arabic seed assertions
+      result: PASS_7_OF_7
+      limitation: Static source assertions only.
+    - scope: Execution workspace template-load assertion
+      result: PASS_1_OF_1
+      limitation: Confirms query tokens, not runtime schema/version consumption.
+    - scope: Execution pre-execution source contract
+      result: PASS_8_OF_8
+      limitation: No template lifecycle or render proof.
+    - scope: Full cd-008-009 Packages file with authorized Admin state
+      result: PASS_14_OF_16
+      failures:
+        - Non-unique Create draft locator resolves three visible buttons.
+        - Impact assertion rejects truthful "No active visits or inspections" copy.
+  protected_dependency:
+    result: BLOCKED_BEFORE_TARGET_FILE
+    blocker: Seeded Inspector authentication returned HTTP 400 in auth.setup.ts.
+    classification: PRE_EXISTING_PROTECTED_FIXTURE_BLOCKER
+  real_browser:
+    authorized_admin:
+      route: http://127.0.0.1:3154/admin/packages
+      persona: admin
+      roles:
+        - compliance_admin
+        - form_admin
+        - gis_admin
+        - risk_owner
+        - security_admin
+        - workflow_admin
+      observed:
+        - Package library and designer rendered from real data.
+        - Governed template registry expanded.
+        - Create fields and all four template types rendered.
+        - No template rows and no template-specific empty message rendered.
+    authorized_arabic:
+      route: http://127.0.0.1:3154/admin/packages
+      persona: admin
+      observed:
+        - document lang=ar
+        - document dir=rtl
+        - Arabic registry heading, create action and schema label rendered
+        - dark theme rendered
+      certification: AUTOMATED_OBSERVATION_ONLY_NOT_NATIVE_ARABIC_ACCEPTANCE
+    denied_reviewer:
+      route: http://localhost:3154/admin/packages
+      persona: reviewer
+      observed:
+        - document lang=ar and dir=rtl
+        - role-denied heading and alert rendered
+        - no configuration data loaded
+        - light and dark themes rendered
+    absent_route:
+      route: http://127.0.0.1:3154/admin/templates
+      result: 404_THIS_PAGE_COULD_NOT_BE_FOUND
+    mutation_performed: false
+
+required_prerequisites:
+  order:
+    - id: TPL-PREREQ-001-DESIGN
+      owner: SEPARATE_DESIGN_AND_GOVERNANCE_LANE
+      requirement: >-
+        Decide and accept the Template Registry as an exact bounded region of
+        SCR-ADM-030/031, or approve another existing governed identity. Do not
+        invent a new design identity in an implementation lane.
+    - id: TPL-PREREQ-002-DATABASE
+      owner: SINGLE_DATABASE_LIFECYCLE_LEASE
+      requirement: >-
+        Make create/publish/supersede/deactivate transitions RPC-only; derive
+        checker from auth.uid; freeze every authority field; add type-specific
+        schema validation, effective-time resolution, CAS and scoped audit read.
+      collision_domains:
+        - configuration_templates table, RLS, triggers and RPCs
+        - package publication dependency validation
+        - penalty mapping template dependency
+    - id: TPL-PREREQ-003-CONSUMERS
+      owner: SINGLE_CROSS_MODULE_TEMPLATE_RESOLVER_LEASE
+      requirement: >-
+        Establish one effective-version resolver and immutable runtime contract
+        for Package, Violations/Penalties, Planning/Pre-Execution, Field and
+        reports. Persist template_version_id and render the frozen schema.
+      collision_domains:
+        - Admin Packages
+        - Admin Violations and Penalties
+        - Planning
+        - Field and offline runtime
+        - report generation
+    - id: TPL-PREREQ-004-ADMIN-UI
+      owner: SINGLE_TEMPLATE_ADMIN_UI_LEASE
+      requirement: >-
+        Implement the accepted design with explicit lifecycle, impact, audit,
+        conflict, loading, empty, error, degraded and denied states while
+        preserving unsaved work.
+      entry_condition: Database and consumer contracts are frozen.
+    - id: TPL-PREREQ-005-QUALITY
+      owner: INDEPENDENT_QA_AND_ISOLATED_DATA_LEASE
+      requirement: >-
+        Use isolated reversible templates/packages/penalties/visits to prove
+        create, edit, stale conflict, distinct checker publication, future
+        activation, wrong-type/schema rejection, history, deactivation,
+        package freeze, Field render, denial and audit. Complete qualified
+        native-Arabic review and protected regression.
+      stop_condition: No write if exact isolation and semantic restoration cannot be proven.
+
+stop_conditions:
+  - Any direct table path can publish, forge approval, mutate authority fields or delete governed history.
+  - Any consumer selects a draft, future, expired, superseded, deactivated or wrong-type template.
+  - Runtime cannot prove template ID, immutable version and rendered schema.
+  - Package/penalty/template snapshots are not transactionally complete.
+  - Audit actor/history/evidence custody is absent or hidden.
+  - Draft concurrency can silently overwrite.
+  - Accepted design, negative tests, real browser evidence or native-Arabic review is missing.
+  - Any required P0/P1 remains failed or unevidenced.
+
+peer_reconciliation:
+  confirmed:
+    - The real capability is embedded at /admin/packages; no dedicated route exists.
+    - WA-DES-002/005 are nearest registered predecessors, not current accepted exact authority.
+    - Package publication and consumer contracts remain bypassable/inconsistent.
+    - Static assertions and immutable banners are not end-to-end completion.
+  corrections_and_additions:
+    - >-
+      This packet isolates Templates from the broader Packages engine and proves
+      the Field schema/version custody failure directly.
+    - >-
+      The generic configuration audit trigger is present, but the scoped audit
+      RPC whitelist and UI omit configuration_templates.
+    - >-
+      Future template publication immediately changes status and Field ignores
+      effective dates, creating a specific successor-selection defect.
+  authority_rule: Peer packets informed comparison only and supplied no completion credit.
+
+rollback:
+  product_and_data: NONE_REQUIRED_NO_MUTATION
+  browser: Locale and theme restored to English/LTR/light.
+  generated_test_evidence: Existing tracked screenshots were restored to their exact pre-run Git state.
+  orchestration: Remove only this packet if independent review rejects it.
+
+safe_queued_successor:
+  task_id: CODEX-ADMIN-COMPLIANCE-APPROVALS-RUNTIME-TRUTH-027
+  mode: READ_ONLY
+  scope: >-
+    Independently verify /admin/compliance-approvals route, server guards,
+    maker-checker queue truth, transition authority, RLS, audit, concurrency,
+    negative paths and browser readiness against exact canonical IDs.
+  exclusions:
+    - all design identity or revision work
+    - Admin Templates, Packages and Violations write ownership
+    - product, database, tests, data, branches, PRs, main, setup/Inspection and stashes
+  safety: Non-overlapping runtime evidence packet only.
+
+final_disposition:
+  acknowledgement: Independent read-only audit completed.
+  recommendation: RETURN
+  implementation: BLOCKED
+  completion_credit: ZERO
+  fully_accepted_requirements: []
+  next_review: Codex lead independent review of this bounded packet.
