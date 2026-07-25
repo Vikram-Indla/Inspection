@@ -1,6 +1,7 @@
 import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
+import DeviceScript from "@/components/DeviceScript";
 import ThemeChannelSync from "@/components/ThemeChannelSync";
 import "./saqeel-components-legacy.css";
 // SAQEEL Inspection Design System v1.0 component layer. saqeel-components.css is
@@ -80,7 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={`${grotesk.variable} ${plexArabic.variable} ${jbMono.variable}`} suppressHydrationWarning>
-      <head><ThemeScript /></head>
+      <head><ThemeScript /><DeviceScript /></head>
       <body><PwaRegister /><ThemeChannelSync />{children}</body>
     </html>
   );

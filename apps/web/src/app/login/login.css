@@ -770,3 +770,11 @@
   .lg-page--split .lg-panel { border-inline-end: none; }
   .lg-page--split .lg-story { display: none; }
 }
+
+/* Belt-and-suspenders for iPad in "Request Desktop Website" mode, where the
+   pointer/hover media features above can report as a desktop mouse. DeviceScript
+   (in <head>, pre-paint) sets data-device="ipad" from navigator.maxTouchPoints +
+   platform, which stays reliable when the UA is spoofed to desktop Mac. */
+:root[data-device="ipad"] .lg-page--split { grid-template-columns: 1fr; }
+:root[data-device="ipad"] .lg-page--split .lg-panel { border-inline-end: none; }
+:root[data-device="ipad"] .lg-page--split .lg-story { display: none; }
