@@ -1,0 +1,256 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-VIOLATIONS-RUNTIME-REMEDIATION-PREFLIGHT-035
+title: Collision-safe Admin Violations and Penalties runtime remediation preflight
+status: PREFLIGHT_READY_AUTHORITY_DECISION_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-VIOLATIONS-RUNTIME-PERMISSION-MAPPING-034
+  design_dependency: M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052
+  route: /admin/violations
+  screen_ids: [SCR-ADM-040, SCR-ADM-041]
+  primary_requirements:
+    - MVP1-M09-003
+    - MVP1-M09-004
+    - MVP1-M09-026
+    - MVP1-M09-027
+    - CR-451
+    - CR-452
+    - CR-474
+    - CR-475
+    - REQ-R0C-01116 through REQ-R0C-01121
+    - REQ-R0C-01183 through REQ-R0C-01189
+  dependent_requirements:
+    - MVP1-M09-008 through MVP1-M09-015
+    - MVP1-M09-029 through MVP1-M09-030
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+authority_decisions:
+  - id: VIO-DEC-001
+    question: Which records are the sole operational violation and penalty authorities?
+    recommended_answer: Immutable approved versions with effective heads; no second writable legacy truth.
+  - id: VIO-DEC-002
+    question: How do approved Compliance Request versions project to package/runtime consumers?
+  - id: VIO-DEC-003
+    question: Must violation generation and invalidation occur only through server transitions derived from frozen answers?
+    recommended_answer: YES
+  - id: VIO-DEC-004
+    question: Which frozen identifiers prove trigger item/response, violation version, penalty version and action-form template?
+  - id: VIO-DEC-005
+    question: How does an active inspection continue when the live penalty mapping is superseded/deactivated?
+    required_rule: Use the mapping pinned/frozen for that inspection; later configuration cannot block it.
+  - id: VIO-DEC-006
+    question: Which states distinguish approved future, active, superseded and deactivated violation/penalty versions?
+  - id: VIO-DEC-007
+    question: Which effective instant/timezone governs violation and penalty eligibility?
+  - id: VIO-DEC-008
+    question: Does every publish/deactivation require a distinct checker and exact impact review?
+    recommended_answer: YES
+  - id: VIO-DEC-009
+    question: Is configuration_version system-assigned and consecutive?
+    recommended_answer: YES
+  - id: VIO-DEC-010
+    question: How is a penalty-linked template frozen, rendered informationally to inspectors, and issued after approval?
+  - id: VIO-DEC-011
+    question: Is form_admin an intended route persona?
+  - id: VIO-DEC-012
+    question: Which personas may read catalogue, penalty values, runtime candidates and issued notices?
+
+target_contract:
+  states:
+    - draft
+    - pending_approval
+    - approved_future
+    - active
+    - superseded
+    - deactivation_scheduled
+    - deactivated
+    - rejected
+  invariants:
+    - Only governed RPCs publish, activate, supersede or deactivate.
+    - Checker equals auth.uid and differs from maker.
+    - Violation generation/invalidation is a server evaluation of pinned item response semantics.
+    - Inspector cannot supply or alter violation/penalty authority identifiers.
+    - Exactly one effective penalty version and template are frozen per violation use.
+    - Historical pinned mappings remain materializable regardless of current live status.
+    - Penalty remains informational until inspection approval.
+    - Accepted configuration/runtime rows and snapshots are immutable and undeletable.
+    - Every transition carries actor, trigger response, package version and correlation.
+  concurrency:
+    - Identity-scoped locks for violation/penalty publication and deactivation.
+    - Expected head and draft revision CAS.
+    - Idempotent generate/invalidate keyed by inspection, item/response and violation version.
+
+proposed_lease_sequence:
+  - lease_id: VIO-LEASE-CONTRACT-001
+    order: 1
+    owner: ONE_VIOLATION_AUTHORITY_CONTRACT_OWNER
+    purpose: Decide VIO-DEC-001..012 and freeze authority, runtime transition, effective-time, template and permission contracts.
+    artifacts_only:
+      - version/state/actor matrix
+      - frozen trigger/provenance schema
+      - package/runtime resolver contract
+      - penalty/template issuance contract
+      - impact matrix
+      - migration and rollback-forward plan
+    do_not_touch: [product code, database, tests, data, design]
+  - lease_id: VIO-LEASE-DB-001
+    order: 2
+    owner: ONE_DATABASE_VIOLATION_ENGINEER
+    purpose: Establish non-bypassable version lifecycle and server-authoritative runtime transitions.
+    proposed_paths:
+      - one new forward-only Supabase migration
+      - one new transactional violation/penalty negative probe
+    entry_criteria:
+      - VIO-DEC-001..012 approved.
+      - Database object/migration ownership recorded.
+      - Items, Packages, Templates, Execution, Review and Enforcement owners reconciled.
+    exit_criteria:
+      - Direct REST cannot publish, forge actors, rewrite deactivation fields or delete accepted history.
+      - Server alone generates/invalidates violations from frozen response state.
+      - Historical penalty mapping materializes from pinned authority.
+      - Future activation preserves current effective authority.
+      - Publication validates legal anchor, penalty, template and dependency closure.
+  - lease_id: VIO-LEASE-PACKAGE-RUNTIME-001
+    order: 3
+    owner: ONE_VIOLATION_RUNTIME_INTEGRATION_ENGINEER
+    purpose: Converge package freeze, Field, action forms, review, report, enforcement and impact.
+    collision_rule: >-
+      Items, Packages, Templates, Field, Review, Reports, Enforcement, Factory
+      360, Dashboard and Audit owners must consent before shared paths are leased.
+    exit_criteria:
+      - Package freezes one exact effective violation/penalty/template chain.
+      - Field uses server transitions and never accepts client-selected authority.
+      - Mandatory action forms block submission at the server boundary.
+      - Review/report/issuance use immutable snapshots.
+      - Impact names packages, future visits, active inspections and enforcement consumers.
+  - lease_id: VIO-LEASE-UI-001
+    order: 4
+    owner: ONE_M9_WEB_ENGINEER
+    purpose: Implement accepted Design 052 against frozen lifecycle, impact and resolver services.
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/violations/**
+      - route-local translations and styles only
+    exit_criteria:
+      - Complete draft editing and system-assigned lineage are visible.
+      - Draft/future/active/superseded/deactivated states are honest.
+      - Maker/checker and impact decisions are distinct.
+      - Penalty and linked-template preview matches Field informational rendering.
+      - Route persona matches approved permissions.
+  - lease_id: VIO-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-violations-runtime.spec.ts
+      - new supabase/tests/m9_violation_penalty_governance_negative_probe.sql
+      - evidence under approved INSPECTION_DOCS_ROOT
+
+seeder_and_fixture_plan:
+  owner: DEDICATED_SEEDER_LANE
+  isolation:
+    - unique seed_batch_id
+    - isolated regulation/clause/item response chain
+    - isolated violation and penalty version lineages
+    - isolated linked template and package snapshots
+    - isolated visits/inspections before and after successors
+    - complete cleanup manifest
+    - transaction rollback for database-negative probes
+  personas:
+    - compliance_admin maker
+    - distinct checker
+    - form_admin subject to VIO-DEC-011
+    - reviewer
+    - assigned inspector
+    - unassigned inspector
+    - unauthorized administrator
+    - anonymous
+  cases:
+    - draft and stale concurrent edit
+    - approved future successor
+    - active predecessor
+    - superseded penalty pinned to active inspection
+    - client arbitrary violation insert attack
+    - client invalidation without response change attack
+    - package with multiple historical penalty rows
+    - mandatory and optional action-form triggers
+    - informational then issued penalty
+
+focused_test_matrix:
+  p0:
+    - id: VIO-TST-001
+      proof: Direct writer cannot publish/forge/deactivate/delete violation or penalty authority.
+    - id: VIO-TST-002
+      proof: Maker cannot approve own version; checker identity cannot be supplied.
+    - id: VIO-TST-003
+      proof: Assigned inspector cannot insert a violation not implied by the pinned response.
+    - id: VIO-TST-004
+      proof: Assigned inspector cannot choose violation version or penalty mapping_version.
+    - id: VIO-TST-005
+      proof: Invalidation succeeds only after the canonical triggering response no longer implies the violation.
+    - id: VIO-TST-006
+      proof: Old pinned mapping materializes after a live successor/deactivation.
+    - id: VIO-TST-007
+      proof: Future violation/penalty successor does not activate early or remove current eligibility.
+    - id: VIO-TST-008
+      proof: Package publication freezes exactly one effective violation/penalty/template chain.
+    - id: VIO-TST-009
+      proof: Missing/ineligible legal anchor, penalty, template or action form blocks database publication.
+    - id: VIO-TST-010
+      proof: Mandatory action form blocks server submission until complete.
+    - id: VIO-TST-011
+      proof: Penalty stays informational until approval, then issues once with immutable mapping snapshot.
+    - id: VIO-TST-012
+      proof: Existing inspection/report/enforcement history remains unchanged after successors.
+  p1:
+    - id: VIO-TST-013
+      proof: Draft CAS and concurrent successor conflicts preserve work.
+    - id: VIO-TST-014
+      proof: Impact names exact item/package override, future visit, active inspection and action-form consumers.
+    - id: VIO-TST-015
+      proof: Draft never renders as active; every lifecycle state matches effective authority.
+    - id: VIO-TST-016
+      proof: Approved persona matrix matches route, RLS, RPC and runtime reads.
+    - id: VIO-TST-017
+      proof: EN/AR, LTR/RTL, light/dark, 1440/1024, keyboard and screen-reader evidence passes.
+
+protected_regression:
+  - apps/web/e2e/cd-010-011-violations.spec.ts
+  - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+  - apps/web/e2e/execution-workspace-contract.spec.ts
+  - apps/web/e2e/execution-crossmodule-contract.spec.ts
+  - apps/web/e2e/compliance-request-engine.spec.ts
+  - apps/web/e2e/golden-journey.spec.ts
+  - supabase/tests/0032_m09_live_release_probe.sql
+  - accepted violation/penalty/template histories
+  - existing package, inspection, submission, report and penalty snapshots
+
+collision_register:
+  hotspots:
+    - violation_codes and penalty_mappings RLS/guards/RPCs
+    - compliance_entity_versions/heads
+    - package item/violation/template snapshots and validation
+    - violations, inspection_penalties and action_forms
+    - Field workspace/offline replay
+    - Review, Reports, Enforcement, Factory 360 and Dashboard
+    - audit events/correlation
+  active_peer_packets:
+    - M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052
+    - M9-ADMIN-ITEMS-RUNTIME-REMEDIATION-PREFLIGHT-031
+    - M9-ADMIN-PACKAGES-RUNTIME-REMEDIATION-PREFLIGHT-029
+  touched_by_this_lane: false
+  rule: Recheck every path before lease; one owner per file, migration and shared database object.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the single-authority, server runtime-transition, effective-time,
+    pinned-penalty, linked-template and permission decisions first. Then lease
+    database governance, cross-module runtime integration, accepted Design 052
+    UI and independent certification separately. Do not count the current
+    catalogue, client implication logic or informational notice trigger as
+    end-to-end completion.
