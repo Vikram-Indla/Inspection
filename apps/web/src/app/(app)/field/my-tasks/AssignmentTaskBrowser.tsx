@@ -160,8 +160,8 @@ export default function AssignmentTaskBrowser({
                   <span className="id-code">#{task.id.slice(0, 8)}</span>
                   <span className={`badge ${tone(task)}`}>{status}</span>
                 </span>
-                <strong><bdi>{task.factory.name}</bdi></strong>
-                <span className="t-caption">
+                <strong className={styles.taskFactory}><bdi>{task.factory.name}</bdi></strong>
+                <span className={`${styles.taskDate} t-caption`}>
                   {new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
                     dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh",
                   }).format(new Date(task.windowStart))}
