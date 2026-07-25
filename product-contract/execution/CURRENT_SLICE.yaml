@@ -1,115 +1,101 @@
 schema_version: "1.5"
-task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
-batch_id: "WA-P1-M1-DASHBOARD-001"
+task_id: "TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001"
+batch_id: "WA-P1-SHARED-BRAND-REGRESSION-001"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin M1 implementation and human screen approval"
-title: "Executive and Business Dashboard reconciliation"
-status: "CANONICALLY_PROMOTED"
+gate: "Web/Admin shared-shell regression correction"
+title: "Restore approved bilingual authenticated-shell wordmark"
+status: "TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
-branch: "codex/m1-dashboard-reconciliation"
-baseline_sha: "c8bdf6d1"
-worktree: "/Users/vikramindla/Developer/Inspection-codex-m1-dashboard"
+branch: "codex/shared-brand-regression"
+baseline_sha: "9d8c414258a5e04244fdf9ce350e5f25f952dfc1"
+worktree: "/Users/vikramindla/Developer/Inspection-codex-shared-brand"
 
 approval:
   approved_by: "Vikram Indla / Product Owner"
   approved_on: "2026-07-24"
-  evidence: "Sponsor approved the complete M1 loop, then explicitly replied 'approved' to the bounded commit, push, PR/check and merge promotion request."
-  interpretation: "APPROVED AND EXECUTED — promote the independently released M1 Dashboard package to canonical main while retaining honest blocked states for unresolved policy contracts."
-  authorizes: "M1 leased application files, focused tests, local/runtime evidence, commit, branch push and canonical main promotion. No deployment, production mutation, Field/PWA/iPad work or invented policy value."
+  evidence: "Sponsor reported that EN/LTR Operations incorrectly shows the Arabic-only صقيل صناعي shell identity and directed the orchestrator to move forward."
+  interpretation: "APPROVED — correct the demonstrated global Web/Admin brand regression using the already-approved bilingual asset."
+  authorizes: "Branch-local governance, the exact shared-shell source/style/test lease, local build, non-destructive evidence, commit, branch push and draft pull request. No main merge, deployment, remote mutation or M3 page work."
 
-process_ids: ["G2-P12"]
+process_ids: ["G2-P00", "G2-P12"]
 requirement_ids: ["CR-001..CR-478"]
-acceptance_ids: ["WA-M1-AC-001..006"]
-evidence_ids: ["WA-M1-EV-001..006"]
-screen_ids: ["WA-DES-025", "WA-DES-046"]
-preservation_ids: ["WA-SP-010..028"]
-screens: ["Dashboard Strategic View", "Dashboard Operational View"]
-routes: ["/dashboard", "/dashboard?view=strategic", "/dashboard?view=operational"]
-authorized_roles: ["ops", "leadership"]
-design_sources:
-  - "SAQEEL Executive Overview.html — SHA-256 0722d7438792a332fd533aae3c9276c54547ee29e1e7c9d80c5af17c47d078e1"
-  - "SAQEEL Web Dashboard.dc.html — SHA-256 d84d2a7cb916d0095954b005b096bc5c9342c848f649fb8c07b37ab0bcbc7088"
-  - "SAQEEL Design System.zip — SHA-256 cfdbfa1a7ff6c0cafe7c778f9a4d43fcf6c65841dc2652dcd7aa4e92b713df3c"
+acceptance_ids: ["WA-SHELL-AC-001", "WA-F0-AC-003..006"]
+screen_ids: ["GLOBAL_SHELL"]
+preservation_ids: ["WA-SP-001"]
+routes:
+  - "All authenticated non-Field routes rendered by apps/web/src/app/(app)/layout.tsx"
+  - "Focused smoke: /dashboard, /operations, /factories"
 engines:
-  - "Supabase SSR and RLS-scoped reads"
-  - "dashboard KPI registry and projection"
-  - "checklist compliance"
-  - "shared GeoMap provider boundary"
-  - "audit/version/immutable submission reads"
+  - "Next.js authenticated AppShell"
+  - "Approved SAQEEL Web/Admin brand assets"
+  - "Responsive/collapsible shared navigation"
 
-backend_contracts_to_preserve:
-  - "Approved inspections only for compliance truth."
-  - "Canonical visit, inspection, review, violation and audit states only."
-  - "Partial, stale, empty, unavailable, not configured, decision required, unauthorized and provider-unavailable states remain explicit."
-  - "No target, threshold, risk band, cycle, SLA, capacity, lookback, license or AI policy is invented."
-  - "RLS/RBAC and geography visibility remain server enforced."
+authority:
+  source: "SAQEEL Design System (7).zip"
+  source_sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
+  approved_expanded_asset: "/saqeel-wordmark-dark-mode.svg"
+  approved_collapsed_asset: "/saqeel-favicon.svg"
+  accessible_name: "SAQEEL | صقيل"
+  rule: "The expanded graphite Web/Admin rail uses the approved bilingual asset in both locales; this task does not invent locale-specific branding."
 
 implementation_lease:
-  owner: "Codex root orchestrator"
+  owner: "Codex shared-shell correction owner"
   files:
-    - "apps/web/src/app/(app)/dashboard/page.tsx"
-    - "apps/web/src/app/(app)/dashboard/DashboardView.tsx"
-    - "apps/web/src/app/(app)/dashboard/dashboard.module.css"
-    - "apps/web/src/app/(app)/dashboard/MetricStrip.tsx"
-    - "apps/web/src/app/(app)/dashboard/DecisionCanvas.tsx"
-    - "apps/web/src/app/(app)/dashboard/dashboard-format.ts"
-    - "apps/web/e2e/web-admin-m1-dashboard.spec.ts"
-  optional_with_evidence:
-    - "apps/web/src/app/(app)/dashboard/metrics.ts"
-    - "apps/web/src/app/(app)/dashboard/loading.tsx"
-
-seeder_lease:
-  owner: "Dedicated Supabase seeder agent"
-  project_ref: "iiozvqntawxfwbgffzqu"
-  environment: "SPONSOR_CONFIRMED_NON_PRODUCTION"
-  scope: "Deterministic reversible source-record seeding, dry-run first; never seed displayed KPI totals or invent governed policy values."
-  remote_write_gate: "Batch provenance, cleanup, idempotency, RLS-negative validation and exact project-ref check must pass before a remote write."
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/app/layout.tsx"
+    - "apps/web/src/app/astryx.css"
+    - "apps/web/e2e/web-admin-f0-foundation.spec.ts"
+    - "product-contract/evidence/TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001.md"
+    - "product-contract/CURRENT_STATE.md"
+    - "product-contract/execution/CURRENT_SLICE.yaml"
+    - "product-contract/execution/WORK_QUEUE.yaml"
+    - "product-contract/sessions/SESSION_LEDGER.json"
+  source_assets_read_only:
+    - "apps/web/public/saqeel-favicon.svg"
+    - "apps/web/public/saqeel-wordmark-dark-mode.svg"
+    - "apps/web/public/saqeel-wordmark-light-mode.svg"
 
 verification:
-  - "typecheck and production build"
-  - "focused M1 functional and negative-path tests"
-  - "RLS/RBAC role-positive and role-negative tests"
-  - "partial-source, zero-denominator and provider-failure tests"
-  - "real GeoMap plus accessible fallback"
-  - "EN/LTR and AR/RTL light/dark at 1440x900, 1024x768, 412/390 and 320"
-  - "keyboard, focus and automated accessibility"
-  - "protected F0, adjacent-route and 478-requirement validator regression"
-  - "real Chrome implementation evidence"
+  - "Focused static brand authority contract"
+  - "Typecheck and production build"
+  - "Expanded and collapsed shell source behavior"
+  - "Mobile drawer restores expanded bilingual identity"
+  - "No hard-coded Arabic-only shell identity remains"
+  - "git diff --check and exact lease audit"
 
 do_not_touch:
-  - "Canonical main modification is limited to the separately sponsor-approved M1 promotion recorded on 2026-07-24; do not modify setup/Inspection, existing stashes, deployment or production."
-  - "Do not edit /field/**, PWA, iPad, offline engines or service workers."
-  - "Do not modify the F0 shell, shared navigation, global tokens, global component CSS or shared GeoMap."
-  - "Do not add APIs, RPCs, migrations, schema, RLS/RBAC or provider configuration under the M1 application lease."
-  - "Do not turn an unresolved DEC-028 metric into a numeric or green state."
+  - "Do not edit M3 Operations pages or tests outside the focused shared-brand contract."
+  - "Do not edit assets, translations, global tokens, navigation structure, backend, APIs, Supabase, RLS/RBAC, migrations or providers."
+  - "Do not edit /field/**, PWA, iPad, offline engines, service workers or manifests."
+  - "Do not modify main, setup/Inspection, stashes or remote systems."
+  - "Do not commit, push, merge or deploy."
 
 rollback:
-  method: "Revert the isolated M1 package commit or disable the guarded composition; F0 baseline c8bdf6d1 remains available."
-  retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
+  method: "Revert this isolated branch diff; no data or remote state is involved."
+  retention: "The pre-correction source remains in Git history."
 
 exit_condition: >-
-  SATISFIED. All WA-M1-AC-001..006 P0/P1 evidence passed or each externally
-  blocked contract is visibly and truthfully classified. Sponsor separately
-  approved commit, push and canonical promotion. Deployment and production
-  mutation remain unauthorized; another implementation module still requires
-  its own recorded lease.
+  Stop after the approved bilingual expanded wordmark and collapsed favicon
+  behavior pass focused source checks, typecheck and production build, with
+  truthful textual evidence and no file outside the lease changed.
 
 completion:
   completed_on: "2026-07-24"
-  verdict: "RELEASE"
-  independent_visual_review: "RELEASE — no remaining P0/P1 issue in the targeted M1 scope."
+  verdict: "TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF"
+  changes:
+    - "Expanded authenticated Web/Admin navigation uses /saqeel-wordmark-dark-mode.svg with accessible name SAQEEL | صقيل."
+    - "Collapsed desktop navigation uses /saqeel-favicon.svg."
+    - "Mobile drawer restores the expanded bilingual wordmark and suppresses the collapsed favicon."
+    - "Arabic-only hard-coded صقيل صناعي shell lettering is removed."
+    - "Root layout loads astryx.css because the current authenticated ShellClient still emits the ax-* namespace defined by that stylesheet."
   tests:
     - "Typecheck PASS"
     - "Production build PASS"
-    - "Focused M1 functional, permission, responsive, RTL and accessibility suite 16/16 PASS (Inspector setup excluded because the pre-existing fixture returns HTTP 400)"
-    - "Final evidence refresh 3/3 PASS"
-    - "Web/Admin validator PASS at 478/478"
+    - "Focused F0 source and brand contract 4/4 PASS"
+    - "Runtime HTML links the compiled stylesheet containing .ax-shell and .ax-shell__brand-wordmark."
+    - "Real authenticated Chrome route renders the styled graphite shell and accessible SAQEEL | صقيل wordmark together."
     - "git diff --check PASS"
-  evidence: "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001.md"
-  seeding: "No remote write. The supplied handoff is discovery/design authority, not an executable governed seeder."
-  remaining_release_caveats:
-    - "Inspector authentication fixture remains an external test-infrastructure defect and is not claimed as passed."
-    - "DEC-028 and all unresolved policy-derived KPIs remain visibly blocked; no values were invented."
-    - "Implementation commit ed384241 was pushed and promoted to origin/main by GitHub merge commit 330f6cba after explicit sponsor approval; no deployment, production mutation, DDL, API, PWA, Field or iPad change occurred."
+  evidence: "product-contract/evidence/TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001.md"
+  caveat: "Codex captured real Chrome implementation evidence; the Product Owner's visual signoff remains the final human acceptance step."
