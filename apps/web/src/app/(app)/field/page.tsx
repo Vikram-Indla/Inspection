@@ -546,6 +546,10 @@ export default async function Field() {
               {tr("field.home.qa.drafts", "Resume draft", "متابعة مسودة")}
               {draftCount > 0 && <span className="badge badge-critical" style={{ height: 16, fontSize: 10 }}>{draftCount}</span>}
             </Link>
+            <Link href="/field/completed" prefetch={false} className={styles.qbtnPill}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><path d="M4 4h16v16H4z" /><path d="m8 12 3 3 5-6" /></svg>
+              {tr("field.home.qa.completed", "Completed history", "سجل العمليات المكتملة")}
+            </Link>
           </div>
         </div>
       </div>
