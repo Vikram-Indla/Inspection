@@ -749,3 +749,11 @@
 .lg-page--split .lg-foot { color: var(--nav-text);
   border-block-start-color: color-mix(in srgb, var(--nav-text) 22%, transparent); }
 .lg-page--split .lg-foot__ministry-label { color: var(--nav-text); }
+
+/* Mobile: show only the PWA credential card — hide the atlas story panel
+   entirely (it previously stacked below with a capped height). The single
+   column is already produced by the base .lg-page--split 1fr rule at ≤960px;
+   the panel keeps min-block-size:100dvh so it fills the phone viewport. */
+@media (max-width: 960px) {
+  .lg-page--split .lg-story { display: none; }
+}
