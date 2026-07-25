@@ -1,0 +1,25 @@
+# V5 §15 heartbeat. Liveness is proven by artifacts (git mtime + commits), not this string.
+actor: claude-orchestrator
+lane: orch-w1
+session_operator: khan.jahanara@gmail.com
+session_id: JK-ORCH-2026-07-25-001
+state: RUNNING
+packet_id: PKT-CUTOVER-V5-001
+worktree: /Users/jahanarakhan/.saqeel-os-cutover      # ISOLATED — not the shared origin checkout
+branch: saqeel/os-v5-cutover
+head: 3eebbf86            # base at cutover start (= setup/Inspection tip)
+dirty_paths:
+  - product-contract/state/**
+  - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  - product-contract/governance/CC-SAQEEL-OS-V5-ADOPTION-001.yaml
+blocked_on: GATE-SAMPLING-RATE          # V5 §0.1.8 — sponsor must set sampling %; queue blocked until then
+fallback_packet: null                    # no non-conflicting build packet may issue pre-sampling-rate
+updated_at: 2026-07-25T00:00:00Z
+context_health: 0.50                      # AMBER/GREEN boundary (§17)
+notes: >-
+  Orchestrator holds NO write lease on product code (§34.1). This lane authored the
+  cutover and control plane only. Build A/B, Design, Verifier are separate sessions
+  not yet provisioned (§34.2 / CC GATE-WORKFORCE-SESSIONS). Authored in an isolated
+  worktree after the shared origin checkout was found to be live with concurrent
+  Codex/Claude iPad sessions (one-session=one-worktree, hard rule).

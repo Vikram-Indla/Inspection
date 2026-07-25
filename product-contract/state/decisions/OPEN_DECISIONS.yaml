@@ -1,0 +1,68 @@
+# V5 §0.1.7 / §19 — open decisions re-stamped with SLA + escalation under new authority.
+# Source of record remains product-contract/governance/decision_register.csv and
+# governance/OPEN_DECISIONS.yaml; this file adds the V5 SLA/escalation envelope only.
+schema_version: "1.0"
+re_opened_at: "2026-07-25"
+re_opened_by: "claude-orchestrator"
+sla_defaults:
+  internal_hours: 8
+  sponsor_hours: 24
+  escalate_immediately_if_rows_blocked_gte: 5
+
+decisions:
+  - id: "GATE-SAMPLING-RATE"
+    ref: "V5 §0.1.8 / §35.3"
+    owner: "sponsor (Vikram Indla)"
+    raised_at: "2026-07-25"
+    sla_hours: 24
+    default_if_unanswered: null      # NO default permitted; queue stays blocked
+    escalation_target: "sponsor"
+    blocks: "ENTIRE PACKET QUEUE — no build packet may issue until set"
+    status: "OPEN — BLOCKING"
+
+  - id: "GATE-INDEPENDENCE-ACCEPTANCE"
+    ref: "V5 §34.6 / §35.6"
+    owner: "sponsor (Vikram Indla)"
+    raised_at: "2026-07-25"
+    sla_hours: 24
+    default_if_unanswered: null
+    escalation_target: "sponsor"
+    blocks: "figure-2 reporting semantics (blind-internal vs external)"
+    status: "OPEN"
+
+  - id: "GATE-WORKFORCE-SESSIONS"
+    ref: "V5 §34.2"
+    owner: "operator (khan.jahanara@gmail.com) + sponsor"
+    raised_at: "2026-07-25"
+    sla_hours: 24
+    default_if_unanswered: null
+    escalation_target: "sponsor"
+    blocks: "build/verify packets — need >=5 separate sessions; one session on two roles is a P1"
+    status: "OPEN"
+
+  - id: "DEC-032"
+    ref: "submission_versions digest() trigger failure"
+    owner: "sponsor + backend (Build B when provisioned)"
+    severity: "P0"
+    raised_at: "2026-07-20"
+    sla_hours: "immediate"
+    escalation_target: "sponsor"
+    blocks: "ALL real inspection submissions (platform-wide); needs a DB migration"
+    status: "OPEN — P0, carried from decision register"
+    note: "100% sponsor-sampled on re-fix (§35.3 — audit/data path)."
+
+  - id: "DEC-030"
+    ref: "Saqeel V5 iPad hardware verification"
+    owner: "sponsor"
+    sla_hours: 24
+    status: "OPEN — needs provisioned physical device / device-lab"
+  - id: "DEC-031"
+    ref: "Saqeel V5 report print-fixture synthesis"
+    owner: "sponsor"
+    sla_hours: 24
+    status: "OPEN — root cause confirmed as DEC-032"
+
+carried_priority_decisions_unchanged:
+  - "DEC-001 risk model, DEC-002 GIS/geofence, DEC-003 SLA calendar, DEC-004 Arabic/RTL,"
+  - "DEC-005 factory boundary, DEC-006 evidence policy, DEC-007 OTP provider, DEC-009,"
+  - "DEC-010 NFR targets, DEC-025..028 (planning role-routing, AI summary, industry-shared, dashboard KPI)"
