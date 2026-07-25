@@ -1,0 +1,459 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-PACKAGE-OFFLINE-CALL-PATH-INVENTORY-076
+title: Trusted Devices package and offline call-path inventory
+status: INVENTORY_COMPLETE_DEVICE_PACKAGE_ENFORCEMENT_DISCONNECTED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_CROSS_RUNTIME_PATH_ANALYSIS
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  code_changes: 0
+  database_changes: 0
+  tests_executed: 0
+  reason: >-
+    This packet inventories existing and absent call paths only. It does not
+    authorize device policy, package invalidation, remote wipe, provider
+    delivery, cached-data destruction or submission behavior.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-PACKAGE-OFFLINE-CALL-PATH-INVENTORY-076
+  source_task: DEV-PRE-DB1-02
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-DESIGN-REUSE-COLLISION-MAP-074
+    - M10-ADMIN-DEVICE-COMMAND-MDM-DB-CALL-SURFACE-INVENTORY-075
+  route: /admin/devices
+  field_routes:
+    - /field/[visitId]
+    - /field/inspection/[id]
+    - /field/settings
+  design_slots: 48
+  do_not_touch:
+    - application, offline engine, database, migrations, RLS and RPCs
+    - live Claude Design, design authority and acceptance records
+    - provider, remote device, seed, remote data, tests and evidence
+    - current slice controls, branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only cross-runtime inventory. Devices, Field, offline, database and
+    provider files remain outside the active slice and unmodified.
+
+unresolved_authority:
+  package_invalidation_scope: null
+  invalidation_effective_time: null
+  cached_package_behavior_after_invalidation: null
+  in_progress_inspection_exception: null
+  outbox_replay_behavior_after_trust_change: null
+  submission_behavior_after_trust_change: null
+  remote_wipe_local_data_scope: null
+  remote_wipe_receipt_schema: null
+  suspend_and_revoke_local_cache_rule: null
+  device_attestation_source_and_freshness: null
+  app_version_policy_source_and_freshness: null
+  device_command_provider: null
+  provider_retry_policy: null
+  command_correlation_and_idempotency: null
+  package_access_event_retention: null
+  offline_queue_retention: null
+  operator_rescue_authority: null
+  source_error_recovery_contract: null
+  future_lease_owner: null
+
+current_path_summary:
+  authoritative_package_tracks:
+    - track: execution_readiness_snapshot
+      objects: [visit_preparations, visit_package_snapshots, inspections]
+      current_truth: >-
+        confirm_visit_ready validates a published package, applies form
+        configuration, hashes the resolved definition, appends an immutable
+        visit snapshot and creates/reuses the inspection.
+      source: supabase/migrations/20260721121000_execution_preparation.sql:647
+    - track: mvp3_control_plane_manifest
+      objects: [mvp3_inspection_package_manifests, mvp3_package_access_events]
+      current_truth: >-
+        A separate compiler creates one manifest per inspection and
+        mvp3_open_inspection_package checks stored device trust, assignment,
+        app compliance and expiry.
+      source: supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:293
+    - track: field_indexeddb_cache
+      objects: [packages]
+      current_truth: >-
+        The Field client caches the package_versions object under visit and
+        inspection keys in the user-scoped IndexedDB database.
+      source: apps/web/src/lib/offline.ts:99
+  central_finding: >-
+    The three tracks are not connected into one enforced lifecycle. Field
+    download/open/cache/sync/submit does not call the MVP3 open-package gate,
+    does not store its manifest identity/hash as the cache authority and does
+    not consume device commands or package invalidation.
+
+current_lifecycle_stages:
+  - stage_id: DEV-PKG-PATH-01
+    stage: admin_command_request
+    owner: Admin
+    caller: /admin/devices -> issueDeviceCommand -> mvp3_issue_device_command
+    current_behavior: >-
+      Ops or Security Admin can request suspend, resume, remote_wipe or
+      expire_packages with a reason.
+    package_effect: >-
+      expire_packages inserts only a queued command. The RPC has no manifest,
+      cache, inspection, package-access or outbox effect.
+    source:
+      - apps/web/src/app/(app)/admin/devices/page.tsx:18
+      - apps/web/src/app/(app)/admin/mvp3-actions.ts:50
+      - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:275
+  - stage_id: DEV-PKG-PATH-02
+    stage: execution_package_resolution
+    owner: Field plus database
+    caller: confirm_visit_ready
+    current_behavior: >-
+      The assigned inspector confirms readiness; the RPC resolves a published
+      package and freezes the resolved definition and SHA-256 checksum.
+    device_dependency: none
+    source: supabase/migrations/20260721121000_execution_preparation.sql:654
+  - stage_id: DEV-PKG-PATH-03
+    stage: mvp3_manifest_compile
+    owner: Database control plane
+    caller: no_application_consumer_located
+    current_behavior: >-
+      Form Admin, Planner or Security Admin may compile an append-only manifest
+      containing required dependency keys and an expiry.
+    dependency_gap: >-
+      No application call was located, and no binding to the readiness
+      snapshot checksum was found.
+    source: supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:293
+  - stage_id: DEV-PKG-PATH-04
+    stage: server_rendered_field_load
+    owner: Field
+    caller: /field/[visitId]
+    current_behavior: >-
+      The route reads visit/package_versions and, after readiness, the latest
+      visit_package_snapshots row. It does not read MVP3 manifest, device or
+      command state.
+    source: apps/web/src/app/(app)/field/[visitId]/page.tsx:69
+  - stage_id: DEV-PKG-PATH-05
+    stage: mvp3_open_gate
+    owner: Database control plane
+    caller: no_application_consumer_located
+    current_behavior: >-
+      The RPC returns opened plus manifest_hash only when the identified
+      device is assigned to the actor, trusted, app-compliant and the manifest
+      is unexpired; otherwise it returns a denial.
+    dependency_gap: >-
+      It is exercised by a probe but not by the Field download, start,
+      workspace, sync or submit path.
+    source:
+      - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:316
+      - supabase/tests/mvp3_retrofit_live_probe.sql:165
+  - stage_id: DEV-PKG-PATH-06
+    stage: field_download
+    owner: Field
+    caller: Startup.downloadPackage
+    current_behavior: >-
+      A package_versions object already present in the page payload is written
+      directly to IndexedDB under visit:<visit id>.
+    device_dependency: none
+    manifest_dependency: none
+    source: apps/web/src/app/(app)/field/[visitId]/Startup.tsx:263
+  - stage_id: DEV-PKG-PATH-07
+    stage: inspection_start_and_cache
+    owner: Field
+    caller: Startup.startInspection
+    current_behavior: >-
+      The client creates or reuses an inspection and caches the same
+      package_versions object under the inspection id before routing to the
+      workspace.
+    device_dependency: none
+    manifest_dependency: none
+    source: apps/web/src/app/(app)/field/[visitId]/Startup.tsx:891
+  - stage_id: DEV-PKG-PATH-08
+    stage: cached_package_read
+    owner: Field
+    caller: PreInspectionPackSheet
+    current_behavior: >-
+      The sheet tests only whether any value exists at the inspection cache
+      key and labels it cached; it does not verify checksum, expiry, command,
+      trust, assignment or app policy.
+    source: apps/web/src/components/field/PreInspectionPackSheet.tsx:104
+  - stage_id: DEV-PKG-PATH-09
+    stage: offline_draft_and_evidence_queue
+    owner: Field offline engine
+    caller: localForUser
+    current_behavior: >-
+      User-scoped IndexedDB preserves package, draft, outbox and conflict
+      stores. Evidence and responses queue independently of device-command and
+      manifest state.
+    source: apps/web/src/lib/offline.ts:55
+  - stage_id: DEV-PKG-PATH-10
+    stage: replay
+    owner: Field offline engine
+    caller: processOutbox
+    current_behavior: >-
+      A pinned authenticated session replays FIFO and stops on failure.
+      Session changes preserve remaining operations. Response conflicts become
+      explicit; other errors retain the queue.
+    device_dependency: none
+    package_invalidation_dependency: none
+    source: apps/web/src/lib/offline.ts:277
+  - stage_id: DEV-PKG-PATH-11
+    stage: evidence_sync
+    owner: Field offline engine
+    caller: processOutbox evidence branch
+    current_behavior: >-
+      Storage upload and evidence-row upsert are replay-safe by path. The
+      branch does not verify current device trust, command state, manifest
+      identity or cache validity.
+    source: apps/web/src/lib/offline.ts:330
+  - stage_id: DEV-PKG-PATH-12
+    stage: submission_replay
+    owner: Field plus database
+    caller: processOutbox submit branch -> submit_inspection
+    current_behavior: >-
+      The canonical RPC enforces assigned inspector/capability, lifecycle,
+      synced evidence, returned scope, idempotency and atomic audit. It does
+      not receive a device identifier or manifest id/hash and does not check
+      device trust or package invalidation.
+    source:
+      - apps/web/src/lib/offline.ts:349
+      - supabase/migrations/20260721160000_execution_submission_review.sql:112
+  - stage_id: DEV-PKG-PATH-13
+    stage: sync_status_and_retry
+    owner: Field
+    caller: FieldHeaderSync and Workspace
+    current_behavior: >-
+      Browser connectivity and local queue count drive status; Sync Now runs
+      processOutbox. No provider/device-command receipt, invalidation status or
+      cross-device health source is included.
+    source: apps/web/src/components/field/FieldHeaderSync.tsx:24
+
+device_command_dependency_matrix:
+  - command: suspend
+    current_server_effect: device trust_status becomes suspended immediately
+    current_field_effect: none located
+    download_open_effect: none because Field does not call the MVP3 gate
+    cached_package_effect: none
+    replay_effect: none
+    submit_effect: none
+  - command: resume
+    current_server_effect: device trust_status becomes trusted immediately
+    current_field_effect: none located
+    hazard: bypasses missing attestation, approval and provider acknowledgement
+  - command: remote_wipe
+    current_server_effect: device trust_status becomes wipe_pending immediately
+    current_field_effect: none located
+    cached_package_effect: no IndexedDB clearing or quarantine consumer located
+    replay_effect: queued operations remain replayable
+    completion_effect: no provider/device receipt path located
+  - command: expire_packages
+    current_server_effect: queued command row only
+    current_field_effect: none located
+    manifest_effect: none
+    cached_package_effect: none
+    replay_effect: none
+    submit_effect: none
+  - command: revoke
+    current_server_effect: command does not exist
+    current_field_effect: none
+
+absent_or_disconnected_consumers:
+  - gap_id: DEV-PKG-GAP-01
+    gap: No application invokes mvp3_compile_inspection_package.
+    implication: The control-plane manifest is not part of the normal Field lifecycle.
+  - gap_id: DEV-PKG-GAP-02
+    gap: No application invokes mvp3_open_inspection_package.
+    implication: Stored device trust cannot govern actual Field opening.
+  - gap_id: DEV-PKG-GAP-03
+    gap: Field download writes an already-loaded package object directly to IndexedDB.
+    implication: Download is neither device-bound nor manifest-authorized.
+  - gap_id: DEV-PKG-GAP-04
+    gap: Cached package records contain no manifest id/hash, device id or validity envelope.
+    implication: Cache presence cannot prove official, current or authorized content.
+  - gap_id: DEV-PKG-GAP-05
+    gap: No IndexedDB invalidation, quarantine or purge consumer was located.
+    implication: Expire/wipe/suspend/revoke cannot alter cached package availability.
+  - gap_id: DEV-PKG-GAP-06
+    gap: processOutbox reads no device or command state.
+    implication: Trust changes do not stop evidence, response or submission replay.
+  - gap_id: DEV-PKG-GAP-07
+    gap: submit_inspection receives no device or manifest identity.
+    implication: A server-authorized inspector may submit despite an unrelated device suspension or package-expiry command.
+  - gap_id: DEV-PKG-GAP-08
+    gap: The readiness snapshot and MVP3 manifest are parallel unbound authorities.
+    implication: Their hashes, definitions and expiry cannot be proven equivalent.
+  - gap_id: DEV-PKG-GAP-09
+    gap: Package access events model only open/denial outcomes.
+    implication: Download, cached open, invalidation receipt, sync and submit are absent from evidence history.
+  - gap_id: DEV-PKG-GAP-10
+    gap: Unknown manifest access produces no package_access_events row.
+    implication: One denial class is not durably evidenced by the current table.
+  - gap_id: DEV-PKG-GAP-11
+    gap: No command correlation/idempotency binds Admin request to device effect.
+    implication: Duplicate or late invalidation/wipe effects cannot be safely reconciled.
+  - gap_id: DEV-PKG-GAP-12
+    gap: No authenticated provider/device acknowledgement consumer exists.
+    implication: Queued, accepted, effected and verified completion cannot be distinguished.
+  - gap_id: DEV-PKG-GAP-13
+    gap: Field sync status is local connectivity plus queue count only.
+    implication: Admin cannot infer device sync health and Field cannot surface command delivery health.
+  - gap_id: DEV-PKG-GAP-14
+    gap: The legacy submission fallback can directly insert and update status.
+    implication: On a pre-canonical server it has even fewer atomic guards and no device/package enforcement.
+  - gap_id: DEV-PKG-GAP-15
+    gap: Package cache read errors are swallowed as uncached.
+    implication: Storage failure and verified absence are not distinguishable in that surface.
+  - gap_id: DEV-PKG-GAP-16
+    gap: No safe rescue operation exists for a held queue after a future trust/package denial.
+    implication: Retry, export, preserve, discard and escalation authority remain undefined.
+
+safe_degraded_behavior_without_new_policy:
+  - condition: Device or command source unavailable
+    safe_behavior: Show last confirmed facts only; disable dependent mutation and never infer trusted or completed.
+  - condition: Manifest compiler unavailable or no manifest exists
+    safe_behavior: Block official device-governed download/open; do not substitute the raw package object as equivalent authority.
+  - condition: Open gate denies access
+    safe_behavior: Preserve local drafts and queued evidence; do not disclose manifest content or auto-retry a privileged open.
+  - condition: Device trust changes while offline
+    safe_behavior: Preserve data locally and mark authorization unverified; do not claim replay or submission remains permitted.
+  - condition: Expire Packages requested but no authenticated device effect exists
+    safe_behavior: Show request/hold only; do not label cached content expired or cleared.
+  - condition: Remote Wipe requested without verified receipt
+    safe_behavior: Show wipe pending; deny positive completion and do not assert local data destruction.
+  - condition: Package cache exists without validity envelope
+    safe_behavior: Label only as locally stored, not verified/current/official.
+  - condition: Replay fails
+    safe_behavior: Stop FIFO, retain current and remaining entries, show neutral localized recovery and never silently drop.
+  - condition: Response conflict
+    safe_behavior: Preserve both local and server facts and require explicit resolution; never overwrite silently.
+  - condition: Submission RPC rejects
+    safe_behavior: Keep the outbox item, retain the immutable local draft, show failed sync and never report submitted.
+  - condition: Session identity changes during replay
+    safe_behavior: Stop immediately and preserve the original user's queue without cross-user replay.
+  - condition: Source authority remains null
+    safe_behavior: Render a blocked dependency state; do not invent thresholds, grace periods, purge behavior or exception policy.
+
+design_slot_dependency_crosswalk:
+  route_source_permission:
+    slots: [DEV-DS-001..010]
+    current_dependencies: [DEV-PKG-PATH-01, DEV-PKG-PATH-04, DEV-PKG-PATH-13]
+    principal_gaps: [DEV-PKG-GAP-01, DEV-PKG-GAP-02, DEV-PKG-GAP-13, DEV-PKG-GAP-15]
+  device_register:
+    slots: [DEV-DS-011..018]
+    current_dependencies: [DEV-PKG-PATH-01, DEV-PKG-PATH-05]
+    principal_gaps: [DEV-PKG-GAP-02, DEV-PKG-GAP-05, DEV-PKG-GAP-06, DEV-PKG-GAP-12]
+  command_request_conflict:
+    slots: [DEV-DS-019..024]
+    current_dependencies: [DEV-PKG-PATH-01]
+    principal_gaps: [DEV-PKG-GAP-11, DEV-PKG-GAP-12, DEV-PKG-GAP-16]
+  provider_receipt:
+    slots: [DEV-DS-025..030]
+    current_dependencies: []
+    principal_gaps: [DEV-PKG-GAP-11, DEV-PKG-GAP-12]
+  package_offline:
+    slots: [DEV-DS-031..035]
+    current_dependencies:
+      - DEV-PKG-PATH-02
+      - DEV-PKG-PATH-03
+      - DEV-PKG-PATH-04
+      - DEV-PKG-PATH-05
+      - DEV-PKG-PATH-06
+      - DEV-PKG-PATH-07
+      - DEV-PKG-PATH-08
+      - DEV-PKG-PATH-09
+      - DEV-PKG-PATH-10
+      - DEV-PKG-PATH-11
+      - DEV-PKG-PATH-12
+    principal_gaps:
+      - DEV-PKG-GAP-01
+      - DEV-PKG-GAP-02
+      - DEV-PKG-GAP-03
+      - DEV-PKG-GAP-04
+      - DEV-PKG-GAP-05
+      - DEV-PKG-GAP-06
+      - DEV-PKG-GAP-07
+      - DEV-PKG-GAP-08
+      - DEV-PKG-GAP-09
+      - DEV-PKG-GAP-10
+      - DEV-PKG-GAP-14
+      - DEV-PKG-GAP-15
+      - DEV-PKG-GAP-16
+  sync_health_rescue:
+    slots: [DEV-DS-036..038]
+    current_dependencies: [DEV-PKG-PATH-09, DEV-PKG-PATH-10, DEV-PKG-PATH-13]
+    principal_gaps: [DEV-PKG-GAP-06, DEV-PKG-GAP-13, DEV-PKG-GAP-16]
+  evidence_audit:
+    slots: [DEV-DS-039..041]
+    current_dependencies: [DEV-PKG-PATH-01, DEV-PKG-PATH-05, DEV-PKG-PATH-11, DEV-PKG-PATH-12]
+    principal_gaps: [DEV-PKG-GAP-09, DEV-PKG-GAP-10, DEV-PKG-GAP-11, DEV-PKG-GAP-12]
+  presentation:
+    slots: [DEV-DS-042..048]
+    current_dependencies: [DEV-PKG-PATH-04, DEV-PKG-PATH-08, DEV-PKG-PATH-13]
+    principal_gaps: [DEV-PKG-GAP-13, DEV-PKG-GAP-15]
+
+bounded_change_boundaries_after_authority:
+  - boundary_id: DEV-PKG-BND-01
+    owner_domain: governance
+    need: Approve roles, transitions, invalidation scope, cached-data effect, offline replay/submit behavior and rescue semantics.
+  - boundary_id: DEV-PKG-BND-02
+    owner_domain: database
+    need: Versioned/idempotent command lifecycle, provider/device receipts and atomic device/package guards.
+  - boundary_id: DEV-PKG-BND-03
+    owner_domain: package_compiler
+    need: Establish one canonical relationship between readiness snapshot and device-governed manifest.
+  - boundary_id: DEV-PKG-BND-04
+    owner_domain: Field
+    need: Consume the authorized manifest envelope at download/open and persist its identity/hash with the cache.
+  - boundary_id: DEV-PKG-BND-05
+    owner_domain: offline_engine
+    need: Fail closed at replay/submit after governed device/package change while preserving recoverable local work.
+  - boundary_id: DEV-PKG-BND-06
+    owner_domain: provider_adapter
+    need: Authenticated command dispatch and receipt ingestion without treating request as effect.
+  - boundary_id: DEV-PKG-BND-07
+    owner_domain: Admin
+    need: Source-backed command, package effect, sync health and rescue views.
+  - boundary_id: DEV-PKG-BND-08
+    owner_domain: QA
+    need: Cross-device/offline negative paths proving no unauthorized open, replay, submit, duplicate effect or data loss.
+
+disposition:
+  result: BLOCK_PACKAGE_OFFLINE_WIRING_PENDING_CONTRACT
+  material_conclusion: >-
+    Existing readiness freezing and offline replay are useful foundations, but
+    they are not currently governed by Trusted Devices. Expire Packages,
+    Suspend and Remote Wipe do not reach Field cache, replay or submission.
+    No design or implementation may claim end-to-end device/package control.
+  sponsor_decisions_needed:
+    - package invalidation scope and effect on cached/in-progress work
+    - replay and submission behavior after trust or package-state changes
+    - remote wipe, suspend and revoke local-data semantics
+    - provider/receipt and retry authority
+    - rescue ownership for held recoverable work
+
+validation:
+  expected_lifecycle_stages: 13
+  expected_dependency_commands: 5
+  expected_gaps: 16
+  expected_safe_degraded_behaviors: 12
+  expected_design_slots: 48
+  yaml_parse: PASS
+  slot_coverage: PASS_48_OF_48_EXACTLY_ONCE
+  reference_integrity: PASS
+  diff_check: PASS
+
+safe_successor:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077
+  mode: READ_ONLY
+  purpose: >-
+    Convert the disconnected lifecycle into a test-only enforcement plan
+    covering Admin command request, provider/receipt hold, Field open/cache,
+    offline replay, submit, data preservation and negative paths without
+    inventing policy or modifying tests.

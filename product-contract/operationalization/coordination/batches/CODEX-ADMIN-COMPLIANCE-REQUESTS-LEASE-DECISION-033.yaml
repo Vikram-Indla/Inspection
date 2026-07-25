@@ -1,0 +1,755 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-DECISION-033
+title: Compliance Request remediation future lease decision record
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: RETURNED_FOR_LEASE_BOUNDARY_CORRECTION
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  lease_authority_granted: false
+  remote_ddl_authority_granted: false
+  shared_data_authority_granted: false
+  provider_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    Packet 032 correctly identifies the safe downstream architecture and five
+    serial ownership boundaries, but the boundary set is not grant-ready.
+    Migration filenames 032A and 032C were manually proposed rather than
+    generated and reserved at grant time; 032B contains only application files
+    and therefore cannot enforce the canonical no-direct-database-authoring
+    rule; and 032C has no dedicated SQL probe or factual handoff-evidence path.
+    The Field boundary also depends on an active Field workstream and the QA
+    boundary lacks current target-project access and complete role separation.
+    Return the lease definition for bounded correction. Keep all five future
+    leases NOT_GRANTED and implementation BLOCKED.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-DECISION-033
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-P0-REMEDIATION-PREFLIGHT-032
+    source_status: ACK_PREFLIGHT_IMPLEMENTATION_BLOCKED
+    source_commit: 5c81303fd376c5288f10073f9601a5d4463f3243
+    source_sha256: 5cca2d4e90dd349744a127f0811d4d0fec79c26a727312cd11dd510a78e3efbd
+  business_capability: >-
+    Connect approved, effective Compliance Configuration Request versions to
+    the Compliance Library, Packages, Planning and Field through immutable
+    package snapshots while preserving maker-checker, permissions, audit,
+    effective dating, concurrency, historical truth and rollback.
+  design_dependency:
+    design_id: WA-DES-019
+    status: SEPARATE_NOT_DECIDED_HERE
+    design_change_authority: false
+  exact_routes:
+    - /admin/compliance-requests
+    - /admin/regulations
+    - /admin/items
+    - /admin/violations
+    - /admin/packages
+    - /planning
+    - /field/:visitId
+    - /field/inspection/:id
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: 5c81303fd376c5288f10073f9601a5d4463f3243
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+gate_check:
+  result: BLOCKED
+  gate_position:
+    G8: PASS
+    G10: PASS_HISTORICAL
+    G11: OPEN
+    G12: OPEN
+  permitted_next_action: >-
+    Correct and independently review the five future lease definitions without
+    implementing, generating a migration, granting ownership or touching data.
+  missing_evidence:
+    - Approved typed per-kind CCR snapshot contract.
+    - Approved Scheduled/Active/effective-date selection mechanism.
+    - Database-enforced legacy authoring cutover.
+    - Reserved migration paths generated at grant time.
+    - Dedicated package-bridge SQL probe and evidence path.
+    - Clean Field integration baseline and exact owner clearance.
+    - Authorized target-project database session and exclusive data lease.
+    - Independent implementation, test-author and certifier assignments.
+    - Current protected regression and real-browser downstream proof.
+
+exact_requirement_scope:
+  customer_rows:
+    - [CR-449, WA-AC-0449]
+    - [CR-450, WA-AC-0450]
+    - [CR-451, WA-AC-0451]
+    - [CR-452, WA-AC-0452]
+    - [CR-458, WA-AC-0458]
+    - [CR-459, WA-AC-0459]
+    - [CR-460, WA-AC-0460]
+    - [CR-463, WA-AC-0463]
+    - [CR-478, WA-AC-0478]
+  authoring_and_cutover:
+    - REQ-R0C-01623
+    - REQ-R0C-01666
+    - REQ-R0C-01684
+    - REQ-R0C-01709
+    - REQ-R0C-01768
+    - REQ-R0C-01903
+    - REQ-R0C-01916
+    - REQ-R0C-02041
+    - REQ-R0C-02131
+    - REQ-R0C-02208..02210
+    - REQ-R0C-02234
+  publication_and_downstream:
+    - REQ-R0C-01803..01805
+    - REQ-R0C-01815
+    - REQ-R0C-01868..01883
+    - REQ-R0C-01885..01886
+    - REQ-R0C-01888..01889
+    - REQ-R0C-01894..01896
+  effective_and_historical:
+    - REQ-R0C-01627
+    - REQ-R0C-01638
+    - REQ-R0C-01655
+    - REQ-R0C-01672..01673
+    - REQ-R0C-01691
+    - REQ-R0C-01694
+    - REQ-R0C-01724..01726
+    - REQ-R0C-01783..01785
+    - REQ-R0C-01900
+    - REQ-R0C-01906
+    - REQ-R0C-01915
+    - REQ-R0C-01919
+    - REQ-R0C-01923
+  quality:
+    - WA-M6-AC-001
+    - WA-M6-AC-002
+    - WA-M6-AC-005
+    - WA-M6-AC-006
+  not_owned:
+    - CR-453..CR-457
+    - CR-461..CR-462
+    - CR-464..CR-477
+    - WA-M6-AC-003..004
+
+global_lease_rules:
+  grant_rule: >-
+    Only Codex lead may issue a lease after every prerequisite for that boundary
+    is PASS, the exact base commit/worktree/branch/owner is recorded, every
+    writable path is clean and unowned, and the preceding serial boundary has
+    independent acceptance. This record is not a lease.
+  branch_rule: >-
+    Each implementation boundary requires its own isolated codex/* branch and
+    authorized worktree from the exact accepted predecessor commit. No work may
+    begin on main, setup/Inspection or an unrelated dirty worktree.
+  migration_path_rule:
+    current_032_paths: UNRESERVED_PLACEHOLDERS_NOT_ALLOWED
+    required_generation: >-
+      After a database lease is explicitly granted, the owner must inspect the
+      installed Supabase CLI help and create the migration through
+      `supabase migration new <approved-name>`. The generated path and timestamp
+      are then added to the granted lease. No worker may reserve or invent the
+      filename in advance.
+    names_for_future_generation_only:
+      - compliance_request_operational_projection
+      - compliance_request_authoring_cutover
+      - compliance_package_snapshot_cutover
+  implementation_qa_separation:
+    - Implementers for 032A..032D may write only their exact leased product, migration, focused probe and factual handoff-evidence files.
+    - An implementer may not set independent acceptance, requirement credit, sponsor status or release status.
+    - The 032E test author must not have implemented 032A..032D.
+    - The final 032E certifier must be independent from both implementation and test authorship.
+    - The data operator must hold the exact data lease; the certifier reviews its immutable audit and restoration evidence.
+    - Codex lead performs final browser acceptance and lease closeout.
+  serial_rule: >-
+    032A -> 032B -> 032C -> 032D -> 032E. A later boundary may perform read-only
+    preparation, but no write lease starts until the prior boundary is
+    independently accepted on the exact integration base.
+  no_credit_rule: >-
+    No individual boundary earns a canonical customer-row completion. Credit is
+    considered only after 032E proves the complete chain and no P0/P1 remains.
+
+lease_decisions:
+  - lease_id: LEASE-CCR-LIFECYCLE-PROJECTION-032A
+    decision: RETURN_NOT_GRANTED
+    sequence: 1
+    purpose: >-
+      Add typed immutable CCR versions, Scheduled/Active effective-date truth,
+      optimistic concurrency, RLS-safe operational projection and append-only
+      lifecycle/audit behavior without switching an application consumer.
+    prerequisite_gates:
+      - id: 032A-G1-TYPED-CONTRACT
+        status: BLOCKED
+        requirement: >-
+          Product authority approves the exact required/optional fields,
+          validation and dependency shape for Regulation, Inspection Item,
+          Violation and Penalty snapshots. Arbitrary JSON is not acceptable.
+      - id: 032A-G2-EFFECTIVE-LIFECYCLE
+        status: BLOCKED
+        requirement: >-
+          Product/database authority selects a canonical no-provider mechanism
+          for Scheduled -> Active date-boundary truth, current-version
+          preservation, deactivation and successor semantics.
+      - id: 032A-G3-LEGACY-BACKFILL
+        status: BLOCKED
+        requirement: >-
+          Read-only reconciliation proves how every existing active head and
+          legacy stable ID receives unambiguous effective/version lineage.
+      - id: 032A-G4-MIGRATION-PATH
+        status: BLOCKED
+        requirement: >-
+          An explicit database lease is granted and the migration path is
+          generated at that time; the 032 placeholder is not reserved.
+      - id: 032A-G5-TARGET
+        status: BLOCKED
+        requirement: >-
+          Local PostgreSQL execution is available. Remote project
+          iiozvqntawxfwbgffzqu remains out of scope until separately authorized.
+    would_be_allowed_only_after_grant:
+      generated_migration_logical_name: compliance_request_operational_projection
+      focused_probe_path: supabase/tests/compliance_request_operational_projection_probe.sql
+      factual_handoff_evidence_path: product-contract/evidence/LEASE-CCR-LIFECYCLE-PROJECTION-032A.md
+      database_objects:
+        existing:
+          - public.compliance_configuration_requests
+          - public.compliance_request_revisions
+          - public.compliance_request_components
+          - public.compliance_entity_versions
+          - public.compliance_entity_heads
+          - public.compliance_request_publications
+          - public.compliance_configuration_compatibility
+          - public.publish_compliance_request(uuid)
+          - public.audit_events
+        candidate_not_approved:
+          - public.compliance_entity_lifecycle_events
+          - public.compliance_operational_versions
+          - public.activate_compliance_entity_version(uuid,text)
+          - public.deactivate_compliance_entity_version(uuid,text)
+    prohibited_paths_and_actions:
+      - all application source and Playwright tests
+      - legacy Compliance tables or authoring policies
+      - package, Planning, Field and offline objects
+      - remote DDL, pg_cron, external scheduler or provider configuration
+      - service-role use, destructive down migration or audit/history deletion
+    data_and_provider_constraints:
+      - Local isolated synthetic fixtures only during implementation.
+      - No shared target-project row write in 032A.
+      - Automatic activation cannot depend on an unapproved Cron or external provider.
+      - Security-invoker views are required for exposed reads.
+      - SECURITY DEFINER RPCs require explicit auth.uid/role checks, revoked PUBLIC/anon execution and reviewed grants.
+      - Every exposed table requires RLS plus least-privilege grants.
+    implementation_exit_evidence:
+      - Fresh PostgreSQL compile and idempotent replay.
+      - Typed validation rejects every malformed kind before state change.
+      - Maker-checker, stale revision, future-effective, current-version-preservation and immutable-row negatives.
+      - RLS/grant catalogue, function execute privileges and audit correlation.
+      - Zero application consumer switch.
+    independent_qa_gate:
+      status: NOT_STARTED
+      verifier_must_not_be_implementer: true
+      required_result: PASS_WITH_ZERO_P0_P1
+    rollback: >-
+      Because 032A is additive and switches no consumer, a failed local run is
+      discarded with its isolated database. Any later authorized remote repair
+      is forward-only; immutable versions, lifecycle events and audit are never
+      deleted or rewritten.
+
+  - lease_id: LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B
+    decision: RETURN_NOT_GRANTED
+    sequence: 2
+    purpose: >-
+      Make approved Scheduled/Active CCR versions the Compliance Library read
+      source and enforce CCR-only create/modify at both route and database
+      boundaries while preserving separately authorized lifecycle actions and
+      historical legacy reads.
+    prerequisite_gates:
+      - id: 032B-G1-UPSTREAM
+        status: BLOCKED
+        requirement: 032A independently accepted on the exact integration base.
+      - id: 032B-G2-DATABASE-ENFORCEMENT-SCOPE
+        status: RETURN_REQUIRED
+        requirement: >-
+          Add a generated authoring-cutover migration to the boundary. The
+          application-only 032B list cannot prevent direct Data API or RPC
+          writes and therefore cannot satisfy exclusive CCR authoring.
+      - id: 032B-G3-ACTION-CLASSIFICATION
+        status: BLOCKED
+        requirement: >-
+          Product authority classifies every create, modify, publish, attach,
+          add-clause, activate and deactivate action. No engineering worker may
+          infer which lifecycle exceptions remain direct.
+      - id: 032B-G4-PERMISSION-PRESENTATION
+        status: BLOCKED
+        requirement: >-
+          Include or separately close the current-user role-filter defect on
+          /admin/compliance-requests; a Reviewer must not be offered Create.
+      - id: 032B-G5-OWNER-CLEARANCE
+        status: BLOCKED
+        requirement: >-
+          Codex confirms no active Regulations, Items, Violations, design or
+          localization owner controls any listed path.
+    would_be_allowed_only_after_grant:
+      generated_migration_logical_name: compliance_request_authoring_cutover
+      application_paths:
+        - apps/web/src/lib/compliance/governed-library.ts
+        - apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+        - apps/web/src/app/(app)/admin/regulations/page.tsx
+        - apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+        - apps/web/src/app/(app)/admin/regulations/Controls.tsx
+        - apps/web/src/app/(app)/admin/regulations/actions.ts
+        - apps/web/src/app/(app)/admin/items/page.tsx
+        - apps/web/src/app/(app)/admin/items/Controls.tsx
+        - apps/web/src/app/(app)/admin/items/actions.ts
+        - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+        - apps/web/src/app/(app)/admin/violations/page.tsx
+        - apps/web/src/app/(app)/admin/violations/Controls.tsx
+        - apps/web/src/app/(app)/admin/violations/actions.ts
+      factual_handoff_evidence_path: product-contract/evidence/LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B.md
+      database_objects_requiring_exact_policy_review:
+        - public.regulations
+        - public.regulation_clauses
+        - public.regulation_attachments
+        - public.inspection_items
+        - public.inspection_item_versions
+        - public.violation_codes
+        - public.penalty_mappings
+        - public.publish_regulation(uuid)
+        - public.publish_violation_code(uuid)
+        - public.publish_penalty_mapping(uuid)
+    prohibited_paths_and_actions:
+      - shared admin guard, shell, navigation, styles or design files
+      - package, Planning, Field, offline and service-worker source
+      - deleting or rewriting legacy rows, attachments, versions or audit
+      - widening Reviewer, Compliance Admin or Form Admin roles
+      - hiding an unavailable source as an empty Library
+    data_and_provider_constraints:
+      - No provider dependency is introduced.
+      - Legacy compatibility reads remain RLS-scoped and historical.
+      - Direct database writes must fail closed after cutover, not merely disappear from the UI.
+      - Source attachments retain governed storage custody, hashes and access policies.
+    implementation_exit_evidence:
+      - Approved Scheduled/Active rows only in Library.
+      - Draft/returned/rejected/future-not-effective/deactivated negatives.
+      - Direct route, Data API and legacy RPC create/modify/publish bypass denied.
+      - Authorized lifecycle actions preserved exactly and audited.
+      - Admin writer, Reviewer read-only, denied persona and anonymous behavior.
+      - Existing attachment, usage, audit, empty/error/degraded behavior preserved.
+    independent_qa_gate:
+      status: NOT_STARTED
+      verifier_must_not_be_implementer: true
+      required_result: PASS_WITH_ZERO_P0_P1
+    rollback: >-
+      Before cutover, the governed projection may run in read-parity mode.
+      After cutover, rollback may restore a prior read projection only. It may
+      not reopen direct create/modify/publish bypass without a new explicit
+      product and database decision.
+
+  - lease_id: LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C
+    decision: RETURN_NOT_GRANTED
+    sequence: 3
+    purpose: >-
+      Publish a package only from exact effective CCR versions, freeze complete
+      component snapshots and provenance transactionally, and preserve existing
+      immutable package/history behavior.
+    prerequisite_gates:
+      - id: 032C-G1-UPSTREAM
+        status: BLOCKED
+        requirement: 032A and 032B independently accepted on the exact integration base.
+      - id: 032C-G2-SNAPSHOT-CONTRACT
+        status: BLOCKED
+        requirement: >-
+          The approved typed CCR contract maps exactly to package item,
+          violation, penalty, evidence and template snapshot fields.
+      - id: 032C-G3-DEDICATED-SQL-PROBE
+        status: RETURN_REQUIRED
+        requirement: >-
+          Add a dedicated package-bridge SQL probe and factual handoff evidence
+          path. Reusing 032A's probe would overlap ownership and hide bridge failures.
+      - id: 032C-G4-MIGRATION-PATH
+        status: BLOCKED
+        requirement: >-
+          Generate and reserve the migration only after a database lease is granted.
+      - id: 032C-G5-PACKAGE-OWNER
+        status: BLOCKED
+        requirement: >-
+          Confirm no Admin Packages worker owns the package application files,
+          publish RPC or package snapshot objects.
+    would_be_allowed_only_after_grant:
+      generated_migration_logical_name: compliance_package_snapshot_cutover
+      focused_probe_path: supabase/tests/compliance_package_snapshot_bridge_probe.sql
+      application_paths:
+        - apps/web/src/app/(app)/admin/packages/actions.ts
+        - apps/web/src/app/(app)/admin/packages/page.tsx
+        - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+        - apps/web/src/app/(app)/admin/packages/ImpactPanel.tsx
+      factual_handoff_evidence_path: product-contract/evidence/LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C.md
+      database_objects:
+        existing:
+          - public.package_versions
+          - public.package_version_item_snapshots
+          - public.package_version_dependency_snapshots
+          - public.publish_package_version(uuid,jsonb)
+          - public.package_version_impact(uuid)
+          - public.audit_events
+        candidate_not_approved:
+          - public.package_version_compliance_snapshots
+          - public.publish_package_version_from_compliance(uuid,jsonb,uuid[])
+    prohibited_paths_and_actions:
+      - Compliance Library authoring files owned by 032B
+      - Planning, Field, offline and service-worker source
+      - rewriting old package definitions or snapshot rows
+      - allowing the prior publish RPC to bypass governed provenance
+      - publishing from live legacy catalogue values
+    data_and_provider_constraints:
+      - No external provider or service-role client.
+      - Package maker and package checker remain distinct.
+      - New exposed snapshots require RLS and least-privilege authenticated reads.
+      - SECURITY DEFINER publication requires explicit auth/role checks and revoked PUBLIC/anon execution.
+      - Audit and snapshot hashes are append-only.
+    implementation_exit_evidence:
+      - Atomic full-branch publish and zero-row rollback on one invalid dependency.
+      - Exact CCR request/revision/version IDs and snapshot hashes stored with package version.
+      - Stale/concurrent publish and self-publish denied.
+      - Old published/locked/deactivated packages byte-equivalent and immutable.
+      - Prior publish function cannot bypass the bridge.
+      - Function privilege, RLS/grant and performance-advisor review.
+    independent_qa_gate:
+      status: NOT_STARTED
+      verifier_must_not_be_implementer: true
+      required_result: PASS_WITH_ZERO_P0_P1
+    rollback: >-
+      A failed publication rolls back transactionally. A successfully published
+      package is never edited or deleted. Operational rollback uses an approved,
+      audited successor or prior effective package; all package and CCR
+      histories remain.
+
+  - lease_id: LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D
+    decision: BLOCKED_NOT_GRANTED
+    sequence: 4
+    purpose: >-
+      Remove Field's live item/template fallbacks so every configured,
+      additional-item, action-form, violation and penalty choice comes only
+      from the inspection's pinned immutable package version.
+    prerequisite_gates:
+      - id: 032D-G1-UPSTREAM
+        status: BLOCKED
+        requirement: 032C independently accepted on the exact integration base.
+      - id: 032D-G2-FIELD-BASELINE
+        status: BLOCKED
+        requirement: >-
+          The active codex/m3-field-expiry-fix worktree is reconciled and Codex
+          records a clean accepted Field baseline. It currently has uncommitted
+          Field work, including apps/web/src/app/(app)/field/[visitId]/page.tsx,
+          which is a read-only dependency of 032D.
+      - id: 032D-G3-COMPLETE-FROZEN-SCOPE
+        status: BLOCKED
+        requirement: >-
+          The package bridge proves it freezes the complete eligible additional
+          item and action-template scope, not only initially configured items.
+      - id: 032D-G4-OFFLINE-PARITY
+        status: BLOCKED
+        requirement: >-
+          Current online/offline execution, review return, conflict and
+          submission behavior is baselined before source edits.
+    would_be_allowed_only_after_grant:
+      application_paths:
+        - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+        - apps/web/src/app/(app)/field/inspection/[id]/runtime.ts
+        - apps/web/src/app/(app)/field/inspection/[id]/Workspace.tsx
+      factual_handoff_evidence_path: product-contract/evidence/LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D.md
+      read_only_dependencies:
+        - apps/web/src/app/(app)/field/[visitId]/page.tsx
+        - apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+        - apps/web/src/lib/offline.ts
+    prohibited_paths_and_actions:
+      - Field navigation, service worker, manifest or IndexedDB schema
+      - preparation, visit, inspection, submission or historical data re-versioning
+      - live legacy fallback after a snapshot is missing
+      - package, Planning, Compliance Library or database writes
+    data_and_provider_constraints:
+      - No provider or shared-data write in implementation tests.
+      - Missing snapshot is a blocking degraded state, never a live-catalogue fallback.
+      - Existing offline queue, conflict and evidence custody remain unchanged.
+    implementation_exit_evidence:
+      - Source trace proves no live inspection_items/configuration_templates read affects an active inspection.
+      - Configured and additional items are both pinned.
+      - Action forms, violation and penalty values are pinned.
+      - Existing online/offline, return/correct/resubmit, evidence and accessibility tests pass.
+      - Missing/corrupt snapshot fails closed with neutral recovery guidance.
+    independent_qa_gate:
+      status: NOT_STARTED
+      verifier_must_not_be_implementer: true
+      required_result: PASS_WITH_ZERO_P0_P1
+    rollback: >-
+      Revert the isolated Field code commit only while the additive package
+      bridge remains. Never restore a silent live-catalogue fallback for an
+      already-started inspection.
+
+  - lease_id: LEASE-CCR-DOWNSTREAM-TEST-DATA-BROWSER-032E
+    decision: BLOCKED_NOT_GRANTED
+    sequence: 5
+    purpose: >-
+      Independently certify the complete CCR -> Library -> Package -> Planning
+      -> Field chain with isolated reversible data, protected tests, permissions,
+      audit, browser states and exact semantic restoration.
+    prerequisite_gates:
+      - id: 032E-G1-INTEGRATED-CANDIDATE
+        status: BLOCKED
+        requirement: 032A..032D independently accepted and stacked on one exact clean commit.
+      - id: 032E-G2-TEST-AUTHOR
+        status: BLOCKED
+        requirement: Assign a test author who implemented none of 032A..032D.
+      - id: 032E-G3-INDEPENDENT-CERTIFIER
+        status: BLOCKED
+        requirement: Assign a certifier distinct from all implementers and the test author.
+      - id: 032E-G4-DATABASE-ACCESS
+        status: BLOCKED
+        requirement: >-
+          Provide an authorized session for non-production project
+          iiozvqntawxfwbgffzqu. Packet 031 recorded that the available connector
+          did not expose this target.
+      - id: 032E-G5-DATA-LEASE
+        status: BLOCKED
+        requirement: >-
+          Issue an exact exclusive data lease naming deterministic IDs,
+          collision queries, personas, original semantic state, restoration and
+          retained immutable audit.
+      - id: 032E-G6-BROWSER-BASELINE
+        status: BLOCKED
+        requirement: >-
+          Authentication fixtures, exact server commit and protected test
+          inventory are current before mutation.
+    would_be_allowed_only_after_grant:
+      test_author_paths:
+        - apps/web/e2e/compliance-request-operational-projection.spec.ts
+        - apps/web/e2e/compliance-request-downstream-runtime.spec.ts
+      final_certificate_path: product-contract/evidence/CODEX-ADMIN-COMPLIANCE-REQUESTS-DOWNSTREAM-CERT-032E.md
+      read_only_protected_tests:
+        - apps/web/e2e/compliance-request-engine.spec.ts
+        - apps/web/e2e/compliance-approval-queue.spec.ts
+        - apps/web/e2e/compliance-library.spec.ts
+        - apps/web/e2e/cd-005-006-regulations.spec.ts
+        - apps/web/e2e/cd-008-009-packages.spec.ts
+        - apps/web/e2e/golden-journey.spec.ts
+        - apps/web/e2e/offline-drill.spec.ts
+      target_project: iiozvqntawxfwbgffzqu
+    prohibited_paths_and_actions:
+      - product, migration, design or existing protected-test edits
+      - service-role browser client or production data
+      - bulk, unrelated or collision-prone fixtures
+      - deleting audit, decisions, publications or immutable version history
+      - self-certification by an implementer or test author
+      - changing a failing protected assertion without a separate exact lease
+    data_and_provider_constraints:
+      environment: NON_PRODUCTION_ONLY
+      authentication: existing approved personas and browser sessions
+      service_role: PROHIBITED
+      provider_calls: >-
+        No external delivery, scheduler or notification success is required or
+        claimed. Unconfigured providers remain fail-closed.
+      collision_rule: STOP_BEFORE_WRITE_ON_ANY_MATCH_OR_UNPROVEN_ISOLATION
+      restoration_rule: >-
+        Restore exact business values, statuses, active versions and package
+        selection semantics. Retain updated_at, updated_by and append-only
+        decisions, versions, publication and audit rows that truthfully record
+        the journey.
+    evidence:
+      database:
+        - migration/object state, RLS, grants and function privileges
+        - maker-checker, concurrency, atomic rollback and immutable-history negatives
+        - exact audit lineage from CCR through package, visit and inspection
+      browser:
+        personas:
+          - compliance_admin_maker
+          - reviewer_checker
+          - form_admin_package_checker
+          - planner
+          - inspector
+          - denied_business_persona
+          - anonymous
+        states:
+          - Draft
+          - Pending Review
+          - Scheduled
+          - Active
+          - denied
+          - loading
+          - empty
+          - error
+          - degraded
+          - stale_conflict
+          - refresh_persistence
+          - historical_locked
+        matrix:
+          - English/LTR and Arabic/RTL
+          - light and dark
+          - desktop, tablet, 390px and 320px
+          - keyboard, focus recovery and Axe
+          - console and failed-network review
+      regression:
+        - focused SQL and Playwright tests
+        - Compliance Library and Packages
+        - Planning single, bulk and immediate package selection
+        - golden journey and offline drill
+        - protected Web/Admin/Field selection
+        - 478-row structural validator
+    certification_exit:
+      - Every required test passes on the exact candidate commit.
+      - Data restoration and retained immutable audit are independently reviewed.
+      - Real-browser matrix is complete with no P0/P1.
+      - Codex lead records ACK; sponsor acceptance remains separate.
+    rollback: >-
+      Test source reverts independently. Data returns to exact semantic
+      pre-test business state while immutable audit/version history remains.
+      No product rollback is performed by the QA lease.
+
+dependency_and_integration_order:
+  - Correct the returned lease definitions in successor 034.
+  - Obtain explicit authority and generate/reserve 032A migration path.
+  - Implement 032A locally; independent database QA must ACK.
+  - Grant and implement corrected 032B; independent Library/permission QA must ACK.
+  - Grant and implement corrected 032C; independent package/SQL QA must ACK.
+  - Reconcile the Field baseline, then grant and implement 032D; independent Field/offline QA must ACK.
+  - Stack A -> B -> C -> D on one exact integration commit without modifying main.
+  - Grant 032E test-author and data/operator scopes separately.
+  - Run independent full certification and real-browser review.
+  - Only after zero P0/P1 may Codex lead request sponsor cutover, merge or release decisions.
+
+current_ownership_and_collision_snapshot:
+  observed_on: "2026-07-25"
+  product_worktree_clean: true
+  orchestration_source_packet_committed: true
+  unreserved_candidate_paths:
+    - compliance_request_operational_projection migration
+    - compliance_request_authoring_cutover migration
+    - compliance_package_snapshot_cutover migration
+    - supabase/tests/compliance_request_operational_projection_probe.sql
+    - supabase/tests/compliance_package_snapshot_bridge_probe.sql
+    - apps/web/e2e/compliance-request-operational-projection.spec.ts
+    - apps/web/e2e/compliance-request-downstream-runtime.spec.ts
+  active_field_dependency:
+    branch: codex/m3-field-expiry-fix
+    dirty_paths:
+      - apps/web/src/app/(app)/field/[visitId]/page.tsx
+      - apps/web/e2e/ipad-gps-policy.spec.ts
+    disposition: >-
+      No exact 032D writable-file overlap was observed, but the same Field
+      runtime and a read-only dependency are active. 032D remains blocked until
+      the baseline and ownership are reconciled.
+  recheck_rule: >-
+    This snapshot is evidence, not a reservation. Codex must repeat branch,
+    worktree, dirty-path, migration-name and database-owner checks immediately
+    before granting any lease.
+
+rollback_order:
+  principle: >-
+    Rollback is semantic and evidence-preserving. No immutable request,
+    decision, version, publication, package snapshot, audit, visit, inspection
+    or submission history is deleted or rewritten.
+  pre_cutover:
+    - Discard failed local isolated databases.
+    - Revert only the isolated boundary commit before a dependent boundary starts.
+    - Keep additive unused database objects until a forward corrective migration is reviewed.
+  stacked_application_revert_order:
+    - 032D Field consumer
+    - 032C Package bridge
+    - 032B Library read routing
+    - 032A remains additive unless a separately reviewed forward migration is required
+  forbidden_rollback:
+    - destructive down migration on shared project
+    - reopening direct legacy authoring automatically
+    - repointing an active/historical inspection to another package
+    - resetting updated_at, updated_by, audit or immutable publication rows
+
+return_corrections:
+  - id: CCR-033-RET-001
+    boundary: 032A_AND_032C
+    correction: >-
+      Replace manually proposed migration filenames with grant-time
+      CLI-generated and explicitly leased paths.
+  - id: CCR-033-RET-002
+    boundary: 032B
+    correction: >-
+      Add database-enforced authoring cutover scope and exact classification of
+      direct lifecycle exceptions; UI removal alone is insufficient.
+  - id: CCR-033-RET-003
+    boundary: 032B
+    correction: >-
+      Include or separately close the unfiltered current-user role read that
+      falsely offers Reviewer Create Request.
+  - id: CCR-033-RET-004
+    boundary: 032C
+    correction: >-
+      Add a dedicated package-bridge SQL probe and factual handoff-evidence path.
+  - id: CCR-033-RET-005
+    boundary: 032D
+    correction: >-
+      Reconcile the active Field workstream and prove the package freezes the
+      complete additional-item/action-template scope.
+  - id: CCR-033-RET-006
+    boundary: 032E
+    correction: >-
+      Name separate implementer, test-author, data-operator and certifier roles,
+      plus exact authorized target-project access and data restoration controls.
+
+stop_conditions:
+  - any future boundary starts from this non-granting record
+  - an unreserved migration filename is treated as owned
+  - typed fields, effective-date semantics or lifecycle exceptions are invented
+  - direct legacy database authoring remains available after cutover
+  - implementer, test author or certifier self-approves
+  - remote DDL, provider or shared-data action lacks separate exact authority
+  - service-role client, production data or broad fixture is proposed
+  - active Field/Admin/Package ownership is unresolved
+  - audit, RLS, maker-checker, concurrency, immutability or rollback is weakened
+  - protected regression or real-browser evidence has a P0/P1 gap
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-BOUNDARY-CORRECTION-034
+  mode: READ_ONLY_CONTROL_PLANE
+  scope: >-
+    Correct only the returned lease definitions: replace unreserved migration
+    placeholders with grant-time generation rules, add database-enforced legacy
+    authoring cutover, add the dedicated package SQL probe/evidence path,
+    reconcile the current-user permission P1, and define independent owner
+    roles. Do not grant, implement, generate migrations, change data or infer
+    typed/effective-date sponsor decisions.
+  safe_because: >-
+    It repairs governance boundaries before any source, database or data owner
+    is authorized and does not overlap product work.
+
+validation:
+  yaml_parse: PASS
+  recommendation_enum: PASS
+  all_five_leases_present: PASS
+  all_leases_not_granted: PASS
+  implementation_qa_separation_present: PASS
+  dependency_order_present: PASS
+  rollback_and_evidence_present: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS
