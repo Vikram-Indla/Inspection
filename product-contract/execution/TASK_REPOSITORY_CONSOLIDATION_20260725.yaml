@@ -103,3 +103,4 @@ completion_evidence:
   git_connectivity: "PASS — 0 non-dangling findings; historical dangling objects retained"
   remote_preservation: "PASS"
   main_fast_forward: "PASS"
+  remote_default_branch: "PASS — origin/HEAD points to main"

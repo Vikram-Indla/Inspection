@@ -13,6 +13,10 @@ non-force fast-forward at `91afebfe`. YAML parsing, diff checking and reachable
 Git-object connectivity pass. Every locally unique committed line named in the
 task record is remote-backed.
 
+GitHub's repository default branch and local `origin/HEAD` now point to `main`;
+the historical `setup/Inspection` branch remains available only as preserved
+history and is no longer the default source route.
+
 The audit found multiple concurrent product, control, preview, design and
 session-provenance branches based on different historical baselines. They are
 not interchangeable and are not silently accepted by this administrative
