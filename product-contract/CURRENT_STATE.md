@@ -191,6 +191,25 @@ Inspector authentication fixture still returns HTTP 400 during setup and is
 recorded as external test debt. No push, merge, deployment, production
 mutation, remote DDL, API, Field, PWA, iPad or stash change occurred.
 
+
+## 2026-07-25 UPDATE 128 — Inspector completed inspection history implemented
+
+`TASK-IPAD-COMPLETED-HISTORY-001` is implemented at source commit `38e18e81`
+on `codex/ipad-completed-history-002`. The Inspector PWA now exposes
+`/field/completed` and `/field/completed/:id`: an assignment-scoped completed
+history list and a locked receipt/detail backed only by the latest immutable
+`submission_versions.snapshot`. The detail shows canonical submission and
+acknowledgement timestamps, a stable version-derived completion reference, and
+read-only findings/evidence summaries. Missing, unauthorized, or versionless
+records fail closed without substituting mutable inspection rows.
+
+Successful RLS-scoped history reads are cached in the existing user-specific
+IndexedDB package store as display-only data; the cache never enters the
+outbox, mutates server state, or crosses identities. Focused source/negative
+contracts pass 4/4; typecheck and production build pass. No DDL, remote/shared
+data mutation, workflow transition, provider, deploy, merge, or `main` change
+occurred. Runtime authenticated and physical-device evidence remains pending.
+
 ## 2026-07-23 UPDATE 127 — Field focus double border removed
 
 The Product Owner rejected the remaining double focus border on the Planning

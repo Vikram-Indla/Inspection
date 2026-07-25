@@ -142,6 +142,11 @@ function createUserOfflineStore(userId: string) {
         },
       });
     },
+    // TASK-IPAD-COMPLETED-HISTORY-001 — immutable, display-only history cache.
+    // This key is never processed by the outbox and is replaced only from a
+    // successful inspector-scoped server read.
+    cacheCompletedHistory: (records: unknown) => tx(verifiedUserId, "packages", "readwrite", s => s.put(records, "completed-history")),
+    getCompletedHistory: () => tx<unknown>(verifiedUserId, "packages", "readonly", s => s.get("completed-history")),
     // FLD-JRN-003/004 — the last provider estimate is a display-only offline
     // value. It never mutates workflow state and is always surfaced as stale.
     cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx(verifiedUserId, "packages", "readwrite", s => s.put(estimate, `route:${visit}`)),

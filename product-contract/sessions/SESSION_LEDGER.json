@@ -4883,9 +4883,29 @@
       "commit_sha": "UNCOMMITTED — isolated branch baseline 9d8c414258a5e04244fdf9ce350e5f25f952dfc1",
       "next_task": "Commit and push the isolated correction for draft review, then obtain the Product Owner visual decision; do not merge main or deploy.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 130, CURRENT_SLICE.yaml and evidence/TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001.md. The shared bilingual wordmark and missing authenticated-shell stylesheet correction pass technical and real-Chrome verification on codex/shared-brand-regression. Do not modify M3 pages, assets, Field/PWA/iPad, backend or remote systems. Product Owner visual signoff remains pending; do not merge main or deploy."
+    },
+    {
+      "session_id": "2026-07-25-ipad-completed-history-001",
+      "started_at": "2026-07-25",
+      "ended_at": "2026-07-25",
+      "branch": "codex/ipad-completed-history-002",
+      "task_id": "TASK-IPAD-COMPLETED-HISTORY-001",
+      "gate": "G10/G11 Inspector PWA verification",
+      "requirements": ["MVP1-M04-210..223", "G2-P09", "FLD-SUB-001"],
+      "acceptance_ids": ["IPAD-HIST-AC-001..006"],
+      "screens": ["SCR-IPAD-660 immutable-success continuation", "/field/completed", "/field/completed/:id"],
+      "engines": ["Inspector assignment and RLS reads", "Immutable submission_versions snapshots", "Audit/version preservation", "User-scoped IndexedDB read cache"],
+      "files_changed": ["Completed history list/detail", "Immutable projection and cache component", "Home discovery action", "Offline read cache", "Focused contract test", "Evidence and continuity records"],
+      "tests": ["typecheck PASS", "production build PASS", "focused contract 4/4 PASS", "git diff --check PASS"],
+      "evidence": ["product-contract/evidence/TASK-IPAD-COMPLETED-HISTORY-001.md"],
+      "decisions": ["Submitted detail reads only immutable snapshot data", "Missing immutable versions fail closed", "Receipt reference derives from version ID and number", "Cache is user-scoped and never enters the outbox"],
+      "blockers": ["Authenticated inspector runtime fixture", "Offline/reload and iPad-class browser validation", "Physical-device accessibility acceptance"],
+      "commit_sha": "38e18e81",
+      "next_task": "Run authenticated Inspector PWA and offline cache verification against a real owned immutable submission.",
+      "resume_prompt": "Check out codex/ipad-completed-history-002 at 38e18e81. Read product-contract/evidence/TASK-IPAD-COMPLETED-HISTORY-001.md, then verify /field/completed and /field/completed/:id with an assigned inspector and a real immutable submission. Do not create shared-data fixtures, apply DDL, or mutate workflow state."
     }
   ],
-  "last_session": "2026-07-24-web-admin-shared-brand-regression-001",
+  "last_session": "2026-07-25-ipad-completed-history-001",
   "rules": {
     "append_only": true,
     "required_fields": [

@@ -435,3 +435,13 @@ synthetic beta licence and expected result for `POST /shared/api/v2/license-info
 | WA-M2-B002-EV-002 | Pinned focused/protected M2 Playwright 19/19; final focused 8/8 | PASS |
 | WA-M2-B002-EV-003 | Visible Codex browser walkthrough of three preview routes | PASS — awaiting Product Owner decision |
 | WA-M2-B002-EV-004 | 478-row Web/Admin validator and Phase 2 isolation | PASS |
+
+## Inspector completed inspection history — 2026-07-25
+
+| ID | Evidence | Status |
+|---|---|---|
+| IPAD-HIST-EV-001 | Inspector-assignment-scoped list and immutable-version detail source | PASS — `TASK-IPAD-COMPLETED-HISTORY-001.md` |
+| IPAD-HIST-EV-002 | No mutation controls; versionless/unauthorized fail-closed contract | PASS — focused static/negative suite 4/4 |
+| IPAD-HIST-EV-003 | User-scoped display-only cache excluded from outbox | PASS — source contract |
+| IPAD-HIST-EV-004 | Typecheck and production build including both routes | PASS |
+| IPAD-HIST-EV-005 | Authenticated iPad/runtime/offline reload evidence | PENDING — no release claim |
