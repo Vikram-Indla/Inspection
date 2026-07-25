@@ -1,5 +1,12 @@
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { useT } from "@/lib/i18n";
+import { getUserRoles } from "@/lib/persona";
+import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
+import { safeFieldReturnPath } from "@/lib/field-auth";
+import FieldSessionBoundary from "@/components/field/FieldSessionBoundary";
 
 // SAQEEL field (inspector iPad) channel layout. This segment renders its OWN
 // self-contained chrome from the canonical SAQEEL field design system — the
@@ -9,6 +16,17 @@ import { useT } from "@/lib/i18n";
 // and never leaks into the console/admin chrome (which stays on astryx.css).
 // Each field page renders its own design header + <FieldNav> bottom bar.
 export default async function FieldLayout({ children }: { children: ReactNode }) {
+  const sb = await supabaseServer();
+  const pathname = safeFieldReturnPath((await headers()).get("x-pathname"));
+  const { data: { user }, error } = await getVerifiedUser(sb);
+  if (error || !user) {
+    redirect(`/login/field?reason=expired&next=${encodeURIComponent(pathname)}`);
+  }
+  const roleRead = await getUserRoles(user.id);
+  const inspector = !roleRead.error && (roleRead.data ?? []).some(row => row.role_key === "inspector");
+  if (!inspector) {
+    redirect(`/login/field?reason=unauthorized&next=${encodeURIComponent(pathname)}`);
+  }
   const { locale } = await useT();
   return (
     <>
@@ -27,7 +45,7 @@ export default async function FieldLayout({ children }: { children: ReactNode })
           fontFamily: "var(--font-body)",
         }}
       >
-        {children}
+        <FieldSessionBoundary>{children}</FieldSessionBoundary>
       </div>
     </>
   );

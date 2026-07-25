@@ -105,7 +105,7 @@ export default async function FieldAccountPage() {
           </Link>
         </section>
 
-        <a href="/signout" className="btn btn-danger btn-block">
+        <a href="/login/field/logout" className="btn btn-danger btn-block">
           {tr("field.account.logout", "Sign out", "تسجيل الخروج")}
         </a>
 
