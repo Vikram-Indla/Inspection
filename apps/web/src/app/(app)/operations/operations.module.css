@@ -357,7 +357,17 @@
 
   .kpiGrid,
   .loadingGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .kpiGrid > *,
+  .loadingGrid > * {
+    grid-column: span 2;
+  }
+
+  .kpiGrid > :nth-child(n + 4),
+  .loadingGrid > :nth-child(n + 4) {
+    grid-column: span 3;
   }
 
   .kpiCard {
@@ -385,5 +395,12 @@
   .kpiGrid,
   .loadingGrid {
     grid-template-columns: 1fr;
+  }
+
+  .kpiGrid > *,
+  .loadingGrid > *,
+  .kpiGrid > :nth-child(n + 4),
+  .loadingGrid > :nth-child(n + 4) {
+    grid-column: auto;
   }
 }
