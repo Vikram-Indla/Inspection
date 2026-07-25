@@ -1,0 +1,573 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050
+title: Independent Admin Inspection Items and runtime-preview design authority review
+status: RETURN_FOR_GOVERNANCE_MAPPING_AND_LOCALIZATION_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The catalogue and runtime-preview capabilities are real, but no accepted
+    exact successor design exists, direct legacy mutation remains outside the
+    governed request/maker-checker path, active-state writes are not
+    concurrency guarded, and bilingual design/runtime evidence is incomplete.
+
+task_contract:
+  task_id: M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050
+  gate: M9 Admin Items design authority
+  routes:
+    - /admin/items
+    - /admin/items/:id/runtime-preview
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids:
+    - SCR-ADM-020
+  screen_name: Inspection Item Catalogue
+  engines:
+    - ENG-01
+    - ENG-05
+    - ENG-07
+    - ENG-08
+    - ENG-09
+    - ENG-10
+    - ENG-12
+  source_requirement_ids:
+    active:
+      - CR-450
+      - CR-453
+      - CR-458
+      - CR-462
+      - CR-463
+      - CR-467
+      - CR-468
+      - CR-473
+      - CR-476
+      - CR-478
+    open_business_decision:
+      - CR-471
+      - CR-472
+  atomic_requirement_ids:
+    - MVP1-M09-002
+    - MVP1-M09-005
+    - MVP1-M09-010
+    - MVP1-M09-014
+    - MVP1-M09-015
+    - MVP1-M09-019
+    - MVP1-M09-020
+    - MVP1-M09-023
+    - MVP1-M09-024
+    - MVP1-M09-025
+    - MVP1-M09-028
+    - MVP1-M09-030
+  acceptance_ids:
+    - WA-AC-0450
+    - WA-AC-0453
+    - WA-AC-0458
+    - WA-AC-0462
+    - WA-AC-0463
+    - WA-AC-0467
+    - WA-AC-0468
+    - WA-AC-0471
+    - WA-AC-0472
+    - WA-AC-0473
+    - WA-AC-0476
+    - WA-AC-0478
+    - DSG-004
+  dependencies:
+    - accepted WA-DES-015-C1 item-register successor
+    - accepted WA-DES-002-C1 item runtime-preview successor
+    - current CD-007 design and browser evidence
+    - one non-bypassable governed mutation path
+    - bilingual item authoring and runtime-preview contract
+    - active-state optimistic concurrency
+    - scoring decision reconciliation for CR-471 and CR-472
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-002 or proposed C1 successors
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No product, design, database, test,
+    evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_screen_validation:
+  catalogue:
+    route: /admin/items
+    page: apps/web/src/app/(app)/admin/items/page.tsx
+    controls: apps/web/src/app/(app)/admin/items/Controls.tsx
+    actions: apps/web/src/app/(app)/admin/items/actions.ts
+    route_boundary: apps/web/src/app/(app)/admin/items/layout.tsx
+    screen_id: SCR-ADM-020
+    validation: CONFIRMED
+  runtime_preview:
+    route: /admin/items/:id/runtime-preview
+    page: apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+    loading: apps/web/src/app/(app)/admin/items/[id]/runtime-preview/loading.tsx
+    error: apps/web/src/app/(app)/admin/items/[id]/runtime-preview/error.tsx
+    dedicated_route_exists: true
+    separate_governed_screen_id: absent
+    validation: CONFIRMED_WITH_MAPPING_CORRECTION
+  route_inventory:
+    catalogue_roles_claimed:
+      - compliance_admin
+      - form_admin
+      - inspector
+      - reviewer
+    actual_route_boundary:
+      - compliance_admin
+      - form_admin
+      - reviewer
+    shell_navigation:
+      - compliance_admin
+      - form_admin
+    runtime_preview_roles_claimed:
+      - inspector
+    actual_inherited_boundary:
+      - compliance_admin
+      - form_admin
+      - reviewer
+    requirement_claim: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD_AND_ROLE_INCONSISTENT
+
+current_capability:
+  catalogue:
+    - independent item and clause reads with partial-degradation disclosure
+    - true empty, unavailable and read-only states
+    - item creation with unique code and required regulation clause
+    - governed response and evidence presets
+    - score enablement, weight and excluded-response storage
+    - item usage aggregates
+    - read-only stored-configuration preview
+    - title, clause and English-guidance edit with configuration-version CAS
+    - reasoned deactivation and unreasoned reactivation
+    - object-scoped writer audit
+  runtime_preview:
+    - exact immutable package-version snapshot when available
+    - live-item fallback labelled as not frozen
+    - package/version selector
+    - regulation, clause, response, evidence and package context
+    - linked violation and penalty context
+    - legacy and governed version lineage
+    - explicit INSPECTOR_RUNTIME_INTEGRATION_GAP list
+  data_sources:
+    - inspection_items
+    - regulation_clauses
+    - regulations
+    - inspection_item_versions
+    - compliance_entity_versions
+    - package_version_item_snapshots
+    - package_versions
+    - violation_codes
+    - penalty_mappings
+    - user_roles
+
+requirement_mapping_review:
+  confirmed:
+    - requirement_ids: [CR-450]
+      capability: item, regulation-clause and package-reuse configuration
+    - requirement_ids: [CR-453, CR-473]
+      capability: base response-based evidence presets
+    - requirement_ids: [CR-458, CR-478]
+      capability: immutable package snapshots and queryable item-version lineage
+    - requirement_ids: [CR-462]
+      capability: reasoned deactivation without historical deletion
+    - requirement_ids: [CR-463]
+      capability: row audit trigger and object-scoped audit reader
+    - requirement_ids: [CR-467, CR-468]
+      capability: configurable response values and result mapping presets
+    - requirement_ids: [CR-476]
+      capability: non-mutating catalogue and exact-package runtime previews
+  decision_conflict:
+    requirement_ids: [CR-471, CR-472]
+    runtime: Weight, scoring-enabled and score-exclusion controls are active.
+    successor_packets: Require those controls to be omitted until decisions close.
+    verdict: GOVERNANCE_CONTRADICTION
+    rule: >-
+      Do not certify, remove or redesign scoring behavior without explicit
+      change control resolving DEC-001 and DEC-028.
+  incomplete_or_overclaimed:
+    - "The route does not author required/optional/conditional item rules even though stale CD-007 evidence says it does; those relationships are authored in package definitions."
+    - "The route does not prove that every created or edited item is approved before future package use."
+    - "The runtime preview is a control-plane verification view, not proof that the Inspector application renders every displayed field."
+
+permissions_and_access:
+  table_read: any authenticated user
+  table_write:
+    - compliance_admin
+    - form_admin
+  server_writer_guard:
+    - compliance_admin
+    - form_admin
+  route_read:
+    - compliance_admin
+    - form_admin
+    - reviewer
+  shell_link:
+    - compliance_admin
+    - form_admin
+  audit_and_usage_read:
+    - compliance_admin
+    - form_admin
+  findings:
+    - "Reviewer may open the catalogue directly but receives neither usage aggregates nor scoped audit."
+    - "The page tells a reviewer that usage can be inspected, but the usage cell says it is writer-only."
+    - "The runtime-preview route inherits the admin boundary and is not an Inspector route despite the frozen inventory claim."
+    - "Authenticated table read is broader than both route and shell navigation."
+  validation: CONFIRMED_WITH_ROLE_AND_DISCLOSURE_CORRECTION
+
+governance_and_maker_checker:
+  desired_path:
+    entry: /admin/compliance-requests/new
+    page_handoff: Create governed request and Request change links
+    validation: PRESENT_AS_RECOMMENDATION
+  direct_legacy_path:
+    create: createItem
+    edit: updateItem
+    deactivate_or_reactivate: toggleItemActive
+    page_label: Legacy compatibility authoring
+    request_or_approval_required: false
+    maker_checker_required: false
+    implication: >-
+      Compliance/Form Admin can mutate the published catalogue directly while
+      the page simultaneously says governed changes should begin through a
+      Compliance Configuration Request.
+    validation: GOVERNED_CHANGE_PATH_BYPASSABLE
+  required_resolution: >-
+    Choose and enforce one authority. Either lease and retire direct legacy
+    mutation after migration, or formally approve a bounded exception with
+    equivalent approval, audit, version and future-use controls.
+
+versioning_immutability_concurrency:
+  edit:
+    current_version_read: true
+    expected_configuration_version_filter: true
+    stale_write_message: true
+    old_and_new_snapshot_trigger: true
+    history_update_delete_guard: true
+    frozen_package_reference_check: true
+    validation: STRONG_WITH_GOVERNANCE_GAP
+  version_archive:
+    trigger: trg_archive_inspection_item_version
+    behavior: >-
+      Every distinct row update inserts old and new snapshots using their
+      configuration_version values with conflict ignored.
+    issue: >-
+      Deactivation/reactivation updates do not increment configuration_version.
+      They therefore attempt to archive two different states under one version
+      key, and ON CONFLICT DO NOTHING can discard the later active-state
+      snapshot from item-version history even though audit still records it.
+    validation: ACTIVE_STATE_VERSION_LINEAGE_INCOMPLETE
+  active_state:
+    expected_version_or_state: absent
+    current_row_read: absent
+    dependency_impact_confirmation: absent
+    concurrent_result: last_write_wins
+    reactivation_reason: absent
+    validation: FAIL
+  package_execution:
+    published_snapshot_guard: present
+    in_flight_package_pin: registered
+    validation: CONFIRMED_FOR_FROZEN_PACKAGE_CONTEXT
+
+dependency_impact_and_audit:
+  usage:
+    package_count: present
+    version_count: present
+    detailed_affected_package_list: absent
+    unavailable_distinct_from_zero: present
+    deactivation_confirmation_uses_impact: false
+    validation: PARTIAL
+  package_dependency:
+    future_publish_rejects_inactive_items: registered
+    existing_published_snapshot_preserved: true
+    edit_blocks_unfrozen_governed_reference: true
+  audit:
+    inspection_items_trigger: trg_audit_inspection_items
+    actor_before_after: present
+    object_scoped_reader: admin_configuration_audit
+    immutable_audit_table: registered
+    route_visibility: writers_only
+    Arabic_footer_truth: stale
+    validation: CONFIRMED_BACKEND_WITH_DISCLOSURE_DEFECT
+
+design_authority:
+  register_predecessor:
+    logical_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    bytes: 42071
+    lines: 366
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    registered_route: /admin
+    item_mode_present: true
+    validation: NEAREST_REGISTER_PATTERN_NOT_EXACT_ROUTE_AUTHORITY
+  detail_predecessor:
+    logical_id: WA-DES-002
+    filename: SAQEEL Admin Detail.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Detail.dc.html
+    bytes: 27541
+    lines: 214
+    sha256: 65b98dfc952d2737260c5c49f432c74cdb85a18f1fdec3e0f2af29ac9dea957d
+    registered_route: /admin/items/:id/runtime-preview
+    validation: NEAREST_DETAIL_PATTERN_WITH_INVENTED_VALUES
+  proposed_register_successor:
+    revision: WA-DES-015-C1
+    exact_filename: SAQEEL Compliance Registries - WA-DES-015-C1.dc.html
+    local_export: absent
+    accepted_hash: absent
+    status: CONTRACT_ONLY_NON_CONSUMABLE
+  proposed_detail_successor:
+    revision: WA-DES-002-C1
+    exact_filename: SAQEEL Compliance Detail - WA-DES-002-C1.dc.html
+    local_export: absent
+    accepted_hash: absent
+    status: CONTRACT_ONLY_NON_CONSUMABLE
+  immutable_revision_evidence:
+    predecessor_hashes: present
+    current_cloud_revision_ids: absent
+    successor_exports: absent
+    exact_successor_frame_manifests: absent
+    validation: INSUFFICIENT
+
+CD_lineage:
+  CD_007:
+    screen: SCR-ADM-020
+    role: HISTORICAL_IMPLEMENTATION_AND_VISUAL_EVIDENCE
+    runtime_screenshots: present_but_partially_registered
+    route_tests: present
+    stale_claims:
+      - "The backend completion memo says required/optional/conditional item authoring is explicit, but the current base-item controls intentionally omit requirement_mode."
+      - "The original Arabic string migration says no deactivation reason and no item audit trigger; later migrations corrected some but not every reused key."
+    validation: INSUFFICIENT_AS_CURRENT_DESIGN_AUTHORITY
+  design_acceptance:
+    id: DSG-004
+    status: not_started
+    required_frames:
+      - populated
+      - error
+      - read_only
+    full_state_matrix: not complete
+    validation: NOT_ACCEPTED
+
+design_versus_code_delta:
+  predecessor_designs_have_code_lacks:
+    - "A visually consolidated exact item-register successor accepted for /admin/items."
+    - "A two-column item detail/runtime composition matching the accepted predecessor."
+  code_has_predecessor_designs_lack:
+    - true empty and partial clause degradation
+    - read-only reviewer state
+    - object-scoped usage and audit
+    - edit CAS and frozen-reference guard
+    - exact package snapshot selection
+    - governed and legacy version lineage
+    - explicit runtime-integration gap disclosure
+  predecessor_defects_not_to_copy:
+    - fixed item, regulation, violation, penalty, weight and date examples presented as facts
+    - scoring presented as settled despite open decisions
+    - Arabic-only wordmark and ADMIN label in English state
+    - insufficient unavailable, unauthorized, stale and conflict states
+  recommended_action: >-
+    Correct and accept the two bounded C1 successors, retaining real code
+    behavior and hard states. Do not implement from the stale predecessors.
+
+language_theme_responsive_accessibility:
+  wordmark:
+    predecessor_English_states: ARABIC_ONLY_OR_UNAPPROVED_IDENTITY
+    required: English SAQEEL Industrial identity in EN and approved Arabic identity in AR.
+    validation: CORRECTION_REQUIRED
+  item_authoring:
+    title_en: present
+    title_ar: absent_from_schema_and_controls
+    guidance_en: present
+    guidance_ar_schema: present
+    guidance_ar_create_or_edit: absent
+    validation: FAIL_BILINGUAL_AUTHORING
+  catalogue:
+    document_RTL: tested
+    LTR_identifier_isolation: tested
+    translated_dynamic_content: partial
+    stale_footer_key: >-
+      admin.items.r2.footer can still state in Arabic and English that no audit
+      trigger exists, contradicting the current backend.
+    validation: PARTIAL_WITH_TRUTH_DEFECT
+  runtime_preview:
+    useT_or_locale_reader: absent
+    English_hardcoded_copy: extensive
+    Arabic_guidance_selection: absent
+    RTL_semantic_parity: not proven
+    validation: FAIL
+  themes:
+    catalogue_light_dark_frames: present
+    accepted_design_registration: incomplete
+    runtime_preview_light_dark: not proven
+    validation: PARTIAL
+  responsive:
+    catalogue:
+      widths: [1440, 1024]
+      overflow_test: present
+    runtime_preview:
+      narrow_or_tablet_certification: absent
+    operational_scale:
+      pagination_or_virtualization: absent
+    validation: PARTIAL
+  accessibility:
+    positive:
+      - semantic headings and table
+      - labelled native controls
+      - status and alert roles
+      - disabled controls for inert catalogue preview
+      - 44px edit control test
+      - LTR isolation in RTL catalogue
+    missing:
+      - full keyboard mutation journey
+      - focus restoration after every action result
+      - error summary and field association
+      - 200 percent zoom
+      - automated accessibility result
+      - runtime-preview Arabic screen-reader and bidi behavior
+    validation: INSUFFICIENT
+
+hard_state_review:
+  evidenced_or_implemented:
+    - loading
+    - fatal item read error
+    - true empty catalogue
+    - clause-read partial degradation
+    - read-only reviewer
+    - duplicate code rejection
+    - edit stale conflict
+    - frozen-reference edit block
+    - runtime item not found
+    - runtime package-usage unavailable
+    - live-item fallback distinct from frozen snapshot
+    - deactivated item
+    - audit unavailable distinct from zero
+  missing_or_inadequate:
+    - governed request pending, rejected and approved transition on this route
+    - unauthorized direct route browser evidence
+    - active-state stale conflict
+    - deactivation dependency impact acknowledgement
+    - reactivation reason and approval
+    - item-version history after deactivate/reactivate cycles
+    - complete invalid response/evidence/scoring database negatives
+    - exact Inspector consumption of every previewed field
+    - full EN/AR, theme and viewport matrix for runtime preview
+
+test_review:
+  focused:
+    - apps/web/e2e/cd-007-items.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+    - apps/web/e2e/compliance-library-evidence.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/cd-006-admin-backend-foundation.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  strengths:
+    - populated semantic catalogue
+    - inert runtime preview
+    - duplicate and unavailable source contracts
+    - edit version and frozen-reference wiring
+    - RTL document direction and identifier isolation
+    - light/dark and desktop/tablet overflow coverage
+  weaknesses:
+    - many backend and negative assertions are source-text checks
+    - no real concurrent toggle exercise
+    - no maker-checker item journey
+    - no deactivate/reactivate version-history verification
+    - no complete runtime-preview localization or responsive journey
+    - no exact accepted-design visual comparison
+
+bounded_delta:
+  frontend_only: false
+  remote_database_change_authorized: false
+  required_before_build:
+    - accept exact WA-DES-015-C1 and WA-DES-002-C1 successors
+    - resolve direct legacy mutation versus governed request authority
+    - add stale-write protection to active-state changes
+    - decide whether active-state changes increment item configuration versions
+    - provide governed Arabic title/guidance authoring or record an approved exclusion
+    - localize and certify runtime preview
+    - correct stale Arabic/English truth strings
+    - reconcile scoring design with open decisions
+    - correct frozen route-role mappings
+    - produce current browser and database negative evidence
+  implementation_boundary: >-
+    No implementation is authorized by this review. After sponsor consent, one
+    engineering owner may lease the item routes, focused tests, localization
+    keys and explicitly approved database changes. Claude Design retains the
+    two C1 successor revisions; this reviewer remains read-only.
+
+reviewer_recommendation:
+  decision: RETURN_FOR_MAPPING_CORRECTION
+  secondary:
+    - BLOCK_DUE_TO_MISSING_CONTRACT
+  rationale:
+    - exact accepted register and detail successors are absent
+    - route/persona mappings conflict with the real inherited boundary
+    - direct mutation and governed request paths are contradictory
+    - bilingual authoring and runtime-preview parity are incomplete
+    - active-state concurrency and item-version history are incomplete
+    - scoring remains under open business decisions
+
+evidence:
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/domain/atomic_scope.csv
+  - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+  - design/claude-design-mvp1/operationalization/DESIGN-OPS-003_SCREEN_STATE_GAP_QUEUE.csv
+  - design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_ALL38_REUSE_AND_GAP_MANIFEST.csv
+  - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015.yaml
+  - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-DETAIL-SUCCESSOR-016.yaml
+  - apps/web/src/app/(app)/admin/items/page.tsx
+  - apps/web/src/app/(app)/admin/items/Controls.tsx
+  - apps/web/src/app/(app)/admin/items/actions.ts
+  - apps/web/src/app/(app)/admin/items/layout.tsx
+  - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+  - apps/web/src/lib/admin-configuration.ts
+  - apps/web/src/lib/shell-navigation.ts
+  - supabase/migrations/0002_rbac_audit.sql
+  - supabase/migrations/20260715101000_cd007_ar_strings.sql
+  - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+  - supabase/migrations/20260715210000_cd006_011_frontend_strings.sql
+  - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+  - supabase/migrations/20260716200000_cd006_011_trigger_rpc_hardening.sql
+  - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+  - apps/web/e2e/cd-007-items.spec.ts
+  - apps/web/e2e/compliance-library.spec.ts
+  - product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Detail.dc.html
+
+next_non_overlapping_review:
+  task_id: M9-ADMIN-REGULATIONS-DESIGN-AUTHORITY-REVIEW-051
+  owner: claude_design_live_watch
+  mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+  routes:
+    - /admin/regulations
+    - /admin/regulations/:id
+  screens:
+    - SCR-ADM-010
+    - SCR-ADM-011
+  objective:
+    - validate registry and dossier route/component truth
+    - verify regulation, clause, attachment and item dependency lifecycle
+    - verify maker-checker publication and immutable published versions
+    - verify deactivation, audit, concurrency and EN/AR hard states
+    - validate WA-DES-015/002 and proposed C1 lineage
+  completion_credit: 0
