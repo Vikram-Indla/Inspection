@@ -118,9 +118,25 @@ closed_gaps:
       the bar was also corrected — Execution Shell, Inspection Form and
       Preparation all load pwa-tabbar.js; only the pre-auth Login omits it.
 
-known_gaps:
   - id: "vendored designs are stale"
+    closed_by: "bb425e22"
     detail: >
-      The live Claude Design project contains SAQEEL Login v2.dc.html (44 KB)
-      which is not vendored under designs/. The repo's login work was built
-      against the older SAQEEL Login.dc.html. Re-pull before further login work.
+      SAQEEL Login v2.dc.html was live in the Claude Design project but never
+      vendored, so the login had been built against the older SAQEEL
+      Login.dc.html. v2 is now under designs/web/export-saqeel-web/ and the
+      login card is synced to it: v2 story title, dismissible offline note,
+      footer taken out of flow. Sign-out redirecting to the deleted
+      /login/field route (a 404) was fixed in the same change.
+
+known_gaps:
+  - id: "browser verification ran against a stale server"
+    detail: >
+      Two processes were listening on port 4100: a next-server left from an
+      earlier worktree, bound to 127.0.0.1, and the freshly built standalone
+      server bound to *. The stale one won every 127.0.0.1 request, so browser
+      checks made earlier in this session were served by old code. It is killed
+      and the Login v2 result above was re-verified against a clean build, but
+      any other browser evidence recorded before bb425e22 — including the
+      tablet and tab-bar checks in this record — should be re-taken.
+      Before trusting a browser check, confirm one listener:
+      lsof -nP -iTCP:4100 -sTCP:LISTEN
