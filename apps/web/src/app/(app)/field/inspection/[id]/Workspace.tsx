@@ -18,7 +18,25 @@ import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
 import styles from "./workspace.module.css";
 
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
+type SubmissionVersion = {
+  id: string;
+  version_number: number;
+  snapshot: {
+    answers?: Record<string, string>;
+    notes?: Record<string, string>;
+    dates?: Record<string, string>;
+  } | null;
+  submitted_at: string;
+};
+type Review = {
+  submission_version_id: string;
+  status: string;
+  decision: string | null;
+  returned_sections: string[] | null;
+  decision_reason: string | null;
+  decided_at: string | null;
+};
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: SubmissionVersion[]; reviews?: Review[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
@@ -60,6 +78,10 @@ export type WorkspaceStrings = {
   answered: string;
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
+  returnedBadge: string; openCorrection: string; correctionOpen: string; resubmitBtn: string;
+  compareVersions: string; compareHeading: string; compareBefore: string; compareAfter: string;
+  compareAnswer: string; compareNote: string; compareDate: string;
+  versionHistory: string; historySubmitted: string; historyReturned: string; historyApproved: string; historyRejected: string;
   submittedTitle: string; submittedBody: string;
   completionVersionLabel: string; completionCreatedTitle: string;
   completionCreatedVersion: string; completionCreatedAudit: string; completionCreatedReview: string;
@@ -144,6 +166,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
   const [signing, setSigning] = useState(false);
   const [submitted, setSubmitted] = useState(inspection.status === "submitted");
+  const [correctionMode, setCorrectionMode] = useState(false);
+  const [showVersionComparison, setShowVersionComparison] = useState(false);
   // SCR-IPAD-660. Server-confirmed submission (submission_version_id,
   // version_number, reused). Null until the outbox op actually syncs — submit
   // is asynchronous, so `submitted` alone does NOT mean the server accepted it.
@@ -744,6 +768,40 @@ export default function Workspace({ inspection, items, library, serverResponses,
     });
   }
 
+  const orderedVersions = [...(inspection.submission_versions ?? [])].sort((a, b) => a.version_number - b.version_number);
+  const nextVersion = Math.max(0, ...orderedVersions.map(v => v.version_number)) + 1;
+  const lastReturn = (inspection.reviews ?? [])
+    .filter(r => !!r.decided_at && r.decision === "return" && !!r.returned_sections)
+    .sort((a, b) => String(a.decided_at).localeCompare(String(b.decided_at)))
+    .slice(-1)[0];
+  const comparedVersions = orderedVersions.length >= 2 ? orderedVersions.slice(-2) : null;
+  const versionChanges = (() => {
+    if (!comparedVersions) return [];
+    const [before, after] = comparedVersions;
+    const fields = [["answers", strings.compareAnswer], ["notes", strings.compareNote], ["dates", strings.compareDate]] as const;
+    return fields.flatMap(([field, label]) => {
+      const left = before.snapshot?.[field] ?? {};
+      const right = after.snapshot?.[field] ?? {};
+      return [...new Set([...Object.keys(left), ...Object.keys(right)])].sort()
+        .filter(key => left[key] !== right[key])
+        .map(key => ({ key, label, before: left[key] ?? "—", after: right[key] ?? "—" }));
+    });
+  })();
+  const historyEvents = [
+    ...orderedVersions.map(v => ({ at: v.submitted_at, tone: "compliant", label: fmt(strings.historySubmitted, { v: v.version_number }) })),
+    ...(inspection.reviews ?? []).flatMap(r => {
+      if (!r.decided_at || !r.decision) return [];
+      const label = r.decision === "return" && r.returned_sections?.length
+        ? fmt(strings.historyReturned, { sections: r.returned_sections.join(", ") })
+        : r.decision === "approve" ? strings.historyApproved
+          : r.decision === "reject" ? strings.historyRejected : null;
+      return label ? [{ at: r.decided_at, tone: r.decision === "approve" ? "compliant" : r.decision === "reject" ? "critical" : "warning", label }] : [];
+    }),
+  ].sort((a, b) => a.at.localeCompare(b.at));
+  const formatEventTime = (value: string) => new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", {
+    dateStyle: "medium", timeStyle: "short",
+  }).format(new Date(value));
+
   const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
   return (
     <div className="stack" style={{ gap: "var(--space-4)" }}>
@@ -815,10 +873,53 @@ export default function Workspace({ inspection, items, library, serverResponses,
           </div>
         </div>
       ))}
-      {inspection.status === "returned" && (() => {
-        const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
-        return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
-      })()}
+      {inspection.status === "returned" && lastReturn && (
+        <div className="alert alert-warning">
+          <div className="stack" style={{ gap: "var(--space-2)" }}>
+            <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+              <span className="badge badge-warning">{strings.returnedBadge}</span>
+              <strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong>
+            </div>
+            {lastReturn.decision_reason ? <div>{lastReturn.decision_reason}</div> : null}
+            <div className="t-caption">{strings.returnedNote}</div>
+            {correctionMode
+              ? <div className="t-caption">{strings.correctionOpen}</div>
+              : <button type="button" className="btn btn-secondary" style={{ alignSelf: "flex-start" }} onClick={() => setCorrectionMode(true)}>{strings.openCorrection}</button>}
+          </div>
+        </div>
+      )}
+      {comparedVersions && versionChanges.length > 0 && (
+        <div className={styles.card} style={{ padding: "var(--space-4)" }}>
+          <div className="row" style={{ justifyContent: "space-between", gap: "var(--space-2)", flexWrap: "wrap" }}>
+            <h4>{fmt(strings.compareHeading, { before: comparedVersions[0].version_number, after: comparedVersions[1].version_number })}</h4>
+            <button type="button" className="btn btn-secondary btn-sm" aria-expanded={showVersionComparison} onClick={() => setShowVersionComparison(v => !v)}>{strings.compareVersions}</button>
+          </div>
+          {showVersionComparison && (
+            <div className={styles.versionDiff}>
+              {versionChanges.map(change => (
+                <div key={`${change.label}-${change.key}`} className={styles.versionDiffRow}>
+                  <strong>{change.key} · {change.label}</strong>
+                  <div><span className={styles.overline}>{fmt(strings.compareBefore, { v: comparedVersions[0].version_number })}</span><div>{change.before}</div></div>
+                  <div><span className={styles.overline}>{fmt(strings.compareAfter, { v: comparedVersions[1].version_number })}</span><div>{change.after}</div></div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {historyEvents.length > 0 && (
+        <div className={styles.card} style={{ padding: "var(--space-4)" }}>
+          <h4>{strings.versionHistory}</h4>
+          <div className={styles.versionTimeline}>
+            {historyEvents.map((event, index) => (
+              <div key={`${event.at}-${index}`} className={styles.versionTimelineRow}>
+                <span className={`${styles.versionTimelineDot} ${styles[event.tone]}`} aria-hidden="true" />
+                <div><strong>{event.label}</strong><div className="t-caption">{formatEventTime(event.at)}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {/* SCR-IPAD-660 completion state (CR-320/321/324/327/333/335/336).
           Deliberately NOT a separate route: submit is asynchronous through the
           outbox, so at setSubmitted(true) the server has not confirmed anything
@@ -914,8 +1015,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {!submitted && displaySections.map(s => {
         if (inspection.status === "returned") {
-          const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
-          if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
+          if (inspection.status === "returned" && (!correctionMode || !lastReturn?.returned_sections?.includes(s.key))) {
             return <div key={s.key} className={styles.card} style={{ padding: "var(--space-4)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="t-caption">{strings.lockedSection}</p></div>;
           }
         }
@@ -1225,7 +1325,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <div className={styles.actionbar}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
           <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
-          <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
+          <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0 || (inspection.status === "returned" && !correctionMode)}
+            onClick={() => { if (inspection.status !== "returned" || correctionMode) void submit(); }}>
+            {inspection.status === "returned" ? fmt(strings.resubmitBtn, { v: nextVersion }) : strings.submitBtn}
+          </button>
         </div>
       )}
       </fieldset>

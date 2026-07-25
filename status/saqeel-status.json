@@ -1,7 +1,7 @@
 {
-  "revision": "SB-r10",
-  "updated": "2026-07-25T23:22:00+03:00",
-  "updatedBy": "claude-code",
+  "revision": "SB-r12",
+  "updated": "2026-07-25T23:19:45+03:00",
+  "updatedBy": "codex",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
@@ -1174,6 +1174,10 @@
         {
           "lane": "design",
           "text": "Offline Factory-360 variant (Factory360Offline.tsx) has no matching design state."
+        },
+        {
+          "lane": "wiring",
+          "text": "Exact 24-factory allowlist is enforced across Establishments facets/list/counts, every Factory-360 resolver identifier, and direct dossier access. Typecheck and diff checks pass; runtime evidence is still pending because localhost:3000 refused the browser connection."
         }
       ],
       "phase": 4,
@@ -1688,7 +1692,7 @@
         },
         {
           "lane": "design",
-          "text": "Still to build inside that mode: return severity badge, explicit 'Open correction mode' action, 'Resubmit — version N+1' labelling, v1-vs-v2 comparison, version-history timeline. Present in SAQEEL PWA-Field Completion.dc.html, absent from the repo."
+          "text": "IMPLEMENTED in /field/inspection/[id] returned mode: real workflow-state Return badge (no fabricated 'Major' severity because no governed severity field exists), explicit 'Open correction mode' gate, 'Resubmit — version N+1' labelling, real submission_versions snapshot comparison only when two versions and actual changed values exist, and a real submission/review version-history timeline. npm run typecheck and scoped git diff --check PASS 2026-07-25; scores unchanged pending runtime EN/LTR + AR/RTL evidence."
         },
         {
           "lane": "code",

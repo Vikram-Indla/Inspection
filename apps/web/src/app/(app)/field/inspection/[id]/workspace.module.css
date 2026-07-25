@@ -152,3 +152,39 @@
 /* Per-section progress track (was inline blockSize/background). */
 .track { block-size: 4px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
 .trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }
+
+.versionDiff { display: grid; gap: var(--space-2); margin-block-start: var(--space-3); }
+.versionDiffRow {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.versionTimeline { display: flex; flex-direction: column; margin-block-start: var(--space-3); }
+.versionTimelineRow { position: relative; display: flex; gap: var(--space-3); padding-block: var(--space-2); }
+.versionTimelineRow:not(:last-child)::after {
+  position: absolute;
+  inset-block-start: calc(var(--space-2) + 10px);
+  inset-block-end: -10px;
+  inset-inline-start: 4px;
+  border-inline-start: 2px solid var(--border-subtle);
+  content: "";
+}
+.versionTimelineDot {
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  margin-block-start: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.compliant { background: var(--status-compliant); }
+.warning { background: var(--status-warning); }
+.critical { background: var(--status-critical); }
+
+@media (max-width: 600px) {
+  .versionDiffRow { grid-template-columns: 1fr; }
+}

@@ -50,7 +50,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
   const { data: ins } = await sb.from("inspections")
-    .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)")
+    .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(id, version_number, snapshot, submitted_at), reviews(submission_version_id, status, decision, returned_sections, decision_reason, decided_at)")
     .eq("id", id).single();
   if (!ins) {
     return (
@@ -501,6 +501,22 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     keepServer: t("field.ws.keepServer", "Keep server"),
     returnedScope: t("field.ws.returnedScope", "Returned — correction scope: {sections}."),
     returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next final submitted version (STM-COR-001/002)."),
+    returnedBadge: t("field.ws.returnedBadge", "Returned"),
+    openCorrection: t("field.ws.openCorrection", "Open correction mode"),
+    correctionOpen: t("field.ws.correctionOpen", "Correction mode open — only returned sections are editable."),
+    resubmitBtn: t("field.ws.resubmitBtn", "Resubmit — version {v}"),
+    compareVersions: t("field.ws.compareVersions", "Compare versions"),
+    compareHeading: t("field.ws.compareHeading", "Compare v{before} → v{after}"),
+    compareBefore: t("field.ws.compareBefore", "Before (v{v})"),
+    compareAfter: t("field.ws.compareAfter", "After (v{v})"),
+    compareAnswer: t("field.ws.compareAnswer", "Answer"),
+    compareNote: t("field.ws.compareNote", "Note"),
+    compareDate: t("field.ws.compareDate", "Date"),
+    versionHistory: t("field.ws.versionHistory", "Version history"),
+    historySubmitted: t("field.ws.historySubmitted", "v{v} submitted"),
+    historyReturned: t("field.ws.historyReturned", "Returned — scope: {sections}"),
+    historyApproved: t("field.ws.historyApproved", "Approved"),
+    historyRejected: t("field.ws.historyRejected", "Rejected"),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
     submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
     // SCR-IPAD-660 completion state (CR-320/324/327/335/336). The version number
