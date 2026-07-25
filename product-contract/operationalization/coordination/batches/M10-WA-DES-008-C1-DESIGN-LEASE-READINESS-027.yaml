@@ -1,0 +1,599 @@
+schema_version: "1.0"
+packet_id: M10-WA-DES-008-C1-DESIGN-LEASE-READINESS-027
+title: WA-DES-008-C1 Integration Trust Console design-write lease readiness
+status: DRAFT_NON_CONSUMABLE_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_write_authorized: false
+implementation_authorized: false
+
+task_contract:
+  task_id: M10-WA-DES-008-C1-DESIGN-LEASE-READINESS-027
+  gate: M10 Integration Hub design correction consent
+  process_ids: ["G2-P00", "G2-P12"]
+  direct_phase_1_requirement_range: NONE_IN_478_BASELINE
+  exact_transferred_requirement_ids:
+    - MVP2-REQ-0073
+    - MVP2-REQ-0078
+    - MVP2-REQ-0188
+    - MVP2-REQ-0189
+    - MVP2-REQ-0190
+    - MVP2-REQ-0191
+    - MVP2-REQ-0192
+    - MVP2-REQ-0224
+    - MVP2-REQ-0226
+    - MVP2-REQ-0227
+    - MVP2-REQ-0238
+    - MVP2-REQ-0239
+    - MVP2-REQ-0241
+    - MVP2-REQ-0256
+  acceptance_ids:
+    - WA-M10-AC-001
+    - WA-M10-AC-002
+    - WA-M10-AC-003
+    - WA-M10-AC-004
+    - WA-M10-AC-005
+    - WA-M10-AC-006
+    - MVP2-AC counterparts for the exact 14 transferred rows
+  route: /admin/integrations
+  dependencies:
+    - M10-INTEGRATION-HUB-DESIGN-READINESS-017
+    - M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - sponsor_consent_for_SD-023-03
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design before sponsor consent and named lease
+    - frozen requirement, route, or design mappings
+    - product code, tests, evidence, data, providers, environment, migrations, seeds, or Supabase
+    - Factory Data, Spatial Canvas, Platform Operations, or nonexistent Senaei Admin route scope
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 3f11a106a2d1cd80aa080cbadacb15ab87995fa2
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-PRE-ACTIVATION-CERTIFICATION-010.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CORRECTED-PACKETS-INDEPENDENT-REVIEW-023.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CORRECTION-READINESS-REVIEW-024.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025.yaml
+    - product-contract/operationalization/coordination/batches/M10-WA-DES-007-C1-DESIGN-LEASE-READINESS-026.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This packet is read-only design-consent preparation. It does not start an
+    application batch or alter the active Planning/Visits approval slice.
+
+authority:
+  design_workspace:
+    - design/claude-design-mvp1/00_START_HERE.md
+    - design/claude-design-mvp1/prompts/00_MASTER_DESIGN_CONSTITUTION.md
+    - design/claude-design-mvp1/acceptance/DESIGN_SIGNOFF_CHECKLIST.md
+    - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+  mapping: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  mvp3_register: product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+  provider_holds: product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  application_source: apps/web/src/app/(app)/admin/integrations/page.tsx
+  schema_source: supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+  tests:
+    - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    - apps/web/e2e/factory360-admin-control-plane.spec.ts
+
+stable_identity:
+  logical_design_id: WA-DES-008
+  correction_revision: WA-DES-008-C1
+  title: SAQEEL Integration Trust Console
+  filename: SAQEEL Admin Integrations - WA-DES-008-C1.dc.html
+  route: /admin/integrations
+  lineage_kind: CORRECTIVE_SUCCESSOR
+  predecessor:
+    filename: SAQEEL Admin Integrations.dc.html
+    bytes: 9039
+    sha256: c5c61acd5b854928b4972fbf6122381a7c0f11dcdb6fbaa018f08fdba954be55
+    reference_viewport: 1160x820
+    fingerprint_reverified_on: "2026-07-25"
+  identity_rule: >-
+    WA-DES-008-C1 is a correction revision, not a new page. It remains
+    non-consumable until export fingerprinting, independent review, sponsor
+    acceptance, and controlled mapping replacement are complete.
+
+collision_check:
+  checked_scope:
+    - repository design and product-contract files
+    - design route map
+    - operational coordination packets
+  exact_successor_identity_matches_outside_predecessor_and_queue_packets: 0
+  filename_collision_found: false
+  route_collision:
+    route: /admin/integrations
+    result: UNIQUE_REAL_ROUTE_FOR_WA-DES-008-C1
+  excluded_competing_authorities:
+    - identity: WA-DES-007
+      route: /admin/integrations/factory-data
+      reason: Separate CSV staging and local master-data control plane.
+    - identity: WA-DES-012
+      route_claim: /admin/integrations/senaei
+      reason: NO_CODE_MATCH and non-consumable.
+    - route: /admin/operations
+      reason: Separate operations and resilience capability with no current design match.
+  conclusion: IDENTITY_CAN_BE_RESERVED_ONLY_AFTER_SPONSOR_CONSENT
+
+independent_mapping_findings:
+  validation: CONFIRMED_WITH_CORRECTION
+  previous_recommendation: RETURN_FOR_DELTA_CORRECTION
+  nearest_design: WA-DES-008
+  required_corrections:
+    - Use WA-DES-008 alone rather than the seven-design M10 bundle.
+    - Replace CR-001..CR-478 with the exact 14 transferred requirement rows.
+    - Replace fictional Technical Admin with table-specific RLS truth.
+    - Remove every fabricated provider card, health value, count, schedule, and last-event claim.
+    - Use the real endpoint registry, append-only event outcomes, and export-job evidence.
+    - Mark events and exports error isolation as an implementation gap.
+
+real_capability_contract:
+  mode: READ_ONLY_TRUST_CONSOLE
+  capabilities:
+    - Read RLS-visible endpoint registry records.
+    - Read recent RLS-visible append-only API and rule event outcomes.
+    - Read recent RLS-visible data-sharing export jobs.
+    - Link to the separate Factory Data Integration route.
+  absent:
+    - credential or secret view/edit
+    - provider test or health call
+    - endpoint create, edit, publish, or delete
+    - retry, replay, webhook, synchronization, or import action
+    - export creation, delivery, receipt, cancellation, or retry action
+    - aggregate uptime, latency, error-rate, delivery, freshness, or health calculation
+  no_page_write_rule: >-
+    This route performs no mutation. Do not add workflow, action audit,
+    concurrency control, confirmation, or success feedback for actions that do
+    not exist.
+
+data_contract:
+  endpoint_registry:
+    table: mvp3_integration_endpoints
+    selected_fields:
+      - endpoint_key
+      - display_name
+      - endpoint_kind
+      - contract_version
+      - status
+      - updated_at
+    displayed_fields:
+      - display_name
+      - endpoint_key
+      - endpoint_kind
+      - contract_version
+      - status
+    status_vocabulary:
+      - dependency_blocked
+      - disabled
+      - configured
+      - degraded
+    truth_rule: >-
+      Configured requires a non-empty runtime address and database contract
+      invariant, but remains configuration truth rather than connectivity or
+      health.
+  api_events:
+    table: mvp3_api_events
+    selected_fields:
+      - event_kind
+      - direction
+      - outcome
+      - correlation_id
+      - occurred_at
+    displayed_fields:
+      - event_kind
+      - direction
+      - outcome
+    status_vocabulary:
+      - accepted
+      - rejected
+      - blocked
+      - failed
+      - delivered
+    immutability: Append-only trigger blocks update and delete.
+  export_jobs:
+    table: mvp3_export_jobs
+    selected_fields:
+      - export_kind
+      - purpose
+      - status
+      - artifact_hash
+      - requested_at
+      - completed_at
+    displayed_fields:
+      - export_kind
+      - purpose
+      - status
+    status_vocabulary:
+      - prepared
+      - dependency_blocked
+      - queued
+      - delivered
+      - failed
+      - cancelled
+    delivery_invariant: Delivered requires artifact_hash and completed_at at database level.
+    receipt_gap: Receipt is not selected or displayed; the current page cannot prove receipt truth.
+  secret_boundary:
+    prohibited:
+      - base_url
+      - configuration
+      - tokens
+      - credentials
+      - certificates
+      - secret material
+
+permission_contract:
+  route_shell:
+    authentication: Authenticated application layout
+    field_only_persona: Redirected from web portal
+    route_specific_AdminRouteBoundary: absent
+    rule: The design must not invent a route-level Integration Admin permission.
+  table_RLS:
+    endpoint_registry:
+      visible_to: [security_admin, workflow_admin]
+    api_events:
+      visible_to: [security_admin, ops, auditor]
+    export_jobs:
+      visible_to:
+        - requesting_user
+        - security_admin
+        - auditor
+        - leadership
+  permission_implications:
+    - A user may legitimately see one section and not another.
+    - RLS-empty is not global empty.
+    - One table's visibility never grants another table's visibility.
+    - Unauthorized or field-only users must not receive registry, event, export, correlation, or hash details.
+
+provider_and_policy_holds:
+  - id: MVP3-HOLD-001
+    subject: Digital signature
+    design_truth: Signature execution disabled; unsigned dossier remains reviewable and auditable.
+  - id: MVP3-HOLD-002
+    subject: Mapbox and maps
+    design_truth: Non-map evidence remains available; no map-provider success is inferred.
+  - id: MVP3-HOLD-003
+    subject: External identity and SSO
+    design_truth: Local authentication remains; external SSO controls stay disabled.
+  - id: MVP3-HOLD-004
+    subject: EBDA and data exchange
+    design_truth: An export may be prepared but cannot be claimed transmitted without approved exchange and receipt contract.
+  - id: MVP3-HOLD-005
+    subject: Notification channels
+    design_truth: In-app/audit evidence may exist while external delivery remains unavailable.
+  - id: MVP3-HOLD-006
+    subject: Retention and backup
+    design_truth: No destructive purge, retention number, backup target, or restore objective may be invented.
+provider_name_rule: >-
+  Show a provider name only when returned by an RLS-visible endpoint record.
+  Do not hard-code Twilio, Resend, Senaei, DocuSign, Teams, Zoom, or another
+  provider as connected, scheduled, live, healthy, late, or failing.
+
+pagination_completeness_and_freshness:
+  endpoint_registry:
+    query_limit: absent
+    total_count: absent
+    completeness_proof: absent
+  api_events:
+    query_limit: 20
+    rendered_rows: 8
+    total_count: absent
+  export_jobs:
+    query_limit: 20
+    rendered_rows: 8
+    total_count: absent
+  requirements:
+    - Label event and export panels "Recent" and state that only eight loaded rows are visible.
+    - Do not label endpoint count as global inventory without a counted complete query.
+    - Show totals only when returned by source.
+    - Annotate pagination or load-more as an implementation gap.
+    - Use updated_at, occurred_at, requested_at, or completed_at only when selected and deliberately displayed.
+    - Do not classify stale/fresh without an approved freshness policy.
+
+error_isolation_and_data_truth:
+  current_behavior:
+    endpoint_error: Captured and drives the schema-unavailable banner.
+    event_error: Discarded; failure can appear as empty.
+    export_error: Discarded; failure can appear as empty.
+  design_rule: >-
+    Design independent endpoint, event, and export unavailable states and mark
+    per-source runtime isolation as an implementation gap. Never depict a
+    failed read as verified empty or healthy.
+  empty_truth:
+    - Verified empty requires a successful source read with zero RLS-visible rows.
+    - RLS-hidden, failed, not configured, dependency-blocked, degraded, and empty are distinct.
+    - Record status is reproduced exactly and never promoted to health.
+  contradiction:
+    - Conflicting endpoint status and event/export outcomes remain unresolved.
+    - Do not auto-reconcile, infer connectivity, or overwrite record truth.
+
+audit_and_concurrency:
+  audit:
+    page_mutations: none
+    api_events: Append-only evidence, not a page action audit.
+    export_jobs: Read-only status on this page.
+    rule: Do not claim that merely viewing the page creates an audit event.
+  concurrency:
+    page_writes: none
+    read_snapshot_consistency: not_evidenced_across_three_parallel_queries
+    conflict_state: >-
+      If registry, events, and exports disagree, show the observation times and
+      unresolved contradiction. Do not claim a transactionally consistent
+      snapshot or silently synthesize one.
+
+information_architecture:
+  shell:
+    brand: Approved SAQEEL | صقيل identity
+    forbidden_branding: ["صقيل صناعي in English shell", "Industrial sub-brand"]
+    title: Integration trust console
+    truth_banner: Configuration is not connectivity; secrets never display.
+  regions:
+    - Governed endpoint registry
+    - Recent API and rule event outcomes
+    - Recent data-sharing export jobs
+    - Separate Factory Data Integration link
+  rejected_pattern:
+    - Six provider health cards
+    - Connected/live/provider-health dashboard
+    - Credential or endpoint settings panel
+
+required_state_matrix:
+  route_and_permission:
+    - loading
+    - authenticated_partial_visibility
+    - field_only_redirect
+    - unauthorized_or_RLS_hidden
+  endpoints:
+    - configured_not_health_verified
+    - dependency_blocked
+    - disabled
+    - degraded
+    - verified_empty
+    - unavailable
+    - completeness_unknown
+  events:
+    - recent_rows
+    - verified_empty
+    - unavailable
+    - RLS_hidden
+    - append_only_detail
+  exports:
+    - prepared_not_delivered
+    - dependency_blocked
+    - queued
+    - delivered_database_invariant_only
+    - delivered_receipt_unproven
+    - failed
+    - cancelled
+    - verified_empty
+    - unavailable
+    - RLS_hidden
+  cross_source:
+    - one_source_failed_others_healthy
+    - conflicting_truth_unresolved
+    - freshness_policy_absent
+  test_and_evidence:
+    - source_contract_only
+    - focused_test_failure
+    - runtime_permission_failure
+    - visual_or_accessibility_failure
+  failure_rule: Any required failed test or missing evidence blocks acceptance and remains visible in review status.
+
+responsive_matrix:
+  viewports:
+    - 1440x900
+    - 1160x820
+    - 1024x768
+    - 768x1024
+    - 412x915
+    - 390x844
+    - 320x568
+  desktop: Registry leads; event and export evidence sit below without dashboard-health framing.
+  tablet: Registry and evidence panels stack without clipped IDs, versions, purposes, statuses, or timestamps.
+  mobile: Single-column order; Factory Data link remains reachable; no peeking submenu icons.
+  minimum_reflow: No task loss, overlap, clipping, or two-dimensional page scroll.
+  table_rule: Reflow to labelled records or a named horizontal region with preserved header semantics.
+
+language_bidi_theme:
+  locales:
+    - {locale: en, direction: ltr}
+    - {locale: ar, direction: rtl}
+  bidi_rules:
+    - Use logical layout and mirror directional structure.
+    - Isolate endpoint keys, contract versions, correlation IDs, hashes, and machine statuses as LTR.
+    - Localize truth, permission, empty, unavailable, degraded, conflict, and recovery copy.
+    - Require qualified native-Arabic review before acceptance.
+  themes: [light, dark]
+  theme_evidence:
+    - shell, truth banner, registry, evidence panels, table/card surfaces, statuses, links, and focus
+    - body, heading, caption, disabled, error, warning, unavailable, and RLS-hidden contrast
+    - status differentiation using text, shape, and icon rather than color alone
+
+accessibility_contract:
+  structure:
+    - One h1 and ordered section headings.
+    - Programmatic table headers or labelled record semantics.
+    - Unique accessible names for Factory Data link and any expandable row detail.
+  keyboard:
+    - Logical LTR and RTL focus order.
+    - Visible single focus treatment in both themes.
+    - Forty-four-pixel minimum interactive targets.
+    - Registry, event, export detail, pagination placeholder, and Factory Data link are keyboard reachable.
+  announcements:
+    - source unavailable
+    - partial visibility
+    - verified empty
+    - conflicting truth
+    - test failure
+  content:
+    - Long IDs and versions wrap or truncate with accessible full value.
+    - Status is not color-only.
+    - Machine status and reader-facing label remain distinguishable.
+  zoom_reflow:
+    - Prove 200 percent zoom.
+    - Prove 400 percent or 320 CSS-pixel equivalent reflow.
+
+test_and_evidence_contract:
+  existing_strength:
+    - Additive MVP3 schema, RLS, append-only events, fail-closed dependency states, and export database invariant exist.
+    - Live route smoke and negative persona containment exist in broader suites.
+    - Selected Arabic RTL mobile and theme switching are exercised.
+  missing:
+    - Focused independent endpoint/event/export read-error isolation.
+    - Table-specific persona matrix for partial visibility.
+    - Proof that configured status is never presented as live health.
+    - Record-detail accessibility and correlation/hash handling.
+    - Endpoint completeness, recent-history labeling, pagination, and totals.
+    - Cross-query contradiction and observation-time behavior.
+    - Tablet, 320px, keyboard-only, zoom, and complete light/dark visual evidence.
+    - Qualified native-Arabic review.
+  design_return:
+    - Corrected editable export under the stable filename.
+    - Export byte size, SHA-256, viewport inventory, and predecessor lineage.
+    - Predecessor comparison proving removal of fabricated provider-health cards and metrics.
+    - Component, data, RLS, state, and source annotations.
+    - Full permission, hold, pagination, error, conflict, responsive, theme, RTL, accessibility, and test-status matrices.
+  runtime_later_not_authorized_here:
+    - Security/workflow endpoint visibility.
+    - Security/ops/auditor event visibility.
+    - Requester/security/auditor/leadership export visibility.
+    - Partial visibility and denied-persona non-leakage.
+    - Independent source failures preserving healthy panels.
+    - Verified-empty versus unavailable versus RLS-hidden.
+    - Prepared versus delivered and receipt-unproven states.
+    - No secret/base-url/configuration leakage.
+    - All responsive, bilingual, theme, keyboard, zoom, and accessibility checks.
+    - Required focused and protected suites with zero unexplained failure.
+
+acceptance_mapping:
+  - id: WA-M10-AC-001
+    priority: P0
+    design_evidence: Real registry, event, export, Factory Data link, and truth-labelled gaps.
+  - id: WA-M10-AC-002
+    priority: P0
+    design_evidence: Table-specific permissions, failure isolation, RLS-hidden, provider-held, contradiction, and test-failure states.
+  - id: WA-M10-AC-003
+    priority: P1
+    design_evidence: Corrected fixed-viewport export with zero unapproved difference.
+  - id: WA-M10-AC-004
+    priority: P1
+    design_evidence: EN/AR RTL, light/dark, desktop/tablet/mobile/reflow, keyboard, and accessibility.
+  - id: WA-M10-AC-005
+    priority: P0
+    design_evidence: RLS, append-only events, export invariant, secret boundary, provider holds, and child-route separation.
+  - id: WA-M10-AC-006
+    priority: P1
+    design_evidence: Stable IDs, exact 14 rows, fingerprint, limitations, evidence index, and change record.
+
+p0_return_gates:
+  - id: P0-IDENTITY
+    return_if: Route, design identity, revision, filename, or predecessor lineage differs.
+  - id: P0-CAPABILITY
+    return_if: A credential, provider test, endpoint mutation, retry, replay, webhook, sync, import, or export action is added.
+  - id: P0-PROVIDER
+    return_if: A provider is called connected, live, healthy, scheduled, late, successful, or failing without a returned record and approved contract.
+  - id: P0-METRIC
+    return_if: Count, latency, uptime, delivery rate, freshness, last-event time, schedule, or health is fabricated.
+  - id: P0-SECRET
+    return_if: Base URL, configuration, token, credential, certificate, or secret is displayed.
+  - id: P0-PERMISSION
+    return_if: Technical Admin or one global Admin persona replaces table-specific RLS truth.
+  - id: P0-CONFIDENTIALITY
+    return_if: Denied personas receive registry, event, correlation, export, hash, or provider detail.
+  - id: P0-ERROR
+    return_if: Event/export read failure is represented as verified empty or healthy.
+  - id: P0-EXPORT
+    return_if: Prepared is shown delivered, or delivered receipt is claimed without receipt evidence.
+  - id: P0-CONCURRENCY
+    return_if: Three parallel reads are called one transactionally consistent snapshot or contradictions are auto-reconciled.
+  - id: P0-HOLD
+    return_if: Any MVP3 provider/policy hold is presented as resolved.
+  - id: P0-SCOPE
+    return_if: Factory Data, Senaei Admin, Platform Operations, or Spatial Canvas behavior is embedded in this route.
+  - id: P0-TRACEABILITY
+    return_if: The page claims all 478 requirements or more than the exact 14 transferred rows.
+  - id: P0-TEST
+    return_if: A failed required test or missing evidence is hidden or converted into completion.
+
+p1_return_gates:
+  - id: P1-HISTORY
+    return_if: Endpoint inventory or recent event/export rows are presented as complete without count/pagination proof.
+  - id: P1-RESPONSIVE
+    return_if: Any required viewport clips, overlaps, hides a task, scrolls the page horizontally, or exposes peeking navigation.
+  - id: P1-RTL
+    return_if: Arabic is untranslated, directionally broken, or corrupts keys, versions, correlations, hashes, or statuses.
+  - id: P1-THEME
+    return_if: Light/dark surfaces, text, focus, statuses, warnings, unavailable, or RLS-hidden states lack contrast.
+  - id: P1-A11Y
+    return_if: Headings, table/record semantics, focus, targets, names, announcements, or full identifier access is missing.
+  - id: P1-TRUTH
+    return_if: Machine status, reader label, observation time, and source-specific limitation are ambiguous.
+  - id: P1-EVIDENCE
+    return_if: Fingerprint, visual matrix, state index, annotations, gap register, test status, or predecessor comparison is absent.
+
+design_write_lease:
+  current_state: NOT_ISSUED
+  owner: null
+  permitted_artifact:
+    identity: WA-DES-008-C1
+    filename: SAQEEL Admin Integrations - WA-DES-008-C1.dc.html
+  permitted_work:
+    - Correct the predecessor within the read-only registry/events/exports boundary.
+    - Produce every design and evidence state named in this packet.
+    - Export and fingerprint the correction for independent review.
+  issue_preconditions:
+    - Sponsor explicitly approves the WA-DES-008-C1 correction.
+    - One named Claude Design writer is recorded.
+    - No concurrent writer owns WA-DES-008, WA-DES-008-C1, or this route's design file.
+    - Writer acknowledges all P0/P1 return gates and open provider/policy holds.
+  expiry: End of one corrected export and evidence return.
+
+review_sequence:
+  - "Sponsor: approve or decline the bounded design correction."
+  - "Orchestrator: name one design writer and recheck identity/file collisions."
+  - "Claude Design writer: produce corrected design and evidence only."
+  - "Codex independent reviewer: apply every P0/P1 return gate without editing the design."
+  - "Sponsor: accept, return, or reject the corrected design."
+  - "Governance: fingerprint and update frozen mapping only through approved change control."
+  - "Implementation owner: receive a separate non-overlapping lease after design acceptance."
+
+readiness_decision:
+  identity_ready: true
+  predecessor_fingerprint_verified: true
+  capability_and_data_contract_ready: true
+  permission_hold_error_and_evidence_contract_ready: true
+  sponsor_consent_present: false
+  named_design_writer_present: false
+  live_design_write_allowed: false
+  implementation_allowed: false
+  consumable_status: NON_CONSUMABLE
+  recommendation: APPROVE_BOUNDED_DESIGN_LEASE_FOR_SPONSOR_CONSENT
+  block_reason: >-
+    Sponsor consent and one named collision-free writer are absent. Provider
+    and policy holds remain open. Table-specific partial visibility, independent
+    event/export error isolation, completeness/pagination, receipt truth,
+    cross-query consistency, full responsive/theme/bilingual/accessibility, and
+    focused test evidence remain unproven.
+
+rollback:
+  action: Delete only this draft packet if rejected.
+  product_or_design_rollback_required: false
+  unrelated_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-REGISTERED-DESIGN-CORRECTION-CONSENT-CLOSEOUT-028
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  scope: >-
+    Consolidate WA-DES-003-C1, WA-DES-006-C1, WA-DES-007-C1, and WA-DES-008-C1
+    readiness into one sponsor consent decision sheet, preserving each block,
+    collision result, named-writer prerequisite, P0/P1 return gate, and
+    implementation prohibition. Make no live design, mapping, code, test,
+    provider, data, lease, or branch change.
+  collision_check_required_before_dispatch: true
