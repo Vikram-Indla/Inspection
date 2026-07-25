@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r12",
-  "updated": "2026-07-25T23:19:45+03:00",
+  "revision": "SB-r13",
+  "updated": "2026-07-25T23:29:59+03:00",
   "updatedBy": "codex",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1373,13 +1373,13 @@
       "designPage": "pwa/SAQEEL PWA-Field Seizure Records.dc.html",
       "route": "components/field/SamplesSection.tsx · SeizureSection.tsx · samplesSeizureStrings.ts",
       "pwa": {
-        "state": "gap",
-        "note": "Components exist inside the workspace, but there is NO standalone /field/seizure-records route the design implies."
+        "state": "partial",
+        "note": "Seizure Records is resolved as a Step 3 report section, not a standalone route. Sample and seizure sections now match the supplied card, repeater, add/delete and photo-capture geometry in EN/LTR and AR/RTL; report-engine runtime evidence remains pending."
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "Design shows a Seizure Records screen; repo has only in-workspace sections. Decide: screen or section."
+          "lane": "wiring",
+          "text": "Connect the user-entered sample and seizure drafts to the governed report engine and capture routed runtime evidence."
         }
       ],
       "phase": 5,
