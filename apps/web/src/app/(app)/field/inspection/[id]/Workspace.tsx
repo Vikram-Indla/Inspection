@@ -1079,30 +1079,6 @@ export default function Workspace({ inspection, items, library, serverResponses,
       <FieldConnectivityBanner offline={strings.connectivityOffline} weak={strings.connectivityWeak} />
       {msg && <div className="alert alert-info"><div>{msg}</div></div>}
 
-      {/* DEC-A — Figma wizard-shell parity as a guided presentation over the existing
-          config-driven engine: pure anchor navigation over the unchanged section list
-          below, no new state, no altered validation/submit/RLS/offline behaviour. */}
-      {!submitted && sections.length > 1 && (
-        <nav className={styles.stepRail} aria-label={strings.panelTitle}>
-          {sections.map((s, index) => {
-            const sectionProgress = progress.find(p => p.key === s.key);
-            const isDone = sectionProgress?.pct === 100;
-            const isCurrent = !isDone && progress.find(p => p.pct < 100)?.key === s.key;
-            return (
-              <a
-                key={s.key}
-                className={`${styles.step} ${isDone ? styles.stepDone : ""} ${isCurrent ? styles.stepCurrent : ""}`}
-                href={`#ax-section-${s.key}`}
-                aria-current={isCurrent ? "step" : undefined}
-              >
-                <span className={styles.stepNumber} aria-hidden="true">{index + 1}</span>
-                {s.title}
-              </a>
-            );
-          })}
-        </nav>
-      )}
-
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
       <details className={styles.card} style={{ padding: "var(--space-4)" }}>
