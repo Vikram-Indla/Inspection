@@ -1,5 +1,5 @@
 {
-  "revision": "SB-r5",
+  "revision": "SB-r6",
   "updated": "2026-07-25T22:52:33+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
@@ -819,9 +819,9 @@
       "channel": "admin",
       "group": "adminbuild",
       "name": "Form & workflow builders",
-      "design": 55,
-      "code": 90,
-      "wiring": 80,
+      "design": 60,
+      "code": 92,
+      "wiring": 82,
       "designPage": "SAQEEL Admin Form Builder.dc.html · Admin Workflow Builder · Item Execution",
       "route": "web/src/app/(app)/admin/templates · admin/workflows · app/admin/execution · lib/workflow/*",
       "pwa": {
@@ -831,7 +831,15 @@
       "pending": [
         {
           "lane": "design",
-          "text": "Builder canvases not diffed against admin/templates + admin/workflows."
+          "text": "WfDeck visual state lane added (boxed states + arrow icons) but pixel diff against SAQEEL Admin Workflow Builder.dc.html not run."
+        },
+        {
+          "lane": "design",
+          "text": "Form Builder design (SAQEEL Admin Form Builder.dc.html) nav links to /admin/packages; card route says admin/templates -- route authority not reconciled."
+        },
+        {
+          "lane": "code",
+          "text": "admin/templates/page.tsx created -- renders TemplateRegistry with CRUD via existing actions; no standalone template builder canvas."
         }
       ],
       "phase": 2,
