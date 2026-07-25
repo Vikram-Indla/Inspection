@@ -25,6 +25,9 @@ export type PackData = {
   factoryName: string;
   packPolicyVersion: string | null;
   packageLabel: string | null;
+  packageVersionId: string | null;
+  packageDefinition: unknown | null;
+  packageChecksum: string | null;
   packageStatus: string | null;
   crNumber: string | null;
   officialLocation: string | null;
@@ -71,6 +74,15 @@ export type PackStrings = {
   ackRepeatReviewed: string;
   required: string;
   downloadOffline: string;
+  downloadingOffline: string;
+  downloadUnavailable: string;
+  downloadFailed: string;
+  integrityVerified: string;
+  integrityFailed: string;
+  legacyUnverified: string;
+  offlineUnavailable: string;
+  packageVersion: string;
+  packageHash: string;
   checkIn: string;           // "Check in — startup"
   checkInBlocked: string;    // "Check in — review required"
   startupNote: string;       // "Opens the governed startup; check-in gates are enforced there."
@@ -94,16 +106,59 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
   const local = useMemo(() => localForUser(userId), [userId]);
   const [open, setOpen] = useState(false);
   const [packageCached, setPackageCached] = useState(false);
+  const [cacheState, setCacheState] = useState<"checking" | "missing" | "downloading" | "verified" | "corrupt" | "legacy_unverified" | "failed">("checking");
+  const [online, setOnline] = useState(true);
   const [factory360Ack, setFactory360Ack] = useState(false);
   const [repeatReviewed, setRepeatReviewed] = useState(false);
 
   // Read the REAL offline package cache presence (display only).
+  const cacheKey = data.inspectionId ?? `visit:${data.visitId}`;
+
   useEffect(() => {
-    if (!open || !data.inspectionId) return;
+    if (!open) return;
     let alive = true;
-    void local.getPackage(data.inspectionId).then((def) => { if (alive) setPackageCached(!!def); }).catch(() => {});
+    void local.verifyCachedPackage(cacheKey).then((result) => {
+      if (!alive) return;
+      setCacheState(result.state);
+      setPackageCached(result.state === "verified");
+    }).catch(() => {
+      if (alive) {
+        setCacheState("failed");
+        setPackageCached(false);
+      }
+    });
     return () => { alive = false; };
-  }, [open, data.inspectionId, local]);
+  }, [cacheKey, open, local]);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  async function downloadOfflinePackage() {
+    if (!online || !data.packageVersionId || data.packageDefinition == null) return;
+    setCacheState("downloading");
+    try {
+      await local.cacheVerifiedPackage(cacheKey, {
+        packageVersionId: data.packageVersionId,
+        packageVersionLabel: data.packageLabel ?? data.packageVersionId,
+        authorityChecksum: data.packageChecksum,
+        definition: data.packageDefinition,
+      });
+      const verified = await local.verifyCachedPackage(cacheKey);
+      setCacheState(verified.state);
+      setPackageCached(verified.state === "verified");
+    } catch {
+      setCacheState("failed");
+      setPackageCached(false);
+    }
+  }
 
   // Readiness blocker: the repeat-findings review acknowledgement. This is a
   // local readiness nudge, not an invented governance policy — the authoritative
@@ -137,7 +192,13 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
               <span className={`sq-lozenge sq-lozenge--${blocked ? "warning" : "success"}`}>
                 {blocked ? strings.reviewBlocker.replace("{n}", "1") : strings.ready}
               </span>
-              <span className="sq-sync sq-sync--synced">{strings.cached}</span>
+              <span className={`sq-sync ${packageCached ? "sq-sync--synced" : ""}`} role="status" data-testid="pack-cache-status">
+                {cacheState === "verified" ? strings.integrityVerified
+                  : cacheState === "corrupt" ? strings.integrityFailed
+                    : cacheState === "legacy_unverified" ? strings.legacyUnverified
+                      : cacheState === "failed" ? strings.downloadFailed
+                        : strings.downloadUnavailable}
+              </span>
               {data.freshnessMinutes != null && (
                 <span className="sq-freshness sq-numeric">{strings.freshness.replace("{n}", String(data.freshnessMinutes))}</span>
               )}
@@ -155,7 +216,10 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
 
               <Section title={strings.sectionPackage}>
                 {data.packageLabel
-                  ? <>{data.packageLabel}{data.packageStatus ? ` · ${data.packageStatus}` : ""}</>
+                  ? <>
+                      <div>{strings.packageVersion}: <span className="sq-numeric">{data.packageLabel}</span>{data.packageStatus ? ` · ${data.packageStatus}` : ""}</div>
+                      <div>{strings.packageHash}: <span className="sq-numeric">{data.packageChecksum ? data.packageChecksum.slice(0, 16) : "—"}</span></div>
+                    </>
                   : <em>—</em>}
               </Section>
 
@@ -217,7 +281,18 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
             </div>
 
             <div className={moduleClasses.packFooter}>
-              <button type="button" className="sq-btn sq-btn--secondary" style={{ flex: 1 }}>{strings.downloadOffline}</button>
+              <button
+                type="button"
+                className="sq-btn sq-btn--secondary"
+                style={{ flex: 1 }}
+                onClick={() => void downloadOfflinePackage()}
+                disabled={!online || !data.packageVersionId || data.packageDefinition == null || cacheState === "downloading"}
+                data-testid="pack-download-offline"
+              >
+                {cacheState === "downloading" ? strings.downloadingOffline
+                  : !online ? strings.offlineUnavailable
+                    : strings.downloadOffline}
+              </button>
               <a
                 href={blocked ? undefined : startupHref}
                 aria-disabled={blocked}

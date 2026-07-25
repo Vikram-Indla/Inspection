@@ -55,6 +55,37 @@ export type CachedRouteEstimate = {
   stale?: boolean;
 };
 
+export type CachedInspectionPackage = {
+  schema: "saqeel-inspection-package-v1";
+  cachedAt: string;
+  packageVersionId: string;
+  packageVersionLabel: string;
+  authorityChecksum: string | null;
+  localChecksum: string;
+  definition: unknown;
+};
+
+export type PackageIntegrityResult =
+  | { state: "missing" }
+  | { state: "legacy_unverified"; definition: unknown }
+  | { state: "verified"; package: CachedInspectionPackage }
+  | { state: "corrupt"; package: CachedInspectionPackage };
+
+function canonicalJson(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  return `{${Object.entries(value as Record<string, unknown>)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`)
+    .join(",")}}`;
+}
+
+async function sha256Text(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
 function idb(userId: string): Promise<IDBDatabase> {
   return new Promise((res, rej) => {
     const r = indexedDB.open(offlineDatabaseName(userId), 1);
@@ -98,6 +129,38 @@ function createUserOfflineStore(userId: string) {
     },
     cachePackage: (inspection: string, def: unknown) => tx(verifiedUserId, "packages", "readwrite", s => s.put(def, inspection)),
     getPackage: (inspection: string) => tx<unknown>(verifiedUserId, "packages", "readonly", s => s.get(inspection)),
+    cacheVerifiedPackage: async (key: string, input: {
+      packageVersionId: string;
+      packageVersionLabel: string;
+      authorityChecksum: string | null;
+      definition: unknown;
+    }): Promise<CachedInspectionPackage> => {
+      const localChecksum = await sha256Text(canonicalJson(input.definition));
+      const cached: CachedInspectionPackage = {
+        schema: "saqeel-inspection-package-v1",
+        cachedAt: new Date().toISOString(),
+        packageVersionId: input.packageVersionId,
+        packageVersionLabel: input.packageVersionLabel,
+        authorityChecksum: input.authorityChecksum,
+        localChecksum,
+        definition: input.definition,
+      };
+      await tx(verifiedUserId, "packages", "readwrite", store => store.put(cached, key));
+      return cached;
+    },
+    verifyCachedPackage: async (key: string): Promise<PackageIntegrityResult> => {
+      const value = await tx<unknown>(verifiedUserId, "packages", "readonly", store => store.get(key));
+      if (value == null) return { state: "missing" };
+      const candidate = value as Partial<CachedInspectionPackage>;
+      if (candidate.schema !== "saqeel-inspection-package-v1" || !candidate.localChecksum || !("definition" in candidate)) {
+        return { state: "legacy_unverified", definition: value };
+      }
+      const localChecksum = await sha256Text(canonicalJson(candidate.definition));
+      const cached = candidate as CachedInspectionPackage;
+      return localChecksum === cached.localChecksum
+        ? { state: "verified", package: cached }
+        : { state: "corrupt", package: cached };
+    },
     // FLD-JRN-003/004 — the last provider estimate is a display-only offline
     // value. It never mutates workflow state and is always surfaced as stale.
     cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx(verifiedUserId, "packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
