@@ -33,6 +33,7 @@ export type LiveOpsStrings = {
   operationalState: string;
   visitReference: string;
   closeDetails: string;
+  dataIntegrity: string;
 };
 
 const Map = dynamic(() => import("./LiveMapInner"), { ssr: false });
@@ -45,6 +46,8 @@ export default function LiveOps({
   observedAt,
   wallboard,
   hasReadError,
+  excludedRecordCount,
+  locale,
 }: {
   factories: LiveFactory[];
   regions: LiveRegion[];
@@ -53,6 +56,8 @@ export default function LiveOps({
   observedAt: string;
   wallboard: boolean;
   hasReadError: boolean;
+  excludedRecordCount: number;
+  locale: "en" | "ar";
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [providerFailed, setProviderFailed] = useState(false);
@@ -62,7 +67,7 @@ export default function LiveOps({
   const selectedInspector = inspectors.find(inspector => inspector.id === selectedId) ?? null;
   const noScopeRows = factories.length === 0 && inspectors.length === 0;
   const hasNoPositions = factories.length > 0 && inspectors.length === 0;
-  const formattedObservedAt = new Intl.DateTimeFormat(undefined, {
+  const formattedObservedAt = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
     dateStyle: "medium",
     timeStyle: "medium",
     timeZone: "Asia/Riyadh",
@@ -74,9 +79,14 @@ export default function LiveOps({
         <div>
           <p className={styles.disclosure}>{s.projected}</p>
           <p className={styles.freshness}>
-            <span>{s.lastObserved}: <time dateTime={observedAt}>{formattedObservedAt}</time></span>
+            <span>{s.lastObserved}: <time data-testid="live-observed-at" dateTime={observedAt}>{formattedObservedAt}</time></span>
             <span>{s.freshnessPolicy}</span>
           </p>
+          {excludedRecordCount > 0 ? (
+            <p className={styles.dataIntegrity} role="status">
+              {s.dataIntegrity} <strong>{excludedRecordCount}</strong>
+            </p>
+          ) : null}
         </div>
         {wallboard ? <a className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</a> : null}
       </header>
@@ -136,11 +146,16 @@ export default function LiveOps({
                 <button type="button" onClick={() => setSelectedId(null)} aria-label={s.closeDetails}>×</button>
               </div>
               <dl className={styles.selectionDetails}>
-                <div><dt>{s.inspectorName}</dt><dd>{selectedInspector.inspector}</dd></div>
+                <div><dt>{s.inspectorName}</dt><dd><bdi dir="auto">{selectedInspector.inspector}</bdi></dd></div>
                 <div><dt>{s.factoryName}</dt><dd>{selectedInspector.factoryName}</dd></div>
                 <div><dt>{s.regionName}</dt><dd>{selectedInspector.region}</dd></div>
                 <div><dt>{s.operationalState}</dt><dd>{selectedInspector.stateLabel}</dd></div>
-                <div><dt>{s.since}</dt><dd>{selectedInspector.sinceLabel}</dd></div>
+                <div>
+                  <dt>{s.since}</dt>
+                  <dd>{selectedInspector.sinceAt
+                    ? <time dateTime={selectedInspector.sinceAt}>{selectedInspector.sinceLabel}</time>
+                    : selectedInspector.sinceLabel}</dd>
+                </div>
                 <div><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
               </dl>
               <p className={styles.selectionDisclosure}>{s.projected}</p>
@@ -158,11 +173,15 @@ export default function LiveOps({
                   >
                     <span>
                       <strong>{inspector.factoryName}</strong>
-                      <small>{inspector.region} · {inspector.inspector}</small>
+                      <small>{inspector.region} · <bdi dir="auto">{inspector.inspector}</bdi></small>
                     </span>
                     <span>
                       <span className="sq-lozenge sq-lozenge--info">{inspector.stateLabel}</span>
-                      <small>{s.since}: {inspector.sinceLabel}</small>
+                      <small>
+                        {s.since}: {inspector.sinceAt
+                          ? <time data-live-since dateTime={inspector.sinceAt}>{inspector.sinceLabel}</time>
+                          : inspector.sinceLabel}
+                      </small>
                     </span>
                   </button>
                 </li>

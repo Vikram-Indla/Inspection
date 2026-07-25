@@ -31,6 +31,16 @@
   font: var(--type-caption-font);
 }
 
+.dataIntegrity {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  font: var(--type-caption-font);
+}
+
+.dataIntegrity strong {
+  color: var(--text-primary);
+}
+
 .counters {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

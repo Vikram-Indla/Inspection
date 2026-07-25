@@ -1,4 +1,5 @@
 import Shell, { preloadShell } from "@/components/Shell";
+import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/dates";
@@ -169,6 +170,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const city = typeof sp.city === "string" ? sp.city : "";
   const view = sp.view === "performance" ? "performance" : "map";
   const { t, locale } = await useT();
+  const local = (english: string, arabic: string) => locale === "ar" ? arabic : english;
   const sb = await supabaseServer();
   // DSG-CMD-020 — direct-route authorization must be identical to the accepted
   // shared navigation contract. Derive it from the same builder instead of
@@ -760,61 +762,69 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       )}
 
       <div className={styles.page}>
-        <nav className={styles.viewSwitch} aria-label={t("ops.views.label", "Operations Center views")}>
-          <a
+        <nav className={styles.viewSwitch} aria-label={t("ops.views.label", local("Operations Center views", "عروض مركز العمليات"))}>
+          <Link
             className={`${styles.viewLink} ${view === "map" ? styles.viewLinkActive : ""}`}
             href={mapViewHref}
+            data-next-spa="true"
             aria-current={view === "map" ? "page" : undefined}
           >
-            {t("ops.views.map", "Operations Map")}
-          </a>
-          <a
+            {t("ops.views.map", local("Operations Map", "خريطة العمليات"))}
+          </Link>
+          <Link
             className={`${styles.viewLink} ${view === "performance" ? styles.viewLinkActive : ""}`}
             href={performanceViewHref}
+            data-next-spa="true"
             aria-current={view === "performance" ? "page" : undefined}
           >
-            {t("ops.views.performance", "National Performance")}
-          </a>
+            {t("ops.views.performance", local("National Performance", "الأداء الوطني"))}
+          </Link>
         </nav>
 
         <section aria-labelledby="operations-kpi-heading">
           <div className={styles.sectionHead}>
             <div>
-              <h3 id="operations-kpi-heading">{t("ops.kpi.heading", "Operational position")}</h3>
+              <h3 id="operations-kpi-heading">{t("ops.kpi.heading", local("Operational position", "الموقف التشغيلي"))}</h3>
               <p className="sq-caption">
-                {t("ops.kpi.scope", "Current RLS-authorized region and city scope")}
+                {t("ops.kpi.scope", local("Current RLS-authorized region and city scope", "النطاق الحالي للمنطقة والمدينة المصرّح به عبر RLS"))}
               </p>
             </div>
           </div>
           <div className={styles.kpiGrid} data-testid="operations-kpi-grid">
             <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.activeVisits", "Active Visits")}</div>
+              <div className={styles.kpiLabel}>{t("ops.kpi.activeVisits", local("Active Visits", "الزيارات النشطة"))}</div>
               <div className={`${styles.kpiValue} sq-numeric`}>{monitored.length}</div>
-              <p className={styles.kpiNote}>{t("ops.kpi.activeNote", "Published or actively executing")}</p>
+              <p className={styles.kpiNote}>{t("ops.kpi.activeNote", local("Published or actively executing", "منشورة أو قيد التنفيذ الفعلي"))}</p>
             </article>
             <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.onTheWay", "On the Way")}</div>
+              <div className={styles.kpiLabel}>{t("ops.kpi.onTheWay", local("On the Way", "في الطريق"))}</div>
               <div className={`${styles.kpiValue} sq-numeric`}>{counts.on_the_way}</div>
-              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", "Canonical operational state")}</p>
+              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", local("Canonical operational state", "الحالة التشغيلية المعتمدة"))}</p>
             </article>
             <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.executing", "Executing")}</div>
+              <div className={styles.kpiLabel}>{t("ops.kpi.executing", local("Executing", "قيد التنفيذ"))}</div>
               <div className={`${styles.kpiValue} sq-numeric`}>{counts.executing}</div>
-              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", "Canonical operational state")}</p>
+              <p className={styles.kpiNote}>{t("ops.kpi.operationalState", local("Canonical operational state", "الحالة التشغيلية المعتمدة"))}</p>
             </article>
             <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.submittedToday", "Submitted Today")}</div>
+              <div className={styles.kpiLabel}>{t("ops.kpi.submittedToday", local("Submitted Today", "المقدّم اليوم"))}</div>
               <div className={styles.kpiValue}>
-                {t("ops.kpi.unavailable", "Unavailable — decision required")}
+                {t("ops.kpi.unavailable", local("Unavailable — decision required", "غير متاح — يتطلب قراراً"))}
               </div>
-              <p className={styles.kpiNote}>{t("ops.kpi.submittedDecision", "Grain, source and Riyadh day boundary require sponsor decision")}</p>
+              <p className={styles.kpiNote}>{t("ops.kpi.submittedDecision", local(
+                "Grain, source and Riyadh day boundary require sponsor decision",
+                "يتطلب مستوى التفصيل والمصدر وحدّ يوم الرياض قرار الراعي",
+              ))}</p>
             </article>
             <article className={styles.kpiCard}>
-              <div className={styles.kpiLabel}>{t("ops.kpi.activeAlerts", "Active Alerts")}</div>
+              <div className={styles.kpiLabel}>{t("ops.kpi.activeAlerts", local("Active Alerts", "التنبيهات النشطة"))}</div>
               <div className={styles.kpiValue}>
-                {t("ops.kpi.unavailable", "Unavailable — decision required")}
+                {t("ops.kpi.unavailable", local("Unavailable — decision required", "غير متاح — يتطلب قراراً"))}
               </div>
-              <p className={styles.kpiNote}>{t("ops.kpi.alertDecision", "Taxonomy and deduplication require sponsor decision")}</p>
+              <p className={styles.kpiNote}>{t("ops.kpi.alertDecision", local(
+                "Taxonomy and deduplication require sponsor decision",
+                "يتطلب التصنيف وإزالة التكرار قرار الراعي",
+              ))}</p>
             </article>
           </div>
           <p className={styles.decisionContext}>

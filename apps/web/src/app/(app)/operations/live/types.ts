@@ -32,5 +32,6 @@ export type LiveInspector = {
   stateLabel: string;
   lat: number;
   lng: number;
+  sinceAt: string | null;
   sinceLabel: string;
 };

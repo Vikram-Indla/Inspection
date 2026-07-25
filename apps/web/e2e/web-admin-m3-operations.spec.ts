@@ -118,6 +118,12 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(liveMapSource).not.toContain("ROUTE_SOURCE");
     expect(liveMapSource).not.toContain("etaMin");
     expect(liveMapSource).not.toContain("flyTo");
+    expect(livePageSource).toContain("isTestFixtureEstablishment(factory)");
+    expect(livePageSource).toContain("startsAt <= observedAt.getTime()");
+    expect(livePageSource).toContain("sourceInspectorName(");
+    expect(livePageSource).toContain("activeFactoryIds.has(factory.id)");
+    expect(liveShellSource).toContain('<bdi dir="auto">{inspector.inspector}</bdi>');
+    expect(liveShellSource).toContain('data-live-since dateTime={inspector.sinceAt}');
   });
 
   test("provides synchronized list, wallboard, loading disclosure and bounded responsive rules", () => {
@@ -214,8 +220,17 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Last observed:", { exact: false })).toBeVisible();
+    await expect(page.getByText(/Verification fixtures and future-dated visit windows are excluded/)).toBeVisible();
+    await expect(page.getByText(/G10 Golden Journey|M04 Governed Integration|KPI Verify|F360 Runtime/)).toHaveCount(0);
     const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
     if (await firstInspector.count()) {
+      await expect(firstInspector.locator('bdi[dir="auto"]')).toBeVisible();
+      const observedAt = Date.parse(await page.getByTestId("live-observed-at").getAttribute("datetime") ?? "");
+      const visibleSinceValues = await page.locator("time[data-live-since]").evaluateAll(nodes =>
+        nodes.map(node => Date.parse(node.getAttribute("datetime") ?? "")),
+      );
+      expect(visibleSinceValues.length).toBeGreaterThan(0);
+      for (const sinceAt of visibleSinceValues) expect(sinceAt).toBeLessThanOrEqual(observedAt);
       await firstInspector.click();
       await expect(firstInspector).toHaveAttribute("aria-pressed", "true");
       const details = page.getByTestId("live-inspector-details");
@@ -240,6 +255,19 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations/live?wallboard=1");
     await expect(page.getByRole("link", { name: "Exit wallboard", exact: true })).toBeVisible();
     await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+  });
+
+  test("Arabic Live Operations is complete, RTL and uses localized operational labels", async ({ page }) => {
+    await page.goto("/locale?set=ar");
+    await page.goto("/operations/live");
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByRole("heading", { name: "العمليات المباشرة — المملكة العربية السعودية", exact: true })).toBeVisible();
+    await expect(page.getByText("مسار متوقّع — ليس تتبعاً مباشراً عبر GPS", { exact: true })).toHaveCount(2);
+    await expect(page.getByRole("heading", { name: "المفتشون النشطون", exact: true })).toBeVisible();
+    await expect(page.getByText("مفتشون في الطريق", { exact: true })).toBeVisible();
+    await expect(page.getByText("مصانع قيد المتابعة", { exact: true })).toBeVisible();
+    await expect(page.getByText("آخر رصد:", { exact: false })).toBeVisible();
   });
 
   test("basemap provider failure withdraws only the map and keeps operational context", async ({ page }) => {
