@@ -8,8 +8,8 @@ purpose: >
 
 status: "OPEN"
 note: >
-  CLI re-authentication is complete. The new V3 contract is being adopted and
-  ChatGPT is authoring the replacement Operations queue. No requirement figure
+  CLI re-authentication is complete. ChatGPT has issued the V3 Operations queue
+  with one active vertical slice and one queued successor. No requirement figure
   is inferred from prior chat or stale artifacts.
 
 current_cycle:
@@ -18,25 +18,25 @@ current_cycle:
   closed_at: null
   watch_lanes:
     chatgpt:
-      state: "RUNNING"
-      active_packet: "GPT-V3-OPS-QUEUE-001"
-      queued_packet: "OPERATIONS-SUCCESSOR-PENDING"
+      state: "ISSUED"
+      active_packet: "PKT-M3-OPS-LIVE-001"
+      queued_packet: "PKT-M3-OPS-CENTER-002"
       dependency: null
     kimi:
-      state: "READY"
-      active_packet: null
-      queued_packet: null
-      dependency: "DEP-GPT-QUEUE-001"
+      state: "READY_READ_ONLY"
+      active_packet: "PKT-M3-OPS-LIVE-001 service/RLS/RBAC review"
+      queued_packet: "PKT-M3-OPS-CENTER-002 review"
+      dependency: "DEP-M3-LEASE-RECONCILIATION-001"
     claude_code:
       state: "READY"
-      active_packet: null
-      queued_packet: null
-      dependency: "DEP-GPT-QUEUE-001"
+      active_packet: "PKT-M3-OPS-LIVE-001"
+      queued_packet: "PKT-M3-OPS-CENTER-002"
+      dependency: "DEP-M3-LEASE-RECONCILIATION-001"
     claude_design:
-      state: "READY"
-      active_packet: null
-      queued_packet: null
-      dependency: "DEP-GPT-QUEUE-001"
+      state: "READY_READ_ONLY"
+      active_packet: "PKT-M3-OPS-LIVE-001 design drift/accessibility review"
+      queued_packet: "module n+1 scaffold packet pending"
+      dependency: null
     independent_codex_delivery_tasks:
       - state: "REVIEW"
         packet_id: "PKT-M9-LOC-001"
@@ -52,7 +52,17 @@ current_cycle:
     p1_count: null
   handoffs_reviewed: []
   dirty_laundry_updates: []
-  next_two_hour_queue: []
+  next_two_hour_queue:
+    - order: 1
+      packet_id: "PKT-M3-OPS-LIVE-001"
+      path: "product-contract/operationalization/packets/PKT-M3-OPS-LIVE-001.yaml"
+      state: "ACTIVE_READY_FOR_CODEX_SAFETY_REVIEW"
+      write_lease: "REQUESTED_NOT_GRANTED"
+    - order: 2
+      packet_id: "PKT-M3-OPS-CENTER-002"
+      path: "product-contract/operationalization/packets/PKT-M3-OPS-CENTER-002.yaml"
+      state: "QUEUED_NO_LEASE"
+      write_lease: "NONE"
 
   cycle_history: []
 
