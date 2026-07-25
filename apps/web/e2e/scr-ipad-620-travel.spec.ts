@@ -11,14 +11,22 @@ import { PERSONAS, storageStatePath } from "./personas";
 // by Startup.tsx (M04-004) and covered by m04-device-eta-override.spec.ts; it is
 // deliberately NOT re-tested here.
 //
-// MUTATION SAFETY / ISOLATION: this is a LIVE test. It stages its own sacrificial
-// fixtures (uniquely stamped factories + plans + visits + assignments) via the
-// acting persona's JWT so RLS stays under test, and deletes every row it created
-// in FK-safe order in afterAll. It runs only inside the live e2e project (auth
-// storageState from the `setup` project + a live Supabase). Under a read-only /
-// non-mutating review set PLAYWRIGHT_LIVE_E2E=0: the whole suite is skipped AND
-// the live-rest client (which reads .env.local at import) is never loaded, so no
-// database credential is touched and no fixture is created.
+// MUTATION SAFETY / ISOLATION: this is a LIVE, MUTATING test. It is EXPLICIT
+// OPT-IN and DEFAULT-OFF — it runs only when PLAYWRIGHT_LIVE_E2E=1. In every
+// other run (CI default, read-only review, the release G10 suite) the whole
+// suite is skipped AND live-rest (which reads .env.local at import) is never
+// loaded, so no database credential is touched and no fixture is created.
+//
+// It additionally REQUIRES an isolated/disposable backend: even when opted in,
+// beforeAll fails closed unless PLAYWRIGHT_DISPOSABLE_BACKEND=1 is set to
+// acknowledge the target Supabase is a throwaway/branch instance. This prevents
+// the mutating fixtures from ever staging against a shared or production DB.
+//
+// It stages its own uniquely stamped fixtures (factories + plans + visits +
+// assignments) via the acting persona's JWT so RLS stays under test, then in
+// afterAll deletes every row it created in FK-safe order, checks each delete for
+// errors, and re-queries to VERIFY the rows are gone — cleanup failures throw
+// visibly and fail the suite rather than being swallowed.
 //
 // Covered (positive + negative + offline + permission):
 //  1. Live route + honest geofence "in range", location freshness, native
@@ -31,7 +39,12 @@ import { PERSONAS, storageStatePath } from "./personas";
 //  4. No official coordinates on file — no route/geofence is shown.
 //  5. RLS / not-found — an unknown visit id shows the scoped empty state.
 
-const LIVE_E2E = process.env.PLAYWRIGHT_LIVE_E2E !== "0";
+// Explicit opt-in, default-off: the mutating suite runs ONLY under
+// PLAYWRIGHT_LIVE_E2E=1. Anything else (unset, read-only review, CI default) skips.
+const LIVE_E2E = process.env.PLAYWRIGHT_LIVE_E2E === "1";
+// Fail-closed isolation guard: even when opted in, refuse to stage fixtures
+// unless the operator acknowledges a disposable/throwaway backend.
+const DISPOSABLE_BACKEND = process.env.PLAYWRIGHT_DISPOSABLE_BACKEND === "1";
 const describe = LIVE_E2E ? test.describe : test.describe.skip;
 
 // Deferred so a read-only review never loads live-rest's .env.local read.
@@ -87,6 +100,15 @@ describe("SCR-IPAD-620 — Journey to Site (travel/GPS/geofence display)", () =>
   }
 
   test.beforeAll(async () => {
+    // Isolation guard: never stage mutating fixtures against a shared/production
+    // backend. Fail closed with an actionable message unless the operator has
+    // acknowledged a disposable target.
+    if (!DISPOSABLE_BACKEND) {
+      throw new Error(
+        "SCR-IPAD-620 live suite refuses to run: set PLAYWRIGHT_DISPOSABLE_BACKEND=1 " +
+        "only when pointed at an isolated, throwaway Supabase (branch/local), never a shared DB.",
+      );
+    }
     live = await import("./live-rest");
     const { login, rest, must } = live;
     const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
@@ -122,21 +144,43 @@ describe("SCR-IPAD-620 — Journey to Site (travel/GPS/geofence display)", () =>
     noCoordsVisitId = await createVisit(planner.userId, noCoords.id, pkg.id, "no-coords", baseDay + 2);
   });
 
-  // Deterministic cleanup: remove every row this spec created, in FK-safe order
-  // (assignments → visits → plans → factories). Best-effort and never throws, so
-  // a partial beforeAll still tears down what it managed to create. The travel
-  // screen itself writes nothing, so these fixtures are the entire footprint.
+  // Deterministic, VERIFIED cleanup: remove every row this spec created, in
+  // FK-safe order (assignments → visits → plans → factories), then re-query to
+  // confirm nothing remains. Every delete error and every surviving row is
+  // collected and thrown — cleanup failures fail the suite visibly instead of
+  // being swallowed. The travel screen itself writes nothing, so these fixtures
+  // are the entire footprint.
   test.afterAll(async () => {
     if (!live || !plannerJwt) return;
     const { rest } = live;
-    const del = (path: string) => rest("DELETE", path, plannerJwt, undefined, "return=minimal").catch(() => undefined);
     const inList = (ids: string[]) => ids.filter(Boolean).join(",");
+    const failures: string[] = [];
+
+    const del = async (label: string, path: string) => {
+      const res = await rest("DELETE", path, plannerJwt, undefined, "return=minimal");
+      if (res.error) failures.push(`delete ${label}: ${res.error}`);
+    };
+    const verifyGone = async (label: string, path: string) => {
+      const res = await rest<unknown[]>("GET", path, plannerJwt);
+      if (res.error) failures.push(`verify ${label}: ${res.error}`);
+      else if (Array.isArray(res.data) && res.data.length) failures.push(`${label}: ${res.data.length} row(s) not cleaned up`);
+    };
+
     if (createdVisitIds.length) {
-      await del(`assignments?visit_id=in.(${inList(createdVisitIds)})`);
-      await del(`visits?id=in.(${inList(createdVisitIds)})`);
+      await del("assignments", `assignments?visit_id=in.(${inList(createdVisitIds)})`);
+      await del("visits", `visits?id=in.(${inList(createdVisitIds)})`);
     }
-    if (createdPlanIds.length) await del(`visit_plans?id=in.(${inList(createdPlanIds)})`);
-    if (createdFactoryIds.length) await del(`factories?id=in.(${inList(createdFactoryIds)})`);
+    if (createdPlanIds.length) await del("visit_plans", `visit_plans?id=in.(${inList(createdPlanIds)})`);
+    if (createdFactoryIds.length) await del("factories", `factories?id=in.(${inList(createdFactoryIds)})`);
+
+    if (createdVisitIds.length) {
+      await verifyGone("assignments", `assignments?select=visit_id&visit_id=in.(${inList(createdVisitIds)})`);
+      await verifyGone("visits", `visits?select=id&id=in.(${inList(createdVisitIds)})`);
+    }
+    if (createdPlanIds.length) await verifyGone("visit_plans", `visit_plans?select=id&id=in.(${inList(createdPlanIds)})`);
+    if (createdFactoryIds.length) await verifyGone("factories", `factories?select=id&id=in.(${inList(createdFactoryIds)})`);
+
+    if (failures.length) throw new Error(`SCR-IPAD-620 fixture cleanup failed:\n- ${failures.join("\n- ")}`);
   });
 
   async function gotoTravel(page: Page, visitId: string) {
