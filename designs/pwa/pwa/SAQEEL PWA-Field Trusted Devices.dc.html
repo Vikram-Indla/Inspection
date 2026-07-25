@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .td-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 16px 18px 60px; display:flex; flex-direction:column; gap:16px; }
+  .td-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 18px; display:flex; align-items:flex-start; gap:14px; }
+  .td-icn { width:42px; height:42px; border-radius:11px; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; flex:none; }
+  .td-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Settings.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
+    <button class="td-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="td-wrap">
+    <p class="t-caption" style="margin:0;">{{ t.intro }}</p>
+
+    <sc-for list="{{ devices }}" as="d" hint-placeholder-count="2">
+      <div class="td-card">
+        <span class="td-icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:22px;height:22px;"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg></span>
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font-weight:600; font-size:14.5px;">{{ d.name }}</span>
+            <sc-if value="{{ d.isCurrent }}" hint-placeholder-val="{{ false }}"><span class="badge" style="background:var(--status-compliant-soft); color:var(--status-compliant-text); height:18px;">{{ t.thisDevice }}</span></sc-if>
+          </div>
+          <div class="t-caption id-code" style="margin-block-start:2px;">{{ d.id }}</div>
+          <div class="t-caption" style="margin-block-start:6px;">{{ t.lastAuth }}: {{ d.lastAuth }}</div>
+          <div class="t-caption">{{ t.enrolled }}: {{ d.enrolledOn }}</div>
+        </div>
+        <sc-if value="{{ d.isCurrent }}" hint-placeholder-val="{{ false }}"><span></span></sc-if>
+        <button class="btn btn-sm" style="border:1px solid var(--status-critical); color:var(--status-critical); background:none; flex:none;" onClick="{{ d.revoke }}">{{ t.revoke }}</button>
+      </div>
+    </sc-for>
+
+    <a href="SAQEEL%20PWA-Field%20Biometric.dc.html" target="_top" class="btn btn-primary btn-block btn-lg">{{ t.enrollNew }}</a>
+    <div class="panel" style="padding:14px 16px; font-size:12.5px; color:var(--text-secondary); display:flex; gap:8px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:16px;height:16px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <span>{{ t.secureEnclaveNote }}</span>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", revoked: {} };
+
+  registry() {
+    return [
+      { id: "DVC-77120", nameAr: "iPad Pro 11″ · خالد العتيبي", nameEn: "iPad Pro 11″ · Khaled Al-Otaibi", isCurrent: true, lastAuth: { ar: "اليوم · 09:14", en: "Today · 09:14" }, enrolledOn: "2026-02-11" },
+      { id: "DVC-65004", nameAr: "iPad Air · خالد العتيبي", nameEn: "iPad Air · Khaled Al-Otaibi", isCurrent: false, lastAuth: { ar: "قبل 12 يوماً", en: "12 days ago" }, enrolledOn: "2025-11-03" },
+    ];
+  }
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", title:"الأجهزة الموثوقة", langBtnLabel:"EN", backArrow:"M15 6l-6 6 6 6",
+        intro:"الأجهزة المصرّح لها بفتح التطبيق الميداني عبر القفل الحيوي. أزل أي جهاز لم تعد تستخدمه.",
+        thisDevice:"هذا الجهاز", lastAuth:"آخر مصادقة", enrolled:"تاريخ التسجيل", revoke:"إلغاء الثقة", enrollNew:"تسجيل جهاز جديد",
+        secureEnclaveNote:"المصادقة الحيوية تتم على الجهاز فقط (Secure Enclave). لا تُرسل بياناتك الحيوية إلى الخادم أبداً." },
+      en: { back:"Back", title:"Trusted Devices", langBtnLabel:"AR", backArrow:"M9 6l6 6-6 6",
+        intro:"Devices authorized to unlock the field app via biometric lock. Remove any device you no longer use.",
+        thisDevice:"This device", lastAuth:"Last auth", enrolled:"Enrolled", revoke:"Revoke", enrollNew:"Enroll new device",
+        secureEnclaveNote:"Biometric authentication happens on-device only (Secure Enclave). Your biometric data is never sent to the server." },
+    };
+    const t = STR[lang];
+    const devices = this.registry()
+      .filter(d => !this.state.revoked[d.id])
+      .map(d => ({ id: d.id, name: ar ? d.nameAr : d.nameEn, isCurrent: d.isCurrent, lastAuth: ar ? d.lastAuth.ar : d.lastAuth.en, enrolledOn: d.enrolledOn,
+        revoke: () => this.setState(s => ({ revoked: { ...s.revoked, [d.id]: true } })) }));
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t, devices,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

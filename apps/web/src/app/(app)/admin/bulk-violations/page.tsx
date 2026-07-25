@@ -6,6 +6,13 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import BulkViolationForm, { type BulkViolationStrings } from "./BulkViolationForm";
 
+const CLEAN_FACTORY_CODES = [
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204", "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+] as const;
+
 export const dynamic = "force-dynamic";
 
 // DEC-L (option 1) — bulk violation issuance reframed as bulk administrative
@@ -35,7 +42,7 @@ export default async function BulkViolations() {
   }
 
   const [{ data: factories, error: factoriesError }, { data: violationRows, error: violationsError }] = await Promise.all([
-    sb.from("factories").select("id, name, factory_code, cr_number, region, city").order("name").limit(500),
+    sb.from("factories").select("id, name, factory_code, cr_number, region, city").in("factory_code", [...CLEAN_FACTORY_CODES]).order("name").limit(24),
     sb.from("violation_codes").select("id, code, title, level, penalty_mappings(mapping_version, penalty_ref, legal_basis, status)").order("code"),
   ]);
 

@@ -1,0 +1,526 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-LEASE-MANIFEST-DRY-RUN-080
+status: SYNTHETIC_READ_ONLY_DRY_RUN_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Prove with synthetic pass/fail examples that the four-lane manifest and all
+  13 post-decision gates reject missing authority, overlapping identities or
+  paths, protected-path/object writes, unsafe data handling, incomplete
+  35-case/7-evidence proof, secret findings and premature completion credit.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+  - KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079
+
+hard_boundary:
+  - "Every identity, receipt, path allocation, environment and result in this packet is synthetic."
+  - "No real identity, sponsor answer, owner, lease, dispatch or migration filename is created."
+  - "No code, SQL, database, data, seed, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+  - "Synthetic PASS never grants authority or completion credit."
+
+dry_run_manifest_schema:
+  required_fields:
+    - manifest_id
+    - synthetic
+    - receipt_result
+    - receipt_hash_valid
+    - product_commit
+    - coordination_commit
+    - lease_registry_sha256
+    - design_gate
+    - migration_allocation
+    - lanes
+    - protected_paths
+    - protected_objects
+    - implementation_result
+    - self_check_result
+    - data_result
+    - acceptance_result
+    - evidence_result
+    - reviewer_result
+    - browser_sponsor_result
+    - completion_credit_request
+  lanes_required:
+    - IMPLEMENTATION
+    - QA
+    - DATA
+    - REVIEW
+  lane_required_fields:
+    - synthetic_identity
+    - mode
+    - write_paths
+    - database_objects
+    - data_scope
+    - release_condition
+
+path_and_object_matching:
+  path_rules:
+    - "Normalize repository-relative paths without resolving through the filesystem."
+    - "Reject absolute paths, parent traversal, empty path and wildcard outside an explicitly listed lease pattern."
+    - "Two write paths collide when equal or when one directory path contains the other."
+    - "Execute-only protected test paths never become QA write paths."
+    - "DATA and REVIEW must have no repository write path."
+  object_rules:
+    - "Normalize schema, object name and exact function signature."
+    - "Functions with different signatures are different objects only when the signature is explicit."
+    - "Table, trigger, function and policy names are compared case-insensitively after canonical public-schema qualification."
+    - "A protected object match always blocks, even if a lane also has a broader allowed object."
+  identity_rules:
+    - "All four synthetic identities must be nonempty and pairwise distinct."
+    - "Identity labels beginning SYNTHETIC- cannot authorize real work."
+
+protected_floor:
+  paths:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0005_audit_absolute_immutability.sql
+    - supabase/migrations/0018_w4_notifications_reviews.sql
+    - supabase/migrations/0019_w5_records.sql
+    - supabase/migrations/0021_fix_broad_rls.sql
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - product-contract/evidence/B6-EV-001-otp-flow.txt
+    - product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
+    - product-contract/evidence/CD-043_D2L_WIRING_CLOSURE_2026-07-15.md
+    - product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md
+    - product-contract/evidence/EVIDENCE_STATUS.md
+    - product-contract/evidence/SAQEEL-DSYNC-001.md
+  objects:
+    - public.audit_events
+    - public.audit_row_change()
+    - public.trg_audit_virtual_participants
+    - public.trg_audit_virtual_sessions
+    - public.vp_request_otp(uuid)
+    - public.vp_verify_otp(uuid,text)
+    - public.vp_otp_status(uuid)
+    - public.vs_append_event(uuid,text,jsonb)
+    - public.vs_mark_session_verified(uuid,uuid)
+    - public.set_operational_state(uuid,operational_state)
+  preservation:
+    control_floor: "20/361/18/9/12"
+    mandatory_requirements: 478
+    maximum_credit_before_real_certification: 0
+
+gate_precedence:
+  - gate: G01_VALID_SAFE_DECISION_RECEIPT
+    order: 1
+  - gate: G02_ACCEPTED_DESIGN_AUTHORITY
+    order: 2
+  - gate: G03_CURRENT_REF_COLLISION_MIGRATION
+    order: 3
+  - gate: G04_FOUR_DISTINCT_IDENTITIES
+    order: 4
+  - gate: G05_EXACT_NONOVERLAPPING_LEASES
+    order: 5
+  - gate: G06_BOUNDED_IMPLEMENTATION
+    order: 6
+  - gate: G07_IMPLEMENTATION_SELF_CHECK
+    order: 7
+  - gate: G08_CONTROLLED_DATA_FIXTURE
+    order: 8
+  - gate: G09_INDEPENDENT_QA_35_CASES
+    order: 9
+  - gate: G10_EVIDENCE_7_ROWS
+    order: 10
+  - gate: G11_FINAL_INDEPENDENT_REVIEW
+    order: 11
+  - gate: G12_REAL_BROWSER_SPONSOR_REVIEW
+    order: 12
+  - gate: G13_COMPLETION_CREDIT
+    order: 13
+
+gate_precedence_rule: "Return the first failing gate; later gates remain NOT_EVALUATED."
+
+synthetic_pass_manifest:
+  manifest_id: SYNTHETIC-M11-REDACTION-PASS-080
+  synthetic: true
+  receipt_result: VALID_DECISIONS_ONLY_POST_GATES_REQUIRED
+  receipt_hash_valid: true
+  product_commit: SYNTHETIC-CURRENT-PRODUCT-COMMIT
+  coordination_commit: SYNTHETIC-CURRENT-COORDINATION-COMMIT
+  lease_registry_sha256: SYNTHETIC-CURRENT-LEASE-HASH
+  design_gate:
+    placement_accepted: true
+    responsive_states_accepted: true
+    bounded_paging_accepted: true
+  migration_allocation:
+    path: supabase/migrations/SYNTHETIC_TIMESTAMP_m11_audit_consumer_redaction.sql
+    path_available: true
+    object_allocation:
+      - public.vs_audit_trail(uuid)
+      - public.vp_rw
+      - public.m11_admin_audit_safe(uuid)
+  lanes:
+    IMPLEMENTATION:
+      synthetic_identity: SYNTHETIC-IMPLEMENTER-A
+      mode: WRITE_EXACT_PATHS_AND_OBJECTS_ONLY
+      write_paths:
+        - apps/web/src/app/(app)/virtual/[id]/page.tsx
+        - apps/web/src/app/(app)/virtual/[id]/AuditTimeline.tsx
+        - apps/web/src/app/(app)/admin/audit/page.tsx
+        - supabase/migrations/SYNTHETIC_TIMESTAMP_m11_audit_consumer_redaction.sql
+      database_objects:
+        - public.vs_audit_trail(uuid)
+        - public.vp_rw
+        - public.m11_admin_audit_safe(uuid)
+      data_scope: []
+      release_condition: SYNTHETIC_IMPLEMENTATION_COMMIT_STABLE
+    QA:
+      synthetic_identity: SYNTHETIC-QA-B
+      mode: WRITE_NEW_TEST_AND_QA_EVIDENCE_ONLY
+      write_paths:
+        - apps/web/e2e/m11-audit-consumer-redaction.spec.ts
+        - apps/web/e2e/m11-audit-direct-table-secret-negative.spec.ts
+        - supabase/tests/m11_audit_consumer_redaction_security.sql
+        - product-contract/evidence/M11_AUDIT_CONSUMER_REDACTION_CERTIFICATION.md
+      database_objects: []
+      data_scope: []
+      release_condition: SYNTHETIC_35_CASE_AND_7_EVIDENCE_PASS
+    DATA:
+      synthetic_identity: SYNTHETIC-DATA-C
+      mode: NON_PRODUCTION_FIXTURE_ROWS_ONLY
+      write_paths: []
+      database_objects: []
+      data_scope:
+        environment: SYNTHETIC-DISPOSABLE-NONPROD
+        mutable_tables:
+          - public.visits
+          - public.assignments
+          - public.virtual_sessions
+          - public.virtual_participants
+        immutable_generated_table: public.audit_events
+        cleanup_manifest_complete: true
+        immutable_rows_listed: true
+        isolated_historical_fixture_disposed: true
+      release_condition: SYNTHETIC_FIXTURE_AND_CLEANUP_MANIFEST_COMPLETE
+    REVIEW:
+      synthetic_identity: SYNTHETIC-REVIEWER-D
+      mode: READ_ONLY
+      write_paths: []
+      database_objects: []
+      data_scope: []
+      release_condition: SYNTHETIC_REVIEW_VERDICT_RECORDED
+  protected_paths: "Matches protected_floor.paths exactly."
+  protected_objects: "Matches protected_floor.objects exactly."
+  implementation_result:
+    bounded_diff: true
+    protected_path_changes: 0
+    protected_object_changes: 0
+  self_check_result:
+    typecheck: PASS
+    build: PASS
+    migration_lint: PASS
+    unexplained_diffs: 0
+  data_result:
+    environment_nonproduction: true
+    fixture_manifest_complete: true
+    cleanup_complete: true
+    immutable_audit_rows_mutated: 0
+  acceptance_result:
+    cases_planned: 35
+    cases_executed: 35
+    P0_failures: 0
+    unsafe_P1_dispositions: 0
+    skipped_cases: 0
+    unauthorized_rows_returned: 0
+    QA_product_repairs: 0
+  evidence_result:
+    rows_required: 7
+    rows_complete: 7
+    artifact_hashes_complete: true
+    forbidden_key_or_value_findings: 0
+    historical_audit_row_mutations: 0
+    protected_regression_exclusions: 0
+  reviewer_result: APPROVE_FOR_SPONSOR_REVIEW
+  browser_sponsor_result:
+    real_implementation_shown: true
+    design_substituted_for_implementation: false
+    sponsor_accepted: true
+  completion_credit_request:
+    requested: true
+    authority: SYNTHETIC-CONTROL-OWNER
+  expected:
+    first_failing_gate: NONE
+    result: PASS_SYNTHETIC_ONLY_NO_AUTHORITY
+    real_leases_created: 0
+    real_credit_granted: 0
+
+synthetic_failure_cases:
+  - case_id: FAIL-080-01
+    mutation: "receipt_result=MISSING"
+    expected_first_failure: G01_VALID_SAFE_DECISION_RECEIPT
+    expected_result: BLOCK_NO_VALID_RECEIPT
+  - case_id: FAIL-080-02
+    mutation: "receipt_hash_valid=false"
+    expected_first_failure: G01_VALID_SAFE_DECISION_RECEIPT
+    expected_result: BLOCK_INVALID_RECEIPT_INTEGRITY
+  - case_id: FAIL-080-03
+    mutation: "design_gate.bounded_paging_accepted=false"
+    expected_first_failure: G02_ACCEPTED_DESIGN_AUTHORITY
+    expected_result: BLOCK_DESIGN_OR_BOUNDS
+  - case_id: FAIL-080-04
+    mutation: "product_commit=SYNTHETIC-STALE-COMMIT"
+    expected_first_failure: G03_CURRENT_REF_COLLISION_MIGRATION
+    expected_result: BLOCK_REPIN_REQUIRED
+  - case_id: FAIL-080-05
+    mutation: "migration_allocation.path_available=false"
+    expected_first_failure: G03_CURRENT_REF_COLLISION_MIGRATION
+    expected_result: BLOCK_MIGRATION_COLLISION
+  - case_id: FAIL-080-06
+    mutation: "QA.synthetic_identity=SYNTHETIC-IMPLEMENTER-A"
+    expected_first_failure: G04_FOUR_DISTINCT_IDENTITIES
+    expected_result: BLOCK_IDENTITY_COLLISION
+  - case_id: FAIL-080-07
+    mutation: "REVIEW.synthetic_identity=SYNTHETIC-QA-B"
+    expected_first_failure: G04_FOUR_DISTINCT_IDENTITIES
+    expected_result: BLOCK_IDENTITY_COLLISION
+  - case_id: FAIL-080-08
+    mutation: "QA.write_paths includes apps/web/src/app/(app)/virtual/[id]/page.tsx"
+    expected_first_failure: G05_EXACT_NONOVERLAPPING_LEASES
+    expected_result: BLOCK_PATH_OVERLAP
+  - case_id: FAIL-080-09
+    mutation: "DATA.write_paths includes scripts/m11-seed.ts"
+    expected_first_failure: G05_EXACT_NONOVERLAPPING_LEASES
+    expected_result: BLOCK_DATA_REPOSITORY_WRITE
+  - case_id: FAIL-080-10
+    mutation: "REVIEW.write_paths includes product-contract/evidence/M11_AUDIT_CONSUMER_REDACTION_CERTIFICATION.md"
+    expected_first_failure: G05_EXACT_NONOVERLAPPING_LEASES
+    expected_result: BLOCK_REVIEWER_WRITE
+  - case_id: FAIL-080-11
+    mutation: "IMPLEMENTATION.write_paths includes supabase/migrations/20260715190000_cd042_audit_read_seam.sql"
+    expected_first_failure: G05_EXACT_NONOVERLAPPING_LEASES
+    expected_result: BLOCK_PROTECTED_HISTORICAL_MIGRATION
+  - case_id: FAIL-080-12
+    mutation: "IMPLEMENTATION.database_objects includes public.audit_row_change()"
+    expected_first_failure: G05_EXACT_NONOVERLAPPING_LEASES
+    expected_result: BLOCK_PROTECTED_GLOBAL_OBJECT
+  - case_id: FAIL-080-13
+    mutation: "IMPLEMENTATION.write_paths includes apps/web/src/app/(app)/virtual/[id]/actions.ts"
+    expected_first_failure: G05_EXACT_NONOVERLAPPING_LEASES
+    expected_result: BLOCK_PROTECTED_MUTATION_PATH
+  - case_id: FAIL-080-14
+    mutation: "implementation_result.bounded_diff=false"
+    expected_first_failure: G06_BOUNDED_IMPLEMENTATION
+    expected_result: RETURN_FOR_SCOPE_CORRECTION
+  - case_id: FAIL-080-15
+    mutation: "implementation_result.protected_object_changes=1"
+    expected_first_failure: G06_BOUNDED_IMPLEMENTATION
+    expected_result: RETURN_FOR_PROTECTED_OBJECT_CORRECTION
+  - case_id: FAIL-080-16
+    mutation: "self_check_result.typecheck=FAIL"
+    expected_first_failure: G07_IMPLEMENTATION_SELF_CHECK
+    expected_result: RETURN_FOR_IMPLEMENTATION_CORRECTION
+  - case_id: FAIL-080-17
+    mutation: "self_check_result.unexplained_diffs=1"
+    expected_first_failure: G07_IMPLEMENTATION_SELF_CHECK
+    expected_result: RETURN_FOR_DIFF_RECONCILIATION
+  - case_id: FAIL-080-18
+    mutation: "DATA.data_scope.environment=PRODUCTION"
+    expected_first_failure: G08_CONTROLLED_DATA_FIXTURE
+    expected_result: BLOCK_PRODUCTION_DATA
+  - case_id: FAIL-080-19
+    mutation: "DATA.data_scope.cleanup_manifest_complete=false"
+    expected_first_failure: G08_CONTROLLED_DATA_FIXTURE
+    expected_result: BLOCK_DATA_CLEANUP
+  - case_id: FAIL-080-20
+    mutation: "data_result.immutable_audit_rows_mutated=1"
+    expected_first_failure: G08_CONTROLLED_DATA_FIXTURE
+    expected_result: BLOCK_AUDIT_IMMUTABILITY
+  - case_id: FAIL-080-21
+    mutation: "acceptance_result.cases_executed=34"
+    expected_first_failure: G09_INDEPENDENT_QA_35_CASES
+    expected_result: BLOCK_INCOMPLETE_ACCEPTANCE
+  - case_id: FAIL-080-22
+    mutation: "acceptance_result.P0_failures=1"
+    expected_first_failure: G09_INDEPENDENT_QA_35_CASES
+    expected_result: RETURN_FAILED_P0
+  - case_id: FAIL-080-23
+    mutation: "acceptance_result.skipped_cases=1"
+    expected_first_failure: G09_INDEPENDENT_QA_35_CASES
+    expected_result: BLOCK_TEST_EXCLUSION
+  - case_id: FAIL-080-24
+    mutation: "acceptance_result.unauthorized_rows_returned=1"
+    expected_first_failure: G09_INDEPENDENT_QA_35_CASES
+    expected_result: BLOCK_AUTHORIZATION_FAILURE
+  - case_id: FAIL-080-25
+    mutation: "acceptance_result.QA_product_repairs=1"
+    expected_first_failure: G09_INDEPENDENT_QA_35_CASES
+    expected_result: BLOCK_QA_INDEPENDENCE_BREACH
+  - case_id: FAIL-080-26
+    mutation: "evidence_result.rows_complete=6"
+    expected_first_failure: G10_EVIDENCE_7_ROWS
+    expected_result: BLOCK_INCOMPLETE_EVIDENCE
+  - case_id: FAIL-080-27
+    mutation: "evidence_result.artifact_hashes_complete=false"
+    expected_first_failure: G10_EVIDENCE_7_ROWS
+    expected_result: BLOCK_EVIDENCE_INTEGRITY
+  - case_id: FAIL-080-28
+    mutation: "evidence_result.forbidden_key_or_value_findings=1"
+    expected_first_failure: G10_EVIDENCE_7_ROWS
+    expected_result: BLOCK_SECRET_FINDING
+  - case_id: FAIL-080-29
+    mutation: "evidence_result.historical_audit_row_mutations=1"
+    expected_first_failure: G10_EVIDENCE_7_ROWS
+    expected_result: BLOCK_HISTORICAL_MUTATION
+  - case_id: FAIL-080-30
+    mutation: "evidence_result.protected_regression_exclusions=1"
+    expected_first_failure: G10_EVIDENCE_7_ROWS
+    expected_result: BLOCK_REGRESSION_EXCLUSION
+  - case_id: FAIL-080-31
+    mutation: "reviewer_result=RETURN_FOR_QA_CORRECTION"
+    expected_first_failure: G11_FINAL_INDEPENDENT_REVIEW
+    expected_result: RETURN_FOR_QA_CORRECTION
+  - case_id: FAIL-080-32
+    mutation: "browser_sponsor_result.real_implementation_shown=false"
+    expected_first_failure: G12_REAL_BROWSER_SPONSOR_REVIEW
+    expected_result: BLOCK_NO_REAL_BROWSER_PROOF
+  - case_id: FAIL-080-33
+    mutation: "browser_sponsor_result.design_substituted_for_implementation=true"
+    expected_first_failure: G12_REAL_BROWSER_SPONSOR_REVIEW
+    expected_result: BLOCK_DESIGN_SUBSTITUTION
+  - case_id: FAIL-080-34
+    mutation: "browser_sponsor_result.sponsor_accepted=false"
+    expected_first_failure: G12_REAL_BROWSER_SPONSOR_REVIEW
+    expected_result: BLOCK_SPONSOR_ACCEPTANCE
+  - case_id: FAIL-080-35
+    mutation: "completion_credit_request.authority=SYNTHETIC-UNAUTHORIZED-ACTOR"
+    expected_first_failure: G13_COMPLETION_CREDIT
+    expected_result: BLOCK_CREDIT_AUTHORITY
+  - case_id: FAIL-080-36
+    mutation: "completion credit requested before G01-G12 pass"
+    expected_first_failure: "First earlier failing gate; G13 remains NOT_EVALUATED."
+    expected_result: BLOCK_PREMATURE_CREDIT
+
+gate_coverage:
+  G01_VALID_SAFE_DECISION_RECEIPT:
+    failure_cases:
+      - FAIL-080-01
+      - FAIL-080-02
+  G02_ACCEPTED_DESIGN_AUTHORITY:
+    failure_cases:
+      - FAIL-080-03
+  G03_CURRENT_REF_COLLISION_MIGRATION:
+    failure_cases:
+      - FAIL-080-04
+      - FAIL-080-05
+  G04_FOUR_DISTINCT_IDENTITIES:
+    failure_cases:
+      - FAIL-080-06
+      - FAIL-080-07
+  G05_EXACT_NONOVERLAPPING_LEASES:
+    failure_cases:
+      - FAIL-080-08
+      - FAIL-080-09
+      - FAIL-080-10
+      - FAIL-080-11
+      - FAIL-080-12
+      - FAIL-080-13
+  G06_BOUNDED_IMPLEMENTATION:
+    failure_cases:
+      - FAIL-080-14
+      - FAIL-080-15
+  G07_IMPLEMENTATION_SELF_CHECK:
+    failure_cases:
+      - FAIL-080-16
+      - FAIL-080-17
+  G08_CONTROLLED_DATA_FIXTURE:
+    failure_cases:
+      - FAIL-080-18
+      - FAIL-080-19
+      - FAIL-080-20
+  G09_INDEPENDENT_QA_35_CASES:
+    failure_cases:
+      - FAIL-080-21
+      - FAIL-080-22
+      - FAIL-080-23
+      - FAIL-080-24
+      - FAIL-080-25
+  G10_EVIDENCE_7_ROWS:
+    failure_cases:
+      - FAIL-080-26
+      - FAIL-080-27
+      - FAIL-080-28
+      - FAIL-080-29
+      - FAIL-080-30
+  G11_FINAL_INDEPENDENT_REVIEW:
+    failure_cases:
+      - FAIL-080-31
+  G12_REAL_BROWSER_SPONSOR_REVIEW:
+    failure_cases:
+      - FAIL-080-32
+      - FAIL-080-33
+      - FAIL-080-34
+  G13_COMPLETION_CREDIT:
+    failure_cases:
+      - FAIL-080-35
+      - FAIL-080-36
+
+dry_run_result:
+  synthetic_pass_cases: 1
+  synthetic_failure_cases: 36
+  gates_covered: 13
+  gates_without_failure_case: 0
+  identity_overlap_mutations: 2
+  path_or_object_overlap_mutations: 6
+  data_safety_mutations: 3
+  acceptance_or_evidence_mutations: 10
+  real_identities_created: 0
+  real_leases_created: 0
+  real_dispatches_created: 0
+  real_credit_granted: 0
+  verdict: PASS_SYNTHETIC_COVERAGE_NO_AUTHORITY
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-DRY-RUN-COVERAGE-CERTIFICATE-081
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Independently cross-check that every field, lane, protected item, gate,
+    zero threshold and completion-credit guard has positive or negative
+    synthetic coverage and report any orphan condition.
+  prohibited:
+    - "No real identity, answer, owner, lease, dispatch, code, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  manifest_required_fields: 20
+  lanes: 4
+  gates: 13
+  synthetic_pass_cases: 1
+  synthetic_failure_cases: 36
+  protected_paths: 19
+  protected_objects: 10
+  gates_without_failure_case: 0
+  acceptance_cases_required: 35
+  evidence_rows_required: 7
+  zero_secret_findings_allowed: 0
+  real_identities_created: 0
+  real_leases_created: 0
+  tests_executed: 0
+  evidence_captured: 0
+  commits_created: 0
+  pushes_created: 0
+  blockers_closed: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

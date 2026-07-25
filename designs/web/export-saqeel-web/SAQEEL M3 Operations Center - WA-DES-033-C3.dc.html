@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<script src="./ksa-adm1-map.js"></script>
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pl-tool { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 16px; background:var(--surface-sunken); border-block-end:1px dashed var(--border-strong); font-size:11.5px; color:var(--text-muted); }
+  .pl-toolgrp { display:flex; gap:4px; background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:8px; padding:3px; flex-wrap:wrap; }
+  .pl-toolbtn { padding:5px 10px; border-radius:6px; border:0; background:none; font:inherit; font-size:11px; font-weight:600; cursor:pointer; color:var(--text-secondary); white-space:nowrap; }
+  .pl-toolbtn.is-active { background:var(--action-primary); color:#fff; }
+  .pl-specbtn { padding:6px 12px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--text-secondary); }
+  .pl-specpanel { position:fixed; inset-block:0; inset-inline-end:0; width:440px; max-width:92vw; background:var(--surface-primary); border-inline-start:1px solid var(--border-subtle); box-shadow:var(--shadow-lg); z-index:200; overflow-y:auto; padding:20px; }
+  .pl-spec-h { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin:18px 0 6px; }
+  .pl-spec-h:first-child{ margin-top:0; }
+  .pl-spec-p { font-size:12px; color:var(--text-secondary); margin:0 0 8px; line-height:1.5; }
+  .pl-spec-select { font:inherit; font-size:12px; padding:5px 8px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--surface-secondary); color:var(--text-primary); }
+  .pl-specbackdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:150; }
+  .pl-drawerbtn { display:none; width:36px; height:36px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--surface-secondary); align-items:center; justify-content:center; cursor:pointer; color:var(--text-secondary); flex:none; }
+  .pl-drawerbackdrop { position:absolute; inset:0; background:rgba(0,0,0,.4); z-index:70; }
+  .pl-devicewrap { overflow:auto; padding:22px; background:repeating-conic-gradient(var(--surface-sunken) 0% 25%, var(--surface-canvas) 0% 50%) 50%/16px 16px; }
+  .pl-devicelabel { font-size:11px; color:var(--text-muted); margin-block-end:8px; font-weight:600; }
+  .pl-device { position:relative; overflow:hidden; box-shadow:var(--shadow-lg); border-radius:10px; margin:0 auto; }
+  .pl-shellgrid { display:grid; grid-template-columns:248px 1fr; height:100%; }
+  [data-mode="drawer"] .pl-shellgrid, [data-mode="mobile"] .pl-shellgrid { grid-template-columns:1fr; }
+  [data-mode="drawer"] aside, [data-mode="mobile"] aside { position:absolute; inset-block:0; inset-inline-start:0; z-index:80; width:248px; transform:translateX(-100%); transition:transform .18s ease; }
+  [dir="rtl"][data-mode="drawer"] aside, [dir="rtl"][data-mode="mobile"] aside { transform:translateX(100%); }
+  .pl-device.pl-drawer-open aside { transform:translateX(0) !important; }
+  [data-mode="desktop"] .pl-drawerbtn { display:none; }
+  [data-mode="drawer"] .pl-drawerbtn, [data-mode="mobile"] .pl-drawerbtn { display:flex; }
+  main.pl-main { overflow-y:auto; height:100%; display:flex; flex-direction:column; min-width:0; }
+  [data-mode="mobile"] .oc-kpigrid { grid-template-columns:1fr !important; }
+  [data-mode="drawer"] .oc-kpigrid { grid-template-columns:repeat(3,1fr) !important; }
+  [data-mode="mobile"] .oc-canvas { grid-template-columns:1fr !important; }
+  [data-w="390"] .oc-kpi { padding:12px 13px; }
+  [data-w="390"] .oc-kpi-value { font-size:23px; }
+  [data-w="390"] .oc-kpi-value.is-blocked { font-size:12px; }
+  [data-w="390"] .oc-context { font-size:10.5px; line-height:1.5; }
+  [data-w="390"] .oc-listrow { padding:7px 12px; font-size:11.5px; }
+  .oc-seg { display:inline-flex; background:var(--surface-secondary); border:1px solid var(--border-subtle); border-radius:11px; padding:4px; gap:2px; }
+  .oc-segbtn { border:0; padding:8px 16px; border-radius:8px; font:inherit; font-weight:700; font-size:12.5px; cursor:pointer; background:transparent; color:var(--text-muted); }
+  .oc-segbtn.is-active { background:var(--action-primary); color:#fff; }
+  .oc-section-label { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin:22px 0 8px; }
+  .oc-kpigrid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+  .oc-kpi { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); padding:14px 15px; display:flex; flex-direction:column; gap:5px; box-shadow:var(--shadow-card); }
+  .oc-kpi-label { font-size:11px; color:var(--text-muted); font-weight:600; }
+  .oc-kpi-value { font-size:26px; font-weight:800; letter-spacing:-.01em; }
+  .oc-kpi-value.is-blocked { font-size:13px; font-weight:700; color:var(--status-major); line-height:1.3; }
+  .oc-kpi-delta { font-size:10.5px; color:var(--text-secondary); }
+  .oc-context { font-size:11px; color:var(--text-muted); padding:8px 0 0; }
+  .oc-context a { font-weight:600; }
+  .oc-canvas { display:grid; grid-template-columns:2fr 1fr; gap:14px; }
+  .oc-panel { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); overflow:hidden; }
+  .oc-feedrow { display:flex; align-items:flex-start; gap:10px; padding:10px 14px; border-block-end:1px solid var(--border-subtle); font-size:12.5px; }
+  .oc-listrow { display:flex; align-items:center; gap:10px; padding:8px 14px; border-block-end:1px solid var(--border-subtle); font-size:12px; }
+  .oc-state-box { padding:40px 20px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .oc-skel { height:14px; border-radius:6px; background:var(--surface-sunken); animation:oc-pulse 1.2s ease-in-out infinite; }
+  @keyframes oc-pulse { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .oc-unauth { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:80px 24px; text-align:center; }
+  .oc-riskrank { font-size:12.5px; color:var(--text-secondary); }
+</style>
+</helmet>
+
+<div dir="ltr" style="background:var(--surface-canvas); min-height:100vh; font-family:var(--font-body);">
+
+  <div class="pl-tool">
+    <span><b>Design tooling — not part of the app</b> · {{ revLabel }}</span>
+    <div class="pl-toolgrp">
+      <sc-for list="{{ frames }}" as="fr" hint-placeholder-count="4">
+        <button class="pl-toolbtn" aria-pressed="{{ fr.active }}" onClick="{{ fr.pick }}">{{ fr.short }}</button>
+      </sc-for>
+    </div>
+    <div class="pl-toolgrp">
+      <button class="pl-toolbtn" aria-pressed="{{ routeAuthorized }}" onClick="{{ setAuthorized }}">Authorized</button>
+      <button class="pl-toolbtn" aria-pressed="{{ routeUnauthorized }}" onClick="{{ setUnauthorized }}">Direct-route: unauthorized</button>
+    </div>
+    <div class="pl-toolgrp">
+      <select class="pl-spec-select" value="{{ mapState }}" onChange="{{ setMapState }}">
+        <option value="normal">Map: normal</option>
+        <option value="loading">Map: loading</option>
+        <option value="empty">Map: empty (RLS scope)</option>
+        <option value="error">Map: error</option>
+        <option value="provider">Map: provider/tile failure</option>
+        <option value="no_positions">Map: no positions</option>
+      </select>
+    </div>
+    <span class="grow"></span>
+    <button class="pl-specbtn" onClick="{{ toggleSpec }}">Spec notes</button>
+  </div>
+
+  <sc-if value="{{ specOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="pl-specbackdrop" onClick="{{ toggleSpec }}"></div>
+    <div class="pl-specpanel">
+      <div style="display:flex; align-items:center; justify-content:space-between;"><b style="font-size:14px;">Spec notes — not part of the product UI</b><button class="btn btn-ghost btn-icon" onClick="{{ toggleSpec }}">✕</button></div>
+      <div class="pl-spec-h">Page identity</div>
+      <p class="pl-spec-p">WA-DES-033-C3 · Route <code>/operations</code> · Revision {{ revLabel }}. Corrects CR-430..CR-448 / WA-M3-AC-001..006 / DSG-027 / DSG-CMD-009..013,020 / WA-SP-029..034 / WA-SHELL-AC-008..009 per Revision 3 of the attached correction package.</p>
+      <div class="pl-spec-h">Five KPI cards (WA-SP-031)</div>
+      <p class="pl-spec-p">Active Visits / On the Way / Executing render governed real counts (illustrative fixture values here). Submitted Today and Active Alerts render <b>unavailable / decision required</b> — never invented numbers or zero — because their metric-grain/taxonomy contracts are not sponsor-approved. This holds even in the Empty state: an empty scope does not change their governance status.</p>
+      <div class="pl-spec-h">Risk display (SPC-CMD-004/DSG-CMD-012)</div>
+      <p class="pl-spec-p">Factory quick card shows risk **rank** among the RLS-visible set as plain text, never a colored band. Color banding is decision-blocked pending threshold policy.</p>
+      <div class="pl-spec-h">Recorded defect (not fixed here)</div>
+      <p class="pl-spec-p"><code>apps/web/src/app/(app)/operations/page.tsx:172-173</code> calls a mutating RPC (<code>expire_stale_geo_override_requests</code>) on every page load — a write during what should be a pure read. Any evidence-capture pass against the real route must use a read-only variant or an explicitly authorized write lease. This design lease does not touch that file.</p>
+      <div class="pl-spec-h">/operations/exceptions</div>
+      <p class="pl-spec-p">Withdrawn from this package — preserved untouched, not part of this page's scope.</p>
+      <div class="pl-spec-h">Fixture disclosure</div>
+      <p class="pl-spec-p">All KPI/table numbers shown are illustrative design fixtures for layout/density review, not repository or runtime data.</p>
+      <div class="pl-spec-h">Revision</div>
+      <p class="pl-spec-p">{{ revDelta }}</p>
+    </div>
+  </sc-if>
+
+  <div class="pl-devicewrap">
+    <div class="pl-devicelabel">{{ frameLabel }}</div>
+    <div class="pl-device{{ drawerCls }}" data-mode="{{ frameMode }}" data-w="{{ frameKey }}" style="width:{{ frameW }}px; height:{{ frameH }}px;">
+      <div class="pl-shellgrid" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="background:var(--surface-canvas); color:var(--text-primary);">
+
+        <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item is-active" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+        <sc-if value="{{ isOverlayMode }}" hint-placeholder-val="{{ false }}"><div class="pl-drawerbackdrop" onClick="{{ toggleDrawer }}"></div></sc-if>
+
+        <main id="main-content" tabindex="-1" class="pl-main">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope"><option>All regions</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+          <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px; padding:10px 18px;">
+            <button class="pl-drawerbtn" onClick="{{ toggleDrawer }}" aria-label="Menu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <div class="input-affix" style="flex:1; min-width:0; max-width:360px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search factories, visits, inspections…" style="border-radius:var(--radius-full); background:var(--surface-secondary); border-color:var(--border-subtle);"></div>
+            <span class="grow"></span>
+            <button class="pl-langbtn" onClick="{{ toggleLang }}">{{ langBtnLabel }}</button>
+            <div style="width:1px; height:22px; background:var(--border-subtle);"></div>
+            <button class="btn btn-icon btn-ghost" aria-label="Notifications" style="position:relative;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span style="position:absolute; top:2px; inset-inline-end:2px; width:7px; height:7px; border-radius:50%; background:var(--status-critical);"></span></button>
+            <button class="btn btn-icon btn-ghost" aria-label="AI assist"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M5 12H2M22 12h-3M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2"/><circle cx="12" cy="12" r="3.4"/></svg></button>
+          </header>
+
+          <sc-if value="{{ routeUnauthorized }}" hint-placeholder-val="{{ false }}">
+            <div class="oc-unauth">
+              <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--text-muted)" stroke-width="1.4"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <div style="font-size:16px; font-weight:700;">Authorized role required</div>
+              <p class="t-caption" style="max-width:48ch;">Your role/RLS scope does not include Operations Center. This is the same outcome you would see whether you typed /operations directly or reached it via navigation — not a silent redirect, not a 404.</p>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ routeAuthorized }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:16px 24px 80px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px;">
+              <div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Operations Center</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">WA-DES-033-C3 · /operations</div></div>
+              <div class="oc-seg">
+                <button class="oc-segbtn" aria-pressed="{{ is_map }}" onClick="{{ go_map }}">Operations Map</button>
+                <button class="oc-segbtn" aria-pressed="{{ is_national }}" onClick="{{ go_national }}">National Performance</button>
+              </div>
+            </div>
+
+            <div class="oc-kpigrid" style="margin-bottom:18px;">
+              <div class="oc-kpi"><div class="oc-kpi-label">Active Visits</div><div class="oc-kpi-value">37</div><div class="oc-kpi-delta">published ∪ on-the-way/arrived/executing</div></div>
+              <div class="oc-kpi"><div class="oc-kpi-label">On the Way</div><div class="oc-kpi-value">6</div><div class="oc-kpi-delta">journey started, not arrived</div></div>
+              <div class="oc-kpi"><div class="oc-kpi-label">Executing</div><div class="oc-kpi-value">14</div><div class="oc-kpi-delta">arrived, inspection in progress</div></div>
+              <div class="oc-kpi"><div class="oc-kpi-label">Submitted Today</div><div class="oc-kpi-value is-blocked">Unavailable — decision required</div><div class="oc-kpi-delta">grain/source pending sponsor decision</div></div>
+              <div class="oc-kpi"><div class="oc-kpi-label">Active Alerts</div><div class="oc-kpi-value is-blocked">Unavailable — decision required</div><div class="oc-kpi-delta">taxonomy pending sponsor decision</div></div>
+            </div>
+            <div class="oc-context">Active Alerts context — <a href="#">SLA breaches 4</a> · <a href="#">Actions overdue 3</a> · <a href="#">Notifications failed 2</a> · <a href="#">Overrides pending 2</a> (each links to its own panel; never substituted into the card value)</div>
+            <div class="oc-context">Submitted Today — open choices: distinct visits vs. inspections vs. submission versions · first submission vs. latest resubmission · Riyadh calendar-day boundary</div>
+
+            <!-- OPERATIONS MAP VIEW -->
+            <sc-if value="{{ is_map }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div class="oc-section-label">Operations Map</div>
+              <div class="oc-canvas">
+                <div style="position:relative; min-height:440px; border-radius:12px; overflow:hidden; border:1px solid var(--border-subtle);">
+                  <sc-if value="{{ mapNormal }}" hint-placeholder-val="{{ true }}"><ksa-adm1-map mode="ops" regions="{{ mapRegionsJson }}" style="position:absolute; inset:0;"></ksa-adm1-map></sc-if>
+                  <sc-if value="{{ mapLoading }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; inset:0; padding:20px; display:flex; flex-direction:column; gap:10px;"><div class="oc-skel" style="height:100%; border-radius:10px;"></div></div></sc-if>
+                  <sc-if value="{{ mapEmpty }}" hint-placeholder-val="{{ false }}"><div class="oc-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700;">No active visits in scope</div></div></sc-if>
+                  <sc-if value="{{ mapErrorSt }}" hint-placeholder-val="{{ false }}"><div class="oc-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700; color:var(--status-critical);">Could not load Operations Map data</div><button class="btn btn-secondary btn-sm">Retry</button></div></sc-if>
+                  <sc-if value="{{ mapProvider }}" hint-placeholder-val="{{ false }}"><div class="oc-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700;">Live map unavailable — basemap provider failed</div><p class="t-caption">KPIs and the accessible list below stay populated from the same already-fetched data.</p></div></sc-if>
+                  <sc-if value="{{ mapNoPos }}" hint-placeholder-val="{{ false }}"><div class="oc-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700;">No mappable factories in scope</div></div></sc-if>
+                </div>
+                <div class="oc-panel">
+                  <div class="panel-header"><div class="panel-title">Accessible list alternative</div></div>
+                  <sc-for list="{{ monitorRows }}" as="row" hint-placeholder-count="5">
+                    <div class="oc-listrow"><span style="flex:1;">{{ row.name }}</span><span class="tag">{{ row.state }}</span><span class="id-code">{{ row.region }}</span></div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div class="oc-section-label">Operational Highlights</div>
+              <div class="oc-panel">
+                <div class="oc-feedrow"><span class="tag tag-accent">SLA breach</span><span style="flex:1;">Al Rasheed Steel Works — SLA window passed 08:41 · K. Al-Otaibi</span><a href="#">View evidence</a></div>
+                <div class="oc-feedrow"><span class="tag tag-warning">Override</span><span style="flex:1;">Najd Dairy Factory — GPS override recorded, observed 412m from planned pin</span></div>
+                <div class="oc-feedrow"><span class="tag">Corrective action overdue</span><span style="flex:1;">Gulf Textiles Ltd. — corrective action due 2026-07-20, not yet closed</span></div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- NATIONAL PERFORMANCE VIEW -->
+            <sc-if value="{{ is_national }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div class="oc-section-label">National → region → factory drill</div>
+              <div class="oc-canvas">
+                <div style="position:relative; min-height:340px; border-radius:12px; overflow:hidden; border:1px solid var(--border-subtle);">
+                  <ksa-adm1-map mode="ops" regions="{{ mapRegionsJson }}" style="position:absolute; inset:0;"></ksa-adm1-map>
+                </div>
+                <div class="oc-panel">
+                  <div class="panel-header"><div class="panel-title">{{ drillTitle }}</div></div>
+                  <sc-for list="{{ drillRows }}" as="row" hint-placeholder-count="5">
+                    <div class="oc-listrow" onClick="{{ row.select }}" style="cursor:pointer;"><span style="flex:1;">{{ row.name }}</span><span class="id-code">{{ row.count }} factories</span><span class="id-code">{{ row.open }} open</span></div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div class="oc-section-label">SLA watch · corrective actions · high-risk board</div>
+              <div class="oc-panel">
+                <div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Factory</th><th>Region</th><th>Issue</th><th>Due</th><th>Risk rank</th></tr></thead><tbody>
+                  <tr><td>Al Rasheed Steel Works</td><td>Eastern</td><td>SLA at risk</td><td class="id-code">2026-07-25</td><td class="oc-riskrank">Rank 3 of 148</td></tr>
+                  <tr><td>Najd Dairy Factory</td><td>Riyadh</td><td>Corrective action overdue</td><td class="id-code">2026-07-20</td><td class="oc-riskrank">Risk position — decision-blocked (SL-2 threshold policy absent)</td></tr>
+                </tbody></table></div>
+              </div>
+            </div>
+            </sc-if>
+          </div>
+          </sc-if>
+        </main>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", view: "map", route: "authorized", frameKey: "1440", specOpen: false, drawerOpen: false, mapState: "normal", region: null };
+
+  renderVals() {
+    const st = this.state, ar = st.lang === "ar";
+    const FRAME_DEFS = [
+      { key: "1440", short: "1440×900", label: "1440×900 · Desktop", w: 1440, h: 900, mode: "desktop" },
+      { key: "1024", short: "1024×768", label: "1024×768 · Desktop (dense)", w: 1024, h: 768, mode: "drawer" },
+      { key: "412", short: "412", label: "412×915 · Mobile", w: 412, h: 915, mode: "mobile" },
+      { key: "390", short: "390", label: "390×844 · Mobile", w: 390, h: 844, mode: "mobile" },
+      { key: "320", short: "320", label: "320×568 · Mobile (small)", w: 320, h: 568, mode: "mobile" },
+    ];
+    const activeFrame = FRAME_DEFS.find(f => f.key === st.frameKey) || FRAME_DEFS[0];
+    const frames = FRAME_DEFS.map(f => ({ short: f.short, active: f.key === st.frameKey, pick: () => this.setState({ frameKey: f.key, drawerOpen: false }) }));
+    const isOverlayMode = activeFrame.mode === "drawer" || activeFrame.mode === "mobile";
+
+    const REGION_FIXTURE = { Riyadh: 91, Makkah: 84, "Eastern Province": 71, "Al Madinah": 88 };
+    const mapRegionsJson = JSON.stringify(Object.entries(REGION_FIXTURE).map(([name, comp]) => ({ name, lng: 45, lat: 24, comp })));
+    const monitorRows = [
+      { name: "Al Rasheed Steel Works", state: "Executing", region: "Eastern" },
+      { name: "Gulf Textiles Ltd.", state: "On the way", region: "Eastern" },
+      { name: "Najd Dairy Factory", state: "Arrived", region: "Riyadh" },
+    ];
+    const REGIONS = [
+      { name: "Eastern", count: 148, open: 6 }, { name: "Riyadh", count: 210, open: 3 }, { name: "Makkah", count: 96, open: 2 },
+    ];
+    const drillRows = st.region
+      ? [{ name: "Al Rasheed Steel Works", count: "—", open: 2 }, { name: "Jubail Chemicals Co.", count: "—", open: 1 }].map(r => ({ ...r, select: () => {} }))
+      : REGIONS.map(r => ({ name: r.name, count: r.count, open: r.open, select: () => this.setState({ region: r.name }) }));
+
+    return {
+      theme: st.theme, isLight: st.theme === "light", isDark: st.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang: st.lang, dir: ar ? "rtl" : "ltr", langBtnLabel: ar ? "EN" : "AR", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })),
+      isAr: ar, isEn: !ar,
+      frames, frameLabel: activeFrame.label + " · " + (st.theme === "dark" ? "dark" : "light") + " · " + (ar ? "AR/RTL" : "EN/LTR"),
+      frameW: activeFrame.w, frameH: activeFrame.h, frameMode: activeFrame.mode,
+      frameKey: st.frameKey,
+      isOverlayMode, drawerCls: st.drawerOpen ? " pl-drawer-open" : "",
+      drawerOpen: st.drawerOpen, toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      specOpen: st.specOpen, toggleSpec: () => this.setState(s => ({ specOpen: !s.specOpen })),
+      revLabel: "WA-DES-033-C3", revDelta: "Revision 3: Active Alerts restored as the fifth KPI card (value: unavailable/decision required, not withdrawn to a non-KPI slot); Submitted Today likewise corrected to unavailable/decision required pending a sponsor-approved metric-grain contract; factory quick-card risk display is rank/greyscale only; national→region→factory drill and direct-route authorization frame added; SPC-CMD-005's row status corrected to not_started (still binding); /operations/exceptions untouched.",
+      routeAuthorized: st.route === "authorized", routeUnauthorized: st.route === "unauthorized",
+      setAuthorized: () => this.setState({ route: "authorized" }), setUnauthorized: () => this.setState({ route: "unauthorized" }),
+      is_map: st.view === "map", is_national: st.view === "national",
+      go_map: () => this.setState({ view: "map" }), go_national: () => this.setState({ view: "national" }),
+      mapState: st.mapState, setMapState: (e) => this.setState({ mapState: e.target.value }),
+      mapNormal: st.mapState === "normal", mapLoading: st.mapState === "loading", mapEmpty: st.mapState === "empty",
+      mapErrorSt: st.mapState === "error", mapProvider: st.mapState === "provider", mapNoPos: st.mapState === "no_positions",
+      mapRegionsJson, monitorRows,
+      drillTitle: st.region ? "Factories in " + st.region : "Regions",
+      drillRows,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pg-wrap { max-width: 1240px; margin: 0 auto; padding: 28px 24px 60px; display:flex; flex-direction:column; gap:28px; }
+  .pg-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:16px; }
+  @media (max-width:820px){ .pg-grid { grid-template-columns: 1fr; } }
+  .pg-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:18px 20px; }
+  .pg-row { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-block-start:1px solid var(--border-subtle); font-size:13.5px; }
+  .pg-row:first-child { border-block-start:none; }
+  .pg-num { font-size:32px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .tabbar-demo { display:flex; border-top:1px solid var(--border-subtle); }
+  .tabbar-demo .it { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 4px; font-size:11.5px; color:var(--text-muted); }
+  .tabbar-demo .it.sel { color:var(--status-compliant-text); border-top:2px solid var(--status-compliant-text); margin-top:-1px; }
+  .tabbar-demo .it svg { width:20px; height:20px; }
+</style>
+</helmet>
+<div data-theme="dark" style="min-height:100dvh; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+  <div class="pg-wrap">
+    <div>
+      <h1 style="font-size:22px; margin:0 0 4px;">Figma vs. SAQEEL Design — Parity Grid</h1>
+      <p class="t-caption" style="margin:0;">MIM iPad Inspector App.fig vs. current Field DCs</p>
+    </div>
+
+    <div class="pg-grid">
+      <div class="pg-card">
+        <div class="t-label">Figma — content pages</div>
+        <div class="pg-num">9</div>
+        <div class="t-caption">Home+Tasks, Visit Reports, Identify Challenge, Report, Customs Report, Safety Report, Establishment Mgmt, Visit Statement, Thumbnail</div>
+      </div>
+      <div class="pg-card">
+        <div class="t-label">Figma — distinct frames</div>
+        <div class="pg-num">~23</div>
+        <div class="t-caption">Visit Reports alone = 7 frames (incl. Draft ×2, Unlicensed creation, Overlay-Alerts). Plus a 484-item shared component/icon library (not screens).</div>
+      </div>
+      <div class="pg-card">
+        <div class="t-label">Ours — Field DCs</div>
+        <div class="pg-num">19</div>
+        <div class="t-caption">Covers all 23 Figma frames' content and rules, split across purpose-built screens rather than nested overlays.</div>
+      </div>
+      <div class="pg-card">
+        <div class="t-label">Ours — beyond Figma</div>
+        <div class="pg-num">+5</div>
+        <div class="t-caption">Settings, Trusted Devices, Notifications (list+detail), Global Search, 4-screen auth sequence — Figma has no dedicated frames for these.</div>
+      </div>
+    </div>
+
+    <div class="pg-card">
+      <div class="t-label" style="margin-bottom:8px;">Page-by-page frame count</div>
+      <div class="pg-row"><span>Home + Tasks</span><span>1 frame (nests Login + ChangePassword ×4 as overlays)</span></div>
+      <div class="pg-row"><span>Visit Reports</span><span>7 frames</span></div>
+      <div class="pg-row"><span>Identify Challenge</span><span>2 frames</span></div>
+      <div class="pg-row"><span>Report (chemical clearance)</span><span>2 frames</span></div>
+      <div class="pg-row"><span>Customs Report</span><span>1 frame</span></div>
+      <div class="pg-row"><span>Safety Report</span><span>3 frames</span></div>
+      <div class="pg-row"><span>Establishment Management</span><span>5 frames</span></div>
+      <div class="pg-row"><span>افادة الزيارة (Visit Statement)</span><span>1 frame</span></div>
+      <div class="pg-row"><span>Thumbnail / Components</span><span>1 + 14 (library, not screens)</span></div>
+    </div>
+
+    <div class="pg-card">
+      <div class="t-label" style="margin-bottom:10px;">Tab bar — now in sync (5 tabs)</div>
+      <div class="pg-grid" style="grid-template-columns: 1fr 1fr;">
+        <div>
+          <div class="t-caption" style="margin-bottom:8px;">Figma — <code>RTLTrueTypeTab5</code> symbol (5 slots, labels unresolved in source)</div>
+          <div class="tabbar-demo" style="background:#fff; border-radius:10px; overflow:hidden;">
+            <div class="it" style="color:#6c737f;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Tab 2</div>
+            <div class="it" style="color:#6c737f;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Tab 3</div>
+            <div class="it" style="color:#6c737f;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Tab 4</div>
+            <div class="it" style="color:#9da4ae;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Tab 5</div>
+            <div class="it sel" style="color:#1b8354; border-color:#1b8354;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>تبويب 1</div>
+          </div>
+        </div>
+        <div>
+          <div class="t-caption" style="margin-bottom:8px;">Ours — now 5 tabs (Notifications added)</div>
+          <div class="tabbar-demo" style="background:var(--surface-primary); border-radius:10px; overflow:hidden; border:1px solid var(--border-subtle);">
+            <div class="it sel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Home</div>
+            <div class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>My Tasks</div>
+            <div class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/></svg>Establishments</div>
+            <div class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</div>
+            <div class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>Account</div>
+          </div>
+          <p class="t-caption" style="margin:8px 0 0;">Rolled out to Dashboard, My Tasks, Establishments, Visits, Account — all 5 root screens.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-card">
+      <div class="t-label" style="margin-bottom:8px;">Other things Figma has that we don't (real gaps)</div>
+      <div class="pg-row"><span>Regulatory Data Statuses board</span><span style="text-align:end; max-width:60%;">A giant annotation sheet (11728×6671px) documenting every regulatory-data status enum with cyan callout notes — reference documentation, not a screen. Its enum values aren't confirmed present in our Establishment File's regulatory-data section — worth a source check.</span></div>
+      <div class="pg-row"><span>View-Visit-Reports (read-only submitted report)</span><span style="text-align:end; max-width:60%;">A dedicated read-only "view a submitted report" screen distinct from the authoring form — ours covers this via Field Visit Results / Field Reports detail view, not a separate named screen.</span></div>
+      <div class="pg-row"><span>Establishment-Management → Select-violations</span><span style="text-align:end; max-width:60%;">Present — matches our Admin Extended bulk-violations + field entry flow (already logged in delta §1).</span></div>
+      <div class="pg-row"><span>Protocol signature variants (attended / not-attended ×6)</span><span style="text-align:end; max-width:60%;">Figma has 6 distinct attended/not-attended component instances per protocol type in View-Visit-Reports; ours models this as the single two-state toggle noted in delta §2A — same rule, less duplicated markup.</span></div>
+      <p class="t-caption" style="margin:10px 0 0;">Everything else (Draft, Overlay-Alerts, Unlicensed creation, report-kind branching, weak-connectivity, protocol visibility) is already tracked as closed or open in <code>handoff/IPAD-FIGMA-DELTA.md</code> and <code>OUTSTANDING.md</code> O-11–O-14.</p>
+    </div>
+
+    <div class="pg-card">
+      <div class="t-label" style="margin-bottom:8px;">Field Account — do we have it?</div>
+      <div class="pg-row"><span>SAQEEL Field Account.dc.html</span><span style="color:var(--status-compliant-text); font-weight:600;">✓ Built</span></div>
+      <p class="t-caption" style="margin:8px 0 0;">Login → forgot-password → OTP → reset-success sequence, plus profile card, gear-link to Settings, biometric/Trusted-Devices link.</p>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+</body>
+</html>

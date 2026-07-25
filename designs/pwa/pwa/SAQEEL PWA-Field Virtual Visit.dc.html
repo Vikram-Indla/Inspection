@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .vv-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 16px 18px 60px; display:flex; flex-direction:column; gap:14px; }
+  .vv-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 18px; }
+  .vv-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .vv-mode { flex:1; border:1.5px solid var(--border-subtle); border-radius:12px; padding:14px 15px; display:flex; flex-direction:column; gap:8px; cursor:pointer; background:var(--surface-primary); text-align:start; font:inherit; }
+  .vv-mode[aria-pressed="true"] { border-color:var(--action-primary); background:var(--accent-soft); }
+  .vv-mode:disabled { opacity:.5; cursor:not-allowed; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Preparation.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:15px;">{{ t.title }}</div><div class="t-caption">{{ v.factory }}</div></div>
+    <button class="vv-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="vv-wrap">
+
+    <sc-if value="{{ isSelect }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <div class="t-label" style="margin-block-end:8px;">{{ t.chooseMode }}</div>
+        <div style="display:flex; gap:10px;">
+          <button class="vv-mode" aria-pressed="{{ isPhysical }}" onClick="{{ setPhysical }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:20px;height:20px; color:var(--action-primary);"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span style="font-weight:600; font-size:14px;">{{ t.physical }}</span>
+            <span class="t-caption">{{ t.physicalNote }}</span>
+          </button>
+          <button class="vv-mode" aria-pressed="{{ isVirtual }}" disabled="{{ virtualDisabled }}" onClick="{{ setVirtual }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:20px;height:20px; color:var(--action-primary);"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 9 6-3v12l-6-3"/></svg>
+            <span style="font-weight:600; font-size:14px;">{{ t.virtual }}</span>
+            <span class="t-caption">{{ virtualNoteResolved }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="vv-card" style="display:flex; gap:9px; align-items:flex-start;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.6" style="width:15px;height:15px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span style="font-size:12.5px; color:var(--text-secondary); line-height:1.55;">{{ t.eligibilityRule }}</span>
+      </div>
+
+      <a href="SAQEEL%20PWA-Field%20Travel.dc.html" target="_top" class="btn btn-primary btn-block" style="{{ physicalCtaStyle }}">{{ t.continuePhysical }}</a>
+      <button class="btn btn-primary btn-block" style="{{ virtualCtaStyle }}" onClick="{{ startVirtualSession }}">{{ t.startVirtualSession }}</button>
+    </sc-if>
+
+    <sc-if value="{{ isSession }}" hint-placeholder-val="{{ false }}">
+      <div class="vv-card" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:9px;"><span class="badge badge-critical" style="height:18px; display:flex; align-items:center; gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ t.live }}</span><span class="grow"></span><span class="t-caption id-code">{{ t.provider }}</span></div>
+        <div style="aspect-ratio:16/9; border-radius:10px; background:var(--surface-sunken); border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.4" style="width:38px;height:38px;"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 9 6-3v12l-6-3"/></svg>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:12.5px;"><span style="color:var(--text-secondary);">{{ t.participant }}</span><span class="id-code" style="font-weight:600;">{{ v.repName }}</span></div>
+        <div style="display:flex; justify-content:space-between; font-size:12.5px;"><span style="color:var(--text-secondary);">{{ t.identityVerification }}</span><span class="badge badge-compliant" style="height:17px;">{{ t.verified }}</span></div>
+        <div style="display:flex; gap:9px;">
+          <button class="btn btn-secondary" style="flex:1;" onClick="{{ endSession }}">{{ t.endSession }}</button>
+          <a href="SAQEEL%20PWA-Field%20Inspection.dc.html" target="_top" class="btn btn-primary" style="flex:1; text-align:center; text-decoration:none;">{{ t.proceedToInspection }}</a>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  // Mirrors the repo's real execution_mode selector (web/src/app/(app)/field/[visitId]/PreExecution.tsx):
+  // physical | virtual, with virtual gated on virtualEligible (requires the OTP identity-verification
+  // engine configured for this establishment). Session room reuses the console's Twilio virtual-visit
+  // pattern (SAQEEL Virtual.dc.html) but scoped to the inspector's own flow, which didn't exist before.
+  state = { theme: "dark", lang: "en", mode: null, phase: "select", virtualEligible: true };
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", title:"وضع تنفيذ الزيارة", backArrow:"M15 6l-6 6 6 6", langBtnLabel:"EN",
+        chooseMode:"اختر وضع التنفيذ", physical:"زيارة ميدانية", physicalNote:"حضور فعلي إلى موقع المنشأة",
+        virtual:"زيارة افتراضية (فيديو)", virtualNote:"مكالمة فيديو موثّقة عبر Twilio مع تحقق من الهوية",
+        virtualDisabledNote:"غير متاحة — تتطلب تفعيل محرك التحقق من الهوية عبر OTP لهذه المنشأة",
+        eligibilityRule:"الزيارة الافتراضية تُتاح فقط عندما تكون المنشأة مؤهلة عبر محرك التحقق من الهوية (OTP) المفعّل. هذا الشرط يُطابق قاعدة الأهلية الفعلية في النظام، وليس قراراً تجميلياً.",
+        continuePhysical:"متابعة كزيارة ميدانية", startVirtualSession:"بدء الجلسة الافتراضية",
+        live:"مباشر", provider:"مزوّد: Twilio Video", participant:"الممثل المتصل", identityVerification:"التحقق من الهوية", verified:"تم التحقق",
+        endSession:"إنهاء الجلسة", proceedToInspection:"المتابعة إلى نموذج التفتيش",
+      },
+      en: { back:"Back", title:"Visit Execution Mode", backArrow:"M9 6l6 6-6 6", langBtnLabel:"AR",
+        chooseMode:"Choose execution mode", physical:"Physical visit", physicalNote:"On-site attendance at the establishment",
+        virtual:"Virtual visit (video)", virtualNote:"Verified video call via Twilio with identity check",
+        virtualDisabledNote:"Unavailable — requires the OTP identity-verification engine enabled for this establishment",
+        eligibilityRule:"Virtual visit is only offered when the establishment is eligible via the enabled OTP identity-verification engine. This mirrors the real system's eligibility rule, not a cosmetic gate.",
+        continuePhysical:"Continue as Physical Visit", startVirtualSession:"Start Virtual Session",
+        live:"Live", provider:"Provider: Twilio Video", participant:"Connected Representative", identityVerification:"Identity Verification", verified:"Verified",
+        endSession:"End Session", proceedToInspection:"Proceed to Inspection Form",
+      },
+    };
+    const t = STR[lang];
+    const v = ar ? { factory:"شركة معادن الخليج — الدمام", repName:"م. سالم القحطاني — ممثل المنشأة" } : { factory:"Gulf Metal Industries — Dammam", repName:"Eng. Salem Al-Qahtani — Establishment Rep" };
+    const mode = this.state.mode, virtualDisabled = !this.state.virtualEligible;
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t, v,
+      isSelect: this.state.phase === "select", isSession: this.state.phase === "session",
+      isPhysical: mode === "physical", isVirtual: mode === "virtual", virtualDisabled,
+      virtualNoteResolved: virtualDisabled ? t.virtualDisabledNote : t.virtualNote,
+      setPhysical: () => this.setState({ mode: "physical" }),
+      setVirtual: () => { if (!virtualDisabled) this.setState({ mode: "virtual" }); },
+      physicalCtaStyle: mode === "physical" ? "" : "display:none;",
+      virtualCtaStyle: mode === "virtual" ? "" : "display:none;",
+      startVirtualSession: () => this.setState({ phase: "session" }),
+      endSession: () => this.setState({ phase: "select", mode: null }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

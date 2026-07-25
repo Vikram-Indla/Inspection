@@ -1,0 +1,491 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-EXECUTION-DESIGN-READINESS-014
+status: REVIEWER_READY_READ_ONLY_LOCK_SAFE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Establish the bounded design-readiness contract for the real Execution
+  Settings control plane at /admin/execution. Preserve its capability-gated,
+  fail-closed, versioned and audited behavior; correct the predecessor's
+  invented values and weak responsive/state coverage; and block any completion
+  claim until the route receives runtime certification.
+
+lock_safe_boundary:
+  state: MAC_LOCKED_OR_UI_UNAVAILABLE
+  allowed:
+    - "Read canonical design mapping, route inventory, requirements, decisions, application source and tests."
+    - "Create and validate this owned readiness packet."
+  prohibited:
+    - "Computer Use, browser, desktop or live Claude Design."
+    - "Mutation of design, mapping, application, tests, migrations, seeds, Supabase or shared data."
+    - "Mutation of main, setup/Inspection or any stash."
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: e077340171aaa5a913187e4b90ebd2e77bd30d3a
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001.yaml
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-REQUEST-MAPPING-CORRECTION-013.yaml
+  dirty_path_ownership: "Other active lanes; preserved and not modified."
+  task: M10-ADMIN-EXECUTION-DESIGN-READINESS-014
+  process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P07", "G2-P08", "G2-P09"]
+  acceptance_ids: ["WA-M10-AC-001..006"]
+  route: /admin/execution
+  logical_design_id: WA-DES-003
+  dependencies:
+    - TASK-EXECUTION-MODULE-001
+    - product-contract/execution/EXECUTION_DECISION_LOG.md
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "The accepted/draft Claude Design inventory and every exported design file."
+    - "Frozen requirement, route, screen, mapping and acceptance artifacts."
+    - "Application source, tests, migrations, providers, seeds, Supabase and shared data."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  execution_decisions: product-contract/execution/EXECUTION_DECISION_LOG.md
+  capability_contract: apps/web/src/lib/execution/capabilities.ts
+  current_implementation:
+    - apps/web/src/app/admin/execution/page.tsx
+    - apps/web/src/app/admin/execution/actions.ts
+    - apps/web/src/app/admin/execution/CapacityForm.tsx
+    - apps/web/src/app/admin/execution/VisitModesForm.tsx
+    - apps/web/src/app/admin/execution/ReasonsManager.tsx
+    - apps/web/src/app/admin/execution/GisRulesForm.tsx
+    - apps/web/src/app/admin/execution/EvidencePolicyForm.tsx
+    - apps/web/src/app/admin/execution/OfflinePolicyForm.tsx
+    - apps/web/src/app/admin/execution/RawJsonDetails.tsx
+  current_test: apps/web/e2e/execution-admin-contract.spec.ts
+  predecessor_export:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Execution.dc.html"
+    logical_id: WA-DES-003
+    filename: "SAQEEL Admin Execution.dc.html"
+    bytes: 13248
+    sha256: "47a54a5b2dc9863310496ccbd14695bdc9795b887ed8b29256a2fd712047c0b8"
+    reference_viewport: "1160x900"
+
+independent_mapping_result:
+  application_route_exists: true
+  route: /admin/execution
+  application_component_exists: true
+  primary_component: apps/web/src/app/admin/execution/page.tsx
+  business_capability_match: true
+  channel: ADMIN
+  design_is_nearest_match: true
+  better_existing_design_match: false
+  claude_code_mapping_classification: CURRENT_BACKEND_PRESERVED_NEW_FRONTEND
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  corrections:
+    - "Replace CR-001..CR-478 with section-level traceability; the whole 478-row baseline is not owned by this route."
+    - "Add the seven real components and six server actions to the mapping evidence."
+    - "Correct persona/guard metadata: the page is capability-gated; route inventory's persona_permission_guard=inspector is wrong."
+    - "Remove unrelated M10 design files from this route's design-authority bundle."
+    - "Add runtime state and responsive proof; the current test is source-contract only."
+  screen_catalogue_status: NO_SCREEN_CATALOGUE_MATCH
+  screen_catalogue_finding: >-
+    No /admin/execution screen row exists. SCR-ADM-060 belongs to /admin/risk
+    and cannot be reused. Governance must add an Execution Settings screen ID
+    or explicitly accept the route without inventing an ID in this packet.
+
+traceability_correction:
+  status: INSUFFICIENT_EVIDENCE_FOR_SINGLE_EXACT_RANGE
+  reason: >-
+    The 478-row baseline defines execution behavior primarily on field,
+    virtual, planning and compliance routes. It does not assign a dedicated
+    Execution Settings control-plane requirement range. This screen governs
+    parameters consumed by those requirements, so section-level contextual
+    traceability is accurate while a new primary requirement ID would require
+    approved change control.
+  section_context:
+    - section: DAILY_CAPACITY_AND_JOURNEY
+      contextual_requirement_ids:
+        - CR-007
+        - CR-018
+        - CR-028
+        - CR-040
+        - CR-048
+        - CR-114..CR-133
+      code_keys:
+        editable: [daily_visit_cap]
+        read_only: [journey_start_timing, one_penalty_per_violation_phase1]
+      acceptance_context:
+        - WA-AC-0007
+        - WA-AC-0018
+        - WA-AC-0028
+        - WA-AC-0040
+        - WA-AC-0048
+        - WA-AC-0114..0133
+    - section: VISIT_MODE_ELIGIBILITY
+      contextual_requirement_ids:
+        - CR-111
+        - CR-112
+        - CR-337..CR-356
+      code_keys: [visit_modes]
+      release_rule: "Self-assessment remains disabled with release_gate=release_2."
+    - section: CANCELLATION_AND_EXCEPTION_REASONS
+      contextual_requirement_ids:
+        - CR-033
+        - CR-062
+        - CR-063
+        - CR-080
+        - CR-086
+        - CR-169..CR-174
+        - CR-341
+        - CR-342
+        - CR-441
+      code_keys: [cancellation_reasons, geo_override_reasons]
+      protected_keys:
+        - "other: preserves mandatory-comment behavior."
+        - "safety_security: preserves the location-override photo-evidence exception."
+    - section: ARRIVAL_AND_GEOFENCE_DEFAULTS
+      contextual_requirement_ids:
+        - CR-145
+        - CR-150..CR-162
+      code_keys:
+        - arrival_detection_radius_m
+        - geofence_default_radius_m
+        - gps_accuracy_checkin_max_m
+        - telemetry_interval_s
+      boundary: "Per-factory overrides remain owned by /admin/gis."
+    - section: EVIDENCE_POLICY
+      contextual_requirement_ids:
+        - CR-158
+        - CR-171
+        - CR-221
+        - CR-236
+        - CR-259
+        - CR-267..CR-283
+        - CR-292
+        - CR-309
+        - CR-325
+        - CR-453
+        - CR-473
+      code_keys: [photo, video, document, voice, retention_years]
+      boundary: >-
+        Per-item and response-level evidence requirements remain owned by
+        Compliance configuration. This screen edits only pre-existing
+        engine-level evidence policy keys.
+    - section: OFFLINE_AND_SYNC_POLICY
+      contextual_requirement_ids:
+        - CR-120
+        - CR-126
+        - CR-142
+        - CR-143
+        - CR-184
+        - CR-280
+        - CR-281
+      code_keys: [offline.max_sync_attempts, offline.autosave_interval_s]
+      decision: "D-005: values remain honestly unset until business-supplied."
+  mapping_write_boundary: >-
+    Do not replace CR-001..CR-478 in frozen mapping with these contextual lists
+    automatically. Governance must first decide whether this control plane
+    receives a dedicated requirement, a traceability-only relationship, or an
+    approved grouped ownership expression.
+
+real_guard_and_service_contract:
+  page_capabilities:
+    - admin.execution_workflow
+    - admin.execution_lookups
+    - admin.mode_eligibility
+    - admin.evidence_policy
+    - admin.offline_policy
+  rendering_rule: "A section is rendered only when its server-side has_capability check passes."
+  no_access_rule: "If no capability passes, render the no-access EmptyState and expose no section values."
+  authoritative_write_controls:
+    - "getVerifiedUser verifies the caller."
+    - "has_capability checks each server action."
+    - "engine_write RLS remains authoritative after capability checks."
+    - "Read-modify-write changes only the named governed keys."
+    - "Each successful write bumps version_label and updated_by."
+    - "Each successful action appends execution_config_update audit evidence."
+  tables: [engine_settings, audit_events]
+  rpc: has_capability
+  engine_rows: [execution, field, gis, evidence]
+  decision_boundary:
+    direct_audited_write: "D-004 explicitly rejects adding maker-checker without sponsor policy."
+    offline_unset: "D-005 preserves platform-default behavior without invented override values."
+
+predecessor_design_findings:
+  preserved_regions:
+    - "Daily capacity and journey."
+    - "Visit mode eligibility."
+    - "Cancellation and exception reasons."
+    - "Arrival and geofence shared defaults."
+    - "Evidence policy."
+    - "Offline and sync policy."
+    - "Stored engine rows as a read-only advanced disclosure."
+  incorrect_or_unsafe:
+    - "Arabic-only صقيل صناعي branding appears in an English shell; replace with approved SAQEEL | صقيل identity."
+    - "Risk Settings appears as unrelated navigation context."
+    - "Fixed values such as 150, 30, file sizes, durations, retry/autosave values and execution v7 are presented without source evidence."
+    - "The design implies values are saved/effective immediately without exposing guarded failure, current stored version or source truth."
+    - "The fixed 1160x900 preview does not prove tablet, mobile, RTL, light mode or negative states."
+    - "The design does not clearly separate shared GIS defaults from per-factory /admin/gis overrides."
+    - "The design does not prove per-section capability hiding or no-access confidentiality."
+  code_behavior_absent_from_design:
+    - "Five independent server-side capability checks and section hiding."
+    - "Six scoped server actions with validation, governed-key merge, version bump and audit."
+    - "Protected cancellation and location-override keys with bilingual labels."
+    - "Fail-closed missing engine rows and neutral provider/service errors."
+    - "Self-assessment hard refusal even if a client posts enabled=true."
+    - "Existing evidence types only; absent types remain not permitted."
+    - "Honest unset and clear-to-platform-default behavior for offline overrides."
+    - "Read-only exact stored engine rows."
+  design_behavior_absent_from_code:
+    - "No bounded design-only behavior should be added merely because the predecessor depicts it."
+    - "Any fixed policy value, version, provider, SLA, retention, threshold or legal rule shown only in design is unauthorized."
+
+successor_identity:
+  logical_id: WA-DES-003
+  proposed_revision: WA-DES-003-C1
+  title: "SAQEEL Execution Settings"
+  filename: "SAQEEL Admin Execution - WA-DES-003-C1.dc.html"
+  predecessor_sha256: "47a54a5b2dc9863310496ccbd14695bdc9795b887ed8b29256a2fd712047c0b8"
+  lineage_kind: CORRECTIVE_SUCCESSOR
+  current_state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+  creation_authorized: false
+  rule: >-
+    A live designer may create this successor only under an explicit lease.
+    It cannot replace WA-DES-003 in mapping until exported, fingerprinted,
+    independently reviewed, sponsor-approved and recorded through change control.
+
+successor_design_contract:
+  shell:
+    identity: "Approved SAQEEL | صقيل bilingual wordmark; no صناعي or Industrial sub-brand."
+    title: "Execution Settings"
+    context: "Execution control plane; stored version only when returned by the record."
+    navigation: "Use the current admin shell. Do not add Risk Settings or a new route."
+  layout:
+    desktop: "Persistent shell with a readable one- or two-column section grid; no horizontal page scroll."
+    tablet: "Collapsed/compact shell; section cards reflow without clipped labels or controls."
+    mobile: "Single column, logical ordering, full-width form controls and actions, no peeking submenu icons."
+    raw_json: "Closed by default, read-only, keyboard operable and safely wrapping long values."
+  sections:
+    - title: "Daily capacity & journey"
+      capability: admin.execution_workflow
+      controls:
+        - "Editable daily visit capacity sourced from engine_settings; unset is visible."
+        - "Read-only journey-start timing; missing means not configured/fail closed."
+        - "Read-only one-penalty invariant; never make it editable here."
+    - title: "Visit mode eligibility"
+      capability: admin.mode_eligibility
+      controls:
+        - "Physical and virtual enabled states from the stored visit_modes object."
+        - "Virtual OTP and appointment requirements from stored values."
+        - "Self-assessment disabled and labelled Release 2."
+    - title: "Cancellation & exception reasons"
+      capability: admin.execution_workflow
+      controls:
+        - "Stable key, English label, Arabic label, add/remove/reorder."
+        - "Protected keys remain visible and non-removable."
+    - title: "Arrival & geofence rules"
+      capability: admin.execution_workflow
+      controls:
+        - "Four shared integer defaults from the GIS engine row."
+        - "Clear route handoff: per-factory overrides are managed in Map Settings."
+    - title: "Evidence policy"
+      capability: admin.evidence_policy
+      controls:
+        - "Only pre-existing evidence-type rules are editable."
+        - "Allowed formats, maximum size and duration when present."
+        - "Retention only when the stored key exists."
+        - "sha256-at-sync integrity invariant remains read-only."
+    - title: "Offline & sync policy"
+      capability: admin.offline_policy
+      controls:
+        - "Optional maximum sync attempts; empty means platform default."
+        - "Optional autosave interval; empty means platform default."
+  action_feedback:
+    saving: "Disable only the submitted section action and announce Saving."
+    success: "Confirm the exact section saved and show returned/current version truth."
+    validation_error: "Preserve input, show field error plus section summary, focus predictably."
+    authorization_error: "Neutral denial; no configuration values from unauthorized sections."
+    service_error: "Neutral recoverable error; never expose provider internals."
+
+state_matrix:
+  required:
+    loading:
+      design: "Skeletons preserve section and action geometry; no fabricated values."
+    configured:
+      design: "Render exact stored values, version and updated time only when supplied."
+    partially_configured:
+      design: "Configured sections remain usable; missing rows/keys are explicitly unavailable or unset."
+    empty:
+      design: "No engine rows/keys is not zero/default; explain that nothing is configured."
+    error:
+      design: "Neutral read/write failure with retry; preserve entered draft on write failure."
+    unauthorized:
+      design: "No capabilities yields a confidentiality-preserving no-access state."
+    degraded:
+      design: "One engine-row failure does not fabricate or erase healthy sections."
+    stale_or_conflict:
+      design: >-
+        If the stored version changes while editing, block silent overwrite and
+        require reload/review. The current code does not yet prove this state,
+        so label it implementation gap rather than completed behavior.
+    immutable_or_protected:
+      design: "Read-only invariants and protected reason keys expose why they cannot be changed."
+  runtime_gap: >-
+    The existing page has source evidence for empty/error/no-access concepts,
+    but lacks named loading/error route boundaries and a proven concurrent
+    stale-write guard. The successor must disclose these as implementation
+    gaps; it must not imply they already work.
+
+responsive_bidi_theme_accessibility:
+  viewports:
+    - "1440x900 desktop"
+    - "1024x768 tablet landscape"
+    - "768x1024 tablet portrait"
+    - "412x915 mobile"
+    - "390x844 mobile"
+    - "320x568 minimum reflow"
+  languages:
+    - "English LTR"
+    - "Arabic RTL with logical layout and isolated LTR identifiers/keys"
+  themes:
+    - "Dark"
+    - "Light with verified text, border, placeholder, disabled and status contrast"
+  keyboard:
+    - "Logical heading and tab order."
+    - "44px minimum interactive targets."
+    - "Reason-row reorder has keyboard-operable controls and announced result."
+    - "Focus moves to validation/result feedback and returns predictably."
+    - "Raw JSON disclosure exposes expanded state and usable focus."
+  semantics:
+    - "One h1 and ordered section headings."
+    - "Every input has a programmatic label, hint and error association."
+    - "Status is never conveyed by color alone."
+    - "Tables reflow to cards or a labelled scroll region; no clipped content."
+  content_rules:
+    - "Stable keys and engine identifiers remain LTR inside Arabic."
+    - "Never mix Arabic branding into the English identity line."
+    - "No invented numbers, defaults, version labels, provider names or policy claims."
+
+functional_and_wiring_implications:
+  preserve_without_redesign:
+    - "Current route and all seven real components."
+    - "Current capability names and per-section server-side checks."
+    - "Current six server actions and their validation."
+    - "RLS, audit, version labels and governed-key merge semantics."
+    - "Release 2 self-assessment gate."
+    - "Protected bilingual reason-key invariants."
+    - "Shared GIS defaults versus per-factory GIS ownership."
+    - "Honest unset evidence/offline behavior."
+  implementation_gaps_requiring_later_lease:
+    - "Route-specific loading and error boundaries, if runtime review confirms the generic boundary is insufficient."
+    - "Explicit stale-version conflict prevention before update."
+    - "Runtime responsive, RTL, light/dark and keyboard defects."
+    - "Truthful success copy tied to returned/current record version rather than a generic effective-immediately claim."
+  no_backend_expansion: >-
+    None of the design corrections authorizes a table, RPC, capability, role,
+    workflow, provider or policy change. A stale-write guard would require a
+    separately approved bounded implementation contract if not already
+    provided by the data layer.
+
+test_and_evidence_readiness:
+  current_test_class: SOURCE_CONTRACT_ONLY
+  current_test_limit: >-
+    execution-admin-contract.spec.ts explicitly performs no browser and no live
+    backend work. It proves source structure, names, guards and invariants; it
+    does not certify user-visible runtime behavior.
+  required_runtime_evidence:
+    - "Authorized full-capability user: read and save each of six sections against governed test data."
+    - "Partial-capability users: only entitled sections visible; direct server-action calls denied."
+    - "Zero-capability user: no values leaked and no section actions exposed."
+    - "RLS denial after capability allowance remains neutral and leaves data unchanged."
+    - "Protected-key removal, duplicate/invalid keys and missing bilingual labels are rejected."
+    - "Self-assessment enabled post is rejected server-side."
+    - "Missing engine row and one-row provider failure degrade without fabricated substitutes."
+    - "Evidence types/retention absent from the record remain unavailable and cannot be created by the form."
+    - "Offline empty overrides remove the governed key and show platform default."
+    - "Before/after governed keys, actor and version appear in audit evidence."
+    - "Two-editor stale-write scenario proves no silent overwrite or records the gap as blocked."
+    - "Desktop/tablet/mobile, EN/AR RTL, dark/light, keyboard-only and zoom/reflow screenshots."
+  negative_paths:
+    - "Anonymous/session-expired."
+    - "Capability RPC failure."
+    - "Read failure by engine row."
+    - "Validation failure."
+    - "Update failure."
+    - "Audit insert failure is logged and assessed against the accepted audit contract."
+    - "Concurrent version change."
+  completion_rule: >-
+    Do not mark WA-M10-AC-001..006 or this route complete from the existing
+    source-only test. Runtime behavior, data, audit, negative paths,
+    accessibility and visual evidence are mandatory.
+
+risk_register:
+  - risk: OVERBROAD_REQUIREMENT_OWNERSHIP
+    severity: HIGH
+    mitigation: "Keep contextual section traceability and require governance for exact primary ownership."
+  - risk: INVENTED_POLICY_VALUES
+    severity: CRITICAL
+    mitigation: "Bind every value to engine_settings; missing is unset/unavailable."
+  - risk: CONFIGURATION_LEAKAGE
+    severity: CRITICAL
+    mitigation: "Preserve per-section server capability checks and zero-capability confidentiality."
+  - risk: SILENT_CONCURRENT_OVERWRITE
+    severity: HIGH
+    mitigation: "Design the stale state honestly and require a separate implementation proof/lease."
+  - risk: FALSE_RUNTIME_CERTIFICATION
+    severity: HIGH
+    mitigation: "Treat current test as source-only and execute the named runtime matrix."
+  - risk: GIS_OWNERSHIP_COLLISION
+    severity: MEDIUM
+    mitigation: "Keep shared defaults here and per-factory overrides at /admin/gis."
+
+no_build_boundary:
+  - "No new route, screen ID, component, capability, role, engine row, table, RPC or provider."
+  - "No maker-checker flow for engine_settings without a new sponsor policy decision."
+  - "No fixed capacity, geofence, GPS, telemetry, evidence, retention, retry or autosave value."
+  - "No self-assessment enablement in Release 1."
+  - "No per-factory GIS editor."
+  - "No Compliance item/response evidence-rule editor."
+  - "No operational execution, review, enforcement or inspection action."
+  - "No design or mapping replacement before accepted successor evidence."
+
+recommended_reviewer_action: APPROVE_FOR_SPONSOR_CONSENT
+recommendation_scope: >-
+  Approve creation and independent review of WA-DES-003-C1 under a dedicated
+  Claude Design lease, plus a separate governance decision for exact
+  requirement/screen traceability. Do not approve implementation or completion
+  from this packet.
+
+rollback:
+  action: >-
+    Delete only this uncommitted owned packet if rejected. No design, mapping,
+    application, test, data, branch or stash state was changed.
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-ADMIN-GIS-DESIGN-READINESS-015
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    route: /admin/gis
+    design_logical_id: WA-DES-006
+  scope: >-
+    Reconcile the GIS and Geofence Settings design with the real route,
+    component, map/list equivalence, shared-versus-factory rule ownership,
+    permissions, provider boundaries, responsive/RTL/theme/accessibility states
+    and runtime evidence. Create a readiness packet only; make no design,
+    mapping, code, test, seed, Supabase or shared-data change.
+  collision_check: >-
+    This successor is a distinct route/design/component from /admin/execution.
+    Recheck live lane ownership before dispatch.

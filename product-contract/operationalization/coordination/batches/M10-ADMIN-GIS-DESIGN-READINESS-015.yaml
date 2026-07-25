@@ -1,0 +1,400 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-DESIGN-READINESS-015
+status: REVIEWER_READY_READ_ONLY_BLOCKED_POLICY_AND_PROVIDER
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Reconcile WA-DES-006 with the real GIS Studio and its optional Spatial Canvas.
+  Preserve official-pin ownership, per-factory radius governance, map/list
+  equivalence, RLS, provider holds and downstream arrival safety while blocking
+  invented coordinate-edit, publication, source-revert and policy behavior.
+
+lock_safe_boundary:
+  state: MAC_LOCKED_OR_UI_UNAVAILABLE
+  allowed:
+    - "Read canonical requirements, decisions, design export, routes, source and tests."
+    - "Create and validate this owned readiness packet."
+  prohibited:
+    - "Desktop, browser, Computer Use or live Claude Design."
+    - "Design, mapping, application, test, data, seed, provider or Supabase mutation."
+    - "main, setup/Inspection and stash mutation."
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: e7cb0dd8c1d48e0cbc2b9796feb4371c95cbd6ad
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-ATOMIC-FIX-LEASE-010.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-EXECUTION-WINDOW-LEASE-011.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-SESSION-LIST-FILTER-LEASE-TBD.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-EXECUTION-DESIGN-READINESS-014.yaml
+  dirty_path_ownership: "Other active/preceding lanes; preserved and not modified."
+  task: M10-ADMIN-GIS-DESIGN-READINESS-015
+  process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06A", "G2-P12"]
+  screen_ids: ["SCR-ADM-070"]
+  engine_ids: ["ENG-06", "ENG-08", "ENG-11", "ENG-12"]
+  acceptance_ids:
+    phase_1: ["WA-M10-AC-001..006"]
+    special_component: ["SPC-GIS-001..008"]
+    transferred_gis: ["MVP2-AC-0072", "MVP2-AC-0075", "MVP2-AC-0233"]
+  dependencies:
+    - DEC-002
+    - MVP3-HOLD-002
+    - TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "Every design and frozen mapping/requirement artifact."
+    - "GIS, Factory 360, Planning, Field, Operations and provider application code/tests."
+    - "Migrations, shared data, credentials and environment configuration."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  decisions: product-contract/governance/decision_register.csv
+  system_prompt: design/claude-design-mvp1/prompts/systems/GIS_GEOFENCE_AND_ROUTE_DESIGN.md
+  mvp3_register: product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+  provider_holds: product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  implementation:
+    - apps/web/src/app/(app)/admin/gis/page.tsx
+    - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    - apps/web/src/app/(app)/admin/gis/actions.ts
+    - apps/web/src/components/GeoMap.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/CreateLayer.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+  tests:
+    - apps/web/e2e/mapbox-provider.spec.ts
+    - apps/web/e2e/ipad-gps-policy.spec.ts
+    - apps/web/e2e/mvp2-modules-live.spec.ts
+    - apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  predecessor:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Geofence.dc.html"
+    logical_id: WA-DES-006
+    bytes: 10141
+    sha256: "39c768e8e3dbe588cc8424306d7eab1c387fd51392bb76d6a78afd8e3bdaf956"
+    viewport: "1200x840"
+
+independent_mapping_result:
+  proposed_route: /admin/gis
+  route_exists: true
+  component_exists: true
+  primary_component: apps/web/src/app/(app)/admin/gis/page.tsx
+  supporting_component: apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+  action: apps/web/src/app/(app)/admin/gis/actions.ts
+  registered_screen: SCR-ADM-070
+  channel: ADMIN
+  nearest_design: WA-DES-006
+  claude_code_classification: DESIGN_CONFLICT_REQUIRES_DECISION
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  functional_match:
+    confirmed:
+      - "Select a factory through a synchronized map/table view."
+      - "Display official coordinates without field overwrite."
+      - "Preview and save a positive per-factory geofence radius."
+      - "Show governed GIS defaults read-only."
+    design_only_not_implemented:
+      - "Edit official latitude and longitude."
+      - "Mandatory reason for coordinate change."
+      - "Revert to source."
+      - "Save and publish lifecycle."
+      - "Source-versus-current comparison with editor and timestamp."
+      - "Last observed arrival pin."
+    code_only_missing_from_design:
+      - "Search, region and risk-band filters."
+      - "Located and unlocated factory counts."
+      - "Linked registry table as non-map and keyboard-accessible evidence."
+      - "Mapbox unavailable state."
+      - "Risk legend with live counts."
+      - "Missing factory registry and partial-source error states."
+
+traceability:
+  phase_1_mapping_defect:
+    current: "CR-001..CR-478"
+    verdict: INCORRECTLY_OVERBROAD
+    exact_primary_range: NO_DEDICATED_ADMIN_GIS_ROW_IN_478_BASELINE
+    rule: >-
+      The 478-row baseline describes behaviors consumed by GIS but targets
+      Planning, Field, Factory 360 and Operations routes. Do not claim all 478
+      or invent a new primary CR. Record contextual links until governance
+      approves a dedicated ownership expression.
+  contextual_478_rows:
+    location_authority: ["CR-037", "CR-038", "CR-046", "CR-117", "CR-154", "CR-157", "CR-414"]
+    map_and_navigation: ["CR-091", "CR-101", "CR-129", "CR-130", "CR-137", "CR-138", "CR-431"]
+    gps_and_geofence: ["CR-123", "CR-124", "CR-135", "CR-136", "CR-140", "CR-144", "CR-145", "CR-150..CR-162"]
+    override_and_audit: ["CR-160", "CR-161", "CR-173", "CR-174", "CR-442", "CR-443"]
+    ownership_rule: "These remain owned by their named business routes; GIS supplies governed configuration/context."
+  transferred_gis_rows:
+    - requirement_id: MVP2-REQ-0072
+      scope: "Official/verified pins, geofence rules, layers, offline packs and privacy policy."
+      result: NEEDS_REVIEW
+      gap: "Current main route covers radius and display; spatial route is feature-held; offline-pack/privacy governance is not complete."
+    - requirement_id: MVP2-REQ-0075
+      scope: "Field route, geofence, check-in proof and geotagged evidence."
+      result: CONTEXTUAL_CROSS_CHANNEL
+    - requirement_id: MVP2-REQ-0233
+      scope: "Defensible GIS evidence, snapshots, thresholds, exception workflow and offline maps."
+      result: NEEDS_REVIEW
+  mapping_write_boundary: "No frozen mapping change is authorized by this packet."
+
+permissions_and_wiring:
+  intended_persona: GIS_ADMIN
+  rbac_contract: RBAC-005
+  allowed_contract: "View/Edit/Validate/Submit/Publish if approver; spatial scope; override-policy segregation."
+  real_main_action:
+    mutation: "factories.geofence_radius_m only"
+    authentication: getVerifiedUser
+    authorization: "factories_update RLS; gis_admin or planner at database policy level"
+    validation: "Positive finite radius, rounded to integer."
+    audit: "Database row audit is expected from the existing factories trigger; action does not request a reason or version."
+  discrepancy:
+    severity: HIGH
+    finding: >-
+      The screen and design say gis_admin-only, while factories_update also
+      allows planner. The route shell may restrict the page, but the server
+      action has no explicit role/capability check. Treat exact actor authority
+      as a runtime/security verification gap, not a design assumption.
+  reads:
+    engine_settings: "GIS settings and version_label."
+    factories: "Identity, official coordinates, risk and per-factory radius."
+  spatial_route:
+    route: /admin/gis/spatial
+    state: FEATURE_HELD
+    flag: FEATURE_SPATIAL_CANVAS
+    tables: [gis_layers, factory_locations]
+    provider_copy: "Mapbox held."
+    relationship: >-
+      This is a distinct companion route. WA-DES-006 may link to it but must
+      not visually absorb layer/offline-pack features into /admin/gis.
+
+provider_and_policy_truth:
+  map_renderer:
+    component: apps/web/src/components/GeoMap.tsx
+    provider: Mapbox GL
+    client_token: NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+    style: mapbox://styles/mapbox/standard
+    constraints:
+      - "KSA bounds."
+      - "Required compact provider attribution."
+      - "Geodesic metre-based rings."
+      - "Day/night basemap follows app theme."
+      - "English/Arabic map language."
+    unavailable: "Missing/invalid token renders a non-map unavailable state."
+  directions_adapter:
+    boundary: "Separate server geocoding/directions/ETA adapter; not the GIS Studio renderer."
+    token: MAPBOX_ACCESS_TOKEN
+    certification: NOT_PRODUCTION_CERTIFIED
+  open_hold:
+    id: MVP3-HOLD-002
+    required:
+      - "Runtime token."
+      - "Approved map style."
+      - "Geographic authority."
+      - "Offline-pack policy."
+    fail_closed: "Coordinate/list evidence remains available; map action reports unavailable."
+  open_decision:
+    id: DEC-002
+    subject: "GPS accuracy, arrival radius, geofence policy and telemetry frequency."
+    rule: "Keep record-configurable; do not invent or visually bless numeric values."
+  critical_code_truth_gap:
+    finding: >-
+      GisStudio.tsx falls back to 150 metres when geofence_default_radius_m is
+      absent. The design successor must show missing policy as unset/blocked,
+      not repeat 150 as authority. Engineering review must separately reconcile
+      this fallback with DEC-002 and the existing sponsor-approved seed contract.
+    design_action: "Expose a policy-unresolved state; do not authorize a code fix here."
+
+predecessor_findings:
+  truth_defects:
+    - "Arabic-only صقيل صناعي identity in English shell."
+    - "Hard-coded factory, CR, coordinates, radius 150, range 50–500, observed point, Senaei value, editor and date."
+    - "Editable official pin conflicts with current read-only official coordinates."
+    - "Revert to source and Save & publish imply absent workflow/actions."
+    - "Last observed arrival and source comparison imply reads the route does not perform."
+    - "No provider-unavailable, no-coordinates, partial-source, unauthorized or conflict state."
+    - "No synchronized registry/list alternative."
+    - "No Mapbox attribution or provider-hold truth."
+  unsafe_functional_implication: >-
+    Shipping the design literally would add unapproved official-coordinate
+    mutation, provenance and publication semantics with direct effect on Field
+    arrival and Operations override behavior.
+
+successor_identity:
+  logical_id: WA-DES-006
+  proposed_revision: WA-DES-006-C1
+  filename: "SAQEEL Admin Geofence - WA-DES-006-C1.dc.html"
+  lineage: CORRECTIVE_SUCCESSOR
+  state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+  creation_authorized: false
+  acceptance_rule: >-
+    Create only under an explicit Claude Design lease. Do not replace the
+    predecessor until export fingerprint, independent review, P0/P1 acceptance,
+    sponsor consent and mapping change control are recorded.
+
+successor_design_contract:
+  identity: "Approved SAQEEL | صقيل wordmark; no صناعي/Industrial sub-brand."
+  title: "GIS Studio — geofencing"
+  context: "SCR-ADM-070; GIS settings version only when record-supplied."
+  desktop:
+    - "Search/filter toolbar."
+    - "Map and bounded factory detail panel."
+    - "Synchronized semantic registry table."
+    - "Read-only engine-settings table."
+  tablet: "Map, detail and table stack without clipped controls; compact shell."
+  mobile: "List/table alternative leads; map is optional progressive content; single-column controls."
+  selected_factory:
+    read_only:
+      - "Factory identity."
+      - "Official coordinates."
+      - "Region/city and record-supplied risk band."
+    editable:
+      - "Per-factory geofence radius only."
+    note: "Field observation never overwrites the official pin."
+  defaults:
+    - "GPS accuracy, arrival radius, default fence and telemetry from engine_settings only."
+    - "Unset values display policy unresolved/not configured, never numeric fallback."
+    - "Route deviation and retention display only source-backed values."
+  map_list_contract:
+    - "Map selection and table selection stay synchronized."
+    - "Factories without coordinates remain in the table."
+    - "Marker shape plus label/legend; color is never sole meaning."
+    - "Map unavailability leaves filters, list, coordinates and permitted radius edit usable."
+    - "Provider attribution remains visible/operable."
+  excluded_predecessor_actions:
+    - "No coordinate edit."
+    - "No source revert."
+    - "No publish action."
+    - "No fabricated observed pin, source coordinates, editor or timestamp."
+
+state_matrix:
+  required:
+    loading: "Reserve toolbar/map/panel/table geometry; announce progress."
+    populated: "Real RLS-scoped factories and exact settings."
+    no_factories: "Explain registry empty versus permission ambiguity."
+    no_coordinates: "Keep row and identity; disable map/radius selection with explanation."
+    no_filter_results: "Clear-filters action and current filter summary."
+    map_provider_unavailable: "List/coordinates remain; no simulated basemap."
+    partial_data: "Healthy settings/factories remain visible; failed source named generically."
+    unauthorized: "No spatial values leak; route denial and direct-action denial proven."
+    validation_error: "Preserve radius input; positive-integer error near field and summary."
+    write_error: "Neutral recoverable error; old stored radius remains authoritative."
+    saved: "Confirm exact factory/radius only after server success."
+    stale_conflict: "Never silently overwrite a newer radius; current code proof is missing, so mark implementation gap."
+    policy_unresolved: "Missing DEC-002-governed setting blocks authority claim."
+    reduced_motion: "No fly animation when reduced motion is requested."
+  cross_channel_reference_only:
+    - "locating, accurate, weak, stale, permission denied and outside fence."
+    - "override pending/approved/rejected."
+    - "tracking start/stop and privacy scope."
+    - "offline tiles and offline pack."
+  rule: "Cross-channel states inform GIS governance but must not be fabricated as /admin/gis actions."
+
+responsive_bidi_theme_accessibility:
+  viewports: ["1440x900", "1200x840", "1024x768", "768x1024", "412x915", "390x844", "320x568"]
+  locales: ["EN/LTR", "AR/RTL with logical layout and LTR-isolated coordinates/codes"]
+  themes: ["Light", "Dark with verified basemap/control/legend contrast"]
+  requirements:
+    - "Keyboard-operable list is functionally equivalent to pointer map selection."
+    - "Clickable table rows require actual button/link semantics and visible focus."
+    - "44px targets for map, filters and actions."
+    - "Unique accessible names for map controls and markers."
+    - "Selection, risk and state use text/shape plus color."
+    - "Radius and filter results announced."
+    - "Map popup exposes real factory detail; empty labels are not allowed."
+    - "Zoom/reflow produces no horizontal task loss."
+    - "Reduced-motion disables flyTo animation."
+
+test_and_evidence_assessment:
+  current_strengths:
+    - "Source tests prove Mapbox is the shared authenticated renderer and no token is committed."
+    - "GPS-policy source test ties Field defaults to GIS configuration."
+    - "Spatial live/negative tests cover the feature-held companion route."
+    - "Neutral-error sweep protects provider details."
+  gaps:
+    - "No focused runtime suite proves /admin/gis selection, filters, radius save and refresh persistence."
+    - "No main-route GIS-admin versus unauthorized direct-action proof."
+    - "No audit row proof for radius change."
+    - "No Mapbox unavailable runtime proof preserving the list."
+    - "No missing-setting proof preventing fallback authority."
+    - "No stale concurrent-write protection proof."
+    - "No full EN/AR, light/dark, desktop/tablet/mobile, keyboard and reduced-motion evidence."
+  mandatory_runtime_evidence:
+    - "GIS Admin selects from map and keyboard list, edits radius, saves, refreshes and sees same value."
+    - "Planner and unauthorized personas are reconciled against route and RLS policy; no accidental write authority."
+    - "Invalid radius and RLS denial change no row."
+    - "Audit evidence records actor, object, before/after and timestamp."
+    - "Missing token preserves list and coordinates with provider-unavailable state."
+    - "Missing coordinate, empty registry, filter-zero and one-source failure."
+    - "Concurrent editors do not silently overwrite or are formally blocked."
+    - "Map/list synchronization, attribution, RTL, themes, reflow, focus, target size and reduced motion."
+  completion_rule: "Do not mark M10 or SCR-ADM-070 complete from current source/route smoke tests."
+
+risk_register:
+  - id: GIS-RISK-001
+    severity: CRITICAL
+    risk: "Invented policy threshold becomes a safety gate."
+  - id: GIS-RISK-002
+    severity: CRITICAL
+    risk: "Design authorizes official-coordinate mutation absent from code/contracts."
+  - id: GIS-RISK-003
+    severity: HIGH
+    risk: "Page persona and database write policy disagree."
+  - id: GIS-RISK-004
+    severity: HIGH
+    risk: "Missing Mapbox/offline policy is rendered as working."
+  - id: GIS-RISK-005
+    severity: HIGH
+    risk: "Pointer-only map blocks keyboard/nonvisual users."
+  - id: GIS-RISK-006
+    severity: HIGH
+    risk: "Concurrent radius change silently overwrites newer truth."
+
+do_not_build:
+  - "No official latitude/longitude edit, source revert or source reconciliation workflow."
+  - "No Save & publish/maker-checker lifecycle."
+  - "No invented threshold, radius, range, telemetry, retention, route-deviation or privacy value."
+  - "No fake observed pin, Senaei record, editor, timestamp, risk or provider success."
+  - "No offline pack or privacy-policy editor while MVP3-HOLD-002 remains open."
+  - "No spatial-layer features on /admin/gis; /admin/gis/spatial remains separate and held."
+  - "No Field, Planning, Operations, Factory 360, provider, schema, RLS or audit change."
+
+recommended_reviewer_action: RETURN_FOR_MAPPING_CORRECTION
+recommendation: >-
+  Approve a bounded WA-DES-006-C1 design correction only after recognizing that
+  the predecessor is not implementation-ready. Separately resolve exact
+  requirement ownership, actor authority and DEC-002/MVP3-HOLD-002. Do not
+  approve literal implementation of coordinate edit, source-revert or publish.
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    route: /admin/integrations/factory-data
+    design_logical_id: WA-DES-007
+  scope: >-
+    Reconcile factory-data integration design with the real sync/import,
+    validation, rejection, reconciliation, source-provenance and permission
+    implementation. Cover provider-held, partial, stale, error, unauthorized,
+    conflict, responsive, RTL, theme and accessibility states. Produce a
+    readiness packet only; make no design, mapping, code, test or data change.
+  collision_check: "Distinct route/design/components; recheck ownership before dispatch."

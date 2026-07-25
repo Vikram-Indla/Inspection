@@ -1,0 +1,555 @@
+packet:
+  id: M2-B002-R4-EVIDENCE-AND-CONTINUITY-CORRECTION
+  title: M2 Planning R4 evidence and continuity correction
+  created_at: "2026-07-25T02:52:14Z"
+  owner: Codex orchestration
+  status: BLOCKED_FOR_PRODUCT_EDITS
+  executable: false
+  packet_class: GOVERNANCE_AND_EVIDENCE_ONLY
+  current_gate_result: BLOCKED
+  m3_state: REMAINS_BLOCKED
+  purpose: >-
+    Reconcile the exact M2 worktree, revision authority, ownership, test
+    expectations, browser/design evidence, and status ledgers before any
+    additional Planning application correction is proposed.
+
+hard_boundaries:
+  permitted_now:
+    - Read-only repository inspection.
+    - Read-only checksum and metadata inspection of existing evidence.
+    - Control-plane packet maintenance inside the orchestration worktree.
+  prohibited_now:
+    - Application, test, data, migration, design, branch, or lease mutation.
+    - Browser or Claude interaction while the Mac is locked.
+    - Main, setup/Inspection, remote, deployment, provider, or stash action.
+    - Treating this packet as implementation authorization.
+    - Starting M3 or using M3 decisions to alter this packet.
+
+repository_snapshot:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_creation: 52aa0091647da7b8ee84e7bdc4fcde33d3e5f289
+  m2_worktree:
+    path: /Users/vikramindla/Developer/Inspection-codex-planning-m2
+    branch: codex/planning-m2-saqeel-correction
+    head: 48c58863a183c80171025c5770c4e3440392802b
+    product_checkpoint: 22173ec8
+    commits_after_product_checkpoint:
+      - 636153eb
+      - 604f1684
+      - 2d9fddee
+      - 803cb160
+      - 48c58863
+    post_checkpoint_classification: GOVERNANCE_AND_STATUS_ONLY
+    recorded_dirty_paths:
+      - path: .codex-review/module-status-board.md
+        state: MODIFIED
+        disposition: PRESERVE_DO_NOT_STAGE_OR_OVERWRITE
+      - path: apps/web/node_modules
+        state: MODIFIED_WORKTREE_LINK_OR_DIRECTORY_STATE
+        disposition: PRESERVE_AND_CLASSIFY_SEPARATELY
+      - path: .codex-review/execution-drill.md
+        state: UNTRACKED
+        disposition: PRESERVE_DO_NOT_STAGE_OR_OVERWRITE
+      - path: .codex-review/f0-sponsor-consent-packet.md
+        state: UNTRACKED
+        disposition: PRESERVE_DO_NOT_STAGE_OR_OVERWRITE
+      - path: .codex-review/primary-module-authority-review.md
+        state: UNTRACKED
+        disposition: PRESERVE_DO_NOT_STAGE_OR_OVERWRITE
+      - path: .codex-review/web-shell-authority-rca.md
+        state: UNTRACKED
+        disposition: PRESERVE_DO_NOT_STAGE_OR_OVERWRITE
+  stale_record:
+    path: /Users/vikramindla/Developer/Inspection/.worktrees/revamp
+    observed_state: DOES_NOT_EXIST
+    required_correction: >-
+      Replace only through an authorized continuity-record correction; never
+      recreate or infer ownership from the stale path.
+  mac_state_at_creation:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+    rule: MONITOR_READ_ONLY_AND_DO_NOT_BYPASS
+
+authoritative_scope:
+  task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  batch_id: WA-P1-M2-BATCH-002
+  change_control_id: CC-WEB-ADMIN-PHASE1-001
+  processes:
+    - G2-P01
+    - G2-P02
+    - G2-P03
+  requirements: CR-001..CR-098
+  acceptance:
+    - WA-M2-AC-001
+    - WA-M2-AC-002
+    - WA-M2-AC-003
+    - WA-M2-AC-004
+    - WA-M2-AC-005
+    - WA-M2-AC-006
+    - WA-SHELL-AC-002
+    - WA-SHELL-AC-013
+  design_ids:
+    - WA-DES-036
+    - WA-DES-045
+  screens:
+    - PLANNING_LANDING
+    - PLANNING_VISITS_LIST
+    - PLANNING_VISIT_DETAIL
+  current_routes:
+    - /planning
+    - /visits
+    - /visits/:id
+  preview_routes:
+    - /planning?wa_preview=1
+    - /planning/visits?wa_preview=1
+    - /planning/visits/:id?wa_preview=1
+  cutover_state: NOT_AUTHORIZED_CURRENT_ROUTES_RETAINED
+
+design_revision_reconciliation:
+  frozen_baseline:
+    design_id: WA-DES-036
+    revision: "1784901048581707"
+    role: PRIOR_ACCEPTED_BASELINE
+  sponsor_approved_candidate:
+    design_id: WA-DES-036
+    revision: "1784904309230874"
+    approved_as: IMPLEMENTATION_CANDIDATE_NOT_BLIND_VISUAL_ACCEPTANCE
+  observed_successor:
+    design_id: WA-DES-036-r4
+    stable_revision: MISSING
+    completion_handoff: MISSING
+    frame_theme_rtl_verification: MISSING
+  conflict: >-
+    The current slice names 1784904309230874 as the accepted candidate while
+    also returning the candidate flow for a newer WA-DES-036-r4 correction.
+    No application owner may choose between them by inference.
+  stable_r4_handoff_required:
+    - Stable immutable revision identifier or etag.
+    - Design page ID and exact page name.
+    - Source project and file identity.
+    - Supersedes or preserves declaration for 1784904309230874.
+    - Semantic delta from 1784904309230874.
+    - Exact route, component, action, and data-grain mapping.
+    - Exact viewport, theme, locale, direction, and state inventory.
+    - Exported frame paths with SHA-256 checksums.
+    - Explicit completion statement from Claude Design.
+    - No-code, no-backend, no-schema, and no-permission-change declaration.
+  decision_required_after_handoff:
+    id: M2-R4-REVISION-AUTHORITY-DECISION
+    owner: Sponsor
+    options:
+      - ACCEPT_1784904309230874_AND_REJECT_R4
+      - ACCEPT_STABLE_R4_AND_SUPERSEDE_1784904309230874
+      - RETURN_R4_FOR_CORRECTION
+    prohibition: NO_DEFAULT_OR_IMPLIED_SELECTION
+
+central_lease_precondition:
+  registry: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+  m2_row_observed: false
+  local_note:
+    path: .codex-review/planning-m2-correction-lease.md
+    authority: NON_CENTRAL_HISTORICAL_NOTE_ONLY
+  required_before_any_future_write:
+    - Independent review result is PASS.
+    - Sponsor revision decision is recorded.
+    - Exact immutable base SHA is recorded.
+    - Exact actor, worktree, branch, packet, and allowed paths are recorded.
+    - F0 and M2 paths are non-overlapping.
+    - Dirty paths have explicit preserve or clean disposition.
+    - Rollback, tests, evidence, and stop conditions are recorded.
+  current_action: DO_NOT_ISSUE_A_LEASE
+
+ownership_reconciliation:
+  finding: >-
+    Product checkpoint 22173ec8 crosses M2, F0, Field namespace, Factory 360,
+    login, and chart paths. That historical commit cannot be treated as proof
+    that one M2 owner may modify all those paths again.
+  F0_owned:
+    shared_shell_and_identity:
+      - apps/web/src/components/ShellClient.tsx
+      - apps/web/src/components/NotificationBell.tsx
+      - apps/web/src/app/BrandMark.tsx
+    shared_charts:
+      - apps/web/src/components/charts/BarChart.tsx
+      - apps/web/src/components/charts/DonutChart.tsx
+      - apps/web/src/components/charts/LineChart.tsx
+    shared_login_and_factory_surface:
+      - apps/web/src/app/login/LoginClient.tsx
+      - apps/web/src/app/(app)/factories/cr/[id]/page.tsx
+    shared_tokens_and_global_styles:
+      - apps/web/src/app/tokens.css
+      - apps/web/src/app/saqeel-components.css
+      - apps/web/src/app/saqeel-components-legacy.css
+      - apps/web/src/app/layout.tsx
+    shared_foundation_tests:
+      - apps/web/e2e/design-foundation-contract.spec.ts
+      - apps/web/e2e/web-admin-f0-foundation.spec.ts
+  FIELD_owned_or_F0_mechanical_only:
+    - apps/web/src/components/FieldTabs.tsx
+    - apps/web/src/components/field/DailyBriefingCard.tsx
+    - apps/web/src/components/field/FieldConnectivityBanner.tsx
+    - apps/web/src/components/field/FieldFullMap.tsx
+    - apps/web/src/components/field/FieldHome.tsx
+    - apps/web/src/components/field/FieldScopeToggle.tsx
+    - apps/web/src/app/(app)/field/[visitId]/travel/TravelClient.tsx
+    - apps/web/src/app/(app)/field/factory-360/[id]/Factory360Offline.tsx
+  M2_owned:
+    - apps/web/src/app/(app)/planning/page.tsx
+    - apps/web/src/app/(app)/planning/PlanningPreview.tsx
+    - apps/web/src/app/(app)/planning/PlanningPreview.module.css
+    - apps/web/src/app/(app)/planning/visits/**
+    - apps/web/src/app/(app)/visits/**
+    - apps/web/e2e/web-admin-m2-batch-002.spec.ts
+  M2_read_only_dependencies:
+    - apps/web/src/lib/planning/access.ts
+    - apps/web/src/lib/planning/visit-list.ts
+    - apps/web/src/lib/planning/lifecycle.ts
+    - apps/web/src/lib/supabase-server.ts
+    - apps/web/src/lib/verified-user.ts
+  rule: >-
+    A future M2 composition correction may use M2-owned paths only. Any shared
+    focus, shell, token, global-style, or Field correction requires a separate
+    non-overlapping F0 or Field-authorized follow-up.
+
+current_wiring_validation:
+  planning:
+    route_exists: true
+    component_exists: true
+    capability_gate: apps/web/src/lib/planning/access.ts
+    real_reads:
+      - planning_lookups
+      - factories
+      - profiles
+      - package_versions
+      - visit_plans
+      - visits
+    rpc:
+      name: expire_lapsed_visits
+      preview_behavior: SKIPPED_TO_KEEP_SPONSOR_PREVIEW_READ_ONLY
+  planning_visits:
+    route_exists: true
+    preview_gate: SAQEEL_M2_PREVIEW_ENABLED_AND_WA_PREVIEW_QUERY_REQUIRED
+    reuse: apps/web/src/app/(app)/visits/page.tsx
+    real_reads:
+      - visits
+      - profiles
+      - assignments
+      - inspections
+      - notifications
+  planning_visit_detail:
+    route_exists: true
+    preview_gate: SAQEEL_M2_PREVIEW_ENABLED_AND_WA_PREVIEW_QUERY_REQUIRED
+    reuse: apps/web/src/app/(app)/visits/[id]/page.tsx
+    real_reads:
+      - visits
+      - profiles
+      - audit_events
+      - visit_lifecycle_events
+      - visit_location_events
+      - visit_packages
+      - package_versions
+      - visit_attachments
+    immutable_and_audit_content_present: true
+  backend_delta_required_for_list_first_composition: false
+
+existing_evidence_inventory:
+  root: >-
+    /Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/WA-P1-M2-BATCH-002/module-01-planning
+  manifest_observed: false
+  files:
+    - file: claude-design-WA-DES-036-r1784901048581707.png
+      sha256: aff673160a165d65190ee1fd6321d960727250ed3af25d0e9768823ecf7cfac9
+      pixels: 757x807
+      classification: BASELINE_REFERENCE_NOT_EXACT_1440X900_PROOF
+    - file: claude-design-WA-DES-036-r1784903934723797.png
+      sha256: 19dd62f4a4ed97df9706bc8f033d762c3ea673d7afaadf9f64bc2de3223819eb
+      pixels: 757x807
+      classification: RETURNED_INTERMEDIATE_REFERENCE
+    - file: claude-design-WA-DES-036-r1784904309230874.png
+      sha256: 328312060f976e59fe65d029a6c018ed87c1c85c401368bcd5e96e0a22d50442
+      pixels: 757x807
+      classification: APPROVED_CANDIDATE_REFERENCE_NOT_EXACT_1440X900_PROOF
+    - file: real-implementation-planning-home-1440x900-2026-07-24.png
+      sha256: c354b18437fea0fdb87226842f95acfac5266c732aabcc8f93aefa1b5e26f077
+      pixels: 742x1233
+      classification: RUNTIME_REFERENCE_FILENAME_AND_PIXEL_DIMENSIONS_CONFLICT
+    - file: real-implementation-planning-home-2026-07-24.png
+      sha256: 5f34df8e217373cccad0b9918dfde0643943e4f4be419b5d4d30ae3fc6cfafe6
+      pixels: 742x1233
+      classification: RUNTIME_REFERENCE_NOT_FIXED_VIEWPORT_PARITY_PROOF
+  missing:
+    - Stable R4 frames.
+    - Exact 1440x900 design/runtime parity frames.
+    - WA-DES-045 Visits list and detail design/runtime frames.
+    - Complete light/dark and EN/LTR/AR/RTL evidence.
+    - Complete responsive evidence.
+    - Evidence manifest with checksums and capture metadata.
+
+required_parity_evidence_matrix:
+  matrix_rule: >-
+    Capture every cartesian product of source, screen, presentation mode, and
+    viewport below. No screenshot may satisfy more than one matrix cell.
+  sources:
+    - CLAUDE_DESIGN_STABLE_ACCEPTED_REVISION
+    - REAL_RUNTIME_AT_EXACT_M2_HEAD_OR_LATER_AUTHORIZED_HEAD
+  screens:
+    - id: WA-DES-036
+      name: PLANNING_LANDING
+      runtime_route: /planning?wa_preview=1
+      required_state: POPULATED_LIST_FIRST
+    - id: WA-DES-045-LIST
+      name: PLANNING_VISITS_LIST
+      runtime_route: /planning/visits?wa_preview=1
+      required_state: POPULATED
+    - id: WA-DES-045-DETAIL
+      name: PLANNING_VISIT_DETAIL
+      runtime_route: /planning/visits/{manifested_visit_id}?wa_preview=1
+      required_state: POPULATED_WITH_AUDIT_AND_VERSION_CONTENT
+  presentation_modes:
+    - en-LTR-light
+    - en-LTR-dark
+    - ar-RTL-light
+    - ar-RTL-dark
+  viewports:
+    - 1440x900
+    - 1024x768
+    - 768x1024
+    - 412x915
+    - 390x844
+    - 320x800
+  required_core_frames: 144
+  filename_template: >-
+    {source}__{design_id}__{state}__{locale}-{direction}-{theme}__{width}x{height}__{revision_or_head}.png
+  exact_capture_rules:
+    - Browser viewport and resulting PNG pixel dimensions must match.
+    - Browser zoom is 100 percent and device scale factor is recorded.
+    - Design and runtime use the same viewport for each comparison pair.
+    - Full-page captures are additional evidence and never replace viewport captures.
+    - Runtime uses a named RLS persona and records no secret.
+    - Populated list/detail cells cannot be skipped for zero data.
+    - Existing data may be used read-only; seeding requires separate authority.
+    - No expiry, workflow, audit, assignment, or shared-data mutation may occur during comparison.
+
+required_state_evidence_matrix:
+  contexts:
+    - en-LTR-light__1440x900
+    - ar-RTL-dark__390x844
+  states_by_screen:
+    PLANNING_LANDING:
+      - LOADING
+      - EMPTY
+      - READ_ERROR
+      - UNAUTHORIZED
+    PLANNING_VISITS_LIST:
+      - LOADING
+      - EMPTY
+      - READ_ERROR
+      - UNAUTHORIZED
+      - STALE_OR_DEGRADED
+    PLANNING_VISIT_DETAIL:
+      - LOADING
+      - NOT_FOUND
+      - READ_ERROR
+      - UNAUTHORIZED
+      - STALE_OR_CONFLICT
+  sources:
+    - CLAUDE_DESIGN_STABLE_ACCEPTED_REVISION
+    - REAL_RUNTIME_AT_EXACT_M2_HEAD_OR_LATER_AUTHORIZED_HEAD
+  required_state_frames: 56
+  total_required_frames: 200
+
+evidence_manifest_contract:
+  filename: M2-B002-R4-EVIDENCE-MANIFEST.json
+  one_record_per_frame: true
+  required_fields:
+    - evidence_id
+    - relative_path
+    - source
+    - design_page_id
+    - design_revision
+    - runtime_head
+    - runtime_route
+    - persona
+    - seed_or_record_reference
+    - locale
+    - direction
+    - theme
+    - viewport_width
+    - viewport_height
+    - png_pixel_width
+    - png_pixel_height
+    - device_scale_factor
+    - browser_zoom
+    - state
+    - captured_at
+    - sha256
+    - bytes
+    - capture_tool
+  validation:
+    - All 200 required cells are unique and present.
+    - Every file exists and its checksum, byte count, and dimensions recompute.
+    - Design revision is identical across all accepted-design frames.
+    - Runtime HEAD is identical across each certification run.
+    - Detail evidence uses a real manifested visit ID but does not expose secrets.
+    - Any missing or mismatched cell returns the packet for evidence correction.
+
+runtime_test_correction_requirements:
+  current_finding: >-
+    apps/web/e2e/web-admin-m2-batch-002.spec.ts mixes runtime checks with
+    self-referential source-string assertions. Its focus assertion requires the
+    legacy outer 2px outline even though the recorded correction and canonical
+    component CSS claim a single inset stroke. Runtime elements using sq-input
+    and the shell search still receive the loaded legacy selectors, so the
+    recorded single-stroke claim is not proven.
+  future_test_owner: F0_FOR_SHARED_FOCUS_AND_M2_FOR_PLANNING_RUNTIME
+  prohibited_now: DO_NOT_EDIT_TESTS_UNDER_THIS_PACKET
+  corrected_expectations:
+    shared_focus_runtime:
+      - Focus the authenticated shell search and one rendered sq-input.
+      - Assert computed outline-style is none.
+      - Assert no positive outline width or separated outline offset exists.
+      - Assert the focused border uses the approved focus/action token.
+      - Assert one contiguous inset reinforcement exists if that is the accepted F0 contract.
+      - Run in light/dark and EN/LTR/AR/RTL.
+    preview_guards:
+      - Preview route returns not-found when the server flag is disabled.
+      - Preview route returns not-found when wa_preview=1 is absent.
+      - Authorized Planner reaches all three preview routes.
+      - Unauthorized Admin is denied without protected content disclosure.
+    real_data_and_wiring:
+      - Require a non-empty certified RLS fixture or return BLOCKED_MISSING_DATA.
+      - Never skip Visit list/detail assertions because zero rows were returned.
+      - Assert Planning list/detail links stay in the Planning-owned preview route.
+      - Assert detail renders audit, lifecycle, package/version, and governed-action content.
+      - Assert preview comparison performs no expiry or workflow mutation.
+    visual_and_accessibility:
+      - Assert zero horizontal overflow at every required viewport.
+      - Run axe on all three screens in EN/LTR and AR/RTL.
+      - Use screenshot comparisons tied to the accepted stable design revision.
+    source_checks_allowed_only_for:
+      - Exact server/query gate presence as defense in depth.
+      - Prohibited credential, service-role, bypass-RLS, and mock markers.
+    source_checks_not_accepted_as_runtime_proof:
+      - Layout geometry.
+      - Focus appearance.
+      - Icons.
+      - Data population.
+      - Route behavior.
+      - RLS behavior.
+
+status_ledger_reconciliation:
+  current_conflicts:
+    - record: product-contract/execution/CURRENT_SLICE.yaml
+      observed: SPONSOR_APPROVED_CANDIDATE_RETURNED_FOR_DESIGN_CORRECTION
+    - record: product-contract/execution/WORK_QUEUE.yaml
+      observed: APPROVED_CANDIDATE_RETURNED_FOR_DESIGN_CORRECTION
+    - record: product-contract/web-admin-phase1/SCREEN_BATCH_LEDGER.csv
+      observed: SPONSOR_APPROVED_CANDIDATE_PENDING_R4_FINAL_EVIDENCE
+    - record: product-contract/web-admin-phase1/M2_BATCH_002_CURRENT_TO_TARGET_MIGRATION.csv
+      observed: IMPLEMENTED_AWAITING_PRODUCT_OWNER_APPROVAL
+    - record: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+      observed: >-
+        WA-M2-AC-003 awaits visual approval; WA-M2-AC-004 and 006 claim review
+        readiness despite missing complete R4 frame and manifest evidence.
+    - record: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ACCEPTANCE.csv
+      observed: WA-SHELL-AC-002_AND_013_REGISTERED_NOT_IMPLEMENTED
+    - record: product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+      observed: M2_ROWS_PLANNED_NOT_IMPLEMENTED
+    - record: product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md
+      observed: >-
+        Claims exact fixed-viewport and complete evidence beyond the currently
+        inventoried files.
+  required_single_truth_before_review:
+    batch_status: BLOCKED_PENDING_STABLE_R4_AND_EVIDENCE_RECONCILIATION
+    implementation_status: ORIGINAL_PREVIEW_CHECKPOINT_EXISTS_NOT_R4_PARITY
+    visual_status: NOT_CERTIFIED
+    responsive_rtl_status: NOT_CERTIFIED_TO_R4
+    evidence_status: INCOMPLETE
+    shell_status: SEPARATE_F0_GATE_OPEN
+    cutover_status: NOT_AUTHORIZED
+    current_routes: RETAINED
+  files_requiring_authorized_reconciliation:
+    - product-contract/execution/CURRENT_SLICE.yaml
+    - product-contract/execution/WORK_QUEUE.yaml
+    - product-contract/web-admin-phase1/SCREEN_BATCH_LEDGER.csv
+    - product-contract/web-admin-phase1/M2_BATCH_002_CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ACCEPTANCE.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/acceptance/ACCEPTANCE_STATUS.md
+    - product-contract/evidence/EVIDENCE_STATUS.md
+    - product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md
+    - product-contract/sessions/SESSION_LEDGER.json
+  rule: >-
+    This packet proposes the reconciliation but does not authorize editing
+    frozen or product-contract records. A separately authorized governance task
+    must update them atomically and preserve their history.
+
+independent_review_gate:
+  id: M2-B002-R4-INDEPENDENT-READINESS
+  reviewer_must_not_be:
+    - The R4 design author.
+    - The future M2 implementation owner.
+    - The F0 shared-focus correction owner.
+  pass_criteria:
+    - Stable R4 handoff is complete.
+    - Sponsor accepted revision is unambiguous.
+    - Central lease registry still prevents unleased writes.
+    - F0, Field, and M2 ownership do not overlap.
+    - All 200 evidence cells and manifest validations pass.
+    - Runtime tests use non-skipped real data and computed behavior.
+    - All status ledgers tell one truthful state.
+    - WA-M2 P0 criteria pass with evidence.
+    - WA-M2 P1 criteria pass with evidence.
+    - WA-SHELL acceptance is not borrowed or self-certified by M2.
+    - No backend, schema, RLS/RBAC, workflow, provider, or cutover expansion exists.
+  allowed_results:
+    - PASS
+    - RETURN_FOR_DESIGN_EVIDENCE_CORRECTION
+    - RETURN_FOR_RUNTIME_EVIDENCE_CORRECTION
+    - RETURN_FOR_TEST_CORRECTION
+    - RETURN_FOR_STATUS_LEDGER_CORRECTION
+    - BLOCK_FOR_F0_OWNERSHIP
+    - BLOCK_FOR_MISSING_DATA
+    - BLOCK_FOR_CONCURRENT_OWNERSHIP
+  current_result: BLOCKED
+
+one_safe_follow_on:
+  id: M2-B002-R4-STABLE-HANDOFF-AND-EVIDENCE-PREFLIGHT
+  activation_condition:
+    - Mac is unlocked.
+    - Claude Design provides the stable R4 handoff without repository mutation.
+  mode: READ_ONLY_CAPTURE_AND_CERTIFICATION_PREPARATION
+  actions:
+    - Record the stable R4 revision and immutable handoff.
+    - Run the sponsor revision reconciliation decision.
+    - Inventory the exact 200-cell capture plan and available real RLS records.
+    - Verify evidence storage and manifest destinations.
+    - Return the independent-readiness packet for review.
+  prohibitions:
+    - No product or test edit.
+    - No design mutation.
+    - No seed or shared-data mutation.
+    - No lease issuance.
+    - No cutover, push, merge, deploy, or remote action.
+  stop_condition: >-
+    Stop after the independent reviewer returns a result. Only a PASS may allow
+    the orchestrator to draft, but not automatically issue, one exact
+    conflict-free M2 frontend lease.
+
+unlock_monitor:
+  last_observed:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+  on_unlock: >-
+    Notify the orchestrator. Do not open or operate Claude Design or a browser
+    until the safe follow-on is explicitly dispatched.
+
+final_disposition:
+  m2_product_edits: BLOCKED
+  m2_design_mutation: BLOCKED
+  m2_lease_issuance: BLOCKED
+  m2_evidence_preparation: READY_AFTER_UNLOCK_AND_STABLE_HANDOFF
+  m3: BLOCKED_UNCHANGED

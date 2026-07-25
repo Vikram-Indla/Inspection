@@ -1,0 +1,365 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045
+title: Independent Workflow Library and Designer authority and runtime-delta review
+status: RETURN_FOR_CONTRACT_AND_DESIGN_CORRECTION_BLOCK_CD051_PACKAGE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    WA-DES-014 is the nearest stable route design, but it does not satisfy the
+    governed lifecycle, permission, immutability, audit, concurrency, simulation,
+    SLA-policy, bilingual, responsive, accessibility or hard-state contracts.
+    The CD-051 R2 package and exact frame fingerprints are unavailable.
+
+task_contract:
+  task_id: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045
+  gate: M9 Workflow Settings design authority
+  route: /admin/workflows
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids: [SCR-ADM-050, SCR-ADM-051]
+  screen_names: [Workflow Library, Workflow Designer]
+  engines: [ENG-03, WORKFLOW, AUDIT, VERSION, IMMUTABLE]
+  exact_requirement_ids:
+    mvp2_source: MVP2-REQ-0025_THROUGH_MVP2-REQ-0043
+    mvp3_extension: [MVP2-REQ-0249, MVP2-REQ-0250]
+  acceptance_ids:
+    mvp2_source: MVP2-AC-0025_THROUGH_MVP2-AC-0043
+    mvp3_extension: [MVP2-AC-0249, MVP2-AC-0250]
+    web_admin:
+      - WA-M9-AC-001
+      - WA-M9-AC-002
+      - WA-M9-AC-003
+      - WA-M9-AC-004
+      - WA-M9-AC-005
+      - WA-M9-AC-006
+  dependencies:
+    - CD-051 R2 package and exact frame fingerprints
+    - CD-043 predecessor identity collision resolution
+    - workflow_admin versus generic config-writer permission decision
+    - non-bypassable maker-checker publish boundary
+    - published config_versions immutability
+    - workflow-definition append-only audit
+    - end-to-end row_version compare-and-set wiring
+    - correct scheduled activation and effective-version selection
+    - in-flight workflow-version binding evidence
+    - persisted simulator fixture and replay contract
+    - DEC-003 approved SLA calendar and values
+    - notification provider and delivery evidence contract
+  do_not_touch:
+    - live Claude Design, WA-DES-014, WA-DES-015, CD-051 or CD-043
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 1a2ab6ab
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, test,
+    database, evidence, provider, mapping, branch, lease or stash is changed.
+
+authority_reconciliation:
+  predecessor_design_review:
+    path: product-contract/operationalization/coordination/batches/M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-037.yaml
+    disposition: REVALIDATED
+  screen_catalogue:
+    - screen_id: SCR-ADM-050
+      route: /admin/workflows
+      capability: Manage workflow definitions and active versions
+      actions: [create, clone, test, publish]
+      negative_states: [missing transition, missing guard]
+    - screen_id: SCR-ADM-051
+      catalogue_route: /admin/workflows/:id
+      implementation_route: /admin/workflows
+      capability: Configure states, transitions, roles, guards, SLA, notifications and simulation
+      actions: [add state, connect, configure, validate, simulate, publish]
+      negative_states: [unreachable state, unauthorized transition, circular terminal path]
+      governance: Maker-checker
+  route_exists: true
+  component_exists: true
+  consolidated_screen_mapping: CONFIRMED
+  new_screen_identity_required: false
+  blanket_CR_001_through_CR_478_completion_claim: PROHIBITED
+
+registered_design_evidence:
+  primary:
+    design_id: WA-DES-014
+    filename: SAQEEL Admin Workflow Builder.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Workflow Builder.dc.html
+    bytes: 12723
+    lines: 135
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    reference_viewport: 1240x880
+    fingerprint_recomputed: true
+    validation: CONFIRMED_WITH_CORRECTION
+  logical_supplement:
+    design_id: CD-051
+    module: M3-01
+    source_module: M2-02
+    claimed_package: CD-051_M3-01_R2_FINAL
+    claimed_renders: CD-051_R2_FINAL/renders/01..06-CD-051_R2.png
+    package_bytes_available: false
+    package_sha256_available: false
+    exact_frame_manifest_available: false
+    validation: INSUFFICIENT_EVIDENCE
+  secondary:
+    design_id: WA-DES-015
+    state_key: workflows
+    validation: SECONDARY_ADMIN_OVERVIEW_ONLY
+    rule: It cannot replace WA-DES-014 as route authority.
+  upstream_warning:
+    design_id: CD-043
+    status: IDENTITY_COLLISION_OR_STALE_LINEAGE
+    reason: Other approved material associates CD-043 with Virtual Inspection.
+    rule: Do not consume CD-043 as Workflow predecessor without exact manifest and hash proof.
+
+nearest_design_validation:
+  parity:
+    - Workflow builder title and versioned workflow concept.
+    - State graph, transition actor, guard and side-effect structure.
+    - Validation summary and maker-versus-checker concept.
+    - Submitted immutable label and workflow-admin context.
+    - Light and dark theme toggle.
+  design_has_code_lacks:
+    - visual state and transition composer instead of raw JSON payload
+    - visible Add state and transition configuration controls
+    - SLA configuration table inside the route
+  code_has_design_lacks:
+    - real config_versions and maker/checker identity reads
+    - six-check validation ledger
+    - honest unavailable boundary for persisted simulation
+    - draft clone and unexposed rollback/retire actions
+    - neutral load and write error handling
+  mandatory_design_corrections:
+    - Remove 48-hour, 3-day, 5-day, Sun-Thu, escalation and auto-expiry claims until DEC-003 is resolved.
+    - Add Workflow Library and version-history context, not only one designer canvas.
+    - Add Review, Approved, Scheduled, Retired and Rolled-back successor states.
+    - Add explicit distinct-checker review and publish consequences.
+    - Add real validation, simulation unavailable and provider-unavailable outcomes.
+    - Add loading, empty, unauthorized, partial, stale, conflict and recovery states.
+    - Remove Arabic-only wordmark from English/LTR.
+    - Provide complete Arabic/RTL, responsive and accessibility evidence.
+  design_action: CORRECT
+
+runtime_delta_only:
+  source_files:
+    - apps/web/src/app/(app)/admin/workflows/page.tsx
+    - apps/web/src/app/(app)/admin/workflows/Controls.tsx
+    - apps/web/src/app/(app)/admin/workflows/WfDeck.tsx
+    - apps/web/src/app/(app)/admin/workflows/actions.ts
+    - apps/web/src/lib/workflow/validate.ts
+    - apps/web/src/lib/workflow/governed-transition.ts
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/20260716120000_seco_config_versions_roles_rls.sql
+    - supabase/migrations/20260717010000_mvp2_m2_02_workflow_version_model.sql
+  runtime_certification_claimed: false
+  current_route_truth:
+    reads: config_versions engine=workflow and profile names
+    exposed_actions:
+      - proposeWorkflowDraft
+      - saveWorkflowDraft
+      - approvePublishWorkflow
+    present_but_not_exposed:
+      - retireWorkflowVersion
+      - rollbackWorkflowToVersion
+      - governed transition, SLA and task actions
+    honest_gap: Persisted simulator fixtures, replay and audit are not built.
+
+permissions_maker_checker_version_audit:
+  permissions:
+    navigation_role: workflow_admin
+    exact_route_role_guard: ABSENT
+    config_versions_read: all authenticated
+    config_writer_roles:
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - risk_owner
+      - gis_admin
+      - security_admin
+    UI_role_gating: ABSENT
+    verdict: INCONSISTENT
+    required_decision: workflow_admin-only or governed broader config-writer model
+  maker_checker:
+    UI_hides_publish_from_maker: true
+    constraint: approved_by may be null or must differ from created_by
+    weakness: Published status does not itself require approved_by.
+    bypass: Generic RLS update can bypass server-action-only publish checks.
+    verdict: PARTIAL_AND_BYPASSABLE
+  versioning:
+    row_version_column: PRESENT
+    bump_trigger: PRESENT
+    page_reads_row_version: false
+    editor_submits_row_version: false
+    compare_and_set: CONDITIONAL_ONLY
+    stale_overwrite_protection: NOT_WIRED_END_TO_END
+    published_immutability_guard: NOT_FOUND
+    scheduled_activation: CONTRACT_INCONSISTENT
+    reason: Future scheduled_from is accepted while status becomes published and effective_from becomes now.
+  audit:
+    runtime_transition_events: PRESENT_IN_ADJACENT_ENGINE
+    config_version_create_save_publish_retire_rollback_events: NOT_PROVEN
+    config_versions_generic_audit_trigger: NOT_FOUND
+    verdict: FAIL_FOR_WORKFLOW_DEFINITION_LIFECYCLE
+
+workflow_transition_and_simulation_review:
+  validation_checks: VAL-01_THROUGH_VAL-06
+  required_negative_paths:
+    - unreachable or orphan state
+    - unauthorized transition
+    - ambiguous transition
+    - circular terminal path
+    - missing actor or guard
+    - non-idempotent side effect
+  governed_runtime_transition:
+    feature_flag: FEATURE_WORKFLOW_TRANSITION
+    default: off
+    direct_status_bypass: false
+  simulation:
+    pure_evaluator: PRESENT
+    deterministic_fixture_store: ABSENT
+    persisted_runs: ABSENT
+    replay_history: ABSENT
+    MVP2_REQ_0249_status: NEEDS_REVIEW
+  in_flight_versioning:
+    design_requirement: New versions apply prospectively; in-flight inspections keep original version.
+    runtime_family_evidence: REGISTERED_MATCH
+    route_specific_visible_evidence: INSUFFICIENT
+    MVP2_REQ_0250_status: NOT_ROUTE_CERTIFIED
+
+language_theme_responsive_accessibility:
+  wordmark:
+    english_ltr: FAIL
+    evidence: WA-DES-014 renders Arabic صقيل صناعي on its English page.
+    required: English SAQEEL Industrial identity in EN and approved Arabic identity in AR.
+  locale_direction:
+    english_ltr: PARTIAL
+    arabic_rtl: MISSING
+  themes:
+    light: PRESENT_BUT_UNCERTIFIED
+    dark: PRESENT_BUT_UNCERTIFIED
+  responsive:
+    status: FAIL_INSUFFICIENT_EVIDENCE
+    observed: One 1100px column breakpoint; fixed 248px rail; state lane can scroll horizontally.
+    required_viewports:
+      - 1440x900
+      - 1240x880
+      - 1024x768
+      - 768x1024
+      - 412x915
+      - 390x844
+      - 320x568
+  accessibility:
+    status: FAIL_INSUFFICIENT_EVIDENCE
+    gaps:
+      - graph nodes and transitions lack complete keyboard contract
+      - roving tab stop does not follow arrow-moved focus
+      - no complete visible-focus evidence
+      - no validation/stale/publish/provider live announcements
+      - no graph-to-list screen-reader parity proof
+      - no zoom, reflow or reduced-motion evidence
+
+hard_state_review:
+  partially_present:
+    - draft workflow
+    - published workflow
+    - state graph
+    - selected transition
+    - validation warning
+    - maker-versus-checker concept
+  missing_or_unproven:
+    - loading
+    - verified empty
+    - source error and partial profile degradation
+    - unauthorized zero-disclosure
+    - read-only authenticated
+    - session expired
+    - stale row-version conflict
+    - review and approved
+    - scheduled not yet active
+    - retired
+    - rollback successor draft
+    - in-flight prior-version binding
+    - happy and exception simulation
+    - simulation fixture or persistence unavailable
+    - SLA calendar unapproved
+    - notification provider unavailable
+    - audit unavailable
+    - EN/AR light/dark responsive accessibility matrix
+
+immutable_revision_evidence:
+  WA_DES_014_export_hash: PRESENT_AND_RECOMPUTED
+  WA_DES_014_immutable_platform_revision: NOT_PROVEN
+  CD_051_R2_package_hash: MISSING
+  CD_051_exact_frame_hashes: MISSING
+  responsive_state_exports: MISSING
+  result: BLOCK_DUE_TO_MISSING_CONTRACT
+
+evidence_verdict:
+  route_and_screen_mapping: CONFIRMED_WITH_CORRECTION
+  nearest_design: CONFIRMED_WITH_CORRECTION
+  CD_051_lineage: BLOCKED
+  permissions_and_maker_checker: FAIL
+  concurrency_and_immutability: FAIL
+  workflow_definition_audit: FAIL
+  simulation_acceptance: FAIL
+  bilingual_RTL_LTR_matrix: FAIL
+  responsive_matrix: FAIL
+  accessibility_matrix: FAIL
+  runtime_behavior: NOT_CERTIFIED_BY_THIS_REVIEW
+
+reviewer_recommendation:
+  decision: RETURN_FOR_CONTRACT_AND_DESIGN_CORRECTION
+  design_consumer_status: NON_CONSUMABLE
+  sponsor_business_decisions:
+    - Confirm WA-DES-014 as primary and WA-DES-015 as overview only.
+    - Retrieve and fingerprint CD-051 R2 and resolve CD-043 lineage.
+    - Decide Workflow Admin-only versus the generic configuration-writer role set.
+    - Require non-bypassable maker-checker, published immutability and canonical audit.
+    - Approve end-to-end row-version and scheduled-activation semantics.
+    - Resolve DEC-003 before displaying any SLA values or calendars.
+    - Define persisted simulation fixtures, replay and evidence.
+  implementation_authorized: false
+  design_write_authorized: false
+  completion_credit_authorized: false
+
+next_non_overlapping_admin_design_review:
+  task_id: M9-ADMIN-PLANNING-LOOKUPS-DESIGN-AUTHORITY-REVIEW-046
+  status: QUEUED_READ_ONLY
+  route: /admin/planning/lookups
+  objective: >-
+    Determine the route's governed screen and exact requirements, identify the
+    nearest registered design instead of inheriting the whole M9 design estate,
+    and validate lookup lifecycle, permissions, audit, concurrency, EN/AR,
+    RTL/LTR, responsive, accessibility, hard states, wordmark and immutable
+    revision evidence without modifying product code or design.
+  non_overlap:
+    - no Workflow, WA-DES-014, WA-DES-015, CD-051 or CD-043 write
+    - no application, test, database, mapping, branch, lease or stash mutation
+    - no runtime certification or completion credit
+
+validation:
+  yaml_parse_required: true
+  WA_DES_014_hash_recomputed: true
+  screens_and_requirement_ids_reconciled: true
+  runtime_sources_read_only_reconciled: true
+  runtime_tests_run: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  data_or_supabase_mutation: false
+  branch_or_stash_mutation: false

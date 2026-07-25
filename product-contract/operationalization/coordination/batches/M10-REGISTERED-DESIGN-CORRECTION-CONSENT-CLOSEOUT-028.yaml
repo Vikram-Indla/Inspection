@@ -1,0 +1,379 @@
+schema_version: "1.0"
+packet_id: M10-REGISTERED-DESIGN-CORRECTION-CONSENT-CLOSEOUT-028
+title: Registered Admin design correction sponsor-consent closeout
+status: DRAFT_AWAITING_SPONSOR_DECISION_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+task_contract:
+  task_id: M10-REGISTERED-DESIGN-CORRECTION-CONSENT-CLOSEOUT-028
+  gate: M10 registered Admin design correction consent
+  surfaces:
+    - WA-DES-003-C1
+    - WA-DES-006-C1
+    - WA-DES-007-C1
+    - WA-DES-008-C1
+  acceptance_ids:
+    - WA-M10-AC-001
+    - WA-M10-AC-002
+    - WA-M10-AC-003
+    - WA-M10-AC-004
+    - WA-M10-AC-005
+    - WA-M10-AC-006
+  dependencies:
+    - M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+    - M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024
+    - M10-WA-DES-006-C1-DESIGN-LEASE-READINESS-025
+    - M10-WA-DES-007-C1-DESIGN-LEASE-READINESS-026
+    - M10-WA-DES-008-C1-DESIGN-LEASE-READINESS-027
+    - sponsor_decision_SD-023-03
+    - one_named_collision_free_designer_per_surface
+  do_not_touch:
+    - live Claude Design before separate sponsor consent and named leases
+    - frozen design, route, requirement, or acceptance mappings
+    - product code, tests, evidence, data, providers, environment, migrations, seeds, or Supabase
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 9687dbc390e3a85157ce1f43e0173247a662efd8
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-CORRECTED-GOVERNANCE-SEQUENCE-011.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026.yaml
+    - product-contract/operationalization/coordination/batches/M10-WA-DES-008-C1-DESIGN-LEASE-READINESS-027.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This sponsor-decision packet does not start a design or application batch.
+    It creates no lease and changes no approved authority.
+
+closeout_summary:
+  registered_successors: 4
+  predecessor_fingerprints_verified: 4
+  collision_checks_clear: 4
+  live_designs_created: 0
+  live_design_writes_authorized: 0
+  implementation_leases_authorized: 0
+  combined_P0_return_gates: 48
+  combined_P1_return_gates: 29
+  recommendation: APPROVE_SEPARATE_BOUNDED_DESIGN_LEASES_WITH_RECORDED_ORDER
+  non_completion_rule: >-
+    This closeout establishes consent readiness only. It does not make a
+    design accepted, consumable, implementation-ready, implemented, tested, or
+    complete and does not close any of the 478 source requirements.
+
+successor_register:
+  - order: 1
+    identity:
+      logical_id: WA-DES-003
+      correction_revision: WA-DES-003-C1
+      route: /admin/execution
+      title: SAQEEL Execution Settings
+      filename: SAQEEL Admin Execution - WA-DES-003-C1.dc.html
+      predecessor:
+        filename: SAQEEL Admin Execution.dc.html
+        bytes: 13248
+        sha256: 47a54a5b2dc9863310496ccbd14695bdc9795b887ed8b29256a2fd712047c0b8
+        reference_viewport: 1160x900
+    collision_result: CLEAR_CORRECTIVE_SUCCESSOR
+    business_capability_preserved: >-
+      Capability-gated, versioned, audited execution configuration across
+      daily capacity, mode eligibility, reasons, shared GIS defaults, evidence,
+      and offline/sync policy.
+    inventions_removed:
+      - Arabic-only or Industrial sub-brand in the English shell
+      - Risk Settings route context
+      - fixed policy values, file limits, durations, retry/autosave values, and invented version
+      - generic effective-immediately success claim without returned version truth
+      - maker-checker, new route, role, capability, engine, provider, or backend behavior
+    current_P0_blocks:
+      - Exact screen identity and direct primary-requirement ownership are unresolved; no ID may be invented.
+      - Per-section capability confidentiality must be proven.
+      - Unset values and protected invariants must remain truthful.
+      - Stale-write protection is design-required but runtime-unproven.
+      - Runtime data, audit, negative, and action evidence is absent from the source-only test.
+    current_P1_blocks:
+      - Complete responsive, light/dark, EN/AR RTL, keyboard, zoom, and accessibility evidence.
+      - Correct section-level feedback and returned-version copy.
+      - Export fingerprint, state index, annotations, and predecessor comparison.
+    return_gate_counts: {P0: 8, P1: 7}
+    consent_status: PENDING
+    named_designer: null
+    write_lease_status: NOT_ISSUED
+
+  - order: 2
+    identity:
+      logical_id: WA-DES-006
+      correction_revision: WA-DES-006-C1
+      route: /admin/gis
+      screen_id: SCR-ADM-070
+      title: SAQEEL GIS Studio — Geofencing
+      filename: SAQEEL Admin Geofence - WA-DES-006-C1.dc.html
+      predecessor:
+        filename: SAQEEL Admin Geofence.dc.html
+        bytes: 10141
+        sha256: 39c768e8e3dbe588cc8424306d7eab1c387fd51392bb76d6a78afd8e3bdaf956
+        reference_viewport: 1200x840
+    collision_result: CLEAR_CORRECTIVE_SUCCESSOR
+    business_capability_preserved: >-
+      Search and filter RLS-visible factories, synchronize map and semantic
+      registry selection, display official coordinates read-only, and save one
+      positive per-factory geofence radius.
+    inventions_removed:
+      - official-coordinate editing
+      - coordinate-change reason and source revert
+      - save-and-publish or maker-checker lifecycle
+      - fabricated source comparison, observed pin, provider row, editor, timestamp, and policy value
+      - Spatial Canvas, offline-pack, privacy, Field override, or cross-channel mutation
+    current_P0_blocks:
+      - DEC-002 numeric policy remains open.
+      - MVP3-HOLD-002 Mapbox provider/style/geographic/offline authority remains open.
+      - GIS Admin versus planner route/action/RLS authority is unresolved.
+      - Runtime code fallback of 150 metres is not accepted policy.
+      - Official-coordinate immutability, no-leak denial, audit, conflict, and completeness require proof.
+    current_P1_blocks:
+      - Map/list keyboard equivalence and unlocated-factory inclusion.
+      - Complete responsive, theme, EN/AR RTL, accessibility, attribution, zoom, and reduced-motion evidence.
+      - Pagination/count labelling and complete export evidence.
+    return_gate_counts: {P0: 13, P1: 8}
+    consent_status: PENDING
+    named_designer: null
+    write_lease_status: NOT_ISSUED
+
+  - order: 3
+    identity:
+      logical_id: WA-DES-007
+      correction_revision: WA-DES-007-C1
+      route: /admin/integrations/factory-data
+      title: SAQEEL Factory Data Integration
+      filename: SAQEEL Admin Integrations Data - WA-DES-007-C1.dc.html
+      predecessor:
+        filename: SAQEEL Admin Integrations Data.dc.html
+        bytes: 12588
+        sha256: a35484895fbb0965ef63f42842a832c7dcd69a164069e1f0e059a1fae17f049b
+        reference_viewport: 1160x880
+    collision_result: CLEAR_CORRECTIVE_SUCCESSOR
+    business_capability_preserved: >-
+      Exact three-role Factory Data control plane with strict CSV custody and
+      staging plus retained local document, representative, product, material,
+      and representative-status operations.
+    inventions_removed:
+      - Technical Admin role
+      - live Senaei call, connectivity, health, endpoint, mapping, or contract
+      - import, reconciliation apply, publication, or approval workflow
+      - fabricated run dates, files, correlations, hashes, counts, external IDs, outcomes, reasons, and freshness
+      - external CR, licence, plant, provider, official factory, Spatial Canvas, or Factory 360 dossier edits
+    current_P0_blocks:
+      - SENAEI_API_CONTRACT_NOT_SUPPLIED.
+      - Staged must remain pending/rejected with zero accepted or imported.
+      - Audit-recorded UI copy is unproven by the current source-only test.
+      - Representative stale writes, duplicate custody, partial writes, exact roles, RLS, and contact confidentiality require runtime proof.
+      - Required test failure or missing evidence must remain blocking.
+    current_P1_blocks:
+      - Bounded 250/20/20/50/30 reads lack totals and pagination proof.
+      - Complete responsive, theme, EN/AR RTL, keyboard, zoom, and accessibility evidence.
+      - Failure-preserved input, status, and full export evidence.
+    return_gate_counts: {P0: 13, P1: 7}
+    consent_status: PENDING
+    named_designer: null
+    write_lease_status: NOT_ISSUED
+
+  - order: 4
+    identity:
+      logical_id: WA-DES-008
+      correction_revision: WA-DES-008-C1
+      route: /admin/integrations
+      title: SAQEEL Integration Trust Console
+      filename: SAQEEL Admin Integrations - WA-DES-008-C1.dc.html
+      predecessor:
+        filename: SAQEEL Admin Integrations.dc.html
+        bytes: 9039
+        sha256: c5c61acd5b854928b4972fbf6122381a7c0f11dcdb6fbaa018f08fdba954be55
+        reference_viewport: 1160x820
+    collision_result: CLEAR_CORRECTIVE_SUCCESSOR
+    business_capability_preserved: >-
+      Read-only trust console for table-scoped endpoint registry, append-only
+      event outcomes, export-job evidence, and a link to Factory Data Integration.
+    inventions_removed:
+      - provider-health cards, connected/live claims, schedules, counts, latency, uptime, delivery rate, and freshness
+      - credentials, tokens, certificates, secrets, base URLs, and configuration detail
+      - provider test, endpoint mutation, retry, replay, webhook, synchronization, import, or export action
+      - global Technical Admin authority
+      - prepared-as-delivered and receipt-complete claims
+    current_P0_blocks:
+      - Six MVP3 provider and policy holds remain open.
+      - Table-specific RLS gives different endpoint, event, and export visibility.
+      - Event/export read errors are discarded and can appear falsely empty.
+      - Export receipt is not selected or displayed.
+      - Cross-query snapshot consistency is unproven and contradictions cannot be auto-reconciled.
+      - Required test failure or missing evidence remains blocking.
+    current_P1_blocks:
+      - Endpoint completeness is unknown; event/export queries load 20 and render 8 without totals or pagination.
+      - Complete responsive, theme, EN/AR RTL, keyboard, zoom, accessibility, partial-visibility, and record-detail evidence.
+      - Source-specific observation and limitation labelling.
+    return_gate_counts: {P0: 14, P1: 7}
+    consent_status: PENDING
+    named_designer: null
+    write_lease_status: NOT_ISSUED
+
+design_write_lease_order:
+  policy:
+    - Sponsor consent is recorded separately for each successor; consent is not all-or-nothing.
+    - Each surface has exactly one named writer and one exact output filename.
+    - A writer may hold only the recorded surface lease; no shared design foundation may be changed.
+    - Different named writers may work concurrently only after the first Execution shell/identity checkpoint passes and file collisions are rechecked.
+    - A lease expires after one corrected export and evidence return.
+    - Codex remains the read-only independent reviewer and never edits the leased design.
+  sequence:
+    - wave: 1
+      surface: WA-DES-003-C1
+      reason: Establish the corrected Admin shell, identity, form-state, and evidence pattern.
+      start_condition: Sponsor consent plus one named writer.
+      checkpoint_before_next_wave:
+        - stable identity and approved SAQEEL | صقيل shell
+        - no invented policy values or backend behavior
+        - responsive, theme, RTL, accessibility, and state evidence scaffold
+    - wave: 2
+      surfaces: [WA-DES-006-C1, WA-DES-007-C1]
+      execution: PARALLEL_ONLY_WITH_DIFFERENT_NAMED_WRITERS_AND_DISTINCT_FILES
+      reason: Distinct GIS and Factory Data capabilities with no shared route or output file.
+      start_condition: Wave 1 checkpoint passes; individual sponsor consents and collision checks recorded.
+    - wave: 3
+      surface: WA-DES-008-C1
+      reason: Confirm Factory Data child-route separation before finalizing Integration Hub information architecture.
+      start_condition: WA-DES-007-C1 route/authority separation passes independent review.
+  writer_register:
+    - surface: WA-DES-003-C1
+      named_designer: null
+      status: REQUIRED_BEFORE_LEASE
+    - surface: WA-DES-006-C1
+      named_designer: null
+      status: REQUIRED_BEFORE_LEASE
+    - surface: WA-DES-007-C1
+      named_designer: null
+      status: REQUIRED_BEFORE_LEASE
+    - surface: WA-DES-008-C1
+      named_designer: null
+      status: REQUIRED_BEFORE_LEASE
+
+shared_design_return_contract:
+  required_for_every_surface:
+    - Exact stable successor ID, title, filename, route, and predecessor lineage.
+    - New export byte size and SHA-256 fingerprint.
+    - Predecessor-versus-successor comparison and explicit removed-invention list.
+    - Component, capability, permission, data, state, interaction, error, and evidence annotations.
+    - English/LTR and Arabic/RTL with qualified native-Arabic review.
+    - Light and dark themes.
+    - Desktop, tablet landscape, tablet portrait, 412, 390, and 320 reflow.
+    - Keyboard-only, visible focus, 44px targets, programmatic labels, status semantics, 200 percent zoom, and 400 percent or equivalent reflow.
+    - Loading, populated, empty, unauthorized, degraded, failure, conflict, and provider/policy-held states relevant to the route.
+    - A truthful gap register distinguishing existing runtime behavior from design-required future implementation.
+  automatic_return:
+    - Missing required evidence
+    - Any P0 gate failure
+    - Any P1 gate failure
+    - Identity or file collision
+    - Unrecorded writer change
+    - Live design mutation outside the leased file
+    - Claim of design acceptance, implementation readiness, or module completion
+
+browser_evidence_prerequisites:
+  design_review_browser_evidence:
+    - Render the corrected export at its fixed comparison viewport in a controlled browser/font environment.
+    - Capture all required responsive viewports in English and Arabic, light and dark.
+    - Capture keyboard focus, validation/error, denied, empty, degraded, provider-held, and conflict states.
+    - Compare predecessor and successor at equal fidelity; list every intentional difference.
+    - Record browser version, viewport, locale, direction, theme, font, timestamp, export SHA-256, and screenshot SHA-256.
+    - Verify no horizontal task loss, peeking navigation, clipped identifiers, or inaccessible full values.
+  application_browser_evidence_later:
+    rule: >-
+      Actual application browser evidence is mandatory only after a separately
+      approved implementation lease. It must use the real route, RLS-scoped
+      test personas, source-backed data, negative paths, refresh persistence,
+      audit where applicable, and provider-unavailable states.
+    prohibition: >-
+      Claude Design screenshots are appearance evidence only. They cannot prove
+      application wiring, authorization, persistence, audit, concurrency,
+      provider integration, tests, or implementation parity.
+  acceptance_boundary:
+    - Design browser evidence may support READY_FOR_DESIGN_REVIEW only.
+    - Application browser evidence plus tests is required before implementation acceptance.
+    - Neither evidence class exists for these successors at closeout time.
+
+sponsor_decisions:
+  - id: SD-028-01
+    decision: Approve a bounded WA-DES-003-C1 design correction lease?
+    recommendation: APPROVE_WITH_RECORDED_BLOCKS
+    current_status: PENDING
+    effect_if_approved: Allows one named writer to correct one design file; no implementation.
+  - id: SD-028-02
+    decision: Approve a bounded WA-DES-006-C1 design correction lease?
+    recommendation: APPROVE_WITH_DEC-002_AND_MVP3-HOLD-002_UNRESOLVED
+    current_status: PENDING
+    effect_if_approved: Allows radius-only design correction; no provider, policy, or implementation authority.
+  - id: SD-028-03
+    decision: Approve a bounded WA-DES-007-C1 design correction lease?
+    recommendation: APPROVE_WITH_SENAEI_CONTRACT_BLOCK
+    current_status: PENDING
+    effect_if_approved: Allows staging/local-control design correction; no import, reconciliation, or provider authority.
+  - id: SD-028-04
+    decision: Approve a bounded WA-DES-008-C1 design correction lease?
+    recommendation: APPROVE_WITH_ALL_PROVIDER_HOLDS_AND_TABLE_RLS_TRUTH
+    current_status: PENDING
+    effect_if_approved: Allows read-only trust-console correction; no provider or endpoint action.
+  - id: SD-028-05
+    decision: Approve the wave order and exactly one named writer per surface?
+    recommendation: APPROVE
+    current_status: PENDING
+    effect_if_approved: Enables controlled parallelism only after the Wave 1 checkpoint.
+  - id: SD-028-06
+    decision: Confirm that design consent does not authorize implementation or mapping replacement?
+    recommendation: CONFIRM
+    current_status: PENDING
+    effect_if_confirmed: Preserves independent review, sponsor acceptance, mapping change control, and later implementation leases.
+
+post_consent_control_flow:
+  - Record the sponsor decision separately for each successor.
+  - Record one named designer and exact file ownership for each approved surface.
+  - Recheck identity, filename, and concurrent-writer collisions immediately before design access.
+  - Issue only the surface-specific lease; retain all P0/P1 gates.
+  - Receive one export and evidence package.
+  - Independently review without editing the design.
+  - Return, reject, or recommend sponsor acceptance.
+  - Update frozen mapping only through a separately approved change-control task.
+  - Issue an implementation lease only after accepted design authority and exact non-overlapping file ownership.
+
+current_disposition:
+  WA-DES-003-C1: DRAFT_BLOCKED_AWAITING_SPONSOR_AND_NAMED_WRITER
+  WA-DES-006-C1: DRAFT_BLOCKED_AWAITING_SPONSOR_NAMED_WRITER_POLICY_AND_PROVIDER
+  WA-DES-007-C1: DRAFT_BLOCKED_AWAITING_SPONSOR_NAMED_WRITER_AND_EXTERNAL_CONTRACT
+  WA-DES-008-C1: DRAFT_BLOCKED_AWAITING_SPONSOR_NAMED_WRITER_AND_PROVIDER_HOLDS
+  bundle_status: NOT_APPROVED
+  live_design_write_allowed: false
+  mapping_change_allowed: false
+  implementation_allowed: false
+  implementation_readiness_claim: PROHIBITED
+
+rollback:
+  action: Delete only this draft closeout packet if rejected.
+  product_or_design_rollback_required: false
+  unrelated_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-SPATIAL-CANVAS-DESIGN-IDENTITY-ALLOCATION-READINESS-029
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  scope: >-
+    Prepare the governance-ready identity-allocation and design-readiness
+    boundary for the real /admin/gis/spatial route. Perform collision checks
+    without inventing an ID; preserve feature-held, provider-held, policy-held,
+    no-map-renderer, factory-location, layer-lifecycle, pagination, permission,
+    responsive, bilingual, theme, accessibility, error, and evidence truth.
+    Make no live design, mapping, code, test, provider, data, lease, or branch change.
+  dependency: Sponsor decision SD-023-02 or equivalent new-identity authorization.
+  collision_check_required_before_dispatch: true

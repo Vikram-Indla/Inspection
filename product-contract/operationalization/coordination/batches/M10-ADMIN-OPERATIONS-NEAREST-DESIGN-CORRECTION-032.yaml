@@ -1,0 +1,412 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-OPERATIONS-NEAREST-DESIGN-CORRECTION-032
+title: Admin Platform Operations nearest-design correction
+status: READY_FOR_MAPPING_CORRECTION_AND_GOVERNANCE_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+supersedes_packet: M10-ADMIN-OPERATIONS-DESIGN-IDENTITY-ALLOCATION-READINESS-030
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+correction:
+  prior_disposition: BLOCKED_NO_IDENTITY_ALLOCATED
+  corrected_disposition: RETURN_FOR_NEAREST_DESIGN_CORRECTION
+  reason: >-
+    Registered WA-DES-004 contains an explicit operations state whose title,
+    cards, queue, feature-flag lifecycle, governed actions and held-policy
+    disclosure are the nearest semantic and information-architecture match for
+    the real /admin/operations route. WA-DES-020 is only an Administration
+    navigation catalogue and is not route authority.
+  prohibition: >-
+    This correction allocates no ID, edits no design, changes no frozen mapping,
+    and grants no design or implementation lease.
+
+task_contract:
+  task_id: M10-ADMIN-OPERATIONS-NEAREST-DESIGN-CORRECTION-032
+  gate: M10 Admin Platform Operations nearest-design governance
+  route: /admin/operations
+  channel: ADMIN
+  process_ids: ["G2-P00"]
+  module_id: M3-00
+  module_design_id: CD-050
+  direct_requirement_ids: [MVP2-REQ-0078]
+  cross_cutting_requirement_ids: [MVP2-REQ-0227, MVP2-REQ-0238, MVP2-REQ-0241, MVP2-REQ-0256]
+  contextual_requirement_ids:
+    - MVP2-REQ-0073
+    - MVP2-REQ-0188
+    - MVP2-REQ-0189
+    - MVP2-REQ-0190
+    - MVP2-REQ-0191
+    - MVP2-REQ-0192
+    - MVP2-REQ-0224
+    - MVP2-REQ-0226
+    - MVP2-REQ-0239
+  acceptance_ids:
+    direct: [MVP2-AC-0078]
+    cross_cutting: [MVP2-AC-0227, MVP2-AC-0238, MVP2-AC-0241, MVP2-AC-0256]
+    web_admin_family: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-003, WA-M10-AC-004, WA-M10-AC-005, WA-M10-AC-006]
+  dependencies:
+    - WA-DES-004_operations_frame_route_binding_decision
+    - WA-DES-020_mapping_removal_and_orphan_disposition
+    - CD-050_M3-00_R2_package_identity_and_fingerprint_verification
+    - WA-DES-004_to_CD-050_lineage_registration
+    - exact_screen_identity_and_requirement_ownership_decision
+    - route_navigation_RLS_RPC_persona_reconciliation
+    - MVP3-HOLD-004
+    - MVP3-HOLD-005
+    - MVP3-HOLD-006
+    - MVP3-HOLD-008
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design, CD-050, WA-DES-004, WA-DES-020, or exported designs
+    - frozen design, route, screen, requirement, acceptance, or evidence mappings
+    - Operations, Integrations, Security Access, Devices, shared shell, or provider application code
+    - tests, evidence, Supabase, migrations, RPCs, credentials, environment, seeds, or data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: ea72cbba
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-DECISION-AUTHORITY-APPLICATION-MATRIX-015.yaml
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-SPONSOR-BRIEFING-016.md
+    - product-contract/operationalization/coordination/batches/KIMI-M11-ACCEPTANCE-HARNESS-PREFLIGHT-CERTIFICATE-031.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-OPERATIONS-DESIGN-IDENTITY-ALLOCATION-READINESS-030.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-SECURITY-ACCESS-DESIGN-IDENTITY-READINESS-031.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  conflict_assessment: >-
+    This is read-only governance analysis. It starts no application or design
+    batch and changes no accepted route, ID, mapping, lease, data or test.
+
+authority:
+  module_and_requirements:
+    - product-contract/mvp3/README.md
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+  route_and_design_inventory:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  live_code_mapping:
+    - apps/web/src/app/(app)/admin/operations/page.tsx
+    - apps/web/src/app/(app)/admin/operations/loading.tsx
+    - apps/web/src/app/(app)/admin/mvp3-actions.ts
+    - apps/web/src/components/Mvp3ActionForm.tsx
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+  external_registered_designs_read_only:
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Extended.dc.html
+      design_id: WA-DES-004
+      bytes: 21561
+      sha256: b2ff11c538430f6f045ba66cf992cbcbc53897c0a62db1db98e30e3c811b19fc
+      reference_viewport: 1200x900
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Control Panel.dc.html
+      design_id: WA-DES-020
+      bytes: 17009
+      sha256: 387114f67318fc3d8d0022b72f711a4b952dce588a66ba5875fd8a5d675125d2
+      reference_viewport: 1200x900
+
+nearest_design_comparison:
+  accepted_candidate:
+    design_id: WA-DES-004
+    filename: SAQEEL Admin Extended.dc.html
+    state_key: operations
+    selector_label: Platform Ops
+    title: Platform operations & resilience
+    description: Fail-closed operations · error queue, flags, resilience
+    module_label: M3-00
+    classification: NEAREST_EXACT_FUNCTIONAL_AND_INFORMATION_ARCHITECTURE_MATCH
+    exact_evidence:
+      - Endpoint contracts card with configured-count distinction.
+      - Open error records card explicitly says there is no throughput claim.
+      - Published flag versions card explicitly calls out maker-checker enforcement.
+      - Error queue includes source, operation, status, attempts, error code and retry controls.
+      - Feature-flag table includes version, maker, checker, state and approve/publish control.
+      - Retention, backup and restore remain visibly policy-held.
+    fixture_values_not_runtime_truth:
+      - endpoint counts 6 and 4
+      - open error count 3
+      - published flag count 7
+      - sample sources, operations, statuses, attempt counts and error codes
+      - sample flag keys, versions, makers and checkers
+    limitations:
+      - It does not prove route admission, RLS visibility, RPC authorization or runtime data.
+      - It lacks complete partial-source, bounded-list, denied, stale/conflict, audit and receipt states.
+      - It lacks full responsive, Arabic/RTL, theme, zoom, motion and accessibility evidence.
+  rejected_candidate:
+    design_id: WA-DES-020
+    filename: SAQEEL Control Panel.dc.html
+    classification: INCORRECT_MAPPING
+    reason:
+      - It is an Administration navigation catalogue.
+      - Its System Operations card links to another screen.
+      - It contains no operational queue, feature-flag lifecycle, endpoint evidence or governed action.
+      - Its Technical Admin label does not establish route/RLS/RPC authority.
+    disposition: ORPHANED_PENDING_SEPARATE_ADMIN_CATALOGUE_DECISION
+  inventory_defect:
+    current_mapping: WA-DES-020_to_/admin/operations
+    omitted_mapping: WA-DES-004_operations_state_to_/admin/operations
+    required_result: >-
+      Governance must bind the WA-DES-004 operations state to the route and
+      remove WA-DES-020 from the route. This packet does not mutate the map.
+
+cd_050_family_authority:
+  module: M3-00
+  design_id: CD-050
+  register_rows: 14
+  authority_statement: Corrected CD-050 R2 remains binding visual and interaction family authority for M3-00.
+  repository_reference: CD-050_M3-00_R2_FINAL with renders 01 through 06
+  package_dc_html_present: false
+  package_sha256_present: false
+  exact_frame_manifest_present: false
+  required_lineage: CD-050_R2 -> WA-DES-004_operations_state -> /admin/operations
+  rule: >-
+    WA-DES-004 is the nearest route expression; it does not replace CD-050.
+    The accepted CD-050 package must be retrieved, fingerprinted and reconciled
+    before the lineage becomes consumable.
+
+recommended_authority_path:
+  preferred:
+    classification: GOVERN_EXISTING_WA-DES-004_OPERATIONS_FRAME_AS_CD-050_ROUTE_EXPRESSION
+    new_logical_design_id_required: false
+    condition: >-
+      Governance records a stable frame/state identifier, exact fingerprint,
+      CD-050 lineage, route, screen identity, requirement ownership and evidence
+      boundary for the existing WA-DES-004 operations state.
+  fallback:
+    classification: GOVERNED_ROUTE_CHILD_LINKED_TO_WA-DES-004_AND_CD-050
+    new_logical_design_id_required: GOVERNANCE_DECISION_ONLY
+    condition: >-
+      Use only if the multi-state WA-DES-004 cannot provide independent stable
+      revision and evidence lineage. This packet supplies no candidate ID.
+  prohibited:
+    - Allocating an ID from the apparent next number.
+    - Treating WA-DES-020, a screenshot, a code badge or a catalogue card as route authority.
+    - Replacing CD-050 family authority with WA-DES-004.
+    - Editing one WA-DES-004 state in a way that silently changes its Security or other states.
+
+real_route_truth:
+  route_exists: true
+  component: apps/web/src/app/(app)/admin/operations/page.tsx
+  title: Platform operations and resilience
+  code_authority_badge: M3-00_CD-050
+  reads:
+    error_queue:
+      table: mvp3_error_queue
+      fields: [id, source, operation, status, attempt_count, last_error_code, created_at]
+      bounded_limit: 50
+    feature_flags:
+      table: mvp3_feature_flags
+      fields: [id, flag_key, version, description, enabled, status, created_by, approved_by]
+    integration_endpoints:
+      table: mvp3_integration_endpoints
+      fields: [id, status]
+  actions:
+    retry:
+      rpc: mvp3_request_error_retry
+      eligible_stored_statuses: [failed, dependency_blocked]
+      runtime_truth: Retry requested; execution or delivery awaits genuine receipt evidence.
+    publish_flag:
+      rpc: mvp3_publish_feature_flag
+      eligible_stored_statuses: [draft]
+      runtime_truth: Independent security-admin checker may publish; maker cannot self-approve.
+  bounded_delta:
+    preserve:
+      - All real reads, RLS and RPC state/authorization guards.
+      - Retry-request semantics and independent feature-flag publication.
+      - Stored statuses and versions without optimistic overwrite.
+    correct:
+      - Never present configured endpoint rows as health, connectivity or uptime.
+      - Never present open-error rows as throughput or reliability.
+      - Never present design fixture values as runtime metrics.
+      - Distinguish each failed source from a verified zero.
+      - Label the error queue as a bounded prefix unless source-backed totals prove completeness.
+      - Replace raw internal RPC errors with safe stable user messages while preserving diagnostic evidence.
+      - Add denied, pending, stale/conflict, persistence, audit and receipt states.
+
+permission_truth:
+  route_group: AUTHENTICATED_NON_FIELD_CHANNEL
+  nav_visible_roles: [security_admin, workflow_admin]
+  route_specific_guard: NOT_PRESENT
+  source_visibility:
+    error_queue: [ops, security_admin, auditor]
+    integration_endpoints: [security_admin, workflow_admin]
+    feature_flags: ALL_AUTHENTICATED_UNDER_CURRENT_RLS
+  action_authority:
+    retry: [ops, security_admin]
+    publish_feature_flag: [security_admin]
+  required_persona_states:
+    - SECURITY_ADMIN_FULL_SCOPE
+    - WORKFLOW_ADMIN_ENDPOINTS_AND_FLAGS_PARTIAL
+    - OPS_ERRORS_AND_FLAGS_PARTIAL
+    - AUDITOR_ERRORS_AND_FLAGS_READ_ONLY
+    - OTHER_AUTHENTICATED_FLAGS_ONLY_UNDER_CURRENT_RLS
+    - UNAUTHORIZED_DIRECT_ROUTE
+    - SESSION_EXPIRED
+  rule: Navigation visibility is not authorization; do not invent a universal Platform Admin persona.
+
+required_design_states:
+  route_and_sources:
+    - LOADING
+    - POPULATED_ALL_VISIBLE_SOURCES
+    - VERIFIED_ZERO_PER_SOURCE
+    - ERROR_QUEUE_UNAVAILABLE
+    - FLAGS_UNAVAILABLE
+    - ENDPOINTS_UNAVAILABLE
+    - MULTIPLE_SOURCES_UNAVAILABLE
+    - SCHEMA_UNAVAILABLE
+    - ERROR_QUEUE_BOUNDED_COMPLETENESS_UNKNOWN
+  retry:
+    - ELIGIBLE
+    - PENDING
+    - REQUESTED_AWAITING_RECEIPT
+    - DEPENDENCY_BLOCKED
+    - DENIED_NO_CHANGE
+    - INELIGIBLE
+    - FAILED_NEUTRAL
+    - STALE_OR_CONFLICT
+  feature_flags:
+    - DRAFT_MAKER
+    - DRAFT_INDEPENDENT_CHECKER
+    - PUBLISH_PENDING
+    - PUBLISHED_IMMUTABLE
+    - SELF_APPROVAL_DENIED
+    - PUBLISH_DENIED
+    - PUBLISH_FAILED_NEUTRAL
+    - PUBLISH_STALE_OR_CONFLICT
+  provider_and_policy:
+    - EBDA_OR_DATA_EXCHANGE_HELD
+    - NOTIFICATION_CHANNEL_HELD
+    - RETENTION_AND_BACKUP_HELD
+    - PRODUCTION_RELEASE_HELD
+
+provider_and_policy_boundary:
+  holds:
+    - {id: MVP3-HOLD-004, scope: EBDA_and_data_exchange}
+    - {id: MVP3-HOLD-005, scope: notification_channels}
+    - {id: MVP3-HOLD-006, scope: retention_and_backup}
+    - {id: MVP3-HOLD-008, scope: production_release}
+  rule: >-
+    No provider probe, service-control action, transmission receipt, backup
+    target, restore success, RPO, RTO or production claim exists on this route.
+
+p0_gates:
+  - id: OP-DES-P0-01
+    criterion: No new design or screen identity is invented.
+  - id: OP-DES-P0-02
+    criterion: WA-DES-004 operations is used as the nearest route design.
+  - id: OP-DES-P0-03
+    criterion: CD-050 R2 family lineage is fingerprinted and recorded.
+  - id: OP-DES-P0-04
+    criterion: WA-DES-020 is removed from this route and separately dispositioned.
+  - id: OP-DES-P0-05
+    criterion: All hard-coded design values are labelled fixtures and excluded from runtime truth.
+  - id: OP-DES-P0-06
+    criterion: Direct, cross-cutting and contextual requirements remain exact; no 478-row or 14-row completion claim is made.
+  - id: OP-DES-P0-07
+    criterion: Operations capability remains bounded from Integrations, Security Access, Devices and provider control.
+  - id: OP-DES-P0-08
+    criterion: Endpoint configured/count truth is never called health, uptime or connectivity.
+  - id: OP-DES-P0-09
+    criterion: Retry requested is never called executed, delivered or resolved.
+  - id: OP-DES-P0-10
+    criterion: Feature-flag maker-checker, version and immutable published truth are preserved.
+  - id: OP-DES-P0-11
+    criterion: Route, navigation, source and action authorization are represented separately.
+  - id: OP-DES-P0-12
+    criterion: Raw internal errors, secrets, payloads and credentials remain undisclosed.
+  - id: OP-DES-P0-13
+    criterion: Failed, RLS-empty, bounded and verified-zero source states cannot collapse into false zero.
+  - id: OP-DES-P0-14
+    criterion: Pending, denied, stale/conflict, persistence, audit and receipt truth is explicit.
+  - id: OP-DES-P0-15
+    criterion: Provider and policy holds remain fail-closed.
+  - id: OP-DES-P0-16
+    criterion: Design acceptance never claims runtime implementation completion.
+
+p1_gates:
+  - id: OP-DES-P1-01
+    criterion: Required access, source, retry, flag and held-policy states are visibly specified.
+  - id: OP-DES-P1-02
+    criterion: 1440, 1200, 1024, 768, 412, 390 and 320 layouts avoid clipping, hanging shell and lost actions.
+  - id: OP-DES-P1-03
+    criterion: English/LTR and approved Arabic/RTL semantics have equivalent task order and state truth.
+  - id: OP-DES-P1-04
+    criterion: Light and dark themes preserve token, contrast and status meaning.
+  - id: OP-DES-P1-05
+    criterion: Keyboard, focus, screen-reader names, table alternatives and error announcements are specified.
+  - id: OP-DES-P1-06
+    criterion: Zoom, reflow and reduced-motion behavior preserve every governed action.
+  - id: OP-DES-P1-07
+    criterion: Provenance, as-of time, RLS scope and bounded-list completeness are visible where needed.
+  - id: OP-DES-P1-08
+    criterion: Evidence includes exact frame fingerprint and all required state/responsive/theme/RTL comparisons.
+
+remaining_governance_decisions:
+  - id: OP-DES-DEC-01
+    decision: Bind WA-DES-004 operations state to /admin/operations as the route expression of CD-050.
+  - id: OP-DES-DEC-02
+    decision: Remove WA-DES-020 from the route and retire or orphan it pending an Admin catalogue decision.
+  - id: OP-DES-DEC-03
+    decision: Retrieve and fingerprint accepted CD-050 R2 and record lineage to the stable WA-DES-004 operations state.
+  - id: OP-DES-DEC-04
+    decision: Allocate or reconcile the route screen identity and exact requirement/acceptance ownership.
+  - id: OP-DES-DEC-05
+    decision: Reconcile route admission, navigation, RLS source visibility and RPC action roles.
+  - id: OP-DES-DEC-06
+    decision: Accept the bounded action, provider and policy truth described here.
+  - id: OP-DES-DEC-07
+    decision: After all prior decisions, name exactly one design writer; design consent is not implementation consent.
+
+collision_safe_design_lease:
+  prerequisite_sequence:
+    - Governance binds WA-DES-004 operations, removes WA-DES-020 and records CD-050 lineage.
+    - Governance closes screen, requirement, persona, provider and policy decisions.
+    - Orchestrator rechecks the WA-DES-004 file, every state in its selector, CD-050 package, active writers and shared evidence files.
+    - Sponsor names exactly one writer and one bounded Operations-frame correction lease.
+  writer_boundary:
+    may_change_after_lease:
+      - WA-DES-004 operations state only, within the accepted bounded delta.
+    must_preserve:
+      - all other WA-DES-004 modes including Security
+      - state selector behavior
+      - CD-050 family authority
+      - fixture labels and fail-closed holds
+    prohibited_parallel_writers:
+      - any writer touching SAQEEL Admin Extended.dc.html
+      - any writer touching its Operations or Security state
+      - any writer touching its state selector or shared Admin shell
+      - any writer touching CD-050 package or the same evidence index
+  closeout:
+    - Independent reviewer verifies P0 and P1 evidence.
+    - Sponsor accepts, returns or rejects the design correction.
+    - Any later implementation lease is separate and records exact application-file ownership.
+
+recommendation:
+  reviewer_recommendation: RETURN_FOR_MAPPING_CORRECTION
+  sponsor_business_decision: >-
+    Approve the corrected authority path—WA-DES-004 Operations under CD-050—and
+    require the seven governance decisions before assigning one design writer.
+    Do not approve application implementation from this packet.
+
+safe_follow_on:
+  task_id: M10-ADMIN-DEVICES-DESIGN-IDENTITY-READINESS-033
+  objective: >-
+    Read-only resolve the exact existing design/frame authority for
+    /admin/devices against WA-DES-004, the current route, registered inventory
+    and MVP3 module authority without allocating an ID.
+  constraints:
+    - No live design mutation or ID allocation.
+    - No application code, tests, data, mapping, branch, lease, main, setup/Inspection or stash change.

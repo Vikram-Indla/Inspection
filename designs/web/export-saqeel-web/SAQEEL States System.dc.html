@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .skel { background: linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-secondary) 37%, var(--surface-sunken) 63%); background-size: 400% 100%; border-radius: var(--radius-sm); animation: skel 1.4s ease infinite; }
+  @keyframes skel { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+  .ax-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 48px 24px; }
+  .ax-state__glyph { display: grid; place-items: center; width: 46px; height: 46px; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+    </div>
+    <nav style="flex:1; overflow-y:auto; padding-block-end:8px;">
+      <div class="sidebar-group">{{ navGroup }}</div>
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+        <a class="nav-item {{ n.active }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">{{ n.label }}</span></a>
+      </sc-for>
+    </nav>
+  </aside>
+
+  <main style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); padding:14px 24px;">
+      <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;">
+        <div><h1 style="font-family:var(--font-body); font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">{{ screenTitle }}</h1><div class="t-caption" style="margin-block-start:3px;">States &amp; localization system · shared code components</div></div>
+        <span class="badge badge-info">{{ screenBadge }}</span>
+        <sc-if value="{{ arPending }}" hint-placeholder-val="{{ false }}"><span class="badge badge-warning" style="height:20px;">⚠ AR copy not in read i18n</span></sc-if>
+      </div>
+      <div style="display:flex; gap:16px; align-items:center; margin-block-start:14px; flex-wrap:wrap;">
+        <label class="stack" style="gap:4px;"><span class="t-label">Screen</span>
+          <select class="select" onChange="{{ pickScreen }}" style="min-width:220px;"><sc-for list="{{ screens }}" as="sc" hint-placeholder-count="6"><option value="{{ sc.id }}" selected="{{ sc.sel }}">{{ sc.name }}</option></sc-for></select></label>
+        <label class="stack" style="gap:4px;"><span class="t-label">State</span>
+          <div class="seg"><button class="seg-opt" aria-pressed="{{ sEmpty }}" onClick="{{ setEmpty }}">Empty</button><button class="seg-opt" aria-pressed="{{ sLoading }}" onClick="{{ setLoading }}">Loading</button><button class="seg-opt" aria-pressed="{{ sError }}" onClick="{{ setError }}">Error</button><button class="seg-opt" aria-pressed="{{ sRls }}" onClick="{{ setRls }}">RLS-denied</button><button class="seg-opt" aria-pressed="{{ sNotyet }}" onClick="{{ setNotyet }}">Not-yet</button></div>
+        </label>
+        <label class="stack" style="gap:4px;"><span class="t-label">Language</span>
+          <div class="seg"><button class="seg-opt" aria-pressed="{{ isEn }}" onClick="{{ setEn }}">EN · LTR</button><button class="seg-opt" aria-pressed="{{ isAr }}" onClick="{{ setAr }}">AR · RTL</button></div>
+        </label>
+        <label class="stack" style="gap:4px;"><span class="t-label">Theme</span>
+          <div class="seg"><button class="seg-opt" aria-pressed="{{ isLight }}" onClick="{{ setLight }}">Light</button><button class="seg-opt" aria-pressed="{{ isDark }}" onClick="{{ setDark }}">Dark</button></div>
+        </label>
+      </div>
+    </header>
+
+    <div style="padding:22px 24px 80px; max-width:820px; width:100%;">
+
+      <!-- EMPTY -->
+      <sc-if value="{{ sEmpty }}" hint-placeholder-val="{{ true }}">
+        <div class="panel">
+          <div class="ax-state" role="status">
+            <span class="ax-state__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.5" style="width:34px; height:34px;"><path d="M3 7h6l2 3h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+            <h4 style="margin:0; font-size:16px;">{{ emptyTitle }}</h4>
+            <p class="t-caption" style="max-width:52ch; margin:0;">{{ emptyBody }}</p>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- LOADING -->
+      <sc-if value="{{ sLoading }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:20px;" aria-busy="true" aria-label="Loading">
+          <div class="skel" style="height:22px; width:38%; margin-block-end:20px;"></div>
+          <div style="display:grid; gap:14px;">
+            <div class="skel" style="height:28px;"></div><div class="skel" style="height:28px;"></div>
+            <div class="skel" style="height:28px;"></div><div class="skel" style="height:28px; width:72%;"></div>
+          </div>
+          <p class="t-caption" style="margin:18px 0 0; color:var(--text-muted);">Per-route <span class="id-code">loading.tsx</span> · shared <span class="id-code">Skeleton</span> primitives · never a spinner-only screen.</p>
+        </div>
+      </sc-if>
+
+      <!-- ERROR (neutral) -->
+      <sc-if value="{{ sError }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:0; border-inline-start:3px solid var(--status-critical); overflow:hidden;">
+          <div style="padding:18px 20px; display:flex; gap:12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-critical)" stroke-width="1.7" style="width:20px; height:20px; flex:none; margin-block-start:2px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+            <div><div style="font-weight:600; font-size:13.5px;">{{ errorTitle }}</div><p class="t-caption" style="margin:4px 0 0;">{{ errorBody }}</p><button class="btn btn-secondary btn-sm" style="margin-block-start:12px;">{{ retryLabel }}</button></div>
+          </div>
+        </div>
+        <p class="t-caption" style="margin:14px 0 0; color:var(--text-muted);">Neutral boundary: diagnostics stay server-side (<span class="id-code">logProviderError</span>); the user sees only <span class="id-code">NEUTRAL_LOAD_ERROR</span>. "Nothing was changed" is explicit.</p>
+      </sc-if>
+
+      <!-- RLS-DENIED -->
+      <sc-if value="{{ sRls }}" hint-placeholder-val="{{ false }}">
+        <div class="panel">
+          <div class="ax-state" role="status">
+            <span class="ax-state__glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.5" style="width:32px; height:32px;"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+            <h4 style="margin:0; font-size:16px;">{{ rlsTitle }}</h4>
+            <p class="t-caption" style="max-width:54ch; margin:0;">{{ rlsBody }}</p>
+          </div>
+        </div>
+        <p class="t-caption" style="margin:14px 0 0; color:var(--text-muted);">Empty-because-scoped is <strong>not</strong> a platform-health claim, and <strong>not</strong> the same as verified-zero. Navigation is not authorization — RLS is the boundary.</p>
+      </sc-if>
+
+      <!-- NOT-YET (feature flag) -->
+      <sc-if value="{{ sNotyet }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:28px;">
+          <div class="badge badge-pending" style="margin-block-end:12px;"><span class="dot"></span>{{ notYetLabel }}</div>
+          <h2 style="font-size:17px; font-weight:600; margin:0 0 8px;">{{ screenTitle }}</h2>
+          <p class="t-caption" style="max-width:58ch; margin:0 0 14px;">{{ notyetBody }}</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;"><span class="t-label">Prerequisites</span><span class="badge badge-neutral">effective policy / provider configured</span><span class="badge badge-neutral">role + scope</span></div>
+          <p class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:14px;">seam: {{ notyetSeam }}</p>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", view: "empty", screen: "integrations" };
+
+  renderVals() {
+    const ar = this.state.lang === "ar";
+    // Screens: real AR empty copy only where it exists in web/src/lib/i18n.ts.
+    const SCREENS = {
+      integrations: { en: "System Connections", ar: "اتصالات النظام", badge: "integrations",
+        emptyEn: "No integrations are registered. This is a verified empty read.",
+        emptyAr: "لا توجد نقاط تكامل مسجلة. هذه قراءة فارغة تم التحقق منها.", hasAr: true },
+      operations: { en: "System Operations", ar: "عمليات النظام", badge: "platform-ops",
+        emptyEn: "No error logs are visible under access policy. This is not a confirmation of platform health.",
+        emptyAr: "لا توجد سجلات أخطاء مرئية وفق سياسات الوصول. هذا ليس تأكيداً لصحة المنصة.", hasAr: true },
+      security: { en: "Security & Access Review", ar: "مراجعة الأمن والوصول", badge: "security-access",
+        emptyEn: "No access reviews are visible under access policy.",
+        emptyAr: "لا توجد مراجعات وصول مرئية وفق سياسات الوصول.", hasAr: true },
+      devices: { en: "Trusted Devices", ar: "الأجهزة الموثوقة", badge: "devices",
+        emptyEn: "No registered devices are visible under access policy.",
+        emptyAr: "لا توجد أجهزة مسجلة مرئية وفق سياسات الوصول.", hasAr: true },
+      tasks: { en: "Tasks", ar: "المهام", badge: "",
+        emptyEn: "No tasks. Empty may also mean none are in your scope (RLS).", emptyAr: "", hasAr: false },
+      ai: { en: "AI Insights", ar: "رؤى الذكاء الاصطناعي", badge: "",
+        emptyEn: "No suggestions. With no configured provider, none are generated. Empty may also mean RLS scope.", emptyAr: "", hasAr: false },
+      virtual: { en: "Virtual inspections", ar: "التفتيش الافتراضي", badge: "",
+        emptyEn: "No confirmed virtual sessions. Empty may also mean none are in your scope (RLS).", emptyAr: "", hasAr: false },
+    };
+    const s = SCREENS[this.state.screen] || SCREENS.integrations;
+    const title = ar ? s.ar : s.en;
+    const arPending = ar && !s.hasAr;
+    const emptyBody = ar ? (s.hasAr ? s.emptyAr : s.emptyEn) : s.emptyEn;
+    const set = (k, v) => () => this.setState({ [k]: v });
+    const NAV_EN = ["Dashboard", "Operations Center", "Factory 360", "Planning", "Inspection"];
+    const NAV_AR = ["لوحة القيادة", "مركز العمليات", "المصنع 360", "التخطيط", "التفتيش"];
+    const navLabels = ar ? NAV_AR : NAV_EN;
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      setLight: set("theme", "light"), setDark: set("theme", "dark"),
+      dir: ar ? "rtl" : "ltr", lang: ar ? "ar" : "en", isEn: !ar, isAr: ar,
+      setEn: set("lang", "en"), setAr: set("lang", "ar"),
+      view: this.state.view,
+      sEmpty: this.state.view === "empty", sLoading: this.state.view === "loading",
+      sError: this.state.view === "error", sRls: this.state.view === "rls", sNotyet: this.state.view === "notyet",
+      setEmpty: set("view", "empty"), setLoading: set("view", "loading"), setError: set("view", "error"),
+      setRls: set("view", "rls"), setNotyet: set("view", "notyet"),
+      pickScreen: (e) => this.setState({ screen: e.target.value }),
+      screens: Object.keys(SCREENS).map(id => ({ id, name: ar ? SCREENS[id].ar : SCREENS[id].en, sel: id === this.state.screen ? "selected" : null })),
+      screenTitle: title, screenBadge: s.badge, arPending,
+      navGroup: ar ? "نظرة عامة" : "Overview",
+      nav: navLabels.map((label, i) => ({ label, active: i === 0 ? "is-active" : "" })),
+      emptyTitle: ar ? "لا توجد سجلات" : "No records",
+      emptyBody,
+      errorTitle: ar ? "البيانات المطلوبة غير متاحة مؤقتاً." : "Couldn’t load. Nothing was changed.",
+      errorBody: ar ? "البيانات المطلوبة غير متاحة مؤقتاً. لم يتغيّر أي شيء. حاول مرة أخرى." : "The requested data is temporarily unavailable. Nothing was changed. Try again.",
+      retryLabel: ar ? "إعادة المحاولة" : "Try again",
+      rlsTitle: ar ? "لا توجد سجلات ضمن نطاقك" : "Nothing in your scope",
+      rlsBody: ar ? "قد يكون هذا العرض فارغاً لأن سياسات الوصول (RLS) تحصر الصفوف على صلاحيتك — وليس تأكيداً على عدم وجود بيانات." : "This view may be empty because access policy (RLS) restricts rows to your authority — not a claim that no data exists.",
+      notYetLabel: ar ? "غير متاح بعد" : "Not available yet",
+      notyetBody: ar ? "هذه الميزة خلف مؤشر ميزة معطّل افتراضياً؛ عند التفعيل تظل خاضعة للحوكمة والتحقق البشري." : "This capability is behind a feature flag that is off by default. When enabled it remains governed and requires human disposition; the provider is fail-closed until configured.",
+      notyetSeam: this.state.screen === "ai" ? "FEATURE_AI_DOCKETS=off + provider held" : "FEATURE_* =off",
+    };
+  }
+}
+</script>
+</body>
+</html>

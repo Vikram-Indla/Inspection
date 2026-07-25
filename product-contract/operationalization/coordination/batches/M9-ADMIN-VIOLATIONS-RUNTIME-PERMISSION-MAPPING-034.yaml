@@ -1,0 +1,367 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-VIOLATIONS-RUNTIME-PERMISSION-MAPPING-034
+title: Independent Admin Violations and Penalties authority, permission and runtime-consumer validation
+status: VALIDATED_CONFIRMED_WITH_CORRECTION_BLOCK_P0
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  route: /admin/violations
+  logical_modes: [violation_catalogue, penalty_mapping]
+  screen_ids: [SCR-ADM-040, SCR-ADM-041]
+  engine: ENG-08
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  canonical_requirements:
+    primary:
+      - [MVP1-M09-003, CR-451, WA-AC-0451, WA-EV-0451]
+      - [MVP1-M09-004, CR-452, WA-AC-0452, WA-EV-0452]
+      - [MVP1-M09-026, CR-474, WA-AC-0474, WA-EV-0474]
+      - [MVP1-M09-027, CR-475, WA-AC-0475, WA-EV-0475]
+    atomic_primary:
+      - REQ-R0C-01116 through REQ-R0C-01121
+      - REQ-R0C-01183 through REQ-R0C-01189
+    lifecycle_and_consumer_dependencies:
+      - [MVP1-M09-008, CR-456, WA-AC-0456, WA-EV-0456]
+      - [MVP1-M09-009, CR-457, WA-AC-0457, WA-EV-0457]
+      - [MVP1-M09-010, CR-458, WA-AC-0458, WA-EV-0458]
+      - [MVP1-M09-011, CR-459, WA-AC-0459, WA-EV-0459]
+      - [MVP1-M09-012, CR-460, WA-AC-0460, WA-EV-0460]
+      - [MVP1-M09-013, CR-461, WA-AC-0461, WA-EV-0461]
+      - [MVP1-M09-014, CR-462, WA-AC-0462, WA-EV-0462]
+      - [MVP1-M09-015, CR-463, WA-AC-0463, WA-EV-0463]
+      - [MVP1-M09-029, CR-477, WA-AC-0477, WA-EV-0477]
+      - [MVP1-M09-030, CR-478, WA-AC-0478, WA-EV-0478]
+    atomic_dependencies:
+      - REQ-R0C-01132 through REQ-R0C-01151
+      - REQ-R0C-01192 through REQ-R0C-01196
+  design_dependency:
+    packet: M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052
+    state: DEPENDENCY_ONLY
+    rule: Stable design identity/revision cannot prove violation generation authority, penalty pinning, maker-checker, RLS, immutable lineage or action-form enforcement.
+  blanket_CR_449_through_CR_478_route_claim: PROHIBITED
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_route:
+  exists: true
+  page: apps/web/src/app/(app)/admin/violations/page.tsx
+  controls: apps/web/src/app/(app)/admin/violations/Controls.tsx
+  actions: apps/web/src/app/(app)/admin/violations/actions.ts
+  route_guard:
+    file: apps/web/src/app/(app)/admin/violations/layout.tsx
+    allowed_roles: [compliance_admin, reviewer]
+    discrepancy: Page/actions/RLS also declare form_admin as writer, but the layout blocks form_admin.
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  reason: >-
+    Violation and penalty catalogues, native version publication, immutable
+    package snapshots, response-driven UI, action-form blockers, informational
+    penalty notices and post-approval issuance are real. End-to-end authority
+    is unsafe: governed request versions are disconnected; direct configuration
+    writes bypass publication; runtime violation insert/invalidation trusts the
+    inspector client; penalty successors can break pinned inspections; and
+    package snapshots/resolvers mishandle versioned penalty rows.
+
+configuration_authorities:
+  violation_codes:
+    table: public.violation_codes
+    identity: unique(code, configuration_version)
+    lineage: supersedes_id
+    statuses: [draft, published, locked, deactivated]
+    effective_window: [active_from, active_to]
+    semantics:
+      - title
+      - level
+      - clause_id
+      - corrective_action
+      - grace_period_days
+      - category
+      - applicability
+    native_publish_RPC: public.publish_violation_code(uuid)
+  penalty_mappings:
+    table: public.penalty_mappings
+    identity: unique(violation_code_id, mapping_version)
+    cardinality:
+      - one draft per violation version
+      - one published/locked row per violation version
+    lineage: supersedes_id
+    effective_window: [effective_from, effective_to]
+    semantics:
+      - penalty_ref
+      - penalty_type
+      - amount
+      - grace_period_days
+      - due_period_days
+      - legal_basis
+      - penalty_range
+      - repeat_rule
+      - template_version_id
+    native_publish_RPC: public.publish_penalty_mapping(uuid)
+  governed_request_engine:
+    entity_kinds: [violation, penalty]
+    tables:
+      - public.compliance_entity_versions
+      - public.compliance_entity_heads
+    operational_projection_to_legacy_tables: ABSENT
+    consumed_by_package_or_runtime: false
+  split_authority_verdict: P0_CONFIRMED
+
+runtime_and_consumers:
+  item_trigger:
+    configuration: response_model.mapping[response].violation
+    package_override: definition.item_rules[code].response_mapping
+    frozen_source: package_versions.definition.item_snapshot
+  package_publication:
+    application_validation:
+      - referenced violation is published/locked and date-active
+      - violation has a published/locked penalty mapping
+      - action-form key exists in package definition
+    database_validation_gap: Full violation, penalty, template and action-form dependency parity is absent.
+    frozen_outputs:
+      - definition.violation_snapshot
+      - package_version_dependency_snapshots violation rows
+    nested_penalty_filter: ABSENT
+    penalty_linked_template_snapshot: NOT_GUARANTEED
+  field_execution:
+    implication: impliedViolations derives candidates from frozen response mapping.
+    persistence: Assigned inspector client inserts directly into public.violations.
+    penalty_materialization: AFTER INSERT trigger reads live published/locked penalty mapping by violation ID and mapping_version.
+    action_forms: Package action_forms plus response action_form key; blocking form completeness prevents submit in client/runtime calculations.
+    invalidation: Assigned inspector directly updates invalidation fields; guard preserves immutable core columns.
+  review_and_reporting:
+    - review displays runtime violation code and mapping_version
+    - report prefers immutable submission snapshot and inspection_penalties.mapping_snapshot
+    - penalty notice changes informational to issued only after inspection approval
+  enforcement_and_analytics:
+    - enforcement reads runtime violations
+    - Factory 360/history and dashboards consume violation rows
+
+findings:
+  - id: VIO-P0-001
+    priority: P0
+    finding: Governed Compliance Request violation/penalty versions are disconnected from operational authority.
+    evidence: >-
+      publish_compliance_request creates immutable compliance_entity_versions
+      and heads, but does not project to violation_codes or penalty_mappings.
+      Packages and Field continue to consume the legacy tables/snapshots.
+    implication: Approved governed changes can be unused while legacy direct writes control execution.
+  - id: VIO-P0-002
+    priority: P0
+    finding: Authorized direct configuration writes bypass publication and maker-checker.
+    evidence: >-
+      violation_codes_admin and penalty_mappings_admin are permissive FOR ALL
+      policies. Guards constrain rows only after published/locked. A writer can
+      INSERT status=published or directly change a draft to published with
+      supplied actor fields, bypassing native RPC validation.
+    implication: Unapproved violations/penalties can become package-eligible.
+  - id: VIO-P0-003
+    priority: P0
+    finding: Runtime violation generation is not server-authoritative.
+    evidence: >-
+      violations_insert checks only that the caller is assigned to the
+      inspection visit. The Workspace inserts inspection_id,
+      violation_code_id and mapping_version directly. No database contract
+      proves the frozen response implies that code or that mapping_version came
+      from the pinned package.
+    implication: An assigned inspector/direct client can add an arbitrary predefined violation or mapping version.
+  - id: VIO-P0-004
+    priority: P0
+    finding: Runtime violation invalidation does not prove the triggering response changed.
+    evidence: >-
+      violations_invalidate and guard_violation_invalidate restrict core-column
+      changes and submitted states, but accept caller-supplied invalidated_at,
+      invalidated_by and reason without checking checklist response/frozen mapping
+      or forcing invalidated_by=auth.uid.
+    implication: An inspector can suppress a generated candidate outside the response transition.
+  - id: VIO-P0-005
+    priority: P0
+    finding: Penalty successor publication can break existing pinned inspections.
+    evidence: >-
+      publish_penalty_mapping immediately deactivates the prior mapping.
+      materialize_informational_penalty accepts only mappings whose current
+      status is published/locked, even when a pinned package frozen the prior
+      mapping_version. A later response in that existing inspection then fails.
+    implication: Later configuration changes affect active inspections, violating runtime locking.
+  - id: VIO-P0-006
+    priority: P0
+    finding: Future-effective violation and penalty successors are activated incorrectly.
+    evidence: >-
+      Native publish immediately deactivates the predecessor and marks the
+      future row published. Package application validation checks violation
+      dates but does not check penalty effective_from/to. Penalty materialization
+      also ignores effective dates.
+    implication: There can be an availability gap for violations and premature use of a future penalty.
+  - id: VIO-P0-007
+    priority: P0
+    finding: Frozen violation snapshots include unfiltered penalty-version arrays.
+    evidence: >-
+      freezeDefinition embeds penalty_mappings without a nested status/effective
+      filter. Field treats any array length greater than one as a conflict and
+      nulls mapping_version. Versioned history therefore appears as a false
+      singularity conflict.
+    implication: Publishing a penalty successor can disable valid violation generation in new or existing packages.
+  - id: VIO-P0-008
+    priority: P0
+    finding: Deactivation guards permit changes to omitted authority fields.
+    evidence: >-
+      The violation deactivation exception does not compare clause_id,
+      active_from, created/approved/published actors/times or supersedes_id.
+      The penalty exception omits effective_from and actor/lineage fields.
+    implication: A direct writer can rewrite legal anchor, effective origin or approval lineage during an allowed deactivation.
+  - id: VIO-P0-009
+    priority: P0
+    finding: Package database publication does not fully validate violation/penalty/template/action-form dependencies.
+    evidence: >-
+      Application validateDefinition checks these dependencies, but the database
+      relationship trigger primarily validates item and item_snapshot semantics.
+      Direct publish RPC callers can supply a definition that bypasses page checks.
+    implication: A package can publish without a valid violation/penalty/action-form chain.
+  - id: VIO-P0-010
+    priority: P0
+    finding: Linked penalty template is not guaranteed to be frozen or consumed.
+    evidence: >-
+      penalty_mappings.template_version_id is stored, but freezeDefinition
+      snapshots templates only from package template_refs/action_forms, not
+      automatically from penalty mappings. Runtime/report surfaces use penalty
+      metadata and mapping_snapshot but no proven rendering of that linked template.
+    implication: REQ-R0C-01119 linked-template behavior is not end-to-end proven.
+  - id: VIO-P1-001
+    priority: P1
+    finding: Draft violation editing and deterministic successor numbering are absent.
+    evidence: >-
+      The route creates a draft with user-entered configuration_version but
+      exposes no edit action. Publish does not require the next consecutive
+      version or expected predecessor.
+    implication: Corrections require direct writes and lineage can skip/rebase silently.
+  - id: VIO-P1-002
+    priority: P1
+    finding: Main lifecycle chip can label a draft as active.
+    evidence: deriveLifecycle uses only active_from/active_to and ignores stored status.
+    implication: A non-published draft with a current date is visually presented as active authority.
+  - id: VIO-P1-003
+    priority: P1
+    finding: Violation usage/trigger impact is incomplete and internally inconsistent.
+    evidence: >-
+      violation_code_usage counts only response_model.mapping.non_compliant,
+      while the UI trace scans every response mapping. Neither includes package
+      overrides, exact package versions, action forms, future visits or pinned inspections.
+    implication: Change/deactivation blast radius is understated.
+  - id: VIO-P1-004
+    priority: P1
+    finding: Route and data writer roles disagree.
+    evidence: layout allows compliance_admin/reviewer; actions/RLS/copy allow form_admin.
+    implication: form_admin can mutate by API but cannot use the route.
+  - id: VIO-P1-005
+    priority: P1
+    finding: Draft concurrency controls are absent.
+    evidence: No expected revision/CAS exists for violation or penalty draft authoring.
+    implication: Concurrent changes can overwrite/rebase without a stable conflict.
+  - id: VIO-P1-006
+    priority: P1
+    finding: Configuration and runtime reads are globally authenticated.
+    evidence: violation_codes, penalty_mappings, runtime violations and inspection_penalties have broad authenticated reads.
+    implication: Personas outside the route can inspect compliance and penalty data.
+  - id: VIO-P1-007
+    priority: P1
+    finding: Existing evidence does not test adversarial actor/runtime/version transitions.
+    evidence: >-
+      Current browser tests prove rendering and source tokens; SQL coverage
+      proves selected happy paths. No test attempts writer direct publish,
+      arbitrary assigned-inspector insert/invalidation, historical mapping
+      materialization, future penalty use or linked-template runtime rendering.
+    implication: P0 gaps can pass the current suite.
+
+permissions_and_rls:
+  route_roles: [compliance_admin, reviewer]
+  writer_roles_in_actions_and_RLS: [compliance_admin, form_admin]
+  configuration_read: ANY_AUTHENTICATED
+  configuration_write: compliance_admin OR form_admin through FOR ALL policies
+  runtime_violation_read: ANY_AUTHENTICATED
+  runtime_violation_insert: ASSIGNED_INSPECTOR_WITHOUT_TRIGGER_VALIDATION
+  runtime_violation_invalidate: ASSIGNED_INSPECTOR_WITHOUT_RESPONSE_VALIDATION
+  inspection_penalty_read: ANY_AUTHENTICATED
+  direct_publish_bypass: CONFIRMED
+  least_privilege: FAILED
+
+immutability_maker_checker_audit_and_concurrency:
+  native_violation_publish: MAKER_CHECKER_PRESENT
+  native_penalty_publish: MAKER_CHECKER_PRESENT
+  direct_table_paths: BYPASSABLE
+  accepted_row_immutability: PARTIAL_DEACTIVATION_FIELD_GAPS
+  runtime_penalty_snapshot: IMMUTABLE_AFTER_MATERIALIZATION
+  historical_mapping_materialization: FAILED
+  future_activation_state: ABSENT
+  draft_CAS: ABSENT
+  expected_predecessor: ABSENT
+  audit:
+    violation_codes: PRESENT
+    penalty_mappings: PRESENT
+    runtime_violations: PRESENT
+    inspection_penalties: PRESENT
+    governed_request: PRESENT_BUT_DISCONNECTED
+
+services_and_interfaces:
+  interfaces:
+    - public.publish_violation_code(uuid)
+    - public.publish_penalty_mapping(uuid)
+    - public.violation_code_usage(text)
+    - public.admin_configuration_audit(text, uuid)
+    - public.materialize_informational_penalty trigger
+    - public.issue_penalties_after_approval trigger
+    - public.publish_compliance_request(uuid)
+  missing:
+    - server-authoritative generate/invalidate violation transition
+    - effective violation/penalty resolver
+    - exact dependency/impact service
+    - historical pinned mapping materializer
+    - penalty-linked template resolver
+
+test_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-010-011-violations.spec.ts
+      covers:
+        - reviewer and writer rendering
+        - catalogue/penalty modes, lifecycle, trace and validation lens
+        - EN/AR RTL, light/dark, 1440/1024, target sizes and screenshots
+        - source assertions for native lifecycle, usage and audit
+    - file: apps/web/e2e/cd-006-011-backend-completion.spec.ts
+      covers: Package snapshots, informational penalties and selected runtime functions.
+    - file: apps/web/e2e/execution-workspace-contract.spec.ts
+      covers: Invalidation columns/guard and source-level fail-closed penalty conflict.
+    - file: supabase/tests/0032_m09_live_release_probe.sql
+      covers: Selected regulation/item/package maker-checker and snapshot behavior.
+      limitation: Does not certify violation/penalty adversarial lifecycle or runtime authority.
+  browser_readiness:
+    visual_read_only_review: READY
+    isolated_writer_happy_path: READY_WITH_DEDICATED_SEED
+    runtime_authority_certification: BLOCKED
+    historical_penalty_certification: BLOCKED
+  evidence_rule: Browser screenshots and source assertions cannot close RLS bypass, pinned-history, generation/invalidation or dependency gaps.
+
+p0_prerequisites:
+  - Select one operational violation/penalty authority and project governed request versions transactionally.
+  - Revoke direct lifecycle/approval writes and narrow all state changes to actor-bound RPCs.
+  - Create server-authoritative generate/invalidate transitions derived from frozen response and package version.
+  - Resolve penalty by pinned frozen mapping identity/snapshot, not current live status.
+  - Introduce approved-future/active/superseded states and a shared effective resolver.
+  - Freeze exactly one effective penalty and its linked template for each referenced violation.
+  - Enforce full package violation/penalty/template/action-form dependency validation in the database transaction.
+  - Close deactivation-field immutability and require exact impact/checker consent.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  verdict: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  recommended_sponsor_action: >-
+    Preserve current UI and immutable inspection_penalty snapshots, but do not
+    approve Violation/Penalty Management completion. First approve one
+    authority, server-owned runtime transitions, effective-time, pinned mapping,
+    linked-template and permission contracts; then lease database governance,
+    package/runtime integration, accepted Design 052 UI and independent QA.

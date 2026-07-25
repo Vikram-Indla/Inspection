@@ -1,0 +1,508 @@
+schema_version: "1.0"
+packet_id: CODEX-M3-OPERATIONS-REDUCED-PROJECTION-SPEC-005
+status: PROPOSED_PENDING_SPONSOR_APPROVAL
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+authority_status: PROPOSAL_ONLY
+
+warning: >-
+  This is a source-backed reviewer proposal, not approved product authority.
+  It does not grant access, change a requirement, authorize implementation,
+  define final masking policy or permit a migration. Sponsor/governance may
+  approve, revise or reject it.
+
+purpose: >-
+  Define the smallest server-generated Operations projections that could
+  satisfy the existing planner and leadership operations.view grants without
+  exposing raw inspector identity, precise recorded GPS, event history or
+  supervisor controls.
+
+non_change_boundary:
+  application_code_changed: false
+  tests_changed: false
+  data_or_seed_changed: false
+  design_changed: false
+  migration_or_rls_changed: false
+  role_or_capability_changed: false
+  claude_eight_file_return_lease_changed: false
+  commit_push_pr_merge: false
+
+source_basis:
+  CR-430: >-
+    Operations Center is monitoring-only unless the user has supervisor
+    permissions; named personas are Supervisor, Operations Manager and
+    Executive.
+  CR-433: >-
+    Inspector location is visible only during active journey/execution and
+    based on policy; the named persona is Supervisor.
+  CR-439: Users see only authorized regions.
+  CR-447: >-
+    Apply role, region, branch and permission restrictions; unauthorized
+    inspectors, factories and regions must be invisible.
+  CR-448: >-
+    One failed source must not break the whole Operations Center and errors
+    must be clear.
+  RBAC-007: >-
+    Planner works within assigned organizational scope and cannot make
+    execution or review decisions.
+  RBAC-008: >-
+    Operations User may monitor and perform separately governed operational
+    actions within region/branch or assigned scope.
+  RBAC-013: >-
+    Leadership User receives aggregated KPI/profile information within
+    authorized geography/organization; sensitive details may be masked.
+  existing_capability_fact: >-
+    20260721093000_execution_canonical_contracts.sql grants operations.view to
+    ops, planner and leadership, while Operations write capabilities are
+    separately granted to ops.
+  current_exposure_fact: >-
+    Current Operations queries can read visit rows, assignment profile names,
+    factory coordinates and raw geo_events coordinates/accuracy/timestamps.
+    Current RLS is broader than the proposed projections and does not enforce
+    Operations region/organization scope.
+
+global_projection_rules:
+  - rule_id: OPS-PROJ-R01
+    proposal: >-
+      Projection is computed on the server after authenticating the actor,
+      resolving the approved view mode and enforcing authorized geography.
+  - rule_id: OPS-PROJ-R02
+    proposal: >-
+      Forbidden fields must be omitted before serialization. CSS hiding,
+      redaction after hydration, client filtering and unused JSON properties
+      do not satisfy the contract.
+  - rule_id: OPS-PROJ-R03
+    proposal: >-
+      A reduced projection must not query or cache raw geo_events for the
+      requesting Planner or Leadership surface when the response does not need
+      those rows.
+  - rule_id: OPS-PROJ-R04
+    proposal: >-
+      "Restricted by access policy" is distinct from "no recorded location",
+      "location unavailable", "empty scope" and "source failed".
+  - rule_id: OPS-PROJ-R05
+    proposal: >-
+      Client-supplied region, city, visit, factory or inspector identifiers may
+      narrow an already-authorized set but may never expand it.
+  - rule_id: OPS-PROJ-R06
+    proposal: >-
+      Counts and groupings are calculated from authorized rows only. Do not
+      zero-fill unauthorized regions or return labels for groups outside scope,
+      because either can disclose existence.
+  - rule_id: OPS-PROJ-R07
+    proposal: >-
+      No national claim or national total is rendered unless the actor has the
+      separately approved explicit national-scope grant.
+  - rule_id: OPS-PROJ-R08
+    proposal: >-
+      Do not invent minimum-group thresholds, anonymization values, risk bands,
+      staleness thresholds or suppression rules. Any such value requires a
+      separate governed decision.
+  - rule_id: OPS-PROJ-R09
+    proposal: >-
+      Role/capability changes take effect on the next authoritative request.
+      Full-detail payloads must never be reused from an Ops cache for a reduced
+      persona.
+
+planner_projection:
+  projection_id: OPERATIONS_PLANNER_MONITORING_V1_PROPOSED
+  business_intent: >-
+    Give a Planner the minimum current operational context needed to understand
+    the state of visits they plan, without turning the Planner into an
+    Operations Supervisor.
+  route_preconditions:
+    - operations.view is present.
+    - Approved region/organization scope is configured.
+    - Explicit national grant is present when a national view is requested.
+  permitted_top_level_fields:
+    scope:
+      - authorized_region_label
+      - authorized_organization_label
+      - is_explicit_national_scope
+    snapshot:
+      - generated_at
+      - source_status_by_widget
+    summary:
+      - authorized_active_visit_count
+      - authorized_planned_visit_count
+      - authorized_visit_count_by_operational_state
+    visits:
+      - visit_reference
+      - factory_reference
+      - factory_name
+      - region
+      - city
+      - planning_status
+      - operational_state
+      - window_start
+      - window_end
+      - has_assignment
+      - assignment_count
+    projected_position:
+      - latitude
+      - longitude
+      - provenance_equals_projected
+      - resolving_source_equals_planner_or_factory
+      - scheduled_at
+    navigation:
+      - authorized_visit_detail_href
+      - authorized_factory_profile_href
+  projected_position_conditions:
+    - >-
+      Position may use the Planner-set dispatch pair or authorized factory
+      official pair already needed for planning.
+    - >-
+      It must be labelled "Projected from assignment/schedule — not recorded
+      inspector GPS" or equivalent governed translation.
+    - >-
+      Mixed or invalid coordinate pairs remain unavailable; no interpolation,
+      route trail, ETA or simulated movement is permitted.
+  fields_omitted_server_side:
+    inspector_identity:
+      - assignments.profiles.user_id
+      - assignments.profiles.full_name
+      - assignments.profiles.email
+      - inspector_avatar
+      - device_identifier
+    raw_location:
+      - geo_events.id
+      - geo_events.kind
+      - geo_events.observed_lat
+      - geo_events.observed_lng
+      - geo_events.accuracy_m
+      - geo_events.occurred_at
+      - geo_events.device_occurred_at
+      - geo_events.geofence_result
+      - raw_journey_path
+      - last_recorded_gps_position
+    supervisor_queues:
+      - geo_override_request_detail
+      - cancellation_request_detail
+      - corrective_action_owner
+      - notification_recipient
+      - evidence_storage_path
+      - decision_reason
+      - requester_identity
+    restricted_actions:
+      - resolve_exception
+      - approve_active_cancel
+      - decide_geo_override
+      - acknowledge_or_close_supervisor_action
+      - mark_another_users_notification_handled
+  masking_and_aggregation:
+    inspector_workload: >-
+      Return visit-level has_assignment/assignment_count only. Do not return
+      inspector names, user IDs or a stable pseudonymous identifier until a
+      separate identity policy approves it.
+    map: >-
+      Render only authorized factories and truthfully projected visit
+      positions. Do not render a recorded inspector marker.
+    queues: >-
+      Omit supervisor decision queues. If planning attention is required,
+      expose only a non-actionable authorized count whose source and formula
+      are separately approved.
+    risk: >-
+      No new risk or hotspot output is included in this minimum projection.
+      Existing authorized factory risk facts require separate accepted display
+      semantics before inclusion.
+  empty_behavior:
+    no_authorized_visits: >-
+      "No visits in your authorized planning scope." This is not a national
+      zero and not proof that another region has no work.
+    no_projected_position: >-
+      Keep the visit in the list and show "Projected position unavailable."
+      Do not query raw GPS as a fallback.
+    scope_unconfigured: >-
+      Fail closed before protected Operations reads and provide a neutral
+      scope-configuration message.
+  error_behavior:
+    visit_source_failed: >-
+      Show the Planner monitoring projection as unavailable; do not fall back
+      to raw Operations data or cached Ops payloads.
+    factory_source_failed: >-
+      Keep safe visit summary only when it cannot disclose an unauthorized
+      factory; withdraw map/projected position and state the source failure.
+    projection_failed: >-
+      Do not substitute a recorded GPS marker. Keep the authorized list with a
+      projection-unavailable reason.
+
+leadership_projection:
+  projection_id: OPERATIONS_LEADERSHIP_AGGREGATE_V1_PROPOSED
+  business_intent: >-
+    Give Leadership an Executive operational posture within authorized
+    geography/organization without row-level inspector or precise position
+    disclosure.
+  route_preconditions:
+    - operations.view is present.
+    - Approved region/organization scope is configured.
+    - Explicit national grant is present when a national view is requested.
+  permitted_top_level_fields:
+    scope:
+      - authorized_region_label
+      - authorized_organization_label
+      - is_explicit_national_scope
+    snapshot:
+      - generated_at
+      - source_status_by_widget
+    aggregates:
+      - authorized_factory_count
+      - authorized_active_visit_count
+      - authorized_visit_count_by_operational_state
+      - authorized_visit_count_by_region
+      - authorized_visit_count_by_city_when_city_is_within_scope
+      - authorized_exception_count_without_record_detail
+    regional_posture:
+      - region_label
+      - aggregate_visit_counts
+      - aggregate_factory_counts
+      - source_status
+    conditional_factory_summary:
+      - factory_reference
+      - factory_name
+      - region
+      - city
+      - aggregate_visit_count
+  conditional_factory_summary_rule: >-
+    Factory identity/profile summary is included only when the actor also has
+    the approved Factory 360 view permission and the factory is inside the
+    authorized geography/organization. Otherwise return regional aggregates
+    only.
+  fields_omitted_server_side:
+    row_level_visit:
+      - visit_id
+      - visit_reference
+      - planning_notes
+      - assignment_rows
+      - visit_window_exact_times
+    inspector_identity:
+      - inspector_user_id
+      - inspector_full_name
+      - inspector_email
+      - inspector_avatar
+      - device_identifier
+      - stable_inspector_pseudonym
+    raw_location:
+      - all_geo_event_rows
+      - observed_lat
+      - observed_lng
+      - accuracy_m
+      - occurred_at_as_position_time
+      - geofence_result
+      - raw_journey_path
+      - projected_inspector_marker
+    operational_record_detail:
+      - action_form_id
+      - action_owner
+      - notification_row
+      - notification_recipient
+      - override_request_row
+      - cancellation_request_row
+      - requester_identity
+      - decision_reason
+      - evidence_path
+    restricted_actions:
+      - all_operations_mutations
+  masking_and_aggregation:
+    grouping_grain: >-
+      Aggregate on the server by authorized region and operational state.
+      City grouping is permitted only inside the authorized region and must not
+      expose unauthorized city labels.
+    inspector: >-
+      Return counts only; never return a stable inspector key that could be
+      joined across responses.
+    location: >-
+      No inspector pin, projected inspector marker or event-level timestamp.
+      A regional posture map may show approved aggregate region shapes/counts,
+      not individual movement.
+    exceptions: >-
+      Return an aggregate count and source status only. No owner, requester,
+      factory, visit or evidence detail in the minimum projection.
+    risk: >-
+      Do not introduce a colored band, threshold or hotspot rule until the
+      accepted risk-display contract authorizes it.
+  empty_behavior:
+    no_authorized_rows: >-
+      "No operational records in your authorized scope." Do not display a
+      national zero or labels for unauthorized regions.
+    scope_unconfigured: >-
+      Fail closed before protected Operations reads and provide a neutral
+      scope-configuration message.
+    conditional_factory_permission_absent: >-
+      Keep regional aggregates and omit the factory drill; do not render a
+      locked factory name that discloses existence.
+  error_behavior:
+    one_aggregate_source_failed: >-
+      Preserve other safe aggregate widgets under CR-448, mark only the failed
+      aggregate unavailable and do not infer zero.
+    geography_source_failed: >-
+      Withdraw geographic grouping/map and preserve only aggregates that remain
+      provably inside authorized scope.
+    projection_failed: >-
+      Do not fall back to row-level visit, inspector or geo-event data.
+
+projection_mode_resolution:
+  status: PROPOSAL_NOT_AUTHORITY
+  rules:
+    - >-
+      Full precise Operations projection requires the separately approved
+      precise-location/identity capability, not merely the ops role label.
+    - >-
+      An actor with leadership plus another reduced role receives the
+      Leadership aggregate projection unless a more permissive capability is
+      explicitly approved.
+    - >-
+      An actor with planner and no leadership/precise capability receives the
+      Planner projection.
+    - >-
+      An actor with operations.view but no recognized approved projection mode
+      fails closed; do not default to full detail.
+    - >-
+      An actor without operations.view is denied before projection queries.
+
+server_contract_proposal:
+  planner_dto:
+    allowed_keys:
+      - projection_mode
+      - scope
+      - snapshot
+      - summary
+      - visits
+      - projected_positions
+      - source_status
+    forbidden_key_patterns:
+      - inspector_name
+      - inspector_user_id
+      - email
+      - observed_lat
+      - observed_lng
+      - accuracy_m
+      - geo_event
+      - override_request
+      - cancellation_request
+      - evidence_path
+  leadership_dto:
+    allowed_keys:
+      - projection_mode
+      - scope
+      - snapshot
+      - aggregates
+      - regional_posture
+      - conditional_factory_summaries
+      - source_status
+    forbidden_key_patterns:
+      - visit_id
+      - visit_reference
+      - inspector
+      - assignment
+      - observed_lat
+      - observed_lng
+      - accuracy_m
+      - geo_event
+      - action_form_id
+      - notification
+      - override_request
+      - cancellation_request
+      - evidence_path
+  cache_partition:
+    required_dimensions:
+      - authenticated_user_or_authorized_scope_identity
+      - projection_mode
+      - authorized_region
+      - authorized_organization
+      - explicit_national_grant_version
+      - permission_or_capability_version
+    prohibition: >-
+      Never key a response only by route, locale, region query parameter or
+      role display name.
+
+negative_evidence_proposal:
+  payload:
+    - >-
+      Capture server response/RSC payload for Planner and assert every forbidden
+      Planner key/value is absent, not null, masked in CSS or removed after
+      hydration.
+    - >-
+      Capture server response/RSC payload for Leadership and assert no
+      visit-level, inspector-level or geo-event-level object exists.
+    - >-
+      Search serialized map sources, accessibility trees and client state for a
+      seeded inspector name, user ID, observed coordinates, accuracy and
+      geo-event ID; every search must return zero for reduced projections.
+  query:
+    - >-
+      Instrument reduced-route reads and prove Planner/Leadership projection
+      does not fetch raw geo_events or assignment profile names.
+    - >-
+      Prove a forged region/city/visit/factory query cannot cause a forbidden
+      server read or change the authorized scope.
+  direct_data:
+    - >-
+      After a separately authorized RLS implementation, direct PostgREST reads
+      by Planner/Leadership must not recover fields omitted from their
+      Operations projection.
+    - >-
+      Until that database evidence exists, do not claim CR-447 complete merely
+      because the route DTO is reduced.
+  cache_and_role_change:
+    - >-
+      Load the full Ops view, sign out, sign in as Planner/Leadership and prove
+      no full-detail payload, map source or client cache survives.
+    - >-
+      Revoke precise/national permission and prove the next authoritative
+      request returns the reduced/scoped projection with no stale details.
+  error_and_empty:
+    - >-
+      Distinguish unauthorized, scope-unconfigured, authorized-empty,
+      source-failed and restricted-location states without revealing hidden
+      row counts or names.
+    - >-
+      Force projection failure and prove the system does not fall back to raw
+      geo-events, broad factory data or an Ops cache.
+  mixed_roles:
+    - >-
+      inspector+planner receives Planner projection; inspector+reviewer without
+      operations.view is denied; leadership+planner receives Leadership
+      aggregate projection; ops+leadership receives full detail only when the
+      explicit precise capability is present.
+  writes:
+    - >-
+      Every Planner and Leadership mutation attempt returns a stable denial and
+      produces zero domain mutation, even when invoked directly without the UI.
+
+open_decisions:
+  - >-
+    Sponsor must approve or reject Planner as an additive operations.view
+    persona under CR-430.
+  - >-
+    Sponsor must approve whether any Planner inspector identity is allowed; this
+    proposal recommends none.
+  - >-
+    Sponsor must approve whether Leadership may drill to named factories; this
+    proposal makes it conditional on the existing approved Factory 360
+    permission and authorized geography.
+  - >-
+    Governance must define org_scope-to-record mapping before organization
+    scoping can be certified.
+  - >-
+    Sponsor/governance must approve any new precise-location/identity and
+    national-scope capabilities before a migration is drafted.
+
+implementation_boundary:
+  status: NOT_AUTHORIZED_NOT_STARTED
+  overlap_block: >-
+    The Planner/Leadership map projection would overlap files in Claude's active
+    eight-file map-provenance return. Do not implement until that lease is
+    closed, independently accepted or superseded, and a new branch/base/file
+    owner is recorded.
+  likely_future_layers:
+    - Server capability and projection resolver.
+    - Separate Planner and Leadership DTO builders.
+    - Database-authoritative geography and sensitive-field policies.
+    - Capability-aligned navigation and route guards.
+    - Persona, payload, RLS, cache, region and mutation-negative evidence.
+
+stop_condition:
+  specification_complete: true
+  sponsor_approval_received: false
+  product_change_authorized: false
+  claude_return_dispatch: READY_AFTER_MANUAL_MAC_UNLOCK

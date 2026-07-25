@@ -1,0 +1,527 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-ACCESS-DESIGN-AUTHORITY-REVIEW-034
+title: Admin Roles and Permissions primary and secondary design authority review
+status: READY_FOR_BOUNDARY_AND_MAPPING_GOVERNANCE_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+predecessor_acknowledgement:
+  packet_id: M10-ADMIN-DEVICES-DESIGN-IDENTITY-READINESS-033
+  disposition: RETURN_FOR_MAPPING_CORRECTION
+  status: BLOCKED_NO_DESIGN_WRITE_AUTHORITY
+  rule: >-
+    Devices remains blocked. Its WA-DES-015/CD-056 mapping recommendation grants
+    no write, lease, identity allocation or implementation authority.
+
+task_contract:
+  task_id: M8-ADMIN-ACCESS-DESIGN-AUTHORITY-REVIEW-034
+  gate: M8 Admin Roles and Permissions design boundary governance
+  route: /admin/access
+  channel: ADMIN
+  process_ids: ["G2-P00"]
+  screen_id: SCR-ADM-090
+  screen_name: Roles & Permissions
+  web_admin_package: M8
+  family_module_id: M3-00
+  family_design_id: CD-050
+  direct_contract_ids:
+    - RBAC-006
+    - EXE-ACCESS
+    - PLN-REQ-004
+    - PLN-CON-013
+  family_requirement_ids:
+    - MVP2-REQ-0192
+    - MVP2-REQ-0227
+    - MVP2-REQ-0241
+    - MVP2-REQ-0256
+  acceptance_ids:
+    family: [MVP2-AC-0192, MVP2-AC-0227, MVP2-AC-0241, MVP2-AC-0256]
+    web_admin: [WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-003, WA-M8-AC-004, WA-M8-AC-005, WA-M8-AC-006]
+  dependencies:
+    - WA-DES-043_primary_route_binding_confirmation
+    - WA-DES-011_secondary_or_future_override_disposition
+    - CD-050_M3-00_R2_package_identity_and_fingerprint_verification
+    - WA-DES-043_to_SCR-ADM-090_and_CD-050_lineage_registration
+    - role_capabilities_vs_role_permissions_semantic_boundary
+    - single_authority_vs_dual_control_sponsor_decision
+    - role_permissions_database_guard_and_audit_apply_truth
+    - route_navigation_RLS_RPC_capability_permission_reconciliation
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design, CD-050, WA-DES-043, WA-DES-011, or exported designs
+    - frozen design, route, screen, requirement, acceptance, evidence, or RBAC mappings
+    - Access, Security Access, Audit, Users/Roles, shared shell, identity, or provider application code
+    - tests, evidence, Supabase, migrations, RPCs, credentials, environment, seeds, or data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 52aa0091
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-EVIDENCE-REUSE-INTEGRITY-AUDIT-034.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICES-DESIGN-IDENTITY-READINESS-033.yaml
+    - product-contract/operationalization/coordination/batches/M2-B002-R4-EVIDENCE-AND-CONTINUITY-CORRECTION.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    Read-only authority analysis only. No application, design, route, mapping,
+    test, database, branch, lease, shared data or active slice is changed.
+
+authority:
+  screen_and_rbac:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/execution/EXECUTION_DECISION_LOG.md
+  module_and_requirements:
+    - product-contract/mvp3/README.md
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  route_and_design_inventory:
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+  live_code_mapping:
+    - apps/web/src/app/(app)/admin/access/page.tsx
+    - apps/web/src/app/(app)/admin/access/loading.tsx
+    - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+    - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+    - apps/web/src/app/(app)/admin/access/actions.ts
+    - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0010_fix_access_roster_visibility.sql
+    - supabase/migrations/20260716120000_seco_config_versions_roles_rls.sql
+    - supabase/migrations/20260720010000_factory360_v2_foundation.sql
+    - supabase/migrations/20260721110000_execution_access_grants.sql
+    - supabase/migrations/20260722120000_planning_role_permissions_audit.sql
+  current_tests:
+    - apps/web/e2e/execution-access-contract.spec.ts
+    - apps/web/e2e/cd-044-admin-planning.spec.ts
+    - apps/web/e2e/cd-004-admin-control-plane-home.spec.ts
+  external_registered_designs_read_only:
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Users Roles.dc.html
+      design_id: WA-DES-043
+      bytes: 16534
+      sha256: 9d4e9879d7f2d4fd39a47895c9f746d99cbb3b3030aa033009889c7ada82a6b6
+      reference_viewport: 1200x900
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Role Override.dc.html
+      design_id: WA-DES-011
+      bytes: 10979
+      sha256: 98827572052bf6157e8fe4710cd6de7d49bc49459dd82aa324d14d159b4f58bd
+      reference_viewport: 1200x860
+
+screen_and_route_truth:
+  screen_catalogue:
+    screen_id: SCR-ADM-090
+    route: /admin/access
+    capability: Manage role permissions and data scope
+    persona: Security Admin
+    inputs: Role matrix; channel; object; action; scope; segregation rules
+    actions: Create role; assign permission; compare; publish
+    exceptions: Privilege conflict; segregation violation
+  existing_identity_status:
+    screen_identity_exists: true
+    new_screen_identity_required: false
+    rule: Use SCR-ADM-090; do not invent or borrow another screen ID.
+  implementation_scope_delta:
+    - Role catalogue creation is not implemented; roles are seed-managed and REST-write denied.
+    - There is no publish lifecycle for the role matrix.
+    - Current writes cover user role grants, direct positive capability grants, and role-permission pairs.
+    - Direct capability overrides are grant-only; there are no negative deny overrides in Release 1.
+
+design_boundary_resolution:
+  primary:
+    design_id: WA-DES-043
+    filename: SAQEEL Users Roles.dc.html
+    route_scope: /admin/access
+    states: [users, roles]
+    classification: PRIMARY_NEAREST_FUNCTIONAL_AND_INFORMATION_ARCHITECTURE_MATCH
+    exact_matches:
+      - Roles & permissions title and RLS-not-UI boundary.
+      - RLS-scoped user roster with role labels.
+      - Security-admin access manager for user role and direct capability grants.
+      - Self-target disabled state and sole-security-admin disclosure.
+      - Effective capabilities separated into role-derived and direct-grant sources.
+      - Role catalogue view and confirmation for admin grants and revokes.
+      - Honest next-request effect and EXE-ACCESS audit wording.
+    gaps_or_corrections:
+      - Hard-coded people, emails, regions, roles, dates, capabilities and counts are fixtures only.
+      - The displayed 54-policy count is not a runtime query and must not be presented as current evidence.
+      - The Roles design is catalogue-only and omits the current RoleCapabilityPanel editor.
+      - It must distinguish role_capabilities/capabilities from role_permissions/permissions.
+      - It lacks partial-source, capability-gate failure, concurrency, audit-unavailable and full negative states.
+      - It contains Arabic branding in an English surface and no complete English/Arabic route state.
+  secondary:
+    design_id: WA-DES-011
+    filename: SAQEEL Admin Role Override.dc.html
+    mapped_scope: /admin/access?view=roles
+    classification: CONDITIONAL_SECONDARY_DETAIL_NOT_CURRENT_RUNTIME_AUTHORITY
+    reusable_boundary:
+      - Focused selected-user role assignment layout.
+      - Explicit consequence, guardrail and change-history presentation.
+      - Strong confirmation treatment for elevated grants.
+    incompatible_or_unproven_claims:
+      - It requires a second security_admin approval and recorded override reason.
+      - Current accepted D-006 explicitly defers maker-checker beyond one security_admin.
+      - Current user role grant RPC takes only target and role; it has no reason or approver input.
+      - Current UI has no saved draft, approval queue, second-approver selection or override state machine.
+      - Its Save assignments batch interaction does not match individual idempotent RPC writes.
+      - Its hard-coded user, approver, history and dates are fixtures only.
+    allowed_disposition:
+      - FUTURE_CONSENTED_DUAL_CONTROL_DESIGN if sponsor changes the contract.
+      - SECONDARY_GUARDRAIL_PATTERN_ONLY under the current single-authority contract.
+    prohibited_disposition: PRESENT_AS_CURRENT_IMPLEMENTED_FLOW
+  validation_status: CONFIRMED_WITH_BOUNDARY_CORRECTION
+  mapping_recommendation:
+    - Keep WA-DES-043 as primary /admin/access authority.
+    - Narrow WA-DES-011 to a conditional secondary detail/future workflow.
+    - Remove WA-DES-043 from /admin/security-access; that route is governed separately.
+
+cd_050_and_m8_authority:
+  package_owner: M8
+  screen_identity: SCR-ADM-090
+  family_module: M3-00
+  family_design_id: CD-050
+  family_relevance: Security/IAM, roles, permissions, scopes, maker-checker and audit governance.
+  route_status_note: >-
+    The M3-00 build sequence names access governance, while the implementation
+    status route list names integrations, operations and security-access but
+    omits /admin/access. Governance must reconcile that omission.
+  package_dc_html_present: false
+  package_sha256_present: false
+  exact_frame_manifest_present: false
+  required_lineage: CD-050_R2 -> WA-DES-043_primary -> SCR-ADM-090 -> /admin/access
+  rule: >-
+    M8 owns the Web/Admin package and SCR-ADM-090 owns the screen. CD-050 is the
+    cross-cutting Security/IAM family authority; it does not erase either.
+
+real_route_and_component_truth:
+  route_exists: true
+  primary_component: apps/web/src/app/(app)/admin/access/page.tsx
+  loading_component: apps/web/src/app/(app)/admin/access/loading.tsx
+  user_grant_component: apps/web/src/app/(app)/admin/access/AccessManager.tsx
+  role_permission_component: apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+  title: Roles & permissions
+  badge: SCR-ADM-090_RBAC-001_THROUGH_014_EXE-ACCESS
+  reads:
+    base:
+      - profiles: user_id, full_name, email, region and nested user_roles
+      - roles: role_key, title, is_admin
+      - verified current user
+    security_admin_panel:
+      - user_roles: user, role, granter and grant time
+      - user_capability_grants: user, capability, granter and grant time
+      - role_capabilities: role-to-capability defaults
+      - capabilities: direct-grant catalogue
+    role_permission_panel:
+      - permissions: governed permission catalogue
+      - role_permissions: role-to-permission grants
+  gates:
+    user_access_manager: has_role_security_admin
+    role_permission_editor: has_planning_capability_admin_access_manage
+  writes:
+    user_access:
+      path: FOUR_SECURITY_DEFINER_RPCS_ONLY
+      operations:
+        - admin_grant_role
+        - admin_revoke_role
+        - admin_grant_capability
+        - admin_revoke_capability
+    role_permissions:
+      path: DIRECT_TABLE_INSERT_DELETE_THROUGH_RLS
+      operations:
+        - grantRoleCapability
+        - revokeRoleCapability
+
+permission_and_rls_truth:
+  route_group: AUTHENTICATED_NON_FIELD_CHANNEL
+  navigation_visible_roles: [security_admin]
+  route_specific_guard: NOT_PRESENT
+  base_data:
+    roles_catalogue: ALL_AUTHENTICATED
+    profiles:
+      own_profile: true
+      elevated_roles: [security_admin, ops, planner]
+    user_roles:
+      own_roles: true
+      elevated_roles: [planner, ops, security_admin, reviewer, auditor, compliance_admin]
+  direct_user_capability_grants:
+    own_grants: true
+    all_grants: security_admin
+    direct_writes: NONE
+  role_permissions:
+    reads: ALL_AUTHENTICATED
+    writes: security_admin_under_RLS
+  actions:
+    user_role_and_direct_capability_rpcs: security_admin
+    role_permission_server_actions: admin.access.manage_capability_plus_security_admin_RLS
+  persona_states:
+    - SECURITY_ADMIN_FULL_MANAGEMENT
+    - SECURITY_ADMIN_WITHOUT_ADMIN_ACCESS_MANAGE_USER_GRANTS_ONLY
+    - NON_SECURITY_ADMIN_ROSTER_READ_ONLY_AS_RLS_ALLOWS
+    - OWN_PROFILE_OR_OWN_GRANTS_ONLY
+    - NAVIGATION_ABSENT_BUT_DIRECT_ROUTE_READABLE
+    - UNAUTHORIZED_OR_RLS_EMPTY
+    - SESSION_EXPIRED
+  contradictions:
+    - Navigation suggests security_admin-only but direct route has no equivalent guard.
+    - The source comment says compliance_admin owns the roster, while profiles RLS does not grant it broad profile visibility.
+    - A user may have admin.access.manage without canManage user grants, or security_admin without that capability.
+  rule: Menu visibility, route admission, each read policy, RPC authority and capability gate are separate facts.
+
+maker_checker_and_sensitive_action_truth:
+  accepted_current_contract:
+    authority: D-006
+    model: SINGLE_SECURITY_ADMIN_WITH_DATABASE_GUARDS
+    maker_checker_beyond_single_actor: DEFERRED_SPONSOR_DECISION
+    user_access_guards:
+      - no self-target for all four RPCs
+      - cannot revoke the sole remaining security_admin
+      - catalogue membership validation
+      - idempotent existing-grant and absent-revoke no-op
+    confirmations:
+      - admin role grant
+      - role revoke
+      - direct capability revoke
+  role_permission_guards:
+    server_action:
+      - actor must have admin.access.manage
+      - actor cannot grant a capability they lack to a role they hold
+      - actor cannot grant or revoke admin.access.manage on a role they hold
+    database:
+      - security_admin RLS only
+      - no equivalent self-escalation or separation-of-duties RPC guard
+    bypass_risk: >-
+      A security_admin can write role_permissions through the REST table policy
+      without the server-action-only self-escalation checks. Design must not
+      imply the application guard is the database boundary.
+  WA_DES_011_dual_control_status: UNAPPROVED_AND_NOT_IMPLEMENTED
+
+data_audit_concurrency_truth:
+  data:
+    - Roster and grant collections are RLS projections, not global totals.
+    - Email and region are personal/scope data and must not be exposed beyond proven RLS purpose.
+    - capabilities/role_capabilities and permissions/role_permissions are distinct catalogues and engines.
+    - Direct overrides are positive grants only; removing a direct grant does not remove role-derived access.
+  source_failure_gaps:
+    - Base profile failure is visible, but roles failure is ignored.
+    - Security-admin panel read failures are logged and collapsed into empty collections.
+    - Permission and role-permission read failures are logged and collapsed into empty collections.
+    - has_role or has_planning_capability failure silently removes a management panel.
+    - No explicit verified-empty roster state exists.
+  audit:
+    user_access_rpcs:
+      - Every actual change appends EXE-ACCESS actor and before/after evidence.
+      - Idempotent no-op writes no audit row because nothing changed.
+      - user_roles also has row-trigger audit, so duplicate semantic audit records may exist and must be explained.
+    role_permissions:
+      - Audit trigger is authored in migration 20260722120000.
+      - Route copy states that migration is pending apply.
+      - Runtime audit coverage must remain UNVERIFIED until environment evidence proves it applied.
+  concurrency:
+    user_access_rpcs:
+      - No target grant row or security-admin authority set is locked.
+      - Concurrent identical grants may collide on primary keys instead of both returning idempotent success.
+      - Concurrent revocation of the last two security_admin holders can race because count and delete are not serialized.
+      - No expected version, request id or idempotency key is accepted.
+    role_permissions:
+      - Primary key makes duplicate grants unique but there is no expected version.
+      - Revoke uses delete-and-select without a stale/conflict contract.
+      - Server-action self-escalation checks and the later write are not one database transaction.
+
+provider_and_policy_truth:
+  holds:
+    - {id: MVP3-HOLD-003, scope: external_identity_and_SSO, effect: No external identity or MFA/SSO administration claim on this route.}
+    - {id: MVP3-HOLD-006, scope: retention_and_backup, effect: No invented access-log retention or purge policy.}
+    - {id: MVP3-HOLD-008, scope: production_release, effect: Local evidence is not production authorization proof.}
+  boundary: No provider enablement or credential action belongs on this route.
+
+required_design_states:
+  route_and_sources:
+    - LOADING
+    - SECURITY_ADMIN_FULL_SCOPE
+    - SECURITY_ADMIN_PARTIAL_CAPABILITY_SCOPE
+    - NON_SECURITY_ADMIN_READ_ONLY
+    - OWN_PROFILE_ONLY
+    - VERIFIED_EMPTY_ROSTER
+    - PROFILES_UNAVAILABLE
+    - ROLES_UNAVAILABLE
+    - USER_GRANTS_UNAVAILABLE
+    - CAPABILITY_CATALOGUE_UNAVAILABLE
+    - ROLE_PERMISSION_CATALOGUE_UNAVAILABLE
+    - GATE_CHECK_UNAVAILABLE
+    - MULTIPLE_SOURCES_UNAVAILABLE
+    - SESSION_EXPIRED
+    - UNAUTHORIZED_DIRECT_ROUTE
+  user_access_actions:
+    - TARGET_SELECTED
+    - SELF_TARGET_BLOCKED
+    - GRANT_ROLE_CONFIRMATION
+    - REVOKE_ROLE_CONFIRMATION
+    - GRANT_DIRECT_CAPABILITY
+    - REVOKE_DIRECT_CAPABILITY_CONFIRMATION
+    - PENDING
+    - SUCCESS_NEXT_REQUEST
+    - IDEMPOTENT_NO_CHANGE
+    - SOLE_SECURITY_ADMIN_DENIED
+    - UNKNOWN_USER_ROLE_OR_CAPABILITY
+    - DENIED_NO_CHANGE
+    - FAILED_NEUTRAL
+    - STALE_OR_CONCURRENT_CONFLICT
+    - AUDIT_EVIDENCE_AVAILABLE
+    - AUDIT_EVIDENCE_UNAVAILABLE
+  role_permissions:
+    - ROLE_SELECTED
+    - GRANT_CAPABILITY
+    - REVOKE_CONFIRMATION
+    - SELF_ESCALATION_BLOCKED
+    - ADMIN_ACCESS_MANAGE_GUARD
+    - PENDING
+    - SUCCESS_NEXT_REQUEST
+    - IDEMPOTENT_NO_CHANGE
+    - DENIED_NO_CHANGE
+    - FAILED_NEUTRAL
+    - STALE_OR_CONCURRENT_CONFLICT
+    - AUDIT_MIGRATION_UNVERIFIED
+  future_dual_control:
+    - NOT_ENABLED_UNDER_CURRENT_CONTRACT
+    - SPONSOR_APPROVED_ONLY
+    - SECOND_APPROVER_PENDING
+    - APPROVED
+    - REJECTED
+    - EXPIRED_OR_WITHDRAWN
+
+responsive_theme_language_accessibility:
+  viewports:
+    - {viewport: 1440x900, expectation: Roster and both management engines remain bounded and distinguishable.}
+    - {viewport: 1200x900, expectation: Exact WA-DES-043 comparison with stable Users/Roles task hierarchy.}
+    - {viewport: 1200x860, expectation: WA-DES-011 is labelled conditional secondary, never current runtime.}
+    - {viewport: 1024x768, expectation: No clipped tables, confirmation or hanging shell.}
+    - {viewport: 768x1024, expectation: User, role, source, consequence and action remain adjacent in one task order.}
+    - {viewport: 412x915, expectation: Labelled records replace wide tables and no controls peek from collapsed navigation.}
+    - {viewport: 390x844, expectation: Guard, pending, denial, audit and effective-source labels remain visible.}
+    - {viewport: 320x568, expectation: No accidental privileged action, clipping, overlap or two-dimensional scroll.}
+  themes:
+    - LIGHT_WITH_TOKEN_AND_CONTRAST_PARITY
+    - DARK_WITH_TOKEN_AND_CONTRAST_PARITY
+  languages:
+    - ENGLISH_LTR_WITH_ENGLISH_SHELL_IDENTITY
+    - APPROVED_ARABIC_RTL_COMPLETE
+  accessibility:
+    - keyboard and visible focus order
+    - labels for every user, role and capability control
+    - non-color admin, source, guard and result meaning
+    - modal or inline confirmation focus management
+    - pending, error, denial and success announcements
+    - table or labelled-record screen-reader parity
+    - zoom, reflow and reduced-motion parity
+
+p0_gates:
+  - {id: ACC-DES-P0-01, criterion: SCR-ADM-090 is preserved and no new identity is invented.}
+  - {id: ACC-DES-P0-02, criterion: WA-DES-043 is bound as primary route authority with exact fingerprint.}
+  - {id: ACC-DES-P0-03, criterion: WA-DES-011 is secondary/future only and cannot imply current dual control.}
+  - {id: ACC-DES-P0-04, criterion: CD-050 cross-cutting lineage and M8 screen ownership are reconciled.}
+  - {id: ACC-DES-P0-05, criterion: Every hard-coded person, email, region, date, count, role and capability is fixture-only.}
+  - {id: ACC-DES-P0-06, criterion: Exact RBAC-006, EXE-ACCESS, PLN and MVP2 family contracts remain distinguishable.}
+  - {id: ACC-DES-P0-07, criterion: Route, navigation, RLS, RPC and capability gates are represented separately.}
+  - {id: ACC-DES-P0-08, criterion: Personal identity, email, region and grants remain purpose- and RLS-scoped.}
+  - {id: ACC-DES-P0-09, criterion: Role defaults, direct positive grants and role-permission mappings remain separate engines.}
+  - {id: ACC-DES-P0-10, criterion: Current single-authority contract and deferred maker-checker decision are explicit.}
+  - {id: ACC-DES-P0-11, criterion: Self-escalation, sole-admin, catalogue, idempotency and next-request effect truth is preserved.}
+  - {id: ACC-DES-P0-12, criterion: Role-permission database bypass, audit-apply and concurrency gaps are not concealed.}
+  - {id: ACC-DES-P0-13, criterion: Failed, partial, RLS-empty and verified-empty reads cannot collapse into empty truth.}
+  - {id: ACC-DES-P0-14, criterion: Actor, before/after, requirement reference and no-op audit semantics are explicit.}
+  - {id: ACC-DES-P0-15, criterion: Provider, retention and production holds remain fail-closed.}
+  - {id: ACC-DES-P0-16, criterion: Design acceptance makes no implementation or all-478 completion claim.}
+
+p1_gates:
+  - {id: ACC-DES-P1-01, criterion: All route, source, action, audit, concurrency, denial, error, empty and future states are specified.}
+  - {id: ACC-DES-P1-02, criterion: All eight viewports preserve task order, bounded reading and safe actions.}
+  - {id: ACC-DES-P1-03, criterion: English/LTR and approved Arabic/RTL have semantic and interaction parity.}
+  - {id: ACC-DES-P1-04, criterion: Light/dark modes preserve contrast and non-color privilege meaning.}
+  - {id: ACC-DES-P1-05, criterion: Keyboard, focus, confirmation, labels and announcements pass.}
+  - {id: ACC-DES-P1-06, criterion: Zoom, reflow and reduced motion preserve every governed action and warning.}
+  - {id: ACC-DES-P1-07, criterion: RLS scope, effective source, next-request timing, audit and freshness are visible.}
+  - {id: ACC-DES-P1-08, criterion: Evidence includes exact fingerprints and complete state/responsive/theme/RTL comparisons.}
+
+remaining_governance_decisions:
+  - id: ACC-DES-DEC-01
+    decision: Confirm WA-DES-043 as primary authority for SCR-ADM-090 and /admin/access.
+  - id: ACC-DES-DEC-02
+    decision: Restrict WA-DES-011 to secondary guardrail patterns or approve it later through change control.
+  - id: ACC-DES-DEC-03
+    decision: Retrieve/fingerprint CD-050 R2 and reconcile its omitted /admin/access route lineage with M8.
+  - id: ACC-DES-DEC-04
+    decision: Confirm the current single-security-admin model or approve a new dual-control access workflow.
+  - id: ACC-DES-DEC-05
+    decision: Reconcile route admission, navigation, RLS, RPC and admin.access.manage capability scope.
+  - id: ACC-DES-DEC-06
+    decision: Define the user grant, role_capabilities and role_permissions product vocabulary and boundaries.
+  - id: ACC-DES-DEC-07
+    decision: Move role-permission sensitive guards into a database-enforced contract or explicitly accept the bypass risk.
+  - id: ACC-DES-DEC-08
+    decision: Prove role_permissions audit migration state and resolve user_roles duplicate semantic audit presentation.
+  - id: ACC-DES-DEC-09
+    decision: Define transaction-safe concurrency for sole-admin revoke and idempotent grants.
+  - id: ACC-DES-DEC-10
+    decision: Reconcile SCR-ADM-090 create/publish promises with the current seed-managed role catalogue.
+  - id: ACC-DES-DEC-11
+    decision: After all prior decisions, name exactly one design writer; design consent is not implementation consent.
+
+collision_safe_design_lease:
+  prerequisite_sequence:
+    - Governance confirms the primary/secondary boundary and records CD-050/M8/SCR-ADM-090 lineage.
+    - Governance closes dual-control, permission-engine, DB-guard, audit, concurrency and catalogue-lifecycle decisions.
+    - Orchestrator rechecks both design files, all states, shared Admin shell, CD-050 and every active writer.
+    - Sponsor names exactly one writer and one bounded Access design lease.
+  writer_boundary:
+    preferred_primary_source: SAQEEL Users Roles.dc.html
+    may_change_after_lease:
+      - WA-DES-043 Users and Roles states within accepted contracts.
+      - WA-DES-011 only if its separate secondary/future disposition explicitly authorizes it.
+    must_preserve:
+      - SCR-ADM-090 and RBAC-006 authority
+      - CD-050 family lineage
+      - all other WA-DES-043 navigation states
+      - single-authority truth unless sponsor approves change control
+      - no-write/no-implementation boundary
+    prohibited_parallel_writers:
+      - any writer touching WA-DES-043 or its Users/Roles selector
+      - any writer touching WA-DES-011
+      - any writer touching shared Admin shell, CD-050 or the same evidence index
+  closeout:
+    - Independent reviewer verifies P0 and P1 evidence.
+    - Sponsor accepts, returns or rejects the design correction.
+    - A later implementation lease separately records exact application and migration ownership.
+
+recommendation:
+  reviewer_recommendation: APPROVE_PRIMARY_RETURN_SECONDARY_FOR_CONTRACT_DECISION
+  sponsor_business_decision: >-
+    Confirm WA-DES-043 as the primary existing design. Keep WA-DES-011
+    secondary and non-consumable until the sponsor decides whether dual control
+    is required. Close eleven governance decisions before naming one writer.
+    Do not approve implementation from this packet.
+
+safe_follow_on:
+  task_id: M8-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-035
+  objective: >-
+    Read-only validate /admin/audit against the registered Activity Log design,
+    SCR-ADM authority, real audit schema/RLS and the access-change evidence
+    claims made by WA-DES-043 and WA-DES-011, without allocating an ID.
+  constraints:
+    - No live design, code, tests, data, mapping, branch, lease, main, setup/Inspection or stash mutation.

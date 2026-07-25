@@ -1,0 +1,354 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+status: INDEPENDENT_REVIEWER_READY_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+purpose: >-
+  Sequence 009r, 010, 011, 013, 014 and 015 so M11 remediation can be
+  implemented, migrated, reviewed and rolled back without concurrent file,
+  RPC, policy or test ownership.
+
+authority:
+  specification_gate: KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+  implementation_packets:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  acceptance_matrix: KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+  acceptance_ids:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+
+isolated_dependencies:
+  CR_337:
+    status: BLOCKED_ON_SPONSOR_SEMANTIC_DECISION
+    packet: KIMI-M11-SESSION-LIST-FILTER-LEASE-TBD
+    rule: >-
+      No today/confirmed list query, timezone or confirmation predicate enters
+      this stack. Its decision and future lease remain separate.
+  DEC_005:
+    status: BLOCKED
+    subject: "Factory-representative principal and access boundary."
+    rule: >-
+      No representative login, portal, token, credential, impersonation or
+      factory-facing route enters this stack.
+
+global_write_rules:
+  - "Only one implementation lease may own an application file at a time."
+  - "Only the integration owner allocates the next monotonic migration filename."
+  - "Every migration is additive/forward-only; no existing migration is edited."
+  - "Every worker starts from the reviewed predecessor commit and returns a bounded commit; no shared dirty worktree."
+  - "The M11 browser behavior specification has one QA owner after 009r acceptance; implementation workers do not edit it."
+  - "No worker deploys, applies remote DDL, mutates shared data, pushes, merges or modifies protected branches under these packets."
+  - "No intermediate stacked commit is called independently deployable when a later lease is required to close its security or compatibility boundary."
+
+safe_order:
+  - order: 0
+    packet: KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+    action: CORRECT_AND_ACCEPT_009R
+    rationale: >-
+      Test semantics and fixture isolation must be accepted before implementation
+      can claim a proof contract.
+    exit:
+      - "009-R01 through 009-R04 corrected."
+      - "No CR-337 product fix is folded into the test lease."
+      - "One QA owner receives the accepted behavior-spec file lease."
+
+  - order: 1
+    packet: KIMI-M11-ATOMIC-FIX-LEASE-010
+    action: IMPLEMENT_ATOMIC_AUTHORIZED_CREATION
+    migration_effect: >-
+      Introduce the atomic session-plus-initial-participants RPC and correct only
+      the virtual_sessions creation authorization boundary.
+    rationale: >-
+      011 needs the governed creation RPC as its appointment-window integration
+      point. Creation must exist before the shared guard replaces it.
+    exit:
+      - "Atomic commit/rollback and duplicate-race proof passes."
+      - "Reviewer and unassigned Inspector creation are denied."
+      - "Creation RPC contract and return tokens are frozen for 011."
+
+  - order: 2
+    packet: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    action: ADD_SHARED_WINDOW_GUARD
+    migration_effect: >-
+      Add one canonical window predicate/guard, replace the 010 creation RPC to
+      validate appointment containment, and guard current waiting/join/begin
+      mutation paths until 014 supersedes join/begin transactionality.
+    rationale: >-
+      The shared guard must exist before 014 creates the final join and begin
+      transactional RPCs. 014 consumes it instead of duplicating window logic.
+    exit:
+      - "Inclusive appointment and live-transition boundaries pass."
+      - "010 atomicity, authorization and return contract still pass."
+      - "Guard function signature and stable outside-window token are frozen for 014."
+
+  - order: 3
+    packet: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    action: IMPLEMENT_TRANSACTIONAL_JOIN_AND_BEGIN
+    migration_effect: >-
+      Add final inspector-only join and begin transactional RPCs that consume
+      011's shared guard and canonical transition authority.
+    rationale: >-
+      Governed RPCs must exist and pass before 013 removes broad direct table
+      mutation. This prevents a secure-policy commit from breaking the only
+      working application path.
+    exit:
+      - "Join and begin positive, denial, rollback and concurrency cases pass."
+      - "Planner/Operations fallback is removed."
+      - "010 and 011 regression remains green."
+
+  - order: 4
+    packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    action: REMOVE_DIRECT_MUTATION_BYPASSES
+    migration_effect: >-
+      Replace broad FOR ALL policies and overbroad RPC allowlists only after
+      creation, join and begin have governed callable paths.
+    rationale: >-
+      Least-privilege policies close direct DML/OTP bypasses without stranding
+      authorized workflows because 010 and 014 are already available.
+    exit:
+      - "Role/row matrix passes through ordinary persona sessions."
+      - "Direct participant verification/join DML is denied."
+      - "Reviewer remains audit-only and all governed paths still pass."
+
+  - order: 5
+    packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    action: HARDEN_AUDIT_AND_NEUTRAL_ERRORS
+    migration_effect: >-
+      Add the explicit safe audit projection, neutral not-found/out-of-scope
+      boundary and restriction of the generic append-event seam after all final
+      governed transition RPCs exist.
+    rationale: >-
+      015 can safely revoke arbitrary semantic-event append only after 014 owns
+      join/begin event creation and 013 has closed direct DML.
+    exit:
+      - "Secret sentinel is absent from every exposed surface."
+      - "Missing/out-of-scope pairs are identical."
+      - "Governed transition events remain visible once; arbitrary append is denied."
+
+  - order: 6
+    packet: KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+    action: RUN_STACKED_INDEPENDENT_CERTIFICATION
+    rationale: >-
+      Only the complete stack represents the intended security and workflow
+      boundary. Packet-local passes cannot substitute for stacked regression.
+    exit:
+      - "All 28 matrix cases and cross-packet regressions pass."
+      - "Runtime, data, audit and browser evidence correlate by isolated run_id."
+      - "Independent reviewer records the final verdict."
+
+migration_dependency_graph:
+  base: "Canonical migration chain at the reviewed source commit."
+  nodes:
+    M11_010:
+      owns:
+        - "Atomic virtual-session creation RPC."
+        - "virtual_sessions INSERT authorization correction."
+      depends_on: [base]
+      may_be_replaced_by: [M11_011]
+    M11_011:
+      owns:
+        - "Canonical visit-window predicate/guard."
+        - "Window integration into the 010 creation RPC and current execution paths."
+      depends_on: [M11_010]
+      consumed_by: [M11_014]
+    M11_014:
+      owns:
+        - "Transactional participant-join RPC."
+        - "Transactional inspector-only begin RPC."
+      depends_on: [M11_011]
+      must_call:
+        - "011 canonical window guard."
+        - "Canonical operational/workflow transition guard."
+    M11_013:
+      owns:
+        - "Explicit virtual_sessions SELECT/UPDATE/DELETE policies after creation."
+        - "Explicit virtual_participants SELECT/INSERT/UPDATE/DELETE policies."
+        - "OTP RPC role/row authorization hardening."
+        - "Privilege revocation preventing direct governed-column bypass."
+      depends_on: [M11_010, M11_014]
+    M11_015:
+      owns:
+        - "Safe audit projection/read seam."
+        - "Neutral resource-not-found-or-out-of-scope boundary."
+        - "Generic semantic-event append restriction."
+      depends_on: [M11_013, M11_014]
+  allocation_rule: >-
+    Symbolic node names are not migration filenames. The integration owner
+    allocates exact monotonic filenames immediately before each lease begins and
+    records the predecessor checksum; workers may not pre-allocate competing
+    timestamps.
+
+application_file_lease_map:
+  apps/web/src/app/(app)/virtual/actions.ts:
+    sequence: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-EXECUTION-WINDOW-LEASE-011]
+    final_owner: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    rule: "010 releases the file only after review; 011 rebases onto and preserves the accepted 010 contract."
+  apps/web/src/app/(app)/virtual/[id]/actions.ts:
+    sequence:
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    final_owner: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    rule: "No parallel edits; each successor starts from the independently accepted predecessor."
+  apps/web/src/app/(app)/virtual/[id]/Room.tsx:
+    sequence:
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    final_owner: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    rule: "011 owns window truth, 014 owns truthful join/begin results, 015 owns safe audit rendering."
+  apps/web/src/app/(app)/virtual/[id]/page.tsx:
+    sequence: [KIMI-M11-EXECUTION-WINDOW-LEASE-011]
+    final_owner: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    rule: "No CR-337 list filter or representative access change."
+  permission_call_site_mapping:
+    owner: CURRENT_APPLICATION_FILE_LEASE_HOLDER
+    reviewer: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    rule: >-
+      013 owns migration/policy semantics, not concurrent application edits.
+      If a stable authorization result requires mapping, the current sequential
+      application-file owner makes the bounded integration change and 013's
+      independent reviewer verifies it.
+
+test_lease_map:
+  accepted_009r_behavior_spec:
+    exclusive_owner: M11_QA_OWNER
+    rule: "No implementation worker edits the shared M11 browser behavior spec."
+  packet_sql_contracts:
+    ownership:
+      "010": "Unique creation atomicity/authorization SQL test file."
+      "011": "Unique window-boundary SQL test file."
+      "014": "Unique join/begin transaction SQL test file."
+      "013": "Unique role/row permission-matrix SQL test file."
+      "015": "Unique audit/redaction/neutral-error SQL test file."
+    rule: "No shared SQL test filename and no shared mutable fixture."
+  browser_evidence:
+    owner: M11_QA_OWNER
+    input: "Accepted 009r plus packet-specific stable contracts."
+    rule: "Evidence is captured only from the integrated stack, never a worker's private partial branch."
+
+rpc_and_policy_collision_map:
+  creation_rpc:
+    initial_owner: KIMI-M11-ATOMIC-FIX-LEASE-010
+    successor_owner: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    forbidden: "013, 014 and 015 may not redefine creation semantics."
+  window_guard:
+    sole_owner: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    consumers: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-BEGIN-ATOMICITY-LEASE-014]
+    forbidden: "No duplicate appointment/live-window predicate."
+  join_and_begin_rpcs:
+    sole_owner: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    consumers: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    forbidden: "No planner/operations fallback and no direct workflow mutation."
+  session_participant_policies:
+    creation_insert_exception: "010 owns only session creation authorization."
+    post_creation_owner: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    forbidden: "No later packet may restore FOR ALL or broad participant DML."
+  otp_authorization:
+    sole_owner: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    audit_consumer: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  audit_projection_and_neutral_errors:
+    sole_owner: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    forbidden: "No raw whole-row audit fallback or alternate error token."
+  semantic_events:
+    transition_event_writers:
+      join_and_begin: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      otp: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    generic_append_restriction: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    rule: >-
+      Existing accepted event names only; no packet invents taxonomy. 010 keeps
+      trigger-generated creation audit, while an 011 denial creates no audit or
+      semantic success event.
+
+promotion_and_rollback:
+  promotion_unit: COMPLETE_010_011_014_013_015_STACK
+  intermediate_rule: >-
+    Intermediate commits are reviewable and testable in isolated databases but
+    are not remotely deployable or sponsor-complete. Promotion occurs only from
+    the final integrated commit after matrix 016 passes.
+  rollback_common:
+    - "Application rollback is to the last accepted compatible stack commit."
+    - "Database rollback is a new forward migration; never edit or reverse an applied migration."
+    - "Preserve valid business rows and immutable audit history."
+    - "Never re-enable a broad policy, direct workflow write or raw audit response as rollback."
+  disable_by_packet:
+    "010": >-
+      If creation is unsafe, fail closed and disable the create action. Never
+      fall back to sequential session/participant inserts.
+    "011": >-
+      If the window guard is unsafe or unavailable, block governed scheduling/
+      execution mutations. Never bypass the window or trust client time.
+    "014": >-
+      If join/begin atomic RPCs fail certification, block join/begin. Never
+      restore Planner/Operations CAS fallback or sequential partial writes.
+    "013": >-
+      If least-privilege policies regress an authorized path, correct them with
+      a forward migration while keeping mutation fail-closed. Never restore
+      FOR ALL or direct verification-column DML.
+    "015": >-
+      If the safe audit seam fails, disable audit rendering/read access while
+      preserving source history. Never return raw before/after state, secrets or
+      arbitrary append authority.
+
+independent_review_gates:
+  G0_009R_SPEC:
+    reviewer: CODEX_INDEPENDENT_REVIEWER
+    pass:
+      - "All four return corrections accepted."
+      - "Fixtures deterministic, isolated and ordinary-persona based."
+      - "Zero product or requirement acceptance claimed."
+  G1_PACKET_DIFF:
+    applies_to: ["010", "011", "014", "013", "015"]
+    reviewer: NON_IMPLEMENTING_REVIEWER
+    pass:
+      - "Only leased files/RPCs/policies changed."
+      - "Predecessor contract preserved."
+      - "No invented policy, threshold, provider or role."
+      - "No service-role/BYPASSRLS/shared-setting shortcut."
+  G2_MIGRATION_CHAIN:
+    reviewer: NON_IMPLEMENTING_REVIEWER
+    pass:
+      - "Fresh canonical chain plus ordered stack applies cleanly."
+      - "Migration order/checksums match this dependency graph."
+      - "Catalog grants, policies and function ownership match the lease map."
+      - "No applied migration was edited."
+  G3_PACKET_PROOF:
+    reviewer: M11_QA_OWNER_PLUS_INDEPENDENT_REVIEWER
+    pass:
+      - "Packet-specific P0 authorized, denial, rollback, concurrency and audit cases pass."
+      - "No skipped or proposed-only mandatory case."
+  G4_STACKED_REGRESSION:
+    reviewer: CODEX_INDEPENDENT_REVIEWER
+    pass:
+      - "All 28 matrix-016 cases pass against one fresh integrated stack."
+      - "Protected workflow, audit and adjacent virtual-route regression passes."
+      - "Secrets and neutral-error pairs are verified across API, DOM, logs and evidence."
+  G5_BROWSER_SPONSOR:
+    reviewer: CODEX_FINAL_REVIEWER
+    pass:
+      - "Real implementation shown in browser with isolated real/approved seeded data."
+      - "Console/network health and required negative states are evidenced."
+      - "Sponsor consent is requested only after technical gates pass."
+  completion_rule: >-
+    No packet, requirement row or 478-row completion count changes until all
+    applicable gates pass and evidence is recorded.
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_AND_009R_ACCEPTANCE
+  kimi_status: COMPLETED
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  dependency_order_checked: PASS
+  file_collision_checked: PASS
+  rpc_policy_collision_checked: PASS
+  rollback_fail_closed_checked: PASS
+  CR_337_DEC_005_separation_checked: PASS

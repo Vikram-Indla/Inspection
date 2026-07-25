@@ -1,0 +1,62 @@
+schema_version: "1.0"
+handoff_id: "<UTC>-<actor>-<packet>-HANDOFF-<sequence>"
+actor:
+  name: "<Codex|Claude Code|Claude Design|ChatGPT|Kimi>"
+  tool_or_application: "<exact tool/application>"
+  account_or_workspace: "<non-secret identity or UNKNOWN>"
+  session_or_conversation_id: "<exact ID or NOT_PROVEN>"
+  context_health: "<HEALTHY|WARN|ROTATE_SESSION>"
+  context_usage_or_reason: "<observed percentage or evidence>"
+bootstrap:
+  saqeel_operating_system_loaded: true
+  authority_read_order_completed: true
+  retired_checkout_excluded: true
+packet:
+  batch_id: "<batch>"
+  lane_id: "<lane>"
+  task_id: "<canonical task>"
+  source_commit: "<full SHA>"
+  worktree: "<absolute canonical worktree>"
+  branch: "<branch>"
+authority:
+  requirement_ids: []
+  screen_ids: []
+  engine_ids: []
+  acceptance_ids: []
+  design_project_id: "<ID or N/A>"
+  design_file_id: "<stable ID or N/A>"
+  accepted_design_revision: "<etag/revision/hash or NOT_PROVEN>"
+scope:
+  mode: "<READ_ONLY|DESIGN_WRITE|PRODUCT_WRITE|REVIEW>"
+  allowed_writes: []
+  prohibited_writes: []
+  files_touched: []
+outputs:
+  - path_or_url: "<output>"
+    sha256_or_revision: "<hash/revision>"
+    status: "<COMPLETE|PARTIAL|BLOCKED>"
+verification:
+  tests: []
+  browser_evidence: []
+  negative_paths: []
+  integration_evidence: []
+  permission_and_audit_evidence: []
+delivery:
+  requirement_rows_certified_complete_this_packet: []
+  requirement_rows_remaining_or_blocked: []
+  commit: "<full SHA or N/A>"
+  pull_request: "<URL or N/A>"
+  pushed: false
+findings:
+  confirmed: []
+  ambiguous: []
+  dirty_laundry: []
+  decisions_requested: []
+completion:
+  status: "<READY_FOR_CODEX_REVIEW|BLOCKED|RETURNED>"
+  completed_at_utc: "<UTC>"
+  next_checkpoint: "<exact next action>"
+  next_two_ready_packets: []
+  no_unlisted_product_change: true
+acknowledgement:
+  codex_event_id: "<ACK|RETURNED event or PENDING>"

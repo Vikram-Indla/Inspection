@@ -19,10 +19,23 @@ const CONFIG_DOMAINS = [
   "localization", "masking_export", "pre_inspection_pack",
 ] as const;
 
-const statusLozenge: Record<string, string> = {
-  implemented: "sq-lozenge--success", not_configured: "sq-lozenge--warning",
-  decision_required: "sq-lozenge--warning", unavailable: "sq-lozenge--removed", deferred: "sq-lozenge--info",
+const BADGE_BY_STATUS: Record<string, string> = {
+  implemented: "badge-compliant",
+  not_configured: "badge-warning",
+  decision_required: "badge-warning",
+  unavailable: "badge-disabled",
+  deferred: "badge-info",
 };
+
+/** Honest label for what a sponsor must supply to unblock a KPI. */
+function unblockNote(def: (typeof KPI_DEFINITIONS)[number]): string | null {
+  if (def.implementation === "implemented") return null;
+  const parts: string[] = [];
+  if (def.decisionRef) parts.push(`Open decision: ${def.decisionRef}`);
+  if (def.note) parts.push(def.note);
+  if (parts.length === 0) return "Pending governance approval.";
+  return parts.join(" · ");
+}
 
 export default async function DashboardConfigPage() {
   const { t } = await useT();
@@ -55,120 +68,137 @@ export default async function DashboardConfigPage() {
 
   return (
     <Shell current="/admin/dashboard-config" title={t("admin.dashcfg.title", "Dashboard Configuration")}
-      context={<><span className="sq-lozenge sq-lozenge--info">ADM-DASH-001..018</span><span className="sq-caption">Governed KPI catalogue &amp; policy · RLS-scoped · maker-checker</span></>}>
+      context={<><span className="badge badge-info">ADM-DASH-001..018</span><span className="t-caption">Governed KPI catalogue &amp; policy · RLS-scoped · maker-checker</span></>}>
 
-      {!migrationApplied ? (
-        <div className="sq-surface"><div className="sq-state" role="alert">
-          <span className="sq-state__glyph" aria-hidden="true">⚠</span>
-          <h4>Foundation migration not yet applied</h4>
-          <p className="sq-caption">The dashboard KPI/configuration tables are not readable. Apply migration
-            <code> 20260721010000_dashboard_kpi_admin_foundation.sql</code> and reload. The catalogue below is shown from the code registry.</p>
-        </div></div>
-      ) : null}
+      <div style={{ maxWidth: 1040, width: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
 
-      {/* ---- KPI catalogue (system-seeded, formula immutable to admins) ---- */}
-      <section className="sq-surface" aria-labelledby="dashcfg-catalogue">
-        <h3 id="dashcfg-catalogue">KPI catalogue</h3>
-        <p className="sq-caption">Formula and metric id are system-seeded and immutable to ordinary admins; {implementedCount} of {KPI_DEFINITIONS.length} metrics have a live formula today.</p>
-        <div className="sq-tablewrap"><table className="sq-table"><caption className="sq-sr-only">Governed KPI catalogue</caption>
-          <thead><tr><th scope="col">Metric</th><th scope="col">Category</th><th scope="col">Unit</th><th scope="col">Owner</th><th scope="col">Delivery</th><th scope="col">Seed</th></tr></thead>
-          <tbody>
-            {KPI_DEFINITIONS.map((d) => {
-              const seeded = kpiRows.find((k) => k.metric_key === d.metricKey);
-              return (
-                <tr key={d.metricId}>
-                  <th scope="row"><strong>{d.metricId}</strong><div className="sq-caption">{d.titleEn}</div></th>
-                  <td>{d.category}</td>
-                  <td>{d.unit}</td>
-                  <td>{d.ownerRole}</td>
-                  <td><span className={`sq-lozenge ${statusLozenge[d.implementation] ?? "sq-lozenge--default"}`}>{d.implementation}</span>
-                    {d.decisionRef ? <div className="sq-caption">{d.decisionRef}</div> : null}</td>
-                  <td>{seeded ? seeded.status : migrationApplied ? "—" : "n/a"}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table></div>
-      </section>
-
-      {/* ---- Configuration domains (published versions + effective date) ---- */}
-      <section className="sq-surface" aria-labelledby="dashcfg-domains">
-        <h3 id="dashcfg-domains">Configuration domains</h3>
-        <p className="sq-caption">Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.</p>
-        <div className="sq-tablewrap"><table className="sq-table"><caption className="sq-sr-only">Dashboard configuration domains</caption>
-          <thead><tr><th scope="col">Domain</th><th scope="col">Active version</th><th scope="col">Effective from</th><th scope="col">Draft in flight</th></tr></thead>
-          <tbody>
-            {CONFIG_DOMAINS.map((key) => {
-              const head = headByKey.get(key);
-              const active = head ? versionById.get(head.current_version_id) : undefined;
-              const inFlight = params.find((p) => p.config_key === key && ["draft", "pending_review", "returned"].includes(p.status));
-              return (
-                <tr key={key}>
-                  <th scope="row">{key}</th>
-                  <td className="sq-numeric">{active ? `v${active.version_number}` : <span className="sq-lozenge sq-lozenge--warning">Not configured</span>}</td>
-                  <td className="sq-numeric">{active ? new Date(active.effective_from).toISOString().slice(0, 10) : "—"}</td>
-                  <td>{inFlight ? <span className={`sq-lozenge sq-lozenge--info`}>{inFlight.status} · R{inFlight.revision}</span> : "—"}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table></div>
-      </section>
-
-      {/* ---- Draft workspace (maker-checker) ---- */}
-      <section className="sq-surface" aria-labelledby="dashcfg-drafts">
-        <h3 id="dashcfg-drafts">Draft workspace</h3>
-        {!canWrite && !canReview ? (
-          <p className="sq-caption" role="note">Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.</p>
+        {!migrationApplied ? (
+          <div className="panel" style={{ padding: 18 }} role="alert">
+            <div className="alert alert-warning" style={{ margin: 0 }}>
+              <strong>Foundation migration not yet applied</strong>
+              <p className="t-caption" style={{ margin: "4px 0 0" }}>The dashboard KPI/configuration tables are not readable. Apply migration
+                <code className="id-code"> 20260721010000_dashboard_kpi_admin_foundation.sql</code> and reload. The catalogue below is shown from the code registry.</p>
+            </div>
+          </div>
         ) : null}
 
-        {canWrite ? (
-          <ActionForm action={createConfigDraft} className="dashcfg-create">
-            <fieldset><legend>Create configuration draft</legend>
-              <label>Domain
-                <select name="config_key" required defaultValue="kpi_parameters">
-                  {CONFIG_DOMAINS.map((k) => <option key={k} value={k}>{k}</option>)}
-                </select>
-              </label>
-              <label>Title<input name="title" type="text" required maxLength={120} /></label>
-              <label>Payload (JSON object)<textarea name="payload" rows={3} placeholder='{"expiring_soon_lead_hours": 48}' /></label>
-              <button className="sq-btn sq-btn--prominent" type="submit">Create draft</button>
-            </fieldset>
-          </ActionForm>
-        ) : null}
-
-        {params.length === 0 ? (
-          <p className="sq-caption" role="status">No configuration drafts in flight.</p>
-        ) : (
-          <div className="sq-tablewrap"><table className="sq-table"><caption className="sq-sr-only">Configuration drafts</caption>
-            <thead><tr><th scope="col">Draft</th><th scope="col">Domain</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+        {/* ---- KPI catalogue (system-seeded, formula immutable to admins) ---- */}
+        <section className="panel" style={{ padding: 18 }} aria-labelledby="dashcfg-catalogue">
+          <h3 id="dashcfg-catalogue" style={{ fontSize: "var(--type-heading-size)", fontWeight: 600, margin: "0 0 4px" }}>KPI catalogue</h3>
+          <p className="t-caption" style={{ margin: "0 0 12px" }}>Formula and metric id are system-seeded and immutable to ordinary admins; <strong>{implementedCount} of {KPI_DEFINITIONS.length}</strong> metrics have a live formula today.</p>
+          <div className="table-wrap"><table className="table"><caption className="sr-only">Governed KPI catalogue</caption>
+            <thead><tr><th scope="col">Metric</th><th scope="col">Category</th><th scope="col">Unit</th><th scope="col">Owner</th><th scope="col">Delivery</th><th scope="col">Seed</th></tr></thead>
             <tbody>
-              {params.map((p) => {
-                const isOwner = p.owner_id === userId;
+              {KPI_DEFINITIONS.map((d) => {
+                const seeded = kpiRows.find((k) => k.metric_key === d.metricKey);
+                const badge = BADGE_BY_STATUS[d.implementation] ?? "badge-outline";
+                const note = unblockNote(d);
                 return (
-                  <tr key={p.id}>
-                    <th scope="row">{p.title}{p.return_reason ? <div className="sq-caption">Returned: {p.return_reason}</div> : null}</th>
-                    <td>{p.config_key}</td>
-                    <td><span className="sq-lozenge sq-lozenge--info">{p.status} · R{p.revision}</span></td>
-                    <td className="dashcfg-actions">
-                      {canWrite && isOwner && ["draft", "returned"].includes(p.status) ? (
-                        <ActionForm action={submitConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="sq-btn sq-btn--secondary" type="submit">Submit</button></ActionForm>
-                      ) : null}
-                      {canReview && !isOwner && p.status === "pending_review" ? (
-                        <>
-                          <ActionForm action={publishConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="sq-btn sq-btn--prominent" type="submit">Publish</button></ActionForm>
-                          <ActionForm action={returnConfigDraft}><input type="hidden" name="id" value={p.id} /><input name="reason" type="text" placeholder="Return reason" required /><button className="sq-btn" type="submit">Return</button></ActionForm>
-                        </>
-                      ) : null}
-                      {p.status === "pending_review" && isOwner ? <span className="sq-caption" role="note">Awaiting an independent reviewer (maker-checker).</span> : null}
+                  <tr key={d.metricId}>
+                    <th scope="row">
+                      <span className="id-code" style={{ fontWeight: 600, fontSize: 12 }}>{d.metricId}</span>
+                      <div className="t-caption">{d.titleEn}</div>
+                      {note ? <div className="t-caption" style={{ color: "var(--status-warning-text)", maxWidth: 320 }}>{note}</div> : null}
+                    </th>
+                    <td>{d.category}</td>
+                    <td>{d.unit}</td>
+                    <td className="t-caption">{d.ownerRole}</td>
+                    <td>
+                      <span className={`badge ${badge}`}><span className="dot" aria-hidden="true" />{d.implementation}</span>
+                      {d.decisionRef ? <div className="t-caption">{d.decisionRef}</div> : null}
                     </td>
+                    <td className="t-caption">{seeded ? "seeded" : migrationApplied ? "—" : "n/a"}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table></div>
-        )}
-      </section>
+        </section>
+
+        {/* ---- Configuration domains (published versions + effective date) ---- */}
+        <section className="panel" style={{ padding: 18 }} aria-labelledby="dashcfg-domains">
+          <h3 id="dashcfg-domains" style={{ fontSize: "var(--type-heading-size)", fontWeight: 600, margin: "0 0 4px" }}>Configuration domains</h3>
+          <p className="t-caption" style={{ margin: "0 0 12px" }}>Each domain publishes an immutable, effective-dated version. Admin configuration may narrow visibility but never widens RLS.</p>
+          <div className="table-wrap"><table className="table"><caption className="sr-only">Dashboard configuration domains</caption>
+            <thead><tr><th scope="col">Domain</th><th scope="col">Active version</th><th scope="col">Effective from</th><th scope="col">Draft in flight</th></tr></thead>
+            <tbody>
+              {CONFIG_DOMAINS.map((key) => {
+                const head = headByKey.get(key);
+                const active = head ? versionById.get(head.current_version_id) : undefined;
+                const inFlight = params.find((p) => p.config_key === key && ["draft", "pending_review", "returned"].includes(p.status));
+                return (
+                  <tr key={key}>
+                    <th scope="row"><span className="id-code">{key}</span></th>
+                    <td className="cell-num">{active ? <span className="badge badge-compliant"><span className="dot" aria-hidden="true" />v{active.version_number}</span> : <span className="badge badge-warning"><span className="dot" aria-hidden="true" />Not configured</span>}</td>
+                    <td className="cell-num">{active ? <span className="id-code">{new Date(active.effective_from).toISOString().slice(0, 10)}</span> : "—"}</td>
+                    <td>{inFlight ? <span className="badge badge-info">{inFlight.status} · R{inFlight.revision}</span> : "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table></div>
+        </section>
+
+        {/* ---- Draft workspace (maker-checker) ---- */}
+        <section className="panel" style={{ padding: 18 }} aria-labelledby="dashcfg-drafts">
+          <h3 id="dashcfg-drafts" style={{ fontSize: "var(--type-heading-size)", fontWeight: 600, margin: "0 0 12px" }}>Draft workspace <span className="t-caption" style={{ fontWeight: 400 }}>maker-checker</span></h3>
+
+          {!canWrite && !canReview ? (
+            <p className="t-caption" role="note">Dashboard configuration authoring requires Compliance/Ops/Security Admin authority; review/publish requires Compliance/Leadership/Security Admin.</p>
+          ) : null}
+
+          {canWrite ? (
+            <ActionForm action={createConfigDraft}>
+              <div style={{ display: "grid", gridTemplateColumns: "200px 1fr auto", gap: 12, alignItems: "end", padding: 12, background: "var(--surface-sunken)", borderRadius: 8, marginBlockEnd: 16 }}>
+                <label className="stack" style={{ gap: 4 }}>
+                  <span className="t-label">Domain</span>
+                  <select name="config_key" required defaultValue="kpi_parameters" className="select">
+                    {CONFIG_DOMAINS.map((k) => <option key={k} value={k}>{k}</option>)}
+                  </select>
+                </label>
+                <label className="stack" style={{ gap: 4 }}>
+                  <span className="t-label">Title</span>
+                  <input name="title" type="text" required maxLength={120} className="input" placeholder="Draft title" />
+                </label>
+                <button className="btn btn-primary" type="submit">Create draft</button>
+              </div>
+            </ActionForm>
+          ) : null}
+
+          {params.length === 0 ? (
+            <p className="t-caption" role="status">No configuration drafts in flight.</p>
+          ) : (
+            <div className="table-wrap"><table className="table"><caption className="sr-only">Configuration drafts</caption>
+              <thead><tr><th scope="col">Draft</th><th scope="col">Domain</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
+              <tbody>
+                {params.map((p) => {
+                  const isOwner = p.owner_id === userId;
+                  return (
+                    <tr key={p.id}>
+                      <th scope="row">{p.title}{p.return_reason ? <div className="t-caption" style={{ color: "var(--status-critical-text)" }}>Returned: {p.return_reason}</div> : null}</th>
+                      <td><span className="id-code">{p.config_key}</span></td>
+                      <td><span className="badge badge-info">{p.status} · R{p.revision}</span></td>
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        {canWrite && isOwner && ["draft", "returned"].includes(p.status) ? (
+                          <ActionForm action={submitConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="btn btn-secondary btn-sm" type="submit">Submit</button></ActionForm>
+                        ) : null}
+                        {canReview && !isOwner && p.status === "pending_review" ? (
+                          <span style={{ display: "inline-flex", gap: 6 }}>
+                            <ActionForm action={publishConfigDraft}><input type="hidden" name="id" value={p.id} /><button className="btn btn-primary btn-sm" type="submit">Publish</button></ActionForm>
+                            <ActionForm action={returnConfigDraft}><input type="hidden" name="id" value={p.id} /><input name="reason" type="text" placeholder="Return reason" required className="input" style={{ width: 160 }} /><button className="btn btn-ghost btn-sm" type="submit">Return</button></ActionForm>
+                          </span>
+                        ) : null}
+                        {p.status === "pending_review" && isOwner ? <span className="t-caption" role="note">Awaiting an independent reviewer (maker-checker).</span> : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table></div>
+          )}
+          <p className="t-caption" style={{ margin: "12px 0 0" }}>Authoring requires Compliance/Ops/Security Admin; review/publish requires Compliance/Leadership/Security Admin — and never the same person (maker ≠ checker).</p>
+        </section>
+      </div>
     </Shell>
   );
 }

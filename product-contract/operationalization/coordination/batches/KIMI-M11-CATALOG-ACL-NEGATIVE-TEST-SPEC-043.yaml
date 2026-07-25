@@ -1,0 +1,435 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+status: READ_ONLY_FUTURE_TEST_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze the exact future negative-test specification needed to prove the M11
+  catalog, permission, redaction, persona, neutral-error, provider,
+  concurrency, rollback and event-cardinality contracts identified by 032 and
+  042. This document specifies tests; it does not contain executable SQL,
+  create fixtures, issue leases or claim runtime evidence.
+
+frozen_authority:
+  test_gap_inventory:
+    packet: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+    sha256: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  security_negative_path_review:
+    packet: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
+    sha256: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+
+hard_boundary:
+  - "No test, SQL, migration, product, application, database, design, data, seed, branch or stash change."
+  - "No live database connection, catalog query, test execution or fixture creation."
+  - "No implementation or QA lease is issued."
+  - "All identities and values below are symbolic fixture classes, never real or realistic credentials, secrets, people or factories."
+  - "Provider-success testing remains blocked until an approved configured provider exists."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and the response is captured and validated."
+  - "Zero change to the 478-row completion count."
+
+coverage_contract:
+  frozen_rows: 31
+  frozen_rows_with_complete_current_proof: 0
+  severity_distribution:
+    P0: 16
+    P1: 9
+    CONTRADICTION: 6
+  required_test_families:
+    - ACL_OWNER_DEPENDENCY
+    - RAW_AUDIT_SECRET_SENTINEL
+    - PERSONA_AUTHORIZATION
+    - DIRECT_DML_DENIAL
+    - NEUTRAL_RESOURCE_BOUNDARY
+    - PROVIDER_FAIL_CLOSED
+    - CONCURRENCY
+    - ROLLBACK
+    - EVENT_CARDINALITY
+
+fixture_contract:
+  isolation:
+    database: "Fresh isolated Supabase-compatible database for each future run."
+    run_identity: "Unique opaque run_id linked to every synthetic fixture and evidence item."
+    cleanup: "Deterministic teardown; a failed teardown invalidates the run."
+    ordinary_sessions_only: true
+    prohibited_proof_substitutes:
+      - service_role
+      - database_owner
+      - superuser
+      - BYPASSRLS
+      - application_mock
+      - permanent_secret_seam
+  symbolic_personas:
+    - fixture_id: FX-PERSONA-ASSIGNED-INSPECTOR
+      authority_shape: "Authenticated Inspector assigned to the exact visit."
+    - fixture_id: FX-PERSONA-UNASSIGNED-INSPECTOR
+      authority_shape: "Authenticated Inspector with no relationship to the exact visit."
+    - fixture_id: FX-PERSONA-REVIEWER
+      authority_shape: "Authenticated Reviewer; safe view-only boundary."
+    - fixture_id: FX-PERSONA-AUDITOR
+      authority_shape: "Authenticated Auditor; safe view-only boundary."
+    - fixture_id: FX-PERSONA-PLANNER
+      authority_shape: "Authenticated Planner; positive actions only where exact frozen authority maps them."
+    - fixture_id: FX-PERSONA-OPERATIONS
+      authority_shape: "Authenticated Operations persona; positive actions blocked without exact frozen authority."
+    - fixture_id: FX-PERSONA-ANON
+      authority_shape: "Anonymous client role."
+    - fixture_id: FX-PERSONA-UNAUTHENTICATED
+      authority_shape: "No authenticated session."
+  symbolic_resources:
+    - FX-VISIT-IN-SCOPE
+    - FX-VISIT-OUT-OF-SCOPE
+    - FX-VISIT-MISSING
+    - FX-SESSION-VALID
+    - FX-SESSION-WRONG-STATE
+    - FX-SESSION-CLOSED
+    - FX-PARTICIPANT-VALID
+    - FX-PARTICIPANT-SECRET-SENTINEL
+    - FX-AUDIT-HISTORICAL
+  symbolic_runtime_controls:
+    - FX-PROVIDER-UNAVAILABLE
+    - FX-PROVIDER-APPROVED-CONFIGURED
+    - FX-TRANSACTION-LOCAL-OTP-INJECTION
+    - FX-FORCED-ROLLBACK
+    - FX-TWO-CONCURRENT-CALLERS
+    - FX-QUIESCE-AND-DRAIN
+  secret_sentinel_rule: >-
+    A synthetic non-credential sentinel is inserted only through the future
+    authorized isolated fixture path. Evidence records presence/absence, never
+    the sentinel value or a value-derived hash.
+
+expected_result_vocabulary:
+  ALLOW: "The exact ordinary persona action succeeds and produces the expected bounded state/audit result."
+  DENY: "The action is rejected without disclosing resource existence or internal policy details."
+  NEUTRAL: "Missing and out-of-scope results are byte-equivalent at the governed boundary."
+  BLOCKED_PROVIDER: "No delivery or completion claim; no secret-bearing substitute is returned."
+  ROLLBACK_CLEAN: "No state, participant, visit, counter, timeline or audit residue remains."
+  ONE_WINNER: "Exactly one concurrent operation commits the authoritative result."
+  ONE_SEMANTIC_EVENT: "Exactly one semantic event exists for one committed transition."
+
+test_cases:
+  ACL_OWNER_DEPENDENCY:
+    future_path: supabase/tests/m11_stack_security_catalog.sql
+    proposed_lease: TEST-CATALOG
+    cases:
+      - id: M11-043-CAT-001
+        fixture: FINAL_FUNCTION_MANIFEST
+        action: "Compare every governed function identity and signature with the frozen corrected manifest."
+        expected: "Exact set; no missing, extra or obsolete overload."
+        evidence: [function_identity_manifest, comparison_result, catalog_snapshot_hash]
+      - id: M11-043-CAT-002
+        fixture: FINAL_FUNCTION_MANIFEST
+        action: "Inspect owner, owner superuser flag, owner BYPASSRLS flag and owner login flag."
+        expected: "Exact approved system owner properties; no unresolved owner."
+        evidence: [owner_manifest, owner_attribute_manifest, catalog_snapshot_hash]
+      - id: M11-043-CAT-003
+        fixture: FINAL_FUNCTION_MANIFEST
+        action: "Inspect SECURITY INVOKER/DEFINER and accepted function settings."
+        expected: "Exact reviewed security mode and safe search_path contract."
+        evidence: [security_mode_manifest, accepted_settings_manifest, catalog_snapshot_hash]
+      - id: M11-043-CAT-004
+        fixture: FINAL_FUNCTION_MANIFEST
+        action: "Inspect PUBLIC, anon and authenticated EXECUTE ACLs for every exact function signature."
+        expected: "PUBLIC and anon denied; authenticated allowed only for reviewed caller-facing RPCs; helper and trigger functions not executable."
+        evidence: [function_acl_manifest, overload_cleanup_manifest, catalog_snapshot_hash]
+      - id: M11-043-CAT-005
+        fixture: FINAL_DEPENDENCY_MANIFEST
+        action: "Inspect nested function, type, table, auth and extension dependencies."
+        expected: "Only reviewed fully qualified identities; no unsafe legacy helper dependency."
+        evidence: [dependency_manifest, extension_namespace_manifest, catalog_snapshot_hash]
+      - id: M11-043-CAT-006
+        fixture: FINAL_POLICY_MANIFEST
+        action: "Inspect policy commands, roles, permissive behavior and predicates."
+        expected: "Per-command explicit authenticated policies; no broad FOR ALL or unintended permissive OR."
+        evidence: [policy_manifest, table_acl_manifest, catalog_snapshot_hash]
+      - id: M11-043-CAT-007
+        fixture: FINAL_TRIGGER_INDEX_MANIFEST
+        action: "Inspect trigger function, timing, enablement, ordering and required policy-supporting indexes."
+        expected: "Safe participant trigger precedes OTP use; exact trigger/index set with no obsolete unsafe trigger path."
+        evidence: [trigger_manifest, index_manifest, catalog_snapshot_hash]
+
+  RAW_AUDIT_SECRET_SENTINEL:
+    future_path: supabase/tests/m11_015_audit_neutral_security.sql
+    proposed_lease: TEST-015
+    cases:
+      - id: M11-043-AUD-001
+        fixture: FX-PARTICIPANT-SECRET-SENTINEL
+        action: "Exercise an authorized future OTP transition, then inspect raw participant audit storage through a privileged isolated evidence lane."
+        expected: "No secret sentinel in before_state or after_state; historical rows remain unchanged."
+        evidence: [sentinel_absence_attestation, historical_checksum_before, historical_checksum_after]
+      - id: M11-043-AUD-002
+        fixture: [FX-PERSONA-ASSIGNED-INSPECTOR, FX-PERSONA-REVIEWER, FX-PERSONA-AUDITOR, FX-PERSONA-PLANNER, FX-PERSONA-OPERATIONS]
+        action: "Attempt ordinary-session direct raw participant audit reads."
+        expected: DENY
+        evidence: [persona_attempt_matrix, normalized_denial_manifest]
+      - id: M11-043-AUD-003
+        fixture: [FX-PERSONA-REVIEWER, FX-PERSONA-AUDITOR]
+        action: "Read the approved safe audit projection."
+        expected: "ALLOW only for authorized safe fields; no before_state, after_state, verification_record, code_hash or secret derivative."
+        evidence: [safe_projection_schema, returned_field_manifest, forbidden_field_absence]
+      - id: M11-043-AUD-004
+        fixture: FX-PARTICIPANT-SECRET-SENTINEL
+        action: "Search RPC JSON, browser DOM, logs and export evidence for prohibited secret classes."
+        expected: "No sentinel or value-derived token in any surface."
+        evidence: [RPC_scan_result, DOM_scan_result, log_scan_result, export_scan_result]
+      - id: M11-043-AUD-005
+        fixture: FX-FORCED-ROLLBACK
+        action: "Force failure after a candidate participant mutation but before commit."
+        expected: ROLLBACK_CLEAN
+        evidence: [row_before_after_manifest, audit_before_after_manifest, transaction_result]
+      - id: M11-043-AUD-006
+        fixture: GLOBAL_AUDIT_CONSUMER_MANIFEST
+        action: "Exercise every inventoried global and maker-checker audit consumer after raw-policy contraction."
+        expected: "Approved safe behavior preserved; no consumer reopens raw participant JSON."
+        evidence: [consumer_matrix, regression_result, disclosure_manifest]
+
+  PERSONA_AUTHORIZATION:
+    future_paths:
+      - supabase/tests/m11_010_creation_atomicity_security.sql
+      - supabase/tests/m11_011_window_actions_security.sql
+      - supabase/tests/m11_013_permission_otp_security.sql
+      - supabase/tests/m11_014_join_begin_atomicity.sql
+      - apps/web/e2e/m11-remediation-stack.spec.ts
+    proposed_leases: [TEST-010, TEST-011, TEST-013, TEST-014, TEST-BROWSER]
+    cases:
+      - id: M11-043-PER-001
+        fixture: FX-PERSONA-ASSIGNED-INSPECTOR
+        action: "Call each exact assigned-Inspector governed action on FX-VISIT-IN-SCOPE."
+        expected: "ALLOW only for the action/state/window combinations authorized by the final contract."
+        evidence: [action_matrix, state_before_after, audit_correlation]
+      - id: M11-043-PER-002
+        fixture: FX-PERSONA-UNASSIGNED-INSPECTOR
+        action: "Call every Inspector-facing governed RPC against an existing out-of-scope resource."
+        expected: NEUTRAL
+        evidence: [RPC_status_token_body_hashes, no_state_change, no_audit_residue]
+      - id: M11-043-PER-003
+        fixture: [FX-PERSONA-REVIEWER, FX-PERSONA-AUDITOR]
+        action: "Attempt every M11 mutation and then read approved safe evidence."
+        expected: "All mutations DENY; only exact safe view paths ALLOW."
+        evidence: [persona_action_matrix, safe_projection_result]
+      - id: M11-043-PER-004
+        fixture: FX-PERSONA-PLANNER
+        action: "Exercise only actions with exact frozen Planner authority; attempt all others."
+        expected: "Mapped actions follow final contract; every unmapped action DENY."
+        evidence: [authority_citation_matrix, action_results]
+      - id: M11-043-PER-005
+        fixture: FX-PERSONA-OPERATIONS
+        action: "Attempt each governed M11 action."
+        expected: "DENY unless the final corrected packet cites exact frozen authority for the action."
+        evidence: [authority_citation_matrix, action_results]
+      - id: M11-043-PER-006
+        fixture: [FX-PERSONA-ANON, FX-PERSONA-UNAUTHENTICATED]
+        action: "Attempt every caller-facing M11 RPC and table action."
+        expected: DENY
+        evidence: [role_action_matrix, normalized_denial_manifest]
+
+  DIRECT_DML_DENIAL:
+    future_paths:
+      - supabase/tests/m11_010_creation_atomicity_security.sql
+      - supabase/tests/m11_013_permission_otp_security.sql
+      - supabase/tests/m11_014_join_begin_atomicity.sql
+    proposed_leases: [TEST-010, TEST-013, TEST-014]
+    cases:
+      - id: M11-043-DML-001
+        fixture: [FX-PERSONA-ANON, FX-PERSONA-ASSIGNED-INSPECTOR, FX-PERSONA-PLANNER, FX-PERSONA-OPERATIONS]
+        action: "Attempt direct INSERT, UPDATE and DELETE on virtual session and participant tables."
+        expected: DENY
+        evidence: [role_command_table_matrix, row_cardinality_before_after]
+      - id: M11-043-DML-002
+        fixture: [FX-PERSONA-ASSIGNED-INSPECTOR, FX-PERSONA-PLANNER, FX-PERSONA-OPERATIONS]
+        action: "Attempt direct visit-state CAS and multi-write begin/create fallbacks."
+        expected: DENY
+        evidence: [fallback_attempt_matrix, state_before_after, audit_before_after]
+      - id: M11-043-DML-003
+        fixture: FX-PERSONA-ASSIGNED-INSPECTOR
+        action: "Attempt arbitrary generic semantic event append."
+        expected: DENY
+        evidence: [append_attempt_result, event_cardinality_before_after]
+
+  NEUTRAL_RESOURCE_BOUNDARY:
+    future_paths:
+      - supabase/tests/m11_011_window_actions_security.sql
+      - supabase/tests/m11_013_permission_otp_security.sql
+      - supabase/tests/m11_015_audit_neutral_security.sql
+      - apps/web/e2e/m11-remediation-stack.spec.ts
+    proposed_leases: [TEST-011, TEST-013, TEST-015, TEST-BROWSER]
+    exact_token: VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE
+    cases:
+      - id: M11-043-NEU-001
+        fixture: [FX-VISIT-MISSING, FX-VISIT-OUT-OF-SCOPE]
+        action: "Call every public governed RPC using the same ordinary persona and request shape."
+        expected: NEUTRAL
+        evidence: [HTTP_status_pair, response_body_byte_hash_pair, RPC_token_pair, timing_class]
+      - id: M11-043-NEU-002
+        fixture: [FX-VISIT-MISSING, FX-VISIT-OUT-OF-SCOPE]
+        action: "Exercise equivalent browser actions."
+        expected: "Identical neutral copy and navigation behavior; no resource existence disclosure."
+        evidence: [DOM_text_hash_pair, route_result_pair, screenshot_pair]
+      - id: M11-043-NEU-003
+        fixture: FX-VISIT-OUT-OF-SCOPE
+        action: "Induce an underlying policy/function/provider failure under the governed boundary."
+        expected: "No raw SQL, RLS, function, owner, extension or provider text reaches the client."
+        evidence: [client_error_schema, forbidden_text_scan]
+
+  PROVIDER_FAIL_CLOSED:
+    future_paths:
+      - supabase/tests/m11_013_permission_otp_security.sql
+      - apps/web/e2e/m11-provider-truth.spec.ts
+    proposed_leases: [TEST-013, TEST-PROVIDER]
+    cases:
+      - id: M11-043-PRO-001
+        fixture: FX-PROVIDER-UNAVAILABLE
+        action: "Request OTP through the future governed path."
+        expected: BLOCKED_PROVIDER
+        evidence: [provider_state_attestation, response_field_manifest, no_delivery_claim]
+      - id: M11-043-PRO-002
+        fixture: FX-PROVIDER-UNAVAILABLE
+        action: "Inspect database result, RPC JSON, browser DOM, logs and audit evidence."
+        expected: "No dev_code, plaintext code, reusable secret, secret derivative or false delivered event."
+        evidence: [prohibited_field_scan, event_cardinality, UI_state]
+      - id: M11-043-PRO-003
+        fixture: FX-TRANSACTION-LOCAL-OTP-INJECTION
+        action: "Prove engine verify behavior in an isolated transaction without a permanent runtime seam."
+        expected: "Engine result proven; injection disappears at rollback/teardown and is unavailable to application personas."
+        evidence: [isolation_attestation, teardown_result, access_denial_matrix]
+      - id: M11-043-PRO-004
+        fixture: FX-PROVIDER-APPROVED-CONFIGURED
+        action: "Prove successful external delivery."
+        expected: "BLOCKED_NOT_RUN until provider authority and configuration are approved."
+        evidence: [future_provider_authority, future_delivery_receipt]
+
+  CONCURRENCY_ROLLBACK_EVENT_CARDINALITY:
+    future_paths:
+      - supabase/tests/m11_010_creation_atomicity_security.sql
+      - supabase/tests/m11_011_window_actions_security.sql
+      - supabase/tests/m11_013_permission_otp_security.sql
+      - supabase/tests/m11_014_join_begin_atomicity.sql
+      - supabase/tests/m11_015_audit_neutral_security.sql
+      - apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+    proposed_leases: [TEST-010, TEST-011, TEST-013, TEST-014, TEST-015, TEST-ROLLOUT]
+    cases:
+      - id: M11-043-CON-001
+        fixture: FX-TWO-CONCURRENT-CALLERS
+        action: "Coordinate duplicate session creation for one governed key."
+        expected: ONE_WINNER
+        evidence: [transaction_timeline, lock_manifest, final_row_cardinality, audit_cardinality]
+      - id: M11-043-CON-002
+        fixture: FX-TWO-CONCURRENT-CALLERS
+        action: "Coordinate join versus reschedule."
+        expected: "One contract-valid outcome; no torn participant/session/window state."
+        evidence: [transaction_timeline, final_state_graph, audit_cardinality]
+      - id: M11-043-CON-003
+        fixture: FX-TWO-CONCURRENT-CALLERS
+        action: "Coordinate begin versus begin."
+        expected: ONE_WINNER
+        evidence: [transaction_timeline, visit_session_participant_inspection_lock_order, final_state_graph]
+      - id: M11-043-CON-004
+        fixture: FX-TWO-CONCURRENT-CALLERS
+        action: "Coordinate OTP request versus request."
+        expected: "One authoritative counter/code state; no duplicate delivered semantic event."
+        evidence: [participant_row_lock, final_counter_state, semantic_event_cardinality]
+      - id: M11-043-CON-005
+        fixture: FX-TWO-CONCURRENT-CALLERS
+        action: "Coordinate OTP verify versus verify."
+        expected: "One authoritative verification transition and one semantic verification event."
+        evidence: [participant_row_lock, final_verification_state, semantic_event_cardinality]
+      - id: M11-043-RBK-001
+        fixture: FX-FORCED-ROLLBACK
+        action: "Force failure at each governed multi-object transition boundary."
+        expected: ROLLBACK_CLEAN
+        evidence: [row_graph_before_after, audit_before_after, event_before_after]
+      - id: M11-043-EVT-001
+        fixture: FX-VISIT-IN-SCOPE
+        action: "Execute each committed governed transition once."
+        expected: ONE_SEMANTIC_EVENT
+        evidence: [transition_event_correlation, semantic_event_count, safe_generic_fact_count]
+      - id: M11-043-ROL-001
+        fixture: FX-QUIESCE-AND-DRAIN
+        action: "Rehearse expand, application switch with OTP disabled, quiesce/drain, uninterrupted 013 then 015 contract, and certification."
+        expected: "Zero traffic during contract; failed certification remains fail-closed and uses roll-forward recovery."
+        evidence: [phase_timeline, in_flight_count, no_traffic_attestation, recovery_result]
+
+evidence_contract:
+  mandatory_metadata:
+    - run_id
+    - case_id
+    - authority_packet_hashes
+    - code_commit
+    - migration_chain_hash
+    - fixture_graph_hash
+    - ordinary_persona
+    - started_at
+    - completed_at
+    - result
+    - reviewer
+  required_artifacts:
+    - machine_readable_case_result
+    - catalog_or_state_before_after
+    - normalized_error_or_response_hash
+    - audit_and_event_cardinality
+    - redaction_scan
+    - teardown_result
+  release_rules:
+    - "No secret, personal, application-row or runtime-query value in evidence."
+    - "No raw function/view body; only approved catalog fields and definition hashes."
+    - "A failed redaction, checksum, teardown or reviewer check quarantines the entire evidence bundle."
+    - "Existing historical evidence is context only and cannot certify the corrected stack."
+    - "Independent reviewer signoff is required before sponsor acceptance."
+
+future_collision_safe_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-010: supabase/tests/m11_010_creation_atomicity_security.sql
+    TEST-011: supabase/tests/m11_011_window_actions_security.sql
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-014: supabase/tests/m11_014_join_begin_atomicity.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+    TEST-ROLLOUT: apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+    TEST-PROVIDER: apps/web/e2e/m11-provider-truth.spec.ts
+  lease_rules:
+    - "One exact path, one QA owner and one worktree per future lease."
+    - "QA owners cannot edit implementation files; implementation owners cannot edit leased QA paths."
+    - "Re-read active leases immediately before issuance."
+    - "Record predecessor commit, migration-chain hash and exact function/policy/trigger ownership."
+    - "Stop on any path, signature, migration filename, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final function, owner, ACL, policy, trigger, application and provider manifests."
+    - "Fresh collision preflight."
+    - "Sponsor-approved non-overlapping test lease."
+
+queued_next:
+  packet: KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Provider-unavailable, delayed, rejected and indeterminate delivery paths only; no provider values invented."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  test_family_count: 9
+  test_case_group_count: 7
+  test_case_count: 37
+  unique_test_case_ids: PASS
+  actual_test_files_created_or_edited: 0
+  proposed_path_count: 9
+  proposed_paths_unique: PASS
+  leases_issued: 0
+  implementation_claimed: false
+  provider_success_claimed: false
+  non_mutating_boundary_checked: PASS

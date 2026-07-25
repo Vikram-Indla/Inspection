@@ -1,0 +1,224 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-PRESERVATION-FLOOR-INDEPENDENT-AUDIT-058
+status: READ_ONLY_INDEPENDENT_AUDIT_COMPLETE_ACK
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Independently verify that every authority choice in
+  KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057 preserves the complete M11
+  requirement, test-case, proof-cluster, QA-path and blocker floor without
+  silently reducing coverage.
+
+hard_boundary:
+  - "Read-only inspection plus this one owned coordination packet."
+  - "No authority selection, lease issuance, queue/slice/shared-control edit, implementation, test execution, SQL, data, design, branch or stash mutation."
+  - "No runtime certification or requirement credit."
+
+audited_authority:
+  decision_brief:
+    packet: KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057
+    sha256: 6a06f67deab90ba7d481cfe82e311372f9cfe1bfd0370382544ee474c1f52b4e
+  crosswalk:
+    packet: KIMI-M11-EXECUTION-TASK-TO-M11-PATH-CROSSWALK-056
+    sha256: 1d4bcc2755aa3feea20fec1d422c5f9d70f5b0d15d2d2e586fb896998b103392
+  QA_readiness: KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+  final_handoff: KIMI-M11-FINAL-HANDOFF-SCORECARD-RECONCILIATION-053
+  requirement_source: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  test_spec_sources:
+    - KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+    - KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+    - KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045
+    - KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+    - KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+    - KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048
+    - KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049
+    - KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050
+    - KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051
+
+independent_floor_recalculation:
+  requirements:
+    expected_range: CR-337..CR-356
+    expected_count: 20
+    observed_count: 20
+    observed_ids:
+      - CR-337
+      - CR-338
+      - CR-339
+      - CR-340
+      - CR-341
+      - CR-342
+      - CR-343
+      - CR-344
+      - CR-345
+      - CR-346
+      - CR-347
+      - CR-348
+      - CR-349
+      - CR-350
+      - CR-351
+      - CR-352
+      - CR-353
+      - CR-354
+      - CR-355
+      - CR-356
+    missing_ids: []
+    result: PASS_FULLY_PRESERVED
+  test_cases:
+    per_spec:
+      KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 37
+      KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 26
+      KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 36
+      KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 45
+      KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 40
+      KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048: 38
+      KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049: 43
+      KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050: 46
+      KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051: 50
+    expected_total: 361
+    observed_total: 361
+    unique_observed: 361
+    duplicates: 0
+    deleted_or_waived: 0
+    result: PASS_FULLY_PRESERVED
+  proof_clusters:
+    expected: 18
+    observed: 18
+    result: PASS_FULLY_PRESERVED
+  future_QA_paths:
+    expected: 9
+    observed: 9
+    unique_observed: 9
+    paths:
+      - supabase/tests/m11_stack_security_catalog.sql
+      - supabase/tests/m11_010_creation_atomicity_security.sql
+      - supabase/tests/m11_011_window_actions_security.sql
+      - supabase/tests/m11_013_permission_otp_security.sql
+      - supabase/tests/m11_014_join_begin_atomicity.sql
+      - supabase/tests/m11_015_audit_neutral_security.sql
+      - apps/web/e2e/m11-provider-truth.spec.ts
+      - apps/web/e2e/m11-remediation-stack.spec.ts
+      - apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+    duplicate_paths: []
+    missing_paths: []
+    result: PASS_FULLY_PRESERVED
+  blockers:
+    expected: 12
+    observed: 12
+    ids:
+      - BLK-M11-MAC-CAPTURE
+      - BLK-M11-KIMI-RETURN
+      - BLK-M11-REVIEW-025
+      - BLK-M11-009R
+      - BLK-M11-CATALOG
+      - BLK-M11-PROVIDER
+      - BLK-M11-IMPLEMENTATION
+      - BLK-M11-QA-LEASES
+      - BLK-M11-FIXTURES
+      - BLK-M11-AUDIT-CONSUMERS
+      - BLK-M11-QUIESCE
+      - BLK-M11-EVIDENCE
+    result: PASS_FULLY_PRESERVED
+
+choice_audit:
+  EXECUTION_TASK_ABSORBS_M11:
+    requirement_floor: PASS
+    test_case_floor: PASS
+    proof_cluster_floor: PASS
+    QA_path_floor: PASS
+    blocker_floor: PASS
+    weakening_found: false
+    evidence: >-
+      The option explicitly requires mapping CR-337..CR-356 and all WA-M11/
+      MIGSEC acceptance, preserving 361 cases, 18 clusters, nine QA paths and
+      all 12 blockers before an exact lease can exist.
+  M11_CHAIN_OWNS_VIRTUAL:
+    requirement_floor: PASS
+    test_case_floor: PASS
+    proof_cluster_floor: PASS
+    QA_path_floor: PASS
+    blocker_floor: PASS
+    weakening_found: false
+    evidence: >-
+      The option is subordinate to 057's unconditional preservation_floor and
+      requires corrected M11 packets plus every blocker to be resolved or
+      explicitly retained. Narrowing the broad Execution task cannot narrow
+      the M11 floor.
+    interpretation_guard: >-
+      Any future response selecting this option must explicitly acknowledge
+      the unconditional floor; omission is RETURN, not implicit acceptance.
+  KEEP_BOTH_BLOCKED:
+    requirement_floor: PASS
+    test_case_floor: PASS
+    proof_cluster_floor: PASS
+    QA_path_floor: PASS
+    blocker_floor: PASS
+    weakening_found: false
+    evidence: >-
+      This option authorizes no write, waiver, deletion, credit or supersession.
+      The frozen M11 floor and all blockers therefore remain unchanged.
+    interpretation_guard: >-
+      Continued blocking is not permission to archive, waive, delete or lower
+      any requirement, test case, proof cluster, QA path or blocker.
+
+coverage_weakening_review:
+  choices_with_silent_drop: []
+  choices_with_explicit_weakening: []
+  ambiguity:
+    state: GUARDED_NOT_MATERIAL
+    detail: >-
+      The second and third choices do not repeat every floor count inside each
+      option body, but the top-level preservation_floor is unconditional and
+      the response format requires preserved_contract_ack. This audit makes
+      that inheritance explicit.
+    future_response_rule: >-
+      Return any selected-option response that omits preserved_contract_ack or
+      reports fewer than 20 requirements, 361 unique cases, 18 clusters, nine
+      unique QA paths or 12 blockers.
+
+verdict:
+  result: ACK
+  exact_reason: ACK_ALL_THREE_CHOICES_PRESERVE_THE_COMPLETE_M11_FLOOR
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+  leases_issued: 0
+
+queued_next:
+  packet: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define deterministic ACK, RETURN and BLOCK checks for any future authority
+    response against the 20/361/18/9/12 preservation floor and 16 mandatory
+    lease fields, without selecting an owner or editing shared controls.
+  prohibited:
+    - "No decision inference, owner selection, lease issuance, shared-control mutation, implementation, QA execution or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  requirement_rows_expected: 20
+  requirement_rows_observed: 20
+  test_cases_expected: 361
+  test_cases_observed: 361
+  unique_test_cases_observed: 361
+  proof_clusters_expected: 18
+  proof_clusters_observed: 18
+  QA_paths_expected: 9
+  QA_paths_observed: 9
+  unique_QA_paths_observed: 9
+  blockers_expected: 12
+  blockers_observed: 12
+  choices_audited: 3
+  weakened_choices: 0
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

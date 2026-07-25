@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .fv-wrap { max-width: 780px; margin: 0 auto; width:100%; padding: 16px 16px 80px; display:flex; flex-direction:column; gap:12px; }
+  .fv-card { display:block; text-decoration:none; color:inherit; padding:15px 16px; border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); border-inline-start:3px solid var(--riskc); transition:box-shadow .15s, transform .15s; }
+  .fv-card:hover { box-shadow:var(--shadow-card-hover); transform:translateY(-2px); }
+  .fv-seg { display:flex; gap:6px; }
+  .fv-seg button { flex:1; padding:9px 0; border-radius:10px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); }
+  .fv-seg button[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; font-weight:600; }
+  .fv-chips { display:flex; gap:8px; overflow-x:auto; padding-block:2px; }
+  .fv-chip { flex:none; display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:12.5px; cursor:pointer; color:var(--text-secondary); white-space:nowrap; }
+  .fv-chip[aria-pressed="true"]{ background:var(--accent-soft); border-color:var(--action-primary); color:var(--accent-text); font-weight:600; }
+  .fv-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <div style="flex:1; line-height:1.3;"><div style="font-weight:700; font-size:18px;">{{ t.myVisits }}</div><div class="t-caption">{{ t.scopeNote }}</div></div>
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.pendingSync }}</span>
+    <span style="display:flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px; border:1px solid var(--status-compliant-text); background:var(--status-compliant-soft); color:var(--status-compliant-text); font-size:12px; font-weight:600; white-space:nowrap;"><span style="width:7px;height:7px;border-radius:50%;background:currentColor;"></span>{{ t.online }}</span>
+    <button class="btn btn-icon btn-ghost" onClick="{{ syncNow }}" aria-label="{{ t.syncNow }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>
+    <button class="fv-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="fv-wrap">
+    <div class="fv-seg">
+      <button aria-pressed="{{ isToday }}" onClick="{{ goToday }}">{{ t.today }} · {{ todayCount }}</button>
+      <button aria-pressed="{{ isUpcoming }}" onClick="{{ goUpcoming }}">{{ t.upcoming }} · {{ upcomingCount }}</button>
+      <button aria-pressed="{{ isDone }}" onClick="{{ goDone }}">{{ t.completed }} · {{ doneCount }}</button>
+    </div>
+
+    <div class="input-affix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="{{ t.searchPlaceholder }}" style="border-radius:var(--radius-full); background:var(--surface-secondary);"></div>
+
+    <div class="fv-chips">
+      <sc-for list="{{ chips }}" as="c" hint-placeholder-count="4">
+        <button class="fv-chip" aria-pressed="{{ c.active }}" onClick="{{ c.pick }}"><sc-if value="{{ c.dot }}" hint-placeholder-val="{{ false }}"><span style="width:8px; height:8px; border-radius:50%; background:{{ c.color }};"></span></sc-if>{{ c.label }} · {{ c.count }}</button>
+      </sc-for>
+    </div>
+
+    <sc-for list="{{ visits }}" as="v" hint-placeholder-count="4">
+      <a class="fv-card" href="SAQEEL%20PWA-Inspector%20iPad%20Field.dc.html" target="_top" style="--riskc:{{ v.riskColor }};">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="id-code" style="font-size:12px; color:var(--text-muted);">{{ v.time }}</span>
+          <span style="flex:1; font-weight:600; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ v.factory }}</span>
+          <span class="badge {{ v.riskBadge }}" style="height:20px;">{{ v.risk }}</span>
+        </div>
+        <div class="t-caption" style="margin-block-start:3px;"><span class="id-code">{{ v.ref }}</span> · {{ v.type }} · {{ v.dist }}</div>
+        <div style="display:flex; gap:7px; margin-block-start:11px; flex-wrap:wrap; align-items:center;">
+          <span class="badge {{ v.planBadge }}" style="height:19px;">{{ v.plan }}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-disabled)" stroke-width="1.6" style="width:13px;height:13px;"><path d="m9 6 6 6-6 6"/></svg>
+          <span class="badge {{ v.opBadge }}" style="height:19px;">{{ v.op }}</span>
+          <span class="grow"></span>
+          <span style="display:inline-flex; align-items:center; gap:4px; font-size:12.5px; color:var(--action-primary); font-weight:600;">{{ v.cta }}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px;"><path d="m9 6 6 6-6 6"/></svg></span>
+        </div>
+      </a>
+    </sc-for>
+
+    <div class="t-caption" style="text-align:center; margin-block-start:6px; display:flex; align-items:center; gap:6px; justify-content:center;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      {{ t.twoStatesNote }}
+    </div>
+  </div>
+
+  <div aria-hidden="true" style="height:58px; flex:none;"></div>
+  <nav style="position:fixed; inset-inline:0; bottom:0; z-index:30; display:flex; background:var(--nav-bg); color:var(--nav-text); padding-block-end:env(safe-area-inset-bottom);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span style="font-size:11px;">{{ t.navHome }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20My%20Tasks.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text-active);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg><span style="font-size:11px;">{{ t.navTasks }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Establishments.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/></svg><span style="font-size:11px;">{{ t.navEst }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Notifications.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:11px;">{{ t.navNotif }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg><span style="font-size:11px;">{{ t.navAccount }}</span></a>
+  </nav>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", seg: "today", lang: "en" };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        myVisits:"زياراتي", scopeNote:"النطاق حسب صلاحيتك · الرياض", pendingSync:"بانتظار المزامنة · 2", feedbackQr:"رمز التقييم", theme:"الوضع", langBtnLabel:"EN",
+        today:"اليوم", upcoming:"القادمة", completed:"المكتملة", searchPlaceholder:"بحث برقم الزيارة أو المنشأة أو السجل",
+        twoStatesNote:"حالتان لكل زيارة: التخطيط ثم التنفيذ الميداني — منفصلتان دائماً.",
+        navHome:"الرئيسية", navTasks:"مهامي", navEst:"المنشآت", navNotif:"الإشعارات", navAccount:"حسابي", online:"متصل", syncNow:"مزامنة الآن",
+        all:"الكل", high:"عالية", med:"متوسطة", low:"منخفضة",
+      },
+      en: {
+        myVisits:"My Visits", scopeNote:"Scoped to your authority · Riyadh", pendingSync:"Pending sync · 2", feedbackQr:"Feedback QR", theme:"Theme", langBtnLabel:"AR",
+        today:"Today", upcoming:"Upcoming", completed:"Completed", searchPlaceholder:"Search by visit no., establishment, or CR",
+        twoStatesNote:"Two states per visit: planning then field execution — always separate.",
+        navHome:"Home", navTasks:"My Tasks", navEst:"Establishments", navNotif:"Notifications", navAccount:"Account", online:"Online", syncNow:"Sync Now",
+        all:"All", high:"High", med:"Medium", low:"Low",
+      },
+    };
+    const t = STR[lang];
+    const CR = "var(--status-critical)", WA = "var(--status-warning)", CO = "var(--status-compliant)";
+    const V = lang === "ar" ? {
+      today: [
+        { time: "09:00", factory: "شركة الراشد للصناعات الفولاذية", ref: "VS-40219", type: "جملة", dist: "4.2 كم", risk: "عالية", riskBadge: "badge-critical", riskColor: CR, plan: "منشورة", planBadge: "badge-info", op: "قيد التنفيذ", opBadge: "badge-compliant", cta: "متابعة" },
+        { time: "11:00", factory: "مصنع الخليج للمنسوجات", ref: "VS-40195", type: "فردية", dist: "8.1 كم", risk: "عالية", riskBadge: "badge-critical", riskColor: CR, plan: "منشورة", planBadge: "badge-info", op: "في الطريق", opBadge: "badge-warning", cta: "الاتجاهات" },
+        { time: "13:30", factory: "مصنع نجد للألبان", ref: "VS-40160", type: "فورية", dist: "12.4 كم", risk: "متوسطة", riskBadge: "badge-warning", riskColor: WA, plan: "منشورة", planBadge: "badge-info", op: "لم تبدأ", opBadge: "badge-neutral", cta: "بدء" },
+      ],
+      upcoming: [
+        { time: "غداً", factory: "شركة الرياض للأسمنت", ref: "VS-40233", type: "جملة", dist: "—", risk: "منخفضة", riskBadge: "badge-compliant", riskColor: CO, plan: "منشورة", planBadge: "badge-info", op: "لم تبدأ", opBadge: "badge-neutral", cta: "عرض" },
+        { time: "الخميس", factory: "مصنع الصفوة المتحدة", ref: "VS-40251", type: "فردية", dist: "—", risk: "عالية", riskBadge: "badge-critical", riskColor: CR, plan: "مسودة", planBadge: "badge-neutral", op: "لم تبدأ", opBadge: "badge-neutral", cta: "عرض" },
+      ],
+      done: [
+        { time: "أمس", factory: "شركة الأمل لتدريب العمال", ref: "VS-40088", type: "فردية", dist: "—", risk: "متوسطة", riskBadge: "badge-warning", riskColor: WA, plan: "مرتجعة", planBadge: "badge-warning", op: "مُرسلة", opBadge: "badge-compliant", cta: "استئناف" },
+        { time: "20 يوليو", factory: "مصنع تبوك للأغذية", ref: "VS-40041", type: "جملة", dist: "—", risk: "منخفضة", riskBadge: "badge-compliant", riskColor: CO, plan: "منشورة", planBadge: "badge-info", op: "مُرسلة", opBadge: "badge-compliant", cta: "عرض النتائج" },
+      ],
+    } : {
+      today: [
+        { time: "09:00", factory: "Al-Rashid Steel Industries Co.", ref: "VS-40219", type: "Bulk", dist: "4.2 km", risk: "High", riskBadge: "badge-critical", riskColor: CR, plan: "Published", planBadge: "badge-info", op: "In progress", opBadge: "badge-compliant", cta: "Continue" },
+        { time: "11:00", factory: "Gulf Textiles Factory", ref: "VS-40195", type: "Individual", dist: "8.1 km", risk: "High", riskBadge: "badge-critical", riskColor: CR, plan: "Published", planBadge: "badge-info", op: "En route", opBadge: "badge-warning", cta: "Directions" },
+        { time: "13:30", factory: "Najd Dairy Factory", ref: "VS-40160", type: "Immediate", dist: "12.4 km", risk: "Medium", riskBadge: "badge-warning", riskColor: WA, plan: "Published", planBadge: "badge-info", op: "Not started", opBadge: "badge-neutral", cta: "Start" },
+      ],
+      upcoming: [
+        { time: "Tomorrow", factory: "Riyadh Cement Co.", ref: "VS-40233", type: "Bulk", dist: "—", risk: "Low", riskBadge: "badge-compliant", riskColor: CO, plan: "Published", planBadge: "badge-info", op: "Not started", opBadge: "badge-neutral", cta: "View" },
+        { time: "Thursday", factory: "Al-Safwa United Factory", ref: "VS-40251", type: "Individual", dist: "—", risk: "High", riskBadge: "badge-critical", riskColor: CR, plan: "Draft", planBadge: "badge-neutral", op: "Not started", opBadge: "badge-neutral", cta: "View" },
+      ],
+      done: [
+        { time: "Yesterday", factory: "Al-Amal Worker Training Co.", ref: "VS-40088", type: "Individual", dist: "—", risk: "Medium", riskBadge: "badge-warning", riskColor: WA, plan: "Returned", planBadge: "badge-warning", op: "Submitted", opBadge: "badge-compliant", cta: "Resume" },
+        { time: "Jul 20", factory: "Tabuk Foods Factory", ref: "VS-40041", type: "Bulk", dist: "—", risk: "Low", riskBadge: "badge-compliant", riskColor: CO, plan: "Published", planBadge: "badge-info", op: "Submitted", opBadge: "badge-compliant", cta: "View results" },
+      ],
+    };
+    const seg = this.state.seg;
+    const rf = this.state.risk || "all";
+    const base = V[seg];
+    base.forEach(v => { v.riskKey = (v.risk === "عالية" || v.risk === "High") ? "high" : (v.risk === "متوسطة" || v.risk === "Medium") ? "med" : "low"; });
+    const byRisk = k => base.filter(v => v.riskKey === k).length;
+    const CHIPS = [
+      { key: "all", label: t.all, color: null, dot: false, count: base.length },
+      { key: "high", label: t.high, color: CR, dot: true, count: byRisk("high") },
+      { key: "med", label: t.med, color: WA, dot: true, count: byRisk("med") },
+      { key: "low", label: t.low, color: CO, dot: true, count: byRisk("low") },
+    ];
+    const shown = rf === "all" ? base : base.filter(v => v.riskKey === rf);
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      syncNow: () => {},
+      isToday: seg === "today", isUpcoming: seg === "upcoming", isDone: seg === "done",
+      goToday: () => this.setState({ seg: "today" }), goUpcoming: () => this.setState({ seg: "upcoming" }), goDone: () => this.setState({ seg: "done" }),
+      todayCount: V.today.length, upcomingCount: V.upcoming.length, doneCount: V.done.length,
+      chips: CHIPS.map(c => ({ label: c.label, count: c.count, color: c.color, dot: c.dot, active: rf === c.key, pick: () => this.setState({ risk: c.key }) })),
+      visits: shown,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

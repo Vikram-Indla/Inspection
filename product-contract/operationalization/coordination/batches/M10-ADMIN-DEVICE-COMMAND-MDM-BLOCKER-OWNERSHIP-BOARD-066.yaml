@@ -1,0 +1,415 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-BLOCKER-OWNERSHIP-BOARD-066
+title: Trusted Devices and MDM blocker ownership board
+status: OWNERSHIP_PLAN_COMPLETE_NO_LEASES_GRANTED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_OWNERSHIP_PLANNING
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  acceptance_cases_proven: 0
+  leases_granted: 0
+  reason: >-
+    This board assigns responsibility for producing missing decisions and
+    evidence. It does not grant authority, change a contract, implement or test
+    the product, or prove any of the 60 acceptance cases.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-BLOCKER-OWNERSHIP-BOARD-066
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+    - M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-GAP-INVENTORY-063
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+    - M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  governed_cases:
+    negative: 46
+    positive: 14
+    total: 60
+  do_not_touch:
+    - Claude Design, WA-DES-015, WA-DES-041 or CD-056
+    - application, database, provider, seed, test or evidence files
+    - RBAC, transition, provider-hold, decision, acceptance or status registers
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Coordination artifact only. No design, application, provider, database,
+    fixture, test, evidence, contract, status, branch or lease is changed.
+
+authority_rules:
+  - Ownership here means accountable producer/reviewer, not an implementation lease.
+  - Sponsor decisions precede policy encoding; nobody else may infer unanswered values.
+  - Governance authors the approved contract and role/state vocabulary; it does not implement product code.
+  - Provider owner proves an approved external contract; seeded or mocked data cannot substitute for a genuine receipt.
+  - Claude Design owns route-specific design output; it cannot redefine requirements, RBAC or provider semantics.
+  - Seeder owner creates deterministic non-production fixtures only after schema/policy contracts are stable.
+  - One implementation lease owns each file set; UI, database, provider and offline leases may run concurrently only when their files and contracts do not overlap.
+  - QA writes/runs acceptance tests under a separate recorded lease and does not self-certify implementation.
+  - Independent reviewer never edits leased product/test/provider/data files.
+  - Sponsor alone approves policy/design promotion and final acceptance; review recommendations are not approval.
+
+ownership_lanes:
+  SPONSOR:
+    accountable_for:
+      - DEV-CMD-DEC-01..10 answers
+      - approval or explicit hold of MDM provider capability
+      - final accepted design revision and promotion decision
+    may_not:
+      - delegate policy invention to implementation or test workers
+    completion_artifact: Signed decision record with every required matrix/value populated.
+  GOVERNANCE:
+    accountable_for:
+      - canonical RBAC/capability mapping
+      - allowed state-transition and terminal-state contract
+      - maker-checker, audit, evidence, retention and change-control trace
+      - formal provider-hold row when capability is held
+    may_not:
+      - select sponsor options or weaken accepted requirements
+    completion_artifact: Versioned approved contract/change record linked to requirement and acceptance IDs.
+  PROVIDER_SECURITY:
+    accountable_for:
+      - approved provider adapter contract or truthful fail-closed hold
+      - authenticated correlation, idempotency and receipt stages
+      - rejection, timeout, duplicate, late and mismatched receipt semantics
+    may_not:
+      - claim a mock, seed or privileged database update as a provider receipt
+    completion_artifact: Approved contract plus genuine non-production endpoint/receipt evidence, or explicit hold.
+  CLAUDE_DESIGN:
+    accountable_for:
+      - stable CD-056 route-specific revision and fingerprints
+      - every approved lifecycle, denied, stale, conflict, offline, provider and audit state
+      - EN/LTR, AR/RTL, theme, responsive and accessible interaction intent
+    may_not:
+      - invent provider behavior, policy values or application completion
+    completion_artifact: Code-ready design package and acceptance mapping approved by sponsor.
+  DATA_SEEDER:
+    accountable_for:
+      - deterministic state/persona/package/sync fixtures
+      - isolated setup/cleanup and provenance
+    may_not:
+      - seed genuine provider acknowledgement or alter canonical policy
+    completion_artifact: Re-runnable fixture manifest with expected state and cleanup proof.
+  IMPLEMENTATION_DB:
+    accountable_for:
+      - RLS/RPC authorization
+      - locked versioned transitions, idempotency and atomic audit
+      - terminal-state and package enforcement
+    file_authority_after_lease: Supabase additive migrations and database tests explicitly named in a future lease.
+    may_not:
+      - edit Admin/Field UI, provider adapter, design or governance records
+  IMPLEMENTATION_PROVIDER:
+    accountable_for:
+      - provider dispatch and authenticated receipt ingestion
+      - correlation, deduplication, quarantine and safe retry
+    file_authority_after_lease: Provider adapter/server boundary files explicitly named in a future lease.
+    may_not:
+      - edit database transition authority, UI design or provider policy
+  IMPLEMENTATION_ADMIN_UI:
+    accountable_for:
+      - /admin/devices source-backed lifecycle and evidence presentation
+      - persona-bound actions, confirmations, conflicts and degraded states
+      - accepted EN/AR, responsive and accessible design
+    file_authority_after_lease: Admin Devices route/components/styles/i18n explicitly named in a future lease.
+    may_not:
+      - edit database/provider/offline behavior or design authority
+  IMPLEMENTATION_FIELD_OFFLINE:
+    accountable_for:
+      - device trust at download/open/cached-open/sync/submit
+      - offline invalidation/replay and immutable conflict evidence
+    file_authority_after_lease: Field package/offline/sync files explicitly named in a future lease.
+    may_not:
+      - edit Admin UI, provider adapter, policy or design authority
+  QA:
+    accountable_for:
+      - test implementation and execution for all applicable 60 cases
+      - named-persona, negative, concurrency, provider, browser and regression evidence
+      - truthful blocked/skipped reporting
+    may_not:
+      - invent expected policy or certify mock provider results as live
+    completion_artifact: Versioned run receipts, traces, screenshots and evidence index with zero unexplained P0/P1 failure.
+  INDEPENDENT_REVIEW:
+    accountable_for:
+      - requirement/design/code/test/evidence trace review
+      - mapping, delta, lease collision and claim accuracy
+      - approve-for-consent, return or block recommendation
+    may_not:
+      - modify any leased implementation/test/data/provider file
+    completion_artifact: Independent recommendation bound to exact revisions and evidence.
+
+blocker_board:
+  - blocker_id: DEV-BLK-01
+    subject: Role ownership and per-command capabilities
+    decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+    primary_owner: SPONSOR
+    supporting_owner: GOVERNANCE
+    unblock_input: Sponsor option plus exact role-to-capability and command/source-state matrices.
+    completion_artifact: Approved canonical RBAC/capability and transition mapping.
+    dependent_cases:
+      - DEV-NEG-AUTH-01..07
+      - DEV-NEG-STATE-01..08
+      - DEV-POS-02
+      - DEV-POS-06..10
+    next_owners_after_unblock: [IMPLEMENTATION_DB, IMPLEMENTATION_ADMIN_UI, QA]
+    state: BLOCKED
+  - blocker_id: DEV-BLK-02
+    subject: Independent approval
+    decisions: [DEV-CMD-DEC-03]
+    primary_owner: SPONSOR
+    supporting_owner: GOVERNANCE
+    unblock_input: Commands requiring approval, approver independence, expiry, withdrawal and emergency policy.
+    completion_artifact: Approved maker-checker lifecycle and audit fields.
+    dependent_cases: [DEV-NEG-AUTH-07, DEV-NEG-AUD-04, DEV-POS-06, DEV-POS-08, DEV-POS-09]
+    next_owners_after_unblock: [IMPLEMENTATION_DB, IMPLEMENTATION_ADMIN_UI, QA]
+    state: BLOCKED
+  - blocker_id: DEV-BLK-03
+    subject: Terminal states and re-enrollment
+    decisions: [DEV-CMD-DEC-04]
+    primary_owner: SPONSOR
+    supporting_owner: GOVERNANCE
+    unblock_input: Revoked/Wiped terminal identity and separately governed re-enrollment policy.
+    completion_artifact: Approved terminal-transition and history-preservation contract.
+    dependent_cases: [DEV-NEG-STATE-03..08, DEV-POS-07, DEV-POS-08, DEV-POS-13]
+    next_owners_after_unblock: [IMPLEMENTATION_DB, IMPLEMENTATION_FIELD_OFFLINE, QA]
+    state: BLOCKED_CURRENT_RESUME_SOURCE_UNSAFE
+  - blocker_id: DEV-BLK-04
+    subject: Trust evidence and freshness
+    decisions: [DEV-CMD-DEC-05]
+    primary_owner: SPONSOR
+    supporting_owner: [GOVERNANCE, PROVIDER_SECURITY]
+    unblock_input: Evidence sources, authoritative actor and freshness/expiry rule.
+    completion_artifact: Approved attestation/compliance/trust contract.
+    dependent_cases: [DEV-NEG-STATE-07, DEV-NEG-STALE-01, DEV-NEG-STALE-03, DEV-NEG-STALE-05, DEV-POS-03, DEV-POS-07, DEV-POS-13]
+    next_owners_after_unblock: [IMPLEMENTATION_DB, IMPLEMENTATION_PROVIDER, IMPLEMENTATION_ADMIN_UI, QA]
+    state: BLOCKED
+  - blocker_id: DEV-BLK-05
+    subject: Acknowledgement, completion, correlation and idempotency
+    decisions: [DEV-CMD-DEC-06]
+    primary_owner: SPONSOR
+    supporting_owner: [GOVERNANCE, PROVIDER_SECURITY]
+    unblock_input: Explicit stages, authoritative actor, receipt schema, correlation and idempotency rules.
+    completion_artifact: Approved lifecycle/receipt contract with no privileged direct-update shortcut.
+    dependent_cases:
+      - DEV-NEG-STALE-02..04
+      - DEV-NEG-DUP-01..03
+      - DEV-NEG-PROV-01..06
+      - DEV-NEG-AUD-01..04
+      - DEV-POS-03
+      - DEV-POS-06..09
+      - DEV-POS-12
+    next_owners_after_unblock: [IMPLEMENTATION_DB, IMPLEMENTATION_PROVIDER, IMPLEMENTATION_ADMIN_UI, QA]
+    state: BLOCKED
+  - blocker_id: DEV-BLK-06
+    subject: Package expiry and cached invalidation
+    decisions: [DEV-CMD-DEC-07]
+    primary_owner: SPONSOR
+    supporting_owner: [GOVERNANCE, PROVIDER_SECURITY]
+    unblock_input: Affected scope, online/cached/offline effect and authoritative completion evidence.
+    completion_artifact: Approved invalidation contract preserving immutable inspection evidence.
+    dependent_cases: [DEV-NEG-STATE-08, DEV-NEG-DUP-04, DEV-NEG-OFF-02..04, DEV-POS-04, DEV-POS-05, DEV-POS-10]
+    next_owners_after_unblock: [IMPLEMENTATION_DB, IMPLEMENTATION_PROVIDER, IMPLEMENTATION_FIELD_OFFLINE, QA]
+    state: BLOCKED_CURRENT_COMMAND_HAS_NO_PACKAGE_EFFECT
+  - blocker_id: DEV-BLK-07
+    subject: Sync-health and rescue ownership
+    decisions: [DEV-CMD-DEC-08]
+    primary_owner: SPONSOR
+    supporting_owner: GOVERNANCE
+    unblock_input: Canonical outbox, conflict, replay, error, last-seen sources and rescue ownership.
+    completion_artifact: Approved sync-health data/action boundary.
+    dependent_cases: [DEV-NEG-STALE-05, DEV-NEG-OFF-01..05, DEV-POS-05, DEV-POS-11]
+    next_owners_after_unblock: [DATA_SEEDER, IMPLEMENTATION_ADMIN_UI, IMPLEMENTATION_FIELD_OFFLINE, QA]
+    state: BLOCKED_CURRENT_ROUTE_LACKS_SYNC_DASHBOARD
+  - blocker_id: DEV-BLK-08
+    subject: MDM provider approval or formal hold
+    decisions: [DEV-CMD-DEC-09]
+    primary_owner: SPONSOR
+    supporting_owner: PROVIDER_SECURITY
+    unblock_input: Approved provider and environment or explicit fail-closed hold.
+    completion_artifact: Provider contract plus genuine pre-production receipts, or canonical hold row.
+    dependent_cases: [DEV-NEG-DUP-02, DEV-NEG-PROV-01..06, DEV-NEG-OFF-01..03, DEV-NEG-AUD-02, DEV-POS-03, DEV-POS-06..10, DEV-POS-12, DEV-POS-13]
+    next_owners_after_unblock: [IMPLEMENTATION_PROVIDER, IMPLEMENTATION_DB, QA]
+    state: BLOCKED_HOLD_REGISTER_CONTRADICTION
+  - blocker_id: DEV-BLK-09
+    subject: Stable route-specific design authority
+    decisions: [DEV-CMD-DEC-10]
+    primary_owner: CLAUDE_DESIGN
+    approval_owner: SPONSOR
+    supporting_owner: [GOVERNANCE, PROVIDER_SECURITY]
+    unblock_input: Approved decisions 01..09 and complete state vocabulary.
+    completion_artifact: Stable CD-056 package/frame fingerprints with signed design acceptance.
+    dependent_cases:
+      - DEV-NEG-I18N-01..02
+      - DEV-NEG-RESP-01..02
+      - DEV-NEG-A11Y-01..03
+      - DEV-POS-14
+    next_owners_after_unblock: [IMPLEMENTATION_ADMIN_UI, QA, INDEPENDENT_REVIEW]
+    state: BLOCKED
+  - blocker_id: DEV-BLK-10
+    subject: Deterministic test data
+    decisions: []
+    primary_owner: DATA_SEEDER
+    approval_owner: QA
+    unblock_input: Stable approved schema, roles, state transitions, sync sources and provider boundary.
+    completion_artifact: Isolated rerunnable fixture manifest and cleanup proof.
+    dependent_cases: ALL_60
+    next_owners_after_unblock: [QA]
+    state: WAITING_ON_CONTRACT_NOT_IDLE
+  - blocker_id: DEV-BLK-11
+    subject: Product implementation
+    decisions: []
+    primary_owner:
+      - IMPLEMENTATION_DB
+      - IMPLEMENTATION_PROVIDER
+      - IMPLEMENTATION_ADMIN_UI
+      - IMPLEMENTATION_FIELD_OFFLINE
+    approval_owner: Sponsor grants separately recorded non-overlapping leases.
+    unblock_input: Approved policy, design and provider/data boundaries.
+    completion_artifact: Separate reviewed commits with file manifests, tests and rollback/remediation notes.
+    dependent_cases: ALL_60
+    next_owners_after_unblock: [QA, INDEPENDENT_REVIEW]
+    state: NO_LEASE_GRANTED
+  - blocker_id: DEV-BLK-12
+    subject: Acceptance execution and certification
+    decisions: []
+    primary_owner: QA
+    review_owner: INDEPENDENT_REVIEW
+    approval_owner: SPONSOR
+    unblock_input: Implemented revisions, deterministic fixtures and genuine provider evidence or explicit held-case list.
+    completion_artifact: 60-case ledger with pass/fail/blocked, evidence paths, revision IDs and independent recommendation.
+    dependent_cases: ALL_60
+    next_owners_after_unblock: [SPONSOR]
+    state: BLOCKED_BY_PREDECESSORS
+
+case_ownership_partition:
+  sponsor_and_governance_policy_cases:
+    cases:
+      - DEV-NEG-AUTH-01..07
+      - DEV-NEG-STATE-01..08
+      - DEV-NEG-STALE-01..05
+      - DEV-NEG-DUP-01
+      - DEV-NEG-AUD-01
+      - DEV-NEG-AUD-03..04
+      - DEV-POS-01..02
+      - DEV-POS-04..08
+      - DEV-POS-13
+    accountable: SPONSOR
+    contract_producer: GOVERNANCE
+  provider_contract_cases:
+    cases:
+      - DEV-NEG-DUP-02..03
+      - DEV-NEG-PROV-01..06
+      - DEV-NEG-AUD-02
+      - DEV-POS-03
+      - DEV-POS-09
+      - DEV-POS-12
+    accountable: PROVIDER_SECURITY
+    approval_owner: SPONSOR
+  offline_and_sync_contract_cases:
+    cases:
+      - DEV-NEG-DUP-04
+      - DEV-NEG-OFF-01..05
+      - DEV-POS-10..11
+    accountable: SPONSOR
+    contract_producer: GOVERNANCE
+    implementation_owner_after_lease: IMPLEMENTATION_FIELD_OFFLINE
+  design_presentation_cases:
+    cases:
+      - DEV-NEG-I18N-01..02
+      - DEV-NEG-RESP-01..02
+      - DEV-NEG-A11Y-01..03
+      - DEV-POS-14
+    accountable: CLAUDE_DESIGN
+    approval_owner: SPONSOR
+  execution_rule: >-
+    The partition assigns one primary pre-implementation accountability per
+    case. After contracts pass, implementation owners produce behavior, QA
+    produces execution evidence, and Independent Review evaluates it; these
+    downstream duties do not create overlapping edit authority.
+
+dependency_order:
+  phase_1_parallel_decisions:
+    may_run_now:
+      - SPONSOR completes DEV-CMD-DEC-01..09 using brief 062.
+      - GOVERNANCE prepares non-prescriptive templates and identifies change-control targets.
+      - PROVIDER_SECURITY inventories actual available provider/environment facts without selecting a provider.
+      - CLAUDE_DESIGN inventories reusable CD-056 states and waits only on semantics it cannot invent.
+      - DATA_SEEDER inventories reusable fixture sources without writing data.
+      - QA prepares case manifest paths and harness prerequisites without encoding unanswered outcomes.
+      - INDEPENDENT_REVIEW audits mappings and collisions.
+    join_condition: Sponsor decisions 01..09 recorded and governance/provider facts reconciled.
+  phase_2_design_and_contract:
+    prerequisites: phase_1_parallel_decisions join condition
+    parallel:
+      - GOVERNANCE writes approved role/state/audit/offline contract.
+      - PROVIDER_SECURITY finalizes approved provider contract or formal hold.
+      - CLAUDE_DESIGN produces stable route-specific lifecycle and negative states.
+    join_condition: Sponsor accepts governance/provider/design artifacts.
+  phase_3_fixture_and_implementation:
+    prerequisites: phase_2_design_and_contract join condition
+    parallel_with_separate_leases:
+      - DATA_SEEDER builds isolated deterministic fixtures.
+      - IMPLEMENTATION_DB implements authorization/lifecycle/audit/package enforcement.
+      - IMPLEMENTATION_PROVIDER implements adapter/receipts if provider is approved.
+      - IMPLEMENTATION_ADMIN_UI implements accepted Devices route.
+      - IMPLEMENTATION_FIELD_OFFLINE implements trust/invalidation/replay boundary.
+    collision_control: Every lease lists exact files, schemas and migration order before work starts.
+  phase_4_integration_and_QA:
+    prerequisites: phase_3 revisions integrated in declared dependency order
+    sequence:
+      - QA executes DB/server/provider tests.
+      - QA executes Admin and Field browser tests.
+      - QA executes visual/i18n/a11y and protected regression.
+      - INDEPENDENT_REVIEW reconciles all 60 cases and evidence.
+      - SPONSOR decides promotion.
+
+no_wait_work_queue:
+  sponsor_busy: Complete the ten-answer sponsor brief; no engineering answer may substitute.
+  governance_busy: Draft empty role/transition/receipt/hold templates and enumerate affected canonical files read-only.
+  provider_busy: Confirm whether a real approved non-production MDM endpoint and receipt contract exist.
+  design_busy: Prepare state inventory and content slots that do not depend on policy values.
+  seeder_busy: Map existing safe fixtures to required states and identify gaps without mutation.
+  implementation_busy: Perform read-only impact and file-collision analysis; do not code before lease/contract.
+  QA_busy: Build a no-result case catalogue and reusable-spec map; do not mark cases passed.
+  reviewer_busy: Verify traceability, evidence grades and authority separation.
+
+collision_boundaries:
+  prohibited_overlap:
+    - DESIGN and implementation editing the same application files
+    - DB and provider workers changing the same migration or lifecycle function
+    - Admin UI and Field/offline workers changing shared shell/i18n without a separate shared-owner lease
+    - Seeder and QA mutating the same live fixtures concurrently
+    - QA modifying implementation to make a test pass
+    - Independent Review modifying any leased file
+  shared_file_rule: >-
+    Any shared shell, i18n, schema, generated type or common action file is
+    removed from parallel leases and assigned to one explicit integration owner.
+  database_rule: Additive forward-only migration order is fixed before parallel implementation; no destructive rollback.
+  evidence_rule: Each producer writes only its owned evidence namespace; final index references rather than overwrites.
+
+review:
+  disposition: BLOCK
+  code: BLOCK_UNTIL_SPONSOR_POLICY_PROVIDER_AND_DESIGN_GATES_PASS
+  validations:
+    - The 60 acceptance cases are partitioned among four primary pre-implementation accountability groups.
+    - Every blocker names primary, supporting/review and downstream owners.
+    - No implementation or test lease is granted by this board.
+    - Parallel work is limited to non-overlapping decisions, fact inventory, design preparation, fixture mapping and test planning.
+    - Current unsafe Resume and absent provider receipt remain explicit blockers.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+    mode: READ_ONLY
+    objective: >-
+      Define the exact completeness and non-contradiction checks for each of
+      the ten sponsor answers so Governance and Claude Design can consume them
+      without invention; do not answer on the sponsor's behalf or change the
+      decision register.

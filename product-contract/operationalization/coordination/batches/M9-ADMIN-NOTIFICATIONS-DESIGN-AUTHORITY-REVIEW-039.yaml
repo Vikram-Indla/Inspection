@@ -1,0 +1,514 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-NOTIFICATIONS-DESIGN-AUTHORITY-REVIEW-039
+title: Admin Notification and SLA Rules design-authority review
+status: BLOCKED_EXACT_DESIGN_PACKAGE_AND_CONTRACT_COMPLETION_REQUIRED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+review_mode: READ_ONLY
+new_design_identity_allocated: false
+live_design_mutated: false
+application_mutated: false
+tests_mutated: false
+data_mutated: false
+mapping_mutated: false
+branch_or_lease_mutated: false
+sponsor_decision_recorded: false
+
+collision_check:
+  checked_on: "2026-07-25"
+  active_notification_owner_found: false
+  independent_runtime_worker_available: false
+  active_lane_observed:
+    task: M2-VS-001-AUTHORITY-AND-READONLY-PREFLIGHT
+    scope: Planning Visit List
+    overlap: none
+  disposition: SAFE_FOR_READ_ONLY_DESIGN_AUTHORITY_REVIEW_ONLY
+  rule: Do not claim runtime certification without an independent runtime reviewer.
+
+task_contract:
+  task_id: M9-ADMIN-NOTIFICATIONS-DESIGN-AUTHORITY-REVIEW-039
+  gate: Admin Notifications design authority and bounded semantic delta
+  process_ids: [G2-P00]
+  package_id: M9
+  channel: ADMIN
+  route: /admin/notifications
+  screen_ids: [SCR-ADM-080]
+  engines: [ENG-11, ENG-12, VERSION, AUDIT]
+  requirement_ids:
+    direct_foundation: [MVP1-FND-004]
+    related_consumers:
+      - MVP1-M01-052
+      - MVP1-M02-041
+      - MVP1-M03-013
+      - MVP1-M04-073
+      - MVP1-M04-219
+      - MVP1-M04-220
+      - MVP1-M06-031
+      - MVP1-M08-005
+    preservation: CR-001_THROUGH_CR-478
+    note: >-
+      The package-level CR-001..478 mapping is a preservation boundary, not
+      evidence that this one screen completes all 478 requirements.
+  acceptance_ids:
+    design: [DSG-013]
+    special_component: [SPC-RT-001, SPC-RT-002, SPC-RT-003, SPC-RT-004, SPC-RT-005, SPC-RT-006, SPC-RT-007, SPC-RT-008]
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+  dependencies:
+    - returned_and_accepted_CD-016_package
+    - explicit_WA-DES-015_to_SCR-ADM-080_route_mapping
+    - DEC-003_SLA_calendar_and_timer_authority
+    - provider_configuration_and_failure_contract
+    - persona_to_role_reconciliation
+    - template_version_and_language_contract
+    - exact_event_catalogue_authority
+    - current_browser_and_negative_path_evidence
+  do_not_touch:
+    - live Claude Design or any design/export/evidence binary
+    - frozen route, screen, requirement, acceptance or evidence mappings
+    - application source, tests, migrations, seeds, Supabase or providers
+    - branches, commits, pushes, merges, leases, main, setup/Inspection or stashes
+    - another worker's packet or dirty file
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: bc176bab
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This packet records read-only design-to-source truth only. It does not
+    authorize M9 implementation or override the active M2 approval stop.
+
+authority_sources:
+  canonical:
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+    - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+    - design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+    - product-contract/domain/atomic_scope.csv
+    - product-contract/evidence/AC_LEDGER.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  claude_design_instruction:
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/individual-admin-prompts/CD-016_PREMIUM_CLAUDE_DESIGN_PROMPT.md
+    - design/claude-design-mvp1/prompts/systems/NOTIFICATIONS_SLA_AND_REALTIME_ALERTS.md
+  runtime_source_inspected_read_only:
+    - apps/web/src/app/(app)/admin/notifications/page.tsx
+    - apps/web/src/app/(app)/admin/notifications/NotificationRulesManager.tsx
+    - apps/web/src/app/(app)/admin/notifications/actions.ts
+    - apps/web/src/app/(app)/admin/notifications/preview-actions.ts
+    - apps/web/src/lib/notify.ts
+    - apps/web/src/lib/workflow/notifications.ts
+    - supabase/migrations/20260716222000_scr_adm_080_notification_rules.sql
+    - supabase/migrations/20260717050000_mvp2_m2_02_notification_bilingual_delivery.sql
+  source_inspection_limit: >-
+    Source inspection establishes implemented contracts and apparent gaps. It
+    is not browser, live-database, RLS, provider or end-to-end certification.
+
+registered_design_inventory:
+  nearest_registered:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    registered_route: /admin
+    target_persona: Admin roles
+    reference_viewport: 1440x900
+    bytes: 42071
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    notification_mode_present: true
+    observed_notification_structure:
+      - Notification rules heading
+      - event to channel to template to audience composition
+      - New rule action
+    classification: NEAREST_REGISTERED_VISUAL_BUT_ROUTE_MAPPING_INCOMPLETE
+  exact_route_design:
+    design_id: NONE_REGISTERED
+    target_route: /admin/notifications
+    classification: NO_EXACT_REGISTERED_DESIGN_MATCH
+  mapping_truth: >-
+    DESIGN_ROUTE_MAP registers WA-DES-015 to /admin only. ROUTE_INVENTORY and
+    CURRENT_TO_TARGET_MIGRATION list the broader M9 design set for the real
+    /admin/notifications route, but no row identifies one exact notification
+    design. WA-DES-015 is the evidence-based nearest match; it must not be
+    silently promoted to exact route authority.
+
+claude_design_CD_016:
+  prompt_exists: true
+  prompt_screen: SCR-ADM-080
+  prompt_route: /admin
+  prompt_current_route_claim: consolidated_surface
+  current_repository_truth: dedicated_route_exists_at_/admin/notifications
+  prompt_source_inventory_stale:
+    claims:
+      - apps/web/src/app/admin/page.tsx
+      - apps/web/src/components/NotificationBell.tsx
+    actual_primary_source:
+      - apps/web/src/app/(app)/admin/notifications/page.tsx
+      - apps/web/src/app/(app)/admin/notifications/NotificationRulesManager.tsx
+      - apps/web/src/app/(app)/admin/notifications/actions.ts
+  required_return_files:
+    - IMPLEMENTATION_MANIFEST_CD-016.yaml
+    - COMPONENT_MAP_CD-016.csv
+    - CLAUDE_CODE_HANDOFF_CD-016.md
+    - ACCEPTANCE_CHECKLIST_CD-016.md
+    - WIRING_MAP_CD-016.csv
+    - CD-016_SCR-ADM-080_primary.png
+    - CD-016_SCR-ADM-080_outlier.png
+  returned_files_found: []
+  stable_revision_found: false
+  design_frames_found: false
+  measured_PNG_evidence_found: false
+  acceptance_status:
+    DSG-013: not_started
+    SPC-RT-001_through_008: not_started
+  classification: PROMPT_EXISTS_RETURN_PACKAGE_MISSING
+
+screen_and_route_mapping:
+  screen_id: SCR-ADM-080
+  screen_name: Notification and SLA Rules
+  catalogue_route: /admin/notifications
+  application_route: /admin/notifications
+  route_exists: true
+  primary_component: apps/web/src/app/(app)/admin/notifications/page.tsx
+  manager_component: apps/web/src/app/(app)/admin/notifications/NotificationRulesManager.tsx
+  nearest_design: WA-DES-015_notification_mode
+  validation: CONFIRMED_WITH_CORRECTION
+  correction: >-
+    The route and capability are real, and WA-DES-015 contains the nearest
+    notification composition. The registered design route and CD-016 prompt
+    still describe /admin, so neither is exact current route authority.
+  recommended_mapping_action: CORRECT
+
+current_source_capability:
+  configuration:
+    - Creates draft rules from a fixed event-key list.
+    - Selects in-app, push, SMS or email channel.
+    - Selects governed recipient and escalation roles from roles.
+    - Stores an English free-text template and optional SLA minutes.
+    - Requires SLA minutes and escalation role together.
+  lifecycle:
+    - Publishes a draft through publish_notification_rule.
+    - Enforces a distinct maker and checker in the database RPC.
+    - Supersedes the prior published event-and-channel rule.
+    - Deactivates a published rule with a mandatory reason.
+    - Guards published rules from mutation or deletion.
+  audit_and_version:
+    - Generic row audit trigger exists.
+    - Notification rows stamp notification_rule_id and rule_version_label.
+    - Admin notification-rule audit RPC exists.
+    - The page does not display rule audit history.
+    - version_label defaults to v1 and no successor-version authoring control is shown.
+  provider_truth:
+    - In-app persistence is treated as delivery.
+    - Email, SMS and push register only when configured provider credentials exist.
+    - Unconfigured providers are recorded as not_configured.
+    - Send test can address only the authenticated tester.
+    - Automatic SLA breach firing is explicitly not implemented.
+  language:
+    - Page shell and labels use localization.
+    - Current manager stores and edits only template, the English half.
+    - A later migration adds nullable template_ar.
+    - The current manager neither reads nor authors template_ar.
+  source_boundary: >-
+    These are source-level observations only. No live provider, database,
+    browser, responsive, theme, Arabic, accessibility or concurrency journey
+    was independently run in this lane.
+
+authority_and_contract_gaps:
+  persona_and_RLS:
+    catalogue_personas: [Business Admin, Technical Admin]
+    runtime_writer_roles:
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - risk_owner
+      - gis_admin
+      - security_admin
+    authenticated_read_policy: all_authenticated
+    route_guard_truth: not_independently_runtime_certified
+    gap: >-
+      Business/Technical Admin are not canonical runtime role keys. The broad
+      six-role writer set and all-authenticated database read policy require an
+      explicit persona-to-role and least-disclosure decision.
+  event_catalogue:
+    UI_event_keys_are_hard_coded: true
+    database_catalogue_FK_or_check: not_found
+    design_requires_event_catalogue: true
+    gap: >-
+      The UI list is not proven to be the complete governed REF-014 catalogue,
+      and the database accepts arbitrary event_key text.
+  templates:
+    english_template: free_text
+    arabic_template_column: exists_in_later_migration
+    arabic_authoring_UI: absent
+    immutable_template_version_reference: absent
+    variable_validation_in_current_create_or_publish: absent
+    gap: >-
+      Current CRUD can publish free text without proving bilingual parity or
+      validating placeholders against the event payload contract.
+  SLA_and_escalation:
+    DEC-003: OPEN
+    UI_allows_arbitrary_positive_minutes: true
+    work_calendar_binding: absent
+    pause_resume_and_correction_rules: absent_from_screen
+    automatic_breach_execution: explicitly_unbuilt
+    gap: >-
+      The route stores arbitrary timer values while the authoritative calendar,
+      pause/resume rules and escalation values remain open. It cannot claim SLA
+      execution or complete SPC-RT-003.
+  provider_and_delivery:
+    provider_status_visible_at_all_times: false
+    per_channel_configuration_visible: false
+    delivery_audit_visible: false
+    test_result_states: delivered_or_not_configured_or_neutral_error
+    partial_channel_failure_design: absent
+    gap: >-
+      Provider truth exists in delivery code but the configuration screen does
+      not visibly expose provider identity, configuration, health, attempts,
+      partial delivery, retry or audit.
+  maker_checker_and_concurrency:
+    database_distinct_checker: present
+    maker_and_checker_identity_visible: false
+    self_approval_prevented_before_submit: false
+    publish_row_lock: present
+    draft_updated_at_or_row_version: absent
+    optimistic_compare_and_set: absent
+    gap: >-
+      Maker-checker is server-enforced but not explained before action. Draft
+      edits have no guarded update path or stale-conflict recovery contract.
+  audit_and_versioning:
+    audit_trigger: present
+    audit_RPC: present
+    audit_history_UI: absent
+    version_label_successor_control: absent
+    immutable_published_guard: present
+    gap: >-
+      The source can prove append-only audit plumbing and published immutability,
+      but users cannot inspect provenance or create a visibly governed successor
+      version from this page.
+
+design_versus_code_delta:
+  nearest_design_has_code_lacks:
+    - Dedicated design authority registered to the actual route.
+    - A clearly governed audience model rather than recipient-role only.
+  CD_016_prompt_requires_code_or_evidence_lacks:
+    - Timeline simulator with accepted work calendar.
+    - Provider status continuously visible.
+    - Reminder, breach, escalation, pause and correction semantics.
+    - Delivery audit and partial-channel outcome presentation.
+    - Bilingual template editing and realistic Arabic-first proof.
+    - Exact component map, wiring map, tests and runtime-evidence contract.
+  code_has_nearest_design_lacks_or_does_not_prove:
+    - Real maker-checker RPC and published immutability.
+    - Honest not_configured provider state.
+    - Rule/version stamp on notification records.
+    - Explicit declaration that automatic escalation is unbuilt.
+  current_source_defects_or_unproven:
+    - No exact accepted design package.
+    - CD-016 prompt is stale about route and primary files.
+    - Broad persona/role mapping is unresolved.
+    - Hard-coded event list is not governed by a database catalogue.
+    - English-only template authoring despite template_ar schema support.
+    - No placeholder validation in create or publish.
+    - Arbitrary SLA minutes while DEC-003 remains open.
+    - No provider health, attempt, retry, partial-failure or audit UI.
+    - No visible maker/checker provenance or pre-submit self-approval block.
+    - No draft concurrency token or retained-input stale recovery.
+    - No audit-history or governed successor-version workflow on the route.
+
+required_states:
+  access:
+    - AUTHENTICATED_AUTHORIZED_WRITER
+    - AUTHENTICATED_GOVERNED_READ_ONLY
+    - UNAUTHORIZED_ZERO_DISCLOSURE
+    - SESSION_EXPIRED
+    - ROLE_LOOKUP_FAILED
+  register:
+    - LOADING
+    - VERIFIED_EMPTY
+    - REGISTER_UNAVAILABLE_NOT_ZERO
+    - DRAFT
+    - ACTIVE_PUBLISHED
+    - PAUSED_IF_AUTHORIZED
+    - DEACTIVATED_WITH_REASON
+    - STALE_OR_CONCURRENT_CONFLICT_INPUT_RETAINED
+  validation:
+    - EVENT_UNKNOWN
+    - MISSING_RECIPIENT
+    - TEMPLATE_EMPTY
+    - TEMPLATE_VARIABLE_INVALID
+    - ARABIC_TEMPLATE_MISSING_OR_GOVERNED_FALLBACK
+    - SLA_WITHOUT_ESCALATION
+    - ESCALATION_WITHOUT_SLA
+    - DUPLICATE_EVENT_CHANNEL
+    - SAME_MAKER_CHECKER_BLOCKED
+  provider_and_delivery:
+    - PROVIDER_CONFIGURED
+    - PROVIDER_PENDING
+    - PROVIDER_UNAVAILABLE
+    - TEST_NOT_SENT
+    - TEST_DELIVERED_WITH_PROVIDER_PROOF
+    - TEST_FAILED
+    - PARTIAL_CHANNEL_DELIVERY
+    - RETRYING
+    - SUPPRESSED_BY_PREFERENCE
+    - DELIVERY_AUDIT_AVAILABLE
+    - DELIVERY_AUDIT_UNAVAILABLE
+  SLA:
+    - CALENDAR_AUTHORITY_UNAVAILABLE
+    - TIMER_PENDING
+    - ACTIVE
+    - PAUSED_ON_GOVERNED_EVENT
+    - REMINDER
+    - BREACHED
+    - ESCALATED
+    - AUTOMATIC_EXECUTION_NOT_BUILT
+  presentation:
+    - ENGLISH_LTR_LIGHT
+    - ENGLISH_LTR_DARK
+    - APPROVED_ARABIC_RTL_LIGHT
+    - APPROVED_ARABIC_RTL_DARK
+    - DESKTOP_1440x900
+    - TABLET_1024x768
+    - MOBILE_412x915_OR_390x844
+    - MOBILE_320x800
+    - KEYBOARD_AND_SCREEN_READER
+    - ZOOM_REFLOW_AND_REDUCED_MOTION
+
+responsive_theme_language_accessibility:
+  current_source:
+    - form grid uses auto-fit minmax 200px
+    - register uses shared responsive table wrapper
+    - inherited shell owns direction and theme
+    - labels are associated and table headers have scope
+    - status messages use alert or status roles
+  unproven_or_missing:
+    - fixed-environment visual comparison to an exact accepted design
+    - no-overflow proof at 1440, 1024, 412 or 390, and 320
+    - full light/dark contrast and focus parity
+    - Arabic template authoring and long-string RTL proof
+    - bidi isolation for event keys, versions, times and providers
+    - keyboard task completion and focus recovery after actions
+    - screen-reader lifecycle, provider and immutable-state semantics
+    - 200/400 percent zoom and reduced-motion proof
+    - urgency and provider failure communicated without color or motion alone
+
+test_truth:
+  related_tests_found:
+    - apps/web/e2e/mvp2-m2-02-notification-model.spec.ts
+    - apps/web/e2e/cycle2-wave2-providers.spec.ts
+    - apps/web/e2e/mvp2-email-resend.spec.ts
+    - apps/web/e2e/mvp2-push-webpush.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  package_focused_runtime_spec: not_found
+  missing_proof:
+    - exact SCR-ADM-080 browser journey
+    - unauthorized and read-only persona behavior
+    - maker-versus-checker publish and same-actor rejection in browser
+    - missing-recipient and invalid-template retained-input recovery
+    - provider configured, unavailable, retry and partial-channel states
+    - draft concurrency collision
+    - audit-history and successor-version behavior
+    - EN/AR, RTL/LTR, light/dark and all responsive widths
+    - keyboard, screen-reader, focus, zoom and reflow
+  certification_status: SOURCE_REVIEW_ONLY_NOT_RUNTIME_OR_DESIGN_ACCEPTANCE
+
+p0_stops:
+  - {id: NOTIF-DES-P0-01, criterion: WA-DES-015 remains the nearest registered identity and is not silently relabelled as exact /admin/notifications authority.}
+  - {id: NOTIF-DES-P0-02, criterion: CD-016 returns its complete stable manifest, maps, checklist, handoff and measured PNG evidence against current route and source.}
+  - {id: NOTIF-DES-P0-03, criterion: DSG-013 and SPC-RT P0 rows receive independent evidence-backed acceptance.}
+  - {id: NOTIF-DES-P0-04, criterion: Business and Technical Admin map to exact route, action, RLS and disclosure roles without invented role keys.}
+  - {id: NOTIF-DES-P0-05, criterion: Event keys are bound to an accepted governed catalogue and arbitrary keys fail closed.}
+  - {id: NOTIF-DES-P0-06, criterion: Bilingual template parity and variable validation are enforced before publish.}
+  - {id: NOTIF-DES-P0-07, criterion: DEC-003 closes before timer, calendar, pause, reminder, breach or escalation values are accepted.}
+  - {id: NOTIF-DES-P0-08, criterion: Provider configuration, health and delivery truth are visible and never infer success from a created row.}
+  - {id: NOTIF-DES-P0-09, criterion: Automatic SLA firing remains visibly unbuilt until a separately approved execution contract exists.}
+  - {id: NOTIF-DES-P0-10, criterion: Maker/checker identity and self-approval prohibition are visible and server/database enforced.}
+  - {id: NOTIF-DES-P0-11, criterion: Draft concurrency has a guarded token and retained-input stale-conflict recovery.}
+  - {id: NOTIF-DES-P0-12, criterion: Rule and delivery audit plus governed successor-version semantics are complete and truthful.}
+  - {id: NOTIF-DES-P0-13, criterion: Empty, error, unavailable, retrying, partial and provider-not-configured states are never conflated.}
+  - {id: NOTIF-DES-P0-14, criterion: One independent runtime reviewer proves route, RLS, RPC, provider-negative and regression behavior.}
+  - {id: NOTIF-DES-P0-15, criterion: No claim upgrades one notification surface to all 478 requirements.}
+  - {id: NOTIF-DES-P0-16, criterion: One collision-free design writer is named only after P0-01 through P0-15 pass.}
+
+p1_stops:
+  - {id: NOTIF-DES-P1-01, criterion: Event, audience, channel, bilingual template, calendar, timer, escalation and provider task order is explicit.}
+  - {id: NOTIF-DES-P1-02, criterion: Provider truth and SLA context remain visible while creating, testing, publishing and deactivating.}
+  - {id: NOTIF-DES-P1-03, criterion: All EN/AR, RTL/LTR, light/dark and responsive states preserve task and semantic parity.}
+  - {id: NOTIF-DES-P1-04, criterion: Long Arabic, event keys, versions, provider names and timestamps remain bounded and directionally correct.}
+  - {id: NOTIF-DES-P1-05, criterion: Keyboard, focus recovery, screen-reader status, zoom, reflow and reduced motion pass.}
+  - {id: NOTIF-DES-P1-06, criterion: Error recovery retains entered rule content and links the user to the exact failing field.}
+  - {id: NOTIF-DES-P1-07, criterion: Fixed-environment design-versus-runtime comparison uses a sponsor-accepted CD-016 revision.}
+  - {id: NOTIF-DES-P1-08, criterion: Exact screen, design, requirement, component, action, table, policy, RPC, provider, test and evidence links are complete.}
+
+governance_decisions:
+  - id: NOTIF-DES-DEC-01
+    decision: Register WA-DES-015 notification mode as predecessor for SCR-ADM-080 without changing its identity, then accept one CD-016 successor revision.
+  - id: NOTIF-DES-DEC-02
+    decision: Correct CD-016 from stale /admin and old source files to /admin/notifications and its real components/actions.
+  - id: NOTIF-DES-DEC-03
+    decision: Map Business and Technical Admin to exact runtime roles and least-disclosure/read/write boundaries.
+  - id: NOTIF-DES-DEC-04
+    decision: Approve the complete governed event catalogue and template-variable schemas.
+  - id: NOTIF-DES-DEC-05
+    decision: Resolve DEC-003 before accepting SLA values, calendar, pause/resume, reminders, breach or escalation.
+  - id: NOTIF-DES-DEC-06
+    decision: Approve provider-status, test, retry, partial-failure and delivery-audit behavior while preserving fail-closed truth.
+  - id: NOTIF-DES-DEC-07
+    decision: Approve bilingual template authoring, version lineage, maker/checker disclosure and draft concurrency.
+  - id: NOTIF-DES-DEC-08
+    decision: After independent P0/P1 review, issue one bounded design-successor lease; implementation remains separately gated.
+
+collision_safe_design_lease:
+  current_state: NOT_ISSUABLE
+  blockers:
+    - no returned or accepted CD-016 package
+    - no exact registered /admin/notifications design mapping
+    - stale CD-016 route and component inventory
+    - open DEC-003 and provider/persona/template/event/concurrency contracts
+    - no independent current runtime certification
+  future_candidate_after_all_stops:
+    writer: Claude Design
+    editable_target: exactly one CD-016 successor revision rooted in WA-DES-015
+    route: /admin/notifications
+    screen: SCR-ADM-080
+    no_new_identity: true
+    shared_shell: read_only
+    prohibited_parallel_writers:
+      - any writer touching the same CD-016 successor
+      - any writer touching WA-DES-015 while successor work is active
+      - any writer touching the shared Admin shell or the same evidence index
+  implementation_boundary: >-
+    Design acceptance grants no code lease. A later implementation lease must
+    name exact route, manager, action, provider, migration, test and evidence
+    files and avoid every concurrently owned file.
+
+reviewer_recommendation:
+  recommendation: RETURN_FOR_MAPPING_AND_DESIGN_AUTHORITY_CORRECTION
+  recommended_action: CORRECT
+  BUILD: BLOCK
+  WIRE: BLOCK
+  UPDATE: BLOCK
+  CHANGE_DESIGN: REQUIRED_AFTER_CONTRACT_DECISIONS
+  sponsor_business_decision: >-
+    Keep the real /admin/notifications capability. Do not redesign it from
+    scratch and do not claim it complete. Correct CD-016 to the real route and
+    source, return its full design package, settle persona/event/template/SLA/
+    provider/concurrency contracts, and independently prove runtime behavior
+    before any implementation lease.
+
+safe_follow_on:
+  task_id: M9-ADMIN-LOCALIZATION-DESIGN-AUTHORITY-REVIEW-040
+  objective: >-
+    After a fresh collision check, read-only validate /admin/localization
+    against WA-DES-010, its duplicate alias WA-DES-009, catalogue authority,
+    EN/AR provenance, versioning, permissions and complete state coverage.
+  constraints:
+    - Do not start if another active lane owns Admin Localization or its design sources.
+    - Do not touch Notifications, Forms, Workflows, Risk, Audit, Planning or shared Admin shell.
+    - No live design, product, test, data, mapping, branch, lease, main, setup/Inspection or stash mutation.

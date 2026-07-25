@@ -68,28 +68,76 @@ export function WfDeck({ payload, strings }: Props) {
         </ul>
       </section>
 
-      {/* Graph + outline — keyboard-accessible ordered stepper (wraps, never clipped) */}
+      {/* Graph + outline — visual state canvas matching the design authority. */}
       <section aria-label={strings.graphTitle} className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <h4 style={{ margin: 0 }}>{strings.graphTitle}</h4>
-        <ol role="list" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "center" }}>
-          {def.states.map((s, idx) => (
-            <li key={s.key} style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-              <button
-                type="button"
-                ref={(el) => { stateRefs.current[idx] = el; }}
-                aria-pressed={selectedState === s.key}
-                onClick={() => setSelectedState(selectedState === s.key ? null : s.key)}
-                onKeyDown={(e) => onStateKey(e, idx)}
-                tabIndex={idx === 0 ? 0 : -1}
-                className={`sq-lozenge ${selectedState === s.key ? "sq-lozenge--info" : ""}`}
-                style={{ cursor: "pointer" }}
-              >
-                {s.initial ? "▶ " : ""}{s.key}
-              </button>
-              {idx < def.states.length - 1 && <span aria-hidden="true">→</span>}
-            </li>
-          ))}
-        </ol>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 0,
+            minWidth: "max-content",
+            overflowX: "auto",
+            padding: "var(--space-3)",
+            border: "1px solid var(--border-subtle)",
+            borderRadius: "var(--radius-sm)",
+            background: "var(--surface-canvas)",
+          }}
+        >
+          {def.states.map((s, idx) => {
+            const isTerminal = !!s.terminal;
+            const isInitial = !!s.initial;
+            const isSelected = selectedState === s.key;
+            return (
+              <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 0, flex: "none" }}>
+                <button
+                  type="button"
+                  ref={(el) => { stateRefs.current[idx] = el; }}
+                  aria-pressed={isSelected}
+                  onClick={() => setSelectedState(isSelected ? null : s.key)}
+                  onKeyDown={(e) => onStateKey(e, idx)}
+                  tabIndex={idx === 0 ? 0 : -1}
+                  style={{
+                    flex: "none",
+                    width: 132,
+                    padding: "12px 10px",
+                    borderRadius: 10,
+                    textAlign: "center",
+                    border: `1.5px solid ${isTerminal ? "var(--status-compliant)" : isSelected ? "var(--action-primary)" : "var(--border-subtle)"}`,
+                    background: isSelected ? "var(--accent-soft)" : "var(--surface-primary)",
+                    boxShadow: "var(--shadow-card)",
+                    cursor: "pointer",
+                    font: "inherit",
+                    color: "var(--text-primary)",
+                  }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: 13 }}>
+                    {isInitial ? "▶ " : ""}{s.key}
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                    {isTerminal ? strings.terminal : isInitial ? strings.initial : ""}
+                  </div>
+                </button>
+                {idx < def.states.length - 1 && (
+                  <span
+                    style={{
+                      flex: "none",
+                      width: 44,
+                      display: "grid",
+                      placeItems: "center",
+                      color: "var(--text-disabled)",
+                    }}
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} style={{ width: 20, height: 20 }}>
+                      <path d="m9 6 6 6-6 6" />
+                    </svg>
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
         <p className="t-caption">
           {def.states.filter((s) => s.initial).map((s) => `▶ ${s.key} ${strings.initial}`).join(" · ")}
           {" · "}

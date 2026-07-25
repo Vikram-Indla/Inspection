@@ -1,0 +1,504 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-PRIMARY-FRAME-RETRIEVAL-READINESS-036
+title: Admin Audit CD-054 primary-frame retrieval readiness
+status: BLOCKED_PRIMARY_DESIGN_PACKAGE_NOT_RETRIEVED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+review_mode: READ_ONLY
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+predecessor_acknowledgement:
+  packet_id: M8-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-035
+  status: BLOCKED_PENDING_CD-054_FRAME_AND_SCREEN_IDENTITY_GOVERNANCE
+  accepted_correction:
+    web_admin_package: M9
+    module: M3-04
+    design: CD-054
+    upstream: M2-05_CD-031
+  rule: >-
+    This packet narrows the missing-primary-design dependency. It does not
+    reopen M8/CD-050 as route authority and grants no design or implementation
+    lease.
+
+task_contract:
+  task_id: M9-ADMIN-AUDIT-PRIMARY-FRAME-RETRIEVAL-READINESS-036
+  gate: CD-054 primary design retrieval and identity readiness
+  route: /admin/audit
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  module_id: M3-04
+  primary_design_id: CD-054
+  upstream_module_id: M2-05
+  upstream_design_id: CD-031
+  requirement_ids: [MVP2-REQ-0230, MVP2-REQ-0237, MVP2-REQ-0254]
+  acceptance_ids:
+    module: [MVP2-AC-0230, MVP2-AC-0237, MVP2-AC-0254]
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+  evidence_ids: [MVP2-EV-0230, MVP2-EV-0237, MVP2-EV-0254]
+  dependencies:
+    - exact_CD-054_returned_ZIP
+    - exact_editable_design_source
+    - exact_standalone_dc_html
+    - exact_frame_selector_and_preserved_frame_ids
+    - exact_renders_01_through_06
+    - exact_SHA256_manifest_and_inventory
+    - exact_screen_identity_governance
+    - exact_route_frame_to_acceptance_crosswalk
+    - WA-DES-015_secondary_lineage_decision
+    - one_named_collision_free_design_writer_after_all_stops_close
+  do_not_touch:
+    - live Claude Design, CD-054, CD-031, WA-DES-015, WA-DES-020, or exported designs
+    - frozen design, route, screen, requirement, acceptance, evidence, ontology, or wiring mappings
+    - application code, tests, data, Supabase, migrations, RPCs, credentials, seeds, or environments
+    - branches, commits, pushes, merges, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 37829f4241c17a424c1481cdb50cad1b64552e5d
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    Read-only retrieval readiness only. No application, design, data, test,
+    mapping, evidence, branch, lease, provider, runtime or remote mutation.
+
+authority_sources:
+  repository:
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/operationalization/OPS-REC-015_MVP3_84_ROW_RECONCILIATION.csv
+    - product-contract/operationalization/coordination/worker-outputs/CODEX-PA007-B-MVP3-ROWS-029-056.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv
+    - design/claude-design-mvp1/operationalization/wp01-design-system-input/20260719T003221Z/COMPLETE_ROUTE_SCREEN_STATE_INVENTORY.csv
+    - product-contract/mvp2/m2-05/DESIGN_AND_IMPLEMENTATION_REVIEW.md
+    - product-contract/mvp2/m2-05/REQUIREMENT_WIRING_MAP.csv
+  external_read_only:
+    design_prompt:
+      path: /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/03_MVP3_DELIVERY_ROOT/04_EXECUTION/PROMPTS/mvp3_full_parallel_design_build_pack_20260717/DESIGN_PROMPTS/P05_CD-054_M3-04_DESIGN_AUTO_PROMPT.txt
+      bytes: 6752
+      sha256: b6e24421f781572aba134215a89e5d5663d4b000f9359b6ec0f5b369f24b2fc3
+      classification: SOURCE_PROMPT_NOT_RETURNED_DESIGN
+    requirement_contract:
+      path: /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/03_MVP3_DELIVERY_ROOT/04_EXECUTION/PROMPTS/mvp3_full_parallel_design_build_pack_20260717/REQUIREMENT_CONTRACTS/CD-054_M3-04_REQUIREMENT_CONTRACT.csv
+      bytes: 4311
+      sha256: 221b56d3af947013d6d1b2b49477f73ccc98eb022fca902b5fc9fbbe698e5aa5
+      classification: THREE_ROW_REQUIREMENT_SOURCE_NOT_DESIGN_OUTPUT
+    code_build_prompt:
+      path: /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/03_MVP3_DELIVERY_ROOT/04_EXECUTION/PROMPTS/mvp3_full_parallel_design_build_pack_20260717/CLAUDE_CODE_BUILD_PROMPTS/P05_CD-054_M3-04_BUILD_PROMPT.txt
+      bytes: 2439
+      sha256: 09cf4f78579ea274b9c128c395ba8e3326586caed9820565bd641eaddd67289f
+      classification: ENTRY_GATE_PROMPT_NOT_ACCEPTED_DESIGN
+    secondary_visual_source:
+      path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+      design_id: WA-DES-015
+      bytes: 42071
+      sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+      classification: REGISTERED_SECONDARY_VISUAL_SOURCE
+
+duplicate_source_validation:
+  inspected_roots:
+    - /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/03_MVP3_DELIVERY_ROOT/04_EXECUTION/PROMPTS/mvp3_full_parallel_design_build_pack_20260717
+    - /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/mvp3_full_parallel_design_build_pack_20260717
+  result: >-
+    The duplicate prompt, requirement-contract and Claude Code build-prompt
+    copies have identical hashes. Neither root contains the returned
+    CD-054-M3-04-RN ZIP, editable design source, dc.html output, R2 renders or
+    output SHA-256 manifest.
+  implication: >-
+    Duplicate source prompts increase provenance confidence for the requested
+    job, but provide no proof that Claude Design returned or preserved the
+    claimed R2 artifact.
+
+current_cd054_reference_inventory:
+  - source: product-contract/execution/slice-history/CURRENT_SLICE_MVP3_COMPLETE_IMPLEMENTATION_001_backup_2026-07-18.yaml
+    claim: CD-054 appears in an historical MVP3 screen_ids list.
+    evidentiary_value: DESIGN_ID_REFERENCE_ONLY
+  - source: product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    claim: >-
+      Three rows claim CD-054_M3-04_R2_FINAL with a dc.html frame selector,
+      preserved R1 frame IDs and renders 01..06-CD-054_R2.png.
+    evidentiary_value: EXPECTED_PACKAGE_AND_RENDER_POINTERS
+    deficiency: No path resolving those pointers exists in the inspected repository or approved documentation roots.
+  - source: product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    claim: CD-054/M3-04 owns requirements, acceptance and evidence 0230, 0237 and 0254.
+    evidentiary_value: BINDING_REQUIREMENT_ACCEPTANCE_LINKAGE
+  - source: product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    claim: CD-054/M3-04 is runtime-certified on /admin/audit.
+    evidentiary_value: IMPLEMENTATION_STATUS_NOT_DESIGN_PACKAGE_PROOF
+  - source: product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    claim: P05/M3-04/CD-054 is Audit history and replay after P01.
+    evidentiary_value: MODULE_SEQUENCE_AND_PREDECESSOR
+  - source: product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+    claim: M3-04/CD-054 reuses audit event, ontology, correlation and replay contracts.
+    evidentiary_value: DATA_REUSE_BOUNDARY
+  - source: product-contract/operationalization/OPS-REC-015_MVP3_84_ROW_RECONCILIATION.csv
+    claim: CD-054 R2 frames 01 through 06 align to /admin/audit and the three module rows.
+    evidentiary_value: RECONCILIATION_CLAIM_WITHOUT_ARTIFACT_FINGERPRINT
+  - source: product-contract/operationalization/coordination/worker-outputs/CODEX-PA007-B-MVP3-ROWS-029-056.csv
+    claim: Independent row review repeats the frames 01 through 06 mapping.
+    evidentiary_value: SECONDARY_REVIEW_CLAIM_WITHOUT_ARTIFACT_FINGERPRINT
+
+retrieval_search_result:
+  repository_cd054_named_files: 0
+  approved_documentation_cd054_output_files: 0
+  source_prompt_files: 2
+  requirement_contract_files: 2
+  code_build_prompt_files: 2
+  exact_returned_zip_found: false
+  editable_design_source_found: false
+  standalone_dc_html_found: false
+  frame_selector_found: false
+  stable_frame_ids_found: false
+  renders_01_through_06_found: false
+  output_inventory_found: false
+  output_sha256_manifest_found: false
+  repository_intake_receipt_found: false
+  design_self_audit_found: false
+  closure_ledger_found: false
+  conclusion: >-
+    CD-054 is a valid logical design authority with a complete source prompt
+    and three-row requirement contract, but its claimed R2 returned package is
+    not currently retrievable or independently fingerprintable.
+
+expected_cd054_return_contract:
+  source: P05_CD-054_M3-04_DESIGN_AUTO_PROMPT.txt
+  required_package: one pure CD-054-M3-04-RN ZIP
+  required_contents:
+    - editable design source
+    - standalone HTML
+    - acceptance matrix
+    - state matrix
+    - wiring matrix
+    - route-component matrix
+    - permission-RLS matrix
+    - event matrix
+    - dependency-stub matrix
+    - component contracts
+    - implementation manifest
+    - repository intake receipt
+    - gap register
+    - self-audit
+    - closure ledger
+    - visual evidence register
+    - inventory
+    - SHA-256 manifest
+  required_design_journeys:
+    - event completeness inventory
+    - correlation and causality chain
+    - before/after reconstruction
+    - source/version and actor proof
+    - missing-event and integrity exception
+    - legal export and package verification as fail-closed where policy is held
+  required_exit_marker: READY_FOR_CODEX_DESIGN_REVIEW_CD-054
+  current_result: NONE_OF_THE_RETURNED_PACKAGE_CONTENTS_IS_RETRIEVABLE
+
+screen_identity_candidate_review:
+  governed_screen_catalogue_match:
+    exact_route: /admin/audit
+    found: false
+  non_allocating_candidates:
+    - candidate: RTE-029
+      source: COMPLETE_ROUTE_SCREEN_STATE_INVENTORY.csv
+      classification: OPERATIONAL_ROUTE_INVENTORY_ID_ONLY
+      decision: NOT_A_GOVERNED_SCREEN_ID
+    - candidate: ADDITIONAL_ROUTE_NO_GOVERNED_SCREEN_ID
+      classification: EXPLICIT_MISSING_ID_SENTINEL
+      decision: NOT_AN_ID
+    - candidate: ADM-AUDIT
+      classification: HISTORICAL_LABEL
+      decision: NOT_PRESENT_IN_GOVERNED_SCREEN_CATALOGUE
+    - candidate: SCR-ADM-001
+      route: /admin
+      classification: GOVERNED_PARENT_ADMIN_HOME
+      decision: CANNOT_BE_REUSED_FOR_CHILD_ROUTE
+    - candidate: WA-DES-015
+      route: /admin
+      classification: REGISTERED_DESIGN_ID
+      decision: NOT_A_SCREEN_ID_AND_NOT_EXACT_CHILD_ROUTE_AUTHORITY
+    - candidate: CD-054
+      classification: MVP3_DESIGN_MODULE_ID
+      decision: NOT_A_SCREEN_ID
+    - candidate: M3-04
+      classification: MVP3_MODULE_ID
+      decision: NOT_A_SCREEN_ID
+    - candidate: M2-05_CD-031
+      classification: UPSTREAM_MODULE_AND_DESIGN
+      decision: NOT_A_SCREEN_ID
+  result: UNRESOLVED
+  prohibited: >-
+    Do not invent SCR-ADM-xxx, promote RTE-029 or ADM-AUDIT, or reuse
+    SCR-ADM-001, WA-DES-015, CD-054, M3-04 or M2-05/CD-031 as a screen ID.
+
+acceptance_linkage:
+  module_rows:
+    - requirement_id: MVP2-REQ-0230
+      acceptance_id: MVP2-AC-0230
+      evidence_id: MVP2-EV-0230
+      priority: P1
+      expected_design_frames: CD-054_R2_01_THROUGH_06_UNRESOLVED_EXACT_FRAME
+      design_proof_status: POINTER_ONLY
+    - requirement_id: MVP2-REQ-0237
+      acceptance_id: MVP2-AC-0237
+      evidence_id: MVP2-EV-0237
+      priority: P0
+      expected_design_frames: CD-054_R2_01_THROUGH_06_UNRESOLVED_EXACT_FRAME
+      design_proof_status: POINTER_ONLY
+    - requirement_id: MVP2-REQ-0254
+      acceptance_id: MVP2-AC-0254
+      evidence_id: MVP2-EV-0254
+      priority: P0
+      expected_design_frames: CD-054_R2_01_THROUGH_06_UNRESOLVED_EXACT_FRAME
+      design_proof_status: POINTER_ONLY
+  web_admin_package:
+    route: /admin/audit
+    package: M9
+    acceptance_ids: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+    status: PLANNED_NOT_IMPLEMENTED
+    implication: >-
+      Existing runtime certification of M3-04 does not satisfy the separate
+      M9 design visual, RTL/responsive/accessibility and evidence acceptance
+      rows.
+  missing_crosswalk:
+    - exact CD-054 frame ID to each module acceptance row
+    - exact frame state, persona and object-scope variant
+    - exact route/component/action/data/event/provider/negative test per frame
+    - exact M9 acceptance evidence artifact and fingerprint
+
+wa_des_015_secondary_boundary:
+  registered_identity: WA-DES-015
+  registered_route: /admin
+  registered_package: M9
+  registered_sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+  contained_state:
+    selector: audit
+    heading: Audit Trail — replay
+    disclosure: append-only, object-scoped, deterministic replay
+    visible_elements:
+      - chronological four-event timeline
+      - actor and date metadata
+      - immutable replay explanation
+      - enabled Export scoped control
+  may_support_secondarily:
+    - Admin shell and Audit navigation vocabulary.
+    - Concise chronological hierarchy.
+    - Append-only, object-scoped and non-mutating replay disclosure.
+  cannot_supply:
+    - CD-054 identity, revision, frame IDs or package fingerprint.
+    - Complete event inventory, causality, before/after or source/version proof.
+    - Missing-event, conflict, integrity, completeness or custody states.
+    - Generic-versus-semantic provenance and bounded-history truth.
+    - Persona/RLS/object-scope, unauthorized or zero-disclosure states.
+    - CD-054 acceptance, wiring, event, provider, test or evidence matrices.
+    - Legal export authority.
+  conflict:
+    enabled_control: Export scoped
+    current_policy: EXPORT_AND_DATA_EXCHANGE_HELD
+    resolution: >-
+      Treat the control as non-authoritative and disabled/removed in any later
+      accepted route frame unless governance approves a real export contract.
+  classification: SECONDARY_VISUAL_ANCESTOR_ONLY
+
+required_design_states_before_writer:
+  identity_and_lineage:
+    - EXACT_CD054_REVISION_IDENTIFIED
+    - EXACT_PACKAGE_AND_SHA256_VERIFIED
+    - EXACT_FRAME_IDS_REGISTERED
+    - EXACT_ROUTE_FRAME_SELECTED
+    - SCREEN_IDENTITY_GOVERNED
+    - WA_DES_015_SECONDARY_LINEAGE_RECORDED
+  route_and_scope:
+    - LOADING
+    - AUDITOR_FULL_SCOPE
+    - OPS_FULL_SCOPE
+    - SECURITY_ADMIN_FULL_SCOPE
+    - LEADERSHIP_PARTIAL_OBJECT_SCOPE
+    - REVIEWER_PARTIAL_OBJECT_SCOPE
+    - PLANNER_PARTIAL_OBJECT_SCOPE
+    - COMPLIANCE_ADMIN_PARTIAL_OBJECT_SCOPE
+    - INSPECTOR_UNAUTHORIZED_ZERO_DISCLOSURE
+    - SESSION_EXPIRED
+  data_and_replay:
+    - VERIFIED_EMPTY
+    - GENERIC_ONLY_DEGRADED
+    - SEMANTIC_SOURCE_UNAVAILABLE
+    - GENERIC_SOURCE_UNAVAILABLE
+    - ONTOLOGY_UNAVAILABLE
+    - REGISTRY_OR_CONSTRAINT_UNAVAILABLE
+    - MULTIPLE_SOURCES_UNAVAILABLE
+    - PORTFOLIO_BOUNDED
+    - GENERIC_CASE_BOUNDED
+    - SEMANTIC_CASE_TRUNCATED
+    - SEARCH_WITHIN_BOUNDED_SNAPSHOT
+    - RECORDER
+    - RECONSTRUCT_NO_EVENT
+    - RECONSTRUCTED
+    - COMPARE_CHANGED
+    - COMPARE_UNCHANGED
+    - CONFLICT
+    - COMPLETENESS_UNAVAILABLE
+    - COMPLETENESS_PARTIAL
+    - COMPLETENESS_CERTIFIABLE
+    - CUSTODY_NOT_ASSESSED
+    - CHAIN_INCOMPLETE
+    - INTEGRITY_MISMATCH
+  policy:
+    - DIGITAL_SIGNATURE_UNVERIFIED
+    - EXPORT_HELD
+    - WORM_ARCHIVE_PROVIDER_UNAVAILABLE
+    - RETENTION_HELD
+    - REDACTION_HELD
+    - LEGAL_STATUS_HELD
+    - PRODUCTION_UNCERTIFIED
+  presentation:
+    - ENGLISH_LTR_LIGHT
+    - ENGLISH_LTR_DARK
+    - APPROVED_ARABIC_RTL_LIGHT
+    - APPROVED_ARABIC_RTL_DARK
+    - DESKTOP_1440x900
+    - DESKTOP_1200x900
+    - TABLET_1024x768
+    - TABLET_768x1024
+    - MOBILE_412x915
+    - MOBILE_390x844
+    - MOBILE_320x568
+    - KEYBOARD_FOCUS_DIALOG_COMPLETE
+    - ZOOM_REFLOW_PRINT_REDUCED_MOTION
+
+policy_holds:
+  - id: MVP3-HOLD-001
+    scope: digital_signature
+    design_effect: Signature remains unverified; no PKI, seal or legal proof claim.
+  - id: MVP3-HOLD-004
+    scope: data_exchange
+    design_effect: Export may not transmit and no receipt may be claimed.
+  - id: MVP3-HOLD-006
+    scope: retention_and_backup
+    design_effect: No retention period, purge, legal hold, backup or restore value may be invented.
+  - id: MVP3-HOLD-008
+    scope: production_release
+    design_effect: Local/runtime evidence is not production certification.
+
+p0_stops:
+  - {id: AUD-RET-P0-01, criterion: The exact returned CD-054-M3-04-RN ZIP is retrieved from an approved source.}
+  - {id: AUD-RET-P0-02, criterion: Editable source, standalone HTML, frame selector and stable frame IDs are present.}
+  - {id: AUD-RET-P0-03, criterion: Renders 01 through 06 resolve to real files and exact frames.}
+  - {id: AUD-RET-P0-04, criterion: Package inventory and SHA-256 manifest verify every returned artifact.}
+  - {id: AUD-RET-P0-05, criterion: Repository intake receipt proves the source repository and upstream CD-031/M2-05 read set.}
+  - {id: AUD-RET-P0-06, criterion: Exact /admin/audit route frame is selected without reusing the /admin parent identity.}
+  - {id: AUD-RET-P0-07, criterion: A governed screen identity is allocated or reconciled through change control, not invented here.}
+  - {id: AUD-RET-P0-08, criterion: Each requirement, acceptance and evidence row maps to exact frame, state, persona and scope.}
+  - {id: AUD-RET-P0-09, criterion: WA-DES-015 is registered as secondary only and cannot replace CD-054.}
+  - {id: AUD-RET-P0-10, criterion: Export, signature, retention, archive, redaction and legal seams remain fail-closed.}
+  - {id: AUD-RET-P0-11, criterion: Generic-only and semantic audit provenance cannot collapse or double-count without disclosure.}
+  - {id: AUD-RET-P0-12, criterion: RLS/object scope, zero disclosure, bounded history, search scope and completeness limits are explicit.}
+  - {id: AUD-RET-P0-13, criterion: All source/unavailable/error/conflict/truncation states remain distinguishable.}
+  - {id: AUD-RET-P0-14, criterion: The returned package contains no claim of implementation authorization or production/legal completion.}
+  - {id: AUD-RET-P0-15, criterion: Exactly one collision-free design writer is named only after P0-01 through P0-14 pass.}
+
+p1_stops:
+  - {id: AUD-RET-P1-01, criterion: All six required CD-054 journeys have exact frame/state coverage.}
+  - {id: AUD-RET-P1-02, criterion: M9 visual, RTL/responsive/accessibility and evidence acceptance rows have exact artifacts.}
+  - {id: AUD-RET-P1-03, criterion: Seven viewports pass without clipped chronology, hidden provenance or two-dimensional scroll.}
+  - {id: AUD-RET-P1-04, criterion: English/LTR and approved Arabic/RTL preserve task, identifier and scope semantics.}
+  - {id: AUD-RET-P1-05, criterion: Light/dark themes preserve contrast and non-color status meaning.}
+  - {id: AUD-RET-P1-06, criterion: Keyboard, visible focus, dialog focus cycle, announcements, zoom, reflow and print behavior are specified.}
+  - {id: AUD-RET-P1-07, criterion: Component, route, permission/RLS, event, dependency, test and evidence matrices cross-link exactly.}
+  - {id: AUD-RET-P1-08, criterion: Package self-audit and closure ledger report zero unresolved design P0/P1 except approved external holds.}
+
+governance_decisions:
+  - id: AUD-RET-DEC-01
+    decision: Identify the authoritative storage location and custodian for the returned CD-054 R2 package.
+  - id: AUD-RET-DEC-02
+    decision: Reconcile the claimed CD-054_M3-04_R2_FINAL and CD-054_R2_FINAL/renders paths to actual files.
+  - id: AUD-RET-DEC-03
+    decision: Verify the package revision, inventory, SHA-256 manifest and exact frame selector.
+  - id: AUD-RET-DEC-04
+    decision: Select the exact /admin/audit frame or governed frame family.
+  - id: AUD-RET-DEC-05
+    decision: Allocate or reconcile the route screen identity through approved change control.
+  - id: AUD-RET-DEC-06
+    decision: Register WA-DES-015 Audit state as secondary visual lineage only.
+  - id: AUD-RET-DEC-07
+    decision: Resolve the enabled WA-DES-015 Export scoped control against current export/legal holds.
+  - id: AUD-RET-DEC-08
+    decision: Accept the exact CD-054-to-MVP2 and M9 acceptance crosswalk.
+  - id: AUD-RET-DEC-09
+    decision: Confirm all provider, retention, redaction and legal seams remain fail-closed.
+  - id: AUD-RET-DEC-10
+    decision: After independent P0/P1 review, name exactly one design writer and one bounded lease.
+
+exact_governance_sequence_before_design_writer:
+  - step: 1
+    owner: Claude Design package custodian
+    action: Return the untouched CD-054-M3-04-RN ZIP from the approved design source.
+    evidence: source URL or session identity, revision, export time and package hash
+  - step: 2
+    owner: Orchestrator
+    action: Place the package only in approved external documentation storage and record provenance.
+    evidence: exact path, bytes and SHA-256; no Git recommit of binary design output
+  - step: 3
+    owner: Independent reviewer
+    action: Verify the ZIP inventory, internal hashes, editable source, HTML, frame IDs, renders and required matrices.
+    evidence: deterministic manifest check with no missing or extra content
+  - step: 4
+    owner: Product governance
+    action: Reconcile the /admin/audit screen identity and exact CD-054 route frame.
+    evidence: approved change-control record; no inferred or reused identity
+  - step: 5
+    owner: Product governance
+    action: Record CD-054 primary and WA-DES-015 Audit secondary lineage plus policy-hold treatment.
+    evidence: approved lineage and conflict decision
+  - step: 6
+    owner: Independent reviewer
+    action: Verify requirement/acceptance/evidence, persona/RLS, state, responsive/RTL/a11y and provider-hold coverage.
+    evidence: all P0/P1 checks pass or exact held rows remain explicitly blocked
+  - step: 7
+    owner: Sponsor
+    action: Accept, return or reject the design package.
+    evidence: explicit sponsor design decision
+  - step: 8
+    owner: Orchestrator
+    action: Recheck active writer/file collisions and issue one bounded design lease if correction is needed.
+    evidence: named writer, exact files/frames, start/end, rollback and reviewer
+  - step: 9
+    owner: Sponsor
+    action: Separately decide any later implementation lease.
+    evidence: implementation approval is not inferred from design acceptance
+
+reviewer_recommendation:
+  recommendation: BLOCK_DUE_TO_MISSING_PRIMARY_DESIGN_PACKAGE_AND_SCREEN_IDENTITY
+  sponsor_business_decision: >-
+    Require the actual fingerprinted CD-054 R2 return package and govern the
+    /admin/audit screen identity before allowing any design writer. Preserve
+    WA-DES-015 only as a secondary visual ancestor. Do not infer readiness from
+    the source prompt, implementation status or reconciliation pointers.
+
+safe_follow_on:
+  task_id: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-037
+  objective: >-
+    After an orchestrator collision check, read-only validate /admin/workflows
+    against its existing design inventory, real workflow/event/version
+    contracts and M9 acceptance rows without touching Audit, Risk or
+    Integration Hub artifacts.
+  constraints:
+    - Do not start if another active lane owns /admin/workflows or its design source.
+    - No live design, code, tests, data, mapping, branch, lease, main, setup/Inspection or stash mutation.

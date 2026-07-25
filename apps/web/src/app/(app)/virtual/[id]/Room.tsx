@@ -6,7 +6,6 @@ import {
   beginRemote, closeSession, joinParticipant, markSessionVerified,
   openWaitingRoom, rescheduleSession, type RoomActionResult,
 } from "./actions";
-import { selectVideoProvider, type VideoJoinResult } from "@/lib/providers/video";
 
 type P = { id: string; display_name: string; role: string; joined_at: string | null; verified_at: string | null };
 type Visit = {
@@ -24,7 +23,6 @@ type OtpStatus = {
 // chain (identity -> time -> participants -> state -> transition -> fallback)
 // resolving to exactly one gated next action. Strings built server-side with t().
 export type RoomStrings = {
-  adapterTitle: string; adapterBody: string; adapterPending: string; videoPlaceholder: string; simulatedSession: string;
   roles: Record<string, string>;
   verified: string; joinedAwaiting: string; notJoined: string;
   markJoined: string;
@@ -85,20 +83,6 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
   const [reschedState, reschedAction, reschedPending] = useActionState<RoomActionResult, FormData>(rescheduleSession, {});
   const [closeState, closeAction, closePending] = useActionState<RoomActionResult, FormData>(closeSession, {});
   const [beginState, beginAction, beginPending] = useActionState<RoomActionResult, FormData>(beginRemote, {});
-
-  // Cycle 2 Wave 2.A — opt-in only (NEXT_PUBLIC_FEATURE_VIDEO_PROVIDER=stub);
-  // additive to the existing honest "provider adapter pending" box, never
-  // replacing it unless a stub is explicitly selected. Never claims a real
-  // connection — always rendered as SIMULATED.
-  const [simVideo, setSimVideo] = useState<VideoJoinResult | null>(null);
-  useEffect(() => {
-    if (session.state !== "in_progress") { setSimVideo(null); return; }
-    const provider = selectVideoProvider();
-    if (!provider) return;
-    let cancelled = false;
-    provider.joinRoom(session.id, "self").then(r => { if (!cancelled) setSimVideo(r); });
-    return () => { cancelled = true; };
-  }, [session.state, session.id]);
 
   // S15 — offline is a UI truth only: nothing is queued and no reconnection is
   // promised; mutating actions are disabled until the browser is back online.
@@ -445,22 +429,12 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
             </ul>
           </section>
 
-          {/* provider-pending room — bounded, never a call surface */}
+          {/* Provider fact boundary — fail closed. lib/providers/video.ts has
+              only an opt-in non-production stub and no real adapter. The
+              console must not turn that fixture into a joinable room. */}
           <section className="panel cd-side cd-room" aria-label={t.room}>
             <div className="cd-sectionhead"><h3>{t.room}</h3><span className="cd-tag cd-tag--blocked">{t.roomTag}</span></div>
-            {simVideo ? (
-              <div className="stack" style={{ gap: "var(--space-2)" }}>
-                <span className="badge badge-warning" role="status">{t.simulatedSession}</span>
-                <div className="cd-roombox" role="img" aria-label={simVideo.state}>
-                  <span className="cd-roombox__glyph" aria-hidden="true">{simVideo.state === "connected" ? "●" : simVideo.state === "degraded" ? "▲" : "✕"}</span>
-                  <span className="cd-roombox__lab">{simVideo.state.replace(/_/g, " ")}</span>
-                </div>
-                <p className="t-caption">camera: {simVideo.camera} · mic: {simVideo.mic} · fixture: {simVideo.fixtureId}</p>
-                <p className="t-caption">Test/staging simulation only — no real media connection exists (provider={simVideo.provider}).</p>
-              </div>
-            ) : (
-              <div className="cd-roombox" role="img" aria-label={t.roomPending}><span className="cd-roombox__glyph" aria-hidden="true">▲</span><span className="cd-roombox__lab">{t.roomPending}</span></div>
-            )}
+            <div className="cd-roombox" role="img" aria-label={t.roomPending}><span className="cd-roombox__glyph" aria-hidden="true">▲</span><span className="cd-roombox__lab">{t.roomPending}</span></div>
             <p className="cd-sub">{t.roomBody}</p>
             <p className="cd-sub">{t.roomContinue}</p>
           </section>

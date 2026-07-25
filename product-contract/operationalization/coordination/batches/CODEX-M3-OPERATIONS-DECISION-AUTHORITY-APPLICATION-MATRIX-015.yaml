@@ -1,0 +1,435 @@
+packet:
+  id: CODEX-M3-OPERATIONS-DECISION-AUTHORITY-APPLICATION-MATRIX-015
+  title: M3 Operations decision-to-authority application matrix
+  status: DRAFT_CHOICES_PENDING_SPONSOR_ACTION
+  source: CODEX-M3-OPERATIONS-SPONSOR-BUSINESS-DECISIONS-014
+  classification: GOVERNANCE_APPLICATION_PLAN_NOT_APPROVAL
+  created_by: Codex orchestration
+  effect: >-
+    Defines how recommended Option A would be applied if selected. No choice is
+    selected or applied by this packet.
+
+global_controls:
+  all_choice_statuses: PENDING_SPONSOR_ACTION
+  m3_active: false
+  lease_authorized: false
+  implementation_authorized: false
+  claude_dispatch_allowed: false
+  design_mutation_allowed: false
+  protected_mutation_allowed: false
+  application_rule: >-
+    Apply decisions as one reviewed governance change set in the prerequisite
+    order below. M3 activation is the final decision applied, never the first.
+  decision_history_rule: >-
+    Append or supersede through change control. Do not rewrite an immutable
+    historical approval to conceal the earlier state.
+
+safe_application_order:
+  - order: 1
+    decision: M3-ACT-DEC-002
+    reason: Establish map truth before route, role, or implementation authority.
+  - order: 2
+    decision: M3-ACT-DEC-003
+    reason: Establish persona-to-role meaning.
+  - order: 3
+    decision: M3-ACT-DEC-004
+    reason: Establish geography and organization scope.
+  - order: 4
+    decision: M3-ACT-DEC-005
+    reason: Establish precise-location privacy inside the approved scope.
+  - order: 5
+    decision: M3-ACT-DEC-006
+    reason: Establish action permissions separately from visibility.
+  - order: 6
+    decision: M3-ACT-DEC-007
+    reason: Establish exceptional national access after default scope is known.
+  - order: 7
+    decision: M3-ACT-DEC-008
+    reason: Resolve or explicitly retain the CR-431 policy hold.
+  - order: 8
+    decision: M3-ACT-DEC-009
+    reason: Authorize conflict-free F0 and M8 follow-up planning.
+  - order: 9
+    decision: M3-ACT-DEC-001
+    reason: Activate or queue M3 only after the business contract is coherent.
+
+decision_application_matrix:
+  - decision_id: M3-ACT-DEC-002
+    recommended_option: A
+    label: Truthful tiered provenance
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 1
+    required_approver:
+      business: Vikram Indla / Product Owner
+      technical_validation: Independent contract reviewer
+    exact_targets:
+      - file: design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+        rows:
+          - SPC-LIVE-001
+          - SPC-CMD-005
+        action_if_approved: >-
+          Supersede obsolete always-projected wording with recorded GPS,
+          scheduled/factory fallback, unavailable, invalid, and read-error
+          provenance while retaining no-fabrication and privacy safeguards.
+      - file: design/claude-design-mvp1/prompts/systems/AUTHENTICATED_LIVE_OPERATIONS_MAP.md
+        section: Current mode and Acceptance IDs SPC-LIVE-001..007
+        action_if_approved: Align the prompt to the approved tiered model.
+      - file: product-contract/operationalization/coordination/batches/M3-SPONSOR-DIRECTION-20260725.yaml
+        row_or_key: decisions[decision_id=M3-MAP-PROVENANCE-001]
+        action_if_approved: Record the selected Option A as applied authority without broadening its lease.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-TIERED-PROVENANCE-DECISION
+        action_if_approved: Record exact sponsor choice, scope, exclusions, and effective authority.
+    prerequisite_evidence:
+      - Exact current text of SPC-LIVE-001 and SPC-CMD-005.
+      - Exact current prompt text.
+      - M3-MAP-R01..R10 correction contract.
+      - Proof that no route, ETA, drift, animation, or live claim is authorized.
+    rollback_if_applied: Append a superseding sponsor decision and revert only the unimplemented governance commit; never silently restore fabricated behavior.
+    no_op_if_declined: Leave all target files unchanged and keep map correction final acceptance and M3 activation blocked.
+
+  - decision_id: M3-ACT-DEC-003
+    recommended_option: A
+    label: Operations plus masked Leadership
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 2
+    required_approver:
+      business: Vikram Indla / Product Owner
+      security_validation: Security/RBAC owner
+    exact_targets:
+      - file: product-contract/domain/reference_data.csv
+        rows:
+          - REF-015
+        action_if_approved: READ_ONLY validation that ops, auditor, leadership, and planner role keys exist; do not add Supervisor.
+      - file: product-contract/domain/rbac_matrix.csv
+        rows:
+          - RBAC-007
+          - RBAC-008
+          - RBAC-013
+        action_if_approved: Clarify Operations view/action, Leadership monitoring/masking, Planner exclusion, and Auditor bounded history without weakening existing restrictions.
+      - file: design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
+        row_or_section: Operations Center business tab
+        action_if_approved: Align visible personas to the selected mapping; route visibility remains separate from data authority.
+      - file: product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+        row_or_key: append M3-ACT-DEC-003
+        action_if_approved: Record role mapping and prohibition on a fabricated Supervisor key.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-PERSONA-ACCESS
+        action_if_approved: Record sponsor choice.
+    prerequisite_evidence:
+      - REF-015 governed role list.
+      - Current operations.view database grants.
+      - Current shell visibility and direct-route behavior.
+      - RBAC-007, RBAC-008, and RBAC-013.
+    rollback_if_applied: Append a superseding access decision and revert only governance/UI consumers; never broaden RLS as rollback.
+    no_op_if_declined: Preserve existing role authority and keep route/access work blocked for unresolved persona mapping.
+
+  - decision_id: M3-ACT-DEC-004
+    recommended_option: A
+    label: Assigned region or branch by default
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 3
+    required_approver:
+      business: Vikram Indla / Product Owner
+      data_policy_validation: Operations and Security data owners
+    exact_targets:
+      - file: product-contract/domain/rbac_matrix.csv
+        rows:
+          - RBAC-008
+          - RBAC-013
+        action_if_approved: Preserve assigned geography/organization scope and define national access as exceptional.
+      - file: product-contract/governance/decision_register.csv
+        row_or_key: append M3-SCOPE-001
+        action_if_approved: Record hierarchy, cardinality, transfer, history, and temporary cross-scope policy.
+      - file: product-contract/governance/OPEN_DECISIONS.yaml
+        row_or_key: M3 scope decision entry
+        action_if_approved: Close only after every required scope field is recorded.
+      - file: product-contract/requirements-control/OPEN_REQUIREMENT_DECISIONS.yaml
+        row_or_key: M3 CR-439 and CR-447 scope dependency
+        action_if_approved: Record exact resolution and requirement linkage.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-SCOPE-POLICY
+        action_if_approved: Record sponsor choice.
+    prerequisite_evidence:
+      - Current profiles.region and profiles.org_scope semantics.
+      - Factory, visit, inspector, case, and risk-exception scope linkage gaps.
+      - Cross-region negative cases.
+    rollback_if_applied: Supersede the policy before implementation or use forward data-policy remediation after application; do not erase historical access audit.
+    no_op_if_declined: Do not create scope migrations or scoped consumers; CR-439 and CR-447 remain blocked.
+
+  - decision_id: M3-ACT-DEC-005
+    recommended_option: A
+    label: Precise location for scoped Operations during active work
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 4
+    required_approver:
+      business: Vikram Indla / Product Owner
+      privacy_validation: Security/Privacy and GIS owners
+    exact_targets:
+      - file: product-contract/domain/rbac_matrix.csv
+        rows:
+          - RBAC-008
+          - RBAC-013
+        action_if_approved: Record precise Operations access and masked Leadership behavior.
+      - file: design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+        rows:
+          - SPC-LIVE-004
+          - SPC-LIVE-007
+          - SPC-CMD-015
+        action_if_approved: Bind freshness, future telemetry safeguards, and Leadership masking.
+      - file: product-contract/governance/decision_register.csv
+        row_or_key: append M3-LOCATION-PRIVACY-001
+        action_if_approved: Record eligible roles, states, masking, aggregation, retention, and audit.
+      - file: product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+        row_or_key: append M3-ACT-DEC-005
+        action_if_approved: Record exact policy transition.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-LOCATION-PRIVACY
+        action_if_approved: Record sponsor choice.
+    prerequisite_evidence:
+      - CR-433.
+      - Active journey/execution state definitions.
+      - Current geo-event freshness and accuracy fields.
+      - Masked and aggregate projection proposal.
+    rollback_if_applied: Fail closed to masked or unavailable projection; never restore precise visibility as a fallback.
+    no_op_if_declined: Keep precise identity/coordinates unavailable and leave projection authority blocked.
+
+  - decision_id: M3-ACT-DEC-006
+    recommended_option: A
+    label: Separately permissioned scoped Operations actions
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 5
+    required_approver:
+      business: Vikram Indla / Product Owner
+      workflow_validation: Operations, Security, and Workflow owners
+    exact_targets:
+      - file: product-contract/domain/rbac_matrix.csv
+        rows:
+          - RBAC-007
+          - RBAC-008
+          - RBAC-013
+        action_if_approved: Record scoped Operations actions and Planner/Leadership restrictions.
+      - file: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+        rows:
+          - CR-430
+          - CR-436
+          - CR-437
+          - CR-442
+          - CR-446
+          - CR-447
+        action_if_approved: READ_ONLY traceability validation; do not rewrite source requirements.
+      - file: product-contract/governance/decision_register.csv
+        row_or_key: append M3-ACTION-AUTHORITY-001
+        action_if_approved: Record action, capability, record scope, guard, audit, and denial for all five actions.
+      - file: product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+        row_or_key: append M3-ACT-DEC-006
+        action_if_approved: Record exact action-policy transition.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-ACTION-AUTHORITY
+        action_if_approved: Record sponsor choice.
+    prerequisite_evidence:
+      - Current server actions, RPC guards, RLS, and audit events.
+      - Negative forged-action cases.
+      - Export filtering and audit contract.
+    rollback_if_applied: Remove or disable consumers while keeping database denial; use a superseding policy decision for authority changes.
+    no_op_if_declined: Keep Operations monitoring-only and do not add action consumers or write-authority migrations.
+
+  - decision_id: M3-ACT-DEC-007
+    recommended_option: A
+    label: Time-bound audited national grant
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 6
+    required_approver:
+      business: Vikram Indla / Product Owner
+      security_validation: Security Administration owner
+    exact_targets:
+      - file: product-contract/domain/rbac_matrix.csv
+        rows:
+          - RBAC-008
+          - RBAC-013
+        action_if_approved: Preserve assigned scope and define national visibility as exceptional.
+      - file: product-contract/governance/decision_register.csv
+        row_or_key: append M3-NATIONAL-GRANT-001
+        action_if_approved: Record grantor, grantee, reason, expiry, review, revocation, session/cache, and audit.
+      - file: product-contract/requirements-control/OPEN_REQUIREMENT_DECISIONS.yaml
+        row_or_key: M3 national-scope dependency
+        action_if_approved: Record the resolved exceptional-access rule.
+      - file: product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+        row_or_key: append M3-ACT-DEC-007
+        action_if_approved: Record exact grant-policy transition.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-NATIONAL-GRANTS
+        action_if_approved: Record sponsor choice.
+    prerequisite_evidence:
+      - Existing additive direct-grant model and lack of negative grants.
+      - M8 /admin/access ownership.
+      - Expiry, revocation, audit, and active-session design.
+    rollback_if_applied: Revoke future grants through governed functions and append audit; never delete grant history.
+    no_op_if_declined: Retain assigned scope only; no national capability or M8 grant-administration follow-up.
+
+  - decision_id: M3-ACT-DEC-008
+    recommended_option: A
+    label: Central GIS/Operations configurable refresh policy
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 7
+    required_approver:
+      business: Vikram Indla / Product Owner
+      policy_owner: GIS/Operations
+    exact_targets:
+      - file: product-contract/governance/decision_register.csv
+        rows:
+          - DEC-002
+        action_if_approved: >-
+          Set Resolved only after policy owner, configuration source, permitted
+          range, stale, offline, and reconnect behavior are approved.
+      - file: product-contract/governance/OPEN_DECISIONS.yaml
+        row_or_key: DEC-002 GIS accuracy and geofence policy
+        action_if_approved: Remove or close only when the full DEC-002 contract is resolved.
+      - file: product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+        row_or_key: append M3-ACT-DEC-008
+        action_if_approved: Record the refresh-policy decision and unresolved numeric details if any.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-REFRESH-POLICY
+        action_if_approved: Record sponsor ownership model and GIS/Operations policy evidence.
+    prerequisite_evidence:
+      - CR-431.
+      - DEC-002 complete field set.
+      - Current client intervals identified as implementation facts, not policy.
+      - Provider, load, battery, offline, stale, and reconnect analysis.
+    rollback_if_applied: Revert configuration consumers and supersede the policy; keep truthful last-observed and stale disclosure.
+    no_op_if_declined: DEC-002 remains Open P0; do not certify CR-431 or invent a cadence.
+
+  - decision_id: M3-ACT-DEC-009
+    recommended_option: A
+    label: Linked F0 and M8 follow-ups
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 8
+    required_approver:
+      business: Vikram Indla / Product Owner
+      ownership_validation: F0 and M8 package owners
+    exact_targets:
+      - file: product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+        rows:
+          - F0
+          - M3
+          - M8
+        action_if_approved: READ_ONLY ownership validation; do not rewrite established ownership.
+      - file: product-contract/execution/TASK_ROUTER.yaml
+        row_or_key: append future linked F0 and M8 tasks
+        action_if_approved: Route disjoint follow-ups with exact dependencies.
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-CROSS-PACKAGE-FOLLOWUPS
+        action_if_approved: Record sponsor scheduling approval without transferring ownership.
+      - file: product-contract/CURRENT_STATE.md
+        row_or_section: new dated M3 governance update
+        action_if_approved: Record linked follow-ups as approved but not active.
+    prerequisite_evidence:
+      - F0 ownership of shared navigation and migrations.
+      - M8 ownership of /admin/access.
+      - M3 ownership of /operations and read-only ETA disposition.
+      - Shared capability mirror owner remains unresolved.
+    rollback_if_applied: Remove queued follow-ups through a superseding router decision; do not edit ownership history.
+    no_op_if_declined: M3 remains limited to work that needs neither F0 migration/navigation nor M8 administration; broader authorization stays blocked.
+
+  - decision_id: M3-ACT-DEC-001
+    recommended_option: A
+    label: Queue M3 immediately after M2
+    choice_status: PENDING_SPONSOR_ACTION
+    application_order: 9
+    required_approver:
+      business: Vikram Indla / Product Owner
+      governance_validation: Independent pre-activation reviewer
+    exact_targets:
+      - file: product-contract/governance/HUMAN_APPROVALS.yaml
+        row_or_key: append gate M3-OPERATIONS-ACTIVATION
+        action_if_approved: Record Option A and every unresolved hold.
+      - file: product-contract/execution/TASK_ROUTER.yaml
+        row_or_key: M3 Operations queued successor
+        action_if_approved: Queue M3 after M2; do not activate it yet.
+      - file: product-contract/CURRENT_STATE.md
+        row_or_section: new dated M3 queue update
+        action_if_approved: Record queued status and blockers.
+      - file: product-contract/sessions/SESSION_LEDGER.json
+        row_or_key: append M3 governance planning session
+        action_if_approved: Record requirements, acceptance, screens, dependencies, decisions, and do-not-touch areas.
+      - file: product-contract/execution/CURRENT_SLICE.yaml
+        row_or_key: full document
+        action_if_approved: NO CHANGE while M2 remains active; transition only after M2 closes and independent certification passes.
+    prerequisite_evidence:
+      - Decisions 002 through 009 applied.
+      - M2 closure evidence.
+      - Independent certification of the applied governance packet.
+      - Exact canonical base SHA and collision-free ownership plan.
+    rollback_if_applied: Remove the queued successor through a superseding router decision; M2 remains unchanged.
+    no_op_if_declined: Do not queue or activate M3; retain M2 and all M3 blocks.
+
+technical_prerequisite_matrix:
+  classification: NOT_SPONSOR_CHOICES
+  items:
+    - order: T01
+      prerequisite: Validate the sponsor response is explicit for all nine decisions.
+      owner: Orchestrator
+    - order: T02
+      prerequisite: Apply only selected decisions to exact authority rows under change control.
+      owner: Governance writer
+    - order: T03
+      prerequisite: Validate YAML/CSV/JSON and exact changed-file manifest.
+      owner: Governance writer
+    - order: T04
+      prerequisite: Run true independent certification after application.
+      owner: Independent reviewer
+    - order: T05
+      prerequisite: Close M2 before activating queued Option A.
+      owner: M2 owner and Product Owner
+    - order: T06
+      prerequisite: Register exact Claude eight-file correction lease and resolve dirty preview overlap.
+      owner: Orchestrator
+    - order: T07
+      prerequisite: Accept F0 dependency and create one reconciled immutable base.
+      owner: F0 owner and independent integrator
+    - order: T08
+      prerequisite: Keep shared migrations F0-owned and the capability mirror read-only until exact ownership.
+      owner: F0/M8 governance owners
+    - order: T09
+      prerequisite: Assign migration filenames only after canonical-tail collision scan.
+      owner: F0 migration owner
+    - order: T10
+      prerequisite: Use isolated commits and negative gates for every database work package.
+      owner: F0 migration owner and security reviewer
+    - order: T11
+      prerequisite: Keep ETA read-only unless separately exact-leased.
+      owner: M3 owner
+    - order: T12
+      prerequisite: Dispatch Claude only after activation, lease, collision, branch, and manual-unlock gates pass.
+      owner: Orchestrator
+
+independent_certification_queue:
+  status: WAITING_FOR_DECISIONS_TO_BE_APPLIED
+  target: Applied decision authority change set
+  reviewer_rule: Reviewer must not be the governance writer who applies the decisions.
+  allowed_results:
+    - PASS
+    - CONDITIONAL PASS
+    - FAIL
+    - BLOCKED
+  authority_created_by_certification: none
+
+monitoring:
+  mac_state: LOCKED
+  on_manual_unlock:
+    - Report unlock immediately to root.
+    - Do not contact Claude Design.
+    - Keep Claude Code dispatch blocked because sponsor choices are still pending.
+
+no_change_attestation:
+  decisions_applied: false
+  product: unchanged
+  tests: unchanged
+  migrations: unchanged
+  data: unchanged
+  design: unchanged
+  branches: unchanged
+  leases: unchanged
+  main: unchanged
+  setup_inspection: unchanged
+  stashes: unchanged

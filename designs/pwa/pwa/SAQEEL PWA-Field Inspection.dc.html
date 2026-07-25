@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .ex-radio { display:flex; align-items:center; gap:10px; flex:1 1 140px; padding:14px 16px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:54px; transition:border-color .12s, background .12s; }
+  .ex-radio[aria-pressed="true"] { border-color:var(--action-primary); background:var(--accent-soft); }
+  .ex-ind { width:20px; height:20px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .ex-radio[aria-pressed="true"] .ex-ind { border-color:var(--action-primary); background:var(--action-primary); }
+  .ex-wrap { max-width:820px; width:100%; margin:0 auto; padding:20px 20px 120px; display:flex; flex-direction:column; gap:18px; }
+  @media (max-width:560px) { .ex-wrap { padding:14px 14px 120px; } }
+  .ex-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px, env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.step }}</span>
+    <button onClick="{{ cycleSync }}" class="badge {{ syncBadge }}" style="border:0; cursor:pointer;"><span class="dot"></span>{{ syncLabel }}</button>
+    <button class="ex-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <input id="if-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+
+  <sc-if value="{{ showOfflineBanner }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; align-items:center; gap:10px; padding:10px 18px; background:var(--status-warning-soft); color:var(--status-warning-text); font-size:13px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:17px; height:17px; flex:none;"><path d="M1 1l22 22M16.7 11.7A6 6 0 0 0 8 8M5 12.5a10 10 0 0 1 3-2.3M12 20h.01"/></svg>
+      <span style="flex:1;">{{ t.offlineNote }}</span>
+    </div>
+  </sc-if>
+
+  <div class="ex-wrap">
+    <div class="panel" style="padding:13px 15px; display:flex; gap:11px; align-items:center; background:var(--status-warning-soft); border-color:color-mix(in srgb, var(--status-warning) 26%, transparent);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-warning-text)" stroke-width="1.8" style="width:19px; height:19px; flex:none;"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span style="font-size:13.5px; color:var(--status-warning-text); font-weight:500;">{{ t.warningNote }}</span>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <button class="btn btn-secondary" onClick="{{ openChecklist }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px; height:16px;"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8 12 3 3 5-6"/></svg>{{ t.checklist }}</button>
+      <span class="grow"></span>
+      <span class="t-caption">{{ t.completedOf }} {{ doneCount }} {{ t.of }} {{ totalCount }}</span>
+      <div class="progress" style="width:130px;"><i style="width:{{ donePct }};"></i></div>
+    </div>
+
+    <sc-for list="{{ pageItems }}" as="it" hint-placeholder-count="3">
+      <div class="panel" style="padding:17px 19px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="badge badge-neutral">{{ t.item }} {{ it.itemNumber }}</span>
+          <span class="badge badge-neutral">{{ it.category }}</span>
+          <sc-if value="{{ it.answered }}" hint-placeholder-val="{{ false }}"><span class="badge badge-compliant" style="height:20px;">{{ t.done }}</span></sc-if>
+          <span class="grow"></span>
+          <button role="switch" aria-checked="{{ it.isEnabled }}" onClick="{{ it.toggle }}" style="all:unset; cursor:pointer; width:44px; height:26px; border-radius:999px; background:{{ it.toggleBg }}; position:relative; transition:background .15s; flex:none;"><span style="position:absolute; top:3px; inset-inline-start:{{ it.knobPos }}; width:20px; height:20px; border-radius:50%; background:#fff; transition:inset-inline-start .15s;"></span></button>
+        </div>
+
+        <div style="font-size:16px; font-weight:600; margin-block-start:13px; color:{{ it.titleColor }};">{{ it.title }}</div>
+
+        <sc-if value="{{ it.isEnabled }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-block-start:15px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-block-end:10px; flex-wrap:wrap;">
+              <span style="font-size:14.5px; font-weight:600;">{{ t.applicationStatus }}</span>
+              <button onClick="{{ it.openViolation }}" style="all:unset; cursor:pointer; display:flex; align-items:center; gap:6px; color:var(--action-primary); font-size:13px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px; height:15px;"><path d="M12 3 4 6v6c0 5 4 8 8 9 4-1 8-4 8-9V6z"/><path d="M12 8v5M9.5 10.5h5"/></svg>{{ t.penalties }}</button>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <sc-for list="{{ it.options }}" as="op" hint-placeholder-count="2">
+                <button class="ex-radio" aria-pressed="{{ op.selected }}" onClick="{{ op.pick }}">
+                  <span class="ex-ind"><sc-if value="{{ op.selected }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:12px; height:12px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>
+                  <span style="font-size:15px; font-weight:500;">{{ op.title }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ it.expanded }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-block-start:17px; padding-block-start:15px; border-block-start:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:15px;">
+            <div>
+              <div style="font-size:14px; margin-block-end:4px;"><span style="color:var(--status-critical-text);">*</span> {{ t.attachments }}</div>
+              <div class="t-caption" style="margin-block-end:10px;">{{ t.fileLimitNote }}</div>
+              <button class="btn btn-secondary btn-sm" onClick="{{ pickFile }}">{{ t.browseFiles }}</button>
+              <sc-if value="{{ it.hasAttachments }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-block-start:10px;">
+                  <sc-for list="{{ it.attachments }}" as="f" hint-placeholder-count="1">
+                    <span style="display:inline-flex; align-items:center; gap:6px; padding:7px 11px; background:var(--surface-sunken); border-radius:var(--radius-sm); font-size:12.5px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.7" style="width:13px; height:13px;"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg>{{ f }}</span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            <label style="display:block;"><span style="font-size:14px;">{{ t.notes }}</span><textarea class="input" rows="2" placeholder="{{ t.notePlaceholder }}" style="margin-block-start:6px; resize:vertical;"></textarea></label>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+
+    <div style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" aria-disabled="{{ prevDisabled }}" onClick="{{ prevPage }}" style="opacity:{{ prevOpacity }};">{{ t.previous }}</button>
+      <sc-for list="{{ pages }}" as="p" hint-placeholder-count="2">
+        <button onClick="{{ p.go }}" aria-current="{{ p.current }}" style="all:unset; cursor:pointer; min-width:34px; height:34px; display:grid; place-items:center; border-radius:8px; font-size:13px; font-variant-numeric:tabular-nums; background:{{ p.bg }}; color:{{ p.fg }};">{{ p.n }}</button>
+      </sc-for>
+      <button class="btn btn-ghost btn-sm" aria-disabled="{{ nextDisabled }}" onClick="{{ nextPage }}" style="opacity:{{ nextOpacity }};">{{ t.next }}</button>
+    </div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px, env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="t-caption">{{ t.autoSaveNote }}</span>
+    <span class="grow"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary">{{ t.continueResults }}</button>
+  </div>
+
+  <sc-if value="{{ violationOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeViolation }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:40;"></div>
+    <div class="drawer" style="width:min(520px,94vw); z-index:41;">
+      <div class="drawer-header"><div class="panel-title" style="font-size:16px;">{{ t.penalties }}</div><button class="btn btn-ghost btn-icon" onClick="{{ closeViolation }}" aria-label="{{ t.close }}">✕</button></div>
+      <div class="drawer-body">
+        <div class="panel" style="padding:13px 15px; display:flex; gap:10px; align-items:flex-start; background:var(--status-critical-soft); border-color:color-mix(in srgb, var(--status-critical) 26%, transparent); margin-block-end:16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-critical-text)" stroke-width="1.8" style="width:18px; height:18px; flex:none; margin-block-start:1px;"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <div style="flex:1;"><div style="font-weight:600; font-size:13.5px; color:var(--status-critical-text);">{{ vio.alertTitle }}</div></div>
+          <span class="badge badge-critical" style="height:20px;">{{ vio.alertTag }}</span>
+        </div>
+        <dl class="desc" style="grid-template-columns:auto 1fr; gap:10px 14px; font-size:13.5px;">
+          <dt>{{ t.item }}</dt><dd>{{ vio.itemName }}</dd>
+          <dt>{{ t.violationDesc }}</dt><dd>{{ vio.desc }}</dd>
+          <dt>{{ t.corrective }}</dt><dd>{{ vio.corrective }}</dd>
+          <dt>{{ t.penalties }}</dt><dd>{{ vio.penalties }}</dd>
+          <dt>{{ t.correctivePeriod }}</dt><dd><span class="id-code">{{ vio.period }}</span></dd>
+        </dl>
+      </div>
+      <div style="padding:14px 16px; border-block-start:1px solid var(--border-subtle);"><button class="btn btn-secondary btn-block" onClick="{{ closeViolation }}">{{ t.close }}</button></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ checklistOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeChecklist }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:40;"></div>
+    <div class="drawer" style="width:min(460px,94vw); z-index:41;">
+      <div class="drawer-header"><div><div class="panel-title" style="font-size:16px;">{{ t.checklist }}</div><div class="t-caption">{{ t.progress }} {{ donePct }} · {{ doneCount }} {{ t.of }} {{ totalCount }}</div></div><button class="btn btn-ghost btn-icon" onClick="{{ closeChecklist }}" aria-label="{{ t.close }}">✕</button></div>
+      <div class="drawer-body" style="padding:0;">
+        <div style="padding:14px 16px; border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;"><span style="font-weight:600; font-size:13.5px;">{{ t.licensesCategory }}</span><span class="grow"></span><span class="t-caption">{{ doneCount }}/{{ totalCount }}</span></div>
+        <sc-for list="{{ allItems }}" as="it" hint-placeholder-count="6">
+          <div style="display:flex; align-items:center; gap:12px; padding:13px 16px; border-block-end:1px solid var(--border-subtle);">
+            <span class="exc {{ it.rowExc }}"><span class="exc-mark"></span></span>
+            <span style="flex:1; font-size:13.5px;">{{ it.title }}</span>
+            <span class="badge {{ it.rowBadge }}" style="height:18px;">{{ it.rowState }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", page: 0, sync: "pending", enabled: {}, compliance: {}, violation: null, checklist: false, lang: "en" };
+
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        back:"رجوع", headerTitle:"تقرير زيارة · بنود التفتيش", headerSub:"شركة الأمل لتدريب العمال", step:"الخطوة 1 من 4", theme:"الوضع", langBtnLabel:"EN",
+        offlineNote: `غير متصل — يتم الحفظ محلياً. ${"٢ تغييرات"} بانتظار المزامنة (صندوق صادر آمن).`,
+        warningNote:"يرجى تحديد حالة التطبيق لكل بند للمتابعة في عملية التفتيش",
+        checklist:"قائمة التحقق", completedOf:"مكتمل", of:"من", item:"البند", done:"تم",
+        applicationStatus:"حالة التطبيق", penalties:"الجزاءات والمخالفات",
+        attachments:"مرفقات", fileLimitNote:"الحد الأقصى لحجم الملف 2 ميجابايت · الصيغ المدعومة jpg · png · pdf", browseFiles:"تصفح الملفات",
+        notes:"ملاحظات", notePlaceholder:"ملاحظة المفتش (اختياري)", previous:"السابق", next:"التالي",
+        autoSaveNote:"الحفظ التلقائي مفعّل · صندوق صادر دائم بلا اتصال", saveDraft:"حفظ كمسودة", continueResults:"متابعة إلى النتائج",
+        close:"إغلاق", violationDesc:"وصف المخالفة", corrective:"الإجراء التصحيحي", correctivePeriod:"المهلة التصحيحية",
+        progress:"التقدم", licensesCategory:"التراخيص والتصاريح",
+      },
+      en: {
+        back:"Back", headerTitle:"Visit Report · Inspection Items", headerSub:"Al-Amal Worker Training Co.", step:"Step 1 of 4", theme:"Theme", langBtnLabel:"AR",
+        offlineNote:"Offline — saving locally. 2 changes pending sync (secure outbox).",
+        warningNote:"Please set the application status for each item to continue the inspection",
+        checklist:"Checklist", completedOf:"Completed", of:"of", item:"Item", done:"Done",
+        applicationStatus:"Application status", penalties:"Penalties & Violations",
+        attachments:"Attachments", fileLimitNote:"Max file size 2 MB · Supported: jpg · png · pdf", browseFiles:"Browse files",
+        notes:"Notes", notePlaceholder:"Inspector note (optional)", previous:"Previous", next:"Next",
+        autoSaveNote:"Auto-save enabled · Persistent offline outbox", saveDraft:"Save as draft", continueResults:"Continue to results",
+        close:"Close", violationDesc:"Violation description", corrective:"Corrective action", correctivePeriod:"Correction period",
+        progress:"Progress", licensesCategory:"Licenses & Permits",
+      },
+    };
+    const t = STR[lang];
+    const PER = 3;
+    const VIO = lang === "ar" ? {
+      lic: { alertTitle: "تنبيه: قد يترتب على هذا البند جزاء", alertTag: "حرجة", itemName: "الترخيص الصناعي", desc: "تشغيل المنشأة بترخيص صناعي منتهي الصلاحية", corrective: "تجديد الترخيص وإيقاف التشغيل حتى التجديد", penalties: "غرامة مالية + إنذار", period: "٧ أيام" },
+      safety: { alertTitle: "تنبيه: قد يترتب على هذا البند جزاء", alertTag: "متوسطة", itemName: "شهادة السلامة", desc: "عدم تحديث شهادة السلامة للمنشأة", corrective: "استخراج شهادة سلامة محدثة", penalties: "إنذار", period: "٣٠ يوماً" },
+    } : {
+      lic: { alertTitle: "Alert: this item may carry a penalty", alertTag: "Critical", itemName: "Industrial license", desc: "Operating the establishment with an expired industrial license", corrective: "Renew license and halt operations until renewed", penalties: "Fine + warning", period: "7 days" },
+      safety: { alertTitle: "Alert: this item may carry a penalty", alertTag: "Medium", itemName: "Safety certificate", desc: "Establishment safety certificate not updated", corrective: "Obtain an updated safety certificate", penalties: "Warning", period: "30 days" },
+    };
+    const CAT = t.licensesCategory;
+    const SRC = lang === "ar" ? [
+      { title: "هل يوجد ترخيص صناعي ساري المفعول للمنشأة؟", type: "validity", vio: VIO.lic, files: ["ترخيص-صناعي.pdf"] },
+      { title: "هل السجل التجاري مطابق للنشاط الفعلي؟", type: "yesno", vio: VIO.lic, files: [] },
+      { title: "هل تصريح الدفاع المدني ساري؟", type: "validity", vio: VIO.safety, files: [] },
+      { title: "هل يوجد تصريح بيئي معتمد؟", type: "yesno", vio: VIO.safety, files: [] },
+      { title: "هل شهادة السلامة محدثة؟", type: "validity", vio: VIO.safety, files: [] },
+      { title: "هل تراخيص العمالة مكتملة؟", type: "yesno", vio: VIO.lic, files: [] },
+    ] : [
+      { title: "Does the establishment have a valid industrial license?", type: "validity", vio: VIO.lic, files: ["industrial-license.pdf"] },
+      { title: "Does the CR match the actual activity?", type: "yesno", vio: VIO.lic, files: [] },
+      { title: "Is the civil defense permit valid?", type: "validity", vio: VIO.safety, files: [] },
+      { title: "Is there an approved environmental permit?", type: "yesno", vio: VIO.safety, files: [] },
+      { title: "Is the safety certificate up to date?", type: "validity", vio: VIO.safety, files: [] },
+      { title: "Are labor licenses complete?", type: "yesno", vio: VIO.lic, files: [] },
+    ];
+    const YESNO = lang === "ar" ? [["نعم", "yes"], ["لا", "no"]] : [["Yes", "yes"], ["No", "no"]];
+    const VALID = lang === "ar" ? [["ساري", "valid"], ["منتهي", "expired"], ["لا يوجد", "na"]] : [["Valid", "valid"], ["Expired", "expired"], ["None", "na"]];
+    const en = this.state.enabled, co = this.state.compliance;
+    const setEnabled = i => () => this.setState(s => ({ enabled: { ...s.enabled, [i]: !s.enabled[i] } }));
+    const setComp = (i, v) => () => this.setState(s => ({ compliance: { ...s.compliance, [i]: v } }));
+
+    const buildItem = (src, i) => {
+      const isEnabled = !!en[i];
+      const comp = co[i] ?? null;
+      const opts = (src.type === "yesno" ? YESNO : VALID).map(([title, val]) => ({ title, selected: comp === val, pick: setComp(i, val) }));
+      const answered = isEnabled && comp != null;
+      return {
+        itemNumber: i + 1, category: CAT, title: src.title, isEnabled, answered,
+        toggle: setEnabled(i),
+        toggleBg: isEnabled ? "var(--action-primary)" : "var(--border-strong)",
+        knobPos: isEnabled ? "21px" : "3px",
+        titleColor: isEnabled ? "var(--text-primary)" : "var(--text-secondary)",
+        options: opts, expanded: answered,
+        hasAttachments: src.files.length > 0, attachments: src.files,
+        openViolation: () => this.setState({ violation: i }),
+        rowExc: answered ? "exc-compliant" : isEnabled ? "exc-warning" : "exc-pending",
+        rowBadge: answered ? "badge-compliant" : "badge-neutral",
+        rowState: answered ? t.done : (lang === "ar" ? "لم يُحدد" : "Not set"),
+      };
+    };
+    const all = SRC.map(buildItem);
+    const pageCount = Math.ceil(SRC.length / PER);
+    const page = this.state.page;
+    const doneCount = all.filter(x => x.answered).length;
+
+    const SYNC = lang === "ar" ? {
+      synced: { badge: "badge-compliant", label: "متزامن" },
+      pending: { badge: "badge-warning", label: "بانتظار المزامنة · 2" },
+      offline: { badge: "badge-critical", label: "غير متصل" },
+    } : {
+      synced: { badge: "badge-compliant", label: "Synced" },
+      pending: { badge: "badge-warning", label: "Pending sync · 2" },
+      offline: { badge: "badge-critical", label: "Offline" },
+    };
+    const cur = SYNC[this.state.sync];
+    const order = ["synced", "pending", "offline"];
+
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      syncBadge: cur.badge, syncLabel: cur.label,
+      cycleSync: () => this.setState(s => ({ sync: order[(order.indexOf(s.sync) + 1) % 3] })),
+      showOfflineBanner: this.state.sync === "offline",
+      pageItems: all.slice(page * PER, page * PER + PER),
+      allItems: all,
+      doneCount, totalCount: SRC.length, donePct: Math.round(doneCount / SRC.length * 100) + "%",
+      pages: Array.from({ length: pageCount }, (_, n) => ({
+        n: n + 1, current: n === page ? "true" : "false",
+        bg: n === page ? "var(--action-primary)" : "transparent",
+        fg: n === page ? "#fff" : "var(--text-secondary)",
+        go: () => this.setState({ page: n }),
+      })),
+      prevDisabled: page === 0 ? "true" : "false", nextDisabled: page >= pageCount - 1 ? "true" : "false",
+      prevOpacity: page === 0 ? ".4" : "1", nextOpacity: page >= pageCount - 1 ? ".4" : "1",
+      prevPage: () => this.setState(s => ({ page: Math.max(0, s.page - 1) })),
+      nextPage: () => this.setState(s => ({ page: Math.min(pageCount - 1, s.page + 1) })),
+      violationOpen: this.state.violation != null,
+      vio: this.state.violation != null ? SRC[this.state.violation].vio : {},
+      closeViolation: () => this.setState({ violation: null }),
+      checklistOpen: this.state.checklist,
+      openChecklist: () => this.setState({ checklist: true }),
+      closeChecklist: () => this.setState({ checklist: false }),
+      pickFile: () => { const el = document.getElementById("if-filepick"); if (el) el.click(); },
+    };
+  }
+}
+
+</script>
+</body>
+</html>

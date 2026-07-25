@@ -1,0 +1,364 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011
+title: Independent /admin/access runtime, permission and evidence mapping
+status: BLOCKED_REQUIREMENT_MAPPING_AND_RUNTIME_PERMISSION_REMEDIATION
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  reason: >-
+    The route exists and some writes work, but no exact atomic row in the
+    478-row baseline is mapped to this screen and the required authorization,
+    maker-checker, concurrency, versioning, negative-path and evidence contracts
+    are not complete.
+
+task_contract:
+  task_id: M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011
+  mode: READ_ONLY_INDEPENDENT_RUNTIME_MAPPING
+  route: /admin/access
+  screen_id: SCR-ADM-090
+  screen_name: Roles & Permissions
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package: M8
+  direct_rbac_id: RBAC-006
+  web_admin_acceptance_ids:
+    - WA-M8-AC-001
+    - WA-M8-AC-002
+    - WA-M8-AC-003
+    - WA-M8-AC-004
+    - WA-M8-AC-005
+    - WA-M8-AC-006
+  transferred_family_requirements:
+    - requirement_id: MVP2-REQ-0192
+      acceptance_id: MVP2-AC-0192
+      evidence_id: MVP2-EV-0192
+    - requirement_id: MVP2-REQ-0227
+      acceptance_id: MVP2-AC-0227
+      evidence_id: MVP2-EV-0227
+    - requirement_id: MVP2-REQ-0241
+      acceptance_id: MVP2-AC-0241
+      evidence_id: MVP2-EV-0241
+    - requirement_id: MVP2-REQ-0256
+      acceptance_id: MVP2-AC-0256
+      evidence_id: MVP2-EV-0256
+  implementation_trace_ids:
+    - id: EXE-ACCESS
+      authority: execution decision and migration trace
+      not_customer_requirement: true
+    - id: PLN-REQ-004
+      authority: code, test and migration trace
+      not_independently_found_in_canonical_requirement_register: true
+    - id: PLN-CON-013
+      authority: code, test and migration trace
+      not_independently_found_in_canonical_requirement_register: true
+  do_not_touch:
+    - Claude Design or design inventory
+    - product application code
+    - tests or evidence
+    - Supabase, migrations, seeds or shared data
+    - leases, branches, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: a18074e6382cd0b6137ad35400c1ea35288b172f
+  unrelated_dirty_path_preserved:
+    - product-contract/operationalization/coordination/batches/M2-VS-002-WA-DES-045-DESIGN-CORRECTION-DISPATCH-042.yaml
+
+canonical_authority:
+  - product-contract/00_START_HERE.md
+  - product-contract/CURRENT_STATE.md
+  - product-contract/GATE_STATUS.md
+  - product-contract/execution/CURRENT_SLICE.yaml
+  - product-contract/execution/TASK_ROUTER.yaml
+  - product-contract/governance/OPEN_DECISIONS.yaml
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/domain/rbac_matrix.csv
+  - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+
+requirement_mapping_verdict:
+  baseline_row_count: 478
+  exact_atomic_route_requirement_found: false
+  exact_atomic_screen_requirement_found: false
+  invalid_current_claim: CR-001..CR-478
+  classification: INSUFFICIENT_EVIDENCE
+  explanation: >-
+    DESIGN_ROUTE_MAP and package-level material assign the entire CR-001..CR-478
+    range to /admin/access. That blanket range is not an atomic trace and cannot
+    establish requirement completion. Governance must map exact source rows or
+    approve a change-controlled requirement before implementation completion can
+    receive row credit.
+  exact_screen_contract:
+    persona: Security Admin
+    capability: Manage role permissions and data scope
+    inputs: Role matrix; channel; object; action; scope; segregation rules
+    actions: Create role; assign permission; compare; publish
+    exceptions: Privilege conflict; segregation violation
+  rbac_contract:
+    allowed_actor: Security Admin
+    channel: Admin
+    actions: [View, Create, Edit, Publish]
+    scope: All roles
+    constraint: Cannot grant beyond own administrative authority.
+
+runtime_mapping:
+  route_exists: true
+  route_specific_admission_guard: false
+  authenticated_route_group_only: true
+  navigation_visibility_roles: [security_admin]
+  route_visibility_is_not_authority: true
+  files:
+    page:
+      path: apps/web/src/app/(app)/admin/access/page.tsx
+      sha256: b031d8cbd05c6c82058777905865b58981bedc0c6c3c9345ecf31c6f94a4cd77
+    user_access_component:
+      path: apps/web/src/app/(app)/admin/access/AccessManager.tsx
+      sha256: 7d30eae6adfef1989396249014394e011dbfacbac8c9a06e7ec8a522481e7e19
+    role_permission_component:
+      path: apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+      sha256: 88f5671d823369079352dca865fb7f75853760751e54e542903197c2795d3b41
+    user_access_actions:
+      path: apps/web/src/app/(app)/admin/access/actions.ts
+      sha256: dc1d24ff7359cb1a4dc9faa6290b3dd2f337801cd7614201e9f793b9ffda234b
+    role_permission_actions:
+      path: apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+      sha256: aaaf3d7d3150e4b7329c97f354571c99ed2507544ab14e98e7b12931b3134601
+  base_reads:
+    - profiles with nested user_roles
+    - roles
+    - verified current user
+  user_access_reads:
+    - user_roles
+    - user_capability_grants
+    - role_capabilities
+    - capabilities
+  role_permission_reads:
+    - permissions
+    - role_permissions
+  current_behavior:
+    - Non-security-admin actors may reach the direct route and receive the RLS-projected roster.
+    - Security-admin gate failure is logged and silently reduces the page to read-only.
+    - Per-source management read failures are logged and collapsed to empty arrays.
+    - The roles read error is not rendered as a distinct source failure.
+    - The UI states that 54 policies realize the matrix without a runtime policy-count query.
+    - Role creation, comparison and published version lifecycle are absent.
+
+permission_boundary:
+  classification: TWO_DISTINCT_ENGINES_NOT_RECONCILED
+  execution_engine:
+    catalogue: capabilities
+    role_defaults: role_capabilities
+    direct_grants: user_capability_grants
+    gate: has_role(security_admin)
+    writes:
+      - admin_grant_role
+      - admin_revoke_role
+      - admin_grant_capability
+      - admin_revoke_capability
+    write_boundary: SECURITY_DEFINER_RPC_ONLY
+  planning_factory360_engine:
+    catalogue: permissions
+    role_defaults: role_permissions
+    gate: has_planning_capability(admin.access.manage)
+    writes:
+      - direct insert into role_permissions
+      - direct delete from role_permissions
+    server_action_guards:
+      - actor must hold admin.access.manage
+      - actor cannot grant a capability the actor does not hold
+      - actor cannot change admin.access.manage on an actor-held role
+    database_boundary: >-
+      RLS permits a security_admin to mutate role_permissions directly. The
+      stronger server-action checks can therefore be bypassed through the table
+      API unless the database contract is strengthened.
+  required_resolution:
+    - Define whether the engines remain separate and name their distinct scopes.
+    - Move all non-bypassable authority and segregation guards into the database boundary.
+    - Define a single route admission and partial-source failure contract.
+
+governance_behavior:
+  maker_checker:
+    implemented: false
+    current_contract: D-006 permits one security_admin and defers dual control.
+    transferred_requirement_conflict: MVP2-REQ-0227 and MVP2-REQ-0241 require maker-checker or sensitive-action approval.
+    decision_required: Sponsor must retain D-006 or authorize a dual-control change.
+  versioning_and_publish:
+    implemented: false
+    missing:
+      - immutable role-matrix version
+      - draft and publish states
+      - comparison against current live version
+      - explicit effective-from boundary
+      - protection against silently changing active inspections
+  concurrency_and_idempotency:
+    rpc_grants: >-
+      Check-then-insert has no lock or conflict-safe insert; concurrent identical
+      requests can collide instead of producing deterministic no-op success.
+    sole_admin_revoke: >-
+      Count-then-delete is not serialized; concurrent revocations can race the
+      sole-security-admin invariant.
+    role_permissions: >-
+      Server actions have no expected version, idempotency key or transaction
+      covering authorization check and mutation.
+  audit:
+    execution_rpc_audit: Semantic EXE-ACCESS rows are authored for actual changes.
+    duplicate_risk: >-
+      Generic row triggers may produce a second audit event for the same logical
+      user_roles change in addition to the semantic RPC event.
+    role_permission_audit: >-
+      Migration 20260722120000_planning_role_permissions_audit.sql is authored,
+      but the reviewed repository evidence does not prove it is applied live.
+    verdict: PARTIAL_AND_LIVE_STATE_UNVERIFIED
+
+test_review:
+  source_contract:
+    path: apps/web/e2e/execution-access-contract.spec.ts
+    strengths:
+      - RPC presence, definer hardening, self-target tokens and static UI wiring.
+      - Direct user grant tables are not written by application actions.
+    gaps:
+      - Static source assertions do not prove runtime RLS or concurrency.
+      - The test calls check-then-write behavior idempotent without racing requests.
+  live_access:
+    path: apps/web/e2e/cd-044-admin-planning.spec.ts
+    strengths:
+      - Self-target denial.
+      - Admin role grant and revoke with semantic audit read.
+      - Role-permission grant and revoke through the UI.
+      - Non-security-admin roster-only behavior.
+    gaps:
+      - The test intentionally leaves governed data behind in adjacent sections.
+      - No direct-table bypass test for role_permissions.
+      - No route-level denial expectation for a non-security-admin.
+      - No concurrent grant or sole-admin revoke race.
+      - No live role_permissions audit assertion.
+      - No source-failure, session-expiry, stale, conflict or recovery state.
+      - No complete EN/AR, RTL, light/dark, responsive or keyboard evidence.
+  route_link:
+    path: apps/web/e2e/cd-004-admin-control-plane-home.spec.ts
+    limitation: It proves /admin/access is linked, not that access is authorized.
+  execution_status: NOT_RUN_READ_ONLY_REVIEW
+
+browser_evidence_readiness:
+  ready_for_completion_claim: false
+  screen_state_contract:
+    source: design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+    required:
+      - populated
+      - loading
+      - empty
+      - validation
+      - unauthorized
+      - read_only
+      - stale
+      - degraded
+      - recovery
+      - EN and AR
+      - dark and light
+      - desktop
+  design_acceptance:
+    id: DSG-014
+    status: not_started
+  currently_observed_evidence:
+    - One historical English/LTR light desktop screenshot is insufficient.
+    - No current mutation, audit, RLS-negative, conflict, concurrency or bilingual evidence set was found.
+  safe_capture_preconditions:
+    - deterministic reversible users and roles
+    - isolated seeded fixtures
+    - confirmed applied migration inventory
+    - explicit browser/data lease
+    - negative personas
+    - audit correlation identifier
+
+design_dependency_boundary:
+  design_work_authorized: false
+  design_write_performed: false
+  primary_dependency:
+    design_id: WA-DES-043
+    sha256: 9d4e9879d7f2d4fd39a47895c9f746d99cbb3b3030aa033009889c7ada82a6b6
+    disposition: DEPENDENCY_ONLY_PRIMARY_NEAREST_MATCH
+  secondary_dependency:
+    design_id: WA-DES-011
+    sha256: 98827572052bf6157e8fe4710cd6de7d49bc49459dd82aa324d14d159b4f58bd
+    disposition: CONDITIONAL_SECONDARY_OR_FUTURE_DUAL_CONTROL_PATTERN
+  family_dependency:
+    design_family: CD-050
+    revision: R2
+    disposition: >-
+      Requirement coverage is registered, but package bytes, hash and exact frame
+      lineage for this route were not independently proved in this runtime review.
+  rule: >-
+    Design authority may resolve the visual and interaction contract separately.
+    It cannot repair database authorization, concurrency, audit or requirement
+    traceability defects.
+
+validated_verdict:
+  route_exists: true
+  component_exists: true
+  business_capability_match: PARTIAL
+  permission_boundary: FAIL_CLOSED_REMEDIATION_REQUIRED
+  requirement_traceability: BLOCKED
+  maker_checker: BLOCKED_DECISION_REQUIRED
+  concurrency: FAIL
+  versioning: NOT_IMPLEMENTED
+  audit: PARTIAL_UNVERIFIED
+  tests: INSUFFICIENT_FOR_CERTIFICATION
+  evidence: NOT_READY
+  recommended_action: BLOCK
+  sponsor_recommendation: >-
+    Do not grant completion credit or approve implementation as complete. Approve
+    a bounded runtime-remediation preflight only after exact requirement mapping,
+    the single-authority versus dual-control decision, and the database ownership
+    boundary are recorded.
+
+remediation_preflight:
+  packet_id: M8-ADMIN-ACCESS-RUNTIME-REMEDIATION-PREFLIGHT-012
+  status: QUEUED_BLOCKED
+  owner_lane: CLAUDE_CODE_ENGINEERING_AFTER_EXPLICIT_LEASE
+  non_overlapping_with_design_lane: true
+  objective: >-
+    Produce an implementation-ready, lease-safe change plan for route admission,
+    database-enforced permission guards, concurrency, versioning, audit correlation,
+    deterministic fixtures and full negative-path certification.
+  blocking_inputs:
+    - Exact atomic 478-row mapping or approved change-control row.
+    - Sponsor disposition for D-006 single authority versus maker-checker.
+    - Approved semantic boundary between capabilities and permissions.
+    - Confirmed live migration inventory including role_permissions audit.
+    - Exact database migration ownership and application/test file leases.
+    - Deterministic reversible seed fixtures and evidence identity.
+  proposed_application_lease_after_approval:
+    - apps/web/src/app/(app)/admin/access/page.tsx
+    - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+    - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+    - apps/web/src/app/(app)/admin/access/actions.ts
+    - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+  proposed_test_lease_after_approval:
+    - apps/web/e2e/web-admin-m8-admin-access-runtime.spec.ts
+  proposed_database_boundary_after_separate_approval:
+    - New additive migration only; never rewrite applied migrations.
+    - Serialize sole-admin and duplicate-grant decisions.
+    - Enforce segregation and own-authority limits in database policies or RPCs.
+    - Add request correlation or idempotency and unambiguous semantic audit.
+  prohibited_until_unblocked:
+    - product, test, migration, data, seed or evidence mutation
+    - design revision or dispatch
+    - lease issuance
+    - completion credit
+
+validation:
+  yaml_parse_required: true
+  exact_ids_checked: true
+  file_hashes_checked: true
+  product_mutation: false
+  data_mutation: false
+  test_mutation: false
+  design_mutation: false
+  branch_or_stash_mutation: false

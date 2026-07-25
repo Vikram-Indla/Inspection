@@ -1,0 +1,587 @@
+packet:
+  id: CODEX-M3-OPERATIONS-CORRECTED-GOVERNANCE-SEQUENCE-009
+  title: Corrected conflict-free Operations governance sequence
+  status: GOVERNANCE_PROPOSAL_ONLY_NOT_EXECUTABLE
+  created_by: Codex orchestration
+  supersession_scope:
+    returned_packet:
+      id: CODEX-M3-OPERATIONS-AUTHORIZATION-CONFLICT-FREE-SEQUENCE-007
+      status: RETURNED_NON_EXECUTABLE
+    review_packet:
+      id: CODEX-M3-OPERATIONS-SPONSOR-DECISION-AND-DISPATCH-GATES-008
+      status: ACCEPTED_AS_REVIEW_AUTHORITY_FOR_THIS_REISSUE
+    effect: >-
+      This packet corrects the sequencing proposal only. It does not supersede
+      product requirements, activate M3, create a lease, or authorize any
+      application or database change.
+
+no_authority_attestation:
+  implementation_authorized: false
+  product_code_change_authorized: false
+  test_change_authorized: false
+  migration_or_rls_change_authorized: false
+  data_or_seed_change_authorized: false
+  design_change_authorized: false
+  branch_or_worktree_creation_authorized: false
+  lease_change_authorized: false
+  main_or_setup_inspection_change_authorized: false
+  stash_change_authorized: false
+
+repository_context:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  governance_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  governance_branch: codex/orchestration-control-plane
+  evidence_head: 34ad28b2795ecf196093720590040a5379f38d1f
+  current_authoritative_slice:
+    task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+    batch_id: WA-P1-M2-BATCH-002
+    module: M2 Planning
+    status: AWAITING_PRODUCT_OWNER_APPROVAL
+    branch: revamp
+    baseline_sha: cf705db0
+    rule: >-
+      M2 remains authoritative. This proposal neither pauses, replaces, edits,
+      nor runs concurrently with M2.
+  proposed_future_slice:
+    module: M3 Operations
+    status: NOT_ACTIVE
+    activation_gate: G00_M3_FUTURE_ACTIVATION
+
+complete_m3_contract_binding:
+  requirements:
+    - CR-430
+    - CR-431
+    - CR-432
+    - CR-433
+    - CR-434
+    - CR-435
+    - CR-436
+    - CR-437
+    - CR-438
+    - CR-439
+    - CR-440
+    - CR-441
+    - CR-442
+    - CR-443
+    - CR-444
+    - CR-445
+    - CR-446
+    - CR-447
+    - CR-448
+  web_admin_acceptance:
+    - WA-M3-AC-001
+    - WA-M3-AC-002
+    - WA-M3-AC-003
+    - WA-M3-AC-004
+    - WA-M3-AC-005
+    - WA-M3-AC-006
+  cross_cutting:
+    - RBAC-008
+    - RBAC-013
+    - FND-001
+    - FND-002
+    - FND-003
+    - FND-011
+    - FND-012
+    - FND-013
+  preservation_rule: >-
+    Every future stage and integration gate must preserve all nineteen CR rows
+    and all six WA-M3 rows, not only the authorization-specific subset.
+  refresh_contract:
+    requirement: CR-431
+    decision_dependency: DEC-002
+    status: DECISION_BLOCKED
+    prohibited_until_decided:
+      - inventing a refresh interval
+      - promoting an existing client constant into policy
+      - displaying or certifying an unapproved cadence
+      - claiming genuine live tracking from page refresh behavior
+
+package_ownership:
+  M3:
+    owns_future:
+      - apps/web/src/app/(app)/operations/**
+      - M3-specific helpers
+      - M3-specific acceptance tests
+    excludes:
+      - shared shell and navigation
+      - admin access-control screens
+      - unapproved shared migrations
+  F0:
+    retains:
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/e2e/shell-navigation.spec.ts
+      - shared shell, localization, and global CSS
+    rule: Any M3 navigation need becomes a separately approved F0 follow-up.
+  M9:
+    retains:
+      - apps/web/src/app/(app)/admin/access/**
+      - apps/web/src/lib/execution/capabilities.ts
+    rule: >-
+      National-grant administration is a separately approved M9 consumer.
+      M3 may consume approved grants but cannot lease M9 admin files.
+
+immutable_anchor_model:
+  B0_m3_activation_base:
+    value: PENDING
+    produced_by: G00_M3_FUTURE_ACTIVATION
+    definition: >-
+      Exact canonical commit named by an approved future M3 current or
+      concurrent slice. It may not be inferred from a worktree or branch name.
+  B1_map_correction_accepted:
+    value: PENDING
+    produced_by: G03_CLAUDE_CORRECTION_ACCEPTANCE
+  B2_f0_dependency_accepted:
+    value: PENDING
+    produced_outside_m3: G04_F0_FOLLOWUP_ACCEPTANCE
+  B3_single_reconciled_base:
+    value: PENDING
+    produced_by: G05_RECONCILED_BASE
+    definition: >-
+      One immutable commit containing the approved M3 activation base, accepted
+      map correction, and accepted F0 dependency. Every M3 database or consumer
+      branch starts from this one SHA or a later accepted descendant.
+  B4_scope_db_accepted:
+    value: PENDING
+  B5_national_db_accepted:
+    value: PENDING
+  B6_write_db_accepted:
+    value: PENDING
+  B7_projection_db_accepted:
+    value: PENDING
+  B8_database_stack_accepted:
+    value: PENDING
+    definition: One immutable descendant containing B4 through B7 in order.
+  B9_projection_consumer_accepted:
+    value: PENDING
+  B10_route_consumer_accepted:
+    value: PENDING
+  B11_write_consumer_accepted:
+    value: PENDING
+  B12_m9_admin_consumer_accepted:
+    value: PENDING
+    produced_outside_m3: G14_M9_ADMIN_ACCEPTANCE
+  B13_integrated_candidate:
+    value: PENDING
+
+future_gates_and_stages:
+  - id: G00_M3_FUTURE_ACTIVATION
+    type: GOVERNANCE_GATE
+    current_state: BLOCKED_NOT_APPLIED
+    must_record:
+      - approved M3 change-control ID
+      - current-slice or explicit concurrent-slice authority
+      - exact B0 base SHA
+      - CR-430..CR-448
+      - WA-M3-AC-001..006
+      - dependencies, open decisions, do-not-touch areas, evidence, and rollback
+      - M2 disposition without touching its worktree
+    pass_condition: Repository-backed authority is present and has no unresolved P0 or P1 contradiction.
+    fail_action: DO_NOT_REGISTER_OR_DISPATCH_ANY_M3_IMPLEMENTATION_LEASE
+
+  - id: G01_MAP_TRUTH_SUPERSESSION
+    type: DESIGN_AND_ACCEPTANCE_GOVERNANCE_GATE
+    current_state: BLOCKED_NOT_APPLIED
+    requires:
+      - G00_M3_FUTURE_ACTIVATION
+    must_record:
+      - sponsor-approved tiered map provenance
+      - explicit supersession of obsolete always-projected SPC-LIVE-001 and SPC-CMD-005 wording
+      - preserved prohibition on fabricated route, ETA, drift, animation, and live claims
+      - recorded GPS timestamp, accuracy, freshness, privacy, and connection truth
+      - scheduled or factory fallback truth
+      - unavailable, invalid-coordinate, and read-error truth
+    fail_action: MAP_CORRECTION_CANNOT_RECEIVE_FINAL_ACCEPTANCE
+
+  - id: G02_CLAUDE_EIGHT_FILE_LEASE_REGISTRATION
+    type: OWNERSHIP_GATE
+    current_state: BLOCKED_NOT_APPLIED
+    requires:
+      - G00_M3_FUTURE_ACTIVATION
+    exact_future_registry_row:
+      worktree: /Users/vikramindla/Developer/Inspection-codex-m3-map-provenance
+      branch: codex/m3-map-provenance-correction
+      base: c48f71cc46ce027927224109f7b070ca489f2b15
+      actor: Claude Code
+      packet: CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001
+      mode: EXACT_EIGHT_FILE_CORRECTION
+      existing_dirty_files:
+        - apps/web/e2e/web-admin-m3-operations.spec.ts
+        - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+        - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+        - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/src/app/(app)/operations/live/types.ts
+        - apps/web/src/app/(app)/operations/page.tsx
+      sole_clean_expansion:
+        - apps/web/src/app/(app)/operations/live/loading.tsx
+      exact_leased_files:
+        - apps/web/e2e/web-admin-m3-operations.spec.ts
+        - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+        - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+        - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/src/app/(app)/operations/live/types.ts
+        - apps/web/src/app/(app)/operations/page.tsx
+        - apps/web/src/app/(app)/operations/live/loading.tsx
+      exclusions:
+        - any ninth file
+        - F0 files
+        - M9 files
+        - product-contract
+        - supabase
+        - data and seeds
+        - main
+        - setup/Inspection
+        - stashes
+    additional_pass_checks:
+      - Dispatch-time registry collision scan passes.
+      - Dirty old-preview overlaps are recorded as excluded competing ownership.
+      - PR 60 and PR 61 remain review-only and untouched.
+    fail_action: DO_NOT_DISPATCH_CLAUDE
+
+  - id: S03_CLAUDE_MAP_CORRECTION
+    type: FUTURE_IMPLEMENTATION_STAGE_NOT_AUTHORIZED
+    requires:
+      - G00_M3_FUTURE_ACTIVATION
+      - G02_CLAUDE_EIGHT_FILE_LEASE_REGISTRATION
+    dispatch_packet: CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+    dispatch_target: Existing Claude Code conversation only
+    design_surface_interaction: PROHIBITED
+    stop_at: REVIEW_READY_FOR_INDEPENDENT_RE_REVIEW
+    prohibited:
+      - commit
+      - push
+      - pull request
+      - ninth file
+
+  - id: G03_CLAUDE_CORRECTION_ACCEPTANCE
+    type: INDEPENDENT_ACCEPTANCE_GATE
+    requires:
+      - S03_CLAUDE_MAP_CORRECTION
+      - G01_MAP_TRUTH_SUPERSESSION
+    exact_corrections:
+      - M3-MAP-R01
+      - M3-MAP-R02
+      - M3-MAP-R03
+      - M3-MAP-R04
+      - M3-MAP-R05
+      - M3-MAP-R06
+      - M3-MAP-R07
+      - M3-MAP-R08
+      - M3-MAP-R09
+      - M3-MAP-R10
+    acceptance:
+      - exact eight-file manifest
+      - no contract or authorization broadening
+      - focused tests, typecheck, and build
+      - latest-per-visit completeness beyond provider row cap
+      - unauthorized denial before protected reads
+      - zero-row distinct from read-error
+      - English and Arabic, LTR and RTL
+      - desktop, 1024, 412 or 390, and 320 widths
+      - keyboard, focus, and accessibility
+      - complete CR-430..CR-448 and WA-M3-AC-001..006 regression mapping
+      - no CR-431 refresh claim
+    produced_anchor: B1_map_correction_accepted
+    fail_action: RETURN_TO_S03_WITH_THE_SAME_EXACT_LEASE
+
+  - id: G04_F0_FOLLOWUP_ACCEPTANCE
+    type: EXTERNAL_PACKAGE_DEPENDENCY
+    owner: F0
+    current_state: PENDING
+    scope:
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/e2e/shell-navigation.spec.ts
+    prerequisite: Current F0 shell work is accepted or explicitly superseded.
+    acceptance:
+      - navigation reachability matches approved role mapping
+      - navigation visibility does not imply data authority
+      - no M3 route, database, or admin file is changed
+      - immutable accepted commit SHA recorded
+    produced_anchor: B2_f0_dependency_accepted
+
+  - id: G05_RECONCILED_BASE
+    type: INTEGRATION_BASE_GATE
+    current_state: PENDING
+    requires:
+      - G00_M3_FUTURE_ACTIVATION
+      - G03_CLAUDE_CORRECTION_ACCEPTANCE
+      - G04_F0_FOLLOWUP_ACCEPTANCE
+    current_divergence_evidence:
+      map_base: c48f71cc46ce027927224109f7b070ca489f2b15
+      f0_head_observed: c8bdf6d185d0326454f8d95247cfbaab10f47ae4
+      reviewed_orchestration_head: 053cebddca98069862f2f6e971130ca2623153d8
+      common_merge_base_observed: 3323a8ef3d788c1c157a9bf0d63e32a3d9334e42
+    pass_condition:
+      - One integration owner reconciles accepted commits.
+      - Textual and semantic conflict checks pass.
+      - One immutable B3 SHA is recorded.
+      - No downstream branch uses multiple symbolic SHAs as its base.
+    produced_anchor: B3_single_reconciled_base
+    fail_action: BLOCK_DATABASE_AND_CONSUMER_BRANCH_CREATION
+
+  - id: S06_DATABASE_STACK
+    type: FUTURE_IMPLEMENTATION_STAGE_NOT_AUTHORIZED
+    owner: ONE_DATABASE_WRITER
+    required_base: B3_single_reconciled_base
+    branch_and_worktree: ASSIGN_ONLY_AFTER_FUTURE_LEASE
+    migration_order_reservation:
+      rule: >-
+        The semantic order below is reserved now. Exact filenames and timestamps
+        remain unassigned until an approved lease checks the canonical migration
+        tail and all active/unpublished work.
+      order:
+        - ordinal: MIG-ORDER-01
+          work_package: WP-04
+          subject: Region, branch, and organization scope authority
+          produced_anchor: B4_scope_db_accepted
+        - ordinal: MIG-ORDER-02
+          work_package: WP-05-DATABASE
+          subject: Exceptional national-scope capability and governed grants
+          requires_anchor: B4_scope_db_accepted
+          produced_anchor: B5_national_db_accepted
+        - ordinal: MIG-ORDER-03
+          work_package: WP-03-DATABASE
+          subject: Operations write capability, RPC, RLS, and audit alignment
+          requires_anchor: B5_national_db_accepted
+          produced_anchor: B6_write_db_accepted
+        - ordinal: MIG-ORDER-04
+          work_package: WP-02-DATABASE
+          subject: Precise and reduced location projection authority
+          requires_anchor: B6_write_db_accepted
+          produced_anchor: B7_projection_db_accepted
+    isolation_rules:
+      - One new migration per ordinal unless approved contract proves an atomic dependency.
+      - One isolated commit per ordinal.
+      - One independent negative gate per ordinal.
+      - A failed ordinal blocks every later ordinal.
+      - Existing migrations remain read-only.
+      - Shared or remote Supabase application requires separate approval.
+      - Rollback is additive forward remediation only after application.
+    tests:
+      ownership: One database writer creates distinct WP-specific contract tests.
+      no_shared_test_collision: Existing shared tests are modified only under an explicit exact-file lease.
+    produced_anchor: B8_database_stack_accepted
+
+  - id: G06_SCOPE_DB_ACCEPTANCE
+    requires:
+      - MIG-ORDER-01
+    acceptance:
+      - canonical scope hierarchy and identifiers
+      - cross-role and cross-region negative proof
+      - unauthorized rows absent at database boundary
+      - audit and performance/index proof
+    produced_anchor: B4_scope_db_accepted
+
+  - id: G07_NATIONAL_DB_ACCEPTANCE
+    requires:
+      - G06_SCOPE_DB_ACCEPTANCE
+      - MIG-ORDER-02
+    acceptance:
+      - approved grantor, grantee, reason, expiry, review, and revocation
+      - role-derived access not falsely directly revocable
+      - active-session and cache semantics
+      - immutable audit
+    produced_anchor: B5_national_db_accepted
+
+  - id: G08_WRITE_DB_ACCEPTANCE
+    requires:
+      - G07_NATIONAL_DB_ACCEPTANCE
+      - MIG-ORDER-03
+    acceptance:
+      - per-action capability and record scope
+      - forged request denial
+      - workflow guard
+      - success and denial audit
+      - no planner or leadership privilege leakage
+    produced_anchor: B6_write_db_accepted
+
+  - id: G09_PROJECTION_DB_ACCEPTANCE
+    requires:
+      - G08_WRITE_DB_ACCEPTANCE
+      - MIG-ORDER-04
+    acceptance:
+      - precise identity and coordinate policy
+      - active journey or execution scope
+      - reduced projection contains no direct identity or exact coordinates
+      - invalid, unavailable, zero-row, stale, and read-error states
+      - database boundary, not UI post-filtering
+      - CR-431 remains explicitly decision-blocked
+    produced_anchors:
+      - B7_projection_db_accepted
+      - B8_database_stack_accepted
+
+  - id: S10_M3_PROJECTION_CONSUMER
+    type: FUTURE_IMPLEMENTATION_STAGE_NOT_AUTHORIZED
+    work_package: WP-02-CONSUMER
+    required_base: B8_database_stack_accepted
+    future_exact_ownership:
+      - Operations map and live-map files only after the Claude lease is closed
+      - one new M3-specific projection helper if approved
+      - one new M3-specific projection acceptance test
+    excludes:
+      - F0 files
+      - M9 files
+      - supabase
+      - shared map files without an explicit lease
+    produced_anchor: B9_projection_consumer_accepted
+
+  - id: S11_M3_ROUTE_CONSUMER
+    type: FUTURE_IMPLEMENTATION_STAGE_NOT_AUTHORIZED
+    work_package: WP-01
+    required_base: B9_projection_consumer_accepted
+    future_exact_ownership:
+      - /operations route page
+      - /operations/live route page
+      - /operations/exceptions route page
+      - one new M3-specific route authorization test
+    excludes:
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/e2e/shell-navigation.spec.ts
+      - F0 files
+      - M9 files
+      - supabase
+    depends_on_external_anchor: B2_f0_dependency_accepted
+    produced_anchor: B10_route_consumer_accepted
+
+  - id: S12_M3_WRITE_CONSUMER
+    type: FUTURE_IMPLEMENTATION_STAGE_NOT_AUTHORIZED
+    work_package: WP-03-CONSUMER
+    required_base: B10_route_consumer_accepted
+    future_exact_ownership:
+      - Operations server actions
+      - Operations control, override, and cancellation components
+      - one new M3-specific write authorization test
+    conditional_page_ownership: >-
+      operations/page.tsx may be added only after S11 closes and only through a
+      new collision-checked exact lease.
+    excludes:
+      - F0 files
+      - M9 files
+      - supabase
+    produced_anchor: B11_write_consumer_accepted
+
+  - id: G13_M3_CONSUMER_ACCEPTANCE
+    requires:
+      - S10_M3_PROJECTION_CONSUMER
+      - S11_M3_ROUTE_CONSUMER
+      - S12_M3_WRITE_CONSUMER
+    acceptance:
+      - all CR-430..CR-448
+      - all WA-M3-AC-001..006
+      - complete authorization negative matrix
+      - database denial remains authoritative
+      - route denial before protected reads
+      - full provenance and projection truth
+      - action audit and workflow guards
+      - EN and AR, LTR and RTL
+      - desktop and narrow responsive evidence
+      - accessibility and keyboard evidence
+      - 478-row validator
+      - no CR-431 refresh certification
+
+  - id: G14_M9_ADMIN_ACCEPTANCE
+    type: EXTERNAL_PACKAGE_DEPENDENCY
+    owner: M9
+    current_state: NOT_AUTHORIZED
+    scope: National-grant administration only after B5 national database acceptance.
+    future_lease:
+      - apps/web/src/app/(app)/admin/access/**
+      - apps/web/src/lib/execution/capabilities.ts
+      - one M9-specific national-grant admin test
+    excludes:
+      - apps/web/src/app/(app)/operations/**
+      - F0 files
+      - supabase
+    produced_anchor: B12_m9_admin_consumer_accepted
+
+  - id: G15_CONTROLLED_INTEGRATION
+    type: FUTURE_INTEGRATION_GATE
+    current_state: NOT_AUTHORIZED
+    required_anchors:
+      - B3_single_reconciled_base
+      - B8_database_stack_accepted
+      - B9_projection_consumer_accepted
+      - B10_route_consumer_accepted
+      - B11_write_consumer_accepted
+      - B12_m9_admin_consumer_accepted
+    integration_owner: One reviewer-integrator who owns no active implementation lease.
+    conflict_rule:
+      - Stop on any textual or semantic conflict.
+      - Return the conflict to the later owning package.
+      - Never drop an accepted requirement, denial, audit, test, or projection safeguard.
+    rollback:
+      - Consumers remain separately revertible.
+      - M9 admin consumer is reverted within M9 ownership.
+      - F0 navigation is reverted within F0 ownership.
+      - Applied database changes use approved forward remediation.
+      - Accepted map truth is not reverted to fabricated behavior because another lane failed.
+    produced_anchor: B13_integrated_candidate
+
+  - id: G16_FINAL_M3_CERTIFICATION
+    type: FUTURE_SPONSOR_GATE
+    current_state: NOT_AUTHORIZED
+    requires:
+      - G13_M3_CONSUMER_ACCEPTANCE
+      - G14_M9_ADMIN_ACCEPTANCE
+      - G15_CONTROLLED_INTEGRATION
+    acceptance:
+      - all CR-430..CR-448
+      - all WA-M3-AC-001..006
+      - 478-row validator
+      - focused and protected regression
+      - database authorization and audit
+      - design-versus-code comparison
+      - browser evidence in required themes, locales, directions, and widths
+      - sponsor screen acceptance
+      - explicit CR-431 disposition as implemented after decision or blocked without false completion
+
+dispatch_and_return_control:
+  current_dispatch_decision: BLOCKED
+  blockers:
+    - Mac locked.
+    - G00 M3 activation not applied.
+    - G02 exact eight-file lease not registered.
+    - G01 map truth supersession not applied.
+  mac_monitor:
+    last_observed:
+      IOConsoleLocked: true
+      CGSSessionScreenIsLocked: true
+    on_unlock:
+      - Report unlock to the root orchestrator immediately.
+      - Do not contact or type into Claude Design.
+      - Re-evaluate G00, G01, and G02.
+      - Contact Claude Code only if every dispatch gate passes.
+  ready_message_source: CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+  mutation_of_dispatch_message: PROHIBITED
+
+corrected_sequence_summary:
+  order:
+    - Keep M2 authoritative.
+    - Apply future M3 activation governance.
+    - Apply map-truth acceptance supersession.
+    - Register exact Claude eight-file lease.
+    - Correct and independently accept map provenance.
+    - Accept F0-owned navigation follow-up.
+    - Produce one reconciled immutable base.
+    - Execute four isolated database ordinals with four gates.
+    - Execute M3 projection, route, and write consumers sequentially.
+    - Execute national-grant administration under M9 ownership.
+    - Integrate through one independent integrator.
+    - Certify all CR-430..CR-448 and WA-M3-AC-001..006.
+    - Keep CR-431 refresh blocked until its policy decision exists.
+
+validation:
+  packet_008_acknowledged_returned: true
+  m2_remains_authoritative: true
+  m3_future_activation_gate_present: true
+  exact_claude_lease_registration_gate_present: true
+  f0_ownership_preserved: true
+  m9_ownership_preserved: true
+  single_reconciled_base_required: true
+  semantic_migration_order_reserved: true
+  exact_migration_filenames_unassigned: true
+  database_commits_and_gates_isolated: true
+  complete_m3_contract_bound: true
+  cr_431_decision_blocked: true

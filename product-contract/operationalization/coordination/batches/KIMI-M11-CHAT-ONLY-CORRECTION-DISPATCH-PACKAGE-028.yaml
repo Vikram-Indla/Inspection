@@ -1,0 +1,355 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028
+status: DOCUMENTATION_ONLY_READY_BLOCKED_WHILE_LOCKED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Provide the exact copy-safe, chat-only correction brief for the existing
+  Kimi session after manual unlock. Kimi returns six separately delimited full
+  YAML payloads and one response manifest without writing any repository file.
+
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  readiness_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  source_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  collision_preflight: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+  future_review: KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+
+dispatch_guard:
+  manually_unlocked: false
+  existing_kimi_conversation_confirmed: false
+  dispatched: false
+  blocked_by:
+    - MANUAL_MAC_UNLOCK
+    - EXISTING_KIMI_CONVERSATION_CONFIRMATION
+  rule: "Do not open, focus, type into or dispatch to Kimi while the Mac is locked."
+
+hard_boundary:
+  response_channel: CHAT_ONLY
+  kimi_may:
+    - "Read the supplied authority and source packet text."
+    - "Return six complete corrected YAML payloads in the exact delimiters below."
+    - "Return one response manifest and one closure matrix in chat."
+    - "Mark unresolved authority, provider, owner or lease values BLOCKED."
+  kimi_must_not:
+    - "Write, create, rename, move, delete, stage or commit any repository file."
+    - "Create or switch a branch or worktree."
+    - "Issue, claim, transfer or imply any lease."
+    - "Modify product, application, database, remote DDL, tests, migrations, data, UI or seeds."
+    - "Push, merge, deploy, modify main or setup/Inspection, or touch stashes."
+    - "Run review 025 or claim any requirement, test or implementation completion."
+  completion_effect: "Zero change to the 478-row completion count."
+
+source_fingerprints:
+  algorithm: SHA-256
+  rule: >-
+    Codex must compare these hashes immediately before dispatch. Any mismatch
+    stops dispatch until the package is regenerated from the changed source.
+  files:
+    KIMI-M11-ATOMIC-FIX-LEASE-010:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-ATOMIC-FIX-LEASE-010.yaml
+      sha256: 4bf626c1230b40f834e8792af8c34e49e2b384de2cb294d4a0971d9464e2675d
+    KIMI-M11-EXECUTION-WINDOW-LEASE-011:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-EXECUTION-WINDOW-LEASE-011.yaml
+      sha256: 62b7411211997bd198f3e180fb98935c3f936825e4ffb946ffdfe7bbc642f9e9
+    KIMI-M11-PERMISSION-HARDENING-LEASE-013:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-PERMISSION-HARDENING-LEASE-013.yaml
+      sha256: e5d52f1e25117f663c8d165d9d6a9328d00ff366f850b660272e4f88fed94849
+    KIMI-M11-BEGIN-ATOMICITY-LEASE-014:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-BEGIN-ATOMICITY-LEASE-014.yaml
+      sha256: de362ea4e9d09a76bc3b8b1e07dd2a5cc3a628362f473e2ccc7ad02fe5bf8fe0
+    KIMI-M11-AUDIT-BOUNDARY-LEASE-015:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-BOUNDARY-LEASE-015.yaml
+      sha256: 1cc3b8839c7dd4dbc09ce410baec194292ea8d77b2143e66926f078d49e5f4a6
+    KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017.yaml
+      sha256: 9229dc66db9a49cf113d64d2dc1516ffa0ca162424d2d12576f878adaf38596e
+    KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022.yaml
+      sha256: 384ed1fe0bceacd4bcb3bea2fd665c28a750f9084cb875a5ebfb15eba4b07546
+    KIMI-M11-CORRECTION-READINESS-REVIEW-024:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-CORRECTION-READINESS-REVIEW-024.yaml
+      sha256: aa9beb6787536b73803467e6c47130358e991557b66593539167bcb9fc433e75
+    KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026.yaml
+      sha256: 70013fa37f25231eb4a9e4520c415e914d814b601f6a450addb7889436c6fe96
+    KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027:
+      path: product-contract/operationalization/coordination/batches/KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027.yaml
+      sha256: 35d23cea16d13b7dff29376280645067556f2e53e6d0d46f3f89bd3d927252da
+
+sequential_ownership_order:
+  correction_phase:
+    rule: "The six packet payloads may be reasoned about together, but each remains a separately delimited full replacement."
+    order:
+      - "017 first defines cross-cutting owner, dependency, rollout and collision standards consumed by all function packets."
+      - "010 defines atomic authorized creation."
+      - "011 consumes 010 and defines the creation successor, window guard, reschedule and waiting."
+      - "014 consumes 011 and defines atomic join/begin."
+      - "015 expansion defines safe audit projection/trigger before OTP use."
+      - "013 expansion defines close/verified; its contract then defines initial locked/no-secret OTP and policy/ACL contraction."
+      - "015 contract is the immediate no-traffic successor to 013 for the exact OTP signatures, raw audit and generic append contraction."
+  application_files:
+    virtual_actions: "010 then 011."
+    virtual_detail_actions: "011 then 014 then one bounded 013/015 application-switch integrator."
+    virtual_room: "011 then 014 then one bounded 013/015 application-switch integrator."
+    virtual_page: "011 only."
+    global_audit_consumers: "Unassigned until exact inventory and file ownership exist."
+  migration_rule: >-
+    No filename is allocated in a correction payload. A future integration
+    owner allocates one monotonic filename immediately before each exact lease,
+    after recording predecessor commit and migration-chain checksum.
+
+collision_stops:
+  - "01: Stop if a fresh active lease overlaps a proposed application or Supabase path."
+  - "02: Stop if Kimi attempts repository writes under its current read-only canonical-repository row."
+  - "03: Stop if a source packet is not corrected, materialized and accepted by review 025."
+  - "04: Stop if corrected 009r lacks acceptance or a single QA owner."
+  - "05: Stop if a predecessor application-file lease is not reviewed and released."
+  - "06: Stop if two workers propose the same migration filename, function signature, policy, trigger or application file."
+  - "07: Stop if 013 and 015 edit OTP signatures concurrently or traffic occurs between their contract migrations."
+  - "08: Stop if the 015 safe participant audit trigger/projection is not installed before OTP is exercised."
+  - "09: Stop if direct DML or generic append authority is contracted before the governed application switch."
+  - "10: Stop if M11 traffic is not quiesced and drained before the 013 then 015 contract."
+  - "11: Stop if any global audit consumer or exact file ownership remains unidentified."
+  - "12: Stop if function owner, SECURITY DEFINER model, extension schema, role grant or dependency remains unresolved."
+  - "13: Stop if Planner or Operations authority is inferred rather than cited."
+  - "14: Stop if an unavailable OTP provider is described as delivered or complete."
+  - "15: Stop if CR-337 or DEC-005 enters the M11 stack."
+  - "16: Stop if review 025 is invoked before all actual corrected inputs exist."
+
+response_protocol:
+  requirements:
+    - "Return every delimiter exactly once and in the declared order."
+    - "Inside each packet delimiter, return one complete parseable YAML document, not a diff or commentary."
+    - "Preserve the packet_id; set a correction-return status that does not claim implementation."
+    - "Incorporate every required section, finding, condition, acceptance gate and stop condition assigned by 026."
+    - "Do not silently resolve missing authority, provider, owner or lease values."
+    - "After the six packets, return the response manifest and closure matrix."
+  delimiters:
+    packet_010:
+      begin: "<<<BEGIN_CORRECTED_YAML:KIMI-M11-ATOMIC-FIX-LEASE-010>>>"
+      end: "<<<END_CORRECTED_YAML:KIMI-M11-ATOMIC-FIX-LEASE-010>>>"
+    packet_011:
+      begin: "<<<BEGIN_CORRECTED_YAML:KIMI-M11-EXECUTION-WINDOW-LEASE-011>>>"
+      end: "<<<END_CORRECTED_YAML:KIMI-M11-EXECUTION-WINDOW-LEASE-011>>>"
+    packet_014:
+      begin: "<<<BEGIN_CORRECTED_YAML:KIMI-M11-BEGIN-ATOMICITY-LEASE-014>>>"
+      end: "<<<END_CORRECTED_YAML:KIMI-M11-BEGIN-ATOMICITY-LEASE-014>>>"
+    packet_013:
+      begin: "<<<BEGIN_CORRECTED_YAML:KIMI-M11-PERMISSION-HARDENING-LEASE-013>>>"
+      end: "<<<END_CORRECTED_YAML:KIMI-M11-PERMISSION-HARDENING-LEASE-013>>>"
+    packet_015:
+      begin: "<<<BEGIN_CORRECTED_YAML:KIMI-M11-AUDIT-BOUNDARY-LEASE-015>>>"
+      end: "<<<END_CORRECTED_YAML:KIMI-M11-AUDIT-BOUNDARY-LEASE-015>>>"
+    packet_017:
+      begin: "<<<BEGIN_CORRECTED_YAML:KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017>>>"
+      end: "<<<END_CORRECTED_YAML:KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017>>>"
+    manifest:
+      begin: "<<<BEGIN_RESPONSE_MANIFEST:KIMI-M11-CORRECTION-RETURN>>>"
+      end: "<<<END_RESPONSE_MANIFEST:KIMI-M11-CORRECTION-RETURN>>>"
+
+six_payload_requests:
+  KIMI-M11-ATOMIC-FIX-LEASE-010:
+    request:
+      - "Return a complete corrected 010 YAML payload."
+      - "Add final function security/owner/ACL/dependency contract, atomic creation authorization, neutral resource boundary and exact evidence contract."
+      - "Resolve 024-X01 and consume every 026 cross-cutting security condition."
+      - "Keep Planner scheduling blocked unless RBAC-007 authority is exact; keep Operations blocked unless exact authority is cited."
+      - "Mark the future lease PROPOSED_NOT_ISSUED."
+  KIMI-M11-EXECUTION-WINDOW-LEASE-011:
+    request:
+      - "Return a complete corrected 011 YAML payload."
+      - "Define the private shared window guard and governed creation successor, reschedule and waiting-room-open contracts."
+      - "Preserve inclusive stored appointment/live database-time semantics and 010 atomicity."
+      - "Resolve 024-X02 and consume every 026 cross-cutting security condition."
+      - "Record that shared files begin only after 010 acceptance/release."
+  KIMI-M11-BEGIN-ATOMICITY-LEASE-014:
+    request:
+      - "Return a complete corrected 014 YAML payload."
+      - "Define assigned-Inspector-only atomic join/begin using the 011 guard and canonical transition."
+      - "Declare neutral authorization boundary, deterministic visit→session→participants UUID→inspection locking and final-stack privilege behavior."
+      - "Resolve 024-X03 and consume every 026 cross-cutting security condition."
+      - "Record that detail files begin only after 011 acceptance/release."
+  KIMI-M11-PERMISSION-HARDENING-LEASE-013:
+    request:
+      - "Return a complete corrected 013 YAML payload."
+      - "Separate expansion close/verified RPCs from contract policy/ACL and initial locked/no-secret OTP definitions."
+      - "Provide exact persona, owner/ACL/dependency, RLS policy, table grant, index and provider-blocker manifests."
+      - "Resolve its MIGSEC/addendum/024-X04 ownership and all 026 cross-cutting conditions."
+      - "Record exact no-traffic release of OTP signatures to the 015 successor."
+  KIMI-M11-AUDIT-BOUNDARY-LEASE-015:
+    request:
+      - "Return a complete corrected 015 YAML payload."
+      - "Separate expansion safe projection/participant trigger from contract raw-audit/generic-append/OTP-successor contraction."
+      - "Preserve 013 OTP authorization and row locking while adding neutral errors and no-secret output."
+      - "Inventory global audit consumers and block unknown file ownership."
+      - "Resolve its MIGSEC/addendum/024-X05 ownership and all 026 cross-cutting conditions."
+  KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017:
+    request:
+      - "Return a complete corrected 017 YAML payload."
+      - "Define global function security, persona authority, deterministic locking, exact sequential ownership, expand/switch/quiesce/013→015 contract rollout and roll-forward-only recovery."
+      - "Provide complete proposed owner/lease/dependency/policy/trigger/application/QA manifests, all marked NOT_ISSUED."
+      - "Resolve its MIGSEC/addendum/024-X06 ownership and incorporate all 16 collision stops."
+      - "Keep CR-337 and DEC-005 isolated."
+
+response_manifest_schema:
+  required_top_level_fields:
+    - response_id
+    - prepared_by
+    - prepared_on
+    - source_fingerprints_acknowledged
+    - repository_write_attempted
+    - packet_results
+    - closure_matrix
+    - unresolved_blockers
+    - collision_stop_acknowledgements
+    - self_validation
+  required_values:
+    repository_write_attempted: false
+    implementation_claimed: false
+    lease_issued_or_claimed: false
+    review_025_run: false
+  packet_result_fields:
+    - packet_id
+    - delimiter_present
+    - yaml_self_parse
+    - assigned_findings_addressed
+    - proposed_future_lease_status
+    - unresolved_blockers
+  closure_matrix_columns:
+    - finding_or_condition_id
+    - primary_owner_packet
+    - consumer_packets
+    - corrected_section
+    - authority_evidence
+    - proposed_future_lease
+    - acceptance_gate
+    - blocker_or_stop_condition
+    - closure_status
+  allowed_closure_statuses:
+    - CLOSED_IN_CORRECTED_PACKET
+    - BLOCKED_ON_AUTHORITY
+    - BLOCKED_ON_PROVIDER
+    - BLOCKED_ON_OWNER
+    - BLOCKED_ON_LEASE
+
+exact_future_chat_message: |-
+  SAQEEL OS v2 — KIMI M11 CHAT-ONLY SOURCE CORRECTION RETURN
+
+  You are operating in READ-ONLY / CHAT-RETURN mode. Do not write, create,
+  rename, delete, stage or commit any repository file. Do not create or switch
+  branches/worktrees. Do not issue or claim leases. Do not modify product code,
+  application code, database, remote DDL, tests, migrations, data, UI or seeds.
+  Do not push, merge, deploy, modify main or setup/Inspection, or touch stashes.
+  Do not run review 025 and do not claim implementation, testing or requirement
+  completion.
+
+  Authority: load and obey 022, 024, 026, 027 and the source fingerprints in
+  dispatch package 028. If any supplied fingerprint differs, stop and report
+  SOURCE_FINGERPRINT_MISMATCH. Keep unresolved authority, provider, owner and
+  lease values BLOCKED; never invent them.
+
+  Return six COMPLETE parseable YAML replacements, not diffs or commentary,
+  inside these exact delimiters and in this order:
+
+  <<<BEGIN_CORRECTED_YAML:KIMI-M11-ATOMIC-FIX-LEASE-010>>>
+  [complete corrected 010 YAML]
+  <<<END_CORRECTED_YAML:KIMI-M11-ATOMIC-FIX-LEASE-010>>>
+
+  <<<BEGIN_CORRECTED_YAML:KIMI-M11-EXECUTION-WINDOW-LEASE-011>>>
+  [complete corrected 011 YAML]
+  <<<END_CORRECTED_YAML:KIMI-M11-EXECUTION-WINDOW-LEASE-011>>>
+
+  <<<BEGIN_CORRECTED_YAML:KIMI-M11-BEGIN-ATOMICITY-LEASE-014>>>
+  [complete corrected 014 YAML]
+  <<<END_CORRECTED_YAML:KIMI-M11-BEGIN-ATOMICITY-LEASE-014>>>
+
+  <<<BEGIN_CORRECTED_YAML:KIMI-M11-PERMISSION-HARDENING-LEASE-013>>>
+  [complete corrected 013 YAML]
+  <<<END_CORRECTED_YAML:KIMI-M11-PERMISSION-HARDENING-LEASE-013>>>
+
+  <<<BEGIN_CORRECTED_YAML:KIMI-M11-AUDIT-BOUNDARY-LEASE-015>>>
+  [complete corrected 015 YAML]
+  <<<END_CORRECTED_YAML:KIMI-M11-AUDIT-BOUNDARY-LEASE-015>>>
+
+  <<<BEGIN_CORRECTED_YAML:KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017>>>
+  [complete corrected 017 YAML]
+  <<<END_CORRECTED_YAML:KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017>>>
+
+  Then return one parseable YAML response manifest containing the acknowledged
+  source hashes, repository_write_attempted=false, results for all six packets,
+  the complete closure matrix required by 026, every unresolved blocker, all
+  16 collision-stop acknowledgements, and self-validation:
+
+  <<<BEGIN_RESPONSE_MANIFEST:KIMI-M11-CORRECTION-RETURN>>>
+  [complete response manifest YAML]
+  <<<END_RESPONSE_MANIFEST:KIMI-M11-CORRECTION-RETURN>>>
+
+  Required correction details for each packet are defined under
+  six_payload_requests in package 028. Preserve this sequence:
+  010 creation → 011 creation successor/window/reschedule/waiting → 014
+  join/begin → 015 safe audit expansion → 013 close/verified expansion and
+  contract → immediate no-traffic 015 OTP/audit/event successor. Application
+  files remain sequential; no migration filename is allocated. Observe all
+  16 collision stops from package 028.
+
+  Finish after the response manifest. Wait for Codex validation and authorized
+  materialization. A chat return is not implementation and does not authorize
+  review 025.
+
+codex_validation_and_materialization_gates:
+  gate_1_dispatch:
+    pass:
+      - "Mac manually unlocked."
+      - "Existing Kimi conversation confirmed."
+      - "All source SHA-256 fingerprints still match."
+      - "Kimi acknowledges chat-only/no-write mode."
+  gate_2_response_shape:
+    pass:
+      - "Every required delimiter appears exactly once and in order."
+      - "Each enclosed packet and the manifest parse as YAML."
+      - "Packet IDs are unchanged."
+      - "No diff-only or truncated payload."
+  gate_3_security_and_authority:
+    pass:
+      - "Every 026 finding and condition is mapped."
+      - "No missing authority/provider/owner/lease is invented."
+      - "013→015 OTP authorization/locking and no-traffic successor are exact."
+      - "All 16 collision stops are acknowledged."
+  gate_4_materialization:
+    pass:
+      - "ACTIVE_WORKTREE_LEASES.csv is re-read."
+      - "Only the authorized Codex control writer updates the six coordination packets."
+      - "No product/application/Supabase/test/migration file changes."
+      - "Post-write hashes and YAML validation are recorded."
+  gate_5_independent_review:
+    precondition: "All six actual corrected packet files and manifests exist."
+    action: "Only then dispatch KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025."
+    prohibited_before_precondition: true
+
+queue_state:
+  KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025: QUEUED_SAFE_FOLLOW_ON_NOT_DISPATCHED
+  corrected_payloads_received: false
+  corrected_packets_materialized: false
+  implementation_authorized: false
+  leases_issued: false
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  source_fingerprints_captured: PASS
+  six_delimited_payload_requests_present: PASS
+  response_manifest_present: PASS
+  no_repository_write_boundary_present: PASS
+  sequential_ownership_order_present: PASS
+  collision_stops_count: 16
+  codex_gates_present: PASS
+  review_025_queued: PASS
+  non_executable_boundary_checked: PASS

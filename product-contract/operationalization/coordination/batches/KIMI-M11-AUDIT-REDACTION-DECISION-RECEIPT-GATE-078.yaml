@@ -1,0 +1,506 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+status: READ_ONLY_RECEIPT_VALIDATOR_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Define deterministic validation for any future sponsor answer set to the
+  five M11 audit-redaction decisions. The validator distinguishes receipt
+  authenticity, decision-set safety and post-decision execution readiness. It
+  selects no answer and grants no authority.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+  - KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+  - KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+
+hard_boundary:
+  - "Read-only validation-contract preparation plus this one uniquely owned packet."
+  - "No sponsor answer is selected, inferred, normalized from ambiguous prose or recorded as accepted."
+  - "No code, SQL, database, data, seed, test, evidence, design, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+  - "No requirement credit."
+
+validation_model:
+  axes:
+    - axis_id: RECEIPT_INTEGRITY
+      question: "Is this an authentic, complete and unaltered record of the sponsor's explicit selections?"
+    - axis_id: DECISION_SET_SAFETY
+      question: "Do the explicit selections permit bounded implementation, require correction/hold, or prohibit implementation?"
+    - axis_id: EXECUTION_READINESS
+      question: "After a safe decision set, have design, collision, lease, test, evidence and sponsor-review gates passed?"
+  rule: >-
+    Passing one axis never implies another. A valid receipt is not an
+    implementation lease, and a safe decision set is not test certification.
+
+future_receipt_schema:
+  required_fields:
+    - receipt_id
+    - authority_kind
+    - sponsor_identity
+    - authority_evidence_ref
+    - source_message_ref
+    - source_message_timestamp
+    - recorded_at
+    - decision_packet_id
+    - contract_packet_id
+    - acceptance_matrix_packet_id
+    - product_commit
+    - coordination_commit
+    - lease_registry_sha256
+    - decisions
+    - preservation_acknowledgements
+    - canonical_payload_sha256
+    - supersedes_receipt_id
+  field_contract:
+    receipt_id:
+      type: NONEMPTY_STABLE_IDENTIFIER
+      rule: "Unique within the coordination record."
+    authority_kind:
+      allowed:
+        - HUMAN_SPONSOR
+        - DOCUMENTED_HUMAN_DELEGATE
+      prohibited:
+        - AGENT
+        - CLI
+        - DESIGN_TOOL
+        - INFERRED_AUTHORITY
+    sponsor_identity:
+      type: NONEMPTY_HUMAN_IDENTITY
+      rule: "Must resolve to the sponsor or documented delegate."
+    authority_evidence_ref:
+      type: NONEMPTY_REFERENCE
+      rule: "Required for a delegate; sponsor provenance must still be explicit."
+    source_message_ref:
+      type: NONEMPTY_IMMUTABLE_REFERENCE
+      rule: "Points to the original answer message, not a later paraphrase."
+    source_message_timestamp:
+      type: ISO_8601_WITH_TIMEZONE
+    recorded_at:
+      type: ISO_8601_WITH_TIMEZONE
+      rule: "Must not predate the source message."
+    decision_packet_id:
+      exact: KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+    contract_packet_id:
+      exact: KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+    acceptance_matrix_packet_id:
+      exact: KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+    decisions:
+      type: EXACT_MAP
+      required_keys:
+        - SD-077-01
+        - SD-077-02
+        - SD-077-03
+        - SD-077-04
+        - SD-077-05
+      extra_keys_allowed: false
+    preservation_acknowledgements:
+      type: EXACT_MAP
+      required_true_keys:
+        - preserve_control_floor_20_361_18_9_12
+        - preserve_478_mandatory_requirements
+        - preserve_zero_credit_before_certification
+        - preserve_audit_immutability
+        - preserve_OTP_server_enforcement
+        - preserve_virtual_workflow_guards
+        - preserve_non_M11_behavior_under_bounded_scope
+        - preserve_protected_regressions
+    canonical_payload_sha256:
+      type: LOWERCASE_SHA256_HEX
+      rule: "Calculated over the canonical payload excluding this hash field."
+    supersedes_receipt_id:
+      type: NULL_OR_EXISTING_RECEIPT_ID
+      rule: "Corrections create a new receipt; accepted history is never silently edited."
+
+allowed_choices:
+  SD-077-01:
+    - SD-077-01-A
+    - SD-077-01-B
+    - SD-077-01-C
+  SD-077-02:
+    - SD-077-02-A
+    - SD-077-02-B
+    - SD-077-02-C
+  SD-077-03:
+    - SD-077-03-A
+    - SD-077-03-B
+    - SD-077-03-C
+  SD-077-04:
+    - SD-077-04-A
+    - SD-077-04-B
+    - SD-077-04-C
+  SD-077-05:
+    - SD-077-05-A
+    - SD-077-05-B
+    - SD-077-05-C
+
+canonicalization:
+  included_fields:
+    - receipt_id
+    - authority_kind
+    - sponsor_identity
+    - authority_evidence_ref
+    - source_message_ref
+    - source_message_timestamp
+    - recorded_at
+    - decision_packet_id
+    - contract_packet_id
+    - acceptance_matrix_packet_id
+    - product_commit
+    - coordination_commit
+    - lease_registry_sha256
+    - decisions
+    - preservation_acknowledgements
+    - supersedes_receipt_id
+  algorithm:
+    - "Encode as UTF-8 JSON."
+    - "Sort object keys lexicographically at every depth."
+    - "Preserve decision choice IDs exactly; do not translate labels."
+    - "Use no insignificant whitespace."
+    - "Represent absent supersedes_receipt_id as null."
+    - "Calculate SHA-256 and compare lowercase hexadecimal output."
+  prohibited_normalization:
+    - "Converting 'approved' into five A choices."
+    - "Choosing an option from surrounding conversation context."
+    - "Resolving multiple choices by taking the last one."
+    - "Repairing an unknown choice ID."
+    - "Treating silence as consent."
+
+validation_precedence:
+  - order: 1
+    failure_class: INVALID_AUTHORITY
+  - order: 2
+    failure_class: INVALID_RECEIPT_INTEGRITY
+  - order: 3
+    failure_class: INCOMPLETE_OR_INVALID_DECISIONS
+  - order: 4
+    failure_class: PRESERVATION_NOT_ACKNOWLEDGED
+  - order: 5
+    failure_class: PROHIBITED_FOR_IMPLEMENTATION
+  - order: 6
+    failure_class: VALID_RECEIPT_REQUIRES_REPIN
+  - order: 7
+    failure_class: VALID_RECEIPT_HOLD_OR_SCOPE_EXPANSION
+  - order: 8
+    success_class: VALID_DECISIONS_ONLY_POST_GATES_REQUIRED
+
+deterministic_steps:
+  - step: 1
+    name: VALIDATE_AUTHORITY
+    checks:
+      - "authority_kind is HUMAN_SPONSOR or DOCUMENTED_HUMAN_DELEGATE."
+      - "sponsor_identity is present."
+      - "authority_evidence_ref proves any delegate."
+      - "source message is attributable to that human authority."
+    fail_result: INVALID_AUTHORITY
+  - step: 2
+    name: VALIDATE_REQUIRED_FIELDS_AND_TYPES
+    checks:
+      - "Every receipt field is present."
+      - "Packet IDs match exactly."
+      - "Timestamps are parseable and recorded_at is not earlier than source_message_timestamp."
+      - "Commit IDs and lease hash have valid hexadecimal shape."
+    fail_result: INVALID_RECEIPT_INTEGRITY
+  - step: 3
+    name: VALIDATE_CANONICAL_HASH
+    checks:
+      - "Canonical serialization follows this packet."
+      - "Calculated SHA-256 equals canonical_payload_sha256."
+    fail_result: INVALID_RECEIPT_INTEGRITY
+  - step: 4
+    name: VALIDATE_DECISION_COMPLETENESS
+    checks:
+      - "Exactly five required decision keys exist."
+      - "Each decision has exactly one choice."
+      - "Each choice belongs to its decision."
+      - "No extra decision or free-text substitute exists."
+    fail_result: INCOMPLETE_OR_INVALID_DECISIONS
+  - step: 5
+    name: VALIDATE_PRESERVATION_ACKNOWLEDGEMENTS
+    checks:
+      - "Every required acknowledgement is exactly true."
+    fail_result: PRESERVATION_NOT_ACKNOWLEDGED
+  - step: 6
+    name: CLASSIFY_PROHIBITED_COMBINATIONS
+    checks:
+      - "Evaluate every hard prohibition and blocking pair below."
+    fail_result: PROHIBITED_FOR_IMPLEMENTATION
+    qualification: "The receipt remains historical evidence; only execution readiness is rejected."
+  - step: 7
+    name: REVALIDATE_PINS
+    checks:
+      - "Current product ref equals receipt product_commit."
+      - "Current coordination ref equals receipt coordination_commit."
+      - "Current lease blob equals receipt lease_registry_sha256."
+    fail_result: VALID_RECEIPT_REQUIRES_REPIN
+  - step: 8
+    name: CLASSIFY_CHOICE_ROUTING
+    checks:
+      - "Evaluate hold, correction, separate-change-control and design-only choices."
+    fail_result: VALID_RECEIPT_HOLD_OR_SCOPE_EXPANSION
+  - step: 9
+    name: REQUIRE_POST_DECISION_GATES
+    checks:
+      - "Decision receipt does not itself close any gate."
+    pass_result: VALID_DECISIONS_ONLY_POST_GATES_REQUIRED
+
+prohibited_for_implementation:
+  hard_single_choice:
+    - rule_id: PI-078-01
+      choice: SD-077-04-B
+      reason: "Historical audit rewrite/delete violates append-only evidence integrity."
+  blocking_pairs:
+    - rule_id: PI-078-02
+      choices:
+        - SD-077-01-B
+        - SD-077-02-A
+      reason: "Safe audit view cannot close direct verification_record exposure."
+    - rule_id: PI-078-03
+      choices:
+        - SD-077-01-B
+        - SD-077-03-A
+      reason: "Admin redaction cannot close direct participant-table exposure."
+    - rule_id: PI-078-04
+      choices:
+        - SD-077-02-C
+        - SD-077-05-A
+      reason: "Approved UI cannot be wired to unsafe raw audit detail."
+    - rule_id: PI-078-05
+      choices:
+        - SD-077-03-C
+        - SD-077-04-A
+      reason: "Projection-only historical safety requires Admin Audit redaction."
+  implementation_context_rules:
+    - rule_id: PI-078-06
+      choice: SD-077-05-B
+      prohibited_context: IMPLEMENT_NOW
+      reason: "Placement without bounded paging does not authorize production wiring."
+    - rule_id: PI-078-07
+      choice: SD-077-03-B
+      prohibited_context: M11_BOUNDED_LEASE
+      reason: "Global audit redesign requires separate change control."
+
+choice_routing:
+  - choice: SD-077-01-A
+    route: CONTINUE_TO_POST_DECISION_GATES
+  - choice: SD-077-01-B
+    route: BLOCK_SECURITY_ACCEPTANCE
+  - choice: SD-077-01-C
+    route: HOLD_FOR_SECURITY_REVIEW
+  - choice: SD-077-02-A
+    route: CONTINUE_TO_POST_DECISION_GATES
+  - choice: SD-077-02-B
+    route: RETURN_FOR_FIELD_CONTRACT_CORRECTION
+  - choice: SD-077-02-C
+    route: BLOCK_SECURITY_ACCEPTANCE
+  - choice: SD-077-03-A
+    route: CONTINUE_TO_POST_DECISION_GATES
+  - choice: SD-077-03-B
+    route: REQUIRE_SEPARATE_GLOBAL_CHANGE_CONTROL
+  - choice: SD-077-03-C
+    route: BLOCK_SECURITY_ACCEPTANCE
+  - choice: SD-077-04-A
+    route: CONTINUE_TO_POST_DECISION_GATES
+  - choice: SD-077-04-B
+    route: REJECT_PROHIBITED
+  - choice: SD-077-04-C
+    route: TEMPORARY_FAIL_CLOSED_NO_FINAL_ACCEPTANCE
+  - choice: SD-077-05-A
+    route: REQUIRE_DESIGN_SIGNOFF_THEN_POST_GATES
+  - choice: SD-077-05-B
+    route: DESIGN_ONLY_BLOCK_WIRING
+  - choice: SD-077-05-C
+    route: DEFER_UI_BLOCK_CR_348
+
+receipt_results:
+  - result: INVALID_AUTHORITY
+    receipt_recordable: false
+    implementation_authority: false
+  - result: INVALID_RECEIPT_INTEGRITY
+    receipt_recordable: false
+    implementation_authority: false
+  - result: INCOMPLETE_OR_INVALID_DECISIONS
+    receipt_recordable: false
+    implementation_authority: false
+  - result: PRESERVATION_NOT_ACKNOWLEDGED
+    receipt_recordable: false
+    implementation_authority: false
+  - result: PROHIBITED_FOR_IMPLEMENTATION
+    receipt_recordable: true
+    implementation_authority: false
+    note: "Preserve the authentic human decision as history; do not dispatch it."
+  - result: VALID_RECEIPT_REQUIRES_REPIN
+    receipt_recordable: true
+    implementation_authority: false
+  - result: VALID_RECEIPT_HOLD_OR_SCOPE_EXPANSION
+    receipt_recordable: true
+    implementation_authority: false
+  - result: VALID_DECISIONS_ONLY_POST_GATES_REQUIRED
+    receipt_recordable: true
+    implementation_authority: false
+    note: "This is the strongest possible receipt result; it still creates no lease."
+
+preservation_floor_validation:
+  control_floor:
+    required_exact_value: "20/361/18/9/12"
+    interpretation_changes_allowed: false
+  mandatory_requirements: 478
+  requirement_credit_before_certification: 0
+  product_preservation_checks:
+    - OTP_SERVER_ENFORCEMENT_UNCHANGED
+    - OTP_STATUS_NO_CODE_HASH
+    - SESSION_RELATIONSHIP_AUTHORIZATION_UNCHANGED
+    - AUDIT_ROWS_APPEND_ONLY
+    - VIRTUAL_STATE_AND_READINESS_GUARDS_UNCHANGED
+    - COMMON_EXECUTION_REDIRECT_UNCHANGED
+    - PROVIDER_TRUTH_UNCHANGED
+    - NON_M11_ADMIN_BEHAVIOR_UNCHANGED_UNDER_BOUNDED_SCOPE
+    - PROTECTED_REGRESSIONS_RETAINED
+  fail_result: PRESERVATION_NOT_ACKNOWLEDGED
+
+post_decision_gates:
+  - gate_id: PDG-078-01
+    name: RECEIPT_ACCEPTANCE
+    pass_when: "Result is VALID_DECISIONS_ONLY_POST_GATES_REQUIRED."
+  - gate_id: PDG-078-02
+    name: DESIGN_AUTHORITY
+    pass_when: "Accepted Virtual timeline placement, responsive states and bounded paging are stable."
+  - gate_id: PDG-078-03
+    name: COLLISION_AND_MIGRATION_ALLOCATION
+    pass_when: "Refs are current; exact paths/objects are clear; one forward migration filename is reserved."
+  - gate_id: PDG-078-04
+    name: IMPLEMENTATION_LEASE
+    pass_when: "One owner holds exact app/SQL/object paths with protected exclusions."
+  - gate_id: PDG-078-05
+    name: INDEPENDENT_QA_LEASE
+    pass_when: "A different owner holds test/evidence paths and cannot edit implementation files."
+  - gate_id: PDG-078-06
+    name: ACCEPTANCE_MATRIX
+    pass_when: "All 35 cases are executed; every P0 passes; P1 disposition is requirement-safe."
+  - gate_id: PDG-078-07
+    name: SECRET_SCAN
+    pass_when: "Zero forbidden keys/values across API, serialization, network, DOM/state, logs and evidence."
+  - gate_id: PDG-078-08
+    name: HISTORICAL_IMMUTABILITY
+    pass_when: "Audit row counts, IDs and stored raw hashes are unchanged."
+  - gate_id: PDG-078-09
+    name: REGRESSION
+    pass_when: "Protected suites pass with no exclusion."
+  - gate_id: PDG-078-10
+    name: BROWSER_AND_SPONSOR_REVIEW
+    pass_when: "Real Virtual/Admin implementations and evidence are reviewed and accepted."
+
+post_decision_readiness_rule: "Every gate must pass in order; no gate is inferred from a receipt."
+
+synthetic_validator_cases:
+  - case_id: SV-078-01
+    input: "Complete, authentic five-choice receipt using only continue-capable choices, current pins and every preservation acknowledgement."
+    expected_receipt_axis: PASS
+    expected_decision_axis: PASS_TO_POST_GATES
+    expected_execution_axis: BLOCKED_POST_GATES_REQUIRED
+    real_answer_selected: false
+  - case_id: SV-078-02
+    input: "One decision key missing."
+    expected: INCOMPLETE_OR_INVALID_DECISIONS
+  - case_id: SV-078-03
+    input: "One decision contains two choices."
+    expected: INCOMPLETE_OR_INVALID_DECISIONS
+  - case_id: SV-078-04
+    input: "Unknown choice ID."
+    expected: INCOMPLETE_OR_INVALID_DECISIONS
+  - case_id: SV-078-05
+    input: "Agent-authored approval with no human sponsor source."
+    expected: INVALID_AUTHORITY
+  - case_id: SV-078-06
+    input: "Canonical payload changed after hashing."
+    expected: INVALID_RECEIPT_INTEGRITY
+  - case_id: SV-078-07
+    input: "Historical rewrite/delete choice."
+    expected_receipt_axis: PASS_IF_AUTHENTIC
+    expected_decision_axis: PROHIBITED_FOR_IMPLEMENTATION
+  - case_id: SV-078-08
+    input: "Direct access retained while safe audit view selected."
+    expected_receipt_axis: PASS_IF_AUTHENTIC
+    expected_decision_axis: PROHIBITED_FOR_IMPLEMENTATION
+  - case_id: SV-078-09
+    input: "Global Admin Audit redesign selected."
+    expected_receipt_axis: PASS_IF_AUTHENTIC
+    expected_decision_axis: VALID_RECEIPT_HOLD_OR_SCOPE_EXPANSION
+  - case_id: SV-078-10
+    input: "Placement selected while paging is deferred."
+    expected_receipt_axis: PASS_IF_AUTHENTIC
+    expected_decision_axis: VALID_RECEIPT_HOLD_OR_SCOPE_EXPANSION
+  - case_id: SV-078-11
+    input: "Complete safe receipt pinned to superseded refs."
+    expected_receipt_axis: PASS
+    expected_decision_axis: PASS
+    expected_execution_axis: VALID_RECEIPT_REQUIRES_REPIN
+  - case_id: SV-078-12
+    input: "One preservation acknowledgement false."
+    expected: PRESERVATION_NOT_ACKNOWLEDGED
+  - case_id: SV-078-13
+    input: "Verbatim 'approved' with no five choice IDs."
+    expected: INCOMPLETE_OR_INVALID_DECISIONS
+  - case_id: SV-078-14
+    input: "Corrected selection edits an old receipt in place."
+    expected: INVALID_RECEIPT_INTEGRITY
+    required_correction: "Create a new receipt with supersedes_receipt_id."
+
+current_live_result:
+  future_receipt_present: false
+  answers_selected: 0
+  receipt_axis: NOT_EVALUABLE
+  decision_axis: NOT_EVALUABLE
+  execution_axis: BLOCKED
+  implementation_authority: false
+  QA_authority: false
+  blockers_closed: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define a no-authority preflight skeleton for exact implementation/QA
+    separation, migration allocation and the 35-case test/evidence gate, to be
+    activated only after a valid safe decision receipt.
+  prohibited:
+    - "No answer selection, code, SQL, database, data, test, evidence, design, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  required_receipt_fields: 17
+  decisions: 5
+  allowed_choices: 15
+  preservation_acknowledgements: 8
+  precedence_levels: 8
+  deterministic_steps: 9
+  prohibited_rules: 7
+  choice_routes: 15
+  receipt_results: 8
+  post_decision_gates: 10
+  synthetic_cases: 14
+  real_answers_selected: 0
+  leases_created: 0
+  tests_executed: 0
+  evidence_captured: 0
+  commits_created: 0
+  pushes_created: 0
+  blockers_closed: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

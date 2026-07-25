@@ -1,0 +1,716 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-VIOLATIONS-RUNTIME-TRUTH-025
+title: "Independent Admin Violations and Penalties runtime truth"
+status: "RETURN_BLOCKED_P0_P1"
+prepared_by: "codex"
+prepared_on: "2026-07-25"
+mode: "READ_ONLY_AUDIT"
+completion_credit: 0
+
+recommendation:
+  action: "RETURN_AND_BLOCK"
+  ack_peer_evidence: true
+  implementation_ready: false
+  acceptance_ready: false
+  reason: >-
+    The catalogue, native draft/publication records, audit triggers, package
+    snapshots, client-side response implication, and informational-to-issued
+    penalty notice path are real. They do not form one safe governed capability.
+    The approved Compliance Configuration Request authority is disconnected from
+    the legacy tables consumed by Packages and Field; direct table policies can
+    bypass maker-checker publication; item/response/legal-parent invariants are
+    absent; runtime generation and invalidation remain client-selectable; and
+    effective-dated penalty successors can break pinned inspections. No canonical
+    acceptance row may receive completion credit.
+
+session_and_scope:
+  task_id: "CODEX-ADMIN-VIOLATIONS-RUNTIME-TRUTH-025"
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  canonical_repository: "/Users/vikramindla/Developer/Inspection"
+  inspected_worktree: "/Users/vikramindla/.codex/worktrees/0982/Inspection"
+  inspected_branch: "codex/admin-localization-lookups"
+  inspected_head: "39cf73d3e5b50ec4b9b3df427ae34e4114e93951"
+  git_common_directory: "/Users/vikramindla/Developer/Inspection/.git"
+  orchestration_worktree: "/Users/vikramindla/Developer/Inspection-codex-orchestration"
+  orchestration_branch: "codex/orchestration-control-plane"
+  orchestration_head_at_start: "6219ba87e5e85015f572aeb431d478cd9eec230a"
+  retired_checkout_accessed: false
+  writes:
+    product: false
+    database: false
+    data: false
+    design: false
+    tests: false
+    branches: false
+    stashes: false
+    packet_only: true
+  peer_packets:
+    - "M9-ADMIN-VIOLATIONS-RUNTIME-PERMISSION-MAPPING-034"
+    - "M9-ADMIN-VIOLATIONS-RUNTIME-REMEDIATION-PREFLIGHT-035"
+  peer_rule: "Used only after independent source, database, test, and browser inspection."
+  design_dependency:
+    packet: "M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052"
+    disposition: "SEPARATE_DEPENDENCY_NOT_REVIEWED_OR_CHANGED"
+
+canonical_authority:
+  screens:
+    - screen_id: "SCR-ADM-040"
+      catalogue_route: "/admin/violations"
+      business_name: "Violation Catalogue"
+      persona: "Compliance Admin"
+      process: "G2-P00"
+    - screen_id: "SCR-ADM-041"
+      catalogue_route: "/admin/penalties"
+      business_name: "Penalty Mapping"
+      personas: ["Compliance Admin", "Approver"]
+      process: "G2-P00"
+  runtime_route_truth:
+    violation_route: "/admin/violations"
+    penalty_route: "/admin/violations?mode=penalty"
+    canonical_penalty_route_result: "HTTP application 404"
+    discrepancy: >-
+      SCR-ADM-041 is catalogued at /admin/penalties, but the implementation and
+      its focused test intentionally treat the screen as a logical query-string
+      mode and assert that /admin/penalties must not exist.
+  engine_label_in_route: "ENG-08"
+  primary_rows:
+    - [MVP1-M09-003, CR-451, CAP-R0C-0451, WA-AC-0451, WA-EV-0451]
+    - [MVP1-M09-004, CR-452, CAP-R0C-0452, WA-AC-0452, WA-EV-0452]
+    - [MVP1-M09-026, CR-474, CAP-R0C-0474, WA-AC-0474, WA-EV-0474]
+    - [MVP1-M09-027, CR-475, CAP-R0C-0475, WA-AC-0475, WA-EV-0475]
+  primary_atomic_requirements:
+    violation_management:
+      - "REQ-R0C-01116"
+      - "REQ-R0C-01117"
+      - "REQ-R0C-01118"
+    penalty_mapping:
+      - "REQ-R0C-01119"
+      - "REQ-R0C-01120"
+      - "REQ-R0C-01121"
+    runtime_trigger:
+      - "REQ-R0C-01183"
+      - "REQ-R0C-01184"
+      - "REQ-R0C-01185"
+    action_form_dependency:
+      - "REQ-R0C-01186"
+      - "REQ-R0C-01187"
+      - "REQ-R0C-01188"
+      - "REQ-R0C-01189"
+  direct_dependency_rows:
+    - [MVP1-M09-008, CR-456, WA-AC-0456, WA-EV-0456]
+    - [MVP1-M09-009, CR-457, WA-AC-0457, WA-EV-0457]
+    - [MVP1-M09-010, CR-458, WA-AC-0458, WA-EV-0458]
+    - [MVP1-M09-011, CR-459, WA-AC-0459, WA-EV-0459]
+    - [MVP1-M09-012, CR-460, WA-AC-0460, WA-EV-0460]
+    - [MVP1-M09-013, CR-461, WA-AC-0461, WA-EV-0461]
+    - [MVP1-M09-014, CR-462, WA-AC-0462, WA-EV-0462]
+    - [MVP1-M09-015, CR-463, WA-AC-0463, WA-EV-0463]
+    - [MVP1-M09-029, CR-477, WA-AC-0477, WA-EV-0477]
+    - [MVP1-M09-030, CR-478, WA-AC-0478, WA-EV-0478]
+  detailed_governed_requirement_groups:
+    violation_ccr_and_audit:
+      range: "REQ-R0C-01679..REQ-R0C-01705"
+      decisive_ids:
+        - "REQ-R0C-01679"
+        - "REQ-R0C-01684"
+        - "REQ-R0C-01688"
+        - "REQ-R0C-01690"
+        - "REQ-R0C-01691"
+        - "REQ-R0C-01692"
+        - "REQ-R0C-01697"
+        - "REQ-R0C-01701"
+        - "REQ-R0C-01704"
+    penalty_ccr_and_audit:
+      range: "REQ-R0C-01706..REQ-R0C-01802"
+      decisive_ids:
+        - "REQ-R0C-01706"
+        - "REQ-R0C-01707"
+        - "REQ-R0C-01709"
+        - "REQ-R0C-01710"
+    controlled_ccr_flow:
+      range: "REQ-R0C-01826..REQ-R0C-01889"
+    violation_item_response_authority:
+      ranges:
+        - "REQ-R0C-01994..REQ-R0C-02041"
+        - "REQ-R0C-02084..REQ-R0C-02133"
+      decisive_ids:
+        - "REQ-R0C-01994"
+        - "REQ-R0C-01995"
+        - "REQ-R0C-01997"
+        - "REQ-R0C-02011"
+        - "REQ-R0C-02023"
+        - "REQ-R0C-02024"
+        - "REQ-R0C-02025"
+        - "REQ-R0C-02028"
+        - "REQ-R0C-02030"
+        - "REQ-R0C-02035"
+        - "REQ-R0C-02037"
+        - "REQ-R0C-02038"
+        - "REQ-R0C-02041"
+        - "REQ-R0C-02113"
+        - "REQ-R0C-02114"
+        - "REQ-R0C-02115"
+        - "REQ-R0C-02118"
+        - "REQ-R0C-02120"
+        - "REQ-R0C-02125"
+        - "REQ-R0C-02127"
+        - "REQ-R0C-02128"
+        - "REQ-R0C-02129"
+        - "REQ-R0C-02130"
+        - "REQ-R0C-02131"
+        - "REQ-R0C-02133"
+    penalty_definition_and_history:
+      range: "REQ-R0C-02176..REQ-R0C-02211"
+      decisive_ids:
+        - "REQ-R0C-02176"
+        - "REQ-R0C-02177"
+        - "REQ-R0C-02178"
+        - "REQ-R0C-02191"
+        - "REQ-R0C-02192"
+        - "REQ-R0C-02193"
+        - "REQ-R0C-02194"
+        - "REQ-R0C-02195"
+        - "REQ-R0C-02196"
+        - "REQ-R0C-02197"
+        - "REQ-R0C-02198"
+        - "REQ-R0C-02199"
+        - "REQ-R0C-02200"
+        - "REQ-R0C-02201"
+        - "REQ-R0C-02202"
+        - "REQ-R0C-02203"
+        - "REQ-R0C-02204"
+        - "REQ-R0C-02205"
+        - "REQ-R0C-02206"
+        - "REQ-R0C-02207"
+        - "REQ-R0C-02208"
+        - "REQ-R0C-02209"
+        - "REQ-R0C-02210"
+        - "REQ-R0C-02211"
+  blanket_claim_prohibited: >-
+    apps/web/e2e/cd-010-011-violations.spec.ts labels its suite AC-0449..0478.
+    That is an overbroad source-test label, not evidence that all thirty
+    acceptance rows are behaviorally complete.
+
+real_business_capability:
+  route_components:
+    page: "apps/web/src/app/(app)/admin/violations/page.tsx"
+    controls: "apps/web/src/app/(app)/admin/violations/Controls.tsx"
+    actions: "apps/web/src/app/(app)/admin/violations/actions.ts"
+    guard: "apps/web/src/app/(app)/admin/violations/layout.tsx"
+  built_surface:
+    - "Violation code list with clause trace, level, dates, status history, item-reference trace, usage, and writer audit counts."
+    - "Writer-only direct draft creation, native publish, and direct deactivation controls for violations."
+    - "Penalty mapping mode with draft/successor creation, native publish, mapping history, and writer audit counts."
+    - "Reviewer read-only state; localized Arabic/RTL rendering; loading, empty, error, degraded, and stale-read disclosures."
+    - "Package definition snapshots of item and violation data."
+    - "Field client implication of configured violations and immutable informational penalty snapshots issued after inspection approval."
+  not_the_required_governed_capability:
+    - "The route creates legacy violation_codes and penalty_mappings directly; it does not create or amend Compliance Configuration Requests."
+    - "Violation creation selects a regulation clause, not an approved eligible inspection item and one non-compliant response."
+    - "Penalty creation accepts a free-text single penalty type; it does not implement governed lookup values, multiple types, fine periodicity, or maximum-fine rules."
+    - "No route action edits an approved violation or penalty through a governed successor request."
+
+roles_and_permission_enforcement:
+  route_allowed_roles: [compliance_admin, reviewer]
+  page_writer_roles: [compliance_admin, form_admin]
+  action_writer_roles: [compliance_admin, form_admin]
+  table_writer_roles: [compliance_admin, form_admin]
+  configuration_read: "ANY_AUTHENTICATED"
+  runtime_violation_read: "ANY_AUTHENTICATED"
+  inspection_penalty_read: "ANY_AUTHENTICATED"
+  observed_browser_personas:
+    admin:
+      roles:
+        - compliance_admin
+        - form_admin
+        - gis_admin
+        - risk_owner
+        - security_admin
+        - workflow_admin
+      result: "Writer forms, publication/deactivation controls, usage counts, and audit counts were visible."
+    reviewer:
+      result: "Route visible, read-only explanation visible, write forms absent, Arabic document RTL confirmed."
+  defects:
+    - "form_admin is authorized by actions and RLS but cannot enter the route without another allowed role."
+    - "The catalogue names Approver for SCR-ADM-041, but the route admits reviewer; reviewer cannot approve, while a second compliance_admin/form_admin is the actual checker."
+    - "FOR ALL table policies permit direct lifecycle writes and therefore defeat RPC-only maker-checker authority."
+    - "Broad authenticated reads are not proven to satisfy least-privilege disclosure requirements."
+
+lifecycle_transition_and_concurrency_truth:
+  native_records:
+    violation:
+      identity: "unique(code, configuration_version)"
+      lineage: "supersedes_id"
+      statuses: [draft, published, locked, deactivated]
+      effective_window: [active_from, active_to]
+      publish_rpc: "public.publish_violation_code(uuid)"
+    penalty:
+      identity: "unique(violation_code_id, mapping_version)"
+      lineage: "supersedes_id"
+      statuses: [draft, published, locked, deactivated]
+      effective_window: [effective_from, effective_to]
+      publish_rpc: "public.publish_penalty_mapping(uuid)"
+  guards_present:
+    - "Native publish RPCs lock the selected row, require draft status, enforce a distinct maker/checker, and capture the approving actor from auth.uid()."
+    - "Published/locked rows reject ordinary edits; inspection_penalties rejects delete and permits only informational-to-issued transition."
+  guard_failures:
+    - "Draft-to-published UPDATE or published INSERT is possible through permissive table RLS because guards inspect the old row state."
+    - "approved_by can be supplied as any distinct profile UUID on a direct path."
+    - "Deactivation exceptions omit legal-anchor/effective-origin/actor/lineage comparisons."
+    - "Publishing a future successor immediately deactivates the current version instead of preserving it until the effective instant."
+    - "No expected-head, draft revision, or compare-and-swap contract exists; version identifiers are user-entered."
+    - "No server transition proves parent regulation, eligible item, unique non-compliant response, active penalty, governed template, or action-form dependency."
+    - "The page derives active/future/deactivated only from dates and can label a draft as active."
+
+immutable_versioned_legal_authority_and_effective_dating:
+  positive_evidence:
+    - "Violation and penalty rows have version identity, supersedes_id, status, effective dates, actor fields, and generic row-change audit."
+    - "Published package dependency snapshots and inspection penalty mapping snapshots are immutable."
+    - "Penalty notices remain informational until the inspection moves to approved, then issue through a database trigger."
+  failed_authority:
+    - "The canonical append-only compliance_entity_versions/heads engine publishes violation and penalty snapshots but has no projection to the legacy tables consumed by Packages and Field."
+    - "The violations route writes the legacy tables rather than the governed request engine."
+    - "Violation rows do not own an inspection_item_id or non-compliant response identity; the page infers a trace by scanning response_model JSON."
+    - "Parent regulation/item deactivation does not cascade to violation or penalty eligibility."
+    - "Penalty publication does not validate that its violation is approved, active, and the source of inherited Regulation/Item/Response context."
+    - "Penalty effective dates are not applied consistently by package validation or runtime materialization."
+    - "Penalty-linked templates are neither automatically frozen from the mapping nor proven as the issued runtime artefact."
+
+audit_and_evidence_custody:
+  present:
+    - "Generic audit_row_change triggers capture before/after, actor, action, object, and timestamp for violation_codes and penalty_mappings."
+    - "The writer-only admin_configuration_audit RPC exposes row history on the route."
+    - "Runtime violations remain as invalidated records rather than being deleted."
+    - "inspection_penalties stores an immutable to_jsonb mapping snapshot and issuance metadata."
+  gaps:
+    - "Direct bypasses produce generic row audit, not a proven maker/checker or Compliance Request decision trail."
+    - "No correlation binds request, component version, operational projection, package snapshot, field trigger response, runtime violation, penalty snapshot, and approval."
+    - "Reviewer can view the catalogue but cannot view its route audit details; generic audit_events access is separately role-scoped."
+    - "Violation and penalty screens do not own source-file custody; legal trace is clause/text metadata and depends on Regulation source-file governance."
+    - "The deactivation impact service counts only a narrow response mapping and runtime reference set; it does not establish complete package, future-visit, active-inspection, action-form, or enforcement custody."
+
+negative_paths:
+  source_proven:
+    - "Route guard denies roles outside compliance_admin/reviewer."
+    - "Server actions fail closed when requireConfigurationWriter cannot prove compliance_admin/form_admin."
+    - "Duplicate code/mapping errors, missing mandatory values, invalid dates, same-maker publish, and immutable accepted-row updates have handling."
+    - "Inspection submission locking prevents later violation invalidation."
+  missing_or_unproven:
+    - "Direct REST/table writer cannot publish, forge actors, rewrite omitted deactivation fields, or delete governed history."
+    - "Draft modification and successor publication cannot race or overwrite a stale head."
+    - "Only approved eligible item/non-compliant response combinations can create one active violation."
+    - "Assigned inspector cannot insert an arbitrary violation_code_id or mapping_version."
+    - "Assigned inspector cannot invalidate a violation without the triggering response changing."
+    - "A pinned historical penalty version still materializes after a live successor or deactivation."
+    - "A future successor does not activate early or remove current authority."
+    - "Missing/inactive Regulation, Item, Violation, Penalty, Template, or mandatory Action Form blocks at the database boundary."
+    - "Penalty fine type/periodicity/amount/maximum combinations reject invalid states."
+  execution_note: >-
+    This was a read-only task without an isolated data lease. No destructive or
+    write-path negative was executed against shared data. Source assertions are
+    not treated as runtime certification.
+
+runtime_and_integration_dependencies:
+  regulations:
+    truth: "Clause trace exists."
+    gap: "Approved/active parent and cascade are not enforced."
+  inspection_items:
+    truth: "response_model.mapping can name a violation code."
+    gap: "No relational item/response ownership or uniqueness exists on violation authority."
+  templates:
+    truth: "Published/locked templates can be selected on a penalty mapping."
+    gap: "Selection is optional and linked-template freeze/render/issuance is not closed."
+  packages:
+    truth: "Application validation checks active violation and presence of a published/locked mapping."
+    gaps:
+      - "Penalty effective dates are ignored."
+      - "Database publication parity with application validation is incomplete."
+      - "freezeDefinition nests all penalty mappings without status/effective filtering."
+  field:
+    truth: "Client computes implied violations and stores mapping_version."
+    gaps:
+      - "Assigned inspector can directly choose authority identifiers."
+      - "Live configuration fallback remains when frozen data is incomplete."
+      - "More than one nested historical mapping nulls the mapping version."
+  review_and_reports:
+    truth: "Submission and inspection_penalties snapshots preserve selected runtime data."
+    gap: "No end-to-end proof ties the snapshot to the exact governed CCR version and trigger response."
+  enforcement:
+    truth: "Issued penalty transition waits for inspection approval."
+    gap: "Historical pinned mapping and future-effective authority are not safely resolved."
+  other_consumers:
+    - "Factory 360"
+    - "Audit"
+    - "Dashboards"
+    - "Bulk violation issuance"
+
+p0_findings:
+  - id: "CVIO-P0-001"
+    title: "Split operational authority"
+    evidence: "CCR append-only violation/penalty versions are not projected to violation_codes/penalty_mappings, while route, Packages, and Field consume the legacy tables."
+    blocked_ids:
+      - "REQ-R0C-01679"
+      - "REQ-R0C-01684"
+      - "REQ-R0C-01688"
+      - "REQ-R0C-01690"
+      - "REQ-R0C-01691"
+      - "REQ-R0C-01706"
+      - "REQ-R0C-01709"
+      - "REQ-R0C-02041"
+      - "REQ-R0C-02131"
+      - "REQ-R0C-02208"
+      - "REQ-R0C-02209"
+  - id: "CVIO-P0-002"
+    title: "Direct publication and actor bypass"
+    evidence: "Authenticated configuration writers retain FOR ALL table access; draft-to-published and published INSERT paths bypass native RPC checks."
+    blocked_ids:
+      - "REQ-R0C-01684"
+      - "REQ-R0C-01704"
+      - "REQ-R0C-01709"
+      - "REQ-R0C-02133"
+      - "REQ-R0C-02211"
+  - id: "CVIO-P0-003"
+    title: "Missing item and response authority"
+    evidence: "Violation rows store clause_id but no item or response identity; UI scans mutable JSON, and no unique active response-to-violation constraint exists."
+    blocked_ids:
+      - "REQ-R0C-01117"
+      - "REQ-R0C-01118"
+      - "REQ-R0C-01183"
+      - "REQ-R0C-01184"
+      - "REQ-R0C-01185"
+      - "REQ-R0C-01994"
+      - "REQ-R0C-01995"
+      - "REQ-R0C-01997"
+      - "REQ-R0C-02024"
+      - "REQ-R0C-02025"
+      - "REQ-R0C-02028"
+      - "REQ-R0C-02114"
+      - "REQ-R0C-02115"
+      - "REQ-R0C-02118"
+  - id: "CVIO-P0-004"
+    title: "Server does not own violation generation or invalidation"
+    evidence: "Assigned-inspector RLS accepts client-supplied violation_code_id/mapping_version and invalidation metadata without proving the frozen response transition."
+    blocked_ids:
+      - "REQ-R0C-01118"
+      - "REQ-R0C-01184"
+      - "REQ-R0C-01185"
+      - "REQ-R0C-01997"
+      - "REQ-R0C-02037"
+      - "REQ-R0C-02127"
+  - id: "CVIO-P0-005"
+    title: "Legal-parent and cascade guards absent"
+    evidence: "Create/publish reads any clause and does not enforce approved/active Regulation or Item inheritance/cascade."
+    blocked_ids:
+      - "REQ-R0C-01994"
+      - "REQ-R0C-02023"
+      - "REQ-R0C-02113"
+      - "REQ-R0C-02129"
+      - "REQ-R0C-02130"
+      - "REQ-R0C-02206"
+      - "REQ-R0C-02207"
+  - id: "CVIO-P0-006"
+    title: "Penalty model is not the canonical governed definition"
+    evidence: "One free-text penalty_type plus optional amount is stored; lookup-backed multiple types and conditional financial-fine rules do not exist."
+    blocked_ids:
+      - "REQ-R0C-01119"
+      - "REQ-R0C-02195"
+      - "REQ-R0C-02196"
+      - "REQ-R0C-02197"
+      - "REQ-R0C-02198"
+      - "REQ-R0C-02199"
+      - "REQ-R0C-02200"
+      - "REQ-R0C-02201"
+      - "REQ-R0C-02202"
+      - "REQ-R0C-02203"
+      - "REQ-R0C-02204"
+  - id: "CVIO-P0-007"
+    title: "Penalty parent approval and inherited context are not enforced"
+    evidence: "The mapping mode lists every violation and publication does not validate approved/active violation, inherited Regulation/Item/Response, or approved template."
+    blocked_ids:
+      - "REQ-R0C-01707"
+      - "REQ-R0C-02176"
+      - "REQ-R0C-02177"
+      - "REQ-R0C-02178"
+      - "REQ-R0C-02191"
+      - "REQ-R0C-02192"
+      - "REQ-R0C-02193"
+      - "REQ-R0C-02194"
+  - id: "CVIO-P0-008"
+    title: "Future-effective successors can remove current authority early"
+    evidence: "Both native publish RPCs immediately deactivate the predecessor; package penalty validation and materialization ignore effective windows."
+    blocked_ids:
+      - "REQ-R0C-01691"
+      - "REQ-R0C-01692"
+      - "REQ-R0C-02037"
+      - "REQ-R0C-02038"
+      - "REQ-R0C-02127"
+      - "REQ-R0C-02128"
+      - "REQ-R0C-02205"
+      - "REQ-R0C-02209"
+      - "REQ-R0C-02210"
+  - id: "CVIO-P0-009"
+    title: "Pinned penalty history is resolved through mutable live status"
+    evidence: "materialize_informational_penalty requires the pinned mapping row still be published/locked; a later successor deactivates it."
+    blocked_ids:
+      - "REQ-R0C-01121"
+      - "REQ-R0C-01692"
+      - "REQ-R0C-02038"
+      - "REQ-R0C-02128"
+      - "REQ-R0C-02205"
+      - "REQ-R0C-02210"
+  - id: "CVIO-P0-010"
+    title: "Package snapshots can contain conflicting penalty histories"
+    evidence: "freezeDefinition filters parent violation status but not nested mapping status/effective window; Field nulls mapping_version when the nested array contains more than one row."
+    blocked_ids:
+      - "REQ-R0C-01120"
+      - "REQ-R0C-01121"
+      - "REQ-R0C-02030"
+      - "REQ-R0C-02120"
+      - "REQ-R0C-02210"
+  - id: "CVIO-P0-011"
+    title: "Database package publication dependency closure is incomplete"
+    evidence: "Application checks are not mirrored as one non-bypassable database transaction for violation, penalty, template, and mandatory action-form authority."
+    blocked_ids:
+      - "REQ-R0C-01186"
+      - "REQ-R0C-01187"
+      - "REQ-R0C-01188"
+      - "REQ-R0C-01189"
+      - "REQ-R0C-01192"
+      - "REQ-R0C-01193"
+      - "REQ-R0C-01194"
+  - id: "CVIO-P0-012"
+    title: "Linked penalty template is not guaranteed to be frozen and consumed"
+    evidence: "template_version_id is optional and package template snapshots are assembled only from package refs/action forms."
+    blocked_ids:
+      - "REQ-R0C-01119"
+      - "REQ-R0C-01121"
+
+p1_findings:
+  - id: "CVIO-P1-001"
+    title: "Canonical /admin/penalties route is missing"
+    evidence: "Real browser returned the application 404; focused source test asserts the route must remain absent."
+  - id: "CVIO-P1-002"
+    title: "Route, writer, and approver persona contracts disagree"
+    evidence: "Route permits compliance_admin/reviewer; actions/RLS permit compliance_admin/form_admin; catalogue also names Approver."
+  - id: "CVIO-P1-003"
+    title: "Draft can render as active"
+    evidence: "deriveLifecycle ignores stored status."
+  - id: "CVIO-P1-004"
+    title: "No draft edit, deterministic versioning, or concurrency conflict"
+    evidence: "Creation accepts user-entered version identifiers and there is no expected-head/CAS edit flow."
+  - id: "CVIO-P1-005"
+    title: "Impact and audit disclosure are incomplete"
+    evidence: "Usage omits package overrides, exact versions, active inspections, future visits, action forms, and enforcement; audit details are writer-only."
+  - id: "CVIO-P1-006"
+    title: "Authenticated reads are broader than the route personas"
+    evidence: "Violation, penalty, runtime violation, and inspection_penalty SELECT policies allow any authenticated user."
+  - id: "CVIO-P1-007"
+    title: "Focused test overclaims acceptance and proves critical negatives only from source"
+    evidence: "The file labels AC-0449..0478 and asserts strings/migration tokens rather than executing adversarial lifecycle, RLS, and pinned-history behavior."
+  - id: "CVIO-P1-008"
+    title: "Protected package regression is not clean"
+    evidence: "cd-008-009-packages.spec.ts passed 14/16; strict Create-draft selector and expected impact-copy assertions failed against current live data/UI."
+  - id: "CVIO-P1-009"
+    title: "Full dependency run is not reproducibly green"
+    evidence: "The with-dependencies violation run stopped in inspector authentication: 4 setup personas passed, inspector timed out after an HTTP 400, and 20 route tests did not run."
+  - id: "CVIO-P1-010"
+    title: "Native Arabic meaning has not been qualified"
+    evidence: "Automated RTL/localization and Arabic browser rendering passed, but identifiers/status values and seeded business titles remain English and no qualified native-Arabic reviewer accepted meaning or grammar."
+
+test_and_browser_evidence:
+  typecheck:
+    command: "npm run typecheck"
+    result: "PASS"
+  requirement_validator:
+    result: "PASS_478_OF_478_MAPPINGS"
+    limitation: "Mapping completeness is not behavioral acceptance."
+  focused_route:
+    command: "PLAYWRIGHT_PORT=3153 npx playwright test e2e/cd-010-011-violations.spec.ts --project=e2e --no-deps"
+    result: "PASS_20_OF_20"
+    covers:
+      - "Admin writer and Reviewer read-only rendering"
+      - "Catalogue and penalty logical modes"
+      - "Arabic RTL"
+      - "Light/dark, 1440/1024, target size, overflow"
+      - "Source assertions for lifecycle, uniqueness, audit, and hard states"
+    limitation: "No real write/review/successor/pinned-history or adversarial RLS journey."
+  focused_with_dependencies:
+    result: "STOPPED_IN_SETUP"
+    detail: "Planner, Reviewer, Admin, and Ops setup passed; Inspector login returned HTTP 400 and timed out; route tests did not run."
+  compliance_request_engine:
+    command: "PLAYWRIGHT_PORT=3153 npx playwright test e2e/compliance-request-engine.spec.ts --project=e2e --no-deps"
+    result: "PASS_8_OF_8"
+    limitation: "Proves the separate CCR engine exists, not that violations/penalties project into operational consumers."
+  package_dependency:
+    command: "PLAYWRIGHT_PORT=3153 npx playwright test e2e/cd-008-009-packages.spec.ts --project=e2e --no-deps"
+    result: "FAIL_14_OF_16_PASS"
+    failures:
+      - "Create draft locator is non-unique because three controls are visible."
+      - "Impact panel copy no longer matches the expected active-visit/inspection wording."
+  manual_real_browser:
+    server: "Existing shared-brand application on port 3153 from the inspected canonical worktree."
+    admin_violation:
+      url: "http://127.0.0.1:3153/admin/violations"
+      observed:
+        - "Three populated codes V-FS-01, V-FS-09, V-HZ-02."
+        - "Writer form, usage counts, audit counts, history, and deactivation controls."
+        - "Item trace is computed and each row reports one item reference."
+    admin_penalty:
+      url: "http://127.0.0.1:3153/admin/violations?mode=penalty"
+      observed:
+        - "Published mappings P-001, P-014, P-031 at v3."
+        - "Penalty type values are blank in current records."
+        - "Successor mapping forms remain available."
+    reviewer_arabic:
+      url: "http://localhost:3153/admin/violations?mode=penalty"
+      observed:
+        - "html lang=ar and dir=rtl."
+        - "Read-only notice visible and write forms absent."
+        - "Arabic shell and route labels render; English business titles and raw status/config tokens remain."
+    canonical_penalty_route:
+      url: "http://127.0.0.1:3153/admin/penalties"
+      observed: "404 This page could not be found."
+  browser_test_readiness:
+    visual_read_only_review: "READY"
+    writer_happy_path: "REQUIRES_ISOLATED_REVERSIBLE_DATA_LEASE"
+    adversarial_permission_certification: "BLOCKED_BY_P0_AUTHORITY_AND_NEGATIVE_PROBES"
+    pinned_history_and_successor_certification: "BLOCKED"
+    native_arabic_acceptance: "BLOCKED_ON_QUALIFIED_HUMAN_REVIEW"
+
+requirement_credit:
+  rule: >-
+    Built parts, independently verified behavior, and full acceptance are
+    reported separately. A green source/render test does not award a canonical
+    acceptance row while its governing P0 invariants fail.
+  built_components:
+    - "REQ-R0C-01116: form fields and direct draft insert exist."
+    - "REQ-R0C-01120: versioned mapping storage and singular current/draft indexes exist."
+    - "REQ-R0C-01121: immutable informational snapshot and post-approval issue trigger exist."
+    - "REQ-R0C-01183..REQ-R0C-01185: item response mapping and client implication/invalidation UI exist."
+    - "REQ-R0C-01186..REQ-R0C-01189: package action-form configuration and client blocking paths exist."
+  independently_verified_limited_behavior:
+    - "REQ-R0C-01116"
+    - "REQ-R0C-01120"
+    - "REQ-R0C-01121"
+    - "REQ-R0C-01183"
+    - "REQ-R0C-01184"
+    - "REQ-R0C-01186"
+    - "REQ-R0C-01187"
+    - "REQ-R0C-01188"
+    - "REQ-R0C-01189"
+  fully_accepted_requirements: []
+  acceptance_rows_receiving_credit: []
+  acceptance_rows_blocked:
+    - [MVP1-M09-003, CR-451, WA-AC-0451]
+    - [MVP1-M09-004, CR-452, WA-AC-0452]
+    - [MVP1-M09-026, CR-474, WA-AC-0474]
+    - [MVP1-M09-027, CR-475, WA-AC-0475]
+  exact_atomic_credit_disposition:
+    no_full_credit:
+      - "REQ-R0C-01116..REQ-R0C-01121"
+      - "REQ-R0C-01183..REQ-R0C-01189"
+      - "REQ-R0C-01679..REQ-R0C-01802"
+      - "REQ-R0C-01826..REQ-R0C-01889"
+      - "REQ-R0C-01994..REQ-R0C-02041"
+      - "REQ-R0C-02084..REQ-R0C-02133"
+      - "REQ-R0C-02176..REQ-R0C-02211"
+    dependency_rows_not_recredited:
+      - "CR-456..CR-463"
+      - "CR-477..CR-478"
+    explanation: >-
+      These dependency rows retain whatever status the governing acceptance
+      ledger assigns outside this packet, but this audit supplies no new
+      completion credit. Their violation/penalty dependency closure remains
+      unevidenced at the non-bypassable database and pinned-runtime boundaries.
+
+source_evidence:
+  - "product-contract/screens/screen_route_catalogue.csv:8-9"
+  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv:452-453"
+  - "product-contract/domain/atomic_scope.csv:452-453"
+  - "product-contract/requirements-control/REQUIREMENT_INDEX.csv:1117-1122"
+  - "product-contract/requirements-control/REQUIREMENT_INDEX.csv:1184-1190"
+  - "product-contract/requirements-control/REQUIREMENT_INDEX.csv:1680-1803"
+  - "product-contract/requirements-control/REQUIREMENT_INDEX.csv:1995-2212"
+  - "apps/web/src/app/(app)/admin/violations/layout.tsx:5"
+  - "apps/web/src/app/(app)/admin/violations/page.tsx:9-40"
+  - "apps/web/src/app/(app)/admin/violations/page.tsx:96-147"
+  - "apps/web/src/app/(app)/admin/violations/page.tsx:261-280"
+  - "apps/web/src/app/(app)/admin/violations/page.tsx:339-480"
+  - "apps/web/src/app/(app)/admin/violations/actions.ts:47-215"
+  - "apps/web/src/app/(app)/admin/packages/actions.ts:254-274"
+  - "apps/web/src/app/(app)/admin/packages/actions.ts:280-329"
+  - "apps/web/src/app/(app)/field/inspection/[id]/page.tsx:252-286"
+  - "apps/web/src/app/(app)/field/inspection/[id]/Workspace.tsx:309-349"
+  - "supabase/migrations/0002_rbac_audit.sql:56-58"
+  - "supabase/migrations/0002_rbac_audit.sql:83-95"
+  - "supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql:200-327"
+  - "supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql:385-500"
+  - "supabase/migrations/20260719213000_compliance_configuration_request_engine.sql:95-148"
+  - "supabase/migrations/20260719213000_compliance_configuration_request_engine.sql:581-653"
+  - "supabase/migrations/20260721150000_execution_item_lifecycle.sql:136-185"
+  - "apps/web/e2e/cd-010-011-violations.spec.ts"
+  - "apps/web/e2e/compliance-request-engine.spec.ts"
+  - "apps/web/e2e/cd-008-009-packages.spec.ts"
+
+peer_reconciliation:
+  packet_034:
+    disposition: "ACK_AS_PEER_EVIDENCE_WITH_ADDITIONAL_CORRECTIONS"
+    confirmed:
+      - "Split CCR/legacy authority"
+      - "Direct publication bypass"
+      - "Client-owned generation/invalidation"
+      - "Pinned penalty successor failure"
+      - "Future-effective resolver failure"
+      - "Unfiltered nested penalty snapshots"
+      - "Partial deactivation immutability"
+      - "Package database dependency gap"
+      - "Linked-template gap"
+      - "Persona, lifecycle-label, impact, concurrency, read-scope, and test gaps"
+    added_by_this_packet:
+      - "Exact canonical /admin/penalties 404 contradiction."
+      - "Exact item/non-compliant-response relational and uniqueness requirements."
+      - "Exact lookup-backed multiple penalty types and conditional fine-rule requirements."
+      - "Focused test overclaim AC-0449..0478."
+      - "Current package protected regression 14/16 and full-run Inspector authentication stop."
+  packet_035:
+    disposition: "ACK_PREFLIGHT_SEQUENCE_REMAINS_BLOCKED"
+    correction: >-
+      Before any UI/data lease, the authority contract must explicitly include
+      the canonical Item + Non-Compliant Response identity/uniqueness model and
+      the lookup-backed multi-type financial-fine rules in addition to the
+      already listed CCR projection, server transitions, effective time,
+      pinned mapping, template, and persona decisions.
+
+required_prerequisites:
+  - "Approve one operational violation/penalty authority and a transactional CCR-to-runtime projection or controlled cutover."
+  - "Define relational Regulation, Inspection Item, Non-Compliant Response, Violation, Penalty, and Template identities and cascade rules."
+  - "Define the canonical penalty-type lookup, multiple-type model, financial-fine periodicity, amount, and maximum-limit invariants without inventing policy values."
+  - "Revoke direct lifecycle writes; expose actor-bound RPCs with expected-head/CAS, idempotency, effective-time resolution, and complete immutable fields."
+  - "Move violation generation/invalidation to server transitions derived from the frozen package response."
+  - "Resolve penalties by the exact frozen version/snapshot for active inspections, independent of later live status."
+  - "Make database package publication validate the same Regulation/Item/Response/Violation/Penalty/Template/Action-Form closure as the application."
+  - "Reconcile /admin/penalties route identity and compliance_admin/form_admin/reviewer/Approver/read-disclosure personas."
+  - "Provide isolated reversible seed lineages and adversarial SQL/browser probes before any completion claim."
+  - "Obtain qualified native-Arabic review after runtime behavior is stable."
+
+rollback_and_stop_conditions:
+  rollback: "No product or data mutation occurred; remove only this untracked packet if Codex lead returns it."
+  stop_conditions:
+    - "Any proposal retains two writable operational authorities."
+    - "Any direct table path can publish, forge checker identity, or alter accepted legal/effective lineage."
+    - "Any active inspection resolves penalty authority from mutable live status rather than its frozen version."
+    - "Any inspector can choose or suppress violation authority outside a server-proven response transition."
+    - "Any implementation invents penalty lookup values, financial rules, effective-time semantics, or persona policy."
+    - "Any lease overlaps active Items, Packages, Templates, Field, Review, Enforcement, Audit, or design ownership."
+    - "Any P0/P1 remains failed or unevidenced while completion credit is requested."
+
+queued_follow_on:
+  task_id: "CODEX-ADMIN-TEMPLATES-RUNTIME-TRUTH-026"
+  mode: "READ_ONLY"
+  scope: >-
+    Independently audit the Admin configuration-template runtime authority,
+    permissions, immutable versions, action-form and penalty-linked consumption,
+    audit, tests, and browser truth. Exclude design identity/revision and all
+    writes; coordinate with existing Template and Package ownership before any
+    future lease.
+  safe_reason: "Read-only evidence work; no overlap with the blocked Violations implementation or active design authority."

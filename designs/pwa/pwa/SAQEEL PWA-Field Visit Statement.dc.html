@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .vt-wrap { max-width:760px; width:100%; margin:0 auto; padding:16px 18px 120px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 17px; display:flex; flex-direction:column; gap:14px; }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .ret { font-size:11px; color:var(--text-muted); border:1px solid var(--border-subtle); border-radius:999px; padding:1px 8px; }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .fld-row { grid-template-columns:1fr; } }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); align-self:flex-start; }
+  .vt-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .rowlabel { display:flex; align-items:center; gap:8px; justify-content:space-between; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.reportType }}</span>
+    <button class="vt-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="vt-wrap">
+    <div class="card" style="flex-direction:row; gap:10px; align-items:flex-start; background:var(--status-info-soft); border-color:color-mix(in srgb,var(--status-info) 26%,transparent); box-shadow:none; padding:12px 14px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <span class="t-compact" style="color:var(--status-info-text);">{{ t.leanNote }}</span>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0; font-size:15px; font-weight:600;">{{ t.statementH }}</h3>
+      <div class="fld-row">
+        <label class="fld"><span class="rowlabel"><span>{{ t.visitDate }}</span><span class="ret">{{ t.retrieved }}</span></span><input class="input" type="date" value="2026-07-23" disabled style="color:var(--text-muted);"></label>
+        <label class="fld"><span class="rowlabel"><span>{{ t.visitor }}</span><span class="ret">{{ t.retrieved }}</span></span><input class="input" value="{{ t.visitorVal }}" disabled style="color:var(--text-muted);"></label>
+      </div>
+      <label class="fld"><span class="rowlabel"><span>{{ t.reason }}</span><span class="ret">{{ t.retrieved }}</span></span><input class="input" value="{{ t.reasonVal }}" disabled style="color:var(--text-muted);"></label>
+      <label class="fld"><span>{{ t.notes }}</span><textarea class="input" rows="4" placeholder="{{ t.notesPh }}"></textarea></label>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0; font-size:15px; font-weight:600;">{{ t.actionsH }}</h3>
+      <label class="fld"><span>{{ t.attachments }}</span>
+        <button class="up-btn" onClick="{{ pickFile }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M12 16V4M8 8l4-4 4 4M4 20h16"/></svg>{{ t.attachBtn }}</button>
+        <span class="t-caption">{{ t.attachHint }}</span>
+      </label>
+    </div>
+  </div>
+
+  <input id="vt-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-completed"><span class="dot"></span>{{ t.ready }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary">{{ t.submit }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:760,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar" };
+  renderVals(){
+    const ar=this.state.lang==="ar";
+    const pickFile=()=>{ const el=document.getElementById("vt-filepick"); if(el)el.click(); };
+    const t = ar ? {
+      back:"رجوع", headerTitle:"تقرير إفادة الزيارة", headerSub:"شركة الأمل لتدريب العمال", reportType:"إفادة الزيارة",
+      theme:"الوضع", langBtnLabel:"EN", ready:"جاهز للإرسال", saveDraft:"حفظ كمسودة", submit:"إرسال",
+      leanNote:"إفادة الزيارة نوع تقرير مختصر: تُعبَّأ حقول 5.2.9 فقط ولا تُستكمل الصفحات المتبقية (لا قائمة بنود ولا محاضر).",
+      statementH:"بيانات الإفادة", retrieved:"مُسترجع",
+      visitDate:"تاريخ الزيارة", visitor:"اسم الزائر", visitorVal:"عبدالله بن صالح الشهري", reason:"سبب الزيارة", reasonVal:"زيارة خدمية — التحقق من استيفاء متطلبات فنية",
+      notes:"ملاحظات", notesPh:"ملاحظات المفتش على الإفادة…",
+      actionsH:"الإجراءات", attachments:"المرفقات", attachBtn:"إضافة أو استعراض الملفات", attachHint:"يسمح برفع ملفات متعددة (PDF أو صور).",
+    } : {
+      back:"Back", headerTitle:"Visit Statement report", headerSub:"Al-Amal Worker Training Co.", reportType:"Visit Statement",
+      theme:"Theme", langBtnLabel:"AR", ready:"Ready to submit", saveDraft:"Save as draft", submit:"Submit",
+      leanNote:"Visit Statement is a lean report type: only the 5.2.9 fields are filled — the remaining pages are skipped (no item list, no records).",
+      statementH:"Statement data", retrieved:"Retrieved",
+      visitDate:"Visit date", visitor:"Visitor name", visitorVal:"Abdullah bin Saleh Al-Shehri", reason:"Visit reason", reasonVal:"Service visit — verifying technical requirements",
+      notes:"Notes", notesPh:"Inspector notes on the statement…",
+      actionsH:"Actions", attachments:"Attachments", attachBtn:"Add or browse files", attachHint:"Multiple files allowed (PDF or images).",
+    };
+    return {
+      theme:this.state.theme, isLight:this.state.theme==="light", isDark:this.state.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:this.state.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})),
+      t, pickFile,
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+title: Trusted Devices and MDM negative acceptance matrix
+status: MATRIX_COMPLETE_EXECUTION_BLOCKED_BY_UNRESOLVED_CONTRACT
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_NEGATIVE_ACCEPTANCE_DEFINITION
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  negative_cases_executed: 0
+  reason: >-
+    This packet defines fail-closed acceptance behavior but does not approve the
+    missing policy, provider or design contract, execute tests, or change the
+    product. Matrix definition earns no completion credit.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+    - M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-GAP-INVENTORY-063
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  direct_requirement_ids: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+  acceptance_ids: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-001..006]
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-041 or CD-056
+    - application, database, provider, seed, test or evidence files
+    - RBAC, transition, provider-hold, decision or acceptance registers
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only matrix authoring. No design, product, provider, database, test,
+    evidence, contract, mapping, status, branch or lease is changed.
+
+acceptance_semantics:
+  REJECT:
+    meaning: The request must not be accepted or dispatched.
+    invariants:
+      - no command row or provider request is created
+      - device, package and trust state remain unchanged
+      - denial is visible without exposing restricted data
+      - the governed denial audit is recorded when policy requires it
+  HOLD:
+    meaning: A request may be durably recorded but cannot be claimed acknowledged, completed or effective.
+    invariants:
+      - trust is never restored
+      - wipe or invalidation is never claimed complete
+      - retry remains bounded by an approved idempotency contract
+      - operator sees the unresolved dependency and safe next action
+  DEGRADE:
+    meaning: Read-only evidence may remain available while mutation is disabled.
+    invariants:
+      - last confirmed state and its age are explicit
+      - stale or unavailable data is not shown as healthy
+      - no optimistic positive state is introduced
+  BLOCK:
+    meaning: Acceptance cannot be run until an unresolved sponsor, provider, policy or design contract is approved.
+  proof_rule: >-
+    Each executable case requires database/API evidence plus named-persona
+    browser evidence where a user surface exists. Source inspection, a route
+    smoke, mocked provider success or privileged direct table mutation is not a
+    pass.
+
+preservation_floor:
+  - Only the assigned, enrolled, trusted and app-compliant device may download, open or submit an official package.
+  - Pending, suspended, revoked, wipe-pending and wiped devices fail closed.
+  - A remote request is not a remote result.
+  - Queuing Resume cannot restore trust.
+  - Provider acceptance, device receipt and verified effect cannot be conflated.
+  - Unauthorized, invalid, stale, duplicate, missing-provider and offline paths cannot corrupt records or silently restore access.
+  - Actor, reason, device identity, governing version, time, before/after state and genuine evidence remain auditable.
+  - No provider behavior, SLA, retry interval, retention, policy value or translation approval may be invented.
+
+matrix_summary:
+  total_cases: 46
+  executable_after_contract: 35
+  blocked_until_sponsor_or_provider_contract: 11
+  categories:
+    authorization_and_scope: 7
+    invalid_and_terminal_transitions: 8
+    stale_and_concurrent_state: 5
+    duplicate_and_idempotency: 4
+    provider_acknowledgement: 6
+    offline_and_degraded: 5
+    audit_and_receipt: 4
+    Arabic_RTL: 2
+    responsive: 2
+    accessibility: 3
+  execution_state: NOT_EXECUTED
+
+negative_acceptance_matrix:
+  authorization_and_scope:
+    - case_id: DEV-NEG-AUTH-01
+      decision_ids: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      stimulus: Unauthenticated user opens /admin/devices or invokes a command endpoint.
+      expected: REJECT
+      required_proof: Direct-route browser denial, API/RPC 42501, no row/state/provider side effect.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-AUTH-02
+      decision_ids: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      stimulus: Inspector attempts any admin device command, including on the assigned self device.
+      expected: REJECT
+      required_proof: No mutation control, direct request denied, no command/provider side effect.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-AUTH-03
+      decision_ids: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      stimulus: Auditor attempts any device mutation.
+      expected: REJECT
+      required_proof: Read-only evidence remains available within scope; mutation and provider dispatch do not.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-AUTH-04
+      decision_ids: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      stimulus: An authenticated role outside the approved device capability matrix uses the direct route and RPC.
+      expected: REJECT
+      required_proof: Navigation absence is not the only guard; server denial and zero side effect are proven.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-01 role-to-capability matrix is unanswered.
+    - case_id: DEV-NEG-AUTH-05
+      decision_ids: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      stimulus: An otherwise authorized actor requests a command outside their approved command or device scope.
+      expected: REJECT
+      required_proof: Per-command and per-device scope guard, non-disclosing error, denial audit.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-02 per-command role/source-state matrix is unanswered.
+    - case_id: DEV-NEG-AUTH-06
+      decision_ids: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      stimulus: Role lookup fails or the session expires between viewing the page and submission.
+      expected: REJECT
+      required_proof: No command is queued; session recovery does not replay the privileged request automatically.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-AUTH-07
+      decision_ids: [DEV-CMD-DEC-03]
+      stimulus: Requester attempts to approve their own command when independent approval applies.
+      expected: REJECT
+      required_proof: Maker-checker denial, unchanged approval/command state, actor-bound audit.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-03 approval policy is unanswered.
+
+  invalid_and_terminal_transitions:
+    - case_id: DEV-NEG-STATE-01
+      decision_ids: [DEV-CMD-DEC-02]
+      stimulus: Missing, malformed or unknown device identifier or command.
+      expected: REJECT
+      required_proof: Stable validation error and zero state/command/provider side effect.
+      current_state: PARTIAL
+      existing_limit: Only missing database device and command allow-list source are covered.
+    - case_id: DEV-NEG-STATE-02
+      decision_ids: [DEV-CMD-DEC-02]
+      stimulus: Blank, whitespace-only or under-minimum reason is submitted.
+      expected: REJECT
+      required_proof: Browser and server validation agree; no audit/command/provider false record.
+      current_state: SOURCE_ONLY
+    - case_id: DEV-NEG-STATE-03
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+      stimulus: Ordinary Resume is requested for a revoked device.
+      expected: REJECT
+      required_proof: Device remains revoked and package/sync denial remains effective.
+      current_state: KNOWN_FAILING_SOURCE
+      source_risk: Current RPC immediately writes trusted from any source state.
+    - case_id: DEV-NEG-STATE-04
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+      stimulus: Ordinary Resume is requested for a wiped device.
+      expected: REJECT
+      required_proof: Device remains wiped; re-enrollment is the only separately governed path if approved.
+      current_state: KNOWN_FAILING_SOURCE
+    - case_id: DEV-NEG-STATE-05
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+      stimulus: Resume, Suspend or package expiry is requested while wipe is pending.
+      expected: REJECT
+      required_proof: Wipe-pending remains fail-closed; no contradictory command is dispatched.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-STATE-06
+      decision_ids: [DEV-CMD-DEC-02]
+      stimulus: Command is requested from an incompatible state defined by the future transition matrix.
+      expected: REJECT
+      required_proof: Every disallowed state/command pair has deterministic denial and zero side effect.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-02 transition matrix is unanswered.
+    - case_id: DEV-NEG-STATE-07
+      decision_ids: [DEV-CMD-DEC-04, DEV-CMD-DEC-05]
+      stimulus: A revoked or wiped device presents an otherwise valid prior MDM reference and compliant app version.
+      expected: REJECT
+      required_proof: Stale prior evidence cannot restore trust or package access.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-STATE-08
+      decision_ids: [DEV-CMD-DEC-04, DEV-CMD-DEC-07]
+      stimulus: Revoked, suspended, wipe-pending or wiped device tries download, cached open, sync or submit.
+      expected: REJECT
+      required_proof: All four operations fail closed without changing immutable inspection evidence.
+      current_state: UNEVIDENCED
+
+  stale_and_concurrent_state:
+    - case_id: DEV-NEG-STALE-01
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-05]
+      stimulus: Page was loaded in one state but the device changed before command submission.
+      expected: REJECT
+      required_proof: Version/precondition conflict; no stale command or optimistic state change.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-STALE-02
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-06]
+      stimulus: Two authorized actors submit contradictory commands concurrently.
+      expected: REJECT
+      required_proof: One governed transition wins; the other receives conflict and neither result is misrepresented.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-STALE-03
+      decision_ids: [DEV-CMD-DEC-05]
+      stimulus: Attestation, compliance or MDM evidence is older than the approved freshness rule.
+      expected: HOLD
+      required_proof: Device cannot become/remain positively trusted solely on stale evidence.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-05 evidence and freshness rule is unanswered.
+    - case_id: DEV-NEG-STALE-04
+      decision_ids: [DEV-CMD-DEC-06]
+      stimulus: Late acknowledgement arrives for a superseded, rejected, expired or terminal command.
+      expected: REJECT
+      required_proof: Receipt is retained and correlated but cannot overwrite current state.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-06 authoritative lifecycle is unanswered.
+    - case_id: DEV-NEG-STALE-05
+      decision_ids: [DEV-CMD-DEC-05, DEV-CMD-DEC-08]
+      stimulus: Last-seen, outbox or sync state is absent or stale.
+      expected: DEGRADE
+      required_proof: Unknown/stale is explicit; no healthy badge, fabricated metric or command enablement follows.
+      current_state: UNEVIDENCED
+
+  duplicate_and_idempotency:
+    - case_id: DEV-NEG-DUP-01
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-06]
+      stimulus: User double-clicks or refresh-resubmits the same request.
+      expected: HOLD
+      required_proof: At most one dispatch/effect for the approved idempotency identity; UI reports existing state.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-DUP-02
+      decision_ids: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      stimulus: Transport retries the same command after timeout.
+      expected: HOLD
+      required_proof: Correlation/idempotency identity prevents a second effect; both attempts remain traceable.
+      current_state: BLOCKED
+      blocker: Provider transport and idempotency contract is absent.
+    - case_id: DEV-NEG-DUP-03
+      decision_ids: [DEV-CMD-DEC-06]
+      stimulus: Duplicate provider or device acknowledgement is received.
+      expected: REJECT
+      required_proof: Receipt is deduplicated without advancing state twice or rewriting original evidence.
+      current_state: BLOCKED
+      blocker: Canonical acknowledgement contract is absent.
+    - case_id: DEV-NEG-DUP-04
+      decision_ids: [DEV-CMD-DEC-07]
+      stimulus: Expire-packages is repeated after invalidation already took effect.
+      expected: HOLD
+      required_proof: No new destructive effect; original scope and receipt remain authoritative.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-07 invalidation scope and effect are unanswered.
+
+  provider_acknowledgement:
+    - case_id: DEV-NEG-PROV-01
+      decision_ids: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      stimulus: No provider is approved or configured.
+      expected: BLOCK
+      required_proof: Mutation disabled; read-only register remains; no simulated success or local positive state.
+      current_state: KNOWN_BLOCKER
+    - case_id: DEV-NEG-PROV-02
+      decision_ids: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      stimulus: Provider rejects the request.
+      expected: HOLD
+      required_proof: Rejection receipt and reason are correlated; no completed or trusted claim.
+      current_state: BLOCKED
+      blocker: Approved provider error contract is absent.
+    - case_id: DEV-NEG-PROV-03
+      decision_ids: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      stimulus: Provider times out or response cannot be authenticated.
+      expected: HOLD
+      required_proof: Unknown remains unknown; no completion; bounded retry requires same correlation identity.
+      current_state: BLOCKED
+    - case_id: DEV-NEG-PROV-04
+      decision_ids: [DEV-CMD-DEC-06]
+      stimulus: Provider accepted but device receipt or verified effect is absent.
+      expected: HOLD
+      required_proof: UI distinguishes acceptance from receipt/effect and preserves package/trust fail-closed rules.
+      current_state: BLOCKED
+    - case_id: DEV-NEG-PROV-05
+      decision_ids: [DEV-CMD-DEC-06]
+      stimulus: Privileged user or service directly updates Acknowledged or Completed without canonical receipt.
+      expected: REJECT
+      required_proof: Table mutation is denied or cannot satisfy product completion; attempt is auditable.
+      current_state: KNOWN_EVIDENCE_DEFECT
+      source_risk: Existing rollback probe directly updates acknowledged after reset role.
+    - case_id: DEV-NEG-PROV-06
+      decision_ids: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      stimulus: Receipt device identity, command identity, nonce/version or expected effect does not match.
+      expected: REJECT
+      required_proof: Mismatched receipt is quarantined; no state transition; anomaly is visible and auditable.
+      current_state: BLOCKED
+
+  offline_and_degraded:
+    - case_id: DEV-NEG-OFF-01
+      decision_ids: [DEV-CMD-DEC-08, DEV-CMD-DEC-09]
+      stimulus: Admin browser loses connectivity before command acceptance is confirmed.
+      expected: HOLD
+      required_proof: No false queued/completed message; safe retry does not duplicate.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-OFF-02
+      decision_ids: [DEV-CMD-DEC-08]
+      stimulus: Field device is offline when suspend, revoke, wipe or expiry is requested.
+      expected: HOLD
+      required_proof: Server access fails closed immediately where possible; remote device effect stays pending until genuine proof.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-OFF-03
+      decision_ids: [DEV-CMD-DEC-07, DEV-CMD-DEC-08]
+      stimulus: Offline device holds a cached package that becomes invalid.
+      expected: HOLD
+      required_proof: Approved invalidation mechanism is exercised; cached open/sync/submit behavior is explicit and never falsely claims purge.
+      current_state: BLOCKED
+      blocker: DEV-CMD-DEC-07 and DEV-CMD-DEC-08 ownership/effect are unanswered.
+    - case_id: DEV-NEG-OFF-04
+      decision_ids: [DEV-CMD-DEC-08]
+      stimulus: Offline outbox replays after the device became suspended, revoked, wipe-pending or wiped.
+      expected: REJECT
+      required_proof: Replay is denied without silent loss or overwrite; immutable local/server evidence remains traceable.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-OFF-05
+      decision_ids: [DEV-CMD-DEC-08]
+      stimulus: Sync/conflict service or its data source is unavailable.
+      expected: DEGRADE
+      required_proof: Read-only last confirmed facts remain, mutations depending on unavailable state are disabled, outage is explicit.
+      current_state: UNEVIDENCED
+
+  audit_and_receipt:
+    - case_id: DEV-NEG-AUD-01
+      decision_ids: [DEV-CMD-DEC-02, DEV-CMD-DEC-06]
+      stimulus: Audit write fails while a command request is being accepted.
+      expected: REJECT
+      required_proof: Command/provider dispatch and state change roll back atomically.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-AUD-02
+      decision_ids: [DEV-CMD-DEC-06]
+      stimulus: Receipt is malformed, unsigned/unverifiable, incomplete or lacks correlation.
+      expected: REJECT
+      required_proof: Receipt cannot advance state; failure and original payload metadata are preserved safely.
+      current_state: BLOCKED
+    - case_id: DEV-NEG-AUD-03
+      decision_ids: [DEV-CMD-DEC-06]
+      stimulus: Actor, reason, device, before/after state, governing version or timestamp is missing.
+      expected: REJECT
+      required_proof: Request cannot pass the acceptance boundary with partial audit evidence.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-AUD-04
+      decision_ids: [DEV-CMD-DEC-03, DEV-CMD-DEC-06]
+      stimulus: Historic command or approval evidence is edited, deleted or silently overwritten.
+      expected: REJECT
+      required_proof: Immutable/versioned record is preserved and tamper attempt is denied/audited.
+      current_state: UNEVIDENCED
+
+  Arabic_RTL:
+    - case_id: DEV-NEG-I18N-01
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Arabic/RTL renders identifiers, UUIDs, command names, dates, device/platform values and reasons.
+      expected: DEGRADE
+      required_proof: No bidi corruption or semantic reversal; machine identifiers use bounded bidi isolation; actions remain correctly associated.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-I18N-02
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Arabic translation is missing, draft or longer than the available layout.
+      expected: DEGRADE
+      required_proof: Governed fallback is explicit, no clipping/overlap, and unapproved Arabic is not certified as final.
+      current_state: UNEVIDENCED
+
+  responsive:
+    - case_id: DEV-NEG-RESP-01
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Narrow viewport cannot display the desktop device/command table.
+      expected: DEGRADE
+      required_proof: Reflow or intentional bounded scroll preserves device-to-command association, focus order and all evidence fields.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-RESP-02
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Text zoom, browser zoom, long Arabic/English content or keyboard opening reduces available space.
+      expected: DEGRADE
+      required_proof: No clipped controls, hidden status, overlapping shell or off-screen confirmation/error.
+      current_state: UNEVIDENCED
+
+  accessibility:
+    - case_id: DEV-NEG-A11Y-01
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Keyboard-only user reviews and submits or cancels a permitted command.
+      expected: REJECT
+      required_proof: If focus order, visible focus, labels, confirmation or error recovery fails, acceptance fails.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-A11Y-02
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Screen-reader user encounters trust state, disabled reason, pending state, error and evidence history.
+      expected: REJECT
+      required_proof: Semantics do not rely on color/position; status changes are announced once and fields have meaningful names.
+      current_state: UNEVIDENCED
+    - case_id: DEV-NEG-A11Y-03
+      decision_ids: [DEV-CMD-DEC-10]
+      stimulus: Touch target, contrast, reduced-motion or forced-colors behavior makes a destructive action ambiguous.
+      expected: REJECT
+      required_proof: Destructive/routine commands remain distinguishable and operable under supported accessibility modes.
+      current_state: UNEVIDENCED
+
+mandatory_execution_dimensions:
+  personas:
+    - unauthenticated
+    - inspector_assigned_self
+    - unrelated_authenticated
+    - auditor_read_only
+    - ops_if_approved
+    - security_admin_if_approved
+    - requester_and_independent_approver_if_approved
+  device_states: [pending, trusted, suspended, revoked, wipe_pending, wiped]
+  commands: [suspend, resume, revoke, remote_wipe, expire_packages]
+  surfaces:
+    - database transaction and RLS/RPC boundary
+    - application server action or API
+    - /admin/devices browser route
+    - field package open, cached open, sync and submit boundary
+    - approved provider adapter and receipt ingestion when available
+  presentation:
+    - English_LTR
+    - Arabic_RTL
+    - light
+    - dark
+    - desktop
+    - tablet
+    - narrow_mobile_or_minimum_supported_width
+    - keyboard
+    - screen_reader_semantics
+    - zoom_and_reflow
+
+acceptance_stop_rules:
+  - Any queued Resume that writes Trusted before approved evidence is an immediate P0/P1 failure.
+  - Any ordinary restoration from Revoked, Wipe Pending or Wiped is an immediate failure.
+  - Any provider timeout, absence or unauthenticated receipt shown as completed is an immediate failure.
+  - Any command accepted when its audit write fails is an immediate failure.
+  - Any denied actor who can mutate through direct request despite hidden navigation is an immediate failure.
+  - Any offline replay that silently overwrites, loses evidence or bypasses current trust state is an immediate failure.
+  - Any mocked or privileged direct acknowledgement presented as genuine provider evidence is an immediate failure.
+  - Arabic/RTL, responsive or accessibility failures on the destructive path block screen certification.
+
+contract_dependencies:
+  sponsor_answers_required:
+    - DEV-CMD-DEC-01 role ownership and capability matrix
+    - DEV-CMD-DEC-02 per-command source-state transition matrix
+    - DEV-CMD-DEC-03 independent approval policy
+    - DEV-CMD-DEC-04 terminal identity and re-enrollment policy
+    - DEV-CMD-DEC-05 trust evidence and freshness rule
+    - DEV-CMD-DEC-06 lifecycle, authoritative actors and receipt schema
+    - DEV-CMD-DEC-07 package invalidation scope and effect
+    - DEV-CMD-DEC-08 sync-health ownership boundary
+    - DEV-CMD-DEC-09 provider approval or formal hold
+    - DEV-CMD-DEC-10 stable governed design identity
+  implementation_contracts_required:
+    - versioned command/transition precondition
+    - idempotency and correlation identity
+    - provider adapter and authenticated receipt contract or explicit hold
+    - atomic command-plus-audit behavior
+    - package/cache/sync/submit invalidation contract
+    - canonical bilingual design states including denied, pending, stale, conflict and failed receipt
+  must_not_be_invented:
+    - provider
+    - delivery or acknowledgement SLA
+    - retry count or interval
+    - attestation or evidence freshness
+    - terminal-state recovery rule
+    - approval threshold
+    - retention or purge semantics
+
+review:
+  disposition: BLOCK
+  code: BLOCK_DUE_TO_UNRESOLVED_DEVICE_COMMAND_AND_PROVIDER_CONTRACT
+  findings:
+    - The matrix is complete enough to prevent unsafe optimistic implementation.
+    - Eleven cases remain intrinsically blocked until sponsor/provider contracts are resolved.
+    - Current source is known unsafe for Resume from terminal states because it immediately writes Trusted.
+    - Current evidence has no genuine provider acknowledgement or Admin Devices action/persona browser proof.
+    - No matrix row may be waived by treating route smoke, static assertions, privileged SQL or adjacent Field tests as acceptance.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    mode: READ_ONLY
+    objective: >-
+      Crosswalk all 46 cases to the exact future database, API, browser,
+      provider, bilingual, responsive and accessibility test layers; identify
+      reusable fixtures and blocked test stubs without editing tests or
+      inventing unanswered policy.

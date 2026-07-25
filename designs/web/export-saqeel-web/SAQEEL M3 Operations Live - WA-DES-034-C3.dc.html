@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<script src="./ksa-adm1-map.js"></script>
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pl-tool { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 16px; background:var(--surface-sunken); border-block-end:1px dashed var(--border-strong); font-size:11.5px; color:var(--text-muted); }
+  .pl-toolgrp { display:flex; gap:4px; background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:8px; padding:3px; flex-wrap:wrap; }
+  .pl-toolbtn { padding:5px 10px; border-radius:6px; border:0; background:none; font:inherit; font-size:11px; font-weight:600; cursor:pointer; color:var(--text-secondary); white-space:nowrap; }
+  .pl-toolbtn.is-active { background:var(--action-primary); color:#fff; }
+  .pl-specbtn { padding:6px 12px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--text-secondary); }
+  .pl-specpanel { position:fixed; inset-block:0; inset-inline-end:0; width:440px; max-width:92vw; background:var(--surface-primary); border-inline-start:1px solid var(--border-subtle); box-shadow:var(--shadow-lg); z-index:200; overflow-y:auto; padding:20px; }
+  .pl-spec-h { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin:18px 0 6px; }
+  .pl-spec-h:first-child{ margin-top:0; }
+  .pl-spec-p { font-size:12px; color:var(--text-secondary); margin:0 0 8px; line-height:1.5; }
+  .pl-spec-select { font:inherit; font-size:12px; padding:5px 8px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--surface-secondary); color:var(--text-primary); }
+  .pl-specbackdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:150; }
+  .pl-drawerbtn { display:none; width:36px; height:36px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--surface-secondary); align-items:center; justify-content:center; cursor:pointer; color:var(--text-secondary); flex:none; }
+  .pl-drawerbackdrop { position:absolute; inset:0; background:rgba(0,0,0,.4); z-index:70; }
+  .pl-devicewrap { overflow:auto; padding:22px; background:repeating-conic-gradient(var(--surface-sunken) 0% 25%, var(--surface-canvas) 0% 50%) 50%/16px 16px; display:flex; flex-direction:column; align-items:center; }
+  .pl-devicelabel { font-size:11px; color:var(--text-muted); margin-block-end:8px; font-weight:600; }
+  .lv-scalebox { position:relative; overflow:hidden; flex:none; }
+  .pl-device { position:absolute; top:0; left:0; overflow:hidden; box-shadow:var(--shadow-lg); border-radius:10px; transform-origin:top left; }
+  .lv-shellgrid { display:grid; grid-template-columns:248px 1fr; height:100%; }
+  [data-mode="drawer"] .lv-shellgrid, [data-mode="mobile"] .lv-shellgrid { grid-template-columns:1fr; }
+  [data-mode="drawer"] aside, [data-mode="mobile"] aside { position:absolute; inset-block:0; inset-inline-start:0; z-index:80; width:248px; transform:translateX(-100%); transition:transform .18s ease; }
+  [dir="rtl"][data-mode="drawer"] aside, [dir="rtl"][data-mode="mobile"] aside { transform:translateX(100%); }
+  .pl-device.pl-drawer-open aside { transform:translateX(0) !important; }
+  [data-mode="desktop"] .pl-drawerbtn { display:none; }
+  [data-mode="drawer"] .pl-drawerbtn, [data-mode="mobile"] .pl-drawerbtn { display:flex; }
+  main.lv-main { overflow-y:auto; height:100%; display:flex; flex-direction:column; min-width:0; }
+  .lv-kpirow { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  [data-mode="mobile"] .lv-kpirow { grid-template-columns:1fr; }
+  [data-w="390"] .lv-kpi { padding:12px 13px; }
+  [data-w="390"] .lv-kpi-value { font-size:23px; }
+  [data-w="390"] .lv-projected { font-size:11.5px; padding:7px 10px; }
+  [data-w="390"] .lv-freshnote { font-size:10.5px; line-height:1.5; }
+  [data-w="390"] .lv-listrow { padding:7px 12px; font-size:11.5px; }
+  .lv-kpi { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); padding:14px 16px; box-shadow:var(--shadow-card); }
+  .lv-kpi-value { font-size:26px; font-weight:800; }
+  .lv-kpi.is-wallboard .lv-kpi-value { font-size:56px; }
+  .lv-label { font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+  .lv-projected { font-weight:700; font-size:13px; padding:8px 12px; border-radius:8px; background:var(--accent-soft); color:var(--accent-text); display:inline-flex; align-items:center; gap:8px; }
+  .lv-wallboard .lv-projected { font-size:20px; padding:12px 18px; }
+  .lv-freshnote { font-size:11.5px; color:var(--text-muted); margin-block-start:6px; }
+  .lv-provlegend { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .lv-prov { font-weight:700; font-size:11.5px; padding:5px 10px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border-subtle); }
+  .lv-prov-recorded { background:var(--accent-soft); color:var(--accent-text); }
+  .lv-prov-projected { background:var(--surface-secondary); color:var(--text-secondary); }
+  .lv-prov-unavailable { background:var(--surface-sunken); color:var(--text-muted); border-style:dashed; }
+  .lv-wallboard .lv-prov { font-size:16px; padding:9px 14px; }
+  [data-w="390"] .lv-prov { font-size:10.5px; padding:4px 8px; }
+  .lv-provrow { display:flex; flex-direction:column; gap:3px; padding:10px 14px; border-block-end:1px solid var(--border-subtle); font-size:12px; }
+  .lv-provrow-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .lv-provmeta { font-size:10.5px; color:var(--text-muted); line-height:1.45; }
+  [data-w="390"] .lv-provrow { padding:8px 12px; }
+  [data-w="390"] .lv-provmeta { font-size:10px; }
+  .lv-state-box { padding:60px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .lv-skel { height:14px; border-radius:6px; background:var(--surface-sunken); animation:lv-pulse 1.2s ease-in-out infinite; }
+  @keyframes lv-pulse { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .lv-pin { width:10px; height:10px; border-radius:50%; background:var(--action-primary); }
+  .lv-pin.reduced { }
+  @media (prefers-reduced-motion: no-preference) { .lv-pin.animok { animation: lv-ping 2s ease-out infinite; } }
+  @keyframes lv-ping { 0%{box-shadow:0 0 0 0 var(--action-primary,#5980a6);} 100%{box-shadow:0 0 0 12px transparent;} }
+  .lv-listrow { display:flex; align-items:center; gap:10px; padding:8px 14px; border-block-end:1px solid var(--border-subtle); font-size:12px; }
+  .lv-unauth { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:80px 24px; text-align:center; }
+  .lv-wallboard header, .lv-wallboard .lv-searchrow { display:none !important; }
+</style>
+</helmet>
+
+<div dir="ltr" style="background:var(--surface-canvas); min-height:100vh; font-family:var(--font-body);">
+
+  <div class="pl-tool">
+    <span><b>Design tooling — not part of the app</b> · {{ revLabel }}</span>
+    <div class="pl-toolgrp">
+      <sc-for list="{{ frames }}" as="fr" hint-placeholder-count="4">
+        <button class="pl-toolbtn" aria-pressed="{{ fr.active }}" onClick="{{ fr.pick }}">{{ fr.short }}</button>
+      </sc-for>
+    </div>
+    <div class="pl-toolgrp">
+      <select class="pl-spec-select" value="{{ mapState }}" onChange="{{ setMapState }}">
+        <option value="normal">Map: normal</option>
+        <option value="loading">Loading</option>
+        <option value="rls_empty">RLS-empty</option>
+        <option value="error">Error</option>
+        <option value="provider">Tile/provider failure</option>
+        <option value="no_positions">No positions</option>
+        <option value="unauthorized">Direct-route: unauthorized</option>
+      </select>
+    </div>
+    <div class="pl-toolgrp">
+      <button class="pl-toolbtn" aria-pressed="{{ notWallboard }}" onClick="{{ setStandard }}">Standard</button>
+      <button class="pl-toolbtn" aria-pressed="{{ isWallboard }}" onClick="{{ setWallboard }}">Wallboard</button>
+    </div>
+    <div class="pl-toolgrp">
+      <button class="pl-toolbtn" aria-pressed="{{ motionOk }}" onClick="{{ setMotionOk }}">Motion</button>
+      <button class="pl-toolbtn" aria-pressed="{{ motionReduced }}" onClick="{{ setMotionReduced }}">Reduced motion</button>
+    </div>
+    <span class="grow"></span>
+    <button class="pl-specbtn" onClick="{{ toggleSpec }}">Spec notes</button>
+  </div>
+
+  <sc-if value="{{ specOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="pl-specbackdrop" onClick="{{ toggleSpec }}"></div>
+    <div class="pl-specpanel">
+      <div style="display:flex; align-items:center; justify-content:space-between;"><b style="font-size:14px;">Spec notes — not part of the product UI</b><button class="btn btn-ghost btn-icon" onClick="{{ toggleSpec }}">✕</button></div>
+      <div class="pl-spec-h">Page identity</div>
+      <p class="pl-spec-p">WA-DES-034-C3 · Route <code>/operations/live</code> · Revision {{ revLabel }}. Corrects SPC-LIVE-001..007 and AUTHENTICATED_LIVE_OPERATIONS_MAP.md.</p>
+      <div class="pl-spec-h">Route/trail conflict (unresolved, flagged not decided here)</div>
+      <p class="pl-spec-p">The system prompt asks for a route trail; SPC-CMD-005 (row status not_started, but binding once implemented) requires no route/navigation drawn in Phase 1. Default safe disposition used here: markers/operational-state only, no route line, no path animation, no ETA. This page does not implement the trail.</p>
+      <div class="pl-spec-h">Freshness</div>
+      <p class="pl-spec-p">No "stale" boolean or amber threshold is invented — only a plain last-observed timestamp plus an explicit freshness-policy-unconfigured note, since no staleness cadence is governed anywhere in engine_settings today.</p>
+      <div class="pl-spec-h">Wallboard cadence</div>
+      <p class="pl-spec-p">No auto-refresh interval is specified, implied, or shown as a countdown. If an implementation re-fetches periodically for operational reasons, that interval must not be surfaced to the viewer as a governed cadence.</p>
+      <div class="pl-spec-h">Fixture disclosure</div>
+      <p class="pl-spec-p">Inspector markers/timestamps shown are illustrative design fixtures, not real telemetry — no location/accuracy/consent/playback is designed as active per AUTHENTICATED_LIVE_OPERATIONS_MAP.md's "future telemetry-ready mode."</p>
+      <div class="pl-spec-h">Revision</div>
+      <p class="pl-spec-p">{{ revDelta }}</p>
+    </div>
+  </sc-if>
+
+  <div class="pl-devicewrap">
+    <div class="pl-devicelabel">{{ frameLabel }} · scaled {{ scalePct }}% to fit</div>
+    <div class="lv-scalebox" style="width:{{ scaledW }}px; height:{{ scaledH }}px;">
+    <div class="pl-device{{ drawerCls }}" data-mode="{{ frameMode }}" data-w="{{ frameKey }}" style="width:{{ frameW }}px; height:{{ frameH }}px; transform:scale({{ scale }});">
+      <div class="lv-shellgrid{{ wallboardCls }}" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="background:var(--surface-canvas); color:var(--text-primary);">
+
+        <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item is-active" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+        <sc-if value="{{ isOverlayMode }}" hint-placeholder-val="{{ false }}"><div class="pl-drawerbackdrop" onClick="{{ toggleDrawer }}"></div></sc-if>
+
+        <main id="main-content" tabindex="-1" class="lv-main">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope"><option>All regions</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+          <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px; padding:10px 18px;">
+            <button class="pl-drawerbtn" onClick="{{ toggleDrawer }}" aria-label="Menu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <span class="grow"></span>
+            <button class="pl-langbtn" onClick="{{ toggleLang }}">{{ langBtnLabel }}</button>
+          </header>
+
+          <sc-if value="{{ isUnauthorized }}" hint-placeholder-val="{{ false }}">
+            <div class="lv-unauth">
+              <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--text-muted)" stroke-width="1.4"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <div style="font-size:16px; font-weight:700;">Authorized role required</div>
+              <p class="t-caption" style="max-width:48ch;">Your role/RLS scope does not include Operations Live. Same outcome for the direct route as for navigation — not a silent redirect, not a 404.</p>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAuthorizedView }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:16px 24px 80px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:12px;">
+              <div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Operations Live</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">WA-DES-034-C3 · /operations/live</div></div>
+              <div class="lv-provlegend">
+                <span class="lv-prov lv-prov-recorded"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>Last recorded GPS — not guaranteed live</span>
+                <span class="lv-prov lv-prov-projected"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>Projected from assignment/schedule — not live GPS</span>
+                <span class="lv-prov lv-prov-unavailable"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>Location unavailable</span>
+              </div>
+            </div>
+            <div class="lv-freshnote">Each entity carries exactly one provenance state, resolved in priority order (recorded observation → assignment/schedule coordinate → unavailable). <b>Staleness cadence not yet configured</b> — recorded timestamps are shown as-is, with no freshness threshold applied.</div>
+
+            <div class="lv-kpirow" style="margin:16px 0 18px;">
+              <div class="lv-kpi{{ wallboardKpiCls }}"><div class="lv-label">Active</div><div class="lv-kpi-value">14</div></div>
+              <div class="lv-kpi{{ wallboardKpiCls }}"><div class="lv-label">On the way</div><div class="lv-kpi-value">6</div></div>
+              <div class="lv-kpi{{ wallboardKpiCls }}"><div class="lv-label">Arrived</div><div class="lv-kpi-value">4</div></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:14px;">
+              <div style="position:relative; min-height:420px; border-radius:12px; overflow:hidden; border:1px solid var(--border-subtle); background:var(--surface-secondary);">
+                <sc-if value="{{ mNormal }}" hint-placeholder-val="{{ true }}">
+                  <ksa-adm1-map mode="ops" style="position:absolute; inset:0;"></ksa-adm1-map>
+                  <div style="position:absolute; inset-inline-start:16px; inset-block-end:16px; display:flex; gap:8px;">
+                    <sc-for list="{{ mappablePins }}" as="p" hint-placeholder-count="2"><span class="lv-pin{{ p.motionCls }}" title="{{ p.pinTitle }}"></span></sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ mLoading }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; inset:0; padding:20px;"><div class="lv-skel" style="height:100%; border-radius:10px;"></div></div></sc-if>
+                <sc-if value="{{ mRlsEmpty }}" hint-placeholder-val="{{ false }}"><div class="lv-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700;">No active visits in your scope right now</div></div></sc-if>
+                <sc-if value="{{ mError }}" hint-placeholder-val="{{ false }}"><div class="lv-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700; color:var(--status-critical);">Live map could not load</div><button class="btn btn-secondary btn-sm">Retry</button></div></sc-if>
+                <sc-if value="{{ mProvider }}" hint-placeholder-val="{{ false }}"><div class="lv-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700;">Live map unavailable — basemap provider failed</div><p class="t-caption">KPI counters and the accessible list stay populated.</p></div></sc-if>
+                <sc-if value="{{ mNoPos }}" hint-placeholder-val="{{ false }}"><div class="lv-state-box" style="position:absolute; inset:0; justify-content:center;"><div style="font-weight:700;">No inspectors currently active</div></div></sc-if>
+              </div>
+              <div style="border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); overflow:hidden;">
+                <div class="panel-header"><div class="panel-title">Accessible list alternative</div></div>
+                <sc-for list="{{ pins }}" as="p" hint-placeholder-count="3">
+                  <div class="lv-provrow" tabindex="0">
+                    <div class="lv-provrow-top"><span style="flex:1; font-weight:600;">{{ p.factory }}</span><span class="tag">{{ p.state }}</span></div>
+                    <span class="lv-prov {{ p.provClass }}">{{ p.provLabel }}</span>
+                    <span class="lv-provmeta">{{ p.provMeta }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+        </main>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", frameKey: "1200", drawerOpen: false, specOpen: false, mapState: "normal", wallboard: false, motion: "ok" };
+
+  renderVals() {
+    const st = this.state, ar = st.lang === "ar";
+    const FRAME_DEFS = [
+      { key: "1200", short: "1200×800", label: "1200×800 · Reference", w: 1200, h: 800, mode: "desktop" },
+      { key: "1024", short: "1024", label: "1024 · Desktop (dense)", w: 1024, h: 768, mode: "drawer" },
+      { key: "412", short: "412", label: "412×915 · Mobile", w: 412, h: 915, mode: "mobile" },
+      { key: "390", short: "390", label: "390×844 · Mobile", w: 390, h: 844, mode: "mobile" },
+      { key: "320", short: "320", label: "320×568 · Mobile (small)", w: 320, h: 568, mode: "mobile" },
+    ];
+    const activeFrame = FRAME_DEFS.find(f => f.key === st.frameKey) || FRAME_DEFS[0];
+    const frames = FRAME_DEFS.map(f => ({ short: f.short, active: f.key === st.frameKey, pick: () => this.setState({ frameKey: f.key, drawerOpen: false }) }));
+    const isOverlayMode = activeFrame.mode === "drawer" || activeFrame.mode === "mobile";
+    const AVAIL_W = 860, AVAIL_H = 660;
+    const scale = Math.min(1, AVAIL_W / activeFrame.w, AVAIL_H / activeFrame.h);
+
+    const motionCls = st.motion === "ok" ? " animok" : " reduced";
+    const PROV = {
+      recorded: { cls: "lv-prov-recorded", label: "Last recorded GPS — not guaranteed live", mappable: true },
+      projected: { cls: "lv-prov-projected", label: "Projected from assignment/schedule — not live GPS", mappable: true },
+      unavailable: { cls: "lv-prov-unavailable", label: "Location unavailable", mappable: false },
+    };
+    const PINS = [
+      { name: "K. Al-Otaibi", factory: "Al Rasheed Steel Works", state: "Executing", prov: "recorded",
+        provMeta: "Recorded 2026-07-24 08:41 (Asia/Riyadh) · accuracy ±12 m · source: arrival-confirmation event (immutable observation)" },
+      { name: "S. Hamdan", factory: "Gulf Textiles Ltd.", state: "On the way", prov: "projected",
+        provMeta: "No permitted observation recorded · coordinate provenance: governed factory registry coordinate · scheduled 2026-07-24 09:30 (Asia/Riyadh)" },
+      { name: "M. Qahtani", factory: "Najd Dairy Factory", state: "Arrived", prov: "unavailable",
+        provMeta: "Missing data: no permitted GPS observation recorded, and no governed factory or dispatch coordinate is registered for this assignment — entity retained in this list" },
+    ].map(p => ({ ...p, motionCls, provClass: PROV[p.prov].cls, provLabel: PROV[p.prov].label,
+      mappable: PROV[p.prov].mappable, pinTitle: p.factory + " — " + PROV[p.prov].label }));
+
+    return {
+      theme: st.theme, isLight: st.theme === "light", isDark: st.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang: st.lang, dir: ar ? "rtl" : "ltr", langBtnLabel: ar ? "EN" : "AR", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })),
+      isAr: ar, isEn: !ar,
+      frames, frameLabel: activeFrame.label + " · " + (st.theme === "dark" ? "dark" : "light") + " · " + (ar ? "AR/RTL" : "EN/LTR") + (st.wallboard ? " · wallboard" : "") + (st.motion === "reduced" ? " · reduced-motion" : ""),
+      frameW: activeFrame.w, frameH: activeFrame.h, frameMode: activeFrame.mode,
+      scale, scalePct: Math.round(scale * 100), scaledW: Math.round(activeFrame.w * scale), scaledH: Math.round(activeFrame.h * scale),
+      frameKey: st.frameKey,
+      isOverlayMode, drawerCls: st.drawerOpen ? " pl-drawer-open" : "",
+      drawerOpen: st.drawerOpen, toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      specOpen: st.specOpen, toggleSpec: () => this.setState(s => ({ specOpen: !s.specOpen })),
+      revLabel: "WA-DES-034-C3",
+      revDelta: "Lease CLAUDE-DESIGN-M3-PROVENANCE-003-A: the single 'Projected route — not live GPS' treatment is replaced by three mutually exclusive per-entity location-provenance states resolved in priority order — (1) permitted immutable observation → 'Last recorded GPS — not guaranteed live' with recorded timestamp, accuracy when present and event/source provenance; (2) no observation but assignment/schedule plus a governed factory or dispatch coordinate → 'Projected from assignment/schedule — not live GPS' with coordinate provenance and scheduled time; (3) neither → 'Location unavailable' with the specific missing-data reason, entity retained in the accessible operational list and drawn no marker. No route line, trail, path animation, navigation or ETA anywhere; no freshness threshold, telemetry, source, coordinate, policy or provider behaviour invented. Layout-only follow-up in the same lease: the WA-SHELL-r4 scale-to-fit evidence viewport was ported in so every named frame (1200/1024/412/390/320) is fully inspectable in the review canvas with no off-canvas chrome. — Revision 3 baseline: SPC-CMD-005 corrected from 'accepted acceptance row' to 'authoritative rule, own row status not_started (binding once implemented)'; wallboard auto-refresh cadence removed/blocked until governed (last-observed timestamp may remain). Carried from Revision 2: no invented stale/amber threshold; tile/provider failure fails closed; route-trail remains an unresolved conflict, not designed-in; direct-route authorization frame included.",
+      mapState: st.mapState, setMapState: (e) => this.setState({ mapState: e.target.value }),
+      isUnauthorized: st.mapState === "unauthorized", isAuthorizedView: st.mapState !== "unauthorized",
+      mNormal: st.mapState === "normal", mLoading: st.mapState === "loading", mRlsEmpty: st.mapState === "rls_empty",
+      mError: st.mapState === "error", mProvider: st.mapState === "provider", mNoPos: st.mapState === "no_positions",
+      notWallboard: !st.wallboard, isWallboard: st.wallboard,
+      setStandard: () => this.setState({ wallboard: false }), setWallboard: () => this.setState({ wallboard: true }),
+      wallboardCls: st.wallboard ? " lv-wallboard" : "", wallboardKpiCls: st.wallboard ? " is-wallboard" : "",
+      motionOk: st.motion === "ok", motionReduced: st.motion === "reduced",
+      setMotionOk: () => this.setState({ motion: "ok" }), setMotionReduced: () => this.setState({ motion: "reduced" }),
+      pins: st.mapState === "no_positions" ? [] : PINS,
+      mappablePins: st.mapState === "no_positions" ? [] : PINS.filter(p => p.mappable),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

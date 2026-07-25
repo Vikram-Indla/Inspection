@@ -1,0 +1,345 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PACKAGES-RUNTIME-PERMISSION-MAPPING-028
+title: Independent Admin Packages authority, permission and runtime-consumer validation
+status: VALIDATED_CONFIRMED_WITH_CORRECTION_BLOCK_P0
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  route: /admin/packages
+  screen_ids: [SCR-ADM-030, SCR-ADM-031]
+  engine: ENG-02
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  canonical_requirements:
+    primary:
+      - [MVP1-M09-006, CR-454, WA-AC-0454, WA-EV-0454]
+      - [MVP1-M09-007, CR-455, WA-AC-0455, WA-EV-0455]
+      - [MVP1-M09-008, CR-456, WA-AC-0456, WA-EV-0456]
+      - [MVP1-M09-009, CR-457, WA-AC-0457, WA-EV-0457]
+      - [MVP1-M09-010, CR-458, WA-AC-0458, WA-EV-0458]
+      - [MVP1-M09-011, CR-459, WA-AC-0459, WA-EV-0459]
+      - [MVP1-M09-012, CR-460, WA-AC-0460, WA-EV-0460]
+      - [MVP1-M09-013, CR-461, WA-AC-0461, WA-EV-0461]
+      - [MVP1-M09-014, CR-462, WA-AC-0462, WA-EV-0462]
+      - [MVP1-M09-015, CR-463, WA-AC-0463, WA-EV-0463]
+      - [MVP1-M09-016, CR-464, WA-AC-0464, WA-EV-0464]
+      - [MVP1-M09-017, CR-465, WA-AC-0465, WA-EV-0465]
+      - [MVP1-M09-018, CR-466, WA-AC-0466, WA-EV-0466]
+      - [MVP1-M09-019, CR-467, WA-AC-0467, WA-EV-0467]
+      - [MVP1-M09-020, CR-468, WA-AC-0468, WA-EV-0468]
+      - [MVP1-M09-021, CR-469, WA-AC-0469, WA-EV-0469]
+      - [MVP1-M09-022, CR-470, WA-AC-0470, WA-EV-0470]
+      - [MVP1-M09-023, CR-471, WA-AC-0471, WA-EV-0471]
+      - [MVP1-M09-024, CR-472, WA-AC-0472, WA-EV-0472]
+      - [MVP1-M09-025, CR-473, WA-AC-0473, WA-EV-0473]
+      - [MVP1-M09-026, CR-474, WA-AC-0474, WA-EV-0474]
+      - [MVP1-M09-027, CR-475, WA-AC-0475, WA-EV-0475]
+      - [MVP1-M09-028, CR-476, WA-AC-0476, WA-EV-0476]
+      - [MVP1-M09-029, CR-477, WA-AC-0477, WA-EV-0477]
+      - [MVP1-M09-030, CR-478, WA-AC-0478, WA-EV-0478]
+    atomic:
+      - REQ-R0C-01125 through REQ-R0C-01196
+  blanket_CR_001_through_CR_478_route_claim: PROHIBITED
+  design_dependency:
+    packet: M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049
+    state: DEPENDENCY_ONLY
+    rule: Stable design identity/revision cannot prove package lifecycle, database immutability or execution pinning.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_route:
+  exists: true
+  layout: apps/web/src/app/(app)/admin/packages/layout.tsx
+  page: apps/web/src/app/(app)/admin/packages/page.tsx
+  actions: apps/web/src/app/(app)/admin/packages/actions.ts
+  components:
+    - DraftEditor.tsx
+    - PublishControls.tsx
+    - PackagePreview.tsx
+    - ImpactPanel.tsx
+    - TemplateRegistry.tsx
+  route_guard:
+    component: AdminRouteBoundary
+    allowed_roles: [compliance_admin, form_admin]
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  reason: >-
+    The route, version model, atomic publish RPC, distinct-identity check,
+    frozen snapshots, impact reader and execution consumers are real. However,
+    direct RLS writes bypass the governed publish lifecycle and full dependency
+    validation; published rows are not fully immutable; effective windows are
+    ignored by Field preparation; and the route cannot create a package shell.
+
+package_and_version_authorities:
+  package_identity:
+    table: public.packages
+    fields: [id, code, title, scope]
+    route_capability: READ_EXISTING_ONLY
+    create_action: ABSENT
+  version:
+    table: public.package_versions
+    identity: unique(package_id, version_label)
+    statuses: [draft, published, locked, deactivated]
+    lineage: supersedes_id
+    effective_window: [effective_from, effective_to]
+    active_open_invariant: unique package_id where status in published/locked and effective_to is null
+  publish:
+    RPC: public.publish_package_version(uuid, jsonb)
+    behavior:
+      - locks the target draft
+      - rejects self-approval and missing effective_from
+      - locks and closes the current open governed version
+      - links supersedes_id
+      - atomically freezes definition, publishes, records approver and published_at
+    app_prevalidation: validateDefinition plus freezeDefinition
+    database_validation: validate_m09_package_definition trigger
+  frozen_runtime:
+    embedded:
+      - definition.item_snapshot
+      - definition.violation_snapshot
+      - definition.template_snapshot
+    companion:
+      - package_version_item_snapshots
+      - package_version_dependency_snapshots
+    visit_binding:
+      - visits.package_version_id
+      - visit_packages append-only links and metadata snapshots
+      - visit_preparations.package_version_id
+      - visit_package_snapshots immutable resolved definition and checksum
+      - inspections.package_version_id
+  audit:
+    package_versions: trg_audit_package_versions
+    package_shell: NO_AUDIT_TRIGGER_FOUND
+
+runtime_consumers:
+  administration:
+    - /admin
+    - /admin/packages
+    - /admin/items/:id/runtime-preview
+  planning:
+    - /planning
+    - /planning/bulk and review
+    - /planning/single
+    - /planning/immediate
+    - /visits/:id repackage
+  execution:
+    - /field/:visitId preparation and package download
+    - /field/inspection/:id workspace runtime
+    - readiness RPCs and visit_package_snapshots
+  reporting_and_history:
+    - /visits/:id
+    - inspection reports
+    - Factory 360 and compliance history
+  consumer_rule: >-
+    Planning creation paths generally apply status plus effective-window
+    filters and pin exact version IDs. Field preparation resolves the pinned
+    definition into an immutable visit snapshot, but its package chooser and
+    database readiness validators check status only.
+
+findings:
+  - id: PKG-P0-001
+    priority: P0
+    finding: Direct permitted table updates bypass the publish RPC and maker-checker identity.
+    evidence: >-
+      package_versions_admin is a FOR ALL policy for compliance_admin/form_admin.
+      guard_publish_requires_approver requires only a non-null approved_by, and
+      pkg_maker_checker requires only approved_by<>created_by; neither requires
+      approved_by=auth.uid(). A writer can set another user's UUID and change a
+      valid draft directly to published.
+    implication: Approval provenance can be forged and application dependency/freeze orchestration bypassed.
+  - id: PKG-P0-002
+    priority: P0
+    finding: Published package versions are not fully immutable.
+    evidence: >-
+      guard_published_package blocks changes only to definition and
+      version_label and is UPDATE-only. Direct writers can change status,
+      package_id, effective dates, creator/approver, published_at or lineage;
+      can revert published→draft and then edit; and can delete an unreferenced
+      published version because RLS grants ALL and no delete guard exists.
+    implication: Historical execution authority and audit provenance can be rewritten or removed.
+  - id: PKG-P0-003
+    priority: P0
+    finding: Full dependency validation is not a single database authority.
+    evidence: >-
+      Application validateDefinition checks effective regulation, item,
+      response, violation, penalty, evidence, template and action-form
+      dependencies. The database trigger validates core item/snapshot,
+      conditional, evidence and scoring shape but does not reproduce all
+      template, action-form, violation, penalty and effective-date checks.
+      publish_package_version accepts caller-supplied p_definition.
+    implication: A direct authorized RPC caller can publish a package the page would block.
+  - id: PKG-P0-004
+    priority: P0
+    finding: Field preparation ignores package effective windows.
+    evidence: >-
+      Field package options query status=published without effective_from/to.
+      save_visit_preparation and confirm_visit_ready validate status=published
+      but do not validate the effective interval.
+    implication: An inspector can select a future package or a historical superseded package for new execution, violating future-only activation and runtime locking rules.
+  - id: PKG-P0-005
+    priority: P0
+    finding: Manual deactivation conflicts with effective dating and pinned work.
+    evidence: >-
+      deactivatePackageVersion immediately changes status to deactivated even
+      when effective_to is future. Readiness accepts only status=published, so
+      a previously planned but not-yet-ready visit pinned to that version can
+      be blocked despite the contract that historical/previous work is preserved.
+    implication: Scheduled deactivation is immediate, and active work can regress.
+  - id: PKG-P0-006
+    priority: P0
+    finding: The route cannot create the required report package identity.
+    evidence: >-
+      UI/actions create draft versions only for existing packages. No
+      createPackage action or packages insert exists outside seed/scaffold migrations.
+    implication: REQ-R0C-01125/CR-454 cannot be completed for a new business package through the product.
+  - id: PKG-P1-001
+    priority: P1
+    finding: Draft editing has no optimistic concurrency control.
+    evidence: saveDraftDefinition updates by id and status=draft only; no expected revision or updated_at predicate exists.
+    implication: Concurrent editors silently overwrite the full JSON definition.
+  - id: PKG-P1-002
+    priority: P1
+    finding: The Admin preview is not the exact frozen inspector runtime for published versions.
+    evidence: >-
+      page.tsx builds previewItems from the live inspection_items catalogue and
+      applies definition.item_rules overrides rather than resolving the
+      published definition.item_snapshot/companion snapshots used by Field.
+    implication: A historical package preview can differ from what an inspector actually executed.
+  - id: PKG-P1-003
+    priority: P1
+    finding: Impact analysis is incomplete for multiple-package and deactivated-version work.
+    evidence: >-
+      package_version_impact counts visits.package_version_id only, not
+      visit_packages secondary links, and its prior set excludes deactivated
+      versions. It returns active prior work, not all future executions affected.
+    implication: The checker may approve with an understated blast radius.
+  - id: PKG-P1-004
+    priority: P1
+    finding: Package shell changes lack audit coverage.
+    evidence: audit triggers cover package_versions and other configuration tables, but no trg_audit_packages was found.
+    implication: Future package identity create/update/delete cannot satisfy CR-463 audit evidence.
+  - id: PKG-P1-005
+    priority: P1
+    finding: Package and frozen dependency reads are globally authenticated.
+    evidence: packages, package_versions and snapshot read policies use auth.uid() is not null.
+    implication: Any authenticated persona can inspect every package definition and dependency snapshot regardless of assignment or admin scope.
+  - id: PKG-P1-006
+    priority: P1
+    finding: Planning's package filter catalog includes every version status and date.
+    evidence: /planning loads package_versions without status/effective filters for its filter dropdown and preview effectivePackage label.
+    implication: Draft, deactivated, future and historical versions are presented as if they were usable catalog entries.
+
+permissions_and_rls:
+  route_roles: [compliance_admin, form_admin]
+  application_writer_guard: requireConfigurationWriter
+  table_read: ANY_AUTHENTICATED
+  table_write: compliance_admin OR form_admin through permissive FOR ALL policy
+  publish_RPC: authenticated grant plus internal compliance_admin/form_admin check
+  impact_RPC:
+    grant: authenticated
+    internal_roles: [compliance_admin, form_admin, workflow_admin, risk_owner, security_admin, leadership]
+  least_privilege: PARTIAL
+  direct_write_bypass: CONFIRMED
+  delete_protection: INCOMPLETE
+
+maker_checker_immutability_and_concurrency:
+  maker_checker:
+    RPC_path: DISTINCT_ACTOR_ENFORCED
+    direct_table_path: BYPASSABLE
+  atomic_successor_publish: CONFIRMED_FOR_RPC
+  one_open_governed_version: DATABASE_ENFORCED_AT_MOST_ONE
+  active_or_historical_immutability: INCORRECT_INCOMPLETE
+  draft_CAS: ABSENT
+  effective_consumer_consistency: FAILED_FIELD_PREPARATION
+  visit_snapshot_immutability: CONFIRMED
+  audit:
+    versions: PRESENT_APPEND_ONLY_AUDIT_EVENT
+    package_identity: ABSENT
+
+test_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-008-009-packages.spec.ts
+      covers:
+        - route rendering, immutable banner and draft controls
+        - read-only preview
+        - impact unavailable semantics
+        - EN/AR, RTL, light/dark, responsive and target sizes
+        - source-token assertions for validation and guards
+      limitation: No governed browser mutation lifecycle or negative-persona runtime write proof.
+    - file: supabase/tests/0032_m09_live_release_probe.sql
+      covers:
+        - valid distinct-checker publication
+        - malformed direct RPC rejection for selected item/snapshot semantics
+        - non-admin item write denial, audit and transaction rollback
+      gaps:
+        - forged approved_by direct update
+        - published→draft and delete bypass
+        - direct RPC missing violation/penalty/template/action-form dependency
+        - draft lost update
+        - future/historical Field package selection
+        - multi-package impact accuracy
+    - file: product-contract/evidence/B1-EV-001-guards-and-rls.txt
+      covers: Attempted published definition mutation is rejected.
+      limitation: Does not prove all published columns, status transitions or delete are immutable.
+    - file: apps/web/e2e/cd-006-011-backend-completion.spec.ts
+      coverage: Mostly static source assertions plus field-runtime unit semantics.
+  browser_readiness: READ_ONLY_VISUAL_READY
+  mutation_readiness: BLOCKED_PENDING_ISOLATED_FIXTURES_AND_DATABASE_GUARDS
+
+required_prerequisites:
+  P0:
+    - Remove direct status/publication/deletion bypass; all lifecycle transitions must use governed RPCs.
+    - Require approved_by=auth.uid and a distinct maker inside a non-bypassable publish boundary.
+    - Make every published/locked/deactivated authority field immutable except explicit governed transition fields.
+    - Move complete dependency and snapshot validation into the database publish transaction.
+    - Enforce effective windows in Field selection, save, readiness and every other future-use consumer.
+    - Decide pinned-work semantics for manual/scheduled deactivation and preserve prior active inspections.
+    - Add governed package identity creation with validation, permissions, audit and version-zero/draft behavior.
+    - Add database negative tests for direct REST/RPC bypass, delete, forged approval and future/historical selection.
+  P1:
+    - Add CAS/revision protection and recoverable conflict UI for draft JSON edits.
+    - Render published preview from exact frozen snapshots; distinguish draft projection.
+    - Extend impact analysis across visit_packages, deactivated history and future work.
+    - Add package identity audit trigger and immutable identity/version relationship.
+    - Scope package/snapshot reads by admin function, Planning eligibility or assigned execution need.
+    - Filter /planning package catalog by governed effective eligibility.
+    - Add real browser maker/checker, denial, validation, conflict and runtime-pinning evidence.
+
+bounded_implementation_boundary:
+  lease_1_database:
+    - package/package_versions RLS and lifecycle guards
+    - atomic create/publish/deactivate RPCs
+    - complete dependency validation
+    - audit and CAS fields
+  lease_2_consumers:
+    - Planning and Field effective-version resolver
+    - readiness and visit-package binding
+    - impact RPC multiple-package coverage
+  lease_3_application:
+    - accepted Design 049 package library/designer
+    - package identity creation
+    - governed draft/publish/deactivate controls
+    - exact frozen preview and conflict handling
+  lease_4_quality:
+    - isolated package/version/item/template/visit fixtures
+    - database bypass and concurrency probes
+    - browser maker/checker and cross-module runtime evidence
+  prohibited:
+    - changing existing published definitions
+    - repointing active/previous inspections to a successor version
+    - inventing template, evidence, legal or penalty policy
+    - modifying Design 049 or peer-leased files
+    - claiming completion from static source assertions or banners
+
+verdict:
+  mapping: CONFIRMED_WITH_CORRECTION
+  runtime_engine: REAL_BUT_BYPASSABLE_AND_CONSUMER_INCONSISTENT
+  requirements_complete: false
+  sponsor_recommendation: BLOCK_PENDING_NON_BYPASSABLE_VERSION_GOVERNANCE
+  next_packet: M9-ADMIN-PACKAGES-RUNTIME-REMEDIATION-PREFLIGHT-029

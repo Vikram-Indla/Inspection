@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .if-wrap { max-width: 880px; margin: 0 auto; width:100%; padding: 18px 18px 130px; display:flex; flex-direction:column; gap:18px; }
+  .if-rail { display:flex; gap:6px; overflow-x:auto; padding:12px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); }
+  .if-step { flex:none; display:flex; align-items:center; gap:7px; padding:7px 13px; border-radius:999px; font-size:12.5px; white-space:nowrap; color:var(--text-muted); background:var(--surface-sunken); }
+  .if-step.is-current { background:var(--action-primary); color:#fff; font-weight:600; }
+  .if-step.is-done { background:var(--accent-soft); color:var(--accent-text); }
+  .if-num { width:18px; height:18px; border-radius:50%; display:grid; place-items:center; font-size:11px; background:rgba(0,0,0,.12); }
+  .if-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:20px; display:flex; flex-direction:column; gap:18px; }
+  .fld { display:flex; flex-direction:column; gap:5px; } .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; } .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  @media (max-width:600px){ .grid2,.grid3 { grid-template-columns:1fr; } .if-wrap { padding:14px 12px 130px; } }
+  .opt { display:flex; align-items:center; gap:9px; flex:1 1 130px; padding:12px 14px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:50px; }
+  .opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .opt .ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .opt[aria-pressed="true"] .ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .optrow { display:flex; gap:10px; flex-wrap:wrap; }
+  .up { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); }
+  .plrow { display:flex; align-items:center; gap:12px; padding:13px 14px; border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); flex-wrap:wrap; }
+  .if-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption"><span class="id-code">VS-40219</span> · {{ t.packageVersion }}</div></div>
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.pendingSync }}</span>
+    <button class="if-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="if-rail">
+    <sc-for list="{{ steps }}" as="s" hint-placeholder-count="6">
+      <button class="if-step {{ s.cls }}" onClick="{{ s.go }}"><span class="if-num">{{ s.n }}</span>{{ s.label }}</button>
+    </sc-for>
+  </div>
+
+  <div class="if-wrap">
+
+    <sc-if value="{{ sType }}" hint-placeholder-val="{{ true }}">
+      <div class="if-card">
+        <div class="panel" style="padding:12px 14px; background:var(--accent-soft); box-shadow:none; display:flex; gap:10px; align-items:flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" stroke-width="1.7" style="width:17px;height:17px;flex:none;margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span class="t-compact" style="color:var(--accent-text);">{{ t.licenseBanner }}</span></div>
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.reportKindLabel }}</h2>
+        <div class="optrow">
+          <sc-for list="{{ kinds }}" as="k" hint-placeholder-count="4"><button class="opt" aria-pressed="{{ k.sel }}" onClick="{{ k.pick }}"><span class="ind">{{ k.mark }}</span>{{ k.label }}</button></sc-for>
+        </div>
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.inspectionType }}</h2>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.inspectionType }} <span class="req">*</span></div><div class="optrow"><button class="opt" aria-pressed="{{ tOnsite }}" onClick="{{ setOnsite }}"><span class="ind">{{ tOnsiteMark }}</span>{{ t.onsite }}</button><button class="opt" aria-pressed="{{ tRemote }}" onClick="{{ setRemote }}"><span class="ind">{{ tRemoteMark }}</span>{{ t.remote }}</button></div></div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--surface-sunken); border-radius:12px;">
+          <div style="flex:1;"><div style="font-weight:600; font-size:14px;">{{ t.disruptedQ }}</div><div class="t-caption">{{ t.disruptedDesc }}</div></div>
+          <button role="switch" aria-checked="{{ disrupted }}" onClick="{{ toggleDisrupt }}" style="all:unset; cursor:pointer; width:46px; height:27px; border-radius:999px; background:{{ disruptBg }}; position:relative; flex:none;"><span style="position:absolute; top:3px; inset-inline-start:{{ disruptKnob }}; width:21px; height:21px; border-radius:50%; background:#fff;"></span></button>
+        </div>
+        <sc-if value="{{ showSpecialized }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--surface-sunken); border-radius:12px;">
+            <div style="flex:1;"><div style="font-weight:600; font-size:14px;">{{ t.specializedQ }}</div></div>
+            <button role="switch" aria-checked="{{ specialized }}" onClick="{{ toggleSpecialized }}" style="all:unset; cursor:pointer; width:46px; height:27px; border-radius:999px; background:{{ specializedBg }}; position:relative; flex:none;"><span style="position:absolute; top:3px; inset-inline-start:{{ specializedKnob }}; width:21px; height:21px; border-radius:50%; background:#fff;"></span></button>
+          </div>
+          <sc-if value="{{ specialized }}" hint-placeholder-val="{{ false }}"><div class="grid2">
+            <label class="fld"><span>{{ t.specializedReason }} <span class="req">*</span></span><input class="input"></label>
+            <label class="fld"><span>{{ t.competentDept }} <span class="req">*</span></span><select class="select"><option>{{ t.chemicalDept }}</option><option>{{ t.safetyDept }}</option></select></label>
+          </div></sc-if>
+        </sc-if>
+        <sc-if value="{{ weakConn }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:12px 14px; background:var(--status-warning-soft); box-shadow:none; border-color:color-mix(in srgb,var(--status-warning) 26%,transparent); display:flex; gap:10px; align-items:flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-warning-text)" stroke-width="1.7" style="width:17px;height:17px;flex:none;margin-block-start:1px;"><path d="M2 12h4M18 12h4M12 2v4M12 18v4M5 5l2.5 2.5M16.5 16.5 19 19M19 5l-2.5 2.5M7.5 16.5 5 19"/></svg><span class="t-compact" style="color:var(--status-warning-text);">{{ t.weakConnNote }}</span></div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sChem }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.chemQuestion }}</h2>
+        <div class="optrow"><button class="opt" aria-pressed="{{ chemYes }}" onClick="{{ setChemYes }}"><span class="ind">{{ chemYesMark }}</span>{{ t.yes }}</button><button class="opt" aria-pressed="{{ chemNo }}" onClick="{{ setChemNo }}"><span class="ind">{{ chemNoMark }}</span>{{ t.no }}</button></div>
+        <p class="t-caption" style="margin:0;">{{ t.chemFlowNote }}</p>
+      </div>
+      <sc-if value="{{ chemYes }}" hint-placeholder-val="{{ false }}">
+        <div class="if-card">
+          <h2 style="font-size:15px; font-weight:700; margin:0 0 4px;">{{ t.chemDetailsTitle }}</h2>
+          <div class="grid2">
+            <label class="fld"><span>{{ t.chemClassification }}</span><select class="select"><option>{{ t.chemPure }}</option><option>{{ t.chemMixed }}</option></select></label>
+            <label class="fld"><span>{{ t.casNo }}</span><input class="input id-code" placeholder="12" dir="ltr"></label>
+          </div>
+          <div class="grid2">
+            <label class="fld"><span>{{ t.itemCode }}</span><input class="input id-code" placeholder="390110" dir="ltr"></label>
+            <label class="fld"><span>{{ t.treatyName }}</span><input class="input" placeholder="Stockholm"></label>
+          </div>
+          <div class="grid2">
+            <label class="fld"><span>{{ t.rawNeedClass }}</span><select class="select"><option>{{ t.essentialMaterial }}</option><option>{{ t.supplementaryMaterial }}</option></select></label>
+            <label class="fld"><span>{{ t.usageClass }}</span><select class="select"><option>{{ t.industrialUse }}</option><option>{{ t.domesticUse }}</option></select></label>
+          </div>
+          <label class="fld"><span>{{ t.finalProductDisposition }}</span><select class="select"><option>{{ t.soldLocally }}</option><option>{{ t.exported }}</option></select></label>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ sCustoms }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.customsTitle }}</h2>
+        <p class="t-caption" style="margin:0;">{{ t.customsNote }}</p>
+        <label class="fld"><span>{{ t.customsRef }} <span class="req">*</span></span><input class="input" placeholder="CE-…"></label>
+        <label class="fld"><span>{{ t.customsAuthority }}</span><select class="select"><option>{{ t.customsGeneralAuthority }}</option></select></label>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sDisruption }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card" style="border-inline-start:3px solid var(--status-warning);">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.disruptionReportTitle }}</h2>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.disruptReason }} <span class="req">*</span></div><div class="optrow"><button class="opt" aria-pressed="true"><span class="ind"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></span>{{ t.closed }}</button><button class="opt" aria-pressed="false"><span class="ind"></span>{{ t.repNotPresent }}</button><button class="opt" aria-pressed="false"><span class="ind"></span>{{ t.wrongAddress }}</button></div></div>
+        <label class="fld"><span>{{ t.otherReason }}</span><input class="input" placeholder="{{ t.additionalDetail }}"></label>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.frontagePhoto }} <span class="req">*</span></div><button class="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>{{ t.takePhoto }}</button></div>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.disruptionRecord }}</div><button class="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M12 16V4M8 8l4-4 4 4M4 20h16"/></svg>{{ t.attachFile }}</button></div>
+        <div class="panel" style="padding:12px 14px; background:var(--status-warning-soft); box-shadow:none; border-color:color-mix(in srgb,var(--status-warning) 26%,transparent);"><span class="t-compact" style="color:var(--status-warning-text);">{{ t.disruptionNote }}</span></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sCondition }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.estCondition }}</h2>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.estStatus }} <span class="req">*</span></div><div class="optrow">
+          <sc-for list="{{ conditions }}" as="c" hint-placeholder-count="5"><button class="opt" aria-pressed="{{ c.sel }}" onClick="{{ c.pick }}"><span class="ind">{{ c.mark }}</span>{{ c.label }}</button></sc-for>
+        </div></div>
+        <sc-if value="{{ showStopReason }}" hint-placeholder-val="{{ false }}">
+          <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.stopReason }} <span class="req">*</span></div><div class="optrow"><button class="opt" aria-pressed="true"><span class="ind"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></span>{{ t.fire }}</button><button class="opt" aria-pressed="false"><span class="ind"></span>{{ t.theft }}</button></div></div>
+          <div class="grid2">
+            <label class="fld"><span>{{ t.stopJustification }} <span class="req">*</span></span><input class="input"></label>
+            <label class="fld"><span>{{ t.closingAuthority }} <span class="req">*</span></span><select class="select"><option>{{ t.civilDefense }}</option><option>{{ t.municipality }}</option><option>{{ t.modon }}</option></select></label>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showProdStatus }}" hint-placeholder-val="{{ true }}">
+          <label class="fld" style="max-width:280px;"><span>{{ t.prodStatusField }}</span><select class="select"><option>{{ t.continuous }}</option><option>{{ t.nonContinuous }}</option><option>{{ t.seasonal }}</option></select></label>
+        </sc-if>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.fuelType }}</div><div class="stack" style="gap:8px;"><label class="check">{{ t.naturalGas }}</label><label class="check"><input type="checkbox" checked>{{ t.diesel }}</label><label class="check"><input type="checkbox" checked>{{ t.electricity }}</label><label class="check">{{ t.other }}</label></div></div>
+        <label class="fld" style="max-width:280px;"><span>{{ t.productionDate }}</span><input class="input" type="date"></label>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sOperations }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.operationsLabor }}</h2>
+        <div class="grid3">
+          <label class="fld"><span>{{ t.adminCount }}</span><input class="input" value="343"></label>
+          <label class="fld"><span>{{ t.specializedOccs }}</span><input class="input" value="343"></label>
+          <label class="fld"><span>{{ t.techCount }}</span><input class="input" value="53"></label>
+          <label class="fld"><span>{{ t.otherTeam }}</span><input class="input" value="4"></label>
+          <label class="fld"><span>{{ t.shiftCount }}</span><input class="input" value="123"></label>
+          <label class="fld"><span>{{ t.prodLines }}</span><input class="input" value="12"></label>
+        </div>
+        <label class="fld"><span>{{ t.operatingMechanism }}</span><input class="input" placeholder="{{ t.briefDesc }}"></label>
+        <div class="grid3">
+          <label class="fld"><span>{{ t.licensedProducts }}</span><input class="input" value="18"></label>
+          <label class="fld"><span>{{ t.unlicensedProducts }}</span><input class="input" value="2"></label>
+          <label class="fld"><span>{{ t.actualProducts }}</span><input class="input" value="20"></label>
+          <label class="fld"><span>{{ t.toolsEquip }}</span><input class="input" value="34"></label>
+        </div>
+        <div class="grid2">
+          <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface-sunken); border-radius:12px;"><span style="flex:1; font-size:14px;">{{ t.doesExport }}</span><span class="badge badge-compliant">{{ t.yes }}</span></div>
+          <label class="fld"><span>{{ t.exportedCount }}</span><input class="input" value="7"></label>
+        </div>
+        <label class="check"><input type="checkbox" checked>{{ t.exemptEst }}</label>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sLines }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.lineVerification }}</h2>
+        <p class="t-caption" style="margin:0;">{{ t.lineVerificationDesc }}</p>
+        <div class="seg"><button class="seg-opt" aria-pressed="{{ plProducts }}" onClick="{{ pickProducts }}">{{ t.products }}</button><button class="seg-opt" aria-pressed="{{ plTools }}" onClick="{{ pickTools }}">{{ t.tools }}</button><button class="seg-opt" aria-pressed="{{ plRaw }}" onClick="{{ pickRaw }}">{{ t.rawMaterials }}</button></div>
+
+        <sc-if value="{{ plProducts }}" hint-placeholder-val="{{ true }}"><div class="stack" style="gap:10px;">
+          <div class="plrow"><div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:14px;">Pigments (including metallic powders)</div><div class="t-caption id-code">HS 321200000000</div></div><label class="check" style="margin:0;"><input type="checkbox" checked>{{ t.regulated }}</label></div>
+          <div class="plrow"><div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:14px;">{{ t.aluminumSheets }}</div><div class="t-caption id-code">HS 222222222222</div></div><label class="check" style="margin:0;"><input type="checkbox">{{ t.regulated }}</label></div>
+          <button class="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>{{ t.productPhotos }}</button>
+        </div></sc-if>
+        <sc-if value="{{ plTools }}" hint-placeholder-val="{{ false }}"><div class="stack" style="gap:10px;">
+          <div class="plrow"><div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:14px;">{{ t.hydraulicPress }}</div><div class="t-caption id-code">TL-2201</div></div><label class="check" style="margin:0;"><input type="checkbox" checked>{{ t.conforming }}</label></div>
+          <button class="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>{{ t.toolPhotos }}</button>
+        </div></sc-if>
+        <sc-if value="{{ plRaw }}" hint-placeholder-val="{{ false }}"><div class="stack" style="gap:10px;">
+          <div class="plrow"><div style="flex:1; min-width:160px;"><div style="font-weight:600; font-size:14px;">{{ t.steelSheets }}</div></div><label class="fld" style="width:90px;"><span>{{ t.quantity }}</span><input class="input" value="2"></label><label class="check" style="margin:0;"><input type="checkbox" checked>{{ t.benefiting }}</label><label class="check" style="margin:0;"><input type="checkbox" checked>{{ t.presentAtSite }}</label></div>
+        </div></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sChecklist }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.inspectionItems }}</h2>
+        <p class="t-caption" style="margin:0;">{{ t.checklistDesc }}</p>
+        <div class="plrow"><div style="flex:1;"><div style="font-weight:600; font-size:14px;">{{ t.licenseValidQ }}</div><div class="t-caption">{{ t.licenseVerifiedNote }}</div></div><span class="badge badge-compliant">{{ t.applies }}</span></div>
+        <div class="plrow"><div style="flex:1;"><div style="font-weight:600; font-size:14px;">{{ t.civilDefenseQ }}</div><div class="t-caption">{{ t.autoViolationNote }}</div></div><span class="badge badge-critical">{{ t.notApplies }}</span></div>
+        <a href="SAQEEL%20PWA-Field%20Inspection.dc.html" target="_top" class="btn btn-secondary btn-block">{{ t.openFullChecklist }}</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ sSubmit }}" hint-placeholder-val="{{ false }}">
+      <div class="if-card">
+        <h2 style="font-size:16px; font-weight:700; margin:0;">{{ t.notesAndSubmit }}</h2>
+        <label class="fld"><span>{{ t.generalNotes }}</span><textarea class="input" rows="3">notes</textarea></label>
+        <div class="panel" style="padding:12px 14px; background:var(--surface-sunken); box-shadow:none; display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.7" style="width:17px;height:17px;flex:none;"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg><span class="t-compact" style="color:var(--text-secondary); flex:1;">{{ t.draftFindNote }}</span><button class="btn btn-secondary btn-sm">{{ t.saveDraftBtn }}</button></div>
+        <div class="panel" style="padding:13px 15px; background:var(--surface-sunken); box-shadow:none; display:flex; gap:10px; align-items:flex-start;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-block-start:1px;"><path d="M12 3 4 6v6c0 5 4 8 8 9 4-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><span class="t-compact" style="color:var(--text-secondary);">{{ t.submitNote }}</span></div>
+        <label class="check"><input type="checkbox">{{ t.confirmAccuracy }}</label>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <button class="btn btn-ghost" aria-disabled="{{ prevDisabled }}" onClick="{{ prev }}" style="opacity:{{ prevOpacity }};">{{ t.previous }}</button>
+    <span class="grow"></span>
+    <button class="btn btn-ghost btn-icon" onClick="{{ toggleWeakConn }}" aria-label="{{ t.simulateWeakConn }}" title="{{ t.simulateWeakConn }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:16px;height:16px;"><path d="M2 12h4M18 12h4M12 2v4M12 18v4M5 5l2.5 2.5M16.5 16.5 19 19M19 5l-2.5 2.5M7.5 16.5 5 19"/></svg></button>
+    <span class="t-caption">{{ t.autoSave }}</span>
+    <sc-if value="{{ atEnd }}" hint-placeholder-val="{{ false }}"><button class="btn btn-primary">{{ submitLabel }}</button></sc-if>
+    <sc-if value="{{ notEnd }}" hint-placeholder-val="{{ true }}"><button class="btn btn-primary" onClick="{{ next }}">{{ t.next }}</button></sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", step: 0, type: "onsite", disrupted: false, condition: "production", plTab: "products", lang: "en", reportKind: "visit", specialized: false, chemRestricted: null, weakConn: false };
+
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        back:"رجوع", headerTitle:"تنفيذ التفتيش · شركة الراشد للصناعات الفولاذية", packageVersion:"الحزمة v3 (مثبّتة)", pendingSync:"بانتظار المزامنة · 2", feedbackQr:"رمز التقييم", theme:"الوضع", langBtnLabel:"EN",
+        inspectionType:"نوع التفتيش", onsite:"ميداني", remote:"عن بُعد",
+        disruptedQ:"تعذّر تنفيذ التفتيش؟", disruptedDesc:"عند التعذر يُسجَّل بلاغ محكوم بدلاً من نتيجة التفتيش",
+        disruptionReportTitle:"بلاغ تعذّر التفتيش", disruptReason:"سبب التعذر", closed:"مغلقة", repNotPresent:"عدم حضور المسؤول", wrongAddress:"عنوان خاطئ",
+        otherReason:"سبب آخر (اختياري)", additionalDetail:"تفصيل إضافي", frontagePhoto:"صورة واجهة المنشأة", takePhoto:"التقاط صورة",
+        disruptionRecord:"محضر التعذر", attachFile:"إرفاق ملف",
+        disruptionNote:"بلاغ التعذر نتيجة محكومة منفصلة — يُنهي الزيارة دون بنود تفتيش. القرار النهائي بشري.",
+        estCondition:"حالة المنشأة", estStatus:"وضع المنشأة", stopReason:"سبب التوقف", fire:"حريق", theft:"سرقة",
+        fuelType:"نوع الوقود المستخدم", naturalGas:"غاز طبيعي", diesel:"ديزل", electricity:"كهرباء", other:"أخرى",
+        productionDate:"تاريخ الإنتاج",
+        operationsLabor:"التشغيل والعمالة", adminCount:"عدد الإداريين", specializedOccs:"المهن المتخصصة", techCount:"عدد الفنيين",
+        otherTeam:"فريق آخر", shiftCount:"عدد الورديات", prodLines:"خطوط الإنتاج", operatingMechanism:"آلية تشغيل المنشأة", briefDesc:"وصف موجز",
+        licensedProducts:"منتجات مرخّصة", unlicensedProducts:"منتجات غير مرخّصة", actualProducts:"المنتجات الفعلية", toolsEquip:"الأدوات والمعدات",
+        doesExport:"هل المنشأة تصدّر؟", yes:"نعم", exportedCount:"عدد المنتجات المصدّرة", exemptEst:"المنشأة معفاة (استثناء نظامي)",
+        lineVerification:"التحقق من خطوط الإنتاج", lineVerificationDesc:"اختر المنتجات والأدوات والمواد الخام المسجّلة للمصنع وتحقّق من كل عنصر بصورة داعمة.",
+        products:"المنتجات", tools:"الأدوات", rawMaterials:"المواد الخام", regulated:"خاضع للتنظيم", aluminumSheets:"ألواح ألمنيوم", productPhotos:"صور المنتجات",
+        hydraulicPress:"مكبس هيدروليكي", conforming:"مطابق", toolPhotos:"صور الأدوات",
+        steelSheets:"صفائح فولاذية", quantity:"الكمية", benefiting:"مستفيد", presentAtSite:"موجودة بالمصنع",
+        inspectionItems:"بنود التفتيش", checklistDesc:"كل بند: ينطبق/لا ينطبق + ملاحظة + مرفقات — وليس حكماً واحداً. الحزمة v3 مثبّتة لهذه الزيارة.",
+        licenseValidQ:"هل يوجد ترخيص صناعي ساري؟", licenseVerifiedNote:"ملاحظة: تم التحقق من الترخيص", applies:"ينطبق",
+        civilDefenseQ:"هل تصريح الدفاع المدني ساري؟", autoViolationNote:"مخالفة تلقائية · محضر مطلوب", notApplies:"لا ينطبق",
+        openFullChecklist:"فتح قائمة البنود الكاملة",
+        notesAndSubmit:"الملاحظات والإرسال", generalNotes:"ملاحظات عامة",
+        submitNote:"عند الإرسال تُجمَّد نسخة غير قابلة للتعديل من هذا التفتيش وحزمته. يتم رفعها عبر الصندوق الصادر الآمن (POST submit-inspection). التصعيد للمراجعة (المستوى الثاني) بشري.",
+        confirmAccuracy:"أقر بصحة البيانات المدخلة", previous:"السابق", autoSave:"الحفظ التلقائي مفعّل — موجودة أيضًا في شاشة المسودات", next:"التالي",
+        reportKindLabel:"نوع التقرير", kindVisit:"تقرير زيارة", kindChem:"تقرير فسح كيميائي", kindCustoms:"تقرير إعفاء جمركي", kindSafety:"تقرير سلامة",
+        licenseBanner:"تم تحديث بيانات الترخيص الصناعي مؤخرًا. يرجى مراجعة بيانات المنشأة والتأكد من سريان الترخيص وصحة رقم الترخيص قبل تنفيذ الزيارة. وفي حال وجود أي اختلاف، يرجى توثيقه في الملاحظات.",
+        specializedQ:"يوجد حاجة لزيارة تخصصية", specializedReason:"السبب", competentDept:"الإدارة المختصة", chemicalDept:"الإدارة الكيميائية", safetyDept:"إدارة السلامة",
+        weakConnNote:"الاتصال ضعيف — يتم حفظ الإدخال محليًا وستتم المزامنة عند تحسّن الاتصال.", simulateWeakConn:"محاكاة اتصال ضعيف",
+        chemQuestion:"هل يتم استخدام مواد مقيدة في اتفاقيات دولية ضمن المنشأة؟", no:"لا",
+        chemFlowNote:"تقرير الفسح الكيميائي يقتصر على: قائمة البنود، المواد الخام، والمنتجات — دون العمالة أو الآلات.",
+        chemDetailsTitle:"تفاصيل المادة الكيميائية", chemClassification:"تصنيف المادة الكيميائية", chemPure:"نقية", chemMixed:"مخلوطة",
+        casNo:"رقم المستخلص الكيميائي (CAS No.)", itemCode:"رمز البند", treatyName:"اسم الاتفاقية",
+        rawNeedClass:"تصنيف الاحتياج للمادة الخام", essentialMaterial:"مادة أساسية", supplementaryMaterial:"مادة مكملة",
+        usageClass:"تصنيف الاستخدام", industrialUse:"صناعي", domesticUse:"منزلي",
+        finalProductDisposition:"تداول المنتج النهائي", soldLocally:"البيع محلياً", exported:"تصدير",
+        customsTitle:"تقرير الإعفاء الجمركي", customsNote:"تبدأ الخطة الخاصة بإعداد تقرير الإعفاء الجمركي. عند الضغط على «التالي» يتم الانتقال إلى ملف المنشأة وفق نفس مسار تقرير الزيارة.",
+        customsRef:"رقم مرجع الإعفاء", customsAuthority:"الجهة المصدرة", customsGeneralAuthority:"الهيئة العامة للجمارك",
+        stopJustification:"مبرر حالة المنشأة", closingAuthority:"الجهة الحكومية التي قامت بالإغلاق", civilDefense:"الدفاع المدني", municipality:"البلدية", modon:"هيئة المدن الصناعية",
+        prodStatusField:"الحالة الإنتاجية", seasonal:"إنتاج موسمي",
+        draftFindNote:"في حال إيقاف الخطة الآن، تجدها لاحقًا في شاشة المسودة.", saveDraftBtn:"حفظ والخروج للمسودة",
+      },
+      en: {
+        back:"Back", headerTitle:"Execute Inspection · Al-Rashid Steel Industries Co.", packageVersion:"Package v3 (pinned)", pendingSync:"Pending sync · 2", feedbackQr:"Feedback QR", theme:"Theme", langBtnLabel:"AR",
+        inspectionType:"Inspection Type", onsite:"On-site", remote:"Remote",
+        disruptedQ:"Was the inspection disrupted?", disruptedDesc:"When disrupted, a governed report is recorded instead of an inspection result",
+        disruptionReportTitle:"Inspection Disruption Report", disruptReason:"Disruption reason", closed:"Closed", repNotPresent:"Representative absent", wrongAddress:"Wrong address",
+        otherReason:"Other reason (optional)", additionalDetail:"Additional detail", frontagePhoto:"Establishment frontage photo", takePhoto:"Take photo",
+        disruptionRecord:"Disruption record", attachFile:"Attach file",
+        disruptionNote:"A disruption report is a separate governed outcome — it ends the visit without inspection items. The final decision is human.",
+        estCondition:"Establishment Condition", estStatus:"Establishment status", stopReason:"Stop reason", fire:"Fire", theft:"Theft",
+        fuelType:"Fuel type used", naturalGas:"Natural gas", diesel:"Diesel", electricity:"Electricity", other:"Other",
+        productionDate:"Production date",
+        operationsLabor:"Operations & Labor", adminCount:"Admin staff count", specializedOccs:"Specialized occupations", techCount:"Technician count",
+        otherTeam:"Other team", shiftCount:"Shift count", prodLines:"Production lines", operatingMechanism:"Operating mechanism", briefDesc:"Brief description",
+        licensedProducts:"Licensed products", unlicensedProducts:"Unlicensed products", actualProducts:"Actual products", toolsEquip:"Tools & equipment",
+        doesExport:"Does the establishment export?", yes:"Yes", exportedCount:"Exported product count", exemptEst:"Establishment is exempt (statutory exception)",
+        lineVerification:"Production Line Verification", lineVerificationDesc:"Select the factory's registered products, tools, and raw materials and verify each item with supporting photos.",
+        products:"Products", tools:"Tools", rawMaterials:"Raw Materials", regulated:"Regulated", aluminumSheets:"Aluminum sheets", productPhotos:"Product photos",
+        hydraulicPress:"Hydraulic press", conforming:"Conforming", toolPhotos:"Tool photos",
+        steelSheets:"Steel sheets", quantity:"Quantity", benefiting:"Benefiting", presentAtSite:"Present at site",
+        inspectionItems:"Inspection Items", checklistDesc:"Each item: applies/does not apply + note + attachments — not a single judgment. Package v3 is pinned for this visit.",
+        licenseValidQ:"Is there a valid industrial license?", licenseVerifiedNote:"Note: license verified", applies:"Applies",
+        civilDefenseQ:"Is the civil defense permit valid?", autoViolationNote:"Automatic violation · report required", notApplies:"Does not apply",
+        openFullChecklist:"Open full checklist",
+        notesAndSubmit:"Notes & Submit", generalNotes:"General notes",
+        submitNote:"On submit, an immutable version of this inspection and its package is frozen. It uploads via the secure outbox (POST submit-inspection). Escalation to review (level 2) is human.",
+        confirmAccuracy:"I confirm the entered data is accurate", previous:"Previous", autoSave:"Auto-save enabled — also found in the Drafts screen", next:"Next",
+        reportKindLabel:"Report Kind", kindVisit:"Visit report", kindChem:"Chemical clearance report", kindCustoms:"Customs exemption report", kindSafety:"Safety report",
+        licenseBanner:"Industrial license data was recently updated. Please review the establishment data and confirm the license validity and number before executing the visit. Report any discrepancy in the notes.",
+        specializedQ:"Needs a specialized visit", specializedReason:"Reason", competentDept:"Competent department", chemicalDept:"Chemical department", safetyDept:"Safety department",
+        weakConnNote:"Connection is weak — entries are saved locally and will sync once connectivity improves.", simulateWeakConn:"Simulate weak connection",
+        chemQuestion:"Are internationally-restricted materials used in the establishment?", no:"No",
+        chemFlowNote:"A chemical clearance report is limited to: item list, raw materials, and products — no workforce or machinery sections.",
+        chemDetailsTitle:"Chemical Material Details", chemClassification:"Chemical classification", chemPure:"Pure", chemMixed:"Mixed",
+        casNo:"CAS No.", itemCode:"Item code", treatyName:"Treaty name",
+        rawNeedClass:"Raw-material need classification", essentialMaterial:"Essential material", supplementaryMaterial:"Supplementary material",
+        usageClass:"Usage classification", industrialUse:"Industrial", domesticUse:"Domestic",
+        finalProductDisposition:"Final product disposition", soldLocally:"Sold locally", exported:"Exported",
+        customsTitle:"Customs Exemption Report", customsNote:"Its own dedicated plan for preparing the customs exemption report. Pressing “Next” routes to the establishment file via the same path as a visit report.",
+        customsRef:"Exemption reference number", customsAuthority:"Issuing authority", customsGeneralAuthority:"General Authority of Customs",
+        stopJustification:"Establishment status justification", closingAuthority:"Government body that closed it", civilDefense:"Civil Defense", municipality:"Municipality", modon:"MODON",
+        prodStatusField:"Production status", seasonal:"Seasonal production",
+        draftFindNote:"Stop the plan now and find it later in the Draft screen.", saveDraftBtn:"Save & exit to draft",
+      },
+    };
+    const t = STR[lang];
+    const mark = on => on ? React.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "#fff", strokeWidth: 3, style: { width: 11, height: 11 } }, React.createElement("path", { d: "m5 12 5 5 9-10" })) : null;
+    const kind = this.state.reportKind;
+    const submitLbl = lang === "ar" ? "الإرسال" : "Submit";
+    const itemsLbl = lang === "ar" ? "البنود" : "Items";
+    const FLOW = this.state.disrupted
+      ? [["type", t.inspectionType], ["disruption", t.disruptionReportTitle], ["submit", submitLbl]]
+      : kind === "chemical"
+      ? [["type", t.inspectionType], ["chem", t.chemQuestion], ["checklist", itemsLbl], ["lines", t.lineVerification], ["submit", submitLbl]]
+      : kind === "customs"
+      ? [["type", t.inspectionType], ["customs", t.customsTitle], ["submit", submitLbl]]
+      : [["type", t.inspectionType], ["condition", t.estCondition], ["operations", t.operationsLabor], ["lines", t.lineVerification], ["checklist", itemsLbl], ["submit", submitLbl]];
+    const step = Math.min(this.state.step, FLOW.length - 1);
+    const cur = FLOW[step][0];
+    const mark2 = on => mark(on);
+    const CONDS = lang === "ar" ? [["production", "إنتاج قائم"], ["production_stop", "إنتاج متوقف"], ["not_found", "غير موجودة"], ["closed", "مغلقة"], ["transfere", "منقولة"]]
+      : [["production", "Producing"], ["production_stop", "Production stopped"], ["not_found", "Not found"], ["closed", "Closed"], ["transfere", "Relocated"]];
+    const cond = this.state.condition;
+    const setCond = k => () => this.setState({ condition: k });
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      steps: FLOW.map(([id, label], i) => ({ n: i + 1, label, cls: i === step ? "is-current" : i < step ? "is-done" : "", go: () => this.setState({ step: i }) })),
+      sType: cur === "type", sDisruption: cur === "disruption", sCondition: cur === "condition",
+      sOperations: cur === "operations", sLines: cur === "lines", sChecklist: cur === "checklist", sSubmit: cur === "submit",
+      sChem: cur === "chem", sCustoms: cur === "customs",
+      kinds: [["visit", t.kindVisit], ["chemical", t.kindChem], ["customs", t.kindCustoms], ["safety", t.kindSafety]].map(([k, label]) => ({
+        label, sel: kind === k, mark: mark2(kind === k), pick: () => this.setState({ reportKind: k, step: 0 }),
+      })),
+      showSpecialized: kind === "visit" || kind === "safety",
+      specialized: this.state.specialized, toggleSpecialized: () => this.setState(s => ({ specialized: !s.specialized })),
+      specializedBg: this.state.specialized ? "var(--action-primary)" : "var(--border-strong)", specializedKnob: this.state.specialized ? "22px" : "3px",
+      weakConn: this.state.weakConn, toggleWeakConn: () => this.setState(s => ({ weakConn: !s.weakConn })),
+      chemYes: this.state.chemRestricted === true, chemNo: this.state.chemRestricted === false,
+      chemYesMark: mark2(this.state.chemRestricted === true), chemNoMark: mark2(this.state.chemRestricted === false),
+      setChemYes: () => this.setState({ chemRestricted: true }), setChemNo: () => this.setState({ chemRestricted: false }),
+      showProdStatus: cond === "production",
+      tOnsite: this.state.type === "onsite", tRemote: this.state.type === "remote",
+      tOnsiteMark: mark(this.state.type === "onsite"), tRemoteMark: mark(this.state.type === "remote"),
+      setOnsite: () => this.setState({ type: "onsite" }), setRemote: () => this.setState({ type: "remote" }),
+      disrupted: this.state.disrupted,
+      toggleDisrupt: () => this.setState(s => ({ disrupted: !s.disrupted, step: 0 })),
+      disruptBg: this.state.disrupted ? "var(--status-warning)" : "var(--border-strong)",
+      disruptKnob: this.state.disrupted ? "22px" : "3px",
+      conditions: CONDS.map(([k, label]) => ({ label, sel: cond === k, mark: mark(cond === k), pick: setCond(k) })),
+      showStopReason: ["not_found", "closed", "transfere"].includes(cond),
+      plProducts: this.state.plTab === "products", plTools: this.state.plTab === "tools", plRaw: this.state.plTab === "raw",
+      pickProducts: () => this.setState({ plTab: "products" }), pickTools: () => this.setState({ plTab: "tools" }), pickRaw: () => this.setState({ plTab: "raw" }),
+      prev: () => this.setState(s => ({ step: Math.max(0, s.step - 1) })),
+      next: () => this.setState(s => ({ step: Math.min(FLOW.length - 1, s.step + 1) })),
+      prevDisabled: step === 0 ? "true" : "false", prevOpacity: step === 0 ? ".4" : "1",
+      atEnd: cur === "submit", notEnd: cur !== "submit",
+      submitLabel: this.state.disrupted ? (lang === "ar" ? "إرسال بلاغ التعذر" : "Submit disruption report") : (lang === "ar" ? "إرسال التفتيش (نهائي)" : "Submit inspection (final)"),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

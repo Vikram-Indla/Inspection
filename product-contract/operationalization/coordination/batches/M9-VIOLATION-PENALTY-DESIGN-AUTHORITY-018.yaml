@@ -1,0 +1,541 @@
+schema_version: "1.0"
+packet_id: M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+status: REVIEWER_READY_READ_ONLY_BLOCKED_NEW_AUTHORITY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+
+business_function: >-
+  Establish the missing design-authority boundary for Violation Configuration
+  and one-to-one Penalty Mapping. Keep configuration separate from operational
+  Enforcement, preserve the real guarded lifecycle, and block design creation
+  until a new logical design ID and route mapping are approved.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 47d958eef92fff201f21f086de5a45d4c7aac722
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015.yaml
+  dirty_path_ownership: "Prior Claude Design lane packet; preserved and not modified."
+  task: M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+  process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+  requirement_ids:
+    primary:
+      - "CR-451"
+      - "CR-452"
+      - "CR-456"
+      - "CR-457"
+      - "CR-458..CR-463"
+      - "CR-474"
+      - "CR-475"
+    contextual_only:
+      - "CR-450"
+      - "CR-467"
+      - "CR-468"
+      - "CR-473"
+    contextual_rule: >-
+      Item response and evidence configuration supplies the trigger trace but
+      remains owned by the Item and Package designs. It is not re-authored here.
+  acceptance_ids: ["WA-M9-AC-001..006"]
+  screens: ["SCR-ADM-040", "SCR-ADM-041"]
+  current_routes:
+    - /admin/violations
+    - "/admin/violations?mode=penalty"
+  catalogue_route_conflict: /admin/penalties
+  engines: ["ENG-07", "ENG-08", "ENG-09", "ENG-10", "ENG-12"]
+  dependencies:
+    - M6-TRACEABILITY-SPLIT-011
+    - M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014
+    - M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "Every accepted or draft Claude Design file."
+    - "Frozen requirement, route, screen, design and acceptance artifacts."
+    - "Application source, tests, migrations, seeds, Supabase, shared data and providers."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  corrected_traceability: product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+  control_plane_audit: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014.yaml
+  registry_successor_packet: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015.yaml
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+  route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  current_implementation:
+    - apps/web/src/app/(app)/admin/violations/page.tsx
+    - apps/web/src/app/(app)/admin/violations/Controls.tsx
+    - apps/web/src/app/(app)/admin/violations/actions.ts
+    - apps/web/src/app/(app)/admin/violations/layout.tsx
+    - apps/web/src/app/(app)/admin/violations/loading.tsx
+    - apps/web/src/app/(app)/admin/violations/error.tsx
+  current_tests:
+    - apps/web/e2e/cd-010-011-violations.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+
+independent_mapping_result:
+  violation_configuration:
+    route: /admin/violations
+    screen: SCR-ADM-040
+    design_authority:
+      logical_id: WA-DES-015
+      proposed_revision: WA-DES-015-C1
+      filename: "SAQEEL Compliance Registries - WA-DES-015-C1.dc.html"
+      current_state: DRAFT_PACKET_ONLY_NOT_CREATED
+      role: VIOLATION_REGISTRY_COMPANION
+    validation: CONFIRMED_WITH_CORRECTION
+    correction: >-
+      Name this Violation Configuration or Violation Catalogue. It is not
+      Operational Enforcement and must not use WA-DES-023 as its authority.
+  penalty_mapping:
+    current_route: "/admin/violations?mode=penalty"
+    catalogue_route: /admin/penalties
+    screen: SCR-ADM-041
+    design_authority:
+      logical_id: UNASSIGNED_NEW_AUTHORITY_REQUIRED
+      predecessor: NONE
+      lineage_kind: NEW_LOGICAL_DESIGN_AUTHORITY
+      current_state: NO_DESIGN_MATCH
+    validation: NO_DESIGN_MATCH
+    correction: >-
+      Create a new logical design only after governance assigns an unused
+      design ID and accepts the route decision. Do not treat the penalty mode as
+      a visual variant of operational Enforcement.
+  operational_enforcement:
+    route: /enforcement
+    design_authority: WA-DES-023
+    validation: INCORRECT_FOR_CONFIGURATION
+    exclusion: >-
+      Operational cases, objections, notices and enforcement decisions are
+      runtime work. They neither author violation codes nor define penalty
+      mappings and own none of this new design authority.
+
+route_decision:
+  conflict:
+    screen_catalogue: /admin/penalties
+    real_application: "/admin/violations?mode=penalty"
+  recommendation: KEEP_CURRENT_QUERY_MODE_FOR_MVP1
+  rationale:
+    - "The query mode is the implemented, tested route and shares one guarded configuration context."
+    - "Creating /admin/penalties would be unapproved route and application work."
+    - "The screen catalogue can be corrected by approved change control without a route migration."
+  required_approval: >-
+    Sponsor/governance must explicitly record the current query mode as the
+    SCR-ADM-041 MVP1 route before new design creation. Until then the design ID,
+    exact filename and mapping remain blocked.
+  no_redirect_or_alias_authority: true
+
+new_design_identity_boundary:
+  status: BLOCKED_PENDING_APPROVED_LOGICAL_ID_AND_ROUTE
+  predecessor: NONE
+  successor_semantics: >-
+    This is a new design authority, not a C-suffix successor. A C1 suffix may be
+    used only after a new logical ID is assigned; it denotes the first revision
+    of that new screen.
+  proposed_title: "SAQEEL Penalty Mapping"
+  exact_filename_pattern: "SAQEEL Penalty Mapping - <APPROVED-LOGICAL-ID>-C1.dc.html"
+  forbidden_placeholders:
+    - "Do not create a file containing PENDING, TBD, TEMP or an invented WA-DES ID."
+    - "Do not reuse WA-DES-015, WA-DES-023 or any page-order number as the new logical ID."
+  identity_record_required_before_creation:
+    - "Approved unused logical design ID."
+    - "Exact title and exact filename."
+    - "Exact current route mapping."
+    - "Screen and requirement ownership."
+    - "Creator lease, timestamp and live project inventory."
+    - "Initial state DRAFT_NON_CONSUMABLE."
+
+semantic_separation:
+  configuration:
+    data:
+      - "violation_codes"
+      - "penalty_mappings"
+      - "regulation_clauses"
+      - "inspection_items trigger references"
+      - "published/locked configuration_templates"
+    actions:
+      - "Create violation-code draft."
+      - "Publish violation code through maker-checker."
+      - "Deactivate violation code with reason."
+      - "Create one penalty-mapping draft for a violation."
+      - "Publish penalty mapping through maker-checker."
+    outcome: "Versioned configuration consumed later by inspection/review/enforcement."
+  operational_enforcement:
+    data:
+      - "runtime violations"
+      - "cases"
+      - "objections"
+      - "notices and decisions"
+    actions:
+      - "Issue, review, decide, object or execute an operational enforcement outcome."
+    exclusion: "No operational action appears in the configuration design."
+  inspector_boundary:
+    rule: >-
+      Inspectors consume configured violation and penalty context. They never
+      author, override, publish or deactivate the configuration.
+
+canonical_capability_mapping:
+  - requirement_ids: ["CR-451", "CR-474"]
+    owner: VIOLATION_CONFIGURATION
+    behavior:
+      - "Define violation code, source clause, configured level, corrective action, grace rule, applicability and effective dates."
+      - "Link a configured non-compliant response to a violation."
+      - "Generated violation is not inspector-overridable."
+  - requirement_ids: ["CR-452"]
+    owner: PENALTY_MAPPING
+    behavior:
+      - "One violation has one active penalty mapping."
+      - "Penalty type, optional amount, timing, legal basis and linked template are record-sourced."
+      - "Penalty is information during inspection and issued only through later approval."
+  - requirement_ids: ["CR-456", "CR-457", "CR-475"]
+    owner: PENALTY_MAPPING_WITH_TEMPLATE_DEPENDENCY
+    behavior:
+      - "Select only a governed active template version."
+      - "Record action-form trigger and whether completion is mandatory."
+      - "Do not author the template inside this screen."
+  - requirement_ids: ["CR-458", "CR-459", "CR-462", "CR-463"]
+    owner: SHARED_CONFIGURATION_LIFECYCLE
+    behavior:
+      - "Draft/publish/version/deactivate/audit with immutable historical references."
+  - requirement_ids: ["CR-460"]
+    owner: DEPENDENCY_VALIDATION
+    behavior:
+      - "Block publication when violation, legal basis, mapping cardinality, template or effective-period dependencies fail."
+  - requirement_ids: ["CR-461"]
+    owner: IMPACT_AND_USAGE_EVIDENCE
+    behavior:
+      - "Show source-backed item/runtime/template usage or explicitly state unavailable."
+
+violation_registry_companion_contract:
+  route: /admin/violations
+  design: WA-DES-015-C1
+  regions:
+    - "Search/filter catalogue and source-bound read timestamp."
+    - "Code/title, configured level, lifecycle, category/applicability and source-clause trace."
+    - "Trigger trace from item response mappings."
+    - "Configuration version history, usage and object-scoped audit."
+    - "Writer-only draft creation, publication and deactivation."
+    - "Penalty mapping status and route handoff without exposing operational Enforcement."
+  truth_rules:
+    - "Lifecycle is derived from active_from/active_to and the observation date."
+    - "Legal basis belongs to Penalty Mapping, never the violation-code row."
+    - "Configured level, corrective action and grace are record fields; no values are invented."
+    - "Usage/audit unavailable is not zero."
+
+penalty_mapping_new_authority_contract:
+  route: "/admin/violations?mode=penalty"
+  screen: SCR-ADM-041
+  page_structure:
+    - region: MODE_CONTEXT
+      content:
+        - "Violation Catalogue and Penalty Mapping route modes with correct tab/link semantics."
+        - "Clear label: configuration control plane, not operational Enforcement."
+    - region: VALIDATION_LENS
+      content:
+        - "One active mapping per violation."
+        - "A second mapping is rejected."
+        - "Legal basis must be supplied from an approved source."
+        - "Range/repeat choices are governed tokens, never inferred amounts or legal text."
+    - region: VIOLATION_CONTEXT
+      content:
+        - "Source-bound violation code/title, configured level and effective lifecycle."
+        - "Regulation-clause trace; no legal basis copied onto the code row."
+    - region: MAPPING_LIFECYCLE
+      content:
+        - "Unmapped, draft awaiting distinct approver, published/locked and deactivated/expired states."
+        - "Mapping version, effective period, predecessor and immutable reference status."
+    - region: PENALTY_DEFINITION
+      content:
+        - "Penalty reference and type."
+        - "Amount only when the record explicitly contains one."
+        - "Grace/due values only when configured."
+        - "Required legal basis."
+        - "Governed range and repeat preset identifiers."
+        - "Optional immutable template-version reference and action-form requirement."
+    - region: IMPACT_AUDIT
+      content:
+        - "Item/runtime/template usage evidence without row leakage."
+        - "Object-scoped immutable audit or explicit permission/unavailable state."
+    - region: GUARDED_ACTIONS
+      content:
+        - "Create draft for verified Compliance/Form writers."
+        - "Approve/publish only by a distinct authorized writer."
+        - "No edit action on published/locked mapping."
+  interaction_rules:
+    - "Select one unmapped violation; do not allow duplicate active/draft mapping."
+    - "Choose only configured governed presets and templates returned by the real service."
+    - "Never prefill legal basis, amount, grace, due period, severity or action."
+    - "Preserve entered values after validation or service failure."
+    - "Focus the error summary/result after submission and return focus predictably."
+    - "No operational issue, notice, fine, case or enforcement-decision action."
+
+existing_behavior_to_preserve:
+  application_routes:
+    - /admin/violations
+    - "/admin/violations?mode=penalty"
+  route_guard_and_roles:
+    read: "Authenticated access only as current route and RLS permit."
+    write: "Compliance Admin or Form Admin; route visibility never grants write authority."
+    permission_failure: "Fail closed and disable/hide writes."
+  violation:
+    - "Unique code and required regulation-clause anchor."
+    - "Configured level, corrective action, grace, category, applicability, effective dates and configuration version."
+    - "Draft creation, maker-checker publication, successor effective-date guard and reasoned deactivation."
+    - "Derived active/future/deactivated lifecycle."
+    - "Trigger trace, usage evidence and object-scoped audit."
+  penalty:
+    - "One-to-one violation mapping enforced by database uniqueness."
+    - "Required penalty reference, mapping version, legal basis, penalty type and governed range/repeat presets."
+    - "Optional amount, grace, due period and immutable template-version reference only when explicitly configured."
+    - "One active and one draft lifecycle guards where proven by the current database."
+    - "Distinct maker/checker publication through the existing guarded RPC."
+    - "Exact mapping-version reference retained by inspections and published package snapshots."
+    - "Audit history remains immutable and object-scoped."
+  stale_and_conflict:
+    - "Surface current unique, effective-period, maker-checker and guarded-publication conflicts."
+    - "Do not claim an optimistic version token unless independently proven."
+    - "Any later-proven stale-write guard must be preserved and represented before acceptance."
+  dependency:
+    - "Missing or inactive clause/template/reference blocks the affected action."
+    - "Published package validation continues to require valid violation and penalty snapshots."
+
+prohibited_invention:
+  values:
+    - "No legal action, enforcement outcome, penalty issuance or approval decision."
+    - "No penalty amount, currency, range, repeat escalation or due/grace period."
+    - "No severity band, configured level value, corrective action or applicability."
+    - "No legal basis, authority, clause, provider, template or source identifier."
+    - "No score, weight, threshold, SLA, risk, health or KPI semantic."
+    - "No connected-provider, current-data, zero-count or transaction guarantee without evidence."
+  presentation_rule: >-
+    Design frames may show labelled placeholders such as Not configured,
+    Required, Unavailable or Source-bound value. They may not fabricate a
+    realistic-looking example and then label the entire screen illustrative.
+
+required_state_matrix:
+  common:
+    - id: LOADING
+      rule: "Preserve mode context and announce progress."
+    - id: AUTHORIZED_POPULATED
+      rule: "Source-backed rows and values only."
+    - id: VERIFIED_ZERO
+      rule: "Successful read with no violation codes or mappings."
+    - id: READ_ERROR
+      rule: "Neutral error, unknown count, retry; no stale data presented as current."
+    - id: UNAUTHORIZED
+      rule: "No row, count, legal or penalty leakage."
+    - id: READ_ONLY
+      rule: "Explain role boundary; no misleading disabled write path."
+    - id: PERMISSION_CHECK_FAILED
+      rule: "Fail closed and offer retry."
+    - id: STALE_CONFLICT
+      rule: "Reject overwrite/publication conflict, preserve input and offer reload/compare."
+    - id: VALIDATION_ERROR
+      rule: "Summary links to each field; first summary receives focus."
+    - id: PROVIDER_OR_DEPENDENCY_UNAVAILABLE
+      rule: "Disable affected authoring while preserving safe read/navigation."
+  violation:
+    - "No regulation clauses; creation unavailable."
+    - "Duplicate code."
+    - "Invalid configured grace/effective/version input."
+    - "Future, active and deactivated derived lifecycle."
+    - "Same maker/checker and successor-date rejection."
+    - "Missing deactivation reason or already inactive conflict."
+    - "Usage/audit unavailable versus verified zero."
+  penalty:
+    - "No violation codes to map."
+    - "Unmapped violation."
+    - "Draft awaiting distinct approver."
+    - "Published/locked mapping is immutable."
+    - "Duplicate/second mapping rejected."
+    - "Missing legal basis, reference, version or penalty type."
+    - "Governed preset or template registry unavailable."
+    - "Invalid optional amount, grace or due input."
+    - "Overlapping/invalid effective period."
+    - "Same maker/checker and guarded publish failure."
+    - "Mapping audit/usage unavailable versus verified zero."
+    - "Exact snapshot/version reference unavailable."
+
+responsive_locale_theme_contract:
+  viewports:
+    - "1440x900 fixed comparison"
+    - "1200x800 desktop"
+    - "1024x768 tablet"
+    - "412x915 mobile"
+    - "390x844 mobile"
+    - "320x568 minimum"
+  variants:
+    - "EN/LTR light"
+    - "EN/LTR dark"
+    - "AR/RTL light"
+    - "AR/RTL dark"
+  shell:
+    - "Approved SAQEEL | صقيل wordmark and shield assets only."
+    - "No ADMIN, صناعي, Industrial or operational Enforcement branding."
+    - "Narrow navigation uses the approved compact/drawer pattern with no peeking icons."
+  layout:
+    - "Desktop may use violation, validation and mapping columns."
+    - "1024 collapses safely without clipping actions or legal/validation context."
+    - "412/390/320 presents each violation/mapping as a labelled card with actions after the facts."
+    - "No page-wide horizontal scrolling; bounded code/legal values may scroll in their own field."
+    - "Long Arabic, legal basis, template title and version values wrap."
+    - "Sticky actions never hide validation or the last mapping."
+  rtl:
+    - "Mirror mode navigation, columns/cards, action order and directional icons."
+    - "Keep IDs, amounts, dates, versions and code tokens in bdi dir=ltr."
+    - "Arabic labels, legal warnings, validation and state announcements have semantic parity."
+  theme:
+    - "Use approved SAQEEL semantic tokens only."
+    - "Status uses word plus glyph/shape; never colour alone."
+    - "Contrast passes for warnings, legal context, disabled controls, focus and tables/cards."
+
+accessibility_contract:
+  - "One h1 per mode and ordered headings."
+  - "Correct tab/link semantics for two URL-addressable modes."
+  - "Landmarks and skip link identify navigation, main and contextual actions."
+  - "Violation and mapping cards have programmatic group names."
+  - "Tables use caption and scoped headers; narrow cards preserve every label."
+  - "Every field has a persistent label, description and linked error."
+  - "Error summary receives focus and links to invalid fields."
+  - "Maker-checker, duplicate and immutable outcomes are announced."
+  - "Focus returns predictably after create/publish/deactivate operations."
+  - "All controls work by keyboard with visible focus and approved touch size."
+  - "200% and 400% zoom retain content/actions without two-dimensional page scroll."
+  - "Reduced motion preserves state changes."
+
+p0_decisions_and_blocks:
+  - id: M9-PEN-P0-001
+    finding: "No logical design ID or predecessor exists for SCR-ADM-041."
+    disposition: BLOCK_NEW_DESIGN_CREATION
+    closure: "Governance assigns one unused logical ID and exact C1 filename."
+  - id: M9-PEN-P0-002
+    finding: "Screen catalogue route /admin/penalties conflicts with the real and tested query mode."
+    disposition: BLOCK_MAPPING_AND_CREATION
+    closure: "Approve current query mode for MVP1 or separately authorize route implementation."
+  - id: M9-PEN-P0-003
+    finding: "WA-DES-023 combines operational Enforcement with configuration in current mapping."
+    disposition: RETURN_FOR_MAPPING_CORRECTION
+    closure: "Remove /admin/violations from WA-DES-023 ownership."
+  - id: M9-PEN-P0-004
+    finding: "WA-DES-015-C1 is packet-only and not an accepted violation-registry companion."
+    disposition: BLOCK_BUNDLE_ACCEPTANCE
+    closure: "Accept the exact registry successor or assign a different accepted companion."
+  - id: M9-PEN-P0-005
+    finding: >-
+      Existing code and tests prove several guards, but no independent current
+      runtime evidence package is attached to this design-authority task.
+    disposition: BLOCK_COMPLETION_AND_IMPLEMENTATION
+    closure: "Current commit/runtime evidence for routes, roles, RPCs, conflicts and snapshots."
+
+p1_design_closure:
+  findings:
+    - id: M9-PEN-P1-001
+      scope: "All required desktop/tablet/mobile layouts."
+    - id: M9-PEN-P1-002
+      scope: "Complete EN/LTR and AR/RTL semantic parity."
+    - id: M9-PEN-P1-003
+      scope: "Every required empty, error, denied, stale, validation, immutable and dependency state."
+    - id: M9-PEN-P1-004
+      scope: "Keyboard, focus, live announcements, zoom and narrow card/table evidence."
+  rule: "All P1 rows block design acceptance and implementation consumption."
+
+safe_creation_method_after_blocks_close:
+  model: NEW_LOGICAL_AUTHORITY_NO_PREDECESSOR
+  before_create:
+    - "Record approved logical ID, route decision, exact unused filename and creator lease."
+    - "List the complete live Claude Design inventory and prove the filename/ID absent."
+    - "Record project page count and all existing violation/enforcement design URLs."
+    - "Freeze the approved semantic contract in a reviewed write packet."
+  create:
+    - "Create exactly one new design file under the approved exact filename."
+    - "Build only the Penalty Mapping authority and its configuration context."
+    - "Do not clone or edit WA-DES-023, WA-DES-015 or any accepted design."
+  after_create:
+    - "Inventory must show exactly one expected addition and no other change."
+    - "Export/hash the new file and record URL, bytes, SHA-256, creator and timestamp."
+    - "Run all route, state, locale, responsive, theme and accessibility comparisons."
+    - "Keep DRAFT_NON_CONSUMABLE until Codex and sponsor acceptance."
+  failure:
+    - "Any unexpected design mutation is REJECTED_PLATFORM_WRITE_BOUNDARY."
+    - "Unexportable or unfingerprintable output is REJECTED_UNPROVEN_IDENTITY."
+
+comparison_evidence_required:
+  - "Before/after complete project inventory and page count."
+  - "Exact new logical ID, filename, URL, bytes and SHA-256."
+  - "Proof no existing design changed."
+  - "Route comparison for /admin/violations and query-mode penalty route."
+  - "Semantic scan proving zero operational Enforcement actions and zero invented values."
+  - "Preservation matrix against page.tsx, Controls.tsx, actions.ts and named tests."
+  - "Paired Violation registry companion and Penalty Mapping captures at 1440x900."
+  - "All required viewport, locale/direction, theme and state captures."
+  - "Keyboard, focus, live-region, zoom and narrow-card evidence."
+  - "Independent Codex verdict and sponsor acceptance naming the exact hash."
+
+mapping_change_after_acceptance_only:
+  remove:
+    - logical_id: WA-DES-023
+      route: /admin/violations
+      reason: "Operational Enforcement is not configuration authority."
+  add:
+    - logical_id: WA-DES-015
+      revision: WA-DES-015-C1
+      route: /admin/violations
+      mode: VIOLATION_REGISTER
+    - logical_id: "<APPROVED-NEW-LOGICAL-ID>"
+      revision: "<APPROVED-NEW-LOGICAL-ID>-C1"
+      route: "/admin/violations?mode=penalty"
+      mode: PENALTY_MAPPING
+  rule: "No frozen mapping is changed by this packet or before exact design acceptance."
+
+rollback:
+  design: >-
+    New authority has no predecessor. Reject it and leave it non-consumable;
+    keep the current implementation and existing accepted design mappings
+    unchanged. A retry receives C2 under the same approved logical ID.
+  mapping: "Do not apply the proposed mapping until acceptance; pre-acceptance rollback is no-op."
+  implementation: >-
+    No implementation occurs here. A later lease must retain the current route,
+    components and guarded backend functions or a proven feature-flag rollback.
+
+queued_successor:
+  packet: M9-PACKAGE-DESIGNER-NO-CODE-MATCH-RESOLUTION-019
+  status: READY_READ_ONLY_AFTER_THIS_REVIEW
+  logical_id: WA-DES-005
+  route: "/admin/packages/:id/designer"
+  current_validation: NO_CODE_MATCH
+  objective: >-
+    Decide whether the accepted form-builder capability remains inline at
+    /admin/packages or requires the missing dedicated route, without design or
+    product writes.
+
+recommendation:
+  reviewer_disposition: BLOCK_DUE_TO_MISSING_DESIGN_ID_AND_ROUTE_CONTRACT
+  approve_now:
+    - "Approve the semantic separation and requirement/component mapping."
+    - "Approve KEEP_CURRENT_QUERY_MODE_FOR_MVP1 if governance accepts the recommendation."
+  do_not_approve_now:
+    - "Design creation."
+    - "Logical ID or filename invented by a worker."
+    - "Frozen mapping change, route implementation or product modification."
+    - "Completion-score increase."
+  completion_score_change: 0
+  real_browser_proof_ready: false
+
+stop_conditions:
+  - "A logical ID, route, filename, legal value or penalty policy is invented."
+  - "Operational Enforcement is included in configuration authority."
+  - "The current query-mode route is changed without approval."
+  - "Any current RLS/RBAC, maker-checker, audit, version, immutable reference, conflict, dependency or snapshot behavior is removed or weakened."
+  - "A design is created before all P0 blocks close."
+  - "Any P1 state, responsive, Arabic/RTL or accessibility evidence is missing."
+  - "Human acceptance is absent."

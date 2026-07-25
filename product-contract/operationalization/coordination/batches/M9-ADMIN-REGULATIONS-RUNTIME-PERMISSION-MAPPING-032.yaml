@@ -1,0 +1,406 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-REGULATIONS-RUNTIME-PERMISSION-MAPPING-032
+title: Independent Admin Regulations authority, permission and runtime-consumer validation
+status: VALIDATED_CONFIRMED_WITH_CORRECTION_BLOCK_P0
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  routes:
+    - /admin/regulations
+    - /admin/regulations/:id
+  screen_ids: [SCR-ADM-010, SCR-ADM-011]
+  engine: ENG-01
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  canonical_requirements:
+    primary:
+      - [MVP1-M09-001, CR-449, WA-AC-0449, WA-EV-0449]
+    atomic_primary:
+      - REQ-R0C-01109
+      - REQ-R0C-01110
+      - REQ-R0C-01111
+      - REQ-R0C-01112
+    lifecycle_and_runtime_dependencies:
+      - [MVP1-M09-010, CR-458, WA-AC-0458, WA-EV-0458]
+      - [MVP1-M09-011, CR-459, WA-AC-0459, WA-EV-0459]
+      - [MVP1-M09-012, CR-460, WA-AC-0460, WA-EV-0460]
+      - [MVP1-M09-013, CR-461, WA-AC-0461, WA-EV-0461]
+      - [MVP1-M09-014, CR-462, WA-AC-0462, WA-EV-0462]
+      - [MVP1-M09-015, CR-463, WA-AC-0463, WA-EV-0463]
+      - [MVP1-M09-029, CR-477, WA-AC-0477, WA-EV-0477]
+      - [MVP1-M09-030, CR-478, WA-AC-0478, WA-EV-0478]
+    atomic_dependencies:
+      - REQ-R0C-01138 through REQ-R0C-01151
+      - REQ-R0C-01192 through REQ-R0C-01196
+  blanket_CR_449_through_CR_478_route_claim: PROHIBITED
+  design_dependency:
+    packet: M9-ADMIN-REGULATIONS-DESIGN-AUTHORITY-REVIEW-051
+    state: DEPENDENCY_ONLY
+    rule: Stable design identity/revision cannot prove legal-version authority, maker-checker, effective-time correctness, attachment custody, RLS or frozen execution provenance.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_routes:
+  register:
+    exists: true
+    page: apps/web/src/app/(app)/admin/regulations/page.tsx
+    controls: apps/web/src/app/(app)/admin/regulations/Controls.tsx
+    actions: apps/web/src/app/(app)/admin/regulations/actions.ts
+  detail:
+    exists: true
+    page: apps/web/src/app/(app)/admin/regulations/[id]/page.tsx
+    implementation: Reuses register page with id search parameter.
+    alternate_component: apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+    alternate_component_usage: NOT_IMPORTED_BY_ACTIVE_ROUTE
+  route_guard:
+    file: apps/web/src/app/(app)/admin/regulations/layout.tsx
+    allowed_roles: [compliance_admin, reviewer]
+    discrepancy: Page/actions/RLS also declare form_admin as a writer, but form_admin is blocked by the layout.
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  reason: >-
+    Register, detail, draft editing, clauses, attachment upload, native
+    successor publication, immutable regulation rows, generic audit and package
+    dependency checks exist. They are not end-to-end safe: governed Compliance
+    Request versions are disconnected from the operational regulations table;
+    broad table RLS can bypass publication; effective-future publication
+    deactivates the current regulation immediately; child immutability can be
+    bypassed by re-parenting; and frozen packages do not retain exact regulation
+    version or attachment provenance.
+
+regulation_authorities:
+  operational_legacy:
+    table: public.regulations
+    version_identity: unique(code, version_label)
+    lineage: supersedes_id
+    statuses: [draft, published, locked, deactivated]
+    effective_fields: [effective_from, effective_to]
+    actor_fields: [created_by, approved_by, deactivated_by]
+    timestamps: [created_at, published_at, deactivated_at]
+    child_tables:
+      - public.regulation_clauses
+      - public.regulation_attachments
+    consumed_by:
+      - /admin/regulations register and detail
+      - inspection_items through regulation_clauses
+      - package authoring and package publication validation
+      - package item snapshot legal-source projection
+  native_publish:
+    RPC: public.publish_regulation(uuid)
+    checks:
+      - caller is compliance_admin or form_admin
+      - target is a draft
+      - checker differs from created_by
+      - effective_from exists
+      - at least one clause exists
+      - every clause maps to an inspection item
+      - successor effective_from follows current version effective_from
+    writes:
+      - immediately deactivates/closes current open governed version
+      - links successor through supersedes_id
+      - publishes target with approved_by=auth.uid and published_at
+  governed_request_engine:
+    tables:
+      - public.compliance_configuration_requests
+      - public.compliance_request_components
+      - public.compliance_entity_versions
+      - public.compliance_entity_heads
+    entity_kind: regulation
+    maker_checker: PRESENT
+    immutable_versions: PRESENT
+    operational_projection_to_regulations: ABSENT
+    consumed_by_items_or_packages: false
+  generic_config_versions:
+    table: public.config_versions
+    relation_to_operational_regulation: NONE_FOUND
+  authority_verdict: P0_SPLIT_AND_BYPASSABLE
+
+dependencies_and_consumers:
+  clause_to_item:
+    relation: inspection_items.clause_id to regulation_clauses.id
+    publication_rule: Every regulation clause must have at least one mapped inspection item.
+    limitation: Publication does not require mapped items themselves to be active.
+  package_publication:
+    validation:
+      - item exists and is active
+      - item is linked through a clause to a published/locked regulation
+      - regulation effective_from is not in the future
+    package_snapshot:
+      included_regulation_data:
+        - clause_ref
+        - legal_source
+      omitted_regulation_data:
+        - regulation id
+        - regulation code
+        - regulation version_label
+        - issuing_authority
+        - effective_from and effective_to
+        - attachment IDs and hashes
+      exact_regulation_version_id: ABSENT
+  field_execution:
+    source: frozen package item_snapshot, compatibility snapshot, then limited live fallback
+    legal_projection: clause_ref and legal_source only
+    prior_execution_content_stability: PARTIAL
+    exact_legal_version_traceability: FAILED
+  impact:
+    register_rail:
+      proves: clause count and mapped item count
+      does_not_prove:
+        - exact package versions
+        - package-level overrides
+        - active or future visits
+        - pinned inspections
+        - affected reports or enforcement outcomes
+    deactivation_preview: ABSENT
+
+findings:
+  - id: REG-P0-001
+    priority: P0
+    finding: Compliance Request regulation versions are disconnected from the operational regulation authority.
+    evidence: >-
+      publish_compliance_request advances immutable compliance_entity_versions
+      and compliance_entity_heads, but does not create/update a regulations row.
+      Items, package validation and /admin/regulations still consume regulations.
+    implication: A governed approved regulation can be operationally invisible while a legacy table change controls future packages.
+  - id: REG-P0-002
+    priority: P0
+    finding: Authorized direct table writes can bypass native publication and maker-checker.
+    evidence: >-
+      regulations_admin is a permissive FOR ALL policy for compliance_admin and
+      form_admin. The published-regulation guard constrains UPDATE/DELETE only
+      after a row is already published/locked. It does not block INSERT with
+      status=published or a direct draft→published update, and the table
+      constraint only compares supplied created_by/approved_by values.
+    implication: A writer can publish without clause mapping validation, effective-date checks, auth.uid approval provenance or distinct real actor consent.
+  - id: REG-P0-003
+    priority: P0
+    finding: Future-effective successor publication creates a regulatory availability gap.
+    evidence: >-
+      publish_regulation immediately changes the current published row to
+      deactivated and sets effective_to=new.effective_from-1, even when the
+      successor date is in the future. Package validation accepts only
+      published/locked rows and rejects future effective_from.
+    implication: From approval until the future date, neither version is eligible for new package publication.
+  - id: REG-P0-004
+    priority: P0
+    finding: Published clause and attachment immutability can be bypassed by re-parenting.
+    evidence: >-
+      guard_regulation_child_write derives parent with
+      coalesce(new.regulation_id,old.regulation_id). On UPDATE, new.regulation_id
+      is always present, so a writer can move a child from a published
+      regulation to a draft; the guard validates only the draft destination.
+    implication: Published legal clauses and attachment metadata can be removed from their accepted regulation and then edited/deleted.
+  - id: REG-P0-005
+    priority: P0
+    finding: Private attachment file immutability is not enforced at storage.
+    evidence: >-
+      regulation_documents_remove_draft permits any compliance_admin/form_admin
+      to delete any object in the bucket; it does not check the parent
+      regulation status. The metadata trigger cannot protect storage.objects,
+      and object deletion has no regulation audit event.
+    implication: A published regulation can retain metadata and checksum while its source file is removed.
+  - id: REG-P0-006
+    priority: P0
+    finding: Frozen runtime does not retain exact regulation-version provenance.
+    evidence: >-
+      freezeDefinition copies only regulation_clauses(clause_ref,legal_source)
+      into item_snapshot. No regulation ID/code/version/effective window,
+      issuing authority, attachment reference or checksum is frozen, and
+      package_version_dependency_snapshots supports only violation/template.
+    implication: Previous execution content is partly stable, but an inspection cannot prove the exact accepted legal source version and attachment set.
+  - id: REG-P0-007
+    priority: P0
+    finding: Deactivation is an immediate single-writer operation without dependency impact or checker consent.
+    evidence: >-
+      deactivateRegulation directly updates status/effective_to and provenance
+      on any published/locked row. It does not use a governed transition RPC,
+      expected revision, checker, scheduled effective time or impact service.
+    implication: A writer can block future package publication without seeing affected packages/future work or obtaining independent approval.
+  - id: REG-P1-001
+    priority: P1
+    finding: The declared writer roles disagree between route and data layers.
+    evidence: >-
+      layout.tsx allows compliance_admin and reviewer only. Page/actions and RLS
+      treat form_admin as a writer and copy tells users Form Admin is permitted.
+    implication: A form_admin can write through API/RLS but cannot use the governed route.
+  - id: REG-P1-002
+    priority: P1
+    finding: Draft changes have no optimistic concurrency contract.
+    evidence: >-
+      updateRegulationDraft updates by id and status=draft without expected
+      revision/updated_at; clause and attachment additions also have no draft revision.
+    implication: Concurrent authors can overwrite title, authority or effective date without a deterministic conflict.
+  - id: REG-P1-003
+    priority: P1
+    finding: Successor publication does not bind to the predecessor the maker reviewed.
+    evidence: >-
+      Drafts carry no expected predecessor/head revision. At publish time the
+      RPC selects whichever open version exists and makes it the predecessor.
+    implication: Two concurrent successor drafts can be sequentially approved against different effective authority than their authors reviewed.
+  - id: REG-P1-004
+    priority: P1
+    finding: Regulation impact is only a clause/item footprint.
+    evidence: >-
+      The register counts clauses and items; there is no regulation usage RPC
+      that names package versions, pinned visits/inspections or frozen reports.
+    implication: Change/deactivation decisions lack a bounded blast-radius view.
+  - id: REG-P1-005
+    priority: P1
+    finding: Attachment custody validation is incomplete.
+    evidence: >-
+      The upload action computes SHA-256 and uses private storage, but imposes
+      no approved MIME/extension or size policy. Storage writers can create
+      unreferenced objects under arbitrary regulation-shaped paths.
+    implication: Governance cannot prove that every stored object is an accepted source attachment.
+  - id: REG-P1-006
+    priority: P1
+    finding: Read access is globally authenticated rather than persona/scoped.
+    evidence: >-
+      regulations, clauses, attachment metadata and regulation-documents object
+      reads use auth.uid() is not null. The page route is narrower, but direct
+      clients can inspect the full catalogue and source files.
+    implication: Legal-source documents and configuration are exposed beyond the route persona contract.
+  - id: REG-P1-007
+    priority: P1
+    finding: An unused duplicate detail implementation increases drift risk.
+    evidence: >-
+      Active /admin/regulations/:id reuses page.tsx, while RegulationDetail.tsx
+      contains a different data projection and text but is not imported.
+    implication: Tests or future edits can target the wrong detail implementation.
+  - id: REG-P1-008
+    priority: P1
+    finding: Existing tests do not attack the authorized bypass paths.
+    evidence: >-
+      Browser specs prove reviewer rendering and source tokens. The provenance
+      spec proves a planner cannot patch, and the SQL probe proves a valid
+      native checker publication. No test attempts writer direct publish,
+      child re-parenting, published storage deletion, future activation gap or
+      exact regulation provenance through Field/report.
+    implication: The P0 defects can pass the current release evidence.
+
+permissions_and_rls:
+  route_roles: [compliance_admin, reviewer]
+  application_writer_guard: [compliance_admin, form_admin]
+  table_read: ANY_AUTHENTICATED
+  table_write: compliance_admin OR form_admin through permissive FOR ALL policies
+  storage_read: ANY_AUTHENTICATED
+  storage_write_delete: compliance_admin OR form_admin
+  publish_RPC:
+    grant: authenticated
+    internal_roles: [compliance_admin, form_admin]
+  audit_RPC:
+    grant: authenticated
+    internal_roles: [compliance_admin, form_admin]
+  least_privilege: FAILED
+  direct_publish_bypass: CONFIRMED
+
+immutability_maker_checker_audit_and_concurrency:
+  regulation_row:
+    published_update_delete_guard: PARTIAL
+    direct_insert_or_draft_transition_guard: ABSENT
+    deactivated_row_immutable: PRESENT
+  clause_and_attachment_metadata:
+    parent_draft_guard: PRESENT_BUT_REPARENT_BYPASSABLE
+    audit_trigger: PRESENT
+  attachment_object:
+    private_bucket: true
+    published_delete_guard: ABSENT
+    regulation_audit: ABSENT
+  maker_checker:
+    native_publish_RPC: PRESENT
+    direct_table_path: BYPASSABLE
+    Compliance_Request_path: PRESENT_BUT_NOT_OPERATIONAL
+    deactivation: ABSENT
+  effective_time:
+    fields_present: true
+    future_activation_state: ABSENT
+    current_version_closed_at_approval_not_activation: true
+  concurrency:
+    native_publish_row_locks: PRESENT
+    expected_predecessor_or_revision: ABSENT
+    draft_CAS: ABSENT
+  audit:
+    regulation_row: PRESENT_GENERIC
+    clauses: PRESENT_GENERIC
+    attachment_metadata: PRESENT_GENERIC
+    storage_object_delete: NOT_CORRELATED
+    governed_request: PRESENT_BUT_SPLIT
+
+services_and_interfaces:
+  interfaces:
+    - public.publish_regulation(uuid)
+    - public.admin_configuration_audit(text, uuid)
+    - public.publish_compliance_request(uuid)
+    - public.compliance_configuration_compatibility
+    - package publication validation and freezeDefinition
+    - private regulation-documents storage with signed URLs
+  missing:
+    - one non-bypassable regulation lifecycle service
+    - effective-version resolver
+    - exact regulation dependency/impact service
+    - immutable attachment object custody service
+    - governed-to-operational projection
+
+test_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-005-006-regulations.spec.ts
+      covers:
+        - reviewer read-only register/detail behavior
+        - states, lineage display and publish readiness
+        - EN/AR RTL, 1024 responsive and screenshots
+        - source assertions for lifecycle, attachments and audit
+      limitation: No writer browser lifecycle or adversarial database/storage proof.
+    - file: apps/web/e2e/cd-006-regulation-publish-provenance.spec.ts
+      covers:
+        - native RPC provenance source assertions
+        - planner direct-write denial
+      limitation: Does not test an authorized writer bypassing the RPC.
+    - file: apps/web/e2e/cd-006-admin-backend-foundation.spec.ts
+      covers: Source-level maker-checker, audit and immutability wiring.
+    - file: supabase/tests/0032_m09_live_release_probe.sql
+      covers:
+        - maker creates regulation, clauses, items and attachment metadata
+        - distinct checker publishes through native RPC
+        - package publication and selected audit assertions
+      gaps:
+        - direct authorized publish bypass
+        - future-effective availability
+        - child re-parenting
+        - published storage deletion
+        - exact legal-version runtime provenance
+        - concurrent successor drafts
+  browser_readiness:
+    reviewer_visual_review: READY
+    isolated_writer_happy_path: READY_WITH_DEDICATED_SEED
+    lifecycle_certification: BLOCKED_PENDING_AUTHORITY_AND_EFFECTIVE_TIME_FIX
+    storage_custody_certification: BLOCKED
+  evidence_rule: Screenshots and source-token assertions do not close database bypass, effective-time, provenance, storage or negative-path findings.
+
+p0_prerequisites:
+  - Select one operational regulation/version authority and define governed projection from Compliance Requests.
+  - Revoke direct status/approval/lifecycle writes and expose narrow identity-bound RPCs.
+  - Introduce approved-future versus active states or an equivalent effective resolver that keeps the predecessor eligible until activation.
+  - Validate both old and new parent on clause/attachment movement, or make parent identity immutable.
+  - Enforce source-object immutability and deletion through a regulation-aware storage service.
+  - Freeze exact regulation version identity, authority, effective window and attachment hashes into package/runtime provenance.
+  - Require governed deactivation with exact package/future-work impact and approved pinned-history behavior.
+  - Add revision/predecessor CAS and deterministic concurrent successor behavior.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  verdict: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  recommended_sponsor_action: >-
+    Preserve existing native regulation publication and frozen package behavior,
+    but do not approve end-to-end Regulation Management completion. First
+    approve the single-authority, effective-time, child/attachment custody,
+    maker-checker and legal-provenance decisions; then lease database
+    governance, package/runtime integration, accepted Design 051 UI and
+    independent QA separately.

@@ -1,6 +1,6 @@
 import { test as setup, expect } from "@playwright/test";
 import { PERSONAS, storageStatePath, type PersonaKey } from "./personas";
-import { waitForCredentialsForm, submitCredentials } from "./login-helper";
+import { waitForCredentialsForm, submitCredentials, identifierField, passwordField } from "./login-helper";
 
 // Signs each persona in through the real /login UI (SCR-PUB-010) and captures
 // storage state so specs start authenticated. Landing is decided by role via
@@ -12,8 +12,8 @@ for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
     page.on("console", message => { if (message.type() === "error") console.error(`[browser:${key}] ${message.text()}`); });
     await page.goto("/login");
     await waitForCredentialsForm(page);
-    await page.locator("#email").fill(p.email);
-    await page.locator("#pw").fill(p.password);
+    await identifierField(page).fill(p.email);
+    await passwordField(page).fill(p.password);
     await submitCredentials(page);
     // /launch verifies identity and reads the user's live role grants before it
     // redirects. Keep one deterministic attempt, but allow the remote identity

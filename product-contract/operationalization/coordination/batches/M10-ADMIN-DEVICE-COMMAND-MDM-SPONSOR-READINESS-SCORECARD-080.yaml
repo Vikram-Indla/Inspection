@@ -1,0 +1,456 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-READINESS-SCORECARD-080
+title: Trusted Devices sponsor readiness scorecard
+status: SCORECARD_COMPLETE_MODULE_BLOCKED_ZERO_ACCEPTED_DELIVERY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_SPONSOR_READINESS
+
+completion_credit:
+  requirement_rows: 0
+  direct_requirements_accepted: 0
+  screens: 0
+  designs_accepted: 0
+  tests_passed: 0
+  evidence_dossiers_complete: 0
+  reason: >-
+    Discovery and planning coverage do not prove delivery. No sponsor answer
+    set, accepted CD-056 revision, implementation, test run, genuine provider
+    receipt or evidence dossier exists for this module.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-READINESS-SCORECARD-080
+  source_task: DEV-PRE-SPONSOR-01
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+    - M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+    - M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077
+    - M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-BUNDLE-SCHEMA-078
+    - M10-ADMIN-DEVICE-COMMAND-MDM-IMPLEMENTATION-LEASE-SPLIT-PREFLIGHT-079
+  direct_requirement_ids: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  do_not_touch:
+    - sponsor answer and canonical decision records
+    - live Claude Design, design authority and acceptance records
+    - application, database, provider, data, tests and evidence
+    - current slice controls, branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only scoring. B002 is not treated as Devices authority and no status,
+    design, implementation, data, test, evidence or lease record is changed.
+
+score_semantics:
+  GREEN:
+    rule: Accepted authority or executed runtime outcome exists and is bound to exact immutable evidence.
+    prohibition: Planning, source inspection, mock, seed, screenshot-only proof, an approval statement without required fields or a queued remote command cannot be green.
+  AMBER:
+    rule: Required plan/schema/map is complete, but execution or acceptance remains blocked by named dependencies.
+  RED:
+    rule: Required authority/runtime/evidence is absent, contradicted or known unsafe.
+  GREY:
+    rule: Not yet applicable because a preceding gate has not opened.
+
+headline:
+  planning_coverage:
+    status: AMBER
+    value: 130_of_130_units_mapped
+    composition:
+      decisions_described: 10_of_10
+      change_boundaries_partitioned: 12_of_12
+      future_tests_defined: 30_of_30
+      design_state_slots_inventoried: 48_of_48
+      future_evidence_case_mappings: 30_of_30
+    caveat: Mapping coverage is not delivery completion.
+  accepted_delivery:
+    status: RED
+    value: 0_of_130_units_accepted_or_proven
+    composition:
+      decisions_accepted: 0_of_10
+      change_boundaries_implemented: 0_of_12
+      tests_passed: 0_of_30
+      design_states_accepted: 0_of_48
+      evidence_dossiers_complete: 0_of_30
+  direct_requirement_acceptance:
+    status: RED
+    value: 0_of_4
+    reason: None of MVP2-AC-0176, 0184, 0186 or 0244 has complete runtime and evidence proof.
+  sponsor_recommendation: HOLD_IMPLEMENTATION_LEASES_AND_COMPLETE_AUTHORITY_FIRST
+
+domain_readiness:
+  sponsor:
+    status: RED
+    planning: 10 questions/options documented.
+    accepted: 0_of_10
+    blocker: Governance null template 072 remains populated=false with every option and companion field null.
+    next_safe_action: Submit one complete compatible answer set for DEV-CMD-DEC-01..10.
+  governance:
+    status: RED
+    planning: 82 deterministic/global/cross/preservation validation checks are defined.
+    accepted: 0_of_82_evidenced
+    blocker: No approved answer-set revision, change-control ID or downstream authority record.
+    next_safe_action: Validate sponsor answer set with checklist 067, then record versioned authority.
+  provider_security:
+    status: RED
+    planning: Provider hold/live/no-mock contract and receipt proof needs are defined.
+    accepted: 0_provider_contracts_and_0_genuine_receipts
+    blocker: No approved provider contract or canonical fail-closed hold reference.
+    next_safe_action: Record D09 choice and separate provider governance reference.
+  Claude_Design:
+    status: RED
+    planning: 48 future state slots and reuse/collision map exist.
+    accepted: 0_of_48_states
+    blocker: No stable route-specific CD-056 page/revision/frame lineage or sponsor design acceptance.
+    next_safe_action: After decisions/provider facts, create and accept the route-specific 48-state revision.
+  implementation:
+    status: RED
+    planning: 12 non-overlapping change boundaries and protected paths are defined.
+    accepted: 0_of_12_boundaries
+    blocker: No authority, frozen interfaces, exact lease paths, implementers or lease IDs.
+    next_safe_action: Freeze interfaces after authority/design, then request the first exact DB lease.
+  data_seeder:
+    status: AMBER
+    planning: Deterministic fixture needs, no-genuine-receipt rule and cleanup evidence are defined.
+    accepted: 0_device_package_fixture_runs
+    blocker: Schema and authority are not stable; no exact seed lease/path.
+    next_safe_action: Prepare a future reversible fixture lease only after DB interface freeze.
+  QA:
+    status: RED
+    planning: 30 cases assigned exactly once across five future test files.
+    accepted: 0_of_30_passed
+    blocker: Expected outcomes, implementation, fixtures, provider/device runtime and accepted design are absent.
+    next_safe_action: Keep tests NOT_RUN; implement only after upstream gates and exact QA lease.
+  evidence_and_review:
+    status: RED
+    planning: All 30 cases map to 10 evidence profiles and external storage rules.
+    accepted: 0_of_30_dossiers
+    blocker: No test execution or producer evidence exists.
+    next_safe_action: Capture only after a clean integrated revision; independent reviewer then issues recommendation.
+
+decision_scorecard:
+  - decision_id: DEV-CMD-DEC-01
+    subject: Role ownership and capability mapping
+    status: RED
+    option: null
+    required_companion: role_to_capability_matrix
+    blocker: Canonical Device/Mobile Admin meaning remains absent.
+    downstream_blocked: [DEV-CHG-GOV-01, DEV-CHG-DB-01, DEV-CHG-SVC-02, DEV-CHG-UI-01]
+    next_safe_action: Select D01-A/B/C and provide the complete role/capability matrix.
+  - decision_id: DEV-CMD-DEC-02
+    subject: Per-command roles and allowed source states
+    status: RED
+    option: null
+    required_companion: per_command_role_and_source_state_matrix
+    blocker: Resume is currently unsafe and no canonical transition matrix exists.
+    downstream_blocked: [DEV-CHG-GOV-01, DEV-CHG-DB-01, DEV-CHG-SVC-02, DEV-CHG-UI-01]
+    next_safe_action: Select D02-A/B/C and specify every command/state/role combination.
+  - decision_id: DEV-CMD-DEC-03
+    subject: Independent approval
+    status: RED
+    option: null
+    required_companion: commands_requiring_approval plus conditional emergency/expiry behavior
+    blocker: Requester/approver separation and expiry/withdrawal semantics are absent.
+    downstream_blocked: [DEV-CHG-GOV-01, DEV-CHG-DB-01, DEV-CHG-UI-01]
+    next_safe_action: Select D03-A/B/C and name exact commands and conditional policy.
+  - decision_id: DEV-CMD-DEC-04
+    subject: Revoked and Wiped terminal behavior
+    status: RED
+    option: null
+    required_companion: conditional reactivation owner and evidence
+    blocker: Ordinary Resume currently can restore trusted from terminal states.
+    downstream_blocked: [DEV-CHG-DB-01, DEV-CHG-DB-02, DEV-CHG-FLD-01, DEV-CHG-FLD-02]
+    next_safe_action: Select D04-A/B/C and define any separate reactivation process.
+  - decision_id: DEV-CMD-DEC-05
+    subject: Trust evidence and freshness
+    status: RED
+    option: null
+    required_companion: attestation_authority_and_freshness_rule
+    blocker: Stored MDM/app fields have no approved source, version or freshness authority.
+    downstream_blocked: [DEV-CHG-DB-02, DEV-CHG-PRV-01, DEV-CHG-SVC-01, DEV-CHG-FLD-01]
+    next_safe_action: Select D05-A/B/C and define authoritative evidence and freshness.
+  - decision_id: DEV-CMD-DEC-06
+    subject: Acknowledgement, completion, correlation and receipt
+    status: RED
+    option: null
+    required_companion: authoritative_actor_and_receipt_for_each_stage
+    blocker: Request, provider acceptance, device receipt and verified effect are not canonically separated.
+    downstream_blocked: [DEV-CHG-DB-01, DEV-CHG-PRV-01, DEV-CHG-SVC-01, DEV-CHG-UI-01]
+    next_safe_action: Select D06-A/B/C and define every stage/actor/receipt.
+  - decision_id: DEV-CMD-DEC-07
+    subject: Package invalidation scope and device/cache effect
+    status: RED
+    option: null
+    required_companion: exact_scope_and_server_device_effects
+    blocker: Current Expire Packages command has no package effect.
+    downstream_blocked: [DEV-CHG-DB-02, DEV-CHG-FLD-01, DEV-CHG-FLD-02]
+    next_safe_action: Select D07-A/B/C and define exact server/cache/offline effects.
+  - decision_id: DEV-CMD-DEC-08
+    subject: Sync-health source and rescue ownership
+    status: RED
+    option: null
+    required_companion: conditional source_owner_formula_threshold_and_actions
+    blocker: No approved source, threshold or rescue owner; current Field status is local connectivity/queue only.
+    downstream_blocked: [DEV-CHG-UI-01, DEV-CHG-FLD-02, DEV-LANE-DATA]
+    next_safe_action: Select D08-A/B/C and, when required, specify sources/formula/actions.
+  - decision_id: DEV-CMD-DEC-09
+    subject: MDM provider or formal hold
+    status: RED
+    option: null
+    required_companion: separate_provider_governance_reference
+    blocker: Neither live provider authority nor canonical hold is recorded.
+    downstream_blocked: [DEV-CHG-PRV-01, DEV-CHG-SVC-01, DEV-CHG-DB-01, DEV-CHG-DES-01]
+    next_safe_action: Select D09-A/B/C and provide the separate provider/hold authority.
+  - decision_id: DEV-CMD-DEC-10
+    subject: Stable Devices design identity
+    status: RED
+    option: null
+    required_companion: governed_identity_fingerprint_and_lineage
+    blocker: WA-DES-015/CD-056 route lineage and accepted frame fingerprints remain unresolved.
+    downstream_blocked: [DEV-CHG-DES-01, DEV-CHG-UI-01, DEV-CHG-TST-01]
+    next_safe_action: Select the declared D10 option and bind stable page/revision/frame lineage.
+
+change_boundary_scorecard:
+  - boundary_id: DEV-CHG-GOV-01
+    status: RED
+    blocker: Decisions 01..09 unanswered.
+    next_safe_action: Complete and validate sponsor answer set.
+  - boundary_id: DEV-CHG-DES-01
+    status: RED
+    blocker: Governance/provider facts and stable accepted route revision absent.
+    next_safe_action: Open design lease only after GOV-01 and PRV-01.
+  - boundary_id: DEV-CHG-DB-01
+    status: RED
+    blocker: Lifecycle, approval, terminal, receipt and idempotency authority absent.
+    next_safe_action: Freeze command lifecycle interface and migration order after decisions.
+  - boundary_id: DEV-CHG-DB-02
+    status: RED
+    blocker: Trust/invalidation/replay/submit authority absent and DB-01 not complete.
+    next_safe_action: Serialize after DB-01 under the same DB integration owner.
+  - boundary_id: DEV-CHG-PRV-01
+    status: RED
+    blocker: D09 and separate provider/hold authority absent.
+    next_safe_action: Record provider contract or canonical hold.
+  - boundary_id: DEV-CHG-SVC-01
+    status: RED
+    blocker: Provider execution and DB receipt interface absent.
+    next_safe_action: Remain held unless PRV-01 authorizes live integration.
+  - boundary_id: DEV-CHG-SVC-02
+    status: RED
+    blocker: DB, provider-hold and accepted design interfaces absent.
+    next_safe_action: Define route-local action only after dependencies stabilize.
+  - boundary_id: DEV-CHG-UI-01
+    status: RED
+    blocker: Accepted 48-state design and source interfaces absent.
+    next_safe_action: Implement only after DES-01, SVC-02 and DB-02.
+  - boundary_id: DEV-CHG-FLD-01
+    status: RED
+    blocker: Canonical manifest/device/package guard absent.
+    next_safe_action: Freeze package authority/cache envelope interface after DB-02.
+  - boundary_id: DEV-CHG-FLD-02
+    status: RED
+    blocker: Sync/rescue and post-trust-change replay/submit authority absent.
+    next_safe_action: Freeze FLD-01/FLD-02 interface, then lease exclusive offline files.
+  - boundary_id: DEV-CHG-TST-01
+    status: RED
+    blocker: Expected outcomes and integrated implementation unavailable.
+    next_safe_action: Keep tests NOT_RUN until authority, interfaces, fixtures and source revision are fixed.
+  - boundary_id: DEV-CHG-EVD-01
+    status: RED
+    blocker: No producer test evidence exists.
+    next_safe_action: Curate immutable outputs only after QA execution and before independent review.
+
+design_state_scorecard:
+  - group: route_and_source
+    slots: DEV-DS-001..005
+    count: 5
+    status: RED
+    blocker: Stable route identity and accepted loading/empty/error/stale source semantics absent.
+    next_safe_action: Bind D10 and source-error contract.
+  - group: persona_and_permission
+    slots: DEV-DS-006..010
+    count: 5
+    status: RED
+    blocker: D01..03 unanswered.
+    next_safe_action: Supply role, command and approval matrices.
+  - group: device_register
+    slots: DEV-DS-011..018
+    count: 8
+    status: RED
+    blocker: Terminal and trust evidence rules absent.
+    next_safe_action: Resolve D04/D05 and provider authority.
+  - group: command_request_and_conflict
+    slots: DEV-DS-019..024
+    count: 6
+    status: RED
+    blocker: Transition/version/idempotency rules absent.
+    next_safe_action: Resolve D02/D03/D06.
+  - group: provider_and_receipt
+    slots: DEV-DS-025..030
+    count: 6
+    status: RED
+    blocker: No provider/hold lifecycle or genuine receipt.
+    next_safe_action: Resolve D06/D09 and provider governance.
+  - group: package_and_offline
+    slots: DEV-DS-031..035
+    count: 5
+    status: RED
+    blocker: Package invalidation and cross-runtime enforcement disconnected.
+    next_safe_action: Resolve D07 then implement DB/Field/offline boundaries.
+  - group: sync_health_and_rescue
+    slots: DEV-DS-036..038
+    count: 3
+    status: RED
+    blocker: Source, thresholds and rescue ownership absent.
+    next_safe_action: Resolve D08.
+  - group: evidence_and_audit
+    slots: DEV-DS-039..041
+    count: 3
+    status: RED
+    blocker: Canonical receipt/audit lifecycle and runtime proof absent.
+    next_safe_action: Resolve D06 and implement atomic evidence.
+  - group: presentation_matrix
+    slots: DEV-DS-042..048
+    count: 7
+    status: RED
+    blocker: Stable accepted EN/AR responsive accessible revision absent.
+    next_safe_action: Complete D10 design lineage and sponsor design acceptance.
+
+test_readiness_scorecard:
+  foundation:
+    status: RED
+    defined: 6_of_6
+    passed: 0_of_6
+    cases:
+      - {case_id: DEV-XRT-FND-01, blocker: canonical_manifest_device_cache_binding_absent, next: complete_DB02_FLD01_FLD02}
+      - {case_id: DEV-XRT-FND-02, blocker: cross_runtime_unregistered_guard_absent, next: complete_DB02_FLD01_FLD02}
+      - {case_id: DEV-XRT-FND-03, blocker: app_policy_authority_absent, next: resolve_D05_and_DB02}
+      - {case_id: DEV-XRT-FND-04, blocker: snapshot_manifest_hash_binding_absent, next: freeze_canonical_package_interface}
+      - {case_id: DEV-XRT-FND-05, blocker: integrated_two_user_offline_harness_not_built, next: implement_FLD02_then_QA}
+      - {case_id: DEV-XRT-FND-06, blocker: accepted_source_error_semantics_and_integration_absent, next: accept_design_and_implement_sources}
+  suspension:
+    status: RED
+    defined: 7_of_7
+    passed: 0_of_7
+    cases:
+      - {case_id: DEV-XRT-SUS-01, blocker: lifecycle_and_idempotency_authority_absent, next: resolve_D02_D06_and_DB01}
+      - {case_id: DEV-XRT-SUS-02, blocker: Field_open_gate_not_connected, next: complete_DB02_FLD01}
+      - {case_id: DEV-XRT-SUS-03, blocker: cache_validity_envelope_absent, next: complete_FLD01}
+      - {case_id: DEV-XRT-SUS-04, blocker: offline_post_suspension_policy_absent, next: resolve_D07_D08_and_FLD02}
+      - {case_id: DEV-XRT-SUS-05, blocker: replay_preflight_absent, next: complete_DB02_FLD02}
+      - {case_id: DEV-XRT-SUS-06, blocker: submit_device_guard_absent, next: complete_DB02_FLD02}
+      - {case_id: DEV-XRT-SUS-07, blocker: provider_contract_and_genuine_receipt_absent, next: resolve_D06_D09_then_live_provider_test}
+  package_expiry:
+    status: RED
+    defined: 7_of_7
+    passed: 0_of_7
+    cases:
+      - {case_id: DEV-XRT-EXP-01, blocker: invalidation_scope_authority_absent, next: resolve_D07_and_DB02}
+      - {case_id: DEV-XRT-EXP-02, blocker: server_open_invalidation_guard_absent, next: complete_DB02_FLD01}
+      - {case_id: DEV-XRT-EXP-03, blocker: cached_open_invalidation_guard_absent, next: complete_FLD01}
+      - {case_id: DEV-XRT-EXP-04, blocker: offline_cache_effect_policy_absent, next: resolve_D07_then_FLD02}
+      - {case_id: DEV-XRT-EXP-05, blocker: replay_denial_and_rescue_authority_absent, next: resolve_D08_then_DB02_FLD02}
+      - {case_id: DEV-XRT-EXP-06, blocker: submit_invalidation_and_in_progress_policy_absent, next: resolve_D07_then_DB02_FLD02}
+      - {case_id: DEV-XRT-EXP-07, blocker: correlation_and_genuine_receipt_absent, next: resolve_D06_D09_then_provider_QA}
+  remote_wipe:
+    status: RED
+    defined: 8_of_8
+    passed: 0_of_8
+    cases:
+      - {case_id: DEV-XRT-WIP-01, blocker: wipe_lifecycle_approval_idempotency_absent, next: resolve_D02_D03_D06_and_DB01}
+      - {case_id: DEV-XRT-WIP-02, blocker: genuine_provider_acceptance_absent, next: authorize_provider_and_run_live}
+      - {case_id: DEV-XRT-WIP-03, blocker: real_device_effect_and_scope_authority_absent, next: resolve_wipe_scope_and_run_real_device}
+      - {case_id: DEV-XRT-WIP-04, blocker: offline_wipe_pending_cross_runtime_guard_absent, next: complete_DB02_FLD01_FLD02}
+      - {case_id: DEV-XRT-WIP-05, blocker: provider_device_idempotent_retry_absent, next: implement_SVC01_DB01_and_run_real_device}
+      - {case_id: DEV-XRT-WIP-06, blocker: approved_local_data_scope_and_device_evidence_absent, next: resolve_policy_and_run_real_device}
+      - {case_id: DEV-XRT-WIP-07, blocker: wipe_pending_wiped_open_replay_submit_guards_absent, next: complete_DB02_FLD01_FLD02}
+      - {case_id: DEV-XRT-WIP-08, blocker: authenticated_mismatch_quarantine_retry_contract_absent, next: resolve_D06_D09_and_SVC01}
+  cross_cutting:
+    status: RED
+    defined: 2_of_2
+    passed: 0_of_2
+    cases:
+      - {case_id: DEV-XRT-XCT-01, blocker: expected_version_and_dispatch_winner_contract_absent, next: complete_DB01_SVC01}
+      - {case_id: DEV-XRT-XCT-02, blocker: atomic_command_audit_provider_transaction_not_implemented, next: complete_DB01_and_zero_dispatch_hook}
+
+evidence_readiness_scorecard:
+  - {profile: COMMON, status: RED, mapped_cases: 30, captured_cases: 0, blocker: no_executed_case_or_revision_binding}
+  - {profile: DB_ATOMIC, status: RED, mapped_cases: 28, captured_cases: 0, blocker: no_database_implementation_or_run}
+  - {profile: ADMIN_UI, status: RED, mapped_cases: 15, captured_cases: 0, blocker: no_accepted_design_or_Admin_runtime}
+  - {profile: FIELD_UI, status: RED, mapped_cases: 23, captured_cases: 0, blocker: no_cross_runtime_Field_implementation}
+  - {profile: LOCAL_STORE, status: RED, mapped_cases: 23, captured_cases: 0, blocker: no_real_IndexedDB_run}
+  - {profile: NETWORK_DEGRADED, status: RED, mapped_cases: 13, captured_cases: 0, blocker: no_offline_reconnect_run}
+  - {profile: PROVIDER_LIVE, status: RED, mapped_cases: 6, captured_cases: 0, blocker: no_provider_contract_or_genuine_receipt}
+  - {profile: DEVICE_LIVE, status: RED, mapped_cases: 3, captured_cases: 0, blocker: no_real_enrolled_nonproduction_device_run}
+  - {profile: I18N_RESP_A11Y, status: RED, mapped_cases: 30, captured_cases: 0, blocker: no_accepted_CD056_revision_or_browser_run}
+  - {profile: ROLLBACK, status: RED, mapped_cases: 30, captured_cases: 0, blocker: no_test_run_or_cleanup}
+
+next_safe_action_sequence:
+  - order: 1
+    owner: SPONSOR
+    action: Complete DEV-CMD-DEC-01..10 in one compatible answer set, including every required companion field.
+    exit: All nulls resolved without weakening preservation floor.
+  - order: 2
+    owner: GOVERNANCE_AND_PROVIDER_SECURITY
+    action: Validate all 82 checks and record canonical policy/provider authority or hold.
+    exit: Versioned answer, change-control and provider/hold references.
+  - order: 3
+    owner: CLAUDE_DESIGN
+    action: Produce route-specific CD-056 revision for all 48 states and presentation variants.
+    exit: Stable page/revision/frame IDs and sponsor acceptance.
+  - order: 4
+    owner: DB_AND_INTERFACE_REVIEW
+    action: Freeze command/receipt/package/cache interfaces and ordered additive migrations.
+    exit: Hash-bound interface and migration order.
+  - order: 5
+    owner: ORCHESTRATOR
+    action: Request exact non-overlapping leases from preflight 079.
+    exit: Named holders, branches/worktrees, exact paths, expiry, tests, rollback and reviewer.
+  - order: 6
+    owner: IMPLEMENTATION_AND_DATA_LANES
+    action: Execute bounded DB, provider/hold, Admin, Field/offline and deterministic fixture work.
+    exit: Integrated clean revision with producer tests.
+  - order: 7
+    owner: QA_EVIDENCE_REVIEW
+    action: Run all 30 tests and produce schema-078 evidence with genuine provider/device proof where required.
+    exit: Thirty PASS dossiers, clean rollback and independent recommendation.
+
+explicit_non_actions:
+  - Do not grant any implementation/design/provider/data/QA lease from this scorecard.
+  - Do not treat the user's prior general approval as the missing structured answers.
+  - Do not design from current unsafe code or illustrative values.
+  - Do not seed provider/device receipts.
+  - Do not mark any state, boundary, test, requirement or evidence profile green.
+
+validation:
+  expected_decisions: 10
+  expected_boundaries: 12
+  expected_tests: 30
+  expected_design_slots: 48
+  expected_evidence_profiles: 10
+  decision_ids_unique: PASS_10_OF_10
+  boundary_ids_unique: PASS_12_OF_12
+  test_ids_unique: PASS_30_OF_30
+  design_slot_count: PASS_48
+  profile_names_match_078: PASS_10_OF_10
+  no_green_status: PASS
+  yaml_parse: PASS
+  diff_check: PASS
+
+safe_successor:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-INTAKE-PACKET-081
+  mode: READ_ONLY
+  purpose: >-
+    Produce a concise fillable ten-answer intake packet that preserves every
+    required companion field and compatibility check from 062/067/072, without
+    selecting options or recording decisions.

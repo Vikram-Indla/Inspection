@@ -42,7 +42,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
     // matching the /field top-level entry — not the desktop /login
     // story-panel surface.
     const pathname = (await headers()).get("x-pathname") ?? "";
-    redirect(pathname.startsWith("/field") ? "/login/field" : "/login");
+    redirect("/login");
   }
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,

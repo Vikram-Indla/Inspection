@@ -1,0 +1,406 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+status: READ_ONLY_QA_READINESS_CONSOLIDATED_BLOCKED_NO_LEASE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Consolidate the M11 test-gap, security verdict and future test
+  specifications into one sponsor-facing QA lease-readiness decision.
+  Deduplication applies to setup, execution and evidence collection only;
+  every one of the 361 frozen source case IDs remains independently traceable
+  and requires a verdict. No lease is issued or implied.
+
+frozen_authority:
+  KIMI-M11-TEST-EVIDENCE-GAP-MAP-032: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 920d500d5f2bdfa55da2fb2acac32b28346e3d668d7ac40f3ab88e00150d24fa
+  KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 782eba637010837658bb185cddda47c804b92f991cb504faced92bbb82c39b6a
+  KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048: f54e977cd7f69182e4044a30884873f8eb67e7b5b723216287a9797874d190a0
+  KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049: 2b056513d9f920c7d8fc48526ee2e77ccd2571a990eabf26afee1ea4353affd7
+  KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050: d969a53143543d6c4fae0df81e4c979d5e27b6e4ff298682995bf75fd24d47a7
+  KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051: bd4fb1fb3f18dc0f04b8ab196cd7e12fe3cab237fea5fcf0e5b653c26a442d9d
+
+hard_boundary:
+  - "No actual test, SQL, migration, deployment, provider, product, application, database, design, data, seed, branch or stash change."
+  - "No implementation, QA, data, provider, migration, evidence or reviewer lease is granted or implied."
+  - "No provider value, policy threshold, owner, SLA, timeout, retry, secret, OTP or authority is invented."
+  - "Every positive authority and expected contract must come from accepted corrected packets."
+  - "Zero change to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+readiness_verdict:
+  result: BLOCKED_NOT_READY_FOR_QA_LEASE
+  QA_leases_issued: 0
+  implementation_leases_issued: 0
+  data_leases_issued: 0
+  executable_tests_ready: false
+  runtime_security_certified: false
+  requirement_credit: 0
+  explanation: >-
+    The specifications are complete enough to define future QA scope, but the
+    corrected Kimi packets have not been captured or accepted, review 025 has
+    not run, corrected 009r and a single QA owner are not accepted, live
+    catalog facts remain unknown, provider completion is blocked, exact
+    implementation ownership is unassigned, and no executable harness exists.
+
+source_case_inventory:
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 37
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 26
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 36
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 45
+  KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 40
+  KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048: 38
+  KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049: 43
+  KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050: 46
+  KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051: 50
+  total_source_case_ids: 361
+  unique_source_case_ids: 361
+  deleted_or_waived_cases: 0
+
+deduplication_contract:
+  rule: >-
+    A canonical proof run may satisfy multiple source case IDs only when the
+    run records every mapped case ID, executes every distinct assertion,
+    preserves each persona/resource/failure variant, and produces a separate
+    verdict per source case. Shared fixtures, catalog snapshots, browser
+    sessions, transaction schedules and evidence scans may be reused.
+  prohibited:
+    - "Deleting a case because another case is similar."
+    - "Replacing ordinary-persona proof with service_role, owner, superuser or BYPASSRLS."
+    - "Using one provider outcome to stand in for another outcome class."
+    - "Using a source scan as runtime proof."
+    - "Reusing historical pre-correction evidence as certification."
+    - "Collapsing missing and out-of-scope cases without comparing both."
+    - "Collapsing CSV, JSON, UI, RPC, Data API and audit surfaces into one unobserved assertion."
+
+canonical_proof_clusters:
+  - id: QA-CLUSTER-01-CATALOG-IDENTITY
+    scope: "Schema/table/function identity, owner attributes, security mode, settings, overloads, dependencies and extension namespace."
+    source_specs: [043, 050]
+    primary_path: TEST-CATALOG
+  - id: QA-CLUSTER-02-ACL-RLS-DEFAULT-PRIVILEGES
+    scope: "PUBLIC/anon/authenticated ACLs, per-command policies, default privileges, helper graph and privilege escalation."
+    source_specs: [043, 046, 050]
+    primary_path: TEST-CATALOG
+  - id: QA-CLUSTER-03-ATOMIC-CREATION
+    scope: "Atomic session/participant creation, authority, rollback, duplicate creation and audit cardinality."
+    source_specs: [043, 045, 046, 048, 050, 051]
+    primary_path: TEST-010
+  - id: QA-CLUSTER-04-WINDOW-ACTIONS
+    scope: "Creation successor, reschedule, waiting-room open, window boundaries, stale revision and races."
+    source_specs: [043, 045, 046, 048, 050, 051]
+    primary_path: TEST-011
+  - id: QA-CLUSTER-05-PERMISSION-OTP
+    scope: "Assigned-Inspector OTP, persona denial, row locks, counters, idempotency and provider fail-closed."
+    source_specs: [043, 044, 045, 046, 048, 050, 051]
+    primary_path: TEST-013
+  - id: QA-CLUSTER-06-JOIN-BEGIN
+    scope: "Atomic join/begin, canonical state/lock order, direct-CAS denial, concurrency, rollback and events."
+    source_specs: [043, 045, 046, 048, 050, 051]
+    primary_path: TEST-014
+  - id: QA-CLUSTER-07-SAFE-AUDIT-RAW-DENIAL
+    scope: "Safe projection, raw participant audit denial, specialized trigger, immutable history and global consumers."
+    source_specs: [043, 045, 046, 047, 048, 050, 051]
+    primary_path: TEST-015
+  - id: QA-CLUSTER-08-SECRET-SENTINEL-EXPORT
+    scope: "Secret/provider/personal/technical sentinel absence across storage, RPC, DOM, logs, CSV, JSON and evidence."
+    source_specs: [043, 044, 047, 048, 049, 051]
+    primary_paths: [TEST-015, TEST-BROWSER]
+  - id: QA-CLUSTER-09-PERSONA-MATRIX
+    scope: "PUBLIC, anon, unrelated, assigned/unassigned Inspector, Reviewer/Auditor, Planner/Operations, admins and technical identities."
+    source_specs: [043, 044, 046, 048, 050]
+    primary_paths: [TEST-CATALOG, TEST-010, TEST-011, TEST-013, TEST-014, TEST-015, TEST-BROWSER]
+  - id: QA-CLUSTER-10-NEUTRAL-BOUNDARY
+    scope: "Missing/out-of-scope equivalence across RPC, UI, Data API, audit, export and provider callback."
+    source_specs: [043, 044, 046, 047, 048, 049]
+    primary_paths: [TEST-013, TEST-015, TEST-BROWSER, TEST-PROVIDER]
+  - id: QA-CLUSTER-11-PROVIDER-DEGRADED
+    scope: "Not configured, unavailable, rejected, timeout/indeterminate, partial, accepted-not-delivered and false success."
+    source_specs: [043, 044, 045, 047, 048, 051]
+    primary_paths: [TEST-PROVIDER, TEST-013, TEST-015, TEST-BROWSER]
+  - id: QA-CLUSTER-12-PROVIDER-CALLBACK
+    scope: "Callback authentication, freshness, replay, binding, rotation, payload integrity, idempotency and redaction."
+    source_specs: [044, 048, 049, 050, 051]
+    primary_paths: [TEST-PROVIDER, TEST-013, TEST-015, TEST-CATALOG, TEST-BROWSER]
+  - id: QA-CLUSTER-13-CONCURRENCY
+    scope: "Creation, window, begin/close, OTP/provider and callback coordinated races under deterministic lock order."
+    source_specs: [043, 044, 045, 049, 051]
+    primary_paths: [TEST-010, TEST-011, TEST-013, TEST-014, TEST-015, TEST-PROVIDER]
+  - id: QA-CLUSTER-14-ROLLBACK-EVENT-CARDINALITY
+    scope: "Forced partial failures, rollback residue, one semantic event, immutable audit and idempotent recovery."
+    source_specs: [043, 044, 045, 047, 049, 051]
+    primary_paths: [TEST-010, TEST-011, TEST-013, TEST-014, TEST-015, TEST-PROVIDER]
+  - id: QA-CLUSTER-15-APP-BROWSER-REGRESSION
+    scope: "Ordinary-persona UI/RPC behavior, no legacy fallback, neutral copy, export filtering and no technical leakage."
+    source_specs: [043, 044, 046, 047, 048, 049, 051]
+    primary_path: TEST-BROWSER
+  - id: QA-CLUSTER-16-DEPLOYMENT-PREFLIGHT-EXPANSION-SWITCH
+    scope: "Authority/dependency/collision checks, backward-compatible expansion, safe trigger/projection and governed application switch."
+    source_specs: [045, 050, 051]
+    primary_paths: [TEST-ROLLOUT, TEST-CATALOG]
+  - id: QA-CLUSTER-17-QUIESCE-CONTRACT-RECOVERY
+    scope: "OTP/provider pause, quiesce/drain, active work, no-traffic 013-to-015, fail-closed roll-forward."
+    source_specs: [045, 051]
+    primary_path: TEST-ROLLOUT
+  - id: QA-CLUSTER-18-CERTIFICATION-EVIDENCE
+    scope: "Post-deploy catalog/runtime/negative/regression certification, evidence integrity and reviewer signoff."
+    source_specs: [043, 044, 045, 046, 047, 048, 049, 050, 051]
+    primary_paths: [TEST-CATALOG, TEST-BROWSER, TEST-ROLLOUT]
+
+prerequisite_decisions:
+  corrected_packet_contract:
+    decision: BLOCK
+    required:
+      - "Capture and validate ordered corrected 010/011/014/013/015/017 and manifest."
+      - "Run review 025 only after actual corrected inputs exist."
+  negative_test_authority:
+    decision: BLOCK
+    required:
+      - "Corrected 009r accepted."
+      - "One exact QA owner approved."
+  catalog_authority:
+    decision: BLOCK
+    required:
+      - "Approved isolated catalog capture."
+      - "Exact owner/BYPASSRLS, extension, ACL, policy, trigger, index, dependency and default privilege manifests."
+  implementation_stack:
+    decision: BLOCK
+    required:
+      - "Accepted corrected source packets and exact final function/application manifests."
+      - "One non-overlapping implementation owner per file/signature/migration/policy/trigger."
+  persona_fixtures:
+    decision: BLOCK
+    required:
+      - "Ordinary authenticated sessions for every required persona."
+      - "Exact assignment/resource relationships and authority citations."
+      - "No service_role/owner/BYPASSRLS substitution."
+  data_fixtures:
+    decision: BLOCK
+    required:
+      - "Fresh isolated database per run."
+      - "Unique opaque run_id graph and deterministic teardown."
+      - "Symbolic non-real secret sentinel and transaction-local engine injection where separately authorized."
+      - "No production/preproduction application data."
+  provider:
+    fail_closed_cases: READY_IN_SPEC_ONLY
+    positive_delivery_cases: BLOCK
+    required_for_positive:
+      - "Approved configured provider."
+      - "Approved callback authentication/freshness/binding/rotation contract."
+      - "Approved delivery-evidence semantics."
+  deployment:
+    decision: BLOCK
+    required:
+      - "Exact migration chain, application switch, quiesce/drain and 013-to-015 ownership manifests."
+      - "All active audit consumers identified."
+  evidence:
+    decision: BLOCK
+    required:
+      - "Approved evidence storage and redaction path."
+      - "Producer attestation, file hashes, bundle index, teardown and independent reviewer."
+  collision:
+    decision: BLOCK
+    required:
+      - "Fresh ACTIVE_WORKTREE_LEASES.csv read immediately before any lease."
+      - "No path, migration filename, function signature, policy, trigger or application-file overlap."
+
+proposed_future_QA_leases:
+  status: PROPOSED_NOT_ISSUED
+  count: 9
+  leases:
+    TEST-CATALOG:
+      path: supabase/tests/m11_stack_security_catalog.sql
+      owner: M11_SECURITY_CATALOG_QA_OWNER_TBD
+      prerequisites: [CATALOG_AUTHORITY, ACCEPTED_FINAL_MANIFESTS, COLLISION_CLEAR]
+    TEST-010:
+      path: supabase/tests/m11_010_creation_atomicity_security.sql
+      owner: M11_SQL_010_QA_OWNER_TBD
+      prerequisites: [ACCEPTED_CORRECTED_010, ACCEPTED_009R, COLLISION_CLEAR]
+    TEST-011:
+      path: supabase/tests/m11_011_window_actions_security.sql
+      owner: M11_SQL_011_QA_OWNER_TBD
+      prerequisites: [ACCEPTED_CORRECTED_011, AUTHORITY_CITATIONS, COLLISION_CLEAR]
+    TEST-013:
+      path: supabase/tests/m11_013_permission_otp_security.sql
+      owner: M11_SQL_013_QA_OWNER_TBD
+      prerequisites: [ACCEPTED_CORRECTED_013_015, PROVIDER_FAIL_CLOSED_CONTRACT, COLLISION_CLEAR]
+    TEST-014:
+      path: supabase/tests/m11_014_join_begin_atomicity.sql
+      owner: M11_SQL_014_QA_OWNER_TBD
+      prerequisites: [ACCEPTED_CORRECTED_014, FINAL_POST_013_MODEL, COLLISION_CLEAR]
+    TEST-015:
+      path: supabase/tests/m11_015_audit_neutral_security.sql
+      owner: M11_SQL_015_QA_OWNER_TBD
+      prerequisites: [ACCEPTED_CORRECTED_015, GLOBAL_AUDIT_INVENTORY, COLLISION_CLEAR]
+    TEST-PROVIDER:
+      path: apps/web/e2e/m11-provider-truth.spec.ts
+      owner: M11_PROVIDER_QA_OWNER_TBD
+      prerequisites: [FAIL_CLOSED_PROVIDER_CONTRACT, CALLBACK_CONTRACT_FOR_POSITIVE_CASES, COLLISION_CLEAR]
+    TEST-BROWSER:
+      path: apps/web/e2e/m11-remediation-stack.spec.ts
+      owner: M11_STACK_BROWSER_QA_OWNER_TBD
+      prerequisites: [INTEGRATED_FINAL_STACK, ORDINARY_PERSONAS, COLLISION_CLEAR]
+    TEST-ROLLOUT:
+      path: apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+      owner: M11_ROLLOUT_QA_OWNER_TBD
+      prerequisites: [INTEGRATED_FINAL_STACK, QUIESCE_REHEARSAL, COLLISION_CLEAR]
+
+future_lease_creation_order:
+  order:
+    - TEST-CATALOG
+    - TEST-010
+    - TEST-011
+    - TEST-014
+    - TEST-013
+    - TEST-015
+    - TEST-PROVIDER
+    - TEST-BROWSER
+    - TEST-ROLLOUT
+  rule: >-
+    This order is a readiness dependency order, not an issued lease sequence.
+    Non-overlapping test-file implementation may be parallelized only after
+    each path's prerequisites and collision check independently pass.
+
+future_execution_order:
+  - "Validate frozen packet/test-spec hashes and exact case index."
+  - "Provision isolated run and ordinary persona fixture graph."
+  - "Capture approved catalog snapshot and run TEST-CATALOG."
+  - "Run atomic creation and window-action database suites."
+  - "Run join/begin, permission/OTP and audit suites under the final integrated expansion state."
+  - "Run provider fail-closed/callback suites; mark positive provider cases BLOCKED if authority/configuration remains absent."
+  - "Run browser/persona/neutral/export/regression suite."
+  - "Run deployment/quiesce/013-to-015 rehearsal last against the otherwise certified stack."
+  - "Repeat catalog, persona, redaction, audit and legacy-path checks after contraction."
+  - "Package evidence and obtain independent review before sponsor acceptance."
+
+stop_conditions:
+  - "Any source authority hash differs."
+  - "Kimi corrected payload is absent, malformed, truncated, unordered or unvalidated."
+  - "Review 025 or corrected 009r acceptance is absent."
+  - "Any exact owner, ACL, dependency, extension, policy, trigger, index or default privilege remains unknown."
+  - "Any active lease or file/signature/migration/policy/trigger collision exists."
+  - "Any positive persona expectation lacks exact authority."
+  - "Any ordinary-persona proof uses service_role, owner, superuser or BYPASSRLS."
+  - "Any provider success/delivery claim lacks approved configured provider evidence."
+  - "Any raw participant audit consumer or implementation owner remains unidentified."
+  - "Any secret, personal data, provider payload, raw query, function body or application row enters evidence."
+  - "Any missing/out-of-scope pair differs on a required neutrality dimension."
+  - "Any direct DML, generic append, legacy signature or application fallback remains."
+  - "Any concurrency case lacks a coordinated schedule or deterministic lock proof."
+  - "Any rollback leaves state, counter, provider, audit or event residue."
+  - "Any historical audit checksum changes."
+  - "Any deployment phase lacks predecessor evidence."
+  - "Traffic or in-flight work exists during the 013-to-015 contract boundary."
+  - "A failed post-contract certification attempts privilege widening or rollback to insecure definitions."
+  - "Any required case, evidence artifact, teardown result or reviewer signoff is missing."
+
+evidence_contract:
+  shared_per_run:
+    - run_id
+    - frozen_authority_hashes
+    - source_case_index_hash
+    - code_commit
+    - migration_chain_hash
+    - active_lease_snapshot_hash
+    - catalog_snapshot_hash
+    - fixture_graph_hash
+    - ordinary_persona_session_manifest
+    - provider_state_class
+    - phase_timeline
+  per_case:
+    - source_case_id
+    - canonical_proof_cluster
+    - exact assertions
+    - observed_result
+    - status_token_message_or_payload_hash
+    - state_before_after
+    - provider_attempt_count_when_applicable
+    - audit_and_semantic_event_cardinality
+    - redaction_scan
+    - evidence_reuse_references
+    - verdict
+  bundle:
+    - source_case_coverage_matrix
+    - file_index_and_SHA256
+    - producer_attestation
+    - teardown_result
+    - independent_reviewer_signoff
+  release_rule: >-
+    Every one of the 361 source case IDs must have a non-inferred verdict and
+    complete mapped evidence. Any failed redaction, checksum, teardown,
+    coverage or reviewer control quarantines the entire bundle.
+
+rollback_and_recovery:
+  test_fixture_failure:
+    action: "Abort run, teardown isolated fixture graph and invalidate evidence."
+  pre_contract_deployment_failure:
+    action: "Use compatible rollback where accepted; retain inert expansion if safer; never widen privilege."
+  quiesce_or_drain_failure:
+    action: "Do not enter contract; remain quiesced and diagnose without forced data loss."
+  post_013_or_post_015_failure:
+    action: "Remain fail-closed and repair forward; never restore dev_code, broad grants, direct DML, raw audit or generic append."
+  certification_failure:
+    action: "Feature remains disabled until repaired and full recertification passes."
+  evidence_failure:
+    action: "Quarantine bundle and rerun affected cases; do not partially accept."
+
+acceptance_gates:
+  G1_CONTRACT:
+    pass: "Corrected packets captured/validated, review 025 allowed, corrected 009r accepted."
+  G2_COLLISION:
+    pass: "Nine exact QA paths have unique approved owners/worktrees and no overlap."
+  G3_FIXTURES:
+    pass: "Isolated data graph, ordinary personas, provider classes and teardown approved."
+  G4_CATALOG:
+    pass: "Owner/ACL/RLS/function/dependency/default privilege/trigger/index checks exact."
+  G5_DATABASE_RUNTIME:
+    pass: "Atomicity, window, join/begin, OTP, audit, concurrency and rollback suites pass."
+  G6_PERSONA_NEUTRALITY:
+    pass: "Ordinary persona, direct-DML, neutral boundary and escalation negatives pass."
+  G7_PROVIDER:
+    pass: "Fail-closed cases pass; positive cases pass only with approved provider or remain explicitly blocked."
+  G8_REDACTION_EVIDENCE:
+    pass: "Raw denial, safe projection, CSV/JSON/UI/log/evidence scans and immutable history pass."
+  G9_DEPLOYMENT:
+    pass: "Expansion/switch/pause/quiesce/drain/013-to-015/certify/recovery rehearsal passes."
+  G10_INDEPENDENT_REVIEW:
+    pass: "All 361 case verdicts and bundle integrity independently accepted."
+  G11_SPONSOR:
+    pass: "Sponsor approves exact QA/implementation lease decision after G1-G10."
+
+queued_next:
+  packet: KIMI-M11-FINAL-HANDOFF-SCORECARD-RECONCILIATION-053
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Reconcile packet status, hashes, credit, blockers, queued work and Kimi capture dependency; no lease or completion claim."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_process_last_observed_alive: true
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  source_spec_count: 9
+  source_case_ids_expected: 361
+  source_case_ids_observed: 361
+  source_case_ids_unique: PASS
+  deleted_or_waived_cases: 0
+  canonical_proof_cluster_count: 18
+  proposed_QA_path_count: 9
+  proposed_QA_paths_unique: PASS
+  acceptance_gate_count: 11
+  QA_leases_issued: 0
+  implementation_leases_issued: 0
+  actual_tests_created_or_edited: 0
+  implementation_claimed: false
+  requirement_credit: 0
+  non_mutating_boundary_checked: PASS

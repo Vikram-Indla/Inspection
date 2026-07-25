@@ -1,0 +1,542 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+status: READ_ONLY_STATIC_INVENTORY_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Inventory every statically discoverable code, test, report and operational
+  consumer of M11 virtual-session audit events, identify required fields,
+  missing consumers, evidence gaps and exact blockers, without executing a
+  mutation or changing product authority.
+
+source_pin:
+  repository: /Users/vikramindla/Developer/Inspection
+  ref: origin/main
+  commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  inspection_method: "git object reads and text search only"
+
+authority:
+  requirements:
+    - CR-343
+    - CR-346
+    - CR-347
+    - CR-348
+    - CR-353
+  acceptance:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  routes:
+    - /virtual
+    - /virtual/:id
+    - /admin/audit
+  design_surface: SAQEEL Virtual
+
+hard_boundary:
+  - "Read-only inspection of origin/main plus this one owned coordination packet."
+  - "No database, seed, application, test, design, branch, stash, owner, lease, dispatch or shared-control mutation."
+  - "No runtime execution, browser acceptance, provider assertion or requirement credit."
+
+canonical_event_store:
+  table: public.audit_events
+  schema_fields:
+    - id
+    - actor
+    - object_type
+    - object_id
+    - action
+    - before_state
+    - after_state
+    - requirement_refs
+    - config_versions
+    - occurred_at
+  immutability:
+    source: supabase/migrations/0005_audit_absolute_immutability.sql
+    rule: "UPDATE and DELETE are rejected; authenticated mutation privileges are revoked."
+  read_roles:
+    source:
+      - supabase/migrations/0002_rbac_audit.sql
+      - supabase/migrations/0019_w5_records.sql
+    broad_roles:
+      - auditor
+      - ops
+      - security_admin
+      - leadership
+      - reviewer
+      - planner
+    additional_role: compliance_admin
+
+M11_event_producers:
+  - producer_id: P-073-01
+    path: supabase/migrations/0018_w4_notifications_reviews.sql
+    mechanism: trg_audit_virtual_sessions
+    object_type: virtual_sessions
+    actions: [INSERT, UPDATE, DELETE]
+    fields_written: [actor, object_type, object_id, action, before_state, after_state, occurred_at]
+    observation: "Every row write is copied by audit_row_change."
+  - producer_id: P-073-02
+    path: supabase/migrations/0018_w4_notifications_reviews.sql
+    mechanism: trg_audit_virtual_participants
+    object_type: virtual_participants
+    actions: [INSERT, UPDATE, DELETE]
+    fields_written: [actor, object_type, object_id, action, before_state, after_state, occurred_at]
+    observation: >-
+      UPDATE snapshots include the full virtual_participants row, including
+      verification_record.
+  - producer_id: P-073-03
+    path: supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    mechanism: vp_request_otp
+    object_type: virtual_participants
+    actions: [OTP_SENT]
+    fields_written: [actor, object_type, object_id, action, after_state, occurred_at]
+    observation: "Writes a reduced resend counter, in addition to the trigger-produced UPDATE row."
+  - producer_id: P-073-04
+    path: supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    mechanism: vp_verify_otp
+    object_type: virtual_participants
+    actions: [OTP_VERIFIED, OTP_FAILED]
+    fields_written: [actor, object_type, object_id, action, after_state, occurred_at]
+    observation: "Writes reduced attempt counters, in addition to the trigger-produced UPDATE row."
+  - producer_id: P-073-05
+    paths:
+      - apps/web/src/app/(app)/virtual/actions.ts
+      - supabase/migrations/0018_w4_notifications_reviews.sql
+    mechanism: "virtual row writes plus vs_append_event"
+    object_types: [virtual_sessions, virtual_participants]
+    actions:
+      - INSERT
+      - UPDATE
+      - DELETE
+    timeline_events:
+      - scheduled
+      - rescheduled
+      - waiting_opened
+      - joined
+      - verified
+      - begin
+      - closed
+    observation: >-
+      The application also maintains virtual_sessions.timeline. That JSON
+      timeline is a parallel presentation source; its write causes an immutable
+      audit_events UPDATE row but it is not itself the audit_events store.
+
+consumer_inventory:
+  - consumer_id: C-073-01
+    kind: DATABASE_READ_SEAM
+    path: supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    component: vs_audit_trail
+    direct_M11_consumer: true
+    scope: "one virtual session row plus its participant rows"
+    personas:
+      - ops
+      - reviewer
+      - auditor
+      - compliance_admin
+      - planner
+      - assigned_inspector
+    required_fields:
+      - occurred_at
+      - action
+      - object_type
+      - object_id
+      - actor
+      - after_state
+    returned_shape:
+      - at
+      - action
+      - object_type
+      - object_id
+      - actor
+      - detail
+    status: PRESENT_UNSAFE_DETAIL
+    gap: >-
+      detail is the unredacted after_state. Trigger-produced participant UPDATE
+      rows can therefore expose verification_record, including code_hash,
+      expiry, counters and provider text, through a SECURITY DEFINER function.
+  - consumer_id: C-073-02
+    kind: PRODUCT_UI
+    path: apps/web/src/app/(app)/virtual/[id]/page.tsx
+    component: VirtualRoom
+    direct_M11_consumer: false
+    consumed_source: virtual_sessions.timeline
+    required_fields:
+      - event
+      - at
+      - actor
+      - detail.participant
+      - detail.reason
+      - detail.appointment_at
+    status: PARALLEL_TIMELINE_ONLY
+    gap: >-
+      The route never calls vs_audit_trail and therefore does not render the
+      immutable audit_events stream. It cannot show OTP_SENT, OTP_FAILED or
+      OTP_VERIFIED audit rows, and it does not prove reviewer-facing complete
+      meeting audit availability.
+  - consumer_id: C-073-03
+    kind: PRODUCT_UI
+    path: apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    component: Room
+    direct_M11_consumer: false
+    consumed_sources:
+      - virtual_sessions
+      - virtual_participants
+      - vp_otp_status
+    status: LIVE_STATE_NOT_AUDIT_CONSUMER
+    gap: "No audit-event read, audit timeline render or redacted audit projection."
+  - consumer_id: C-073-04
+    kind: PRODUCT_UI
+    path: apps/web/src/app/(app)/admin/audit/page.tsx
+    component: AuditPage
+    direct_M11_consumer: true
+    scope: "unfiltered newest global audit rows unless an object UUID is supplied"
+    required_fields:
+      - id
+      - actor
+      - object_type
+      - object_id
+      - action
+      - before_state
+      - after_state
+      - occurred_at
+    status: PRESENT_RAW_GLOBAL
+    gap: >-
+      Authorized broad-audit roles can receive full participant before_state
+      and after_state, including verification_record. No M11-specific
+      redaction or event normalization is present.
+  - consumer_id: C-073-05
+    kind: PRODUCT_UI
+    path: apps/web/src/app/(app)/admin/page.tsx
+    component: AdminHome
+    direct_M11_consumer: true
+    scope: "head-count of all visible audit_events"
+    required_fields: [id]
+    status: PRESENT_AGGREGATE_ONLY
+    gap: "Counts M11 rows but exposes no event detail; not a session audit timeline."
+  - consumer_id: C-073-06
+    kind: TEST
+    path: apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    component: "CD-042 audit-read seam"
+    direct_M11_consumer: true
+    required_fields:
+      - action
+      - object_type
+      - object_id
+    assertions:
+      - "OTP_SENT exists for the staged participant."
+      - "Every returned row is virtual_sessions or virtual_participants."
+      - "An unassigned inspector is rejected."
+    status: PRESENT_PARTIAL_CONTRACT
+    gap: >-
+      It does not assert the complete returned shape, chronology, duplicate
+      trigger/explicit events, redaction of verification_record, assigned
+      inspector success, reviewer success, empty history, deletion behavior or
+      pagination/bounds.
+  - consumer_id: C-073-07
+    kind: REPORT_EVIDENCE
+    path: product-contract/evidence/B6-EV-001-otp-flow.txt
+    component: OTP audit count proof
+    direct_M11_consumer: true
+    required_fields:
+      - action
+      - count
+    status: HISTORICAL_PARTIAL_EVIDENCE
+    gap: >-
+      Proves OTP action counts for one run but has no immutable execution
+      identity, raw result hash, session audit read-seam proof or secret
+      redaction proof.
+  - consumer_id: C-073-08
+    kind: REPORT_EVIDENCE
+    path: product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
+    component: verified-transition live gate audit
+    direct_M11_consumer: false
+    consumed_fact: "vs_mark_session_verified availability and focused journey result"
+    status: ADJACENT_TRANSITION_EVIDENCE
+    gap: "Does not inspect or certify M11 audit-event consumers."
+  - consumer_id: C-073-09
+    kind: REPORT_EVIDENCE
+    path: product-contract/evidence/CD-043_D2L_WIRING_CLOSURE_2026-07-15.md
+    component: virtual boundary-state closure report
+    direct_M11_consumer: false
+    consumed_fact: "virtual_sessions.timeline is described as append-only"
+    status: PARALLEL_TIMELINE_EVIDENCE
+    gap: >-
+      Describes the page timeline but does not prove that the audit_events
+      read seam is wired or that sensitive participant snapshots are redacted.
+  - consumer_id: C-073-10
+    kind: OPERATIONAL_CATALOG
+    path: product-contract/seeding-discovery/SCHEMA_CATALOG.csv
+    component: "vs_audit_trail and virtual audit trigger inventory"
+    direct_M11_consumer: true
+    required_fields:
+      - function signature
+      - security mode
+      - trigger table
+      - trigger events
+      - applied state
+    status: PRESENT_METADATA_ONLY
+    gap: "Catalog presence does not prove runtime behavior or safe output."
+  - consumer_id: C-073-11
+    kind: OPERATIONAL_CATALOG
+    path: product-contract/seeding-discovery/ENDPOINT_DATA_SOURCE_MATRIX.csv
+    component: EP-057 and EP-058
+    direct_M11_consumer: true
+    required_fields:
+      - route
+      - tables
+      - RPCs
+      - realism
+      - downstream
+      - test
+    status: PRESENT_INCOMPLETE
+    gap: >-
+      EP-058 lists timeline/audit behavior but omits vs_audit_trail even though
+      the RPC exists, matching the missing application consumer.
+  - consumer_id: C-073-12
+    kind: OPERATIONAL_SEED_CONTRACT
+    path: product-contract/seeding-discovery/SEED_SCENARIO_CATALOG.csv
+    component: SCN-025 and SCN-026
+    direct_M11_consumer: true
+    required_fields:
+      - session state
+      - participant verification state
+      - audit expectation
+      - provider-degraded expectation
+    status: EXPECTATION_ONLY
+    gap: >-
+      The scenarios expect audit events, but no consumer-side assertion proves
+      complete session history, redaction or provider disconnect/reconnect
+      events.
+  - consumer_id: C-073-13
+    kind: GENERIC_RUNTIME_EVALUATED
+    paths:
+      - apps/web/src/app/(app)/dashboard/page.tsx
+      - apps/web/src/app/(app)/reviews/[id]/page.tsx
+      - apps/web/src/app/(app)/visits/[id]/page.tsx
+    direct_M11_consumer: false
+    status: EXCLUDED_BY_OBJECT_SCOPE
+    reason: >-
+      Dashboard scopes object IDs to visits, inspections, reviews and
+      violations; review scopes inspection/submission/review IDs; visit detail
+      fixes object_type=visits. None reads virtual_sessions or
+      virtual_participants audit rows.
+  - consumer_id: C-073-14
+    kind: SEMANTIC_REPLAY_EVALUATED
+    paths:
+      - apps/web/src/lib/workflow/events.ts
+      - supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql
+    direct_M11_consumer: false
+    status: NO_M11_SOURCE_CONTRACT
+    reason: >-
+      No audit_event_source_contract maps virtual_sessions or
+      virtual_participants actions to a registered semantic event, so M11
+      audit rows cannot enter this consumer through the contracted append
+      boundary.
+
+required_event_field_crosswalk:
+  - requirement: CR-343
+    needed_business_facts:
+      - session creation
+      - cancellation
+      - operational state updates
+    current_sources:
+      - "virtual_sessions INSERT/UPDATE audit snapshots"
+      - "virtual_sessions.timeline events"
+    missing_or_ambiguous:
+      - "No normalized event taxonomy links raw UPDATE rows to the required business facts."
+      - "No application audit_events consumer displays the immutable facts."
+  - requirement: CR-346
+    needed_business_facts:
+      - inspector join time
+      - factory representative join time
+    current_sources:
+      - virtual_participants.joined_at
+      - "virtual_participants UPDATE audit snapshot"
+      - "virtual_sessions.timeline joined event"
+    missing_or_ambiguous:
+      - "No proof that both required roles receive separate joins."
+      - "No reviewer-facing immutable join audit consumer."
+  - requirement: CR-347
+    needed_business_facts:
+      - connected
+      - disconnected
+      - reconnected
+      - session end
+    current_sources:
+      - "session close can be inferred from virtual_sessions UPDATE/timeline"
+    missing_or_ambiguous:
+      - "No provider callback contract or stored disconnected/reconnected events."
+  - requirement: CR-348
+    needed_business_facts:
+      - join
+      - leave
+      - disconnect
+      - reconnect
+      - reviewer-visible complete audit timeline
+    current_sources:
+      - vs_audit_trail
+      - virtual_sessions.timeline
+    missing_or_ambiguous:
+      - "No leave/disconnect/reconnect producers."
+      - "No reviewer UI wired to vs_audit_trail."
+      - "No complete-history bounds or pagination contract."
+  - requirement: CR-353
+    needed_business_facts:
+      - verification time
+      - verification method
+      - representative details
+    current_sources:
+      - virtual_participants.verified_at
+      - virtual_participants.verification_record
+      - OTP_VERIFIED reduced audit event
+    missing_or_ambiguous:
+      - "The reduced event omits representative details and method."
+      - "The raw trigger event contains excess sensitive material."
+      - "No approved safe reviewer projection is defined."
+
+security_findings:
+  - finding_id: F-073-01
+    severity: P0_BLOCKER
+    title: "Safe seam returns raw participant verification_record"
+    evidence:
+      - "audit_row_change serializes the complete virtual_participants row."
+      - "verification_record contains code_hash, expires_at, attempts, resends, last_sent_at and provider."
+      - "vs_audit_trail returns after_state unchanged as detail."
+      - "The SECURITY DEFINER seam is callable by the assigned inspector and listed staff roles."
+    implication: >-
+      The seam intended to avoid broad audit-table access can disclose the very
+      OTP verification material that vp_otp_status deliberately redacts.
+    disposition: BLOCK_DUE_TO_MISSING_REDACTION_CONTRACT
+  - finding_id: F-073-02
+    severity: P0_BLOCKER
+    title: "Global audit UI renders raw before/after state"
+    evidence:
+      - "Admin audit selects before_state and after_state without M11 redaction."
+      - "Virtual participant audit triggers serialize verification_record."
+    implication: "Broad audit readers may receive unnecessary OTP-derived sensitive state."
+    disposition: BLOCK_DUE_TO_MISSING_REDACTION_CONTRACT
+  - finding_id: F-073-03
+    severity: P1
+    title: "One OTP action produces two audit records with different shapes"
+    evidence:
+      - "The participant UPDATE trigger writes a raw UPDATE event."
+      - "The OTP RPC separately writes OTP_SENT, OTP_VERIFIED or OTP_FAILED."
+    implication: >-
+      Consumers need an approved deduplication/presentation rule; otherwise
+      one business action can appear twice and counts can be misleading.
+    disposition: RETURN_FOR_EVENT_PRESENTATION_CONTRACT
+
+missing_consumers:
+  - missing_id: MC-073-01
+    requirement: CR-348
+    consumer: "Reviewer-facing complete M11 session audit timeline"
+    exact_gap: "No application component calls vs_audit_trail."
+  - missing_id: MC-073-02
+    requirements: [CR-343, CR-346, CR-348, CR-353]
+    consumer: "Redacted M11 audit projection"
+    exact_gap: "No approved projection removes OTP secret-derived fields while retaining required proof."
+  - missing_id: MC-073-03
+    requirement: CR-348
+    consumer: "Complete-history pagination/bounds behavior"
+    exact_gap: "vs_audit_trail aggregates the full session history with no limit or cursor."
+  - missing_id: MC-073-04
+    requirements: [CR-347, CR-348]
+    consumer: "Provider lifecycle audit consumer"
+    exact_gap: "There are no leave/disconnect/reconnect producers to consume."
+  - missing_id: MC-073-05
+    requirement: WA-M11-AC-005
+    consumer: "Regression assertion for raw-secret non-disclosure"
+    exact_gap: "No test rejects code_hash/provider leakage through either audit UI/read seam."
+
+evidence_gaps:
+  - "No runtime capture of vs_audit_trail output for all authorized personas."
+  - "No negative proof that unassigned inspector, unrelated staff and anonymous callers cannot read a session."
+  - "No assertion that code_hash and the full verification_record are absent from every consumer."
+  - "No complete event-set proof for creation, joins by both roles, verification, begin, cancellation/close and operational updates."
+  - "No leave/disconnect/reconnect evidence because no provider event contract is implemented."
+  - "No reviewer UI screenshot or browser evidence for a complete audit timeline."
+  - "No ordering, duplicate-event, empty-history, high-volume or deletion-history test."
+  - "No catalog reconciliation that adds vs_audit_trail to EP-058."
+
+exact_blockers:
+  - blocker_id: BLK-073-01
+    state: OPEN
+    reason: "No accepted redaction contract for virtual_participants audit snapshots."
+    blocks:
+      - "Wiring vs_audit_trail into a product UI"
+      - "Claiming CR-353 safe reviewer availability"
+  - blocker_id: BLK-073-02
+    state: OPEN
+    reason: "No provider callback/lifecycle contract for leave, disconnect and reconnect."
+    blocks:
+      - CR-347
+      - CR-348
+  - blocker_id: BLK-073-03
+    state: OPEN
+    reason: "No leased implementation owner or independent QA owner for M11 remediation."
+    blocks:
+      - "Application, SQL and test mutation"
+      - "Runtime certification"
+  - blocker_id: BLK-073-04
+    state: OPEN
+    reason: "No complete M11 consumer-side acceptance/evidence suite."
+    blocks:
+      - WA-M11-AC-001
+      - WA-M11-AC-002
+      - WA-M11-AC-005
+      - WA-M11-AC-006
+
+verdict:
+  classification: BLOCK_DUE_TO_MISSING_CONTRACT
+  reasons:
+    - "The only session-scoped audit read seam returns unsafe raw detail."
+    - "The real virtual-room UI consumes only the parallel JSON timeline."
+    - "Required provider lifecycle events do not exist."
+    - "Consumer acceptance evidence is incomplete."
+  requirement_credit: 0
+  implementation_authorized: false
+  QA_authorized: false
+
+safe_successor:
+  packet: KIMI-M11-IMPLEMENTATION-PATH-OBJECT-COLLISION-REFRESH-074
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Refresh exact application, test, migration, RPC and database-object
+    collision boundaries for a future redacted-audit remediation lease, using
+    this consumer inventory as an input.
+  required_inputs:
+    - KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+    - product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+    - origin/main
+  prohibited:
+    - "No owner, lease, dispatch, application, test, SQL, data, design, branch, stash or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  producer_rows: 5
+  consumer_rows: 14
+  direct_M11_consumers: 8
+  evaluated_non_consumers: 6
+  requirement_crosswalk_rows: 5
+  security_findings: 3
+  missing_consumers: 5
+  evidence_gaps: 8
+  blockers_open: 4
+  blockers_closed: 0
+  runtime_commands_executed: 0
+  database_mutations: 0
+  application_mutations: 0
+  test_mutations: 0
+  real_dispatches_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

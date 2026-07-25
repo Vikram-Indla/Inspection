@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .cr-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 16px 18px 60px; display:flex; flex-direction:column; gap:14px; }
+  .cr-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 18px; }
+  .cr-side { flex:1; border:1px solid var(--border-subtle); border-radius:10px; padding:11px 13px; background:var(--surface-sunken); }
+  .cr-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Settings.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
+    <span class="badge badge-critical" style="height:19px;">{{ conflictCount }} {{ t.pending }}</span>
+    <button class="cr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="cr-wrap">
+    <p class="t-caption" style="margin:0;">{{ t.intro }}</p>
+    <div class="panel" style="padding:11px 13px; background:var(--accent-soft); display:flex; gap:8px; align-items:flex-start; font-size:12px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" stroke-width="1.7" style="width:14px;height:14px; flex:none; margin-block-start:1px;"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z"/></svg>
+      <span>{{ t.policyNote }}</span>
+    </div>
+
+    <sc-for list="{{ conflicts }}" as="c" hint-placeholder-count="2">
+      <div class="cr-card">
+        <div style="display:flex; align-items:center; gap:9px; margin-block-end:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-warning-text)" stroke-width="1.7" style="width:17px;height:17px;"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span style="font-weight:600; font-size:14px;">{{ c.itemLabel }}</span><span class="grow"></span><span class="t-caption id-code">{{ t.detected }} {{ c.detectedAt }}</span></div>
+        <div class="t-caption id-code" style="margin-block-end:10px;">{{ t.key }}: {{ c.key }}</div>
+        <div style="display:flex; gap:10px; margin-block-end:12px;">
+          <div class="cr-side"><div class="t-label" style="margin-block-end:8px;">{{ t.localValue }}</div>
+            <sc-for list="{{ c.localFields }}" as="lf" hint-placeholder-count="3">
+              <div style="display:flex; justify-content:space-between; gap:8px; font-size:12.5px; padding:4px 0;"><span style="color:var(--text-secondary);">{{ lf.label }}</span><span style="font-weight:600; text-align:end;">{{ lf.value }}</span></div>
+            </sc-for>
+          </div>
+          <div class="cr-side"><div class="t-label" style="margin-block-end:8px;">{{ t.serverValue }}</div>
+            <sc-for list="{{ c.serverFields }}" as="sf" hint-placeholder-count="3">
+              <div style="display:flex; justify-content:space-between; gap:8px; font-size:12.5px; padding:4px 0;"><span style="color:var(--text-secondary);">{{ sf.label }}</span><span style="font-weight:600; text-align:end;">{{ sf.value }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex; gap:9px;">
+          <button class="btn btn-secondary btn-sm" style="flex:1;" onClick="{{ c.keepServer }}">{{ t.keepServer }}</button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" onClick="{{ c.resubmitLocal }}">{{ t.resubmitLocal }}</button>
+        </div>
+      </div>
+    </sc-for>
+
+    <sc-if value="{{ noConflicts }}" hint-placeholder-val="{{ false }}">
+      <div class="cr-card" style="text-align:center; padding:32px 20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <span style="width:48px; height:48px; border-radius:50%; background:var(--status-compliant-soft); color:var(--status-compliant-text); display:grid; place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:22px;height:22px;"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <div style="font-weight:600;">{{ t.allResolved }}</div>
+        <div class="t-caption">{{ t.allResolvedSub }}</div>
+      </div>
+    </sc-if>
+
+    <div class="panel" style="padding:12px 14px; font-size:12px; color:var(--text-secondary); display:flex; gap:8px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <span>{{ t.groundingNote }}</span>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  // Data shape mirrors the real IndexedDB `conflicts` store exactly (web/src/lib/offline.ts):
+  // { key: "<inspection_id>:<item_id>", local: <response JSON>, server: <response JSON>, item_id, detected_at }.
+  // Only the "response" outbox op produces a conflict — a checklist-item answer whose queued
+  // baseline_updated_at was stale against the server's updated_at when sync ran.
+  state = { theme: "dark", lang: "en", resolved: {} };
+
+  registry() {
+    return [
+      { key: "insp_5591:item_12", item_id: "item_12", itemLabel: { ar: "بند التفتيش #12 — سلامة الحريق", en: "Checklist item #12 — Fire Safety" },
+        local: { applicable: true, compliant: false, notes: "مخرج طوارئ مسدود جزئياً" },
+        server: { applicable: true, compliant: true, notes: null },
+        detectedAt: "2026-07-23T11:50:02Z" },
+    ];
+  }
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", title:"حل تعارضات المزامنة", backArrow:"M15 6l-6 6 6 6", langBtnLabel:"EN", pending:"قيد الحل", key:"المفتاح", detected:"اكتُشف",
+        intro:"يحدث هذا فقط عندما تُزامَن إجابة بند تفتيش محفوظة محلياً بينما حدّث طرف آخر نفس البند على الخادم بعد آخر نسخة محلية لديك. لا يتم استبدال أي بيانات دون قرارك.",
+        localValue:"إجابتك المحلية", serverValue:"قيمة الخادم الحالية",
+        keepServer:"إبقاء قيمة الخادم (تجاهل إجابتي)", resubmitLocal:"إعادة إرسال إجابتي المحلية",
+        allResolved:"لا توجد تعارضات", allResolvedSub:"جميع إجابات بنود التفتيش متزامنة.",
+        groundingNote:"مبني على مخزن conflicts الفعلي في IndexedDB (mim-field-v1) — يغطي تعارضات إجابات بنود التفتيش فقط.",
+        policyNote:"سياسة الحل: يُسأل المفتش في كل مرة — لا يوجد فوز تلقائي لأي طرف. اختيارك (إبقاء قيمة الخادم أو إعادة إرسال إجابتك) يُنفَّذ فوراً ويُسجَّل ضمن سجل القرار." },
+      en: { back:"Back", title:"Sync Conflict Resolution", backArrow:"M9 6l6 6-6 6", langBtnLabel:"AR", pending:"pending", key:"Key", detected:"Detected",
+        intro:"This only happens when a locally-saved checklist-item response syncs while someone else updated the same item on the server after your last local copy. Nothing is overwritten without your decision.",
+        localValue:"Your Local Response", serverValue:"Current Server Value",
+        keepServer:"Keep Server Value (discard my response)", resubmitLocal:"Resubmit My Local Response",
+        allResolved:"No conflicts", allResolvedSub:"All checklist-item responses are in sync.",
+        groundingNote:"Modeled on the real `conflicts` IndexedDB store (mim-field-v1) — covers checklist-response conflicts only.",
+        policyNote:"Resolution policy: the inspector is asked every time — no side wins automatically. Your choice (keep server value or resubmit your response) is applied immediately and logged in the decision record." },
+    };
+    const t = STR[lang];
+    // Human-readable labels for the raw JSON response fields (applicable/compliant/notes).
+    // Add more field labels here if the real checklist_responses.response shape carries more keys.
+    const FIELD_LABELS = {
+      applicable: ar ? "قابل للتطبيق" : "Applicable",
+      compliant: ar ? "مطابق" : "Compliant",
+      notes: ar ? "الملاحظات" : "Notes",
+    };
+    const fmtVal = v => v === true ? (ar ? "نعم" : "Yes") : v === false ? (ar ? "لا" : "No") : v == null ? (ar ? "لا يوجد" : "None") : String(v);
+    const toFields = obj => Object.entries(obj).map(([k, v]) => ({ label: FIELD_LABELS[k] ?? k, value: fmtVal(v) }));
+    const conflicts = this.registry()
+      .filter(c => !this.state.resolved[c.key])
+      .map(c => ({
+        key: c.key, itemLabel: ar ? c.itemLabel.ar : c.itemLabel.en, detectedAt: c.detectedAt,
+        localFields: toFields(c.local), serverFields: toFields(c.server),
+        // O-16: the two choices are NOT symmetric — each maps to a distinct offline.ts path.
+        // Keep server value → discard the local response and clear the conflict record:
+        //   offline.ts resolveConflict(key) === conflicts.delete(key). Nothing is re-queued.
+        keepServer: () => this.setState(s => ({ resolved: { ...s.resolved, [c.key]: "server" } })),
+        // Resubmit local → re-enqueue the local answer as a fresh "response" outbox op
+        //   (offline.ts enqueue({ store: "response", key: c.key, value: c.local })), THEN clear the
+        //   conflict record. The requeued op replays against a refreshed baseline so it no longer conflicts.
+        resubmitLocal: () => this.setState(s => ({ resolved: { ...s.resolved, [c.key]: "local" } })),
+      }));
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      conflicts, conflictCount: conflicts.length, noConflicts: conflicts.length === 0,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

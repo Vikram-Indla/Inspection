@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pf-wrap { max-width: 920px; margin: 0 auto; padding: 18px 18px 130px; display:flex; flex-direction:column; gap:14px; }
+  .pf-card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 18px; display:flex; flex-direction:column; gap:12px; }
+  .pf-h { font-weight:600; font-size:15px; margin:0; }
+  .pf-chips { display:flex; gap:8px; flex-wrap:wrap; }
+  .pf-day { padding:9px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); font:inherit; font-size:13px; cursor:pointer; color:var(--text-primary); min-height:44px; }
+  .pf-day[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .pf-day:disabled{ opacity:.45; cursor:not-allowed; }
+  .pf-opt { display:flex; align-items:center; gap:9px; padding:11px 14px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:46px; color:var(--text-primary); text-align:start; }
+  .pf-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .pf-opt:disabled{ opacity:.5; cursor:not-allowed; }
+  .pf-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .pf-opt[aria-pressed="true"] .pf-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .pf-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; }
+  .pf-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:12.5px; padding:8px 14px; cursor:pointer; color:var(--text-secondary); }
+  .pf-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .pf-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .pf-sec { display:flex; align-items:center; gap:10px; padding:9px 0; border-block-end:1px solid var(--border-subtle); }
+  .pf-sec:last-child { border-block-end:0; }
+  .pf-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.batchTag }}</span>
+    <button class="pf-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="pf-wrap">
+    <div class="panel" style="padding:12px 15px; display:flex; align-items:flex-start; gap:10px; background:var(--status-info-soft); border-color:color-mix(in srgb,var(--status-info) 26%,transparent); box-shadow:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <span class="t-compact" style="color:var(--status-info-text);">{{ t.engineNote }}</span>
+    </div>
+
+    <div class="pf-card">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <h4 class="pf-h">{{ t.govHeading }}</h4>
+        <div class="pf-seg">
+          <button aria-pressed="{{ isPlanner }}" onClick="{{ setPlanner }}">{{ t.govPlanner }}</button>
+          <button aria-pressed="{{ isInspector }}" onClick="{{ setInspector }}">{{ t.govInspector }}</button>
+        </div>
+      </div>
+      <p class="t-caption" style="margin:0;">{{ t.govHint }}</p>
+    </div>
+
+    <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="5">
+      <div class="pf-card">
+        <h4 class="pf-h">{{ b.title }}</h4>
+        {{ b.body }}
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge {{ readyBadgeClass }}"><span class="dot"></span>{{ readyBadge }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary" onClick="{{ onSave }}">{{ t.save }}</button>
+    <button class="btn btn-primary" onClick="{{ onConfirm }}">{{ confirmLabel }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:920,&quot;height&quot;:1100}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", gov:"planner", date:null, mode:"physical", packageId:"visit", removed:{}, added:{}, notify:false, ready:false };
+
+  renderVals(){
+    const lang=this.state.lang, ar=lang==="ar", h=React.createElement;
+    const st=this.state;
+
+    const t = ar ? {
+      back:"رجوع", headerTitle:"أساس حزمة التقرير · التحضير", headerSub:"شركة الأمل لتدريب العمال", batchTag:"الدفعة 1",
+      theme:"الوضع", langBtnLabel:"EN", save:"حفظ", confirm:"تأكيد الجاهزية", reopen:"إعادة فتح التحضير",
+      engineNote:"نوع التقرير يُمثَّل كـ«حزمة» منشورة يرسمها محرّك التنفيذ العام — لا تُبنى صفحة تقرير مُبرمَجة. الحزمة إمّا مُسندة من التخطيط (للقراءة) أو يختارها المفتش من النسخ المنشورة، ثم تُجمَّد كلقطة غير قابلة للتعديل عند التأكيد.",
+      govHeading:"مسار الحزمة", govPlanner:"مُسندة من التخطيط", govInspector:"اختيار المفتش",
+      govHint:"يعكس المسارين الحقيقيين في PreExecution: حزمة مُسندة من التخطيط تظهر للقراءة فقط، وإلا يظهر مُنتقٍ محكوم للنسخ المنشورة. التقييم الذاتي لا يُعرض أبداً.",
+      ctx:"سياق التخطيط والمنشأة", factory:"المنشأة", vtype:"نوع الزيارة", window:"النافذة", priority:"الأولوية", vtypeVal:"زيارة رقابية", windowVal:"20–24 يوليو 2026", prioVal:"عالية",
+      dateH:"تاريخ التنفيذ", dateCap:"ضمن النافذة المسندة؛ يعرض المتبقي لكل يوم حسب السعة اليومية.", left:"متبقٍ", full:"مكتمل الحجز",
+      modeH:"نمط الزيارة", physical:"ميداني", virtual:"عن بُعد", planned:"مُخطَّط من التخطيط", virtualOff:"غير مؤهلة — لا يوجد عقد مزوّد فيديو مُثبت (فشل آمن).",
+      pkgH:"الحزمة (نوع التقرير)", byPlanning:"بواسطة التخطيط", choose:"اختر نسخة حزمة منشورة:", sections:"أقسام", noSections:"لا أقسام منشورة",
+      prevH:"معاينة الحزمة", optional:"اختياري", remove:"إزالة", afH:"نماذج الإجراء", addAf:"إضافة نموذج إجراء", notify:"إشعار المنشأة بموعد الزيارة",
+      contentH:"محتوى الحزمة (يُرسم عبر المحرك العام)", contentNote:"تظهر الأقسام أدناه في محرّك التنفيذ العام؛ التفاصيل الحقلية موثّقة في «SAQEEL Report Deltas».",
+      readyH:"الجاهزية", snapshot:"لقطة الحزمة نسخة {n} · بصمة {c}", notReady:"مسودة تحضير", readyState:"جاهزة",
+    } : {
+      back:"Back", headerTitle:"Report package foundation · Preparation", headerSub:"Al-Amal Worker Training Co.", batchTag:"Batch 1",
+      theme:"Theme", langBtnLabel:"AR", save:"Save", confirm:"Confirm ready", reopen:"Reopen preparation",
+      engineNote:"Report type is expressed as a published PACKAGE rendered by the generic execution engine — no hardcoded report page. The package is either planner-set (read-only) or inspector-chosen from published versions, then frozen as an immutable snapshot on confirm.",
+      govHeading:"Package path", govPlanner:"Planner-set", govInspector:"Inspector selects",
+      govHint:"Mirrors the two real PreExecution paths: a planner-set package is read-only; otherwise a governed selector of published versions is shown. Self-assessment is never offered.",
+      ctx:"Planning & establishment context", factory:"Factory", vtype:"Visit type", window:"Window", priority:"Priority", vtypeVal:"Regulatory visit", windowVal:"20–24 Jul 2026", prioVal:"High",
+      dateH:"Execution date", dateCap:"Within the assigned window; shows remaining capacity per day.", left:"left", full:"Fully booked",
+      modeH:"Visit mode", physical:"Physical", virtual:"Virtual", planned:"planned by Planning", virtualOff:"Not eligible — no confirmed video-provider contract (fail closed).",
+      pkgH:"Package (report type)", byPlanning:"by Planning", choose:"Choose a published package version:", sections:"sections", noSections:"No published sections",
+      prevH:"Package preview", optional:"optional", remove:"Remove", afH:"Action forms", addAf:"Add action form", notify:"Notify factory of the visit",
+      contentH:"Package content (rendered via the generic engine)", contentNote:"The sections below render in the generic execution engine; field-level detail is documented in “SAQEEL Report Deltas”.",
+      readyH:"Readiness", snapshot:"Package snapshot v{n} · checksum {c}", notReady:"Preparation draft", readyState:"Ready",
+    };
+
+    const ck = h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const fmt=(s,v)=>s.replace(/\{(\w+)\}/g,(m,k)=>String(v[k]??m));
+
+    // Published package versions (report types) — sections grounded in the inspection BRD 5.2.3/5.2.7/5.2.8
+    const PKGS = ar ? {
+      visit:{ code:"VISIT", title:"تقرير الزيارة", ver:"نسخة 3", sections:[
+        {k:"est",t:"بيانات المنشأة",rm:false},{k:"work",t:"القوى العاملة",rm:true},{k:"raw",t:"المواد الأولية",rm:true},{k:"prod",t:"المنتجات",rm:true},{k:"mach",t:"الآلات",rm:true},{k:"parts",t:"قطع الغيار",rm:true},{k:"items",t:"قائمة البنود",rm:false},{k:"out",t:"المخرجات",rm:false},{k:"rec",t:"المحاضر",rm:false}]},
+      chem:{ code:"CHEM", title:"تقرير الفسح الكيميائي", ver:"نسخة 2", sections:[
+        {k:"items",t:"قائمة البنود",rm:false},{k:"raw",t:"المواد الخام",rm:false},{k:"prod",t:"المنتجات",rm:false},{k:"restr",t:"المواد الكيميائية المقيدة (اتفاقيات دولية)",rm:false},{k:"exp",t:"بيانات التصدير",rm:true},{k:"safe",t:"السلامة الكيميائية",rm:true}]},
+      customs:{ code:"CUSTOMS", title:"تقرير الإعفاء الجمركي", ver:"نسخة 1", sections:[
+        {k:"plan",t:"خطة التقرير",rm:false},{k:"file",t:"ملف المنشأة",rm:false},{k:"join",t:"بيانات الأصناف · الربط بخط الإنتاج",rm:false},{k:"benefit",t:"تفاصيل الاستفادة",rm:false},{k:"photo",t:"صور الأصناف",rm:true}]},
+    } : {
+      visit:{ code:"VISIT", title:"Visit Report", ver:"v3", sections:[
+        {k:"est",t:"Establishment data",rm:false},{k:"work",t:"Workforce",rm:true},{k:"raw",t:"Raw materials",rm:true},{k:"prod",t:"Products",rm:true},{k:"mach",t:"Machinery",rm:true},{k:"parts",t:"Spare parts",rm:true},{k:"items",t:"Inspection items",rm:false},{k:"out",t:"Outputs",rm:false},{k:"rec",t:"Records",rm:false}]},
+      chem:{ code:"CHEM", title:"Chemical Clearance Report", ver:"v2", sections:[
+        {k:"items",t:"Inspection items",rm:false},{k:"raw",t:"Raw materials",rm:false},{k:"prod",t:"Products",rm:false},{k:"restr",t:"Restricted chemicals (int'l agreements)",rm:false},{k:"exp",t:"Export data",rm:true},{k:"safe",t:"Chemical safety",rm:true}]},
+      customs:{ code:"CUSTOMS", title:"Customs Exemption Report", ver:"v1", sections:[
+        {k:"plan",t:"Report plan",rm:false},{k:"file",t:"Establishment file",rm:false},{k:"join",t:"Item data · production-line join",rm:false},{k:"benefit",t:"Benefit details",rm:false},{k:"photo",t:"Item photography",rm:true}]},
+    };
+    const AF = ar
+      ? [{id:"admin",t:"طلب توصية إجراء إداري"},{id:"pl-close",t:"محضر إغلاق خط إنتاج"},{id:"seizure",t:"محضر حجز منتجات"}]
+      : [{id:"admin",t:"Admin-action recommendation"},{id:"pl-close",t:"Production-line closure record"},{id:"seizure",t:"Product seizure record"}];
+
+    const gov=st.gov, planner=gov==="planner";
+    // planner-set path pins the Visit package read-only; inspector path lets them choose
+    const activeId = planner ? "visit" : st.packageId;
+    const pkg = PKGS[activeId];
+    const pkgLine = (p)=>`${p.code} · ${p.title} · ${p.ver}`;
+
+    const days = ar
+      ? [{d:"20",l:"20 يوليو",rem:0,past:true},{d:"21",l:"21 يوليو",rem:2,past:false},{d:"22",l:"22 يوليو",rem:0,past:false},{d:"23",l:"23 يوليو",rem:5,past:false},{d:"24",l:"24 يوليو",rem:3,past:false}]
+      : [{d:"20",l:"Jul 20",rem:0,past:true},{d:"21",l:"Jul 21",rem:2,past:false},{d:"22",l:"Jul 22",rem:0,past:false},{d:"23",l:"Jul 23",rem:5,past:false},{d:"24",l:"Jul 24",rem:3,past:false}];
+
+    const badge=(cls,txt)=>h("span",{className:"badge "+cls},txt);
+    const lozInfo=(txt)=>h("span",{className:"badge badge-info"},txt);
+
+    // ── block bodies ──
+    const ctxBody = h("div",{className:"pf-chips"},
+      badge("badge-outline", t.factory+": "+t.headerSub),
+      badge("badge-outline", t.vtype+": "+t.vtypeVal),
+      badge("badge-outline", t.window+": "+t.windowVal),
+      badge("badge-outline", t.priority+": "+t.prioVal));
+
+    const dateBody = h(React.Fragment,null,
+      h("p",{className:"t-caption",style:{margin:"0 0 4px"}},t.dateCap),
+      h("div",{className:"pf-chips"}, days.map(d=>{
+        const full=d.rem<=0, disabled=d.past||full, sel=st.date===d.d;
+        return h("button",{key:d.d,className:"pf-day","aria-pressed":sel,disabled, onClick:()=>this.setState({date:d.d})},
+          d.l + (full?` · ${t.full}`:` · ${d.rem} ${t.left}`));
+      })));
+
+    const modeBody = h("div",{style:{display:"flex",flexDirection:"column",gap:"8px"}},
+      ["physical","virtual"].map(m=>{
+        const sel=st.mode===m, off=m==="virtual";
+        return h("div",{key:m,style:{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap"}},
+          h("button",{className:"pf-opt","aria-pressed":sel,disabled:off,style:{flex:"0 0 auto"},onClick:()=>!off&&this.setState({mode:m})},
+            h("span",{className:"pf-ind"},sel?ck:null), m==="physical"?t.physical:t.virtual),
+          m==="physical"?lozInfo(t.planned):null,
+          off?h("span",{className:"t-caption"},t.virtualOff):null);
+      }));
+
+    const pkgBody = planner
+      ? h("div",{style:{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap"}},
+          h("span",{style:{fontWeight:600}},pkgLine(pkg)), lozInfo(t.byPlanning),
+          h("span",{className:"t-caption"},`${pkg.sections.length} ${t.sections}`))
+      : h("div",{style:{display:"flex",flexDirection:"column",gap:"8px"}},
+          h("p",{className:"t-caption",style:{margin:0}},t.choose),
+          Object.keys(PKGS).map(id=>{ const p=PKGS[id], sel=st.packageId===id;
+            return h("button",{key:id,className:"pf-opt","aria-pressed":sel,onClick:()=>this.setState({packageId:id,removed:{}}),style:{width:"100%"}},
+              h("span",{className:"pf-ind"},sel?ck:null),
+              h("span",{style:{flex:1}}, pkgLine(p)+` · ${p.sections.length} ${t.sections}`)); }));
+
+    const previewBody = h(React.Fragment,null,
+      h("div",{style:{display:"flex",flexDirection:"column"}}, pkg.sections.map(sec=>{
+        const rmSel=!!st.removed[activeId+":"+sec.k];
+        return h("div",{key:sec.k,className:"pf-sec"},
+          h("span",{style:{flex:1,fontSize:"13.5px"}},sec.t),
+          sec.rm?lozInfo(t.optional):null,
+          sec.rm?h("label",{style:{display:"flex",gap:"6px",alignItems:"center",fontSize:"12px",color:"var(--text-secondary)",cursor:"pointer"}},
+            h("input",{type:"checkbox",checked:rmSel,onChange:e=>{const r={...st.removed}; if(e.target.checked)r[activeId+":"+sec.k]=1; else delete r[activeId+":"+sec.k]; this.setState({removed:r});}}),
+            t.remove):null);
+      })),
+      h("div",{style:{marginTop:"10px"}},
+        h("div",{className:"pf-k",style:{marginBottom:"6px"}},t.afH),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}}, AF.map(a=>h("label",{key:a.id,className:"check"},
+          h("input",{type:"checkbox",checked:!!st.added[a.id],onChange:e=>{const ad={...st.added}; if(e.target.checked)ad[a.id]=1; else delete ad[a.id]; this.setState({added:ad});}}),
+          h("span",null,a.t))))),
+      h("label",{className:"check",style:{marginTop:"10px"}},
+        h("input",{type:"checkbox",checked:st.notify,onChange:e=>this.setState({notify:e.target.checked})}), h("span",null,t.notify)),
+      h("div",{style:{marginTop:"10px",fontSize:"12px",color:"var(--text-muted)",lineHeight:1.6}}, t.contentNote));
+
+    const readyBody = st.ready
+      ? h(React.Fragment,null,
+          h("p",{className:"t-caption",style:{margin:"0 0 8px"}}, fmt(t.snapshot,{n:2,c:"a1c8d02bf1c0"})),
+          h("button",{className:"btn btn-secondary",style:{alignSelf:"flex-start"},onClick:()=>this.setState({ready:false})},t.reopen))
+      : h("p",{className:"t-caption",style:{margin:0}}, ar?"أكمل الحقول ثم اضغط «تأكيد الجاهزية» لتجميد لقطة الحزمة غير القابلة للتعديل.":"Complete the fields, then Confirm Ready to freeze the immutable package snapshot.");
+
+    const blocks = [
+      {title:t.ctx, body:ctxBody},
+      {title:t.dateH, body:dateBody},
+      {title:t.modeH, body:modeBody},
+      {title:t.pkgH, body:pkgBody},
+      {title:t.prevH, body:previewBody},
+      {title:t.readyH, body:readyBody},
+    ];
+
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      isPlanner:planner, isInspector:!planner,
+      setPlanner:()=>this.setState({gov:"planner"}), setInspector:()=>this.setState({gov:"inspector"}),
+      blocks,
+      readyBadge: st.ready ? t.readyState : t.notReady,
+      readyBadgeClass: st.ready ? "badge-completed" : "badge-warning",
+      confirmLabel: st.ready ? t.readyState : t.confirm,
+      onSave:()=>{}, onConfirm:()=>this.setState({ready:true}),
+    };
+  }
+}
+</script>
+</body>
+</html>

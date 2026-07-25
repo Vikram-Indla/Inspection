@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .m6-pre { margin:0; font-family:var(--font-mono); font-size:11.5px; background:var(--surface-sunken); border-radius:6px; padding:10px; overflow:auto; color:var(--text-secondary); }
+  .m6-grid2 { display:grid; grid-template-columns:1.55fr 1fr; gap:16px; align-items:start; }
+  .m6-grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+  .m6-prov { font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted); }
+  .m6-unset { font-family:var(--font-mono); font-size:11.5px; color:var(--status-warning-text); }
+  .m6-skip { position:absolute; inset-inline-start:-9999px; }
+  .m6-skip:focus { position:static; display:inline-block; margin:8px; }
+  @media (max-width: 1180px) { .m6-grid2 { grid-template-columns:1fr; } }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item is-active" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <main style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;" id="m6-main">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <a class="m6-skip btn btn-secondary btn-sm" href="#m6-body">Skip to content</a>
+
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+      <div style="display:flex; align-items:flex-end; gap:14px; padding:14px 24px 12px; flex-wrap:wrap;">
+        <div style="min-inline-size:0;">
+          <h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">{{ routeTitle }}</h1>
+          <div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">{{ routeMeta }}</div>
+        </div>
+        <span class="grow"></span>
+        <div class="seg" role="group" aria-label="Rendered state">
+          <button class="seg-opt" aria-pressed="{{ st_ready }}" onClick="{{ set_ready }}">Ready</button>
+          <button class="seg-opt" aria-pressed="{{ st_loading }}" onClick="{{ set_loading }}">Loading</button>
+          <button class="seg-opt" aria-pressed="{{ st_empty }}" onClick="{{ set_empty }}">Empty</button>
+          <button class="seg-opt" aria-pressed="{{ st_error }}" onClick="{{ set_error }}">Error</button>
+          <button class="seg-opt" aria-pressed="{{ st_degraded }}" onClick="{{ set_degraded }}">Degraded</button>
+          <button class="seg-opt" aria-pressed="{{ st_denied }}" onClick="{{ set_denied }}">Denied</button>
+          <button class="seg-opt" aria-pressed="{{ st_conflict }}" onClick="{{ set_conflict }}">Conflict</button>
+        </div>
+        <div class="seg" role="group" aria-label="Viewport">
+          <button class="seg-opt" aria-pressed="{{ w_desktop }}" onClick="{{ set_desktop }}">1440</button>
+          <button class="seg-opt" aria-pressed="{{ w_tablet }}" onClick="{{ set_tablet }}">1024</button>
+          <button class="seg-opt" aria-pressed="{{ w_narrow }}" onClick="{{ set_narrow }}">412</button>
+        </div>
+        <button class="btn btn-secondary btn-sm" onClick="{{ toggleLocale }}" aria-label="Toggle locale">{{ localeLabel }}</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; padding:0 24px 12px; flex-wrap:wrap;">
+        <span class="badge badge-neutral">WA-BRAND-r1 shell</span>
+        <span class="badge badge-info">{{ acceptanceId }}</span>
+        <span class="m6-prov">route {{ routePath }}</span>
+        <span class="grow"></span>
+        <span class="m6-prov">authorized compliance user · RLS zone scope applied server-side</span>
+      </div>
+    </header>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div id="m6-body" style="padding:20px 24px 90px; display:flex; flex-direction:column; gap:16px; max-inline-size:{{ frameWidth }}; inline-size:100%;" aria-live="polite">
+
+      <!-- ===== NON-READY STATES (shared, apply to every route) ===== -->
+      <sc-if value="{{ st_loading }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:18px;" aria-busy="true">
+          <div class="panel-header" style="padding:0 0 12px;"><span class="panel-title">Loading {{ routeNoun }}</span></div>
+          <div class="stack" style="gap:10px;">
+            <div class="skeleton" style="height:16px; width:38%;"></div>
+            <div class="skeleton" style="height:52px;"></div>
+            <div class="skeleton" style="height:52px;"></div>
+            <div class="skeleton" style="height:52px;"></div>
+          </div>
+          <p class="t-caption" style="margin:12px 0 0;">No optimistic content is shown before the scoped read resolves. Skeleton rows carry no counts.</p>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ st_empty }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:34px 22px; text-align:center;">
+          <h2 style="font-size:16px; font-weight:600; margin:0 0 6px;">No {{ routeNoun }} in your scope</h2>
+          <p class="t-caption" style="margin:0 auto; max-inline-size:60ch;">The scoped read returned zero rows. This is an empty result, not a permission failure and not a data outage — the distinction is preserved in copy and in the response contract.</p>
+          <div style="display:flex; gap:10px; justify-content:center; margin-block-start:16px;"><button class="btn btn-secondary btn-sm">Clear filters</button><button class="btn btn-primary btn-sm">{{ emptyPrimary }}</button></div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ st_error }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:22px; border-color:var(--status-critical-border);" role="alert">
+          <span class="exc exc-critical"><span class="exc-mark"></span>Data unavailable</span>
+          <h2 style="font-size:16px; font-weight:600; margin:10px 0 6px;">{{ routeNoun }} could not be read</h2>
+          <p class="t-caption" style="margin:0; max-inline-size:70ch;">The read failed. Nothing is inferred, cached or substituted — no partial list, no placeholder counts, no last-known values. Retry is the only forward action; the correlation id is required for support.</p>
+          <dl style="display:grid; grid-template-columns:150px 1fr; gap:6px 16px; margin:14px 0 0; font-size:12.5px;">
+            <dt style="color:var(--text-muted);">Correlation</dt><dd style="margin:0;"><span class="id-code">cor-{{ corr }}</span></dd>
+            <dt style="color:var(--text-muted);">Failed call</dt><dd style="margin:0;"><span class="id-code">{{ routeRpc }}</span></dd>
+            <dt style="color:var(--text-muted);">Retry policy</dt><dd style="margin:0;"><span class="m6-unset">Not configured — no approved retry/backoff value in the M6 package</span></dd>
+          </dl>
+          <div style="display:flex; gap:10px; margin-block-start:16px;"><button class="btn btn-primary btn-sm">Retry read</button><button class="btn btn-secondary btn-sm">Copy correlation id</button></div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ st_degraded }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:18px; border-color:var(--status-warning-border);">
+          <span class="exc exc-warning"><span class="exc-mark"></span>Degraded — read-only</span>
+          <h2 style="font-size:16px; font-weight:600; margin:10px 0 6px;">Decisions are disabled on this route</h2>
+          <p class="t-caption" style="margin:0; max-inline-size:70ch;">A dependency required to record a governed decision is unavailable, so the route drops to evidence-read only. Existing records stay visible and unaltered; every write control is disabled rather than hidden, with the reason attached.</p>
+          <div class="m6-grid3" style="margin-block-start:14px;">
+            <div class="panel" style="padding:12px;"><div class="t-label">Read</div><div style="font-size:13px; margin-block-start:4px;">Available</div></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Governed write</div><div style="font-size:13px; margin-block-start:4px; color:var(--status-warning-text);">Disabled — dependency unavailable</div></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Signature / PKI</div><div style="font-size:13px; margin-block-start:4px;"><span class="m6-unset">Provider fact not supplied</span></div></div>
+          </div>
+          <div style="display:flex; gap:10px; margin-block-start:16px;"><button class="btn btn-primary btn-sm" disabled>Record decision</button><button class="btn btn-secondary btn-sm">View audit history</button></div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ st_denied }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:22px; border-color:var(--status-critical-border);" role="alert">
+          <span class="exc exc-critical"><span class="exc-mark"></span>Not authorized</span>
+          <h2 style="font-size:16px; font-weight:600; margin:10px 0 6px;">This route is outside your permission set</h2>
+          <p class="t-caption" style="margin:0; max-inline-size:70ch;">Authorization is resolved server-side. The denial is explicit and does not leak record existence, counts, titles or establishment identity. Denied is never rendered as empty.</p>
+          <dl style="display:grid; grid-template-columns:150px 1fr; gap:6px 16px; margin:14px 0 0; font-size:12.5px;">
+            <dt style="color:var(--text-muted);">Required grant</dt><dd style="margin:0;"><span class="id-code">{{ routeGrant }}</span></dd>
+            <dt style="color:var(--text-muted);">Resolved by</dt><dd style="margin:0;">Server permission resolution + RLS zone scope</dd>
+            <dt style="color:var(--text-muted);">Correlation</dt><dd style="margin:0;"><span class="id-code">cor-{{ corr }}</span></dd>
+          </dl>
+          <div style="display:flex; gap:10px; margin-block-start:16px;"><button class="btn btn-secondary btn-sm">Request access</button><button class="btn btn-ghost btn-sm">Back to Dashboard</button></div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ st_conflict }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:22px; border-color:var(--status-warning-border);" role="alert">
+          <span class="exc exc-warning"><span class="exc-mark"></span>Concurrent revision conflict</span>
+          <h2 style="font-size:16px; font-weight:600; margin:10px 0 6px;">Another authorized user changed this record</h2>
+          <p class="t-caption" style="margin:0; max-inline-size:70ch;">The submitted decision carried an expected revision that no longer matches server state. The write was rejected whole — nothing partially applied, nothing silently merged, no last-write-wins. The user re-reads, then re-decides.</p>
+          <div class="m6-grid2" style="margin-block-start:14px;">
+            <div class="panel" style="padding:14px;"><div class="t-label">Your expected revision</div><div style="font-size:14px; margin-block-start:4px;"><span class="id-code">R2</span></div><p class="t-caption" style="margin:8px 0 0;">Read at 2026-07-25 09:12</p></div>
+            <div class="panel" style="padding:14px; border-color:var(--status-warning-border);"><div class="t-label">Current server revision</div><div style="font-size:14px; margin-block-start:4px;"><span class="id-code">R3</span></div><p class="t-caption" style="margin:8px 0 0;">Decision recorded by another checker · <span class="id-code">cor-{{ corr }}</span></p></div>
+          </div>
+          <div style="display:flex; gap:10px; margin-block-start:16px;"><button class="btn btn-primary btn-sm">Reload current revision</button><button class="btn btn-secondary btn-sm">Compare R2 → R3</button><button class="btn btn-ghost btn-sm">Discard my draft</button></div>
+        </section>
+      </sc-if>
+
+      <!-- ===== READY BODIES ===== -->
+      <sc-if value="{{ show_requests }}" hint-placeholder-val="{{ true }}">
+        <section class="panel" style="padding:16px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <label class="stack" style="gap:4px;"><span class="t-label">Lifecycle stage</span><select class="select" style="min-inline-size:170px;"><option>All stages</option><option>Draft</option><option>Submitted</option><option>Under review</option><option>Returned</option><option>Approved</option><option>Published</option><option>Rejected</option></select></label>
+            <label class="stack" style="gap:4px;"><span class="t-label">Request type</span><select class="select"><option>All</option><option>Create</option><option>Modify</option><option>Retire</option></select></label>
+            <label class="stack" style="gap:4px;"><span class="t-label">Search</span><input class="input" placeholder="Title, correlation, component id"></label>
+            <span class="grow"></span>
+            <button class="btn btn-primary">New request</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Requests in scope</span><span class="badge badge-neutral">4 rows · page 1</span></div>
+          <div class="table-wrap"><table class="table">
+            <caption class="t-caption" style="text-align:start; padding:8px 12px;">Ordered by last transition. Stage, revision and owner are server facts; no client-side re-ranking.</caption>
+            <thead><tr><th scope="col">Request</th><th scope="col">Type</th><th scope="col">Stage</th><th scope="col">Rev</th><th scope="col">Owner (maker)</th><th scope="col">Components</th><th scope="col">Last transition</th></tr></thead>
+            <tbody>
+              <tr><td><a href="#detail" onClick="{{ go_request_detail }}">Add three fire-safety clauses + linked items</a><div class="m6-prov">cor-CCR-2231</div></td><td>Create</td><td><span class="badge badge-warning">Under review</span></td><td><span class="id-code">R2</span></td><td>f.admin@mim</td><td class="cell-num">2</td><td class="cell-num"><span class="id-code">2026-07-20 14:02</span></td></tr>
+              <tr><td><a href="#detail" onClick="{{ go_request_detail }}">Retire superseded packaging requirement</a><div class="m6-prov">cor-CCR-2229</div></td><td>Retire</td><td><span class="badge badge-info">Submitted</span></td><td><span class="id-code">R1</span></td><td>n.alqahtani@mim</td><td class="cell-num">1</td><td class="cell-num"><span class="id-code">2026-07-19 10:48</span></td></tr>
+              <tr><td><a href="#detail" onClick="{{ go_request_detail }}">Modify emergency egress evidence rule</a><div class="m6-prov">cor-CCR-2224</div></td><td>Modify</td><td><span class="badge badge-neutral">Returned</span></td><td><span class="id-code">R3</span></td><td>s.otaibi@mim</td><td class="cell-num">3</td><td class="cell-num"><span class="id-code">2026-07-18 16:20</span></td></tr>
+              <tr><td><a href="#detail" onClick="{{ go_request_detail }}">Publish chemical storage clause set</a><div class="m6-prov">cor-CCR-2218</div></td><td>Create</td><td><span class="badge badge-compliant">Published</span></td><td><span class="id-code">R4</span></td><td>f.admin@mim</td><td class="cell-num">5</td><td class="cell-num"><span class="id-code">2026-07-15 09:03</span></td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="panel" style="padding:18px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Lifecycle contract</h2>
+          <p class="t-caption" style="margin:0 0 12px;">Transitions are server RPCs. The UI never computes a stage; it renders the stage it was given and offers only the transitions the server declared available for this user on this revision.</p>
+          <div class="m6-grid3">
+            <div class="panel" style="padding:12px;"><div class="t-label">Draft → Submitted</div><p class="t-caption" style="margin:6px 0 0;">Maker only. Requires at least one component. Locks the revision for review.</p></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Submitted → Under review / Returned</div><p class="t-caption" style="margin:6px 0 0;">Checker only, maker ≠ checker enforced server-side. Return requires a reason.</p></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Approved → Published</div><p class="t-caption" style="margin:6px 0 0;">Transactional across approved branches; assigns immutable version ids. Partial publication is not possible.</p></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Any → Rejected</div><p class="t-caption" style="margin:6px 0 0;">Terminal for the revision. Reason mandatory; record retained and auditable.</p></div>
+          </div>
+          <p class="t-caption" style="margin:12px 0 0;">Windows, reminder cadence and escalation: <span class="m6-unset">Not configured — no approved SLA values in the M6 package</span></p>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ show_request_detail }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+            <div><h2 style="font-size:16px; font-weight:600; margin:0 0 4px;">Add three fire-safety clauses + linked items</h2><p class="t-caption" style="margin:0;">Governed envelope · correlation <span class="id-code">cor-CCR-2231</span> · expected revision <span class="id-code">R2</span></p></div>
+            <span class="badge badge-warning">Under review · R2</span>
+          </div>
+          <dl style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px 20px; margin:14px 0 0;">
+            <div><dt class="t-label">Type</dt><dd style="margin:2px 0 0;">Create</dd></div>
+            <div><dt class="t-label">Maker</dt><dd style="margin:2px 0 0;">f.admin@mim</dd></div>
+            <div><dt class="t-label">Checker</dt><dd style="margin:2px 0 0;">Assigned by queue</dd></div>
+            <div><dt class="t-label">Publication</dt><dd style="margin:2px 0 0;">Not published</dd></div>
+          </dl>
+        </section>
+        <div class="m6-grid2">
+          <div class="stack" style="gap:14px;">
+            <article class="panel" style="padding:16px;">
+              <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;"><div><div class="t-label">1 · Regulation</div><h3 style="font-size:14px; font-weight:600; margin:2px 0 0;">FS-CLAUSE-3.1 · Emergency egress</h3></div><span class="badge badge-warning">Pending review</span></div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-block-start:12px;">
+                <div><h4 class="t-label" style="margin:0 0 4px;">Current value</h4><pre class="m6-pre">{}</pre></div>
+                <div><h4 class="t-label" style="margin:0 0 4px;">Proposed value</h4><pre class="m6-pre">{
+  "code": "FS-3.1",
+  "title": "Emergency egress",
+  "requires_evidence": true
+}</pre></div>
+              </div>
+              <div style="display:flex; gap:8px; margin-block-start:12px; padding-block-start:12px; border-block-start:1px solid var(--border-subtle);"><button class="btn btn-primary btn-sm">Approve component</button><button class="btn btn-danger btn-sm">Reject component</button><button class="btn btn-secondary btn-sm">Return with reason</button></div>
+            </article>
+            <article class="panel" style="padding:16px;">
+              <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;"><div><div class="t-label">2 · Checklist item</div><h3 style="font-size:14px; font-weight:600; margin:2px 0 0;">Exit route unobstructed?</h3></div><span class="badge badge-compliant">Approved</span></div>
+              <p class="t-caption" style="margin:10px 0 0;">Depends on: Regulation FS-3.1 — a dependent component cannot be published before its parent.</p>
+              <p class="t-caption" style="margin:6px 0 0; color:var(--status-compliant-text);">Immutable version <span class="id-code">pkgver-4471</span> recorded 2026-07-20.</p>
+            </article>
+          </div>
+          <aside class="stack" style="gap:14px;">
+            <section class="panel" style="padding:16px;"><h3 style="font-size:13.5px; font-weight:600; margin:0 0 10px;">Dependency tree</h3><ol style="margin:0; padding-inline-start:18px; font-size:13px; line-height:1.7;"><li>Regulation FS-3.1<ol style="padding-inline-start:16px;"><li>Checklist item · Exit route unobstructed?</li></ol></li></ol><p class="t-caption" style="margin:10px 0 0;">Cycles are rejected at submit time by the server.</p></section>
+            <section class="panel" style="padding:16px;"><h3 style="font-size:13.5px; font-weight:600; margin:0 0 10px;">Immutable history</h3><ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px;">
+              <li><strong style="font-size:13px;">R2 · Submitted</strong><div class="t-caption">2026-07-19 · 2 components · maker f.admin@mim</div></li>
+              <li><strong style="font-size:13px;">R1 · Returned</strong><div class="t-caption">Reason recorded · checker n.alqahtani@mim</div></li>
+              <li><strong style="font-size:13px;">R1 · Draft created</strong><div class="t-caption">2026-07-16 · cor-CCR-2231</div></li>
+            </ol><p class="t-caption" style="margin:10px 0 0;">Append-only. Entries are never edited or deleted; corrections are new entries.</p></section>
+            <section class="panel" style="padding:16px;"><h3 style="font-size:13.5px; font-weight:600; margin:0 0 8px;">Governed actions</h3><div class="stack" style="gap:8px;"><button class="btn btn-primary btn-block">Publish approved branches</button><button class="btn btn-secondary btn-block">Return request</button><button class="btn btn-danger btn-block">Reject request</button></div><p class="t-caption" style="margin:10px 0 0;">Maker ≠ checker: the owner cannot decide their own request. Every action carries the expected revision and fails closed on mismatch.</p></section>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ show_approvals }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:16px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <span class="badge badge-warning">3 awaiting your decision</span>
+            <span class="m6-prov">queue is server-assigned; makers never see their own items here</span>
+            <span class="grow"></span>
+            <label class="stack" style="gap:4px;"><span class="t-label">Queue</span><select class="select"><option>Assigned to me</option><option>My delegated cover</option><option>All in my zone</option></select></label>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Approval queue</span><span class="badge badge-neutral">maker-checker enforced</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col"><span class="t-label">Select</span></th><th scope="col">Item</th><th scope="col">Kind</th><th scope="col">Maker</th><th scope="col">Rev</th><th scope="col">Waiting since</th><th scope="col">Decision</th></tr></thead>
+            <tbody>
+              <tr><td><input type="checkbox" aria-label="Select fire-safety clause request"></td><td>Add three fire-safety clauses + linked items<div class="m6-prov">cor-CCR-2231</div></td><td>Compliance request</td><td>f.admin@mim</td><td><span class="id-code">R2</span></td><td class="cell-num"><span class="id-code">2026-07-19</span></td><td><div style="display:flex; gap:6px;"><button class="btn btn-primary btn-sm">Approve</button><button class="btn btn-secondary btn-sm">Return</button></div></td></tr>
+              <tr><td><input type="checkbox" aria-label="Select enforcement recommendation"></td><td>Enforcement recommendation · Al Rasheed Steel Works<div class="m6-prov">cor-ENF-1187</div></td><td>Enforcement recommendation</td><td>s.otaibi@mim</td><td><span class="id-code">R1</span></td><td class="cell-num"><span class="id-code">2026-07-22</span></td><td><div style="display:flex; gap:6px;"><button class="btn btn-primary btn-sm">Approve</button><button class="btn btn-secondary btn-sm">Return</button></div></td></tr>
+              <tr><td><input type="checkbox" aria-label="Select bulk violation batch"></td><td>Bulk violation batch · 14 records<div class="m6-prov">cor-BVB-0442</div></td><td>Bulk violations</td><td>n.alqahtani@mim</td><td><span class="id-code">R1</span></td><td class="cell-num"><span class="id-code">2026-07-23</span></td><td><div style="display:flex; gap:6px;"><button class="btn btn-primary btn-sm">Approve</button><button class="btn btn-secondary btn-sm">Return</button></div></td></tr>
+            </tbody>
+          </table></div>
+          <div style="display:flex; gap:10px; padding:14px; border-block-start:1px solid var(--border-subtle); flex-wrap:wrap; align-items:center;">
+            <button class="btn btn-primary btn-sm">Approve selected</button>
+            <button class="btn btn-secondary btn-sm">Return selected with reason</button>
+            <span class="m6-prov">bulk decisions are one transaction per item; a single failure rolls back only its own item and is reported per row</span>
+          </div>
+        </section>
+        <section class="panel" style="padding:18px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Queue ordering &amp; ageing</h2>
+          <p class="t-caption" style="margin:0;">Rows are ordered by waiting time as recorded server-side. Ageing bands, breach markers and escalation targets: <span class="m6-unset">Not configured — no approved SLA thresholds in the M6 package</span></p>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ show_library }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:16px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <label class="stack" style="gap:4px;"><span class="t-label">Instrument</span><select class="select"><option>All instruments</option><option>Regulation</option><option>Requirement</option><option>Checklist item</option><option>Violation type</option></select></label>
+            <label class="stack" style="gap:4px;"><span class="t-label">Status</span><select class="select"><option>Active</option><option>Draft</option><option>Superseded</option><option>Retired</option></select></label>
+            <label class="stack" style="gap:4px;"><span class="t-label">Search</span><input class="input" placeholder="Code or title (EN / AR)"></label>
+            <span class="grow"></span>
+            <button class="btn btn-secondary">Export catalogue</button>
+            <button class="btn btn-primary">New via request</button>
+          </div>
+          <p class="t-caption" style="margin:12px 0 0;">The library is read-only by construction: every create, modify and retire is routed through a compliance request. There is no direct edit path.</p>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Regulations &amp; requirements</span><span class="badge badge-neutral">immutable versions</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">Code</th><th scope="col">Title</th><th scope="col">Instrument</th><th scope="col">Version</th><th scope="col">Status</th><th scope="col">Linked items</th><th scope="col">Violation types</th></tr></thead>
+            <tbody>
+              <tr><td><span class="id-code">FS-3.1</span></td><td>Emergency egress<div class="m6-prov">مخارج الطوارئ</div></td><td>Regulation</td><td><span class="id-code">pkgver-4471</span></td><td><span class="badge badge-compliant">Active</span></td><td class="cell-num">4</td><td class="cell-num">2</td></tr>
+              <tr><td><span class="id-code">FS-3.2</span></td><td>Fire suppression coverage</td><td>Requirement</td><td><span class="id-code">pkgver-4471</span></td><td><span class="badge badge-compliant">Active</span></td><td class="cell-num">3</td><td class="cell-num">1</td></tr>
+              <tr><td><span class="id-code">PK-1.4</span></td><td>Packaging labelling</td><td>Requirement</td><td><span class="id-code">pkgver-4390</span></td><td><span class="badge badge-neutral">Superseded</span></td><td class="cell-num">2</td><td class="cell-num">1</td></tr>
+              <tr><td><span class="id-code">CH-2.7</span></td><td>Chemical storage segregation</td><td>Regulation</td><td><span class="id-code">pkgver-4468</span></td><td><span class="badge badge-warning">Draft in request</span></td><td class="cell-num">0</td><td class="cell-num">0</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+        <section class="panel" style="padding:18px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 10px;">Instrument detail contract</h2>
+          <div class="m6-grid3">
+            <div class="panel" style="padding:12px;"><div class="t-label">Identity</div><p class="t-caption" style="margin:6px 0 0;">Stable id + code + bilingual title. Codes are assigned at publication and never re-used.</p></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Version lineage</div><p class="t-caption" style="margin:6px 0 0;">Each published version is immutable; supersession is a link, not an overwrite.</p></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Downstream links</div><p class="t-caption" style="margin:6px 0 0;">Checklist items and violation types that reference this instrument, with the version they bind to.</p></div>
+            <div class="panel" style="padding:12px;"><div class="t-label">Legal text</div><p class="t-caption" style="margin:6px 0 0;"><span class="m6-unset">Authoritative legal text is supplied by source; not authored in this UI</span></p></div>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ show_enforce }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:16px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="seg" role="group" aria-label="Enforcement view"><button class="seg-opt" aria-pressed="true">Violations</button><button class="seg-opt" aria-pressed="false">Recommendations</button><button class="seg-opt" aria-pressed="false">Bulk batches</button></div>
+            <span class="grow"></span>
+            <label class="stack" style="gap:4px;"><span class="t-label">Establishment</span><input class="input" placeholder="CR or name"></label>
+            <button class="btn btn-secondary">New bulk batch</button>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Recorded violations</span><span class="badge badge-neutral">source: inspection submission (immutable)</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">Violation</th><th scope="col">Establishment</th><th scope="col">Instrument</th><th scope="col">Recorded from</th><th scope="col">State</th><th scope="col">Decision</th></tr></thead>
+            <tbody>
+              <tr><td><span class="id-code">VIO-88213-1</span><div class="m6-prov">obstructed exit route</div></td><td>Al Rasheed Steel Works Co.<div class="m6-prov">CR 1010445213</div></td><td><span class="id-code">FS-3.1</span> · pkgver-4471</td><td>INS-88213 v3</td><td><span class="badge badge-warning">Open</span></td><td><a href="#rec">Recommendation drafted</a></td></tr>
+              <tr><td><span class="id-code">VIO-88213-2</span><div class="m6-prov">suppression coverage gap</div></td><td>Al Rasheed Steel Works Co.</td><td><span class="id-code">FS-3.2</span> · pkgver-4471</td><td>INS-88213 v3</td><td><span class="badge badge-warning">Open</span></td><td>None</td></tr>
+              <tr><td><span class="id-code">VIO-87944-1</span></td><td>Al Huda Industries</td><td><span class="id-code">PK-1.4</span> · pkgver-4390</td><td>INS-87944 v1</td><td><span class="badge badge-neutral">Corrected</span></td><td>Closed by committee</td></tr>
+            </tbody>
+          </table></div>
+          <p class="t-caption" style="margin:0; padding:14px; border-block-start:1px solid var(--border-subtle);">A violation record is never edited here. Its facts belong to the submitted inspection; enforcement adds decisions alongside it.</p>
+        </section>
+        <div class="m6-grid2">
+          <section class="panel" style="padding:18px;" id="rec">
+            <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Enforcement recommendation</h2>
+            <p class="t-caption" style="margin:0 0 12px;">Drafted by a compliance user, decided by a different authorized user, then handed to committee where the instrument requires it.</p>
+            <dl style="display:grid; grid-template-columns:170px 1fr; gap:8px 16px; margin:0; font-size:13px;">
+              <dt style="color:var(--text-muted);">Subject</dt><dd style="margin:0;">VIO-88213-1 · FS-3.1</dd>
+              <dt style="color:var(--text-muted);">Recommended measure</dt><dd style="margin:0;"><span class="m6-unset">Measure catalogue not supplied — selected from source-governed list at implementation</span></dd>
+              <dt style="color:var(--text-muted);">Legal basis</dt><dd style="margin:0;"><span class="m6-unset">Cited from the published instrument; not authored here</span></dd>
+              <dt style="color:var(--text-muted);">Correction period</dt><dd style="margin:0;"><span class="m6-unset">Not configured — no approved period values in the M6 package</span></dd>
+              <dt style="color:var(--text-muted);">Maker</dt><dd style="margin:0;">s.otaibi@mim · <span class="t-caption">cannot self-approve</span></dd>
+            </dl>
+            <div style="display:flex; gap:10px; margin-block-start:16px; flex-wrap:wrap;"><button class="btn btn-primary btn-sm">Submit for approval</button><button class="btn btn-secondary btn-sm">Save draft</button><button class="btn btn-ghost btn-sm">Attach evidence reference</button></div>
+          </section>
+          <section class="panel" style="padding:18px;">
+            <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Bulk violations batch</h2>
+            <p class="t-caption" style="margin:0 0 12px;">Batch <span class="id-code">cor-BVB-0442</span> · 14 candidate records from 3 submitted inspections.</p>
+            <div class="table-wrap"><table class="table">
+              <thead><tr><th scope="col">Row</th><th scope="col">Instrument</th><th scope="col">Validation</th></tr></thead>
+              <tbody>
+                <tr><td class="cell-num">1–11</td><td><span class="id-code">FS-3.1</span></td><td><span class="badge badge-compliant">Accepted</span></td></tr>
+                <tr><td class="cell-num">12</td><td><span class="id-code">PK-1.4</span></td><td><span class="badge badge-critical">Rejected — instrument superseded</span></td></tr>
+                <tr><td class="cell-num">13–14</td><td><span class="id-code">CH-2.7</span></td><td><span class="badge badge-warning">Held — instrument not published</span></td></tr>
+              </tbody>
+            </table></div>
+            <p class="t-caption" style="margin:12px 0 0;">Row-level validation is server-side. A rejected row never blocks accepted rows, and no row is silently coerced onto a different instrument version.</p>
+            <div style="display:flex; gap:10px; margin-block-start:14px;"><button class="btn btn-primary btn-sm">Submit 11 accepted rows</button><button class="btn btn-secondary btn-sm">Download rejected rows</button></div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ show_committee }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:18px;">
+          <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div><h2 style="font-size:16px; font-weight:600; margin:0 0 4px;">Committee handoff · session CMT-2026-0714</h2><p class="t-caption" style="margin:0;">3 referred items · correlation <span class="id-code">cor-CMT-0714</span></p></div>
+            <span class="badge badge-info">Referred — awaiting committee decision</span>
+          </div>
+          <p class="t-caption" style="margin:14px 0 0; max-inline-size:78ch;">Referral transfers the decision, not the record. Compliance keeps read access and loses write access on referred items until the committee returns a decision. Which measures require committee referral is a source rule, not a UI rule.</p>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Referred items</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">Item</th><th scope="col">Origin</th><th scope="col">Referred by</th><th scope="col">Compliance write</th><th scope="col">Committee decision</th></tr></thead>
+            <tbody>
+              <tr><td>Enforcement recommendation · VIO-88213-1</td><td><span class="id-code">cor-ENF-1187</span></td><td>s.otaibi@mim</td><td><span class="badge badge-neutral">Locked</span></td><td>Pending</td></tr>
+              <tr><td>Enforcement recommendation · VIO-87944-1</td><td><span class="id-code">cor-ENF-1102</span></td><td>n.alqahtani@mim</td><td><span class="badge badge-neutral">Locked</span></td><td><span class="badge badge-compliant">Upheld</span></td></tr>
+              <tr><td>Bulk batch · 11 rows</td><td><span class="id-code">cor-BVB-0442</span></td><td>n.alqahtani@mim</td><td><span class="badge badge-neutral">Locked</span></td><td>Pending</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+        <div class="m6-grid2">
+          <section class="panel" style="padding:18px;">
+            <h2 style="font-size:15px; font-weight:600; margin:0 0 10px;">Handoff package</h2>
+            <ol style="margin:0; padding-inline-start:18px; font-size:13px; line-height:1.9;">
+              <li>Violation records at their submitted versions</li>
+              <li>Cited instrument versions (<span class="id-code">pkgver-*</span>)</li>
+              <li>Recommendation and its maker/checker trail</li>
+              <li>Evidence references — pointers, never copies</li>
+              <li>Risk facts as recorded, with source attribution</li>
+            </ol>
+            <p class="t-caption" style="margin:12px 0 0;">Package assembly is server-side and reproducible: the same session id always yields the same package.</p>
+          </section>
+          <section class="panel" style="padding:18px;">
+            <h2 style="font-size:15px; font-weight:600; margin:0 0 10px;">Signature &amp; return</h2>
+            <dl style="display:grid; grid-template-columns:160px 1fr; gap:8px 16px; margin:0; font-size:13px;">
+              <dt style="color:var(--text-muted);">Signature transport</dt><dd style="margin:0;"><span class="m6-unset">Provider fact not supplied — flagged, not assumed</span></dd>
+              <dt style="color:var(--text-muted);">Quorum / voting</dt><dd style="margin:0;"><span class="m6-unset">Not configured — no approved committee rule in the M6 package</span></dd>
+              <dt style="color:var(--text-muted);">Return path</dt><dd style="margin:0;">Decision recorded → compliance write unlocks → audit entry appended</dd>
+            </dl>
+            <div style="display:flex; gap:10px; margin-block-start:16px;"><button class="btn btn-secondary btn-sm">Open audit trail</button><button class="btn btn-primary btn-sm" disabled>Record committee decision</button></div>
+            <p class="t-caption" style="margin:10px 0 0;">Recording is disabled for compliance users by design — the control is shown disabled with its reason rather than hidden.</p>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ show_risk }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:18px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Risk facts — as recorded</h2>
+          <p class="t-caption" style="margin:0; max-inline-size:80ch;">This route displays recorded facts and their provenance. It does not score, weight, band or rank. Health and risk remain separate concepts, and approval is never presented as compliance.</p>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Facts for Al Rasheed Steel Works Co. · CR 1010445213</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">Fact</th><th scope="col">Value as recorded</th><th scope="col">Source</th><th scope="col">Recorded at</th></tr></thead>
+            <tbody>
+              <tr><td>Open violations</td><td class="cell-num">2</td><td>SAQEEL inspection submissions</td><td class="cell-num"><span class="id-code">2026-07-20</span></td></tr>
+              <tr><td>Corrected violations (lifetime)</td><td class="cell-num">1</td><td>SAQEEL enforcement records</td><td class="cell-num"><span class="id-code">2026-07-15</span></td></tr>
+              <tr><td>Licence status</td><td>Active</td><td>Source system of record</td><td class="cell-num"><span class="id-code">2026-07-20</span></td></tr>
+              <tr><td>Risk band</td><td><span class="m6-unset">Not configured — no approved risk model or thresholds in the M6 package</span></td><td>—</td><td>—</td></tr>
+              <tr><td>Composite risk score</td><td><span class="m6-unset">Decision required — model not supplied; nothing computed client-side</span></td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+        <section class="panel">
+          <div class="panel-header"><span class="panel-title">Immutable audit trail</span><span class="badge badge-neutral">append-only</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">At</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Subject</th><th scope="col">Rev</th><th scope="col">Correlation</th></tr></thead>
+            <tbody>
+              <tr><td class="cell-num"><span class="id-code">2026-07-20 14:02</span></td><td>n.alqahtani@mim</td><td>Component approved</td><td>FS-3.1</td><td><span class="id-code">R2</span></td><td><span class="id-code">cor-CCR-2231</span></td></tr>
+              <tr><td class="cell-num"><span class="id-code">2026-07-19 10:48</span></td><td>f.admin@mim</td><td>Request submitted</td><td>cor-CCR-2231</td><td><span class="id-code">R2</span></td><td><span class="id-code">cor-CCR-2231</span></td></tr>
+              <tr><td class="cell-num"><span class="id-code">2026-07-18 16:20</span></td><td>n.alqahtani@mim</td><td>Request returned (reason recorded)</td><td>cor-CCR-2231</td><td><span class="id-code">R1</span></td><td><span class="id-code">cor-CCR-2231</span></td></tr>
+              <tr><td class="cell-num"><span class="id-code">2026-07-15 09:03</span></td><td>system</td><td>Publication — immutable versions assigned</td><td>pkgver-4471</td><td><span class="id-code">R4</span></td><td><span class="id-code">cor-CCR-2218</span></td></tr>
+            </tbody>
+          </table></div>
+          <p class="t-caption" style="margin:0; padding:14px; border-block-start:1px solid var(--border-subtle);">Entries cannot be edited, re-ordered or removed from this UI, and no entry is ever written client-side. Retention period: <span class="m6-unset">Not configured — governed by source policy</span></p>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ show_rtl }}" hint-placeholder-val="{{ false }}">
+        <section class="panel" style="padding:16px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">AR / RTL parity — same route, mirrored</h2>
+          <p class="t-caption" style="margin:0;">Rendered with <span class="id-code">dir="rtl" lang="ar"</span>. Layout uses logical properties throughout, so the rail, table alignment, badge order and action order mirror; Latin identifiers, codes and timestamps stay LTR inside the RTL flow.</p>
+        </section>
+        <section class="panel" dir="rtl" lang="ar">
+          <div class="panel-header"><span class="panel-title">طلبات الامتثال في نطاقك</span><span class="badge badge-neutral">٤ سجلات</span></div>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">الطلب</th><th scope="col">النوع</th><th scope="col">المرحلة</th><th scope="col">المراجعة</th><th scope="col">المالك</th><th scope="col">آخر انتقال</th></tr></thead>
+            <tbody>
+              <tr><td>إضافة ثلاثة بنود للسلامة من الحرائق<div class="m6-prov" dir="ltr">cor-CCR-2231</div></td><td>إنشاء</td><td><span class="badge badge-warning">تحت المراجعة</span></td><td><span class="id-code" dir="ltr">R2</span></td><td dir="ltr">f.admin@mim</td><td class="cell-num"><span class="id-code" dir="ltr">2026-07-20</span></td></tr>
+              <tr><td>إلغاء متطلب التغليف المستبدل<div class="m6-prov" dir="ltr">cor-CCR-2229</div></td><td>إلغاء</td><td><span class="badge badge-info">مُقدَّم</span></td><td><span class="id-code" dir="ltr">R1</span></td><td dir="ltr">n.alqahtani@mim</td><td class="cell-num"><span class="id-code" dir="ltr">2026-07-19</span></td></tr>
+              <tr><td>تعديل قاعدة إثبات مخارج الطوارئ<div class="m6-prov" dir="ltr">cor-CCR-2224</div></td><td>تعديل</td><td><span class="badge badge-neutral">مُعاد</span></td><td><span class="id-code" dir="ltr">R3</span></td><td dir="ltr">s.otaibi@mim</td><td class="cell-num"><span class="id-code" dir="ltr">2026-07-18</span></td></tr>
+            </tbody>
+          </table></div>
+        </section>
+        <div class="m6-grid2" dir="rtl" lang="ar">
+          <section class="panel" style="padding:18px;">
+            <h3 style="font-size:15px; font-weight:600; margin:0 0 10px;">الإجراءات المحكومة</h3>
+            <div class="stack" style="gap:8px;"><button class="btn btn-primary btn-block">نشر الفروع المعتمدة</button><button class="btn btn-secondary btn-block">إعادة الطلب</button><button class="btn btn-danger btn-block">رفض الطلب</button></div>
+            <p class="t-caption" style="margin:10px 0 0;">مبدأ فصل المُنشئ عن المعتمد مُطبَّق على الخادم؛ لا يمكن لمالك الطلب اعتماده.</p>
+          </section>
+          <section class="panel" style="padding:18px;">
+            <h3 style="font-size:15px; font-weight:600; margin:0 0 10px;">حالات محكومة</h3>
+            <div class="stack" style="gap:10px;">
+              <div><span class="exc exc-critical"><span class="exc-mark"></span>غير مصرّح</span><p class="t-caption" style="margin:6px 0 0;">لا يتم الكشف عن وجود السجلات أو أعدادها.</p></div>
+              <div><span class="exc exc-warning"><span class="exc-mark"></span>تعارض في المراجعة</span><p class="t-caption" style="margin:6px 0 0;">رُفض الحفظ بالكامل؛ يُعاد التحميل ثم يُعاد القرار.</p></div>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ===== CONTRACT FOOTER (always) ===== -->
+      <section class="panel" style="padding:18px;">
+        <div class="panel-header" style="padding:0 0 12px;"><span class="panel-title">Route contract · {{ acceptanceId }}</span></div>
+        <dl style="display:grid; grid-template-columns:190px 1fr; gap:8px 18px; margin:0; font-size:12.5px;">
+          <dt style="color:var(--text-muted);">Route</dt><dd style="margin:0;"><span class="id-code">{{ routePath }}</span></dd>
+          <dt style="color:var(--text-muted);">Read</dt><dd style="margin:0;"><span class="id-code">{{ routeRpc }}</span> — RLS zone-scoped, server-paged</dd>
+          <dt style="color:var(--text-muted);">Grant</dt><dd style="margin:0;"><span class="id-code">{{ routeGrant }}</span></dd>
+          <dt style="color:var(--text-muted);">Write rule</dt><dd style="margin:0;">{{ routeWrite }}</dd>
+          <dt style="color:var(--text-muted);">States observable</dt><dd style="margin:0;">Ready · Loading · Empty · Error · Degraded · Denied · Conflict — all switchable above, none simulated by copy alone</dd>
+          <dt style="color:var(--text-muted);">Shell scope</dt><dd style="margin:0;">Date and region scope render <strong>disabled — “Not applicable”</strong> on every M6 route (repo <span class="id-code">shellScopeForRoute</span> grants them only to <span class="id-code">/dashboard</span> and <span class="id-code">/operations*</span>). Route filters live in the page body, never in shell chrome.</dd>
+          <dt style="color:var(--text-muted);">Unsourced values</dt><dd style="margin:0;">Rendered as <span class="m6-unset">Not configured / Decision required</span> — never filled with an invented number, threshold, period or legal rule</dd>
+        </dl>
+      </section>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:980}}">
+const ROUTES = {
+  requests:   { title:"Compliance requests", noun:"requests", path:"/compliance/requests (no repo route yet — confirm before build)", ac:"WA-M6-AC-001", rpc:"rpc.compliance_requests_list", grant:"compliance.request.read", write:"Maker creates and submits; checker decides. Maker ≠ checker enforced server-side.", empty:"New request", meta:"M6 · request lifecycle · SCR-WEB-610" },
+  request_detail: { title:"Compliance request", noun:"request", path:"/compliance/requests/:requestId", ac:"WA-M6-AC-001", rpc:"rpc.compliance_request_get", grant:"compliance.request.read", write:"Component and request decisions carry the expected revision; mismatch fails closed with a conflict.", empty:"New request", meta:"M6 · request detail · SCR-WEB-611" },
+  approvals:  { title:"Awaiting Approval", noun:"approvals", path:"/admin/compliance-approvals", ac:"WA-M6-AC-002", rpc:"rpc.compliance_approval_queue", grant:"compliance.approval.decide", write:"Decisions are per item and transactional; makers are excluded from their own items.", empty:"Open requests list", meta:"M6 · maker-checker queue · SCR-WEB-612" },
+  library:    { title:"Inspection Rules", noun:"instruments", path:"/admin/regulations", ac:"WA-M6-AC-003", rpc:"rpc.regulations_list", grant:"compliance.library.read", write:"No direct write. All changes route through a compliance request.", empty:"New via request", meta:"M6 · instrument catalogue · SCR-WEB-613" },
+  enforce:    { title:"Violations &amp; Penalties", noun:"violations", path:"/admin/violations", ac:"WA-M6-AC-004", rpc:"rpc.violations_list", grant:"enforcement.violation.read", write:"Violation facts are immutable. Recommendations and bulk batches are drafted, then decided by a different authorized user.", empty:"New bulk batch", meta:"M6 · violations · recommendations · bulk · SCR-WEB-614" },
+  committee:  { title:"Committee handoff", noun:"referred items", path:"/enforcement (nearest repo route — no committee route exists yet)", ac:"WA-M6-AC-005", rpc:"rpc.committee_session_get", grant:"committee.session.read", write:"Referral locks compliance write on referred items; committee decision unlocks and appends audit.", empty:"Open enforcement board", meta:"M6 · referral &amp; signature handoff · SCR-WEB-615" },
+  risk:       { title:"Risk Settings &amp; Activity Log", noun:"facts", path:"/admin/risk + /admin/audit", ac:"WA-M6-AC-006", rpc:"rpc.risk_facts_get + rpc.audit_trail_list", grant:"risk.fact.read", write:"Read-only. No client-side scoring, banding or ranking; audit is append-only server-side.", empty:"Open establishment registry", meta:"M6 · recorded facts · audit trail · SCR-WEB-616" },
+  rtl:        { title:"AR / RTL parity", noun:"rows", path:"/compliance/requests (ar)", ac:"WA-M6-AC-001..006", rpc:"same as source route", grant:"same as source route", write:"Mirrored rendering only — no locale-specific behaviour or rule.", empty:"New request", meta:"M6 · locale parity evidence · SCR-WEB-617" }
+};
+
+class Component extends DCLogic {
+  state = { route:"requests", st:"ready", locale:"en", theme:"dark", width:"desktop" };
+
+  set(k, v) { this.setState({ [k]: v }); }
+
+  renderVals() {
+    const s = this.state;
+    const r = ROUTES[s.route] || ROUTES.requests;
+    const ready = s.st === "ready";
+    const widths = { desktop:"1440px", tablet:"1024px", narrow:"412px" };
+    const go = route => () => this.setState({ route, st:"ready" });
+    return {
+      theme: s.theme,
+      isDark: s.theme === "dark",
+      isLight: s.theme === "light",
+      dir: s.locale === "ar" ? "rtl" : "ltr",
+      lang: s.locale === "ar" ? "ar" : "en",
+      localeLabel: s.locale === "ar" ? "EN" : "AR",
+      toggleLocale: () => this.set("locale", s.locale === "ar" ? "en" : "ar"),
+      toggleTheme: () => this.set("theme", s.theme === "dark" ? "light" : "dark"),
+
+      routeTitle: r.title.replace("&amp;", "&"),
+      routeNoun: r.noun,
+      routeMeta: r.meta.replace("&amp;", "&"),
+      routePath: r.path,
+      routeRpc: r.rpc,
+      routeGrant: r.grant,
+      routeWrite: r.write,
+      acceptanceId: r.ac,
+      emptyPrimary: r.empty,
+      corr: "M6-" + s.route.toUpperCase().slice(0, 6),
+      frameWidth: widths[s.width],
+
+      cur_requests: s.route === "requests" || s.route === "request_detail" ? "page" : null,
+      cur_approvals: s.route === "approvals" ? "page" : null,
+      cur_library: s.route === "library" ? "page" : null,
+      cur_enforce: s.route === "enforce" ? "page" : null,
+      cur_committee: s.route === "committee" ? "page" : null,
+      cur_risk: s.route === "risk" ? "page" : null,
+      cur_rtl: s.route === "rtl" ? "page" : null,
+
+      go_requests: go("requests"),
+      go_request_detail: go("request_detail"),
+      go_approvals: go("approvals"),
+      go_library: go("library"),
+      go_enforce: go("enforce"),
+      go_committee: go("committee"),
+      go_risk: go("risk"),
+      go_rtl: go("rtl"),
+
+      st_ready: ready,
+      st_loading: s.st === "loading",
+      st_empty: s.st === "empty",
+      st_error: s.st === "error",
+      st_degraded: s.st === "degraded",
+      st_denied: s.st === "denied",
+      st_conflict: s.st === "conflict",
+      set_ready: () => this.set("st", "ready"),
+      set_loading: () => this.set("st", "loading"),
+      set_empty: () => this.set("st", "empty"),
+      set_error: () => this.set("st", "error"),
+      set_degraded: () => this.set("st", "degraded"),
+      set_denied: () => this.set("st", "denied"),
+      set_conflict: () => this.set("st", "conflict"),
+
+      w_desktop: s.width === "desktop",
+      w_tablet: s.width === "tablet",
+      w_narrow: s.width === "narrow",
+      set_desktop: () => this.set("width", "desktop"),
+      set_tablet: () => this.set("width", "tablet"),
+      set_narrow: () => this.set("width", "narrow"),
+
+      show_requests: ready && s.route === "requests",
+      show_request_detail: ready && s.route === "request_detail",
+      show_approvals: ready && s.route === "approvals",
+      show_library: ready && s.route === "library",
+      show_enforce: ready && s.route === "enforce",
+      show_committee: ready && s.route === "committee",
+      show_risk: ready && s.route === "risk",
+      show_rtl: ready && s.route === "rtl"
+    };
+  }
+}
+</script>
+</body>
+</html>

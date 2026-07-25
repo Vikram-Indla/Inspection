@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAQEEL — Executive Overview</title>
+<link rel="stylesheet" href="saqeel/styles.css">
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<script src="ksa-adm1-map.js"></script>
+<style>
+  html, body { height:100%; margin:0; }
+  body { background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); }
+  .ex-shell { height:100vh; display:grid; grid-template-columns:248px 1fr; }
+  .ex-main { height:100vh; overflow-y:auto; }
+  .ex-hero { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media (max-width:1100px){ .ex-hero { grid-template-columns:repeat(2,1fr); } }
+  .ex-canvas { display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+  @media (max-width:1000px){ .ex-canvas { grid-template-columns:1fr; } }
+  #ksa { width:100%; height:auto; display:block; }
+  .ex-zone { cursor:pointer; transition:opacity .15s; }
+  .ex-zone:hover { opacity:.85; }
+  .ex-rowbtn { display:flex; align-items:center; gap:12px; width:100%; text-align:start; padding:12px 14px; border:0; border-block-end:1px solid var(--border-subtle); background:none; cursor:pointer; font:inherit; color:var(--text-primary); }
+  .ex-rowbtn:hover { background:var(--surface-sunken); }
+  .ex-chip { padding:9px 14px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); text-align:start; }
+  .ex-chip:hover { border-color:var(--action-primary); color:var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="ex-shell">
+  <!-- SHELL SIDEBAR -->
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item is-active" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main-content" tabindex="-1" class="ex-main">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <details class="r5-scope"><summary aria-label="Date scope"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Last 30 days</span></summary><div class="r5-pop"><label class="r5-field"><span class="t-label">From</span><input class="input" type="date" value="2026-06-26"></label><label class="r5-field"><span class="t-label">To</span><input class="input" type="date" value="2026-07-25"></label><button class="btn btn-secondary btn-sm" type="button">Apply</button></div></details>
+      <label class="r5-scope"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope"><option>All regions</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <header style="position:sticky;top:0;z-index:20;background:var(--surface-primary);border-block-end:1px solid var(--border-subtle);padding:14px 28px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;">
+      <div><h1 style="font-size:24px;font-weight:700;letter-spacing:-0.02em;margin:0;">نظرة القيادة</h1><div class="t-caption" style="margin-block-start:4px;">أداء التفتيش الصناعي في المملكة · رؤية استراتيجية من ١٠٬٠٠٠ قدم</div></div>
+      <span class="badge badge-info">المملكة العربية السعودية</span>
+      <span class="grow"></span>
+      <span class="badge badge-compliant"><span class="dot"></span>محدّث 02:31 · مباشر</span>
+      <span class="avatar" style="background:var(--action-primary);color:#fff;">و</span>
+    </header>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div style="padding:22px 28px 90px;display:flex;flex-direction:column;gap:20px;">
+      <!-- HERO SIGNALS -->
+      <div class="ex-hero">
+        <div class="kpi"><div class="kpi-label">الامتثال الوطني</div><div class="kpi-value">92.0<span class="unit">%</span></div><div class="kpi-delta down">▼ 1.2 نقطة عن الربع السابق</div></div>
+        <div class="kpi"><div class="kpi-label">مصانع تحتاج تدخّلاً</div><div class="kpi-value" style="color:var(--status-warning);">18</div><div class="kpi-delta">من 296 · تركّز شرقي</div></div>
+        <div class="kpi"><div class="kpi-label">تراخيص منتهية</div><div class="kpi-value" style="color:var(--status-critical);">6</div><div class="kpi-delta down">▲ 14 خلال ≤30 يوماً</div></div>
+        <div class="kpi"><div class="kpi-label">تغطية التفتيش السنوية</div><div class="kpi-value">85<span class="unit">%</span></div><div class="kpi-delta up">▲ متقدّم على المستهدف</div></div>
+      </div>
+
+      <!-- MAP + LIST -->
+      <div class="ex-canvas">
+        <div class="panel" style="padding:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-block-end:6px;"><h2 style="font-size:15px;font-weight:600;margin:0;flex:1;">خريطة الامتثال حسب المنطقة</h2><span class="t-caption" id="ex-hint">مرّر على منطقة للتفاصيل</span></div>
+          <div style="width:100%;aspect-ratio:720/560;"><ksa-adm1-map mode="choropleth" style="width:100%;height:100%;display:block" landmark='{"lng":46.6753,"lat":24.7136,"ar":"مقر وزارة الصناعة والثروة المعدنية","en":"MIM HQ · RIYADH"}' regions='[{"lng":46.7,"lat":24.7,"comp":93},{"lng":40.4,"lat":21.4,"comp":88},{"lng":49.9,"lat":26.0,"comp":79},{"lng":39.6,"lat":24.5,"comp":90},{"lng":43.9,"lat":26.3,"comp":94},{"lng":42.5,"lat":18.7,"comp":86},{"lng":37.2,"lat":28.4,"comp":91},{"lng":41.7,"lat":27.5,"comp":89},{"lng":42.7,"lat":16.9,"comp":82},{"lng":44.1,"lat":17.6,"comp":87},{"lng":41.5,"lat":20.0,"comp":90},{"lng":39.6,"lat":29.9,"comp":92},{"lng":42.9,"lat":30.5,"comp":88}]'></ksa-adm1-map></div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-block-start:8px;">
+            <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary);"><span style="width:11px;height:11px;border-radius:50%;background:#3fb27f;"></span>مرتفع (≥90%)</span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary);"><span style="width:11px;height:11px;border-radius:50%;background:#e2a336;"></span>متوسط (80–90%)</span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary);"><span style="width:11px;height:11px;border-radius:50%;background:#e5484d;"></span>منخفض (<80%)</span>
+            <span class="grow"></span><span class="t-caption id-code">GADM ADM1 · ArcGIS · d3-geo</span>
+          </div>
+        </div>
+
+        <div class="panel" style="padding:0;overflow:hidden;">
+          <div style="padding:14px 16px;border-block-end:1px solid var(--border-subtle);display:flex;align-items:center;gap:10px;"><span style="font-weight:600;font-size:14px;flex:1;">المناطق مرتّبة حسب الامتثال</span><span class="t-caption">13 منطقة</span></div>
+          <div id="ex-list" style="max-height:430px;overflow-y:auto;"></div>
+        </div>
+      </div>
+
+      <!-- AI COMPOSER -->
+      <div class="panel" style="padding:20px;border-inline-start:3px solid var(--action-primary);">
+        <div style="display:flex;align-items:center;gap:10px;margin-block-end:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:20px;height:20px;"><path d="M12 3v3M12 18v3M5 12H2M22 12h-3M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2"/><circle cx="12" cy="12" r="3.4"/></svg>
+          <h2 style="font-size:16px;font-weight:600;margin:0;flex:1;">مساعد القيادة الذكي</h2>
+          <span class="badge badge-info">Gemini · استشاري</span>
+        </div>
+        <p class="t-caption" style="margin:0 0 14px;">اسأل عن الاتجاهات والمخاطر والتوقعات. الإجابات استشارية ومبنية على بيانات محكومة — القرار النهائي بشري.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:9px;margin-block-end:14px;">
+          <button class="ex-chip">ما المناطق الأكثر تدهوراً هذا الربع؟</button>
+          <button class="ex-chip">أي القطاعات تقود المخالفات؟</button>
+          <button class="ex-chip">توقّع التراخيص المنتهية خلال ٣٠ يوماً</button>
+          <button class="ex-chip">قارن الأداء الشرقي بالمستهدف الوطني</button>
+        </div>
+        <div class="input-affix" style="display:flex;align-items:center;gap:8px;padding:0 14px;min-height:48px;border:1px solid var(--border-input);border-radius:var(--radius-full);background:var(--surface-secondary);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.6" style="width:18px;height:18px;flex:none;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input class="input" placeholder="اكتب سؤالك حول أداء التفتيش…" style="border:0;background:none;flex:1;">
+          <button class="btn btn-primary btn-sm">اسأل</button>
+        </div>
+      </div>
+
+      <!-- BENCHMARK + PROACTIVE -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:18px;">
+          <h2 style="font-size:14px;font-weight:600;margin:0 0 14px;">المقارنة المرجعية · القطاعات مقابل المستهدف</h2>
+          <div id="ex-bench" style="display:flex;flex-direction:column;gap:12px;"></div>
+          <div style="margin-block-start:14px; height:150px; border-radius:10px; overflow:hidden; position:relative; border:1px solid var(--border-subtle);">
+            <ksa-adm1-map mode="ops" style="position:absolute; inset:0; width:100%; height:100%;"></ksa-adm1-map>
+          </div>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <h2 style="font-size:14px;font-weight:600;margin:0 0 14px;">إشارات استباقية</h2>
+          <div class="stack" style="gap:11px;">
+            <div style="display:flex;gap:10px;"><span class="exc exc-critical"><span class="exc-mark"></span></span><span style="font-size:13.5px;">ارتفاع مخالفات السلامة +108% خلال 3 أشهر — تركّز في الجبيل والدمام.</span></div>
+            <div style="display:flex;gap:10px;"><span class="exc exc-warning"><span class="exc-mark"></span></span><span style="font-size:13.5px;">14 ترخيصاً في المنطقة الشرقية ينتهي خلال 30 يوماً دون خطة تفتيش.</span></div>
+            <div style="display:flex;gap:10px;"><span class="exc exc-compliant"><span class="exc-mark"></span></span><span style="font-size:13.5px;">تحسّن الامتثال في القصيم +3.4 نقطة — نموذج قابل للتعميم.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const REGIONS = [
+  { name:"الرياض",           en:"Riyadh",            lng:46.7, lat:24.7, comp:93, fac:64, trend:"+0.4" },
+  { name:"مكة المكرمة",       en:"Makkah",            lng:40.4, lat:21.4, comp:88, fac:52, trend:"-0.6" },
+  { name:"المنطقة الشرقية",   en:"Eastern",           lng:49.9, lat:26.0, comp:79, fac:58, trend:"-1.8" },
+  { name:"المدينة المنورة",   en:"Madinah",           lng:39.6, lat:24.5, comp:90, fac:24, trend:"+0.2" },
+  { name:"القصيم",            en:"Qassim",            lng:43.9, lat:26.3, comp:94, fac:19, trend:"+3.4" },
+  { name:"عسير",              en:"Asir",              lng:42.5, lat:18.7, comp:86, fac:14, trend:"+0.1" },
+  { name:"تبوك",              en:"Tabuk",             lng:37.2, lat:28.4, comp:91, fac:9,  trend:"+0.5" },
+  { name:"حائل",              en:"Hail",              lng:41.7, lat:27.5, comp:89, fac:8,  trend:"0.0" },
+  { name:"جازان",             en:"Jazan",             lng:42.7, lat:16.9, comp:82, fac:11, trend:"-0.9" },
+  { name:"نجران",             en:"Najran",            lng:44.1, lat:17.6, comp:87, fac:6,  trend:"+0.3" },
+  { name:"الباحة",            en:"Bahah",             lng:41.5, lat:20.0, comp:90, fac:5,  trend:"+0.4" },
+  { name:"الجوف",             en:"Al Jawf",           lng:39.6, lat:29.9, comp:92, fac:5,  trend:"+0.6" },
+  { name:"الحدود الشمالية",   en:"Northern Borders",  lng:42.9, lat:30.5, comp:88, fac:4,  trend:"-0.2" }
+];
+const color = c => c >= 90 ? "#3fb27f" : c >= 80 ? "#e2a336" : "#e5484d";
+
+(async function () {
+  const W = 720, H = 560;
+  const svg = d3.select("#ksa").attr("viewBox", `0 0 ${W} ${H}`);
+  // Real Saudi ADM1 (13 provinces) — GADM via ArcGIS FeatureServer, fetched live in the browser.
+  let adm1 = null;
+  try {
+    adm1 = await fetch("https://services7.arcgis.com/co15Y7Q02mBEZqnK/ArcGIS/rest/services/gadm41_SAU_shp/FeatureServer/1/query?where=1%3D1&outFields=NAME_1&returnGeometry=true&outSR=4326&f=geojson").then(r => r.ok ? r.json() : null);
+  } catch (e) { adm1 = null; }
+  const hasGeo = !!(adm1 && adm1.features && adm1.features.length);
+
+  // name-agnostic: match each polygon to the nearest known region centroid
+  const near = (lng, lat) => REGIONS.reduce((b, r) => {
+    const d = (r.lng - lng) ** 2 + (r.lat - lat) ** 2; return d < b.d ? { d, r } : b;
+  }, { d: Infinity, r: REGIONS[0] }).r;
+
+  const proj = hasGeo
+    ? d3.geoMercator().fitExtent([[24,24],[W-24,H-24]], adm1)
+    : d3.geoMercator().center([45,24]).scale(1300).translate([W/2, H/2]);
+  const path = d3.geoPath(proj);
+
+  if (hasGeo) {
+    svg.append("g").selectAll("path").data(adm1.features).join("path")
+      .attr("class", "ex-zone").attr("d", path)
+      .attr("fill", f => { const c = d3.geoCentroid(f); return color(near(c[0], c[1]).comp); })
+      .attr("fill-opacity", .82).attr("stroke", "#fff").attr("stroke-width", .8)
+      .on("mouseenter", (ev, f) => { const c = d3.geoCentroid(f); const rg = near(c[0], c[1]); document.getElementById("ex-hint").textContent = `${rg.name} · امتثال ${rg.comp}% · ${rg.fac} مصنعاً · ${rg.trend}`; })
+      .on("mouseleave", () => document.getElementById("ex-hint").textContent = "مرّر على منطقة للتفاصيل");
+    svg.append("path").datum(adm1).attr("d", path).attr("fill", "none")
+      .attr("stroke", "var(--action-primary)").attr("stroke-width", 1.2).attr("opacity", .5).style("pointer-events", "none");
+  }
+
+  // compliance % labels at real coordinates (bubbles only in the offline fallback)
+  const g = svg.append("g").style("pointer-events", "none");
+  REGIONS.forEach(rg => {
+    const p = proj([rg.lng, rg.lat]); if (!p) return;
+    const node = g.append("g").attr("transform", `translate(${p[0]},${p[1]})`);
+    if (!hasGeo) {
+      const r = 8 + Math.sqrt(rg.fac) * 1.9;
+      node.append("circle").attr("r", r + 5).attr("fill", color(rg.comp)).attr("opacity", .16);
+      node.append("circle").attr("r", r).attr("fill", color(rg.comp)).attr("opacity", .85).attr("stroke", "#fff").attr("stroke-width", 1.5);
+    }
+    node.append("text").text(rg.comp + "%").attr("text-anchor", "middle").attr("dy", "0.34em")
+      .attr("fill", "#fff").attr("font-size", "10.5px").attr("font-weight", "700").attr("font-family", "var(--font-body)")
+      .attr("stroke", "rgba(0,0,0,.4)").attr("stroke-width", 2.6).attr("paint-order", "stroke");
+  });
+
+  // ranked list
+  const list = d3.select("#ex-list");
+  [...REGIONS].sort((a, b) => b.comp - a.comp).forEach(rg => {
+    const row = list.append("button").attr("class", "ex-rowbtn");
+    row.html(`<span style="width:10px;height:10px;border-radius:50%;background:${color(rg.comp)};flex:none;"></span>
+      <span style="flex:1;min-width:0;"><span style="font-weight:600;font-size:13.5px;">${rg.name}</span>
+      <span class="t-caption" style="display:block;">${rg.fac} مصنعاً · <span class="id-code">${rg.trend}</span></span></span>
+      <span style="font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;">${rg.comp}%</span>`);
+  });
+
+  // benchmarking bars
+  document.querySelectorAll('#ex-bench ~ div ksa-adm1-map').forEach(el => el.setAttribute('regions', JSON.stringify(REGIONS.map(r => ({ lng:r.lng, lat:r.lat, comp:r.comp })))));
+  const BENCH = [["الأغذية",95],["المعادن",82],["الكيماويات",76],["النسيج",89],["البلاستيك",84]];
+  const bench = d3.select("#ex-bench");
+  BENCH.forEach(([label, v]) => {
+    const row = bench.append("div").style("display", "flex").style("align-items", "center").style("gap", "12px");
+    row.html(`<span style="width:80px;font-size:13px;">${label}</span>
+      <span style="flex:1;height:9px;border-radius:5px;background:var(--surface-sunken);overflow:hidden;"><i style="display:block;height:100%;width:${v}%;background:${color(v)};border-radius:5px;"></i></span>
+      <span class="id-code" style="width:34px;font-size:12px;">${v}%</span>`);
+  });
+})();
+</script>
+</body>
+</html>

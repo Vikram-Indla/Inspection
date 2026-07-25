@@ -1,0 +1,279 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-WORKFLOWS-RUNTIME-PERMISSION-MAPPING-020
+title: Independent Workflow Library runtime, permission and governed-lifecycle validation
+status: VALIDATED_BLOCKED_P0_RUNTIME_AND_AUTHORIZATION_GAPS
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  mode: READ_ONLY
+  route: /admin/workflows
+  screens:
+    - SCR-ADM-050
+    - SCR-ADM-051
+  process_ids:
+    - G2-P00
+  requirement_ids:
+    mvp2_workflow_studio:
+      - MVP2-REQ-0025 through MVP2-REQ-0043
+      - MVP2-AC-0025 through MVP2-AC-0043
+    strategic_successors:
+      - [MVP2-REQ-0249, MVP2-AC-0249, MVP2-EV-0249]
+      - [MVP2-REQ-0250, MVP2-AC-0250, MVP2-EV-0250]
+    foundation:
+      - RBAC-002
+      - RBAC-003
+      - ENG-03
+  web_admin_acceptance:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-003
+    - WA-M9-AC-004
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+  canonical_478_scope:
+    status: NOT_DIRECTLY_ATTRIBUTABLE_TO_THIS_ADMIN_ROUTE
+    finding: >-
+      The Phase-1 manifests assign CR-001..CR-478 wholesale to M9 and this route,
+      but the canonical 478-row baseline contains business journey obligations,
+      not a justified route-specific Workflow Library subset. The blanket range
+      is not evidence that 478 requirements are implemented here.
+  design_dependency:
+    id: WA-DES-014
+    file: SAQEEL Admin Workflow Builder.dc.html
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    authority_state: DEPENDENCY_ONLY_PENDING_SEPARATE_CLAUDE_DESIGN_REVIEW
+    rule: This packet does not approve, revise or compete with Claude Design authority.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_lease_claimed: true
+
+validated_mapping:
+  application_route:
+    claimed: /admin/workflows
+    exists: true
+    route_file: apps/web/src/app/(app)/admin/workflows/page.tsx
+  components:
+    - apps/web/src/app/(app)/admin/workflows/Controls.tsx
+    - apps/web/src/app/(app)/admin/workflows/WfDeck.tsx
+  server_actions:
+    - apps/web/src/app/(app)/admin/workflows/actions.ts
+    - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+    - apps/web/src/app/(app)/admin/workflows/task-actions.ts
+    - apps/web/src/app/(app)/admin/workflows/sla-actions.ts
+  services:
+    - apps/web/src/lib/workflow/normalize.ts
+    - apps/web/src/lib/workflow/validate.ts
+    - apps/web/src/lib/workflow/transition.ts
+    - apps/web/src/lib/workflow/governed-transition.ts
+    - apps/web/src/lib/workflow/guards.ts
+    - apps/web/src/lib/workflow/outbox.ts
+    - apps/web/src/lib/workflow/events.ts
+    - apps/web/src/lib/workflow/tasks.ts
+    - apps/web/src/lib/workflow/sla.ts
+    - apps/web/src/lib/workflow/lifecycles.ts
+  data_contracts:
+    - config_versions
+    - profiles
+    - audit_events
+    - workflow_outbox
+    - workflow_task_assignments
+    - sla_timers
+  classification: CONFIRMED_WITH_CORRECTION
+  correction: >-
+    The real route is a combined Workflow Library and inline designer, not a
+    separate implemented /admin/workflows/:id designer. It exposes clone, raw
+    JSON draft edit, validation and publish; it does not expose the full
+    catalogue action set or all server-side lifecycle functions.
+
+runtime_capability_matrix:
+  - capability: List workflow versions
+    runtime: IMPLEMENTED
+    evidence: page.tsx reads engine=workflow config_versions and displays state graph, validation and approval chain.
+  - capability: Clone published version to draft
+    runtime: IMPLEMENTED
+    evidence: ProposeDraftForm calls proposeWorkflowDraft.
+  - capability: Edit draft definition
+    runtime: PARTIAL
+    evidence: Raw JSON editor exists; graphical add/connect/guard/SLA/notification builders do not.
+  - capability: Validate before publish
+    runtime: IMPLEMENTED_PURE_AND_SERVER_GATE
+    evidence: validateWorkflowPayload VAL-01..06 is shown and called again by approvePublishWorkflow.
+  - capability: Distinct checker publish
+    runtime: PARTIAL
+    evidence: UI suppresses self-approval and maker_checker checks approved_by differs from created_by.
+  - capability: Optimistic concurrency
+    runtime: NOT_WIRED
+    evidence: >-
+      saveWorkflowDraft optionally compares row_version, but page.tsx does not
+      select row_version and DraftPayloadEditor does not submit it. Normal UI
+      edits therefore update by id/status only and can silently overwrite.
+  - capability: Review and Approved lifecycle stages
+    runtime: NOT_EXPOSED
+    evidence: UI/actions use draft directly to published although MVP2-REQ-0026 names Draft→Review→Approved→Published.
+  - capability: Scheduled activation
+    runtime: NOT_WIRED
+    evidence: approve action accepts scheduled_from but ApprovePublish renders no schedule field; effective_from is always set to now.
+  - capability: Retire
+    runtime: SERVER_ONLY_UNREACHABLE
+    evidence: retireWorkflowVersion exists but no page control calls it.
+  - capability: Roll back
+    runtime: SERVER_ONLY_UNREACHABLE
+    evidence: rollbackWorkflowToVersion exists but no page control calls it and no rolled_back lifecycle result is written.
+  - capability: Persisted simulation and replay
+    runtime: BLOCKED_EXPLICITLY
+    evidence: NotYetBoundary states sim_fixtures and sim_runs are absent.
+  - capability: Governed operational transition
+    runtime: DARK_AND_INCOMPLETE
+    evidence: applyGovernedTransition is feature-flagged off and does not patch the operational object's canonical status.
+  - capability: Tasks and SLA operations
+    runtime: SEPARATE_OR_DARK
+    evidence: Task actions are used by /tasks; SLA actions have no Workflow Library UI and no scheduler/automatic breach execution.
+
+permission_and_governance_findings:
+  - id: WF-P0-001
+    priority: P0
+    finding: Route has no Workflow Admin authorization boundary.
+    evidence: >-
+      The authenticated layout redirects only field-only personas. page.tsx
+      performs no role check. config_versions SELECT permits every authenticated
+      user, while navigation merely hides the link from non-workflow admins.
+    implication: A deep link exposes every workflow definition and approval-chain identity to any authenticated non-field user.
+  - id: WF-P0-002
+    priority: P0
+    finding: Workflow writes are not engine-scoped to Workflow Admin.
+    evidence: >-
+      config_write/config_update allow compliance_admin, form_admin, workflow_admin,
+      risk_owner, gis_admin and security_admin across the shared config_versions
+      table. The policies do not bind engine to the caller's capability.
+    implication: Non-workflow administrative roles can insert or update engine=workflow rows through REST or these actions.
+  - id: WF-P0-003
+    priority: P0
+    finding: Published workflow immutability is not database-enforced.
+    evidence: >-
+      There is no DELETE policy, but config_update permits updates to all matching
+      config_versions rows and no published-row mutation trigger was found.
+      Server-action status filters protect only those application paths.
+    implication: A permitted REST caller can mutate an in-flight published workflow, violating MVP2-REQ-0250.
+  - id: WF-P0-004
+    priority: P0
+    finding: Stale-edit rejection is inactive on the rendered edit path.
+    evidence: row_version is neither selected by page.tsx nor posted by DraftPayloadEditor.
+    implication: Concurrent draft edits can silently overwrite each other.
+  - id: WF-P0-005
+    priority: P0
+    finding: Maker-checker is identity-distinct but not capability-distinct.
+    evidence: >-
+      The database check only requires approved_by <> created_by. It does not
+      prove the approver holds the governed publish capability for engine=workflow.
+    implication: Separation of identity exists, but authorization and approval-stage semantics remain incomplete.
+  - id: WF-P0-006
+    priority: P0
+    finding: Published version selection and activation semantics are not proven end to end.
+    evidence: >-
+      A uniqueness index includes coalesce(scheduled_from,effective_from), which
+      permits multiple published rows at different timestamps. The reviewed
+      route does not prove consumers select the correct effective workflow or
+      pin in-flight objects to their original version.
+    implication: Publishing can succeed without proof that future and in-flight records use the correct immutable version.
+  - id: WF-P1-001
+    priority: P1
+    finding: Retire, rollback and schedule actions exist only in server code.
+    implication: The advertised governance lifecycle cannot be completed from the application.
+  - id: WF-P1-002
+    priority: P1
+    finding: Audit writes in task, SLA and transition actions do not fail the business action when audit append fails.
+    implication: Successful state mutation can lack required audit proof.
+  - id: WF-P1-003
+    priority: P1
+    finding: The catalogue route /admin/workflows/:id is not implemented.
+    implication: SCR-ADM-051 is folded into an unbounded inline raw-JSON editor rather than a routed governed designer.
+
+test_and_evidence_readiness:
+  present:
+    pure_tests:
+      - apps/web/e2e/mvp2-m2-02-workflow-validator.spec.ts
+      - apps/web/e2e/mvp2-m2-02-transition-guards.spec.ts
+      - apps/web/e2e/mvp2-m2-02-governed-transition.spec.ts
+      - apps/web/e2e/mvp2-m2-02-outbox-idempotency.spec.ts
+      - apps/web/e2e/mvp2-m2-02-lifecycles.spec.ts
+      - apps/web/e2e/mvp2-m2-02-normalize.spec.ts
+      - apps/web/e2e/mvp2-m2-02-task-model.spec.ts
+      - apps/web/e2e/mvp2-m2-02-sla-model.spec.ts
+    schema_probes:
+      - supabase/tests/mvp2_m2_02_workflow_version_model_probe.sql
+      - supabase/tests/mvp2_m2_02_workflow_outbox_probe.sql
+      - supabase/tests/mvp2_m2_02_task_assignments_probe.sql
+      - supabase/tests/mvp2_m2_02_sla_timers_probe.sql
+  missing:
+    - Focused authenticated browser test for /admin/workflows.
+    - Direct-link authorization denial for every non-Workflow-Admin persona.
+    - Engine-scoped RLS tests proving each admin role can modify only its owned engine.
+    - Published-row UPDATE and DELETE denial through authenticated REST.
+    - Two-user stale draft edit and compare-and-set browser evidence.
+    - Maker/checker publish success and self-approval denial with real personas.
+    - Review/Approved/Scheduled/Retired/Rolled Back runtime evidence.
+    - In-flight version pinning and future-record activation evidence.
+    - Audit-failure atomicity or durable outbox evidence.
+    - EN/AR, LTR/RTL, light/dark, responsive, keyboard and visual-diff evidence.
+  readiness: NOT_READY_FOR_RUNTIME_CERTIFICATION
+
+verdict:
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  sponsor_decision: >-
+    Do not approve Workflow Library implementation or cutover. Approve only a
+    bounded remediation lease after the design authority review resolves the
+    intended route/persona/lifecycle surface and after database ownership is
+    checked for collision.
+  completion_claim_permitted: false
+
+p0_prerequisites:
+  - Add a fail-closed Workflow Admin route boundary and negative deep-link evidence.
+  - Replace shared broad config_versions writes with engine-scoped authorization.
+  - Enforce published workflow immutability at the database boundary.
+  - Wire row_version load/post and prove stale update rejection.
+  - Govern checker capability and the required review/approval/publish stages.
+  - Prove effective-version selection and in-flight workflow version pinning.
+  - Resolve design authority for Workflow Library versus Workflow Designer before UI restructuring.
+
+p1_prerequisites:
+  - Wire scheduled activation, retire and rollback or mark them unavailable with bounded prerequisites.
+  - Make audit persistence failure-safe for state-changing actions.
+  - Add focused browser, RLS, concurrency, lifecycle, localization, responsive and accessibility tests.
+  - Reconcile /admin/workflows/:id catalogue intent with the accepted design and route contract.
+
+queued_successor:
+  packet_id: M9-ADMIN-WORKFLOWS-RUNTIME-REMEDIATION-PREFLIGHT-021
+  mode: READ_ONLY
+  scope: >-
+    Produce collision-safe file, migration, persona-fixture, test and evidence
+    lease boundaries for the P0 findings without implementing or claiming ownership.
+  non_overlap:
+    - Claude Design retains design identity, revision and visual authority.
+    - This lane does not modify application, database, test, seed, design or shared shell files.
+    - M9-ADMIN-AUDIT-019 remains separately blocked and no lease is claimed.
+
+evidence:
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/rbac/rbac_matrix.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  - product-contract/requirements-control/CURRENT_REQUIREMENTS_BASELINE.yaml
+  - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+  - apps/web/src/app/(app)/layout.tsx
+  - apps/web/src/app/(app)/admin/workflows/page.tsx
+  - apps/web/src/app/(app)/admin/workflows/Controls.tsx
+  - apps/web/src/app/(app)/admin/workflows/WfDeck.tsx
+  - apps/web/src/app/(app)/admin/workflows/actions.ts
+  - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+  - apps/web/src/app/(app)/admin/workflows/task-actions.ts
+  - apps/web/src/app/(app)/admin/workflows/sla-actions.ts
+  - supabase/migrations/0001_foundation.sql
+  - supabase/migrations/0002_rbac_audit.sql
+  - supabase/migrations/20260716120000_seco_config_versions_roles_rls.sql
+  - supabase/migrations/20260717010000_mvp2_m2_02_workflow_version_model.sql

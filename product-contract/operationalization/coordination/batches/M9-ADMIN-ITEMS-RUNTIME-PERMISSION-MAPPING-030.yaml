@@ -1,0 +1,385 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-ITEMS-RUNTIME-PERMISSION-MAPPING-030
+title: Independent Admin Inspection Items authority, permission and runtime-consumer validation
+status: VALIDATED_CONFIRMED_WITH_CORRECTION_BLOCK_P0
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  route: /admin/items
+  detail_route: /admin/items/:id/runtime-preview
+  screen_ids: [SCR-ADM-020]
+  engine: ENG-01
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  canonical_requirements:
+    primary:
+      - [MVP1-M09-002, CR-450, WA-AC-0450, WA-EV-0450]
+      - [MVP1-M09-005, CR-453, WA-AC-0453, WA-EV-0453]
+      - [MVP1-M09-007, CR-455, WA-AC-0455, WA-EV-0455]
+      - [MVP1-M09-010, CR-458, WA-AC-0458, WA-EV-0458]
+      - [MVP1-M09-011, CR-459, WA-AC-0459, WA-EV-0459]
+      - [MVP1-M09-013, CR-461, WA-AC-0461, WA-EV-0461]
+      - [MVP1-M09-014, CR-462, WA-AC-0462, WA-EV-0462]
+      - [MVP1-M09-015, CR-463, WA-AC-0463, WA-EV-0463]
+      - [MVP1-M09-018, CR-466, WA-AC-0466, WA-EV-0466]
+      - [MVP1-M09-019, CR-467, WA-AC-0467, WA-EV-0467]
+      - [MVP1-M09-020, CR-468, WA-AC-0468, WA-EV-0468]
+      - [MVP1-M09-021, CR-469, WA-AC-0469, WA-EV-0469]
+      - [MVP1-M09-022, CR-470, WA-AC-0470, WA-EV-0470]
+      - [MVP1-M09-023, CR-471, WA-AC-0471, WA-EV-0471]
+      - [MVP1-M09-024, CR-472, WA-AC-0472, WA-EV-0472]
+      - [MVP1-M09-025, CR-473, WA-AC-0473, WA-EV-0473]
+      - [MVP1-M09-028, CR-476, WA-AC-0476, WA-EV-0476]
+      - [MVP1-M09-030, CR-478, WA-AC-0478, WA-EV-0478]
+    atomic:
+      - REQ-R0C-01113 through REQ-R0C-01115
+      - REQ-R0C-01122 through REQ-R0C-01124
+      - REQ-R0C-01128 through REQ-R0C-01131
+      - REQ-R0C-01138 through REQ-R0C-01142
+      - REQ-R0C-01145 through REQ-R0C-01151
+      - REQ-R0C-01159 through REQ-R0C-01182
+      - REQ-R0C-01190 through REQ-R0C-01191
+      - REQ-R0C-01195 through REQ-R0C-01196
+  dependencies:
+    - MVP1-M09-001 regulation and clause authority
+    - MVP1-M09-006 through MVP1-M09-009 package identity, versions and publication
+    - MVP1-M09-029 publication validation
+  blanket_CR_001_through_CR_478_route_claim: PROHIBITED
+  design_dependency:
+    packet: M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050
+    state: DEPENDENCY_ONLY
+    rule: Stable design identity/revision cannot prove item authority, maker-checker, RLS, immutable lineage or package/runtime consumption.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_route:
+  exists: true
+  layout: apps/web/src/app/(app)/admin/items/layout.tsx
+  page: apps/web/src/app/(app)/admin/items/page.tsx
+  actions: apps/web/src/app/(app)/admin/items/actions.ts
+  components:
+    - apps/web/src/app/(app)/admin/items/Controls.tsx
+    - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+  route_guard:
+    component: AdminRouteBoundary
+    allowed_roles: [compliance_admin, form_admin, reviewer]
+  writer_roles: [compliance_admin, form_admin]
+  reviewer_mode: READ_ONLY
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  reason: >-
+    The catalogue, clause relationship, evidence/response/scoring shape checks,
+    generic audit, legacy version archive, package snapshot freeze and exact
+    detail preview are real. However, the product has two disconnected item
+    authorities: governed compliance_entity_versions and mutable
+    inspection_items. Package publication and Field execution continue from
+    the legacy row/snapshots, while /admin/items writes the legacy row directly.
+
+item_authorities:
+  operational_legacy:
+    table: public.inspection_items
+    identity: id with unique code
+    fields:
+      - clause_id
+      - response_model
+      - evidence_rule
+      - score_weight
+      - score_excluded_on
+      - guidance_en
+      - guidance_ar
+      - active
+      - configuration_version
+      - deactivation metadata
+    writers: compliance_admin OR form_admin through permissive FOR ALL RLS
+    consumers:
+      - /admin/items
+      - /admin/packages authoring and publication freeze
+      - Field legacy/fallback item reads
+      - review and report lookups
+      - dashboard and AI context reads
+    lifecycle: IMMEDIATE_LIVE_ROW_MUTATION
+  legacy_archive:
+    table: public.inspection_item_versions
+    key: [item_id, configuration_version]
+    snapshot: full legacy inspection_items row
+    append_mechanism: BEFORE UPDATE trigger with ON CONFLICT DO NOTHING
+    update_delete_guard: PRESENT
+    limitation: A changed row is not a new authority unless configuration_version changes.
+  governed_request_engine:
+    tables:
+      - public.compliance_configuration_requests
+      - public.compliance_request_components
+      - public.compliance_entity_versions
+      - public.compliance_entity_heads
+      - public.compliance_request_publications
+    entity_kind: inspection_item
+    maker_checker: DISTINCT_OWNER_AND_PUBLISHER
+    version_immutability: PRESENT
+    compatibility_view: public.compliance_configuration_compatibility
+    operational_projection_to_legacy_item: ABSENT
+    consumed_by_package_publication: false
+    consumed_by_field_runtime: false
+  split_brain_verdict: P0_CONFIRMED
+
+item_and_package_relationship:
+  item_belongs_to_regulation:
+    physical_relation: inspection_items.clause_id to regulation_clauses.id
+    create_UI_requires_clause: true
+    database_nullability: clause_id is nullable
+    direct_writer_can_remove_clause: true
+  package_reuse:
+    source: package_versions.definition sections/items by item code
+    future_publication: freezes current live item plus package-level overrides
+    immutable_embedded_snapshot: definition.item_snapshot
+    companion_legacy_snapshot: package_version_item_snapshots
+  impact_reader:
+    RPC: public.inspection_item_usage(text)
+    returns:
+      - package_count
+      - version_count
+    limitation: Counts package definitions across statuses; does not identify exact packages, active/future pins, visits, inspections or package-level semantic overrides.
+
+runtime_consumers:
+  package_authoring:
+    source: public.inspection_items
+    behavior: Selects active catalogue items and applies package item_rules.
+  package_publication:
+    source: live inspection_items plus package definition
+    frozen_outputs:
+      - package_versions.definition.item_snapshot
+      - package_version_item_snapshots for compatibility
+    database_validation: validate_m09_package_definition plus relationship hardening
+  field_execution:
+    primary_source: frozenDefinition.item_snapshot
+    compatibility_fallback: package_version_item_snapshots and limited live item fallback
+    enforced_semantics:
+      - required, optional and conditional visibility
+      - mandatory when visible
+      - evidence type, trigger, minimum and mandatory state
+      - scoring enabled, excluded responses and weight
+      - response/result/violation mapping
+  reporting_and_review:
+    historical_truth: frozen package/visit definition where wired
+    live_lookup_risk: Some report, review, dashboard and AI surfaces still query inspection_items for labels or context.
+  runtime_locking:
+    existing_published_execution: SUBSTANTIALLY_PROTECTED_BY_PACKAGE_SNAPSHOT
+    future_package_authority: IMMEDIATELY_AFFECTED_BY_LEGACY_ITEM_ROW
+    governed_request_version: NOT_CONSUMED
+
+findings:
+  - id: ITEM-P0-001
+    priority: P0
+    finding: The governed item version engine is disconnected from the operational item authority.
+    evidence: >-
+      publish_compliance_request inserts immutable compliance_entity_versions
+      and advances compliance_entity_heads, but does not project an approved
+      inspection_item snapshot to inspection_items. Package authoring and
+      publication still read inspection_items, and Field executes package
+      snapshots frozen from that legacy table.
+    implication: Maker-checker approval can publish a version that the product never uses, while an unapproved legacy edit controls future packages.
+  - id: ITEM-P0-002
+    priority: P0
+    finding: Direct RLS writes bypass every route-level frozen-version and concurrency check.
+    evidence: >-
+      inspection_items_admin grants compliance_admin/form_admin FOR ALL.
+      updateItem alone calls inspection_item_versions_are_frozen and applies a
+      configuration_version CAS. Direct REST/table writes can change code,
+      clause, response/evidence/scoring, active state, guidance and version
+      without either application check.
+    implication: Future execution semantics and legal dependency can change outside the governed workflow.
+  - id: ITEM-P0-003
+    priority: P0
+    finding: The UI's “Save new version” is an in-place live edit, not a draft/publish successor.
+    evidence: >-
+      updateItem updates the existing inspection_items row and increments an
+      integer. It exposes only title, clause and English guidance; it has no
+      draft, submit, approve, reject, effective date, distinct checker or
+      successor identity.
+    implication: CR-458/459 versioning and maker-checker are not satisfied by the catalogue action.
+  - id: ITEM-P0-004
+    priority: P0
+    finding: Item version history silently loses same-version state changes.
+    evidence: >-
+      archive_inspection_item_version writes snapshots keyed by
+      (item_id, configuration_version) with ON CONFLICT DO NOTHING.
+      toggleItemActive changes active/deactivation fields without incrementing
+      configuration_version. A same-version direct update has the same defect.
+    implication: Immutable history cannot reconstruct deactivation, reactivation or bypassed semantic changes.
+  - id: ITEM-P0-005
+    priority: P0
+    finding: Legacy item deletion is permitted by policy and lacks a database prohibition.
+    evidence: >-
+      The admin policy is FOR ALL and no BEFORE DELETE guard exists on
+      inspection_items. Foreign keys restrict some referenced rows, but an
+      unreferenced item can be deleted despite the product statement that items
+      are never deleted.
+    implication: Catalogue identity and audit trace can be removed instead of deactivated.
+  - id: ITEM-P0-006
+    priority: P0
+    finding: Create and deactivation are immediately live single-actor operations.
+    evidence: >-
+      createItem inserts active=true directly. toggleItemActive changes the live
+      row immediately, clears the reason on reactivation, and has no checker,
+      effective window, expected revision or package/pinned-work decision.
+    implication: A maker can introduce, withdraw or restore future package authority without consent or scheduled activation.
+  - id: ITEM-P0-007
+    priority: P0
+    finding: The database does not enforce that every operational item belongs to a regulation clause.
+    evidence: >-
+      The route requires clause_id, but inspection_items.clause_id is nullable
+      and broad direct update permission can remove or change it. Authoring
+      validation checks response/evidence/scoring shape, not mandatory clause
+      membership.
+    implication: REQ-R0C-01115 can be bypassed by an authorized direct writer.
+  - id: ITEM-P1-001
+    priority: P1
+    finding: The main catalogue preview is not the exact inspector runtime.
+    evidence: >-
+      /admin/items builds ItemPreview from the current live row and does not
+      select a package version, frozen item_snapshot or package-level item_rules.
+      The detail runtime-preview route can select immutable package snapshots
+      and explicitly distinguishes live from frozen authority.
+    implication: A user can mistake a live projection for the checklist already pinned to an inspection.
+  - id: ITEM-P1-002
+    priority: P1
+    finding: Impact analysis understates and obscures the change blast radius.
+    evidence: >-
+      inspection_item_usage returns only counts and the page calls it once per
+      item. It does not name package/version consumers, distinguish draft from
+      governed use, show active/future visits or inspections, or report
+      package-level semantic overrides.
+    implication: A writer cannot make an informed version/deactivation decision and the page has N+1 query cost.
+  - id: ITEM-P1-003
+    priority: P1
+    finding: Base semantic evolution is not available through the edit lifecycle.
+    evidence: >-
+      Create supports governed response/evidence presets and scoring, but
+      EditItemForm changes only title, clause and English guidance. Response,
+      evidence, scoring, Arabic guidance and mapping changes require another
+      surface or direct data write.
+    implication: The declared item version action cannot perform a complete governed successor change.
+  - id: ITEM-P1-004
+    priority: P1
+    finding: Read permission is broader than the route's persona contract.
+    evidence: inspection_items_read permits every authenticated user while the route allows only compliance_admin, form_admin and reviewer.
+    implication: Any authenticated client can inspect the full live compliance catalogue outside the intended page.
+  - id: ITEM-P1-005
+    priority: P1
+    finding: Existing tests assert wiring tokens more strongly than governed outcomes.
+    evidence: >-
+      cd-007-items covers rendering, a11y, themes and source strings. The M09 SQL
+      probe proves malformed create rejection and non-admin denial, but does not
+      attempt direct semantic update, delete, same-version deactivation,
+      maker self-approval, governed-to-legacy projection or exact frozen-runtime parity.
+    implication: The P0 authority gaps can pass the current suite.
+
+permissions_and_rls:
+  route_roles: [compliance_admin, form_admin, reviewer]
+  writer_guard: requireConfigurationWriter
+  legacy_table_read: ANY_AUTHENTICATED
+  legacy_table_write: compliance_admin OR form_admin through permissive FOR ALL
+  governed_version_table_write: RPC_ONLY
+  governed_publish:
+    reviewer_required: true
+    publisher_must_differ_from_request_owner: true
+  least_privilege: FAILED_SPLIT_AUTHORITY
+  direct_write_bypass: CONFIRMED
+  delete_protection: ABSENT_ON_LEGACY_ITEM
+
+immutability_maker_checker_audit_and_concurrency:
+  package_snapshot_immutability: CONFIRMED
+  legacy_archive_row_immutability: CONFIRMED
+  legacy_current_row_immutability: FAILED
+  governed_entity_version_immutability: CONFIRMED
+  governed_version_consumption: FAILED
+  maker_checker:
+    compliance_request_path: PRESENT
+    operational_legacy_item_path: ABSENT
+  update_CAS:
+    updateItem: PRESENT_FOR_SELECTED_FIELDS
+    create: NOT_APPLICABLE
+    deactivate_reactivate: ABSENT
+    direct_table_path: ABSENT
+  audit:
+    generic_legacy_row_audit: PRESENT
+    immutable_version_lineage: INCOMPLETE
+    governed_request_audit: PRESENT
+    operational_correlation_between_authorities: ABSENT
+
+services_and_interfaces:
+  interfaces:
+    - public.inspection_item_usage(text)
+    - public.inspection_item_versions_are_frozen(text)
+    - public.admin_configuration_audit(text, uuid)
+    - public.publish_compliance_request(uuid)
+    - public.compliance_configuration_compatibility
+    - public.publish_package_version(uuid, jsonb)
+  service_verdict: >-
+    Individual interfaces exist, but no single non-bypassable service owns item
+    create, successor version, approval, activation, deactivation and operational projection.
+
+test_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-007-items.spec.ts
+      covers:
+        - route, catalogue table, read-only live preview and writer controls
+        - EN/AR RTL, light/dark, 1440/1024 and target-size evidence
+        - source assertions for presets, duplicate handling, usage, audit, freeze check and CAS
+      gaps:
+        - governed browser mutation lifecycle
+        - unauthorized runtime reads and writes
+        - direct RLS bypass and delete
+        - deactivation version lineage
+        - frozen package versus Field parity
+    - file: apps/web/e2e/cd-006-011-backend-completion.spec.ts
+      covers:
+        - response/evidence/scoring runtime functions
+        - source assertions for item versions and package frozen snapshots
+      limitation: Mostly code-layer/token proof rather than persisted actor and lifecycle outcomes.
+    - file: apps/web/e2e/compliance-library.spec.ts
+      covers:
+        - exact immutable snapshot sources in the detail runtime preview
+        - read-only reviewer behavior and explicit integration gaps
+    - file: supabase/tests/0032_m09_live_release_probe.sql
+      covers:
+        - malformed item authoring rejection
+        - non-admin write denial
+        - package maker-checker and frozen snapshot publication
+      gaps:
+        - operational item maker-checker
+        - governed request projection
+        - same-version update/deactivation archive
+        - delete prohibition and direct writer bypass
+  browser_readiness:
+    visual_read_only_review: READY_WITH_ISOLATED_SEED
+    mutation_certification: BLOCKED_PENDING_SINGLE_AUTHORITY_AND_SAFE_FIXTURE
+    detail_frozen_preview: READY_FOR_EXISTING_PUBLISHED_FIXTURE
+  evidence_rule: Browser screenshots do not close authority, RLS, lineage or negative-path findings without database assertions.
+
+p0_prerequisites:
+  - Select one operational item authority and define how approved compliance_entity_versions become package-consumable.
+  - Prohibit direct lifecycle and semantic writes to inspection_items; expose narrow governed RPCs only.
+  - Require distinct maker/checker for create, successor publication and deactivation/reactivation.
+  - Define draft, pending, approved-future, active, superseded, deactivated and rejected states plus effective time.
+  - Make every authority transition increment immutable lineage and record actor/correlation.
+  - Add database-enforced clause membership and undeletable item identity/history.
+  - Define compatibility migration for existing item IDs/codes and already-frozen package snapshots.
+  - Define impact over exact package versions, active/future visits, inspections and package-level overrides.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  verdict: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  recommended_sponsor_action: >-
+    Preserve the existing frozen package/runtime behavior, but do not approve
+    the catalogue as complete. First approve one item authority and its
+    projection/compatibility contract, then lease database governance,
+    package/runtime integration, accepted Design 050 UI and independent QA as
+    separate non-overlapping slices.

@@ -1,0 +1,323 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-LOOKUPS-RUNTIME-PERMISSION-MAPPING-022
+title: Independent Planning Lookups runtime, permission and consumer-source validation
+status: VALIDATED_BLOCKED_P0_GOVERNANCE_AND_SOURCE_FRAGMENTATION
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  route: /admin/planning/lookups
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  implementation_contract: PLN-CON-012
+  canonical_requirement_rows:
+    direct_master_data_consumers:
+      - [CR-006, WA-AC-0006, WA-EV-0006]
+      - [CR-017, WA-AC-0017, WA-EV-0017]
+      - [CR-027, WA-AC-0027, WA-EV-0027]
+      - [CR-039, WA-AC-0039, WA-EV-0039]
+      - [CR-045, WA-AC-0045, WA-EV-0045]
+      - [CR-047, WA-AC-0047, WA-EV-0047]
+    governed_reason_consumers:
+      - [CR-033, WA-AC-0033, WA-EV-0033]
+      - [CR-060, WA-AC-0060, WA-EV-0060]
+      - [CR-062, WA-AC-0062, WA-EV-0062]
+      - [CR-063, WA-AC-0063, WA-EV-0063]
+      - [CR-080, WA-AC-0080, WA-EV-0080]
+      - [CR-081, WA-AC-0081, WA-EV-0081]
+      - [CR-086, WA-AC-0086, WA-EV-0086]
+      - [CR-170, WA-AC-0170, WA-EV-0170]
+      - [CR-342, WA-AC-0342, WA-EV-0342]
+    related_override_rules:
+      - [CR-019, WA-AC-0019, WA-EV-0019]
+      - [CR-029, WA-AC-0029, WA-EV-0029]
+    atomic_requirements:
+      - REQ-R0C-00020
+      - REQ-R0C-00023
+      - REQ-R0C-00078
+      - REQ-R0C-00081
+      - REQ-R0C-00146
+      - REQ-R0C-00150
+      - REQ-R0C-00185
+      - REQ-R0C-00186
+      - REQ-R0C-00190
+      - REQ-R0C-00193
+      - REQ-R0C-00196
+      - REQ-R0C-00232
+      - REQ-R0C-00234
+      - REQ-R0C-00235
+      - REQ-R0C-00444
+      - REQ-R0C-00445
+      - REQ-R0C-00448
+      - REQ-R0C-00820
+      - REQ-R0C-01411
+      - REQ-R0C-01464
+      - REQ-R0C-01486
+  web_admin_acceptance:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-003
+    - WA-M9-AC-004
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+  blanket_CR_001_through_CR_478_route_claim: PROHIBITED
+  reason: >-
+    Only the cited rows depend directly on the managed planning vocabulary.
+    The Phase-1 route manifest's blanket CR-001..CR-478 range is not evidence
+    that this route implements all 478 customer rows.
+  design_dependency:
+    review_packet: M9-ADMIN-PLANNING-LOOKUPS-DESIGN-AUTHORITY-REVIEW-046
+    state: DEPENDENCY_ONLY_NOT_CONSUMED_AS_RUNTIME_PROOF
+    registered_design_issue: >-
+      WA-DES-009 and WA-DES-010 are byte-identical Lookup designs registered
+      against /admin/localization, not this route. Design 046 must resolve the
+      Planning Lookups identity and revision independently.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_mapping:
+  route_exists: true
+  route_file: apps/web/src/app/(app)/admin/planning/lookups/page.tsx
+  components:
+    - apps/web/src/app/(app)/admin/planning/lookups/LookupsAdmin.tsx
+    - apps/web/src/app/(app)/admin/planning/lookups/constants.ts
+  server_actions:
+    - apps/web/src/app/(app)/admin/planning/lookups/actions.ts
+  service_dependencies:
+    - apps/web/src/lib/planning/lifecycle.ts
+    - apps/web/src/lib/verified-user.ts
+    - apps/web/src/lib/supabase-server.ts
+    - apps/web/src/lib/neutral-error.ts
+  database:
+    table: planning_lookups
+    capability_rpc: has_planning_capability
+    write_capability: planning.configure_lookups
+    audit_trigger: trg_audit_planning_lookups
+    updated_at_trigger: trg_planning_lookups_touch
+  lookup_kinds:
+    - visit_type
+    - visit_mode
+    - priority
+    - return_reason
+    - cancellation_reason
+    - manual_entry_reason
+    - assignment_override_reason
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  correction: >-
+    This is a direct mutable Planning vocabulary editor, not a versioned,
+    maker-checker Lookup Management hub. Its cancellation vocabulary is not
+    the live source used by the Field/Execution engine.
+
+runtime_capabilities:
+  - capability: Read all Planning lookup rows
+    status: IMPLEMENTED
+    evidence: page.tsx reads active and inactive rows including metadata.
+  - capability: Add governed kind/key
+    status: IMPLEMENTED_WITH_FIXED_KIND_ALLOWLIST
+    evidence: saveLookup validates LOOKUP_KINDS, key shape, English label, sort order and metadata.
+  - capability: Inline edit labels, order and metadata
+    status: IMPLEMENTED_IN_PLACE
+    evidence: LookupsAdmin posts the row ID; saveLookup updates the existing row.
+  - capability: Activate/deactivate without delete
+    status: IMPLEMENTED
+    evidence: setLookupActive changes is_active; no DELETE RLS policy exists.
+  - capability: Audit before/after change
+    status: DATABASE_TRIGGER_PRESENT
+    evidence: trg_audit_planning_lookups calls audit_row_change after insert/update/delete.
+  - capability: Version history and effective dates
+    status: NOT_IMPLEMENTED
+    evidence: planning_lookups has no version, supersedes, effective_from or effective_to fields.
+  - capability: Maker-checker approval
+    status: NOT_IMPLEMENTED
+    evidence: Writes immediately affect consumers; no proposal, checker or publish stage exists.
+  - capability: Optimistic concurrency
+    status: NOT_IMPLEMENTED
+    evidence: updated_at exists but is neither loaded into the UI nor used as compare-and-set.
+  - capability: Downstream planning selects
+    status: PARTIAL
+    evidence: Planning home, bulk, immediate and Visit lifecycle consumers read active planning_lookups.
+  - capability: Downstream Field/Execution cancellation
+    status: NOT_WIRED_TO_THIS_SOURCE
+    evidence: >-
+      Field, Operations and execution cancellation RPCs read
+      engine_settings.field.cancellation_reasons. planning_lookups was copied
+      from that JSON once during migration and has no synchronization contract.
+
+consumer_inventory:
+  - consumer: Planning home
+    source: apps/web/src/app/(app)/planning/page.tsx
+    kinds: [visit_type, priority]
+    active_only: true
+  - consumer: Bulk Planning
+    source: apps/web/src/app/(app)/planning/bulk/actions.ts
+    kinds: [visit_type, visit_mode, priority]
+    active_only: true
+  - consumer: Immediate Planning
+    sources:
+      - apps/web/src/app/(app)/planning/immediate/page.tsx
+      - apps/web/src/app/(app)/planning/immediate/actions.ts
+    kinds: [visit_type, manual_entry_reason]
+    active_only: true
+  - consumer: Visit return/cancel lifecycle
+    sources:
+      - apps/web/src/lib/planning/lifecycle.ts
+      - apps/web/src/app/(app)/visits/actions.ts
+      - apps/web/src/app/(app)/visits/[id]/actions.ts
+    kinds: [return_reason, cancellation_reason]
+    active_only: true
+  - consumer: Assignment override
+    kind: assignment_override_reason
+    status: NO_APPLICATION_READ_FOUND
+  - consumer: Field and Execution cancellation
+    kind: cancellation_reason
+    status: DIFFERENT_SOURCE
+    actual_source: engine_settings.field.cancellation_reasons
+    affected_routes:
+      - /field/:visitId
+      - /field/inspection/:id
+      - /operations
+      - /admin/execution
+
+permission_and_governance_findings:
+  - id: LK-P0-001
+    priority: P0
+    finding: Planning and execution cancellation vocabularies have diverging authorities.
+    evidence: >-
+      planning_lookups cancellation_reason is a one-time migration copy, while
+      live Field/Execution/Operations flows continue reading and validating
+      engine_settings.field.cancellation_reasons.
+    implication: An administrator can change this page and receive success while the Inspector-facing cancellation list remains unchanged.
+  - id: LK-P0-002
+    priority: P0
+    finding: High-impact reference changes publish immediately without maker-checker or effective versioning.
+    evidence: INSERT/UPDATE directly changes active consumer reads; no draft/review/approve/publish model exists.
+    implication: Existing and future planning behavior can change without governed approval, activation time or rollback lineage.
+  - id: LK-P0-003
+    priority: P0
+    finding: Concurrent edits can silently overwrite.
+    evidence: updated_at is not submitted as a compare-and-set token and update filters only by ID.
+    implication: Two administrators can overwrite labels, metadata and ordering without conflict detection.
+  - id: LK-P0-004
+    priority: P0
+    finding: Deactivation has no dependency or in-use guard.
+    evidence: setLookupActive updates by ID without checking active drafts, planned visits, operational records or required last-value invariants.
+    implication: A value referenced by drafts or required by a workflow can disappear from selects without impact analysis.
+  - id: LK-P0-005
+    priority: P0
+    finding: The configurable execution cancellation list does not meet the canonical initial vocabulary.
+    evidence: >-
+      REQ-R0C-01486 requires Factory closed, Factory not found, Factory no
+      longer operating, Access refused, No authorized representative, Unsafe
+      conditions, Emergency, Incorrect assignment, Duplicate visit, Factory
+      requested cancellation, Technical blocking issue and Other. The Planning
+      migration copies a separate field JSON source and the route does not
+      certify the required set or comments/evidence semantics.
+    implication: Lookup administration cannot be credited against the canonical configurable cancellation requirement.
+  - id: LK-P1-001
+    priority: P1
+    finding: Every Admin-class role receives configure_lookups by default.
+    evidence: >-
+      has_planning_capability returns true for Planning configure capabilities
+      for any is_admin role; role_permissions also seed all six admin roles.
+    implication: The effective owner is every administrator, not a specifically governed Planning configuration persona.
+  - id: LK-P1-002
+    priority: P1
+    finding: Deep-linked authenticated users can inspect inactive rows and raw metadata.
+    evidence: Route has no authorization boundary and planning_lookups SELECT permits any authenticated user.
+    implication: Read-only business vocabulary is needed downstream, but inactive/admin metadata disclosure is not separated from active consumer projection.
+  - id: LK-P1-003
+    priority: P1
+    finding: assignment_override_reason has no application consumer.
+    implication: The page advertises governance for a vocabulary that does not control assignment override behavior.
+  - id: LK-P1-004
+    priority: P1
+    finding: Success feedback overstates propagation.
+    evidence: UI says consumers see the change on next read even for cancellation_reason, whose Field/Execution consumers use another source.
+    implication: Operators receive a false confirmation of platform-wide effect.
+  - id: LK-P1-005
+    priority: P1
+    finding: Arabic labels are optional even for a bilingual control plane.
+    implication: Active values can publish without Arabic parity and degrade Arabic/RTL consumers.
+
+test_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-044-admin-planning.spec.ts
+      coverage: Admin REST-stages a return_reason, deactivates it in UI and verifies it leaves active Planning reads.
+    - file: apps/web/e2e/cd-027-visit-detail.spec.ts
+      coverage: Reads governed return and cancellation labels for Visit detail scenarios.
+  weaknesses:
+    - cd-044 mutates shared data and deliberately leaves the test row deactivated.
+    - No non-configurator write denial test exists for this route/table.
+    - No route-level read or inactive-metadata disclosure decision is tested.
+    - No two-user stale update test exists.
+    - No maker-checker, version, effective date or rollback evidence can exist on the current schema.
+    - No deactivation dependency/in-use negative path is tested.
+    - No test proves Planning changes reach Field/Execution; repository evidence proves they do not.
+    - No canonical REQ-R0C-01486 required-vocabulary test exists.
+    - No focused EN/AR, LTR/RTL, light/dark, responsive, keyboard, accessibility or visual-diff bundle exists.
+    - Audit trigger presence is not enough; the UI test does not assert the exact lookup audit row.
+  readiness: NOT_READY_FOR_CERTIFICATION
+
+verdict:
+  validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  sponsor_decision: >-
+    Do not credit or cut over Planning Lookups as a complete governed Lookup
+    Management module. First decide the single authoritative cancellation
+    source, ownership persona and version/maker-checker policy; then authorize
+    a bounded remediation lease.
+
+p0_prerequisites:
+  - Govern one authoritative cancellation vocabulary across Planning, Field, Execution and Operations.
+  - Add proposal/version/effective-date/maker-checker semantics or obtain an explicit bounded exception for direct reference-data publication.
+  - Add compare-and-set concurrency and recoverable stale conflict handling.
+  - Add dependency/in-use checks before deactivation.
+  - Reconcile and test the canonical REQ-R0C-01486 initial cancellation vocabulary and metadata rules.
+
+p1_prerequisites:
+  - Decide whether every Admin-class role may configure Planning vocabularies.
+  - Split active consumer projection from inactive/admin metadata if broad authenticated reads remain necessary.
+  - Wire or remove assignment_override_reason from the claimed surface.
+  - Correct success feedback to name the consumers actually updated.
+  - Require or govern Arabic translation completeness.
+  - Build focused RLS, audit, consumer, bilingual, responsive and accessibility evidence.
+
+queued_successor:
+  packet_id: M9-ADMIN-PLANNING-LOOKUPS-RUNTIME-REMEDIATION-PREFLIGHT-023
+  mode: READ_ONLY
+  scope: >-
+    Define non-overlapping database, application-consumer, UI and independent
+    QA lease boundaries after design review 046 and policy decisions.
+  no_lease_claimed: true
+
+evidence:
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/seeding-discovery/ENDPOINT_DATA_SOURCE_MATRIX.csv
+  - apps/web/src/app/(app)/admin/planning/lookups/page.tsx
+  - apps/web/src/app/(app)/admin/planning/lookups/LookupsAdmin.tsx
+  - apps/web/src/app/(app)/admin/planning/lookups/actions.ts
+  - apps/web/src/app/(app)/admin/planning/lookups/constants.ts
+  - apps/web/src/lib/planning/lifecycle.ts
+  - apps/web/src/lib/shell-navigation.ts
+  - apps/web/src/app/(app)/planning/page.tsx
+  - apps/web/src/app/(app)/planning/bulk/actions.ts
+  - apps/web/src/app/(app)/planning/immediate/page.tsx
+  - apps/web/src/app/(app)/planning/immediate/actions.ts
+  - apps/web/src/app/(app)/field/[visitId]/page.tsx
+  - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+  - apps/web/src/app/(app)/operations/page.tsx
+  - apps/web/src/app/admin/execution/page.tsx
+  - supabase/migrations/20260721030000_planning_capabilities.sql
+  - supabase/migrations/20260721030100_planning_canonical_structures.sql
+  - supabase/migrations/20260721140000_execution_journey_cancellation.sql
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - apps/web/e2e/cd-027-visit-detail.spec.ts

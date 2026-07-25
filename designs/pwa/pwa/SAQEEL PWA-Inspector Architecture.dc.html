@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .ar-root { min-height:100dvh; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); }
+  .ar-bar { position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); }
+  .ar-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; flex-wrap:wrap; }
+  .ar-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:12px; padding:8px 12px; cursor:pointer; color:var(--text-secondary); border-inline-end:1px solid var(--border-input); }
+  .ar-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .ar-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .ar-page { padding:22px; }
+  .ar-h { font-family:var(--font-heading); font-size:22px; font-weight:600; margin:0 0 4px; }
+  .ar-sub { font-size:13px; color:var(--text-secondary); margin:0 0 18px; }
+  .ar-flow { display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; }
+  .ar-card { position:relative; flex:0 0 auto; width:210px; border:1px solid var(--border-subtle); border-inline-start:4px solid var(--c, var(--border-strong)); border-radius:10px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:12px 13px; display:flex; flex-direction:column; gap:6px; }
+  .ar-card.dash { border-style:dashed; }
+  .ar-card .cid { font-size:10.5px; color:var(--text-muted); font-family:var(--font-mono); }
+  .ar-card .cnm { font-size:14px; font-weight:600; line-height:1.3; }
+  .ar-card .cmeta { font-size:11px; color:var(--text-secondary); line-height:1.5; }
+  .ar-card .ctag { align-self:flex-start; font-size:10px; font-weight:700; padding:2px 7px; border-radius:999px; }
+  .ar-arrow { align-self:center; color:var(--text-muted); font-size:20px; flex:0 0 auto; }
+  .ar-legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:18px; padding:12px 14px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-primary); }
+  .ar-leg { display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--text-secondary); }
+  .ar-sw { width:14px; height:14px; border-radius:4px; flex:none; }
+  .lane { display:grid; grid-template-columns:150px 1fr; border:1px solid var(--border-subtle); border-radius:10px; overflow:hidden; margin-bottom:10px; background:var(--surface-primary); }
+  .lane-h { background:var(--surface-sunken); padding:10px 12px; font-size:12px; font-weight:600; color:var(--text-secondary); border-inline-end:1px solid var(--border-subtle); display:flex; align-items:center; }
+  .lane-c { padding:10px 12px; font-size:12.5px; line-height:1.55; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .step { border:1px solid var(--border-subtle); border-radius:8px; padding:6px 9px; background:var(--surface-primary); font-size:11.5px; }
+  .step.gap { border-color:color-mix(in srgb,var(--status-critical) 40%,transparent); background:var(--status-critical-soft); color:var(--status-critical-text); }
+  .step.add { border-style:dashed; }
+  .hm { border-collapse:collapse; font-size:11px; width:100%; }
+  .hm th, .hm td { border:1px solid var(--border-subtle); padding:6px 7px; text-align:center; }
+  .hm th { background:var(--surface-sunken); color:var(--text-secondary); font-weight:600; position:sticky; top:0; }
+  .hm td.j { text-align:start; white-space:nowrap; font-weight:600; background:var(--surface-primary); }
+  .hm .cell { width:14px; height:14px; border-radius:3px; display:inline-block; }
+  .jsel { padding:8px 12px; border:1px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); color:var(--text-primary); font:inherit; font-size:13px; }
+</style>
+</helmet>
+<div class="ar-root" dir="{{ dir }}" lang="{{ lang }}" data-theme="dark">
+  <div class="ar-bar">
+    <strong style="font-size:14px;">{{ t.title }}</strong>
+    <span class="badge badge-info">{{ t.awaiting }}</span>
+    <span style="flex:1;"></span>
+    <div class="ar-seg">
+      <sc-for list="{{ boards }}" as="b" hint-placeholder-count="6"><button aria-pressed="{{ b.active }}" onClick="{{ b.go }}">{{ b.label }}</button></sc-for>
+    </div>
+    <button class="ar-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </div>
+
+  <div class="ar-page">
+    <div class="ar-legend">{{ legend }}</div>
+    {{ board }}
+  </div>
+</div>
+<template id="__bundler_thumbnail" data-bg-color="#12161f">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#12161f"/>
+    <g fill="none" stroke="#5aa9e6" stroke-width="6">
+      <rect x="120" y="330" width="200" height="140" rx="14" fill="#182233"/>
+      <rect x="500" y="180" width="200" height="140" rx="14" fill="#182233"/>
+      <rect x="500" y="480" width="200" height="140" rx="14" fill="#182233"/>
+      <rect x="880" y="330" width="200" height="140" rx="14" fill="#182233"/>
+      <path d="M320 400 H460 M700 250 H840 V400 M700 550 H840 V400 M460 400 L500 250 M460 400 L500 550"/>
+    </g>
+    <g fill="#5aa9e6"><circle cx="460" cy="400" r="10"/><circle cx="840" cy="400" r="10"/></g>
+    <text x="600" y="720" fill="#8aa0b8" font-family="sans-serif" font-size="34" text-anchor="middle">Inspector PWA — Journey Architecture</text>
+  </svg>
+</template></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { lang:"en", board:"level0", journey:0 };
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? {
+      title:"معمارية رحلة تطبيق المفتش (PWA) — عرض بصري", awaiting:"بانتظار الاعتماد", langBtnLabel:"EN",
+      b0:"المستوى 0 · الكون", b1:"الرحلات", bstate:"آلة الحالة", boff:"دون اتصال", bheat:"خريطة الفجوات", borph:"يتيمة/مسدودة",
+    } : {
+      title:"Inspector PWA — Complete Visual Journey Architecture", awaiting:"AWAITING APPROVAL", langBtnLabel:"AR",
+      b0:"Level 0 · Universe", b1:"Journeys", bstate:"State machine", boff:"Offline", bheat:"Gap heatmap", borph:"Orphans/dead-ends",
+    };
+    // classification legend
+    const CLS = {
+      working:{c:"var(--status-compliant)", bg:"var(--status-compliant-soft)", fg:"var(--status-compliant-text)", l: ar?"يعمل ومُثبت":"Working & proven"},
+      align:{c:"var(--status-info)", bg:"var(--status-info-soft)", fg:"var(--status-info-text)", l: ar?"يعمل غير متوائم":"Working, not design-aligned"},
+      figma:{c:"#8b5cf6", bg:"color-mix(in srgb,#8b5cf6 24%, transparent)", fg:"#cbbdf7", l: ar?"في فيغما غير منفّذ":"Figma, not implemented"},
+      partial:{c:"var(--status-major)", bg:"var(--status-major-soft)", fg:"var(--status-major-text)", l: ar?"مطلوب جزئي":"BRD required, partial"},
+      broken:{c:"var(--status-critical)", bg:"var(--status-critical-soft)", fg:"var(--status-critical-text)", l: ar?"مقطوع/مسدود":"Disconnected / dead-end"},
+      decision:{c:"var(--text-muted)", bg:"var(--surface-sunken)", fg:"var(--text-secondary)", l: ar?"قرار عمل":"Business decision"},
+      blocked:{c:"repeating-linear-gradient(45deg,var(--status-warning) 0 4px,transparent 4px 8px)", bg:"var(--status-warning-soft)", fg:"var(--status-warning-text)", l: ar?"مزوّد خارجي محظور":"External provider blocked"},
+    };
+    const legend = Object.values(CLS).map((v,i)=>h("span",{key:i,className:"ar-leg"}, h("span",{className:"ar-sw",style:{background:v.c}}), v.l));
+
+    const card=(id,name,meta,cls,dash)=>h("div",{className:"ar-card"+(dash?" dash":""),style:{"--c":CLS[cls].c}},
+      h("span",{className:"cid"},id), h("span",{className:"cnm"},name), meta?h("span",{className:"cmeta"},meta):null,
+      h("span",{className:"ctag",style:{background:CLS[cls].bg, color:CLS[cls].fg, fontSize:"11px", border:"1px solid color-mix(in srgb,"+CLS[cls].c+" 40%,transparent)"}}, CLS[cls].l));
+    const arrow=()=>h("span",{className:"ar-arrow"}, ar?"←":"→");
+    const flow=(cards)=>{ const out=[]; cards.forEach((c,i)=>{ out.push(c); if(i<cards.length-1) out.push(arrow()); }); return h("div",{className:"ar-flow"}, out); };
+
+    // ── Level 0 universe (14 stages) ──
+    const L0 = [
+      ["auth","1 · "+(ar?"الدخول والإطلاق":"Auth & launch"),"/login · /launch","working"],
+      ["home","2 · "+(ar?"الرئيسية والاكتشاف":"Home & discovery"),"/field","working"],
+      ["tasks","3 · "+(ar?"اختيار المهمة":"Task selection"),"/field/my-tasks","working"],
+      ["prep","4 · "+(ar?"التحضير":"Preparation"),"/field/[visitId]","working"],
+      ["branch","5 · "+(ar?"ميداني/عن بُعد/فوري":"Physical/Virtual/Immediate"),"branch","partial"],
+      ["journey","6 · "+(ar?"الرحلة والوصول":"Journey & arrival"),"Startup.tsx","working"],
+      ["exec","7 · "+(ar?"تنفيذ التفتيش":"Execution"),"/field/inspection/[id]","working"],
+      ["findings","8 · "+(ar?"النتائج والأدلة والمحاضر":"Findings/evidence/records"),"Workspace+runtime","working"],
+      ["complete","9 · "+(ar?"الإنهاء والتوقيع":"Completion & signature"),"finalizeSubmit","working"],
+      ["submit","10 · "+(ar?"الإرسال":"Submission"),"submission_versions","working"],
+      ["review","11 · "+(ar?"نتيجة المراجعة":"Review outcome"),"reviews","working"],
+      ["returned","12 · "+(ar?"إرجاع/تصحيح":"Return/correction"),"STM-COR","working"],
+      ["outcome","13 · "+(ar?"اعتماد/رفض/إلغاء":"Approval/rejection/cancel"),"reviews","working"],
+      ["reports","14 · "+(ar?"التقارير والسجل":"Reports & history"),"Reports Library","partial"],
+    ].map(([id,nm,meta,cls])=>card(id.toUpperCase(),nm,meta,cls));
+    const level0 = h("div",null, h("h2",{className:"ar-h"}, ar?"الكون التنفيذي للرحلات":"Executive journey universe"), h("p",{className:"ar-sub"}, ar?"العائلات الرئيسية للشاشات؛ كل بطاقة ترتبط بلوح تفصيلي.":"Major screen families; each card links to a detailed board."), flow(L0));
+
+    // ── Level 1 journeys (6-lane) ──
+    const LANES = ar?["نيّة المفتش","الشاشة/فيغما","إجراء التطبيق","الخادم/RLS/تدقيق","قناة مستقبِلة","استثناء/دون اتصال/تعافي"]:["Inspector intent","Screen / Figma","App action","Backend / RLS / audit","Receiving channel","Exception / offline / recovery"];
+    const step=(txt,kind)=>h("span",{className:"step"+(kind?" "+kind:"")},txt);
+    const JOURNEYS = [
+      { n: ar?"تفتيش ميداني مجدول — المسار الناجح":"Scheduled physical — success",
+        lanes:[
+          [step(ar?"بدء الزيارة":"Start visit"),step(ar?"تنفيذ":"Execute"),step(ar?"توقيع وإرسال":"Sign & submit")],
+          [step("Dashboard"),step("Journey"),step("Execution Shell"),step("Completion")],
+          [step("startJourney"),step("confirm_arrival"),step("finalizeSubmit")],
+          [step("geo_events"),step("submission_versions (immutable)"),step("audit")],
+          [step("Level-2 Review (web)")],
+          [step(ar?"مزامنة دون اتصال":"offline sync","add")],
+        ]},
+      { n: ar?"وصول خارج النطاق":"Outside-geofence",
+        lanes:[
+          [step(ar?"وصل خارج النط40اق":"Arrived outside")],
+          [step("Journey"),step("Outside-geofence request")],
+          [step("confirm_arrival→outside notice")],
+          [step("geo_events outside (immutable)")],
+          [step("Operations approval queue","gap")],
+          [step(ar?"يُحظر البدء حتى الاعتماد":"start blocked till approved")],
+        ]},
+      { n: ar?"تعذّر الوصول":"Unable to access",
+        lanes:[
+          [step(ar?"تعذّر":"Unable")],
+          [step("Journey · reasons")],
+          [step("request_visit_cancellation")],
+          [step("visits.cancellation_requested + notify")],
+          [step("Planning/Ops decides","gap")],
+          [step(ar?"لا نتيجة امتثال":"no compliance result")],
+        ]},
+      { n: ar?"إرجاع وتصحيح وإعادة إرسال":"Returned correction & resubmit",
+        lanes:[
+          [step(ar?"تصحيح مُوجّه":"Scoped correction")],
+          [step("Completion · returned banner")],
+          [step("edit scoped sections")],
+          [step("reviews.returned_sections")],
+          [step("Level-2 Review re-decides")],
+          [step(ar?"إعادة إرسال = نسخة v+1":"resubmit = v+1")],
+        ]},
+      { n: ar?"تفتيش عن بُعد":"Virtual inspection",
+        lanes:[
+          [step(ar?"جلسة عن بُعد":"Remote session")],
+          [step("Virtual Session")],
+          [step("vp_verify_otp → beginRemote")],
+          [step("virtual_participants + audit")],
+          [step(ar?"مزوّد فيديو":"video provider","gap")],
+          [step(ar?"لا في الطريق/وصل":"no On-the-Way/Arrived")],
+        ]},
+      { n: ar?"العينات والحجز":"Samples & seizure",
+        lanes:[
+          [step(ar?"سحب/حجز":"Collect/seize")],
+          [step("Item Exec · gated repeater")],
+          [step(ar?"غير موصول بالإرسال":"not wired to submit","gap")],
+          [step("evidence + snapshot","add")],
+          [step("—")],
+          [step(ar?"حقول العنصر مطلوبة":"item fields needed","add")],
+        ]},
+    ];
+    const jsel = h("select",{className:"jsel",value:String(st.journey),onChange:e=>this.setState({journey:+e.target.value})}, JOURNEYS.map((j,i)=>h("option",{key:i,value:String(i)},j.n)));
+    const J = JOURNEYS[st.journey];
+    const level1 = h("div",null,
+      h("h2",{className:"ar-h"}, ar?"لوح الرحلة (٦ ممرات)":"Journey board (6 lanes)"),
+      h("div",{style:{marginBottom:"14px"}}, jsel),
+      h("div",null, LANES.map((ln,i)=>h("div",{className:"lane",key:i}, h("div",{className:"lane-h"},ln), h("div",{className:"lane-c"}, J.lanes[i])))),
+      h("p",{className:"ar-sub",style:{marginTop:"10px"}}, ar?"الخطوات المُتقطّعة = إضافية؛ الحمراء = فجوة قناة/تنفيذ.":"Dashed steps = additive; red = channel/impl gap. 20 journeys total; 6 shown in detail here."));
+
+    // ── State machine ──
+    const col=(title,items)=>h("div",{style:{flex:"1 1 220px",border:"1px solid var(--border-subtle)",borderRadius:"10px",background:"var(--surface-primary)",padding:"13px 15px"}}, h("div",{style:{fontWeight:600,marginBottom:"8px",fontSize:"13.5px"}},title), h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}}, items.map((x,i)=>h("span",{key:i,className:"step"},x))));
+    const stateB = h("div",null, h("h2",{className:"ar-h"}, ar?"آلة الحالة ثلاثية الطبقات":"Three-tier state machine"),
+      h("p",{className:"ar-sub"}, ar?"لا تُدمج الطبقات؛ العرض يتجاوز «في الطريق/وصل».":"Never collapsed; Virtual bypasses On-the-Way/Arrived."),
+      h("div",{style:{display:"flex",gap:"12px",flexWrap:"wrap"}},
+        col(ar?"حالة الزيارة":"Visit Status",["Draft","Published","Returned","Cancelled","Expired"]),
+        col(ar?"حالة التفتيش":"Inspection Status",["New","In Progress","Returned","Cancelled","Approved","Rejected"]),
+        col(ar?"الحالة التشغيلية":"Operational State",["New","Ready","On the Way","Arrived","Executing","Submitted","Under Review"]),
+        col(ar?"الجلسة عن بُعد":"Virtual session",["Scheduled","Waiting","Joined","Verified","In Progress","Closed"])));
+
+    // ── Offline lifecycle ──
+    const offB = h("div",null, h("h2",{className:"ar-h"}, ar?"دورة حياة العمل دون اتصال":"Offline & recovery lifecycle"),
+      flow([
+        card("O1",ar?"تنزيل الحزمة":"Package download","local package version","working"),
+        card("O2",ar?"مسودة + حفظ تلقائي":"Draft + autosave","user-scoped IndexedDB","working"),
+        card("O3",ar?"عملية في الطابور":"Queued op","outbox + idempotency key","working"),
+        card("O4",ar?"تعارض":"Conflict","inspector-asked (O-16)","working"),
+        card("O5",ar?"إرسال مؤجّل":"Queued submit","duplicate-protected","working"),
+        card("O6",ar?"تعافٍ بعد التعطّل":"Crash recovery","session restore","working"),
+      ]));
+
+    // ── Gap heatmap ──
+    const cols = ar?["BRD","فيغما","مسار","خادم","دون اتصال","RLS","تدقيق","قناة","اختبار آلي","جهاز"]:["BRD","Figma","Route","Backend","Offline","RLS","Audit","X-chan","Auto test","Device"];
+    const V={c:"var(--status-compliant)",p:"var(--status-major)",m:"var(--status-critical)",b:"repeating-linear-gradient(45deg,var(--status-warning) 0 3px,transparent 3px 6px)",d:"var(--text-muted)"};
+    const rows = [
+      [ar?"ميداني ناجح":"Physical success",["c","c","c","c","c","c","c","c","c","d"]],
+      [ar?"خارج النطاق":"Outside-geofence",["c","c","c","c","c","c","c","p","p","d"]],
+      [ar?"تعذّر الوصول":"Unable to access",["c","c","c","c","c","c","c","p","p","d"]],
+      [ar?"إرجاع/تصحيح":"Returned/correct",["c","c","c","c","c","c","c","c","p","d"]],
+      [ar?"مرفوض":"Rejected",["c","c","c","c","c","c","c","c","p","d"]],
+      [ar?"معتمد + تقرير":"Approved+report",["c","c","c","p","c","c","c","p","p","d"]],
+      [ar?"عن بُعد":"Virtual",["c","c","c","c","c","c","c","p","c","d"]],
+      [ar?"فوري":"Immediate",["c","p","p","p","p","c","c","d","m","d"]],
+      [ar?"غير مرخّصة":"Unregistered",["c","p","c","p","c","c","c","p","m","d"]],
+      [ar?"عينات/حجز":"Samples/seizure",["c","p","c","m","m","c","c","d","m","d"]],
+      [ar?"حادث أثناء الزيارة":"Incident",["c","p","p","p","p","c","c","p","m","d"]],
+      [ar?"تباين البيانات":"Data discrepancy",["c","p","c","p","c","c","c","m","m","d"]],
+      [ar?"التغذية الراجعة (QR)":"Feedback (QR)",["c","c","b","m","c","c","c","m","m","d"]],
+    ];
+    const heat = h("div",null, h("h2",{className:"ar-h"}, ar?"خريطة الفجوات":"Gap heatmap"),
+      h("p",{className:"ar-sub"}, ar?"أخضر مكتمل · برتقالي جزئي · أحمر مفقود · مخطط محظور · رمادي غير منطبق.":"Green complete · orange partial · red missing · hatched blocked · grey n/a."),
+      h("div",{style:{overflowX:"auto"}}, h("table",{className:"hm"},
+        h("thead",null,h("tr",null, h("th",{style:{textAlign:"start"}}, ar?"الرحلة":"Journey"), cols.map((c,i)=>h("th",{key:i},c)))),
+        h("tbody",null, rows.map((r,i)=>h("tr",{key:i}, h("td",{className:"j"},r[0]), r[1].map((v,j)=>h("td",{key:j}, h("span",{className:"cell",style:{background:V[v]}})))))))));
+
+    // ── Orphans ──
+    const orph = h("div",null, h("h2",{className:"ar-h"}, ar?"اليتيمة والمسدودة والمكرّرة":"Orphan / dead-end / duplicated"),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:"8px",maxWidth:"760px"}},
+        [["DUPLICATED","Inspector iPad / iPad Field / iPad Dashboard",ar?"استبدلها هيكل التنفيذ":"superseded by Execution Shell"],
+         ["DISCONNECTED","/field/map",ar?"مدخل تنقّل ضعيف":"weak nav entry"],
+         ["EXTERNAL_BLOCKED","/feedback/scan",ar?"خدمة المسح + PDF غير مبنية (O-15)":"scan-service + PDF unbuilt (O-15)"],
+         ["PARTIAL","Immediate Inspection",ar?"لا مدخل مميّز + قاعدة القفل":"no distinct entry + lock rule"],
+         ["PARTIAL","Mid-visit incident",ar?"مسار التسجيل أثناء الزيارة":"in-visit logging path"],
+         ["GAP","Cross-channel receiving queues",ar?"إلغاء/إرجاع/اعتماد/تغذية راجعة":"cancel/return/approval/feedback"]].map((r,i)=>
+          h("div",{key:i,style:{display:"flex",gap:"10px",alignItems:"center",border:"1px solid var(--border-subtle)",borderRadius:"8px",padding:"10px 12px",background:"var(--surface-primary)"}},
+            h("span",{className:"ctag",style:{background:"var(--status-critical)",color:"#fff",fontSize:"10px",fontWeight:700,padding:"2px 7px",borderRadius:"999px",flex:"none"}},r[0]),
+            h("span",{style:{fontWeight:600,fontSize:"13px"}},r[1]), h("span",{style:{fontSize:"12px",color:"var(--text-secondary)"}},"· "+r[2])))));
+
+    const BOARDS=[["level0",t.b0,level0],["level1",t.b1,level1],["state",t.bstate,stateB],["offline",t.boff,offB],["heat",t.bheat,heat],["orphans",t.borph,orph]];
+    return {
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t, legend,
+      boards: BOARDS.map(([k,l])=>({label:l, active: st.board===k?"true":"false", go:()=>this.setState({board:k})})),
+      board: (BOARDS.find(b=>b[0]===st.board)||BOARDS[0])[2],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .wix-card { display:flex; flex-direction:column; gap:6px; padding:12px 14px; border-radius:8px; border:1px solid #e2e4e8; background:#ffffff; text-decoration:none; transition: transform 140ms ease, border-color 140ms ease; }
+  .wix-card:hover { transform:translateY(-2px); border-color:#3a5ba0; }
+  .wix-card.misc { background:#f4f2ec; border-style:dashed; }
+  .wix-name { color:#14181d; }
+  .wix-desc { color:#5b6470; }
+  .wix-route { font-family:ui-monospace, "SF Mono", Menlo, monospace; font-size:10.5px; padding:2px 6px; border-radius:4px; width:fit-content; }
+  .wix-route.ok { background:#e8eefc; color:#1f3f8f; }
+  .wix-route.na { background:#fbeee0; color:#9a5b12; }
+  .wix-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; }
+</style>
+</helmet>
+<div dir="ltr" style="min-height:100dvh; background:#0f1720; color:#eef1f5; font-family:var(--font-body); padding:32px 40px 60px;">
+  <div style="display:flex; align-items:center; gap:12px; margin-block-end:6px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#3a5ba0" stroke-width="1.7" style="width:30px;height:30px;"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    <h1 style="font-size:26px; font-weight:700; margin:0;">SAQEEL Web — Screen Index</h1>
+  </div>
+  <p class="t-caption" style="color:#aab2bd; margin:0 0 6px;">All {{ total }} web-console / control-panel / executive screens — desktop channels, not the field PWA. Route badge = code path in <span class="id-code">web/src/app/**</span>; amber = not yet wired, or a duplicate to reconcile.</p>
+  <p class="t-caption" style="color:#aab2bd; margin:0 0 28px;"><a href="pwa/SAQEEL PWA-Index.dc.html" style="color:#3a5ba0;">→ Field PWA index</a></p>
+
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6">
+    <div style="margin-block-end:30px;">
+      <h2 style="font-size:14px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#7ea3e8; margin:0 0 4px; padding-block-end:8px; border-bottom:1px solid #263140;">{{ g.label }}</h2>
+      <sc-if value="{{ g.note }}" hint-placeholder-val="{{ false }}"><p class="t-caption" style="color:#aab2bd; margin:0 0 12px;">{{ g.note }}</p></sc-if>
+      <div class="wix-grid">
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+          <a class="wix-card {{ it.misc }}" href="{{ it.file }}">
+            <span class="wix-name" style="font-weight:600; font-size:14.5px;">{{ it.name }}</span>
+            <span class="wix-desc t-caption">{{ it.desc }}</span>
+            <span class="wix-route {{ it.routeOk }}">{{ it.route }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() {
+    const OK = "ok", NA = "na";
+    const groups = [
+      { label:"Executive", note:"A view, not a channel — renders on any channel, phone-first; minister sees more.", items:[
+        { name:"Executive Overview", desc:"Ministerial dashboard", file:"SAQEEL Executive Overview.html", route:"renders inside the normal app shell on any channel", routeOk:NA },
+      ]},
+      { label:"Console / Web Dashboard — business users", items:[
+        { name:"Web Dashboard", desc:"Home", file:"SAQEEL Web Dashboard.dc.html", route:"web/src/app/(app)/dashboard", routeOk:OK },
+        { name:"Tasks", desc:"Task board", file:"SAQEEL Tasks.dc.html", route:"web/src/app/(app)/tasks", routeOk:OK },
+        { name:"Visits", desc:"Visits board", file:"SAQEEL Visits.dc.html", route:"web/src/app/(app)/visits", routeOk:OK },
+        { name:"Planning", desc:"Visit planning", file:"SAQEEL Planning.dc.html", route:"web/src/app/(app)/planning", routeOk:OK },
+        { name:"Planning Identity", desc:"Single/bulk plan identity step", file:"SAQEEL Planning Identity.dc.html", route:"…/planning/single, …/planning/bulk", routeOk:OK },
+        { name:"Review & Approval", desc:"Reviewer decision", file:"SAQEEL Review & Approval.dc.html", route:"web/src/app/(app)/reviews", routeOk:OK },
+        { name:"Cases", desc:"Case list", file:"SAQEEL Cases.dc.html", route:"web/src/app/(app)/cases", routeOk:OK },
+        { name:"Committee", desc:"Committee decisions", file:"SAQEEL Committee.dc.html", route:"web/src/app/(app)/committee", routeOk:OK },
+        { name:"Enforcement", desc:"Enforcement actions", file:"SAQEEL Enforcement.dc.html", route:"web/src/app/(app)/enforcement", routeOk:OK },
+        { name:"Compliance Requests", desc:"Compliance request queue", file:"SAQEEL Compliance Requests.dc.html", route:"web/src/app/(app)/admin/compliance-requests", routeOk:OK },
+        { name:"Portal", desc:"External portal", file:"SAQEEL Portal.dc.html", route:"web/src/app/(app)/portal", routeOk:OK },
+        { name:"Profile", desc:"User profile", file:"SAQEEL Profile.dc.html", route:"web/src/app/(app)/profile", routeOk:OK },
+        { name:"Factories", desc:"Establishment list", file:"SAQEEL Factories.dc.html", route:"web/src/app/(app)/factories", routeOk:OK },
+        { name:"Factory 360", desc:"Establishment 360 view", file:"SAQEEL Factory 360.dc.html", route:"…/factories/[id]", routeOk:OK },
+        { name:"Incident Reports", desc:"Incident report list", file:"SAQEEL Incident Reports.dc.html", route:"web/src/app/(app)/incident-reports", routeOk:OK },
+        { name:"Evidence OCR", desc:"OCR review (web twin)", file:"SAQEEL Evidence OCR.dc.html", route:"web/src/app/(app)/evidence-ocr", routeOk:OK },
+        { name:"Virtual", desc:"Virtual visit scheduling", file:"SAQEEL Virtual.dc.html", route:"web/src/app/(app)/virtual", routeOk:OK },
+        { name:"AI Studio", desc:"AI suggestions / composer", file:"SAQEEL AI Studio.dc.html", route:"web/src/app/(app)/ai/suggestions", routeOk:OK },
+        { name:"KPI Management", desc:"KPI grid config", file:"SAQEEL KPI Management.dc.html", route:"…/dashboard (KpiGrid.tsx), …/admin/dashboard-config", routeOk:OK },
+        { name:"Delegation", desc:"Absence cover / delegation", file:"SAQEEL Delegation.dc.html", route:"⊘ not yet in repo (confirmed requirement)", routeOk:NA },
+        { name:"Login", desc:"Web login", file:"SAQEEL Login.dc.html", route:"web/src/app/login", routeOk:OK },
+        { name:"Auth States", desc:"Auth edge-state reference", file:"SAQEEL Auth States.dc.html", route:"web/src/app/login, web/src/app/reset", routeOk:OK },
+      ]},
+      { label:"Control Panel / Admin — all config as sections", items:[
+        { name:"Control Panel", desc:"Admin shell / section nav", file:"SAQEEL Control Panel.dc.html", route:"web/src/app/(app)/admin", routeOk:OK },
+        { name:"Admin", desc:"Admin landing — reconcile vs. Control Panel", file:"SAQEEL Admin.dc.html", route:"web/src/app/(app)/admin/page.tsx", routeOk:NA },
+        { name:"Admin Form Builder", desc:"Form/template builder", file:"SAQEEL Admin Form Builder.dc.html", route:"web/src/app/(app)/admin/templates", routeOk:OK },
+        { name:"Admin Workflow Builder", desc:"Workflow builder", file:"SAQEEL Admin Workflow Builder.dc.html", route:"web/src/app/(app)/admin/workflows", routeOk:OK },
+        { name:"Admin Integrations", desc:"Integrations list", file:"SAQEEL Admin Integrations.dc.html", route:"web/src/app/(app)/admin/integrations", routeOk:OK },
+        { name:"Admin Integrations Data", desc:"Factory data integration detail", file:"SAQEEL Admin Integrations Data.dc.html", route:"…/admin/integrations/factory-data", routeOk:OK },
+        { name:"Admin SENAI Data", desc:"SENAI data management CRUD", file:"SAQEEL Admin SENAI Data.dc.html", route:"web/src/app/(app)/admin/integrations/senai-data", routeOk:OK },
+        { name:"Admin Lookups", desc:"Reference lists", file:"SAQEEL Admin Lookups.dc.html", route:"web/src/app/(app)/admin/planning/lookups", routeOk:OK },
+        { name:"Admin Role Override", desc:"Role/capability override", file:"SAQEEL Admin Role Override.dc.html", route:"web/src/app/(app)/admin/access", routeOk:OK },
+        { name:"Users Roles", desc:"Users & roles", file:"SAQEEL Users Roles.dc.html", route:"web/src/app/(app)/admin/access", routeOk:OK },
+        { name:"Admin Execution", desc:"Execution policy config", file:"SAQEEL Admin Execution.dc.html", route:"web/src/app/admin/execution", routeOk:OK },
+        { name:"Admin Virtual Premium", desc:"Premium virtual provider config", file:"SAQEEL Admin Virtual Premium.dc.html", route:"web/src/app/admin/execution (VisitModesForm) — confirm split", routeOk:NA },
+        { name:"Admin Geofence", desc:"Geofence rules", file:"SAQEEL Admin Geofence.dc.html", route:"…/admin/execution (GisRulesForm), …/admin/gis", routeOk:OK },
+        { name:"Admin Extended", desc:"Extended admin settings — unclear scope", file:"SAQEEL Admin Extended.dc.html", route:"⊘ unconfirmed — no matching folder found", routeOk:NA },
+        { name:"Admin Detail", desc:"Admin detail drilldown — unclear scope", file:"SAQEEL Admin Detail.dc.html", route:"⊘ unconfirmed — no matching folder found", routeOk:NA },
+        { name:"Establishment Violations", desc:"Bulk violation issuance", file:"SAQEEL Establishment Violations.dc.html", route:"web/src/app/(app)/admin/bulk-violations", routeOk:OK },
+        { name:"Item Execution", desc:"Checklist item config", file:"SAQEEL Item Execution.dc.html", route:"web/src/app/(app)/admin/items", routeOk:OK },
+        { name:"Risk", desc:"Risk model config", file:"SAQEEL Risk.dc.html", route:"web/src/app/(app)/admin/risk", routeOk:OK },
+        { name:"Report Package Foundation", desc:"Report package templates", file:"SAQEEL Report Package Foundation.dc.html", route:"web/src/app/(app)/admin/packages", routeOk:OK },
+        { name:"Dashboard Config", desc:"Dashboard/KPI admin config", file:"SAQEEL Dashboard Config.dc.html", route:"web/src/app/admin/dashboard-config", routeOk:OK },
+      ]},
+      { label:"Operations", items:[
+        { name:"Operations Center", desc:"Ops monitoring", file:"SAQEEL Operations Center.dc.html", route:"web/src/app/(app)/operations", routeOk:OK },
+        { name:"Operations Live", desc:"Live ops map/monitoring", file:"SAQEEL Operations Live.dc.html", route:"web/src/app/(app)/operations/live", routeOk:OK },
+      ]},
+      { label:"Reports / Records (web twins)", items:[
+        { name:"Inspection Report", desc:"Rendered report", file:"SAQEEL Inspection Report.dc.html", route:"web/src/app/reports/inspection/[id]", routeOk:OK },
+        { name:"Report Deltas", desc:"Report revision diff — unclear scope", file:"SAQEEL Report Deltas.dc.html", route:"⊘ unconfirmed — no matching folder found", routeOk:NA },
+        { name:"Report Inventory", desc:"Report inventory list — unclear scope", file:"SAQEEL Report Inventory.dc.html", route:"⊘ unconfirmed — no matching folder found", routeOk:NA },
+        { name:"Feedback", desc:"Post-inspection feedback analytics", file:"SAQEEL Feedback.dc.html", route:"⊘ not yet in repo — new module per CLAUDE.md", routeOk:NA },
+      ]},
+      { label:"⊘ Miscellaneous — reference & non-product files", note:"Not runtime screens — design references and one likely-stale duplicate.", items:[
+        { name:"Design System", desc:"Component reference", file:"SAQEEL Design System.dc.html", route:"reference only", routeOk:NA, misc:"misc" },
+        { name:"States System", desc:"State-machine reference", file:"SAQEEL States System.dc.html", route:"reference only", routeOk:NA, misc:"misc" },
+        { name:"Figma Parity Grid", desc:"Figma↔build parity reference", file:"SAQEEL Figma Parity Grid.dc.html", route:"reference only", routeOk:NA, misc:"misc" },
+        { name:"iPad Dashboard", desc:"Possible stale duplicate of PWA iPad ref", file:"SAQEEL iPad Dashboard.dc.html", route:"⊘ reconcile vs. SAQEEL PWA-Inspector iPad", routeOk:NA, misc:"misc" },
+      ]},
+    ];
+    const total = groups.reduce((n,g)=>n+g.items.length,0);
+    return { groups, total };
+  }
+}
+</script>
+</body>
+</html>

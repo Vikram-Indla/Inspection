@@ -1,13 +1,14 @@
-import EmptyState from "@/components/EmptyState";
-import { IconGlobe } from "@/app/icons";
+import RouteLoading from "@/components/RouteLoading";
 
-// Route-level loading fallback (must render sync — bilingual static text).
+// Route-level loading fallback follows the active locale and announces busy
+// state through the shared, accessible route-loading contract.
 export default function Loading() {
   return (
-    <div style={{ margin: "var(--space-6)" }}>
-      <EmptyState icon={<IconGlobe size={28} />}
-        title={<>Loading localization… · <span lang="ar">جارٍ تحميل الترجمة…</span></>}
-        body="ui_strings · SCR-ADM-100" />
-    </div>
+    <RouteLoading
+      en="Loading localization registry…"
+      ar="جارٍ تحميل سجل الترجمات…"
+      bodyEn="Loading the RLS-scoped translation dictionary."
+      bodyAr="جارٍ تحميل قاموس الترجمات المقيّد حسب صلاحيات الصفوف."
+    />
   );
 }

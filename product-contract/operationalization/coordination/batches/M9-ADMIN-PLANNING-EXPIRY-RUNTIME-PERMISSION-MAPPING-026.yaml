@@ -1,0 +1,285 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-EXPIRY-RUNTIME-PERMISSION-MAPPING-026
+title: Independent Planning Expiry rule, scheduler and permission validation
+status: VALIDATED_CONFIRMED_WITH_CORRECTION_BLOCK_P0
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  route: /admin/planning/expiry
+  implementation_contract: PLN-CON-013
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  screen_scope:
+    - Planning Expiry Rules control plane
+  canonical_requirements:
+    primary:
+      - [MVP1-M02-016, CR-068, WA-AC-0068, WA-EV-0068]
+      - [MVP1-M02-046, CR-098, WA-AC-0098, WA-EV-0098]
+    lifecycle_dependency:
+      - [MVP1-M02-015, CR-067, WA-AC-0067, WA-EV-0067]
+    atomic:
+      - REQ-R0C-00204
+      - REQ-R0C-00205
+      - REQ-R0C-00206
+      - REQ-R0C-00207
+      - REQ-R0C-00263
+    canonical_transition: STM-VIS-003
+  blanket_CR_001_through_CR_478_route_claim: PROHIBITED
+  design_dependency:
+    packet: M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048
+    state: DEPENDENCY_ONLY
+    rule: Design identity and revision cannot prove scheduler, database or permission behavior.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_route:
+  exists: true
+  route_file: apps/web/src/app/(app)/admin/planning/expiry/page.tsx
+  component: apps/web/src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx
+  actions: apps/web/src/app/(app)/admin/planning/expiry/actions.ts
+  table: public.planning_expiry_rules
+  scheduler:
+    job: expire-lapsed-visits
+    cadence: "*/15 * * * *"
+    entrypoint: public.expire_lapsed_visits_scheduled()
+    core: public._expire_lapsed_visits_core(text)
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  recommended_action: BLOCK
+  reason: >-
+    The route, rule table, scheduled engine, audit trigger and downstream
+    consequences are real, but activation/version governance is not atomic,
+    active versions are mutable, one exposed rule type is structurally
+    dormant, and authorization/concurrency boundaries are too broad or absent.
+
+runtime_rule_mapping:
+  - rule_type: not_completed_at_window_end
+    basis: visits.window_end plus offset_minutes
+    candidate: published visit with no started inspection
+    exclusion: inspector-created immediate visit
+    status: RUNTIME_CONSUMED
+  - rule_type: no_execution_start
+    basis: visits.window_start plus offset_minutes
+    candidate: published visit with operational_state=new and no started inspection
+    exclusion: inspector-created immediate visit
+    status: RUNTIME_CONSUMED
+  - rule_type: no_acknowledgement
+    basis: visits.window_start plus offset_minutes
+    candidate: published visit with an assignment still in assigned state and no started inspection
+    exclusion: inspector-created immediate visit
+    status: RUNTIME_CONSUMED
+  - rule_type: no_execution_date
+    basis: visits.window_start is null
+    status: DORMANT_BY_SCHEMA
+    evidence: visits.window_start is NOT NULL; migration comments state the predicate matches nothing.
+    implication: The UI offers and can enable a rule that cannot expire any current visit.
+
+expiry_consequences:
+  status_update:
+    target: visits.planning_status=expired
+    provenance: visits.expired_by_rule_id
+  semantic_event:
+    table: visit_lifecycle_events
+    event_type: expire
+    carries: rule_type reason prior status window_end rule_id
+  notifications:
+    event_key: visit_expired
+    recipients:
+      - assigned inspector when notify_inspector=true
+      - plan creator when notify_plan_creator=true
+  generic_audit:
+    trigger: trg_audit_visits
+    table: audit_events
+  transactionality: CONFIRMED
+  rationale: >-
+    Status changes, lifecycle events and notifications execute within one
+    PostgreSQL function call; an error rolls back the statement transaction.
+  idempotency: CONFIRMED_FOR_STATUS
+  limitation: Already-expired rows leave the published candidate set, but notification uniqueness is not independently constrained.
+
+findings:
+  - id: EX-P0-001
+    priority: P0
+    finding: Rule activation is a non-atomic two-write operation.
+    evidence: >-
+      setRuleEnabled first disables sibling rows, then enables the target using
+      a separate Supabase update. No governed RPC or database transaction wraps
+      both writes.
+    implication: Failure or interruption after the first write leaves the rule family with no enabled version.
+  - id: EX-P0-002
+    priority: P0
+    finding: Active effective versions can be edited in place.
+    evidence: >-
+      updateRule applies scope, offset, reason and notification changes to any
+      row ID, including enabled rows; the scheduler reads those values on its
+      next sweep.
+    implication: Historical version meaning changes retroactively and production behavior changes without creating or approving a new version.
+  - id: EX-P0-003
+    priority: P0
+    finding: Effective-version lifecycle is semantically false in the control plane.
+    evidence: >-
+      New disabled rows receive effective_from=now; enabling does not set a new
+      effective_from, close the prior effective_to or prevent disabling the
+      last active version. The UI therefore labels disabled and retired rows
+      as effective/ongoing.
+    implication: Operators cannot reconstruct which version governed a visit at a past instant from the displayed windows.
+  - id: EX-P0-004
+    priority: P0
+    finding: no_execution_date is an impossible runtime rule.
+    evidence: >-
+      The engine requires visits.window_start IS NULL while the schema requires
+      window_start NOT NULL. Both the migration and certification test
+      acknowledge that it matches nothing.
+    implication: An administrator can enable a rule whose promised business behavior cannot occur.
+  - id: EX-P0-005
+    priority: P0
+    finding: The single-enabled invariant is not database-enforced.
+    evidence: >-
+      The table has unique(rule_type, version), but no partial unique constraint
+      on rule_type WHERE enabled and no activation RPC. Direct permitted writes
+      can create multiple enabled rows or no enabled row.
+    implication: Multiple rules of one family may run in version order; the first matching rule wins by changing status, producing configuration-dependent provenance.
+  - id: EX-P0-006
+    priority: P0
+    finding: Enable accepts an unvalidated client-supplied rule_type independent of rule_id.
+    evidence: >-
+      setRuleEnabled validates only non-empty strings; it disables siblings for
+      the supplied type, then enables the independently supplied ID.
+    implication: A configuring actor or malformed request can retire one rule family while enabling a row from another.
+  - id: EX-P0-007
+    priority: P0
+    finding: Rule changes have no maker-checker or approved activation state.
+    evidence: >-
+      A single actor with planning.configure_expiry can create, edit, enable
+      and disable rule versions. No proposal, review, distinct approver or
+      activation decision record exists.
+    implication: A high-impact scheduler policy can be changed unilaterally immediately before the next sweep.
+  - id: EX-P1-001
+    priority: P1
+    finding: Route access and table reads are broader than control-plane need.
+    evidence: >-
+      The page has no route-local admin guard and planning_expiry_rules_read
+      permits every authenticated user; the UI only hides writes by capability.
+    implication: Any authenticated non-field route consumer can deep-link and inspect all current and historical expiry policy.
+  - id: EX-P1-002
+    priority: P1
+    finding: Every Admin access-class role receives expiry configuration by default.
+    evidence: >-
+      has_planning_capability defaults planning.configure_expiry for the admin
+      class, and compliance_admin, form_admin, workflow_admin, risk_owner,
+      gis_admin and security_admin are all explicitly seeded with it.
+    implication: Least privilege and separation of duties are not demonstrated.
+  - id: EX-P1-003
+    priority: P1
+    finding: Updates have no optimistic concurrency guard.
+    evidence: Actions update by id only; no version, updated_at or expected-state predicate is supplied.
+    implication: Concurrent edits or toggles can silently overwrite one another.
+  - id: EX-P1-004
+    priority: P1
+    finding: New-version allocation is read-max-then-insert.
+    evidence: >-
+      createRuleVersion reads the maximum version and inserts max+1; a uniqueness
+      conflict is surfaced as refresh/retry rather than serialized by the database.
+    implication: Concurrent administrators receive avoidable conflicts and no preserved draft.
+  - id: EX-P1-005
+    priority: P1
+    finding: Scope enumerations duplicate lookup authority.
+    evidence: Visit type, execution mode and priority values are hard-coded in both UI and action validation.
+    implication: Expiry policy scope can drift from governed Planning lookups and runtime enum evolution.
+  - id: EX-P1-006
+    priority: P1
+    finding: Scheduler deployment evidence is static, not live.
+    evidence: Migration declares pg_cron every 15 minutes, but this review found no live cron run history or current deployed job proof.
+    implication: Repository correctness alone cannot prove the production scheduler is installed and healthy.
+
+permissions_rls_and_concurrency:
+  read_policy: auth.uid() is not null
+  write_policy: has_planning_capability(planning.configure_expiry)
+  route_guard: ABSENT
+  server_action_recheck: PRESENT
+  least_privilege: NOT_PROVEN
+  maker_checker: ABSENT
+  database_single_enabled_constraint: ABSENT
+  governed_activation_rpc: ABSENT
+  active_version_immutability: ABSENT
+  optimistic_concurrency: ABSENT
+  delete_policy: ABSENT
+  generic_audit_trigger: PRESENT
+
+tests_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-044-admin-planning.spec.ts
+      covers:
+        - disable and re-enable seeded v1 through the page
+        - create a disabled version while preserving one enabled version
+      gaps:
+        - atomic activation failure
+        - mismatched rule_type and rule_id
+        - direct-RLS multiple-enabled write
+        - active-version immutability
+        - maker-checker and negative personas
+        - concurrent edit and version allocation
+        - effective window closure
+        - deployed cron health
+    - file: apps/web/e2e/pln-browser-certification.spec.ts
+      covers:
+        - three executable rule families expire governed fixtures
+        - expired_by_rule_id provenance
+        - audit and notification existence
+        - explicit proof that no_execution_date is dormant
+      risk: Creates enabled shared rules and persisted audit fixtures; cleanup is incomplete by design.
+    - file: apps/web/e2e/cd-027-visit-detail.spec.ts
+      covers:
+        - expired visit provenance resolves to rule reason and type
+  browser_readiness: BLOCKED_FOR_MUTATING_SHARED_ENVIRONMENT
+  safe_static_route_review: READY_AFTER_DESIGN_IDENTITY_DEPENDENCY
+
+required_prerequisites:
+  P0:
+    - Sponsor-approved policy for whether each rule family must always have exactly one active version or may intentionally have none.
+    - Governed transactional activation RPC that validates rule identity/type, serializes the family, closes the prior effective window and activates one approved version.
+    - Database invariant preventing more than one active/effective version per rule family.
+    - Immutable active/effective rows; changes create a new draft version.
+    - Decision to remove no_execution_date or introduce a real nullable execution-date authority and migration contract.
+    - Maker-checker decision and distinct-actor approval for expiry activation.
+    - Negative-path database tests proving atomic rollback and final Expired guards.
+  P1:
+    - Route-local authorization and least-privilege read/write policy.
+    - CAS or expected-version protection for draft edit and activation.
+    - Governed version allocator.
+    - Scope values sourced from canonical lookup/enum authority.
+    - Live pg_cron installation, run-history, failure alert and idempotent replay evidence.
+    - Isolated seeder namespace with complete cleanup for expiry certification.
+
+bounded_implementation_boundary:
+  lease_1_database:
+    - planning_expiry_rules constraints and lifecycle fields
+    - activation/proposal/approval RPCs
+    - RLS and transition guards
+    - scheduler rule evaluation compatibility
+  lease_2_application:
+    - /admin/planning/expiry route guard
+    - draft/version/approve/activate UI behavior
+    - honest effective-state and unavailable-state rendering
+  lease_3_quality:
+    - isolated seeded fixtures
+    - database negative and concurrency tests
+    - browser persona, locale, theme and responsive evidence
+    - deployed cron health evidence
+  prohibited:
+    - changing expiry thresholds or policy values without sponsor-approved authority
+    - implementing the dormant rule by weakening visits.window_start integrity
+    - modifying leased Design files
+    - claiming completion from page rendering or repository-only cron text
+
+verdict:
+  mapping: CONFIRMED_WITH_CORRECTION
+  runtime_engine: REAL_BUT_CONTROL_PLANE_UNSAFE
+  requirements_complete: false
+  sponsor_recommendation: BLOCK_PENDING_CONTRACT_AND_ATOMIC_GOVERNANCE
+  next_packet: M9-ADMIN-PLANNING-EXPIRY-RUNTIME-REMEDIATION-PREFLIGHT-027

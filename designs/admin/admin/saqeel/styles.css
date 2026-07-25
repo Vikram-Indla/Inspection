@@ -1,0 +1,6 @@
+/* SAQEEL Inspection Design System — global entry. Link this one file. */
+@import url('tokens/fonts.css');
+@import url('tokens/colors.css');
+@import url('tokens/typography.css');
+@import url('tokens/layout.css');
+@import url('components.css');

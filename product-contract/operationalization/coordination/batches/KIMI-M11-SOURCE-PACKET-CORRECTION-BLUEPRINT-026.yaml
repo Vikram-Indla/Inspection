@@ -1,0 +1,502 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+status: DOCUMENTATION_ONLY_NON_EXECUTABLE_READY_FOR_FUTURE_DISPATCH
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  independent_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  future_post_return_review: KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+  source_packets:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    - KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+
+purpose: >-
+  Tell Kimi exactly where every unresolved security finding, addendum condition
+  and source contradiction belongs when revising 010/011/013/014/015/017.
+  This blueprint proposes future non-overlapping lease boundaries but does not
+  issue a lease or authorize implementation.
+
+hard_boundary:
+  allowed_after_future_dispatch:
+    - "Revise the six source orchestration packets only."
+    - "Prepare requested manifests and closure matrix."
+  prohibited:
+    - "Application, database, remote DDL, test, migration, data, UI or seed writes."
+    - "Branch/worktree creation or switch."
+    - "Lease issuance or implementation-owner appointment."
+    - "Push, merge, deploy, main, setup/Inspection or stash changes."
+    - "Premature execution of post-return review 025."
+  completion_effect: "Zero requirement or 478-row completion change."
+
+primary_ownership_index:
+  migration_security:
+    M11-MIGSEC-001: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    M11-MIGSEC-002: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    M11-MIGSEC-003: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    M11-MIGSEC-004: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    M11-MIGSEC-005: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    M11-MIGSEC-006: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    M11-MIGSEC-007: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    M11-MIGSEC-008: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    M11-MIGSEC-009: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    M11-MIGSEC-010: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    M11-MIGSEC-011: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    M11-MIGSEC-012: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+  addendum:
+    021-P0-01: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    021-P0-02: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    021-P0-03: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    021-P0-04: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    021-P0-05: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    021-P0-06: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    021-P0-07: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    021-P0-08: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    021-P1-01: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    021-P1-02: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    021-P1-03: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    021-P1-04: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    021-P1-05: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  contradictions:
+    024-X01: KIMI-M11-ATOMIC-FIX-LEASE-010
+    024-X02: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    024-X03: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    024-X04: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    024-X05: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    024-X06: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+
+cross_packet_consumption_rules:
+  - "017 owns cross-cutting standards/manifests; every function packet copies the applicable requirement by reference and adds function-specific evidence."
+  - "013 owns final permission/OTP predicates; 015 is the exact sequential successor only for neutral/no-secret OTP definitions."
+  - "015 owns audit/trigger/neutral-token semantics; every public RPC packet implements the same neutral boundary."
+  - "No finding has two primary owners."
+  - "Consumer responsibility does not authorize editing the primary owner's object."
+
+packet_blueprints:
+  KIMI_M11_ATOMIC_FIX_LEASE_010:
+    required_sections:
+      function_security_contract:
+        must_add:
+          - "Final function identity/signature placeholder, security mode and owner-manifest reference."
+          - "search_path='', full qualification and no unsafe nested legacy helper."
+          - "auth.uid/persona/assignment/visit/state checks before existence disclosure."
+          - "Exact PUBLIC/anon/authenticated execute ACL contract."
+      atomic_creation_contract:
+        must_add:
+          - "Assigned Inspector authority is explicit."
+          - "Planner scheduling is allowed only with an RBAC-007 appointment-planning mapping; otherwise BLOCKED_FOR_AUTHORITY."
+          - "Operations scheduling is BLOCKED unless exact RBAC-008/requirement authority is cited."
+          - "Stable missing/out-of-scope token before visit details."
+          - "Visit is locked before uniqueness/session/participant work."
+      evidence_contract:
+        must_add:
+          - "Final-stack post-013 direct INSERT denial."
+          - "Missing/out-of-scope equality."
+          - "Concurrent duplicate and rollback audit proof."
+          - "Function proconfig/proacl/owner/dependency catalog proof."
+    findings_consumed:
+      primary: [024-X01]
+      cross_cutting:
+        - M11-MIGSEC-001
+        - M11-MIGSEC-002
+        - M11-MIGSEC-003
+        - 021-P0-05
+        - 021-P0-06
+        - 021-P1-01
+        - 021-P1-02
+        - 021-P1-03
+        - 021-P1-04
+        - 021-P1-05
+    proposed_future_lease:
+      status: PROPOSED_NOT_ISSUED
+      database_objects:
+        - "Atomic creation RPC only; exact name/signature reserved after owner manifest."
+      application_files:
+        - apps/web/src/app/(app)/virtual/actions.ts
+      ordering: "Exclusive until 010 review acceptance; released to 011 successor afterward."
+      excludes:
+        - "Window predicate."
+        - "Post-creation policies."
+        - "OTP/join/begin/audit."
+    acceptance_gate:
+      - "Every required section is present and cites exact authority."
+      - "No unresolved owner/schema/role is presented as final."
+      - "010 evidence maps to matrix-016 creation cases."
+    stop_condition:
+      - "Stop if Planner/Operations authority remains inferred."
+      - "Stop if function owner/security mode cannot be declared."
+      - "Stop if 011 would need to edit 010 concurrently."
+
+  KIMI_M11_EXECUTION_WINDOW_LEASE_011:
+    required_sections:
+      shared_guard_contract:
+        must_add:
+          - "Private guard identity, search_path='', qualified dependencies and no direct caller grant."
+          - "Inclusive stored appointment and database-live-time semantics unchanged."
+          - "No order-dependent window trigger."
+      governed_action_replacements:
+        must_add:
+          - "Final creation successor definition consuming 010."
+          - "Governed reschedule RPC."
+          - "Governed waiting-room-open RPC."
+          - "Stable missing/out-of-scope token before window/state disclosure."
+          - "Exact per-action Planner/Operations/assigned-Inspector authority citations."
+      evidence_contract:
+        must_add:
+          - "Boundary, role, stale/zero-row, concurrent join/reschedule and final catalog proof."
+          - "Policy predicate index evidence for visit/session lookups."
+    findings_consumed:
+      primary: [024-X02]
+      cross_cutting:
+        - M11-MIGSEC-001
+        - M11-MIGSEC-002
+        - M11-MIGSEC-003
+        - M11-MIGSEC-008
+        - M11-MIGSEC-010
+        - M11-MIGSEC-011
+        - 021-P0-05
+        - 021-P0-06
+        - 021-P1-01
+        - 021-P1-02
+        - 021-P1-03
+        - 021-P1-04
+        - 021-P1-05
+    proposed_future_lease:
+      status: PROPOSED_NOT_ISSUED
+      database_objects:
+        - "Private window guard."
+        - "Creation successor, reschedule and waiting RPCs."
+      application_files:
+        - apps/web/src/app/(app)/virtual/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+        - apps/web/src/app/(app)/virtual/[id]/page.tsx
+      ordering: "Starts after accepted 010; releases detail action/Room files to 014."
+      excludes:
+        - "Join/begin/close/OTP/audit/list filtering."
+    acceptance_gate:
+      - "010 creation behavior remains atomic and authorized."
+      - "All three governed action definitions share one guard."
+      - "No new grace/tolerance/provider/list rule."
+    stop_condition:
+      - "Stop on unresolved Planner/Operations action authority."
+      - "Stop if a trigger is proposed instead of the shared predicate without explicit review."
+      - "Stop if 010 file ownership is not released."
+
+  KIMI_M11_BEGIN_ATOMICITY_LEASE_014:
+    required_sections:
+      governed_join_begin_contract:
+        must_add:
+          - "Assigned Inspector only."
+          - "Final definer/invoker model compatible with 013 direct DML revocation."
+          - "011 guard and canonical operational transition dependencies."
+          - "Neutral missing/out-of-scope boundary."
+          - "Visit→session→participants UUID order→inspection lock order."
+      evidence_contract:
+        must_add:
+          - "Final-stack role denial, zero-row, forced rollback, mixed concurrency and one-event proof."
+          - "Owner/ACL/search_path/dependency catalog proof."
+    findings_consumed:
+      primary: [024-X03]
+      cross_cutting:
+        - M11-MIGSEC-001
+        - M11-MIGSEC-002
+        - M11-MIGSEC-003
+        - M11-MIGSEC-008
+        - M11-MIGSEC-010
+        - M11-MIGSEC-011
+        - M11-MIGSEC-012
+        - 021-P0-05
+        - 021-P0-06
+        - 021-P0-07
+        - 021-P1-01
+        - 021-P1-03
+        - 021-P1-04
+        - 021-P1-05
+    proposed_future_lease:
+      status: PROPOSED_NOT_ISSUED
+      database_objects:
+        - "Atomic join RPC."
+        - "Atomic begin RPC."
+      application_files:
+        - apps/web/src/app/(app)/virtual/[id]/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+      ordering: "Starts only after 011 releases detail files; releases them to 013/015 application switch."
+      excludes:
+        - "OTP, close, policies, generic append and audit projection."
+    acceptance_gate:
+      - "Final 013-compatible privilege model is explicit."
+      - "No Planner/Operations fallback."
+      - "No partial inspection/visit/session/event outcome."
+    stop_condition:
+      - "Stop if canonical transition must be bypassed."
+      - "Stop if 011 guard or file release is unavailable."
+      - "Stop if owner manifest is unresolved."
+
+  KIMI_M11_PERMISSION_HARDENING_LEASE_013:
+    required_sections:
+      expansion_contract:
+        must_add:
+          - "Governed Inspector-only close/cancel RPC."
+          - "Governed assigned-Inspector mark-session-verified definition."
+      OTP_contract:
+        must_add:
+          - "Assigned Inspector-only request/verify/status."
+          - "Participant row locking and atomic counters/code consumption/event cardinality."
+          - "No dev_code/raw secret output."
+          - "Runtime BLOCKED without approved provider."
+          - "Exact sequential handoff to 015."
+      contract_policy_and_ACL:
+        must_add:
+          - "Per-command policies, no FOR ALL, explicit TO authenticated, UPDATE USING/WITH CHECK."
+          - "Direct INSERT/UPDATE/DELETE revoke from PUBLIC, anon and authenticated."
+          - "One-way participant→session→qualified role/assignment dependency."
+          - "Exact pg_policy/table-ACL/index manifest."
+      evidence_contract:
+        must_add:
+          - "Every persona/command direct-DML matrix."
+          - "OTP race, provider-blocked, final 015 compatibility and neutral behavior."
+          - "Affected-row and index/catalog proof."
+    findings_consumed:
+      primary:
+        - M11-MIGSEC-003
+        - M11-MIGSEC-007
+        - M11-MIGSEC-009
+        - M11-MIGSEC-010
+        - 021-P0-01
+        - 021-P0-05
+        - 021-P1-05
+        - 024-X04
+      cross_cutting:
+        - M11-MIGSEC-001
+        - M11-MIGSEC-002
+        - M11-MIGSEC-006
+        - M11-MIGSEC-008
+        - M11-MIGSEC-011
+        - M11-MIGSEC-012
+        - 021-P0-02
+        - 021-P0-06
+        - 021-P0-07
+        - 021-P1-01
+        - 021-P1-02
+        - 021-P1-03
+        - 021-P1-04
+    proposed_future_lease:
+      status: PROPOSED_NOT_ISSUED
+      expansion_database_objects:
+        - "Close/cancel and mark-verified governed definitions."
+      contract_database_objects:
+        - "Initial locked/no-secret OTP definitions."
+        - "Session/participant policies, table ACLs and obsolete grant removal."
+      application_files:
+        - "Only the bounded call-site mapping assigned by 017 after 014 releases detail files."
+      ordering: "Expansion before switch; contract after switch/quiesce; exact OTP signatures released to 015 successor."
+      excludes:
+        - "Audit projection/raw audit policies/safe trigger/generic append."
+    acceptance_gate:
+      - "Persona, provider and final policy manifests are exact."
+      - "No direct DML remains after switch."
+      - "015 can replace OTP definitions without authorization/locking loss."
+    stop_condition:
+      - "Stop on provider completion claim without delivery."
+      - "Stop on ambiguous Planner/Operations authority."
+      - "Stop if 015 exact successor ownership is not recorded."
+      - "Stop if PUBLIC/anon/authenticated table ACLs are not catalog-proven."
+
+  KIMI_M11_AUDIT_BOUNDARY_LEASE_015:
+    required_sections:
+      expansion_contract:
+        must_add:
+          - "Safe audit projection/RPC."
+          - "Specialized safe virtual-participant audit trigger installed before 013 OTP contract."
+          - "Global audit consumer inventory."
+      contract_audit_policy:
+        must_add:
+          - "Replace audit_read, audit_read_compliance and every overlapping permissive policy."
+          - "No authenticated application role reads raw virtual-participant before/after JSON."
+          - "Historical rows immutable; privileged physical access remains out-of-band."
+      OTP_successor_contract:
+        must_add:
+          - "Replace exact three 013 OTP signatures sequentially."
+          - "Preserve assigned-Inspector authorization and row locking."
+          - "Apply VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE and retain no-secret output."
+      generic_event_contract:
+        must_add:
+          - "Remove arbitrary authenticated vs_append_event authority after application switch."
+          - "Governed existing event names only."
+      evidence_contract:
+        must_add:
+          - "All-role raw query denial, secret sentinel, historical checksum and global audit regression."
+          - "Trigger inventory/order, one-event cardinality and rollback proof."
+          - "Every public RPC missing/out-of-scope pair."
+    findings_consumed:
+      primary:
+        - M11-MIGSEC-004
+        - M11-MIGSEC-005
+        - M11-MIGSEC-011
+        - 021-P0-03
+        - 021-P0-04
+        - 021-P0-06
+        - 021-P0-08
+        - 024-X05
+      cross_cutting:
+        - M11-MIGSEC-001
+        - M11-MIGSEC-002
+        - M11-MIGSEC-006
+        - M11-MIGSEC-008
+        - M11-MIGSEC-009
+        - M11-MIGSEC-010
+        - M11-MIGSEC-012
+        - 021-P0-02
+        - 021-P0-07
+        - 021-P1-01
+        - 021-P1-04
+        - 021-P1-05
+    proposed_future_lease:
+      status: PROPOSED_NOT_ISSUED
+      expansion_database_objects:
+        - "Safe audit projection/RPC."
+        - "Specialized participant audit trigger/function."
+      contract_database_objects:
+        - "Exact OTP successor definitions."
+        - "Audit policies and generic append ACL/function."
+      application_files:
+        - "M11 room audit renderer after 014 release."
+        - "Any global audit consumer only after inventory and exact separate file ownership."
+      ordering: "Safe trigger/projection in expansion; OTP/audit/event contraction immediately after 013 without traffic."
+      excludes:
+        - "Role expansion, workflow transitions and global audit_row_change rewrite."
+    acceptance_gate:
+      - "No secret sentinel in new audit or any application surface."
+      - "No authenticated raw participant audit access."
+      - "Global/maker-checker audit remains safe and functional."
+      - "013 authorization/locking preserved byte-for-byte in successor logic."
+    stop_condition:
+      - "Stop if any audit consumer is unidentified."
+      - "Stop if safe trigger would mutate historical audit."
+      - "Stop if OTP successor overwrites 013 authority/locking."
+      - "Stop if generic append is removed before application switch."
+
+  KIMI_M11_REMEDIATION_DEPENDENCY_LEASE_COLLISION_PLAN_017:
+    required_sections:
+      global_function_security_standard:
+        must_add:
+          - "search_path='', qualification, unsafe nested-helper prohibition and exact ACL standard."
+          - "Owner/bypass-RLS/extension/dependency manifest template."
+      persona_authority_matrix:
+        must_add:
+          - "Per public RPC ALLOW/DENY/BLOCKED authority citation."
+          - "Assigned Inspector-only OTP and Reviewer/Auditor safe read."
+          - "Provider-unavailable runtime blocker."
+      deterministic_lock_standard:
+        must_add:
+          - "visit→session→participants UUID order→inspection."
+      exact_sequential_ownership:
+        must_add:
+          - "010 creation → 011 creation successor/window/reschedule/waiting."
+          - "011 detail files → 014 join/begin → 013/015 bounded application switch."
+          - "013 initial OTP → 015 exact successor."
+          - "Single QA owner after corrected 009r."
+      rollout:
+        must_add:
+          - "Database expand with 015 safe trigger before OTP."
+          - "Application switch with OTP disabled."
+          - "M11 quiesce/drain."
+          - "013 then 015 contract with no traffic."
+          - "Certification and roll-forward-only rollback."
+      evidence_and_lease_manifest:
+        must_add:
+          - "Exact function/policy/trigger/application/QA proposed leases marked NOT_ISSUED."
+          - "Owner/lease unresolved values block implementation."
+    findings_consumed:
+      primary:
+        - M11-MIGSEC-001
+        - M11-MIGSEC-002
+        - M11-MIGSEC-006
+        - M11-MIGSEC-008
+        - M11-MIGSEC-012
+        - 021-P0-02
+        - 021-P0-07
+        - 021-P1-01
+        - 021-P1-02
+        - 021-P1-03
+        - 021-P1-04
+        - 024-X06
+      cross_cutting:
+        - "All packet-specific consumers above."
+    proposed_future_lease:
+      status: PROPOSED_NOT_ISSUED
+      owner: ORCHESTRATION_INTEGRATOR_TBD
+      scope:
+        - "Sequencing/manifest integration only."
+        - "No product/database object ownership."
+      ordering: "Accepted before any implementation lease proposal."
+    acceptance_gate:
+      - "Every primary ownership index entry has one owner and named consumers."
+      - "No file/function/policy/trigger/migration/QA overlap."
+      - "All blockers and rollout stages are explicit."
+    stop_condition:
+      - "Stop if exact owner/lease remains presented as assigned rather than proposed."
+      - "Stop if any source packet contradicts 022."
+      - "Stop if CR-337 or DEC-005 enters the stack."
+      - "Stop if 025 is invoked before actual corrected revisions return."
+
+returned_closure_matrix_required:
+  columns:
+    - finding_or_condition_id
+    - primary_owner_packet
+    - consumer_packets
+    - corrected_section
+    - authority_evidence
+    - proposed_future_lease
+    - acceptance_gate
+    - blocker_or_stop_condition
+    - closure_status
+  allowed_statuses:
+    - CLOSED_IN_CORRECTED_PACKET
+    - BLOCKED_ON_AUTHORITY
+    - BLOCKED_ON_PROVIDER
+    - BLOCKED_ON_OWNER
+    - BLOCKED_ON_LEASE
+  prohibited_statuses:
+    - IMPLEMENTED
+    - TESTED
+    - ACCEPTED_REQUIREMENT
+
+future_dispatch_message: >-
+  SAQEEL OS v2 — SOURCE PACKET CORRECTION BLUEPRINT. Load 022, review 024 and
+  blueprint 026. Revise orchestration packets 010/011/013/014/015/017 only,
+  following each packet_blueprints section exactly. Return the six corrected
+  packets and returned_closure_matrix_required. Do not implement, migrate, test,
+  seed, access the database, issue leases or change branches. Keep every
+  unresolved authority/provider/owner/lease BLOCKED. Do not run review 025.
+
+dispatch:
+  dispatched: false
+  blocked_by:
+    - MANUAL_MAC_UNLOCK
+    - EXISTING_KIMI_CONVERSATION_CONFIRMATION
+  kimi_status: COMPLETED
+  kimi_active: false
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  all_MIGSEC_findings_mapped_once_primary: PASS
+  all_addendum_conditions_mapped_once_primary: PASS
+  all_source_contradictions_mapped: PASS
+  packet_section_blueprints_checked: PASS
+  non_overlapping_proposed_lease_checked: PASS
+  acceptance_and_stop_conditions_checked: PASS
+  post_return_025_not_prematurely_run: PASS
+  non_executable_boundary_checked: PASS

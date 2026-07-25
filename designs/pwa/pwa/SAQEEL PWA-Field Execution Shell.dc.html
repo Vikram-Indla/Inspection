@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .sh-root { min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); }
+  .sh-head { position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); }
+  .sh-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .sh-body { flex:1; display:grid; grid-template-columns:1fr; min-height:0; }
+  .sh-nav { display:flex; gap:8px; overflow-x:auto; padding:10px 14px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); position:sticky; top:0; z-index:20; }
+  .sh-stage { flex:0 0 auto; display:flex; flex-direction:column; gap:5px; align-items:flex-start; min-width:132px; padding:9px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; text-align:start; color:var(--text-primary); min-height:44px; }
+  .sh-stage[aria-current="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .sh-stage .row { display:flex; align-items:center; gap:7px; width:100%; }
+  .sh-idx { width:22px; height:22px; border-radius:50%; background:var(--surface-sunken); color:var(--text-secondary); display:grid; place-items:center; font-size:12px; font-weight:700; flex:none; }
+  .sh-stage[aria-current="true"] .sh-idx { background:var(--action-primary); color:var(--text-on-action); }
+  .sh-stage .nm { font-size:13px; font-weight:600; flex:1; }
+  .sh-bd { width:8px; height:8px; border-radius:50%; flex:none; }
+  .sh-prog { height:3px; width:100%; border-radius:2px; background:var(--surface-sunken); overflow:hidden; }
+  .sh-prog i { display:block; height:100%; background:var(--action-primary); }
+  .sh-scroll { overflow-y:auto; min-height:0; }
+  .sh-content { max-width:900px; width:100%; margin:0 auto; padding:16px 18px 32px; display:flex; flex-direction:column; gap:14px; }
+  .sh-foot { position:sticky; bottom:0; z-index:30; display:flex; align-items:center; gap:10px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle); }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:15px 16px; display:flex; flex-direction:column; gap:12px; }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .ie-opt { display:flex; align-items:center; gap:9px; flex:1 1 120px; padding:10px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:44px; color:var(--text-primary); }
+  .ie-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .ie-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .ie-opt[aria-pressed="true"] .ie-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .swx { display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; white-space:nowrap; }
+  .swx input { appearance:none; -webkit-appearance:none; box-sizing:border-box; width:34px; min-width:34px; height:20px; margin:0; border:0; border-radius:999px; background:var(--border-strong); position:relative; cursor:pointer; transition:background .15s; flex:none; }
+  .swx input:checked { background:var(--action-primary); }
+  .swx input::after { content:""; position:absolute; top:2px; inset-inline-start:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:inset-inline-start .15s; }
+  .swx input:checked::after { inset-inline-start:16px; }
+  @media (min-width:1000px){
+    .sh-body { grid-template-columns:248px 1fr; }
+    .sh-nav { flex-direction:column; overflow-x:visible; overflow-y:auto; border-block-end:0; border-inline-end:1px solid var(--border-subtle); padding:14px; position:sticky; top:0; align-self:start; height:100%; }
+    .sh-stage { min-width:0; width:100%; }
+  }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div class="sh-root" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header class="sh-head">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.3;">
+      <div style="font-weight:600; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div>
+      <div class="sh-chips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:3px;">
+        <span class="badge badge-info">{{ t.reportType }}</span>
+        <span class="badge badge-onhold">{{ t.visitStatus }}</span>
+        <span class="badge badge-warning"><span class="dot"></span>{{ t.opState }}</span>
+        <span class="badge badge-pending"><span class="dot"></span>{{ syncChip }}</span>
+        <sc-if value="{{ hasConflict }}" hint-placeholder-val="{{ false }}"><span class="badge badge-critical"><span class="dot"></span>{{ conflictChip }}</span></sc-if>
+      </div>
+    </div>
+    <button class="sh-langbtn" onClick="{{ toggleOffline }}" aria-pressed="{{ offline }}">{{ onlineTgl }}</button>
+    <button class="sh-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="sh-body">
+    <nav class="sh-nav" aria-label="{{ t.stagesLabel }}">
+      <sc-for list="{{ stages }}" as="s" hint-placeholder-count="4">
+        <button class="sh-stage" aria-current="{{ s.current }}" onClick="{{ s.go }}">
+          <div class="row"><span class="sh-idx">{{ s.n }}</span><span class="nm">{{ s.title }}</span><span class="sh-bd" style="background:{{ s.dot }};"></span></div>
+          <div class="sh-prog"><i style="width:{{ s.pct }}%;"></i></div>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div class="sh-scroll">
+      <div class="sh-content">{{ stageBody }}</div>
+    </div>
+  </div>
+
+  <footer class="sh-foot">
+    <span class="badge {{ submitBadgeClass }}"><span class="dot"></span>{{ footStatus }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary" aria-disabled="{{ atFirst }}" style="{{ prevStyle }}" onClick="{{ onPrev }}">{{ t.prev }}</button>
+    <button class="btn btn-secondary" onClick="{{ onSave }}">{{ t.save }}</button>
+    <sc-if value="{{ atLast }}" hint-placeholder-val="{{ false }}">
+      <button class="btn btn-primary" aria-disabled="{{ submitDisabled }}" style="{{ submitStyle }}" onClick="{{ onSubmit }}">{{ t.submit }}</button>
+    </sc-if>
+    <sc-if value="{{ notLast }}" hint-placeholder-val="{{ true }}">
+      <button class="btn btn-primary" onClick="{{ onNext }}">{{ t.next }}</button>
+    </sc-if>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1000,&quot;height&quot;:760}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", stage:1,
+    ans:{ i1:{applied:true,value:"expired",att:0}, i2:{applied:true,value:"no",att:1} },
+    samplesGate:"yes", seizureGate:"no", records:{ summons:true, factfind:true, violation:true, sample:true, destruction:false, seizure:false, liftSeizure:false, plClose:false, facClose:false, plReopen:false, facReopen:false },
+    offline:false, syncPending:2, conflicts:0 };
+
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? {
+      back:"رجوع", headerSub:"شركة الأمل لتدريب العمال", theme:"الوضع", langBtnLabel:"EN",
+      reportType:"تقرير زيارة", visitStatus:"قيد التنفيذ", opState:"وصل", stagesLabel:"مراحل التنفيذ",
+      prev:"السابق", next:"التالي", save:"حفظ كمسودة", submit:"إرسال", ready:"جاهز للإرسال", blocked:"إرسال محظور",
+      s_est:"ملف المنشأة", s_items:"البنود", s_results:"المخرجات", s_records:"المحاضر",
+      estNote:"يُقرأ من صناعي — لا يُعدّل هنا.", estNo:"رقم المنشأة", activity:"النشاط", region:"المنطقة", city:"المدينة", license:"رقم الترخيص", activityVal:"تدريب مهني", regionVal:"الرياض", licenseVal:"IL-118824",
+      applied:"يُطبَّق", state:"الحالة", applies:"ينطبق", notApply:"لا ينطبق", valid:"ساري", expired:"منتهي", na:"لا يوجد",
+      prelim:"الامتثال المبدئي", compliant:"مطابق", noncompliant:"غير مطابق", vio:"مرشّح مخالفة", attach:"إرفاق دليل", evMissing:"الدليل ناقص",
+      itemsHint:"يرسم المحرّك العام البنود؛ راجع «تنفيذ البنود» للتفاصيل الكاملة.",
+      resultsHint:"مخرجات الزيارة تُشكّل مجموعة المحاضر.", specialty:"حاجة لزيارة تخصصية؟", samples:"سحب عينات؟", seizure:"حجز منتجات؟", yes:"نعم", no:"لا",
+      recordsHint:"تظهر المحاضر حسب مخرجات الزيارة (زيارة ميدانية). المحرّرات الكاملة في محاضر الحجز / إشعارات إعادة الفتح / مكتبة التقارير.", rSummons:"مذكرة استدعاء", rFact:"محضر إثبات واقعة", rViolation:"محضر ضبط مخالفة", rSample:"محضر سحب عينة", rDestruction:"محضر إتلاف منتجات مخالفة", rSeizure:"محضر حجز منتجات", rLift:"إشعار برفع الحجز", rPLClose:"محضر إغلاق خط إنتاج", rFacClose:"محضر إغلاق منشأة", rPLReopen:"إشعار إعادة فتح خط إنتاج", rFacReopen:"إشعار إعادة فتح منشأة", reportTypeNote:"نوع التقرير يحدّد مجموعة المحاضر؛ «رصد التحدي» و«إفادة الزيارة» نوعا تقرير مستقلان.",
+      blockersMini:"معوّقات:", bU:"بنود غير مُجابة", bE:"دليل ناقص",
+      s_journey:"الرحلة", s_completion:"الإنهاء", mode:"ميداني",
+      onlineTgl:"غير متصل", syncChip:"بانتظار المزامنة · {n}", conflictChip:"تعارض · {n}", conflictNote:"يُسأل المفتش عن كل تعارض — لا فائز تلقائي (يفتح شاشة حل التعارض).",
+      offlineBanner:"غير متصل — يعمل التطبيق دون اتصال؛ يُحفظ كل شيء محلياً ويُزامَن لاحقاً. لا شيء يُفقد.",
+      journeyHint:"استمرارية الرحلة والوصول تُدار في سطح «الرحلة»؛ هذه لقطة الحالة.", arrivedInside:"وصل داخل النطاق (68م)", arrEvSaved:"حُفظ دليل الوصول", journeyLink:"الوصول خارج النطاق وتعذّر التنفيذ يُعالَجان في سطح الرحلة الكامل.",
+      completionHint:"المراجعة والإقرار والإرسال تُدار في سطح «الإنهاء»؛ هذه لقطة.", ackPresent:"حضر الممثل ووقّع", sigCaptured:"التُقط التوقيع (DEC-009)", immutableV:"النسخة النهائية v1 · مقفلة", returnedNote:"التصحيح فقط ضمن الأقسام المُعادة؛ إعادة الإرسال تنشئ النسخة التالية.",
+    } : {
+      back:"Back", headerSub:"Al-Amal Worker Training Co.", theme:"Theme", langBtnLabel:"AR",
+      reportType:"Visit Report", visitStatus:"In progress", opState:"Arrived", stagesLabel:"Execution stages",
+      prev:"Previous", next:"Next", save:"Save draft", submit:"Submit", ready:"Ready to submit", blocked:"Submit blocked",
+      s_est:"Establishment", s_items:"Items", s_results:"Results", s_records:"Records",
+      estNote:"Read from Senaei — not edited here.", estNo:"Establishment no.", activity:"Activity", region:"Region", city:"City", license:"License no.", activityVal:"Vocational training", regionVal:"Riyadh", licenseVal:"IL-118824",
+      applied:"Applied", state:"State", applies:"Applies", notApply:"Does not apply", valid:"Valid", expired:"Expired", na:"Not available",
+      prelim:"Preliminary compliance", compliant:"Compliant", noncompliant:"Non-compliant", vio:"Violation candidate", attach:"Attach evidence", evMissing:"Evidence missing",
+      itemsHint:"The generic engine renders items; see “Item Execution” for full detail.",
+      resultsHint:"Visit outputs shape the record set.", specialty:"Specialty visit needed?", samples:"Samples taken?", seizure:"Products seized?", yes:"Yes", no:"No",
+      recordsHint:"Records appear per visit outputs (field visit). Full editors live in Seizure Records / Reopening Notices / Reports Library.", rSummons:"Summons memo", rFact:"Fact-finding record", rViolation:"Violation record", rSample:"Sample collection record", rDestruction:"Destruction record", rSeizure:"Product seizure record", rLift:"Lift-seizure notification", rPLClose:"Production-line closure record", rFacClose:"Factory closure record", rPLReopen:"Production-line reopening notice", rFacReopen:"Factory reopening notice", reportTypeNote:"Report type drives the record set; Challenge and Visit Statement are their own report types.",
+      blockersMini:"Blockers:", bU:"unanswered", bE:"missing evidence",
+      s_journey:"Journey", s_completion:"Completion", mode:"Physical",
+      onlineTgl:"Offline", syncChip:"Pending sync · {n}", conflictChip:"Conflict · {n}", conflictNote:"The inspector is asked on every conflict — no automatic winner (opens Conflict Resolution).",
+      offlineBanner:"Offline — the app works without a connection; everything is saved locally and synced later. Nothing is lost.",
+      journeyHint:"Travel & arrival continuity is handled in the Journey surface; this is the status snapshot.", arrivedInside:"Arrived inside fence (68m)", arrEvSaved:"Arrival evidence saved", journeyLink:"Outside-fence arrival and unable-to-access are handled in the full Journey surface.",
+      completionHint:"Review, acknowledgement and submission are handled in the Completion surface; this is a snapshot.", ackPresent:"Representative attended & signed", sigCaptured:"Signature captured (DEC-009)", immutableV:"Final version v1 · locked", returnedNote:"Correction only within returned sections; resubmission creates the next version.",
+    };
+    const ck=h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const setAns=(id,p)=>this.setState(s=>({ans:{...s.ans,[id]:{...s.ans[id],...p}}}));
+
+    // ── Items model (subset of runtime.ts) for live blockers ──
+    const ITEMS=[
+      {id:"i1", title: ar?"عدم وجود تصريح سلامة ساري":"No valid safety permit", type:"validity", clause: ar?"دفاع مدني · م.121":"Civil Defense · Art.121",
+        map:{valid:{r:"compliant"}, expired:{r:"non_compliant",vio:1}, na:{r:"non_compliant",vio:1}}, ev:{on:["expired","na"],min:1,mand:true}},
+      {id:"i2", title: ar?"عدم وجود لوحة خارجية":"No external signboard", type:"yesNo", clause: ar?"صناعة · م.39":"Industry · Art.39",
+        map:{yes:{r:"compliant"}, no:{r:"non_compliant",vio:1}}, ev:{on:["no"],min:1,mand:true}},
+    ];
+    const opts=(ty)=> ty==="validity" ? [["valid",t.valid],["expired",t.expired],["na",t.na]] : [["yes",t.applies],["no",t.notApply]];
+    const resOf=(it)=>{const a=st.ans[it.id]; return a.applied ? (it.map[a.value]?.r ?? null) : "na";};
+    const evMiss=(it)=>{const a=st.ans[it.id]; if(!a.applied)return false; return it.ev.on.includes(a.value) && (a.att||0)<it.ev.min;};
+
+    // ── blockers across flow ──
+    const unanswered=ITEMS.filter(it=>st.ans[it.id].applied && !st.ans[it.id].value);
+    const evBlock=ITEMS.filter(evMiss);
+    const nBlock=unanswered.length+evBlock.length;
+
+    // ── per-stage progress + blocker dot ──
+    const itemsPct=Math.round(100*ITEMS.filter(it=>!st.ans[it.id].applied||st.ans[it.id].value).length/ITEMS.length);
+    const green="var(--status-compliant)", red="var(--status-critical)", grey="var(--border-strong)";
+    const STAGES=[
+      {key:"journey", title:t.s_journey, pct:100, dot:green},
+      {key:"est", title:t.s_est, pct:100, dot:green},
+      {key:"items", title:t.s_items, pct:itemsPct, dot: evBlock.length?red:(itemsPct===100?green:grey)},
+      {key:"results", title:t.s_results, pct:100, dot:green},
+      {key:"records", title:t.s_records, pct: Object.values(st.records).some(Boolean)?100:0, dot:green},
+      {key:"completion", title:t.s_completion, pct: nBlock?60:100, dot: nBlock?red:green},
+    ];
+
+    const chip=(c,x)=>h("span",{className:"badge "+c},x);
+    const field=(label,val,dis)=>h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}},h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}},label),h("input",{className:"input",defaultValue:val,disabled:dis,style:dis?{color:"var(--text-muted)"}:null}));
+    const banner=(txt,tone)=>h("div",{className:"card",style:{flexDirection:"row",gap:"10px",alignItems:"flex-start",background:`var(--status-${tone}-soft)`,borderColor:`color-mix(in srgb,var(--status-${tone}) 26%,transparent)`,boxShadow:"none",padding:"11px 14px"}},h("span",{className:"t-compact",style:{color:`var(--status-${tone}-text)`}},txt));
+    const gate=(val,key,label)=>h("div",{className:"card"},h("div",{style:{fontSize:"13.5px",fontWeight:600}},label),h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}},[["yes",t.yes],["no",t.no]].map(([v,l])=>{const on=val===v;return h("button",{key:v,className:"ie-opt",style:{flex:"0 0 auto"},"aria-pressed":on,onClick:()=>this.setState({[key]:v})},h("span",{className:"ie-ind"},on?ck:null),l);})));
+
+    // ── stage bodies ──
+    let body;
+    const stg=STAGES[st.stage].key;
+    if(stg==="journey"){
+      body=h(React.Fragment,null, banner(t.journeyHint,"info"),
+        h("div",{className:"card"},
+          h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}}, chip("badge-completed","✓ "+t.arrivedInside), chip("badge-completed","✓ "+t.arrEvSaved)),
+          h("div",{className:"t-caption"},t.journeyLink)));
+    } else if(stg==="completion"){
+      body=h(React.Fragment,null, banner(t.completionHint,"info"),
+        h("div",{className:"card"},
+          h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}}, chip("badge-completed","✓ "+t.ackPresent), chip("badge-completed","✓ "+t.sigCaptured), chip("badge-completed",t.immutableV)),
+          h("div",{className:"t-caption"},t.returnedNote)));
+    } else if(stg==="est"){
+      body=h(React.Fragment,null, banner(t.estNote,"info"),
+        h("div",{className:"card"},
+          h("div",{className:"fld-row"}, field(t.estNo,"EST-77219",true), field(t.activity,t.activityVal,true)),
+          h("div",{className:"fld-row"}, field(t.region,t.regionVal,true), field(t.city,t.regionVal,true)),
+          field(t.license,t.licenseVal,true)));
+    } else if(stg==="items"){
+      body=h(React.Fragment,null, banner(t.itemsHint,"info"),
+        ITEMS.map(it=>{const a=st.ans[it.id]; const r=resOf(it);
+          return h("div",{className:"card",key:it.id},
+            h("div",{style:{display:"flex",alignItems:"flex-start",gap:"10px"}},
+              h("div",{style:{flex:1}}, h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"3px"}},chip("tag",it.clause)), h("div",{style:{fontSize:"13.5px",fontWeight:600}},it.title)),
+              h("label",{className:"swx"},h("input",{type:"checkbox",checked:a.applied,onChange:e=>setAns(it.id,{applied:e.target.checked})}),h("span",null,t.applied))),
+            a.applied?h(React.Fragment,null,
+              h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}}, opts(it.type).map(([v,l])=>{const on=a.value===v;return h("button",{key:v,className:"ie-opt","aria-pressed":on,onClick:()=>setAns(it.id,{value:v})},h("span",{className:"ie-ind"},on?ck:null),l);})),
+              h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}},h("span",{style:{fontSize:"11.5px",color:"var(--text-muted)",textTransform:"uppercase",letterSpacing:".05em"}},t.prelim), r==="compliant"?chip("badge-compliant",t.compliant):r==="non_compliant"?chip("badge-critical",t.noncompliant):chip("badge-outline",t.na), it.map[a.value]?.vio?chip("badge-major",t.vio):null),
+              it.ev.on.includes(a.value)?h("button",{className:"ie-opt",style:{borderStyle:"dashed",justifyContent:"center",color: evMiss(it)?"var(--status-critical-text)":"var(--text-secondary)"},onClick:()=>setAns(it.id,{att:(a.att||0)+1})}, evMiss(it)?("⚠ "+t.evMissing):(t.attach+(a.att?` · ${a.att}`:""))):null
+            ):null);
+        }));
+    } else if(stg==="results"){
+      body=h(React.Fragment,null, banner(t.resultsHint,"info"),
+        gate("no","_sp",t.specialty), gate(st.samplesGate,"samplesGate",t.samples), gate(st.seizureGate,"seizureGate",t.seizure));
+    } else {
+      const rec=(k,label)=>h("label",{className:"ie-opt",style:{width:"100%"}},h("input",{type:"checkbox",checked:st.records[k],onChange:e=>this.setState(s=>({records:{...s.records,[k]:e.target.checked}})),style:{width:18,height:18}}),h("span",null,label));
+      body=h(React.Fragment,null, banner(t.recordsHint,"info"),
+        h("div",{className:"card"},
+          rec("summons",t.rSummons), rec("factfind",t.rFact), rec("violation",t.rViolation), rec("sample",t.rSample), rec("destruction",t.rDestruction),
+          rec("seizure",t.rSeizure), rec("liftSeizure",t.rLift), rec("plClose",t.rPLClose), rec("facClose",t.rFacClose), rec("plReopen",t.rPLReopen), rec("facReopen",t.rFacReopen),
+          rec("incident", ar?"رصد حادث أثناء الزيارة":"Mid-visit incident")),
+        banner(t.reportTypeNote,"info"),
+        banner(ar?"يمكن بدء تفتيش فوري (بدون إسناد مسبق) من «مهامي»، وتُقفل الحزمة كأي زيارة — انظر «التفتيش الفوري ورصد الحادث».":"An immediate inspection (no prior assignment) can be started from My Tasks; the package locks like any visit — see “Immediate inspection & incident”.","info"));
+    }
+
+    // Batch 6 hardening — offline + conflict banners prepended to every stage
+    const hardening=[];
+    if(st.offline) hardening.push(banner(t.offlineBanner,"warning"));
+    if(st.conflicts>0) hardening.push(banner(t.conflictNote,"critical"));
+    const bodyWrapped = hardening.length ? h(React.Fragment,null, ...hardening, body) : body;
+
+    const atFirst=st.stage===0, atLast=st.stage===STAGES.length-1;
+    const go=(i)=>this.setState({stage:i});
+
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      stages: STAGES.map((s,i)=>({ n:String(i+1), title:s.title, pct:s.pct, dot:s.dot, current: i===st.stage ? "true":"false", go:()=>go(i) })),
+      stageBody: bodyWrapped,
+      offline:st.offline, toggleOffline:()=>this.setState(s=>({offline:!s.offline})),
+      syncChip: t.syncChip.replace("{n}",st.syncPending), conflictCount: st.conflicts, hasConflict: st.conflicts>0,
+      conflictChip: t.conflictChip.replace("{n}",st.conflicts), mode:t.mode, onlineTgl:t.onlineTgl,
+      atFirst, atLast, notLast:!atLast,
+      onPrev:()=>!atFirst&&go(st.stage-1), onNext:()=>!atLast&&go(st.stage+1), onSave:()=>{}, onSubmit:()=>{},
+      prevStyle: atFirst?"opacity:.4; pointer-events:none;":"",
+      submitDisabled: nBlock?"true":"false", submitStyle: nBlock?"opacity:.5; pointer-events:none;":"",
+      footStatus: nBlock ? (t.blockersMini+" "+[unanswered.length?unanswered.length+" "+t.bU:null, evBlock.length?evBlock.length+" "+t.bE:null].filter(Boolean).join(" · ")) : t.ready,
+      submitBadgeClass: nBlock?"badge-critical":"badge-completed",
+    };
+  }
+}
+</script>
+</body>
+</html>

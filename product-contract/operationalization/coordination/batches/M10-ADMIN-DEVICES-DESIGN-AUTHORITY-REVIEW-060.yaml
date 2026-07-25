@@ -1,0 +1,597 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060
+title: Independent Admin Trusted Devices design authority and runtime-delta review
+status: BLOCK_DUE_TO_UNGOVERNED_DESIGN_AND_UNSAFE_DEVICE_TRUST_TRANSITIONS
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    Device registration storage, RLS-scoped reads, package-open denial,
+    command-request storage and fail-closed pending self-enrollment exist.
+    Certification is blocked because no governed screen or stable CD-056 route
+    revision exists, all frozen route mappings are wrong, queued Resume
+    immediately restores trusted state without MDM acknowledgement, invalid and
+    contradictory transitions are accepted, no authenticated acknowledgement
+    or completion contract exists, command evidence is not attributable in the
+    UI, provider and source failures collapse into misleading truth, and the
+    required bilingual, responsive, accessibility and negative-path evidence is
+    incomplete.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060
+  gate: M10 Admin Trusted Devices design authority
+  route: /admin/devices
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_ids: [M8, M10]
+  module_id: M3-06
+  module_design_id: CD-056
+  screen_ids:
+    governed: []
+    missing: TRUSTED_DEVICES_ADMIN_SCREEN_ID_REQUIRED
+  requirement_ids:
+    phase_1_direct: []
+    direct: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+    contextual:
+      - MVP2-REQ-0074
+      - MVP2-REQ-0076
+      - MVP2-REQ-0178
+      - MVP2-REQ-0179
+      - MVP2-REQ-0180
+      - MVP2-REQ-0181
+      - MVP2-REQ-0182
+      - MVP2-REQ-0183
+      - MVP2-REQ-0185
+      - MVP2-REQ-0240
+  acceptance_ids:
+    - WA-M8-AC-001..006
+    - MVP2-AC-0176
+    - MVP2-AC-0184
+    - MVP2-AC-0186
+    - MVP2-AC-0244
+  dependencies:
+    - WA-DES-015_devices_frame_route_binding_decision
+    - WA-DES-004_devices_mapping_removal
+    - WA-DES-043_and_WA-DES-011_route_inventory_correction
+    - CD-056_M3-06_R2_package_and_frame_fingerprint
+    - exact_screen_identity_and_requirement_ownership
+    - route_navigation_RLS_RPC_persona_reconciliation
+    - valid_device_trust_transition_matrix
+    - authenticated_command_acknowledgement_and_receipt_contract
+    - immutable_device_command_audit_contract
+    - external_MDM_contract_and_formal_hold
+    - focused_runtime_and_design_evidence
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-004, WA-DES-041, WA-DES-043, WA-DES-011 or CD-056
+    - Devices, Field/iPad, offline, package, sync or provider application code
+    - database, migration, seed, test or evidence files
+    - frozen design, route, screen, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  unrelated_dirty_paths_preserved:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-VIOLATIONS-RUNTIME-TRUTH-025.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CONTROL-PLANE-SCOPE-LEASE-RECONCILIATION-055.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-EXECUTION-TASK-TO-M11-PATH-CROSSWALK-056.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-CONFIG-WRITER-COLLISION-AUDIT-043.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-SECURITY-ACCESS-DESIGN-AUTHORITY-REVIEW-059.yaml
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, Field/iPad,
+    design, provider, database, seed, test, evidence, mapping, branch, lease or
+    stash is changed.
+
+route_and_capability_validation:
+  route:
+    page: apps/web/src/app/(app)/admin/devices/page.tsx
+    loading_boundary: apps/web/src/app/(app)/admin/devices/loading.tsx
+    authenticated_AppShell: true
+    route_specific_role_boundary: false
+    route_specific_error_boundary: false
+    validation: CONFIRMED_REAL_ROUTE_WITH_ADMISSION_AND_ERROR_GAPS
+  real_capability:
+    - list RLS-visible registered devices and stored trust states
+    - derive a trusted-row count
+    - show assigned-user UUID, platform, MDM reference and last-seen value
+    - queue suspend, resume, expire-packages or remote-wipe command requests
+    - list the latest thirty RLS-visible command records
+    - deny package open for missing, unassigned, untrusted, non-compliant or expired context
+    - allow a separate Field flow to self-enroll only a fail-closed pending iPad row
+  absent_capability:
+    - admin device enrollment, approval, assignment or reassignment
+    - governed revoke transition
+    - app-version and compliance remediation
+    - MDM attestation or command transport
+    - authenticated device acknowledgement or command completion
+    - command receipt, failure code or retry
+    - package-download or submission enforcement evidence
+    - actual expire-packages implementation
+    - sync-health, outbox, conflict or replay administration
+    - complete offline administration
+  title_delta: >-
+    Trusted device and offline administration overstates the route. It is a
+    partial device register and command-request surface; it has no operational
+    sync dashboard or offline rescue controls.
+  validation: CONFIRMED_PARTIAL_DEVICE_REGISTER_NOT_END_TO_END_ADMINISTRATION
+
+design_inventory_and_revision_validation:
+  frozen_inventory:
+    design_route_map:
+      claimed: WA-DES-004 -> /admin/devices
+      validation: INCORRECT_MAPPING_NO_DEVICES_STATE
+    route_inventory:
+      claimed:
+        - SAQEEL Users Roles.dc.html
+        - SAQEEL Admin Role Override.dc.html
+      persona: inspector
+      validation: INCORRECT_DESIGNS_AND_PERSONA
+    package_manifest:
+      claimed:
+        - SAQEEL Users Roles.dc.html
+        - SAQEEL Admin Role Override.dc.html
+      validation: INCORRECT_ROUTE_SCOPE
+  nearest_existing_design:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    sha256_registered: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    sha256_recomputed: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    state_key: devices
+    title: Field devices
+    nearest_match: true
+    validation: CONFIRMED_NEAREST_WITH_MANDATORY_CORRECTION
+    semantic_match:
+      - dedicated Devices navigation state
+      - device, assignee, operating-system and last-contact concepts
+      - illustrative online, offline and revoked distinctions
+    invented_or_unavailable_if_copied:
+      - online and offline health states
+      - outbox counts
+      - human inspector names
+      - operating-system versions
+      - sync timestamps
+      - device fixtures and revoked outcome
+    missing_real_controls:
+      - trust, MDM and app-compliance evidence
+      - valid-state command choices and reason
+      - command pending, acknowledgement, completion and receipt
+      - role, denial, conflict and audit evidence
+      - provider-held and per-source failure states
+    identity_defect: English shell uses Arabic صقيل wordmark.
+  foundation_only:
+    design_id: WA-DES-041
+    filename: SAQEEL States System.dc.html
+    sha256: 9e78eb7ced8d9b43096d2346a8925534feeecd30c748cc48f70a86a17f4b5d9a
+    usable_authority: verified-empty wording only
+    validation: SUPPORTING_STATE_REFERENCE_NOT_ROUTE_AUTHORITY
+  rejected:
+    - {design_id: WA-DES-004, reason: No Devices state exists.}
+    - {design_id: WA-DES-043, reason: Users and roles, not device trust administration.}
+    - {design_id: WA-DES-011, reason: Role override, not device trust administration.}
+  CD_056_lineage:
+    family_authority: CD-056_R2
+    package_dc_html_present: false
+    package_sha256_present: false
+    exact_devices_frame_manifest_present: false
+    required_lineage: CD-056_R2 -> WA-DES-015_devices_state -> governed_screen_identity -> /admin/devices
+    validation: INSUFFICIENT_STABLE_REVISION_EVIDENCE
+  route_specific_immutable_revision: absent
+  map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+  design_consumer_status: NON_CONSUMABLE
+
+governed_screen_and_requirement_mapping:
+  exact_screen_catalogue_match: false
+  current_requirement_claim: CR-001..CR-478
+  current_claim_validation: INCORRECTLY_OVERBROAD
+  exact_direct_rows:
+    - id: MVP2-REQ-0176
+      obligation: Register, assign, approve, revoke, wipe and view sync health with MDM and package expiry.
+    - id: MVP2-REQ-0184
+      obligation: Only trusted enrolled iPads can run field inspections.
+    - id: MVP2-REQ-0186
+      obligation: Operational sync dashboard for field issue rescue.
+    - id: MVP2-REQ-0244
+      obligation: Only trusted enrolled devices download, open and submit official packages; revoked devices cannot sync and app-version policy is enforced.
+  route_compliance:
+    MVP2_REQ_0176: PARTIAL_REGISTER_AND_COMMAND_REQUEST_ONLY
+    MVP2_REQ_0184: PARTIAL_OPEN_PACKAGE_GUARD_NOT_COMPLETE_FIELD_EXECUTION_PROOF
+    MVP2_REQ_0186: FAIL_NO_SYNC_DASHBOARD
+    MVP2_REQ_0244: PARTIAL_OPEN_GUARD_ONLY_DOWNLOAD_SUBMIT_REVOKED_SYNC_AND_JAILBREAK_UNPROVEN
+  contextual_rule: >-
+    The other ten M3-06 rows primarily belong to Field execution, package,
+    evidence, acknowledgement, safety and replay journeys. They cannot be
+    counted complete on this Admin route.
+  completion_rule: This route receives 0/478 requirement completion credit.
+
+permissions_and_persona_truth:
+  shared_channel_gate:
+    field_only: redirected to Field before route query
+    other_authenticated_non_field: route admitted
+    role_lookup_failure: fails open to AppShell
+  navigation_visible_roles: [security_admin]
+  source_visibility:
+    devices:
+      - assigned_user_self
+      - ops
+      - security_admin
+      - auditor
+    commands:
+      - ops
+      - security_admin
+      - auditor
+  command_authority: [ops, security_admin]
+  defects:
+    - Ops can command devices but has no navigation entry.
+    - Auditor sees every command form but the RPC denies submission.
+    - An assigned non-field user can see their device and command form but cannot invoke it.
+    - The route does not query actor roles and renders every action to every visible device row.
+    - Navigation, route admission, RLS visibility and command authority are not reconciled.
+  required_design_rule: >-
+    Distinguish full Security Admin, Ops command, Auditor read-only, assigned
+    self, denied and session-expired states. Do not expose a destructive control
+    and use the RPC error as normal permission discovery.
+  validation: FAIL_ROUTE_AND_ACTION_PERMISSION_TRUTH
+
+trust_lifecycle_and_command_contract:
+  stored_trust_states: [pending, trusted, suspended, revoked, wipe_pending, wiped]
+  trusted_invariant:
+    mdm_reference_required: true
+    app_version_compliant_required: true
+    MDM_attestation_verified: false
+    app_policy_version_stored: false
+  command_request:
+    commands: [suspend, resume, remote_wipe, expire_packages]
+    reason_minimum_trimmed_characters: 8
+    actor_and_request_time_stored: true
+    row_lock: true
+    idempotency_key: absent
+    expected_device_version: absent
+    allowed_transition_matrix: absent
+  immediate_state_effects:
+    suspend: suspended
+    remote_wipe: wipe_pending
+    expire_packages: no_device_or_package_state_change
+    resume: trusted
+  critical_defects:
+    - >-
+      Resume changes the device to trusted within the queue transaction before
+      any MDM transport, device acknowledgement or fresh attestation.
+    - >-
+      Resume can restore a revoked, wiped or wipe-pending row whenever its
+      existing MDM reference and app-compliant boolean satisfy the table check.
+    - Suspend and remote-wipe can be repeatedly or contradictorily queued from any state.
+    - Expire packages records a command but expires no manifest or cached package.
+    - There is no duplicate-command or contradictory-pending-command guard.
+    - There is no canonical authenticated acknowledgement/completion RPC or policy.
+  test_boundary:
+    live_probe_acknowledgement: privileged direct table update after reset role
+    application_actor_acknowledgement: absent
+    provider_receipt: absent
+    implication: >-
+      The probe demonstrates that a privileged database actor can mutate status;
+      it does not prove device, MDM, service or authenticated application
+      acknowledgement.
+  validation: FAIL_UNSAFE_TRUST_RESTORATION_AND_UNIMPLEMENTED_COMMAND_LIFECYCLE
+
+package_offline_and_degraded_truth:
+  package_open_guard:
+    assigned_user_required: true
+    trust_status_trusted_required: true
+    app_version_compliant_required: true
+    package_not_expired_required: true
+    append_only_access_event_for_existing_manifest: true
+  limitations:
+    - A missing manifest denial creates no package-access event.
+    - Download and submit paths are not certified by this Admin route.
+    - Revoked-device sync rejection is not proven here.
+    - Offline cached package invalidation after suspend/wipe/expire request is not proven.
+    - Last seen is not sync health and has no approved stale threshold.
+    - No outbox, conflict, replay, readiness or rescue source is queried.
+  self_enrollment:
+    source: separate Field Settings flow
+    initial_state: pending
+    fail_closed_values:
+      mdm_reference: null
+      app_version_compliant: false
+      last_seen_at: null
+      platform: ipad_os
+    admin_approval_path: absent
+    live_RLS_test_default: skipped_without_opt_in
+  validation: PARTIAL_OPEN_GUARD_WITHOUT_END_TO_END_OFFLINE_LIFECYCLE
+
+source_audit_and_evidence_truth:
+  devices:
+    query_error_captured: true
+    trusted_count_on_error: zero_still_rendered
+    error_copy: MVP3 database contract is not applied in this environment.
+    defects:
+      - Error is falsely diagnosed as missing schema.
+      - Zero trusted is displayed during failed read.
+      - Device result is unbounded without count or completeness marker.
+  commands:
+    query_error_captured: false
+    failure_result: No RLS-visible commands.
+    bounded_limit: 30
+    bounded_disclosure: absent
+    validation: FAILED_OR_HIDDEN_SOURCE_COLLAPSES_TO_EMPTY
+  device_evidence_hidden:
+    - app_version
+    - app_version_compliant
+    - enrolled_by
+    - updated_at
+  command_fields_selected_but_hidden:
+    - device_id
+    - requested_at
+    - completed_at
+  command_fields_not_selected:
+    - requested_device_identifier
+    - requested_by
+  command_UI:
+    displayed: [command, reason, status]
+    defect: A command cannot be attributed to a device, requester or time.
+  immutable_device_command_trigger: absent
+  command_status_invariants:
+    completed_requires_completed_at: false
+    acknowledged_timestamp: absent
+    receipt_or_payload_digest: absent
+    failure_code_or_safe_detail: absent
+  MDM_reference:
+    displayed_raw: true
+    privacy_and_masking_contract: absent
+  validation: FAIL_ACTOR_TIME_DEVICE_RECEIPT_AUDIT_AND_SOURCE_TRUTH
+
+provider_and_policy_boundary:
+  implementation_status_claim: RUNTIME_CERTIFIED_MDM_HELD
+  formal_MDM_hold_in_provider_register: absent
+  open_production_hold: MVP3-HOLD-008
+  required_MDM_contract:
+    - approved provider and tenant
+    - enrollment and attestation semantics
+    - application-version policy authority
+    - command transport authentication
+    - acknowledgement and completion receipt schema
+    - retry, timeout, duplicate and conflict behavior
+    - remote-wipe legal and operational authorization
+    - identifier privacy and retention
+  fail_closed_rule: >-
+    No online, offline-health, attested, delivered, acknowledged, completed,
+    wiped or production-ready provider behavior may be claimed until the
+    contract, formal hold and executed receipts exist.
+  validation: BLOCK_DUE_TO_MISSING_PROVIDER_CONTRACT
+
+localization_responsive_theme_and_accessibility:
+  localization:
+    translated_route_labels: present
+    hard_coded_or_raw_English:
+      - MDM
+      - unverified
+      - unassigned
+      - platform key
+      - trust_status values
+      - command and command-status values
+      - Working…
+      - action validation, success and raw RPC errors
+    date_rendering: server-default toLocaleString without explicit app locale or timezone
+    identifier_isolation:
+      assigned_user_UUID: bdi present
+      device_and_MDM_identifiers: not systematically isolated or classified
+    design_wordmark:
+      English_LTR: Arabic صقيل
+      validation: FAIL_SEMANTIC_IDENTITY
+    validation: PARTIAL_NOT_EQUIVALENT_ARABIC_FLOW
+  responsive:
+    structural_support: horizontally wrapped table and wrapping command rows
+    risks:
+      - select, textarea and queue button inside a wide table cell
+      - destructive control detaches from device facts under horizontal scrolling
+      - no compact labelled-record layout for narrow screens
+      - WA-DES-015 fixed 256px rail lacks explicit narrow breakpoint
+    focused_route_evidence: absent
+    required_viewports: [1440x900, 1200x900, 1024x768, 768x1024, 412x915, 390x844, 320x568]
+    validation: INSUFFICIENT_EVIDENCE
+  themes:
+    design_modes: [light, dark]
+    focused_runtime_matrix: absent
+    validation: INSUFFICIENT_EVIDENCE
+  accessibility:
+    strengths:
+      - semantic device table with scoped headers
+      - labelled command and reason controls
+      - pending button disable
+      - status text supplements color
+      - action result status or alert
+    critical_gaps:
+      - repeated Queue command names omit device and consequence
+      - no confirmation for remote wipe, suspend or expire packages
+      - no valid-state disabled reason
+      - no deterministic focus recovery proof
+      - no labelled-record alternative for narrow reflow
+      - no keyboard, screen-reader, zoom, contrast or reduced-motion evidence
+    validation: FAIL_DESTRUCTIVE_ACTION_SAFETY_AND_ACCEPTANCE_EVIDENCE
+
+design_versus_code_delta:
+  nearest_design_parity:
+    - device register
+    - assignee concept
+    - operating platform
+    - last-contact concept
+    - multiple device states
+  design_contains_but_code_does_not_support:
+    - online and offline health
+    - outbox counts
+    - sync-health interpretation
+    - human inspector names
+  code_contains_but_design_must_preserve:
+    - pending/trusted/suspended/revoked/wipe-pending/wiped storage states
+    - MDM-reference plus app-compliance trusted invariant
+    - assigned-user and elevated-role RLS scopes
+    - command role/reason and queued-not-completed distinction
+    - package-open denial outcomes
+    - fail-closed Field self-enrollment
+  unresolved_in_both:
+    - stable CD-056 route-frame identity
+    - valid transition matrix
+    - safe trust restoration
+    - MDM transport, acknowledgement, completion and receipt
+    - package expiry and offline cache invalidation
+    - sync, outbox, conflict and replay evidence
+    - immutable audit and complete actor/time/device evidence
+    - complete Arabic, responsive, theme and accessibility evidence
+
+required_design_states:
+  route_and_sources:
+    - LOADING
+    - SECURITY_ADMIN_FULL_SCOPE
+    - OPS_COMMAND_SCOPE
+    - AUDITOR_READ_ONLY
+    - ASSIGNED_SELF_READ_ONLY
+    - VERIFIED_EMPTY_UNDER_RLS
+    - DEVICES_UNAVAILABLE
+    - COMMANDS_UNAVAILABLE
+    - BOTH_SOURCES_UNAVAILABLE
+    - COMMAND_HISTORY_BOUNDED_COMPLETENESS_UNKNOWN
+    - UNAUTHORIZED_DIRECT_ROUTE
+    - SESSION_EXPIRED
+  trust_and_compliance:
+    - PENDING_SELF_ENROLLED
+    - PENDING_ADMIN_ENROLLED
+    - TRUSTED_COMPLIANT_WITH_PROVEN_ATTESTATION
+    - SUSPENDED
+    - REVOKED
+    - WIPE_PENDING
+    - WIPED
+    - MDM_UNVERIFIED
+    - APP_VERSION_NONCOMPLIANT
+    - NEVER_SEEN
+    - LAST_SEEN_WITHOUT_HEALTH_INFERENCE
+  command:
+    - ELIGIBLE_FOR_CURRENT_STATE
+    - INVALID_FOR_CURRENT_STATE
+    - DESTRUCTIVE_CONFIRMATION
+    - REASON_INVALID
+    - PENDING
+    - QUEUED_AWAITING_TRANSPORT
+    - TRANSMITTED_AWAITING_DEVICE_ACKNOWLEDGEMENT
+    - ACKNOWLEDGED
+    - COMPLETED_WITH_RECEIPT
+    - FAILED_NEUTRAL
+    - DEPENDENCY_BLOCKED
+    - DENIED_NO_CHANGE
+    - STALE_OR_CONFLICT
+    - DUPLICATE_OR_CONTRADICTORY_COMMAND
+  provider_and_offline:
+    - MDM_CONTRACT_HELD
+    - MDM_TRANSPORT_UNAVAILABLE
+    - DEVICE_OFFLINE_WITHOUT_INVENTED_HEALTH
+    - ACKNOWLEDGEMENT_UNAVAILABLE
+    - PACKAGE_EXPIRY_NOT_PROPAGATED
+    - PRODUCTION_RELEASE_HELD
+
+test_and_evidence_assessment:
+  current_proof:
+    - structural schema, RLS and command source assertions
+    - package-open fail-closed SQL paths
+    - one suspend request and privileged status-update rollback probe
+    - Field self-enrollment source-contract test
+    - optional live self-enrollment RLS test
+    - Security Admin route-open smoke
+    - Arabic-key presence test
+  misleading_or_insufficient_proof:
+    - Privileged direct update is not a canonical provider/device acknowledgement path.
+    - Route smoke proves rendering, not action authority or lifecycle safety.
+    - Arabic-key presence proves neither raw-status translation nor RTL behavior.
+    - The only Arabic/mobile additive-route runtime test targets Integrations.
+    - Optional self-enrollment live test is skipped by default.
+  missing:
+    - Security Admin, Ops, Auditor, assigned self, unrelated user, field and anonymous route matrix
+    - action visibility and denial for each persona
+    - every valid and invalid trust transition
+    - resume denial until fresh MDM acknowledgement
+    - duplicate, contradictory and stale command prevention
+    - destructive-action confirmation and no-change cancellation
+    - real MDM transport, acknowledgement, completion and receipt
+    - expire-package effect and offline cache invalidation
+    - device, actor, time, reason, before/after and immutable audit presentation
+    - per-source failure and bounded command-history truth
+    - full English/Arabic, LTR/RTL, theme, viewport, keyboard, zoom and accessibility evidence
+    - exact accepted route-frame fingerprint and design/runtime comparison
+  completion_rule: >-
+    No route, screen, requirement or design receives completion credit until
+    design authority, trust safety, provider acknowledgement, offline effects,
+    audit evidence and every named P0/P1 evidence item pass.
+
+risk_register:
+  - id: DEV-060-RISK-001
+    severity: CRITICAL
+    risk: Queued Resume restores trusted state before MDM or device acknowledgement.
+  - id: DEV-060-RISK-002
+    severity: CRITICAL
+    risk: Revoked, wiped or wipe-pending devices can be resumed without a valid transition contract.
+  - id: DEV-060-RISK-003
+    severity: CRITICAL
+    risk: Remote wipe and package expiry are presented as actionable without transport or effect evidence.
+  - id: DEV-060-RISK-004
+    severity: CRITICAL
+    risk: Frozen design and route inventories point to unrelated designs and persona.
+  - id: DEV-060-RISK-005
+    severity: HIGH
+    risk: Auditor or assigned users receive destructive command controls without RPC authority.
+  - id: DEV-060-RISK-006
+    severity: HIGH
+    risk: Command evidence cannot be attributed to device, actor or time.
+  - id: DEV-060-RISK-007
+    severity: HIGH
+    risk: Failed or bounded command reads appear as complete verified empty history.
+  - id: DEV-060-RISK-008
+    severity: HIGH
+    risk: Design online/offline and outbox fixtures become invented operational truth.
+  - id: DEV-060-RISK-009
+    severity: HIGH
+    risk: Raw MDM reference and internal RPC errors are exposed without approved classification.
+
+reviewer_disposition:
+  acknowledgement:
+    - WA-DES-015 Devices is the nearest existing information-architecture match.
+    - Pending self-enrollment, device RLS and package-open denial are genuinely fail-closed.
+    - Queueing is correctly distinguished from completed wipe in route copy.
+  return:
+    - Correct route mapping to a governed WA-DES-015 Devices state under CD-056.
+    - Remove WA-DES-004, WA-DES-043 and WA-DES-011 from route ownership.
+    - Remove invented online/offline, outbox, sync and fixture truth.
+  block:
+    - No design consumption until screen identity and CD-056 route-frame revision are governed.
+    - No implementation completion while Resume restores trust before acknowledgement.
+    - No MDM, command-completion, wipe, package-expiry or sync-health claim without a provider contract and receipt.
+  decision: BLOCK_DUE_TO_MISSING_CONTRACT
+  secondary_action: RETURN_FOR_MAPPING_CORRECTION
+  recommended_action_after_governance: CORRECT_MAPPING_DEFINE_SAFE_TRANSITIONS_AND_MDM_ACKNOWLEDGEMENT
+
+sponsor_business_decision:
+  recommendation: >-
+    Approve WA-DES-015 Devices as the corrected design starting point under
+    CD-056, but do not approve it for implementation or completion. First
+    require a device-state transition contract that forbids restoring trust
+    until a fresh MDM/device acknowledgement, defines the effect of revoke and
+    expire-packages, and records genuine receipts. Register the MDM hold and
+    reconcile personas, audit and offline boundaries. Then assign exactly one
+    bounded design writer; any application lease remains a separate decision.
+
+safe_follow_on:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+  objective: >-
+    Read-only define the governance decisions and evidence prerequisites for a
+    valid device transition matrix, MDM transport/acknowledgement contract,
+    package-expiry effect, command audit and bounded corrective design lease.
+  constraints:
+    - No live design, application, Field/iPad, provider, database, seed, test or evidence mutation.
+    - No frozen mapping, branch, lease, main, setup/Inspection or stash change.

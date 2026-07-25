@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .oc-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 18px 18px 40px; display:flex; flex-direction:column; gap:16px; }
+  .fld { display:flex; flex-direction:column; gap:6px; } .fld > span { font-size:13px; color:var(--text-secondary); }
+  .oc-langbtn { padding:6px 11px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.advisory }}</span>
+    <button class="oc-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}"><sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if><sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if></button>
+  </header>
+  <input id="sw-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+
+  <div class="oc-wrap">
+    <div class="panel" style="padding:14px 16px; display:flex; gap:11px; align-items:flex-start; border-inline-start:3px solid var(--action-primary);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <div><div style="font-weight:600; font-size:13.5px;">{{ t.ocrAdvisoryTitle }}</div><p class="t-caption" style="margin:4px 0 0;">{{ t.ocrAdvisoryDesc }}</p></div>
+    </div>
+
+    <div class="panel" style="padding:16px;">
+      <div class="t-label" style="margin-block-end:10px;">{{ t.step1 }}</div>
+      <div style="aspect-ratio:4/3; border-radius:12px; background:var(--surface-sunken); display:grid; place-items:center; text-align:center; padding:20px; border:1.5px dashed var(--border-strong);">
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="width:34px;height:34px;margin:0 auto 10px;"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg><div class="t-caption">{{ t.fileStored }}</div></div>
+      </div>
+      <div style="display:flex; gap:8px; margin-block-start:12px; flex-wrap:wrap;"><button class="btn btn-secondary btn-sm" onClick="{{ pickFile }}">{{ t.takePhoto }}</button><button class="btn btn-ghost btn-sm" onClick="{{ pickFile }}">{{ t.browseFiles }}</button></div>
+    </div>
+
+    <div class="panel" style="padding:16px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-block-end:10px;"><span class="t-label">{{ t.step2 }}</span><span class="grow"></span><span class="badge badge-compliant" style="height:18px;">{{ t.completed }}</span></div>
+      <div style="padding:14px; background:var(--surface-sunken); border-radius:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-block-end:10px;"><span class="t-caption">{{ t.extractedText }}</span><span class="grow"></span><span class="id-code t-caption" style="color:var(--text-muted);">{{ t.confidenceNote }}</span></div>
+        <div dir="{{ dir }}" style="font-size:13.5px; line-height:1.8; background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:8px; padding:12px;">{{ t.ocrText1 }} <span class="id-code">IL-44718</span><br>{{ t.ocrText2 }}<br>{{ t.ocrText3 }}<br>{{ t.ocrText4 }}</div>
+        <div style="display:flex; gap:8px; margin-block-start:12px; flex-wrap:wrap;"><button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px;height:14px;"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>{{ t.copyText }}</button><button class="btn btn-ghost btn-sm">{{ t.retryOcr }}</button></div>
+      </div>
+      <p class="t-caption" style="margin:10px 0 0; color:var(--text-muted);">{{ t.ocrNote }}</p>
+    </div>
+
+    <div class="panel" style="padding:16px;">
+      <div class="t-label" style="margin-block-end:10px;">{{ t.step3 }}</div>
+      <label class="fld"><span>{{ t.licenseNumber }}</span><input class="input" dir="ltr" style="text-align:start;" placeholder="{{ t.pastePlaceholder }}"></label>
+      <label class="fld" style="margin-block-start:12px;"><span>{{ t.note }}</span><textarea class="input" rows="2" placeholder="{{ t.notePlaceholder }}"></textarea></label>
+    </div>
+
+    <div class="panel" style="padding:14px 16px; display:flex; gap:10px; align-items:flex-start; background:var(--surface-sunken); box-shadow:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.7" style="width:16px;height:16px;flex:none;margin-block-start:1px;"><path d="M1 1l22 22M16.7 11.7A6 6 0 0 0 8 8"/></svg>
+      <span class="t-compact" style="color:var(--text-secondary);">{{ t.providerNote }}</span>
+    </div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-info"><span class="dot"></span>{{ t.savedNote }}</span>
+    <span class="grow"></span>
+    <button class="btn btn-primary">{{ t.attachEvidence }}</button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en" };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        back:"رجوع", headerTitle:"إرفاق دليل · قراءة ضوئية", headerSub:"البند: الترخيص الصناعي", advisory:"استشاري", theme:"الوضع", langBtnLabel:"EN",
+        ocrAdvisoryTitle:"القراءة الضوئية استشارية — القرار للمفتش.",
+        ocrAdvisoryDesc:"النص المستخرَج لا يُعبّئ الحقول تلقائياً. تنسخ ما تريد يدوياً. المزوّد يعمل فقط عند تهيئته؛ خلاف ذلك يبقى الإرفاق كصورة دون قراءة.",
+        step1:"١ · المرفق (الدليل الأساسي)", fileStored:"ترخيص-صناعي.jpg · مُخزَّن كدليل", takePhoto:"التقاط صورة", browseFiles:"تصفح الملفات",
+        step2:"٢ · قراءة ضوئية (اختياري · استشاري)", completed:"اكتملت", extractedText:"النص المستخرَج (غير مُتحقَّق منه)", confidenceNote:"الثقة: غير مُتاحة — لا تُستنتج",
+        ocrText1:"رخصة صناعية رقم", ocrText2:"المنشأة: شركة الراشد للصناعات الفولاذية", ocrText3:"تاريخ الانتهاء: 2027-03-01", ocrText4:"الحالة: سارية",
+        copyText:"نسخ النص", retryOcr:"إعادة القراءة", ocrNote:"النص أعلاه لا يملأ أي حقل. لإدخاله في نتيجة البند، انسخه والصقه بنفسك بعد التحقق من الأصل.",
+        step3:"٣ · إدخال المفتش (يدوي)", licenseNumber:"رقم الترخيص", pastePlaceholder:"الصق أو اكتب بعد التحقق", note:"ملاحظة", notePlaceholder:"ملاحظة المفتش (اختياري)",
+        providerNote:"حالة المزوّد غير مهيأ: يُرفَق الملف كصورة دون قراءة ضوئية — لا يُفقد الدليل ولا تتعطل الزيارة.",
+        savedNote:"يُحفظ ضمن أدلة البند", attachEvidence:"إرفاق الدليل",
+      },
+      en: {
+        back:"Back", headerTitle:"Attach Evidence · OCR Scan", headerSub:"Item: Industrial license", advisory:"Advisory", theme:"Theme", langBtnLabel:"AR",
+        ocrAdvisoryTitle:"OCR scanning is advisory — the decision is the inspector's.",
+        ocrAdvisoryDesc:"Extracted text does not auto-fill any field. Copy what you need manually. The provider only runs when configured; otherwise the attachment stays as an image without OCR.",
+        step1:"1 · Attachment (primary evidence)", fileStored:"industrial-license.jpg · stored as evidence", takePhoto:"Take photo", browseFiles:"Browse files",
+        step2:"2 · OCR scan (optional · advisory)", completed:"Completed", extractedText:"Extracted text (unverified)", confidenceNote:"Confidence: unavailable — not inferred",
+        ocrText1:"Industrial license no.", ocrText2:"Establishment: Al-Rashid Steel Industries Co.", ocrText3:"Expiry date: 2027-03-01", ocrText4:"Status: Valid",
+        copyText:"Copy text", retryOcr:"Re-scan", ocrNote:"The text above fills no field. To use it in an item result, copy and paste it yourself after verifying the original.",
+        step3:"3 · Inspector entry (manual)", licenseNumber:"License number", pastePlaceholder:"Paste or type after verifying", note:"Note", notePlaceholder:"Inspector note (optional)",
+        providerNote:"Provider not configured: the file is attached as an image without OCR — evidence is not lost and the visit is not blocked.",
+        savedNote:"Saved under item evidence", attachEvidence:"Attach evidence",
+      },
+    };
+    const t = STR[lang];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      pickFile: () => { const el = document.getElementById("sw-filepick"); if (el) el.click(); },
+    };
+  }
+}
+
+</script>
+</body>
+</html>

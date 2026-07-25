@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+/* ============================================================================
+   Verbatim port of web/src/app/login/login.css — atlas layers only.
+   Class names are kept identical to the repo so edits here diff 1:1 back into
+   login.css. Page furniture is inline; the atlas needs stage-descendant
+   selectors and @keyframes, which cannot be inline.
+   ========================================================================== */
+html, body { height: 100%; margin: 0; }
+a { color: var(--action-primary); }
+a:hover { color: var(--action-primary); text-decoration: underline; text-underline-offset: 3px; }
+
+.lg-story { --atlas-canvas: #0b1017; --atlas-surface: #121a24; --atlas-text: #f4f7fa;
+  --atlas-muted: #9dabbb; --atlas-border: rgba(255,255,255,.14);
+  position: relative; min-inline-size: 0; overflow: hidden; background: var(--atlas-canvas); }
+[data-theme="light"] .lg-story { --atlas-canvas: var(--surface-canvas); --atlas-surface: var(--surface-primary);
+  --atlas-text: var(--text-primary); --atlas-muted: var(--text-secondary); --atlas-border: var(--border-subtle); }
+
+.lg-story__head { position: absolute; inset-block-start: 0; inset-inline: 0; z-index: 30;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: clamp(18px,2.2vw,30px) clamp(20px,2.4vw,34px); pointer-events: none; }
+.lg-story__head > * { pointer-events: auto; }
+.lg-story__title { font: 700 18px/24px var(--font-body); color: var(--atlas-text);
+  text-shadow: 0 1px 12px var(--atlas-canvas), 0 0 4px var(--atlas-canvas); }
+.lg-story__overline { font: 600 10px/14px var(--font-mono); letter-spacing: .16em;
+  color: var(--atlas-muted); text-shadow: 0 1px 8px var(--atlas-canvas);
+</x-dc>
+</body>
+</html>

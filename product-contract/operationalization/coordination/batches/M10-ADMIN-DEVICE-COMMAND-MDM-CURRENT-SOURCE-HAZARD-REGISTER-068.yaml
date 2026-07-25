@@ -1,0 +1,413 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+title: Trusted Devices current design, source and evidence hazard register
+status: REGISTER_COMPLETE_CURRENT_ACCEPTANCE_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_HAZARD_REGISTRATION
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  hazards_remediated: 0
+  acceptance_cases_proven: 0
+  reason: >-
+    Hazards are recorded from current source and evidence only. No design,
+    implementation, data, provider, test or control artifact is changed.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+  predecessors:
+    - M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+    - M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-GAP-INVENTORY-063
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+    - M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    - M10-ADMIN-DEVICE-COMMAND-MDM-BLOCKER-OWNERSHIP-BOARD-066
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  governed_decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02, DEV-CMD-DEC-03, DEV-CMD-DEC-04, DEV-CMD-DEC-05, DEV-CMD-DEC-06, DEV-CMD-DEC-07, DEV-CMD-DEC-08, DEV-CMD-DEC-09, DEV-CMD-DEC-10]
+  governed_acceptance_cases: 60
+  do_not_touch:
+    - design, application, database, provider, data, test or evidence files
+    - RBAC, transition, decision, provider-hold, acceptance or status registers
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only source/evidence inspection and hazard indexing.
+
+severity:
+  CRITICAL: Current behavior can restore access, claim destructive effect, bypass governance or corrupt the acceptance boundary.
+  HIGH: Mandatory behavior, authority or evidence is missing or materially misleading.
+  MEDIUM: Presentation or observability defect can cause incorrect operator action or blocks certification.
+  LOW: Bounded source quality issue with no proven security transition impact.
+
+hazards:
+  - hazard_id: DEV-HAZ-001
+    severity: CRITICAL
+    type: UNSAFE_TRUST_TRANSITION
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:275"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:286"
+    observation: Resume immediately writes trust_status=trusted after queueing, with no source-state guard, attestation, approval, provider receipt or completion.
+    decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-04, DEV-CMD-DEC-05, DEV-CMD-DEC-06]
+    cases: [DEV-NEG-STATE-03, DEV-NEG-STATE-04, DEV-NEG-STATE-05, DEV-NEG-STATE-06, DEV-NEG-STATE-07, DEV-NEG-STALE-01, DEV-NEG-STALE-02, DEV-POS-03, DEV-POS-07, DEV-POS-13]
+    owner_after_contract: IMPLEMENTATION_DB
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-002
+    severity: HIGH
+    type: MISSING_TRANSITION_CONTRACT
+    evidence: ["supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:275"]
+    observation: One RPC accepts every listed command from every device state; no allowed transition, expected version, stale conflict or terminal-state matrix exists.
+    decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+    cases: [DEV-NEG-STATE-05, DEV-NEG-STATE-06, DEV-NEG-STALE-01, DEV-NEG-STALE-02, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09]
+    owner_after_contract: IMPLEMENTATION_DB
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-003
+    severity: CRITICAL
+    type: INSUFFICIENT_TRUST_EVIDENCE
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:113"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:126"
+    observation: Trusted requires only non-empty mdm_reference and app_version_compliant; authoritative attestation, source, freshness, policy version and assignment validation are absent from the trust transition.
+    decisions: [DEV-CMD-DEC-05, DEV-CMD-DEC-09]
+    cases: [DEV-NEG-STALE-03, DEV-NEG-STALE-05, DEV-NEG-PROV-01, DEV-NEG-PROV-06, DEV-POS-03, DEV-POS-04, DEV-POS-05, DEV-POS-07]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_PROVIDER]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-004
+    severity: HIGH
+    type: COMMAND_VOCABULARY_GAP
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:134"
+      - "apps/web/src/app/(app)/admin/mvp3-actions.ts:50"
+      - "apps/web/src/app/(app)/admin/devices/page.tsx:18"
+    observation: Mandatory revoke behavior is absent from schema, RPC validation, server action and UI.
+    decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+    cases: [DEV-NEG-STATE-03, DEV-NEG-STATE-07, DEV-NEG-STATE-08, DEV-POS-08, DEV-POS-13]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_ADMIN_UI, IMPLEMENTATION_FIELD_OFFLINE]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-005
+    severity: CRITICAL
+    type: FALSE_PACKAGE_EXPIRY
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:283"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:288"
+    observation: expire_packages creates a command row but changes no manifest, server access decision, cached state or device state.
+    decisions: [DEV-CMD-DEC-07]
+    cases: [DEV-NEG-DUP-04, DEV-NEG-OFF-03, DEV-POS-10]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_FIELD_OFFLINE]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-006
+    severity: HIGH
+    type: NO_PROVIDER_CONTRACT_OR_ADAPTER
+    evidence:
+      - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+      - product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md
+      - "apps/web/src/app/(app)/admin/mvp3-actions.ts:54"
+    observation: No approved MDM provider, adapter, credentials boundary or genuine receipt path exists; certificate calls MDM held while the hold register has no MDM row.
+    decisions: [DEV-CMD-DEC-05, DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+    cases: [DEV-NEG-DUP-02, DEV-NEG-DUP-03, DEV-NEG-PROV-01, DEV-NEG-PROV-02, DEV-NEG-PROV-03, DEV-NEG-PROV-04, DEV-NEG-PROV-06, DEV-NEG-OFF-01, DEV-NEG-OFF-02, DEV-POS-03, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-12, DEV-POS-13]
+    owner_after_contract: PROVIDER_SECURITY
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-007
+    severity: CRITICAL
+    type: UNAUTHENTICATED_COMPLETION_PATH
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:130"
+      - "supabase/tests/mvp3_retrofit_live_probe.sql:190"
+    observation: Command rows have status/completed_at but no canonical authenticated transition, receipt, stage actor or verification fields; existing probe uses privileged direct update to acknowledged.
+    decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+    cases: [DEV-NEG-STALE-04, DEV-NEG-PROV-04, DEV-NEG-PROV-05, DEV-NEG-PROV-06, DEV-NEG-AUD-02, DEV-NEG-AUD-03, DEV-NEG-AUD-04, DEV-POS-06, DEV-POS-09, DEV-POS-12]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_PROVIDER]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-008
+    severity: HIGH
+    type: NO_IDEMPOTENCY_OR_CORRELATION
+    evidence: ["supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:130", "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:283"]
+    observation: Every invocation inserts a new row; no idempotency key, provider correlation, uniqueness rule or duplicate-receipt protection exists.
+    decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+    cases: [DEV-NEG-DUP-01, DEV-NEG-DUP-02, DEV-NEG-DUP-03, DEV-NEG-STALE-04]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_PROVIDER]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-009
+    severity: HIGH
+    type: NO_INDEPENDENT_APPROVAL
+    evidence: ["supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:275"]
+    observation: Device commands have requester only; no approver, approval state, expiry, rejection or maker-checker boundary exists.
+    decisions: [DEV-CMD-DEC-03]
+    cases: [DEV-NEG-AUTH-07, DEV-NEG-AUD-04, DEV-POS-06, DEV-POS-08, DEV-POS-09]
+    owner_after_contract: IMPLEMENTATION_DB
+    current_disposition: BLOCK_PENDING_SPONSOR_POLICY
+
+  - hazard_id: DEV-HAZ-010
+    severity: HIGH
+    type: ROLE_AUTHORITY_MISMATCH
+    evidence:
+      - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+      - "apps/web/src/lib/shell-navigation.ts:207"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:279"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:425"
+    observation: Requirements name Device Admin/Mobile Admin, navigation exposes Security Admin, while RPC additionally mutates for Ops and row read includes assigned Inspector and Auditor; no canonical capability reconciliation exists.
+    decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+    cases: [DEV-NEG-AUTH-01, DEV-NEG-AUTH-02, DEV-NEG-AUTH-03, DEV-NEG-AUTH-04, DEV-NEG-AUTH-05, DEV-NEG-AUTH-06, DEV-POS-02]
+    owner_after_contract: GOVERNANCE
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-011
+    severity: MEDIUM
+    type: MUTATION_CONTROLS_RENDERED_WITHOUT_ELIGIBILITY
+    evidence: ["apps/web/src/app/(app)/admin/devices/page.tsx:18"]
+    observation: Every visible row renders all four current commands regardless of role, source state, provider availability, approval requirement or terminal eligibility.
+    decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02, DEV-CMD-DEC-03, DEV-CMD-DEC-04, DEV-CMD-DEC-09]
+    cases: [DEV-NEG-AUTH-02, DEV-NEG-AUTH-03, DEV-NEG-AUTH-04, DEV-NEG-AUTH-05, DEV-NEG-STATE-03, DEV-NEG-STATE-04, DEV-NEG-STATE-05, DEV-NEG-STATE-06, DEV-NEG-PROV-01]
+    owner_after_contract: IMPLEMENTATION_ADMIN_UI
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-012
+    severity: HIGH
+    type: DESTRUCTIVE_ACTION_WITHOUT_CONFIRMATION_OR_CONTEXT
+    evidence:
+      - "apps/web/src/app/(app)/admin/devices/page.tsx:18"
+      - "apps/web/src/components/Mvp3ActionForm.tsx:13"
+    observation: Remote wipe and expiry share a generic form/submit with no impact scope, independent approval, confirmation, stale precondition or recovery context.
+    decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-03, DEV-CMD-DEC-06, DEV-CMD-DEC-07]
+    cases: [DEV-NEG-STALE-01, DEV-NEG-STALE-02, DEV-NEG-DUP-01, DEV-NEG-DUP-04, DEV-POS-09, DEV-POS-10]
+    owner_after_contract: IMPLEMENTATION_ADMIN_UI
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-013
+    severity: HIGH
+    type: COMMAND_EVIDENCE_INCOMPLETE
+    evidence: ["apps/web/src/app/(app)/admin/devices/page.tsx:11", "apps/web/src/app/(app)/admin/devices/page.tsx:19"]
+    observation: Query reads device, reason and times, but UI shows only command, reason and status; requester, device identity, requested/completed time, before/after state, version and receipt are absent.
+    decisions: [DEV-CMD-DEC-03, DEV-CMD-DEC-05, DEV-CMD-DEC-06]
+    cases: [DEV-NEG-AUD-01, DEV-NEG-AUD-02, DEV-NEG-AUD-03, DEV-NEG-AUD-04, DEV-POS-03, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-10, DEV-POS-12, DEV-POS-13]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_ADMIN_UI]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-014
+    severity: MEDIUM
+    type: EVIDENCE_TRUNCATION
+    evidence: ["apps/web/src/app/(app)/admin/devices/page.tsx:11"]
+    observation: Command evidence is silently limited to the latest 30 with no pagination, count, retention statement or indication that history is truncated.
+    decisions: [DEV-CMD-DEC-06]
+    cases: [DEV-NEG-AUD-04, DEV-POS-06, DEV-POS-08, DEV-POS-09, DEV-POS-12]
+    owner_after_contract: IMPLEMENTATION_ADMIN_UI
+    current_disposition: RETURN
+
+  - hazard_id: DEV-HAZ-015
+    severity: MEDIUM
+    type: SOURCE_FAILURE_MISCLASSIFICATION
+    evidence: ["apps/web/src/app/(app)/admin/devices/page.tsx:9", "apps/web/src/app/(app)/admin/devices/page.tsx:17", "apps/web/src/app/(app)/admin/devices/page.tsx:19"]
+    observation: Any device query error is described as an unapplied schema; command-query error is discarded and can render as truthful empty evidence.
+    decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-08]
+    cases: [DEV-NEG-STALE-05, DEV-NEG-OFF-05, DEV-NEG-AUD-01, DEV-POS-11, DEV-POS-12]
+    owner_after_contract: IMPLEMENTATION_ADMIN_UI
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-016
+    severity: MEDIUM
+    type: RAW_ERROR_DISCLOSURE_AND_UNLOCALIZED_ACTION
+    evidence:
+      - "apps/web/src/app/(app)/admin/mvp3-actions.ts:57"
+      - "apps/web/src/components/Mvp3ActionForm.tsx:16"
+    observation: Raw database error text is returned to the browser and Working text is hard-coded English; error semantics, neutralization and Arabic status announcements are not governed.
+    decisions: [DEV-CMD-DEC-10]
+    cases: [DEV-NEG-AUTH-06, DEV-NEG-I18N-02, DEV-NEG-A11Y-02]
+    owner_after_contract: IMPLEMENTATION_ADMIN_UI
+    current_disposition: RETURN
+
+  - hazard_id: DEV-HAZ-017
+    severity: HIGH
+    type: SYNC_HEALTH_ABSENT
+    evidence:
+      - product-contract/operationalization/OPS-REC-015_MVP3_84_ROW_RECONCILIATION.csv
+      - "apps/web/src/app/(app)/admin/devices/page.tsx:18"
+    observation: Route shows last-seen, register and commands only; no canonical outbox, error, conflict, replay, health source or rescue action satisfies MVP2-REQ-0186.
+    decisions: [DEV-CMD-DEC-08]
+    cases: [DEV-NEG-STALE-05, DEV-NEG-OFF-02, DEV-NEG-OFF-03, DEV-NEG-OFF-04, DEV-NEG-OFF-05, DEV-POS-05, DEV-POS-11]
+    owner_after_contract: [IMPLEMENTATION_ADMIN_UI, IMPLEMENTATION_FIELD_OFFLINE]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-018
+    severity: HIGH
+    type: PACKAGE_BOUNDARY_INCOMPLETE
+    evidence: ["supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:316"]
+    observation: Server guard covers package open only; required download, cached open, sync and submit boundaries are not cross-certified to current device trust and app policy.
+    decisions: [DEV-CMD-DEC-04, DEV-CMD-DEC-07, DEV-CMD-DEC-08]
+    cases: [DEV-NEG-STATE-08, DEV-NEG-OFF-02, DEV-NEG-OFF-03, DEV-NEG-OFF-04, DEV-POS-04, DEV-POS-05, DEV-POS-10]
+    owner_after_contract: [IMPLEMENTATION_DB, IMPLEMENTATION_FIELD_OFFLINE]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-019
+    severity: HIGH
+    type: PLATFORM_ENFORCEMENT_GAP
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:116"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:316"
+    observation: web_managed is an allowed platform and package-open does not require iPad OS; MVP2-REQ-0184's trusted enrolled iPad boundary is not proven.
+    decisions: [DEV-CMD-DEC-05]
+    cases: [DEV-POS-01, DEV-POS-02, DEV-POS-03, DEV-POS-04, DEV-POS-05]
+    owner_after_contract: IMPLEMENTATION_DB
+    current_disposition: RETURN_FOR_CONTRACT_CLARITY
+
+  - hazard_id: DEV-HAZ-020
+    severity: HIGH
+    type: DESIGN_AUTHORITY_MISSING
+    evidence:
+      - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060.yaml
+      - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    observation: WA-DES-015 is nearest illustrative source, but no route-specific governed revision/fingerprint proves its CD-056 and /admin/devices lineage.
+    decisions: [DEV-CMD-DEC-10]
+    cases: [DEV-NEG-I18N-01, DEV-NEG-I18N-02, DEV-NEG-RESP-01, DEV-NEG-RESP-02, DEV-NEG-A11Y-01, DEV-NEG-A11Y-02, DEV-NEG-A11Y-03, DEV-POS-14]
+    owner_after_contract: CLAUDE_DESIGN
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-021
+    severity: MEDIUM
+    type: ILLUSTRATIVE_DATA_AS_DESIGN_SIGNAL
+    evidence:
+      - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+      - "apps/web/src/app/(app)/admin/devices/page.tsx:15"
+      - "apps/web/src/lib/i18n.ts:87"
+    observation: Design contains illustrative people/device/outbox/health values and runtime displays a translated hard-coded 14 controlled rows badge unrelated to queried count.
+    decisions: [DEV-CMD-DEC-08, DEV-CMD-DEC-10]
+    cases: [DEV-NEG-STALE-05, DEV-NEG-OFF-05, DEV-NEG-I18N-02, DEV-POS-11, DEV-POS-14]
+    owner_after_contract: [CLAUDE_DESIGN, IMPLEMENTATION_ADMIN_UI]
+    current_disposition: BLOCK_FALSE_METRIC
+
+  - hazard_id: DEV-HAZ-022
+    severity: MEDIUM
+    type: BILINGUAL_SEMANTIC_GAP
+    evidence:
+      - "apps/web/src/app/(app)/admin/devices/page.tsx:18"
+      - "apps/web/src/lib/i18n.ts:68"
+      - product-contract/evidence/TASK-I18N-RTL-AUDIT-001.md
+    observation: Trust/command statuses, platform, MDM label and date formatting are raw/unreviewed; Devices Arabic browser behavior is untested and some strings are explicitly draft.
+    decisions: [DEV-CMD-DEC-10]
+    cases: [DEV-NEG-I18N-01, DEV-NEG-I18N-02, DEV-POS-14]
+    owner_after_contract: [CLAUDE_DESIGN, IMPLEMENTATION_ADMIN_UI]
+    current_disposition: BLOCK_CERTIFICATION
+
+  - hazard_id: DEV-HAZ-023
+    severity: MEDIUM
+    type: RESPONSIVE_ACCESSIBILITY_UNPROVEN
+    evidence:
+      - "apps/web/src/app/(app)/admin/devices/page.tsx:18"
+      - "apps/web/src/components/Mvp3ActionForm.tsx:13"
+      - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    observation: Dense table/form has no route-specific 1024/412/390/320, zoom, keyboard, focus, screen-reader, forced-colors or visual comparison evidence.
+    decisions: [DEV-CMD-DEC-10]
+    cases: [DEV-NEG-RESP-01, DEV-NEG-RESP-02, DEV-NEG-A11Y-01, DEV-NEG-A11Y-02, DEV-NEG-A11Y-03, DEV-POS-14]
+    owner_after_contract: [CLAUDE_DESIGN, IMPLEMENTATION_ADMIN_UI, QA]
+    current_disposition: BLOCK_CERTIFICATION
+
+  - hazard_id: DEV-HAZ-024
+    severity: HIGH
+    type: AUDIT_ATOMICITY_UNPROVEN
+    evidence:
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:130"
+      - "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:283"
+    observation: Command row is the only request record; no separate immutable audit event, before/after snapshot, governing version or forced audit-failure rollback evidence exists.
+    decisions: [DEV-CMD-DEC-03, DEV-CMD-DEC-05, DEV-CMD-DEC-06]
+    cases: [DEV-NEG-AUD-01, DEV-NEG-AUD-03, DEV-NEG-AUD-04, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-10, DEV-POS-12, DEV-POS-13]
+    owner_after_contract: IMPLEMENTATION_DB
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-025
+    severity: MEDIUM
+    type: OFFLINE_ADMIN_SUBMISSION_UNPROVEN
+    evidence:
+      - "apps/web/src/components/Mvp3ActionForm.tsx:11"
+      - apps/web/e2e/offline-drill.spec.ts
+    observation: Generic action form has no Devices-specific connectivity loss, timeout, retry or duplicate protection; adjacent Field offline test does not cover Admin command submission.
+    decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-08, DEV-CMD-DEC-09]
+    cases: [DEV-NEG-DUP-01, DEV-NEG-DUP-02, DEV-NEG-OFF-01]
+    owner_after_contract: [IMPLEMENTATION_ADMIN_UI, IMPLEMENTATION_PROVIDER]
+    current_disposition: BLOCK
+
+  - hazard_id: DEV-HAZ-026
+    severity: HIGH
+    type: ACCEPTANCE_EVIDENCE_DEFICIT
+    evidence:
+      - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+      - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+      - apps/web/e2e/field-settings-rls-live.spec.ts
+      - supabase/tests/mvp3_retrofit_live_probe.sql
+    observation: Evidence is static source, route smoke, opt-in Field RLS and one rollback suspend; there are no Admin action/persona, provider, lifecycle, negative matrix, bilingual, responsive, accessibility or route visual receipts.
+    decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02, DEV-CMD-DEC-03, DEV-CMD-DEC-04, DEV-CMD-DEC-05, DEV-CMD-DEC-06, DEV-CMD-DEC-07, DEV-CMD-DEC-08, DEV-CMD-DEC-09, DEV-CMD-DEC-10]
+    cases: ALL_60
+    owner_after_contract: QA
+    current_disposition: BLOCK_COMPLETION_CLAIM
+
+case_coverage:
+  source_of_truth: M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+  expected_negative: 46
+  expected_positive: 14
+  expected_total: 60
+  rule: Every case must be referenced by at least one hazard; ALL_60 expands to the complete ledger.
+
+decision_coverage:
+  DEV-CMD-DEC-01: [DEV-HAZ-010, DEV-HAZ-011, DEV-HAZ-026]
+  DEV-CMD-DEC-02: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-004, DEV-HAZ-010, DEV-HAZ-011, DEV-HAZ-012, DEV-HAZ-026]
+  DEV-CMD-DEC-03: [DEV-HAZ-009, DEV-HAZ-011, DEV-HAZ-012, DEV-HAZ-013, DEV-HAZ-024, DEV-HAZ-026]
+  DEV-CMD-DEC-04: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-004, DEV-HAZ-011, DEV-HAZ-018, DEV-HAZ-026]
+  DEV-CMD-DEC-05: [DEV-HAZ-001, DEV-HAZ-003, DEV-HAZ-006, DEV-HAZ-013, DEV-HAZ-019, DEV-HAZ-024, DEV-HAZ-026]
+  DEV-CMD-DEC-06: [DEV-HAZ-001, DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-008, DEV-HAZ-012, DEV-HAZ-013, DEV-HAZ-014, DEV-HAZ-015, DEV-HAZ-024, DEV-HAZ-025, DEV-HAZ-026]
+  DEV-CMD-DEC-07: [DEV-HAZ-005, DEV-HAZ-012, DEV-HAZ-018, DEV-HAZ-026]
+  DEV-CMD-DEC-08: [DEV-HAZ-015, DEV-HAZ-017, DEV-HAZ-018, DEV-HAZ-021, DEV-HAZ-025, DEV-HAZ-026]
+  DEV-CMD-DEC-09: [DEV-HAZ-003, DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-008, DEV-HAZ-011, DEV-HAZ-025, DEV-HAZ-026]
+  DEV-CMD-DEC-10: [DEV-HAZ-016, DEV-HAZ-020, DEV-HAZ-021, DEV-HAZ-022, DEV-HAZ-023, DEV-HAZ-026]
+
+hazard_by_future_non_overlapping_owner:
+  GOVERNANCE: [DEV-HAZ-010]
+  PROVIDER_SECURITY: [DEV-HAZ-006]
+  CLAUDE_DESIGN: [DEV-HAZ-020, DEV-HAZ-021, DEV-HAZ-022, DEV-HAZ-023]
+  IMPLEMENTATION_DB: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-003, DEV-HAZ-004, DEV-HAZ-005, DEV-HAZ-007, DEV-HAZ-008, DEV-HAZ-009, DEV-HAZ-018, DEV-HAZ-019, DEV-HAZ-024]
+  IMPLEMENTATION_PROVIDER: [DEV-HAZ-003, DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-008, DEV-HAZ-025]
+  IMPLEMENTATION_ADMIN_UI: [DEV-HAZ-004, DEV-HAZ-011, DEV-HAZ-012, DEV-HAZ-013, DEV-HAZ-014, DEV-HAZ-015, DEV-HAZ-016, DEV-HAZ-017, DEV-HAZ-021, DEV-HAZ-022, DEV-HAZ-023, DEV-HAZ-025]
+  IMPLEMENTATION_FIELD_OFFLINE: [DEV-HAZ-004, DEV-HAZ-005, DEV-HAZ-017, DEV-HAZ-018]
+  QA: [DEV-HAZ-023, DEV-HAZ-026]
+  ownership_note: >-
+    Lists show eventual concern, not edit authority. A hazard spanning layers
+    must be decomposed into separately leased files; no lease is granted here.
+
+review:
+  disposition: BLOCK
+  code: BLOCK_CURRENT_SOURCE_UNSAFE_AND_UNEVIDENCED
+  summary:
+    total_hazards: 26
+    critical: 4
+    high: 14
+    medium: 8
+    low: 0
+    remediated: 0
+  stop_conditions:
+    - Resume writes Trusted before evidence.
+    - Expire packages has no package effect.
+    - Provider/receipt path is absent and provider-hold trace contradicts evidence.
+    - Role/capability and terminal-state policy are unresolved.
+    - Design authority and route-specific acceptance evidence are absent.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-HAZARD-TO-CHANGE-BOUNDARY-069
+    mode: READ_ONLY
+    objective: >-
+      Partition the 26 hazards into the smallest future governance, design,
+      database, provider, Admin UI, Field/offline and QA change boundaries,
+      identifying exact collision risks and prerequisite order without
+      proposing implementation or granting a lease.

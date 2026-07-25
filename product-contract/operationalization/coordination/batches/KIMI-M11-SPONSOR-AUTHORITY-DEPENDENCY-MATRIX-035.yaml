@@ -1,0 +1,335 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SPONSOR-AUTHORITY-DEPENDENCY-MATRIX-035
+status: DOCUMENTATION_ONLY_DEPENDENCY_MATRIX_NO_DECISIONS_TAKEN
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Separate genuine sponsor/change-control choices from technical prerequisites
+  for M11 closure rows blocked by provider, persona, owner/schema, audit or
+  quiesce dependencies. Recommend fail-closed defaults and identify the exact
+  source packet and future evidence needed after authority exists.
+
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  readiness_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  correction_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  collision_preflight: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+  acceptance_harness: KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
+  test_gap_map: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+  evidence_reuse_audit: KIMI-M11-EVIDENCE-REUSE-INTEGRITY-AUDIT-034
+
+hard_boundary:
+  - "No sponsor decision is inferred, recorded as approved or implemented here."
+  - "No product, application, database, remote DDL, test, migration, data, UI or seed write."
+  - "No dispatch, review 025 execution, test run, branch/worktree change or lease issuance."
+  - "No policy value, provider, role right, owner, schema, maintenance window or SLA is invented."
+  - "Zero change to the 478-row completion count."
+
+classification:
+  SPONSOR_CHANGE_CONTROL_CHOICE:
+    meaning: "A business/governance authority must select or explicitly retain a blocked outcome."
+  CONDITIONAL_SPONSOR_CHOICE:
+    meaning: "No choice is needed unless technical discovery exposes an unresolved business-access need."
+  TECHNICAL_PREREQUISITE:
+    meaning: "Engineering/security must discover, implement or prove the fact; the sponsor should not guess it."
+  ORCHESTRATION_PREREQUISITE:
+    meaning: "Required packet, review, ownership or collision state before work may be leased."
+
+non_negotiable_fail_closed_rules:
+  - "No approved OTP delivery provider means OTP runtime completion remains BLOCKED."
+  - "No exact persona authority means the disputed action is denied/BLOCKED_FOR_AUTHORITY."
+  - "No confirmed function owner/security model or extension schema means no migration lease."
+  - "No complete audit-consumer inventory means no raw-audit policy contraction."
+  - "No safe participant trigger means hardened OTP is not exercised."
+  - "No zero-in-flight quiesce proof means 013→015 contraction does not start."
+  - "No corrected packets, accepted 009r or fresh collision check means no test or implementation lease."
+
+sponsor_choice_matrix:
+  - dependency_id: M11-SPONSOR-OTP-01
+    category: PROVIDER
+    classification: SPONSOR_CHANGE_CONTROL_CHOICE
+    business_question: >-
+      Approve a configured OTP delivery provider and its governed operating
+      contract, or explicitly accept that virtual identity verification remains
+      blocked for runtime completion.
+    choices:
+      - APPROVE_PROVIDER_THROUGH_CHANGE_CONTROL
+      - RETAIN_RUNTIME_BLOCKED
+    prohibited_choice:
+      - "Treat dev_code, stored notification, permanent mock, test secret or unconfigured adapter as delivery."
+    fail_closed_default: RETAIN_RUNTIME_BLOCKED
+    affected_rows: ["021-P0-02", "024-X04"]
+    source_packets:
+      primary: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+      successor: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    future_evidence:
+      test_leases: [TEST-PROVIDER, TEST-013, TEST-015, TEST-BROWSER]
+      required:
+        - "No-provider ordinary-session failure is truthful, neutral and secret-free."
+        - "Approved provider configuration and delivery receipt correlate to participant/run_id without exposing the code."
+        - "Request/status/verify retain assigned-Inspector authorization, row locking and one-event cardinality."
+      impossible_without_choice: "Successful live OTP delivery and CR-350/CR-351 runtime-completion claim."
+
+  - dependency_id: M11-SPONSOR-PLANNER-01
+    category: PERSONA
+    classification: SPONSOR_CHANGE_CONTROL_CHOICE
+    business_question: >-
+      Confirm through canonical change control whether RBAC-007 authorizes
+      Planner creation/scheduling and rescheduling of a virtual session.
+    choices:
+      - "CITE_EXISTING_EXACT_AUTHORITY_PER_ACTION"
+      - "APPROVE_EXPLICIT_REQUIREMENT_CHANGE_PER_ACTION"
+      - "RETAIN_ACTION_BLOCKED_FOR_PLANNER"
+    fail_closed_default: RETAIN_ACTION_BLOCKED_FOR_PLANNER
+    affected_rows: ["021-P1-02", "024-X01", "024-X02"]
+    source_packets:
+      primary: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-EXECUTION-WINDOW-LEASE-011]
+      integrator: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+    future_evidence:
+      test_leases: [TEST-010, TEST-011, TEST-BROWSER]
+      required:
+        - "Per-action Planner ALLOW or governed denial using an ordinary Planner session."
+        - "No broad RLS or current UI visibility substitutes for authority."
+        - "Authorized action retains atomicity/window/audit; denied action changes zero rows."
+
+  - dependency_id: M11-SPONSOR-OPERATIONS-01
+    category: PERSONA
+    classification: SPONSOR_CHANGE_CONTROL_CHOICE
+    business_question: >-
+      Confirm through canonical change control whether RBAC-008 authorizes any
+      Operations schedule, reschedule, waiting-room-open or close/cancel action,
+      and state the approved-override boundary per action.
+    choices:
+      - "CITE_EXISTING_EXACT_AUTHORITY_PER_ACTION"
+      - "APPROVE_EXPLICIT_REQUIREMENT_CHANGE_PER_ACTION"
+      - "RETAIN_ACTION_BLOCKED_FOR_OPERATIONS"
+    prohibited_choice:
+      - "Infer execution authority from exception visibility, reassignment or broad current database access."
+    fail_closed_default: RETAIN_ACTION_BLOCKED_FOR_OPERATIONS
+    affected_rows: ["021-P1-02", "024-X01", "024-X02"]
+    source_packets:
+      primary: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-EXECUTION-WINDOW-LEASE-011]
+      integrator: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+    future_evidence:
+      test_leases: [TEST-010, TEST-011, TEST-BROWSER]
+      required:
+        - "Per-action Operations ALLOW or governed denial with ordinary session evidence."
+        - "Approved override records reason, actor, scope and immutable audit evidence."
+        - "No Operations OTP/join/verify/begin permission."
+
+  - dependency_id: M11-SPONSOR-QUIESCE-01
+    category: QUIESCE
+    classification: SPONSOR_CHANGE_CONTROL_CHOICE
+    business_question: >-
+      After technical rehearsal passes, approve the bounded M11 maintenance
+      window in which new traffic is disabled, in-flight work drains to zero,
+      and 013 then 015 contract migrations run without traffic.
+    choices:
+      - APPROVE_REHEARSED_MAINTENANCE_WINDOW
+      - DEFER_CONTRACTION
+    fail_closed_default: DEFER_CONTRACTION
+    affected_rows: [M11-MIGSEC-006, M11-MIGSEC-008, M11-MIGSEC-012, "021-P0-07", "024-X06"]
+    source_packets:
+      primary: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+      contract_sequence: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    future_evidence:
+      test_leases: [TEST-ROLLOUT, TEST-CATALOG, TEST-BROWSER]
+      required:
+        - "Approved switch-off and drain procedure with zero in-flight M11 mutations."
+        - "Exact 013→015 migration order and no-traffic timestamps."
+        - "Fail-closed abort and roll-forward-only recovery rehearsal."
+
+  - dependency_id: M11-SPONSOR-AUDIT-AUDIENCE-01
+    category: AUDIT
+    classification: CONDITIONAL_SPONSOR_CHOICE
+    business_question: >-
+      Only if the technical inventory finds a business consumer outside the
+      already-authorized Reviewer/Auditor safe-read contract, decide whether
+      that role needs a new safe projection permission through change control.
+    choices:
+      - "APPROVE_SAFE_PROJECTION_ROLE_THROUGH_CHANGE_CONTROL"
+      - "RETAIN_NO_ACCESS"
+    prohibited_choice:
+      - "Allow raw secret-bearing participant before/after JSON to an application role."
+    fail_closed_default: RETAIN_NO_ACCESS
+    affected_rows: [M11-MIGSEC-004, "021-P0-03", "021-P0-08", "024-X05"]
+    source_packets:
+      primary: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+      integrator: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+    future_evidence:
+      test_leases: [TEST-015, TEST-BROWSER]
+      required:
+        - "Ordinary-session positive safe projection only for explicitly authorized roles."
+        - "Raw audit denial remains universal for authenticated application personas."
+    trigger: "Do not ask the sponsor until the technical global-consumer inventory identifies a real unresolved audience."
+
+technical_prerequisite_matrix:
+  - dependency_id: M11-TECH-OWNER-01
+    category: OWNER
+    classification: TECHNICAL_PREREQUISITE
+    required_fact: "Exact owner role, BYPASSRLS effect and SECURITY DEFINER/INVOKER model for every final function."
+    not_a_sponsor_guess: true
+    fail_closed_default: OWNER_ROLE_MUST_BE_CONFIRMED_FROM_ISOLATED_CATALOG
+    affected_rows: [M11-MIGSEC-001, M11-MIGSEC-002, M11-MIGSEC-003, "021-P1-04"]
+    source_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017, KIMI-M11-PERMISSION-HARDENING-LEASE-013]
+    future_evidence:
+      test_leases: [TEST-CATALOG]
+      required: ["pg_proc owner/security/proconfig/proacl capture and effective BYPASSRLS analysis."]
+
+  - dependency_id: M11-TECH-SCHEMA-01
+    category: SCHEMA
+    classification: TECHNICAL_PREREQUISITE
+    required_fact: "Actual installed extension/type/function schemas and fully qualified dependency identities."
+    not_a_sponsor_guess: true
+    fail_closed_default: NO_MIGRATION_OR_FUNCTION_LEASE
+    affected_rows: [M11-MIGSEC-001, M11-MIGSEC-002, "021-P1-01", "021-P1-04"]
+    source_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+    future_evidence:
+      test_leases: [TEST-CATALOG]
+      required: ["pg_extension/pg_namespace/pg_depend and exact function-identity catalog capture."]
+
+  - dependency_id: M11-TECH-AUDIT-INVENTORY-01
+    category: AUDIT
+    classification: TECHNICAL_PREREQUISITE
+    required_fact: "Complete global inventory of every raw and safe audit consumer, query, role and application file."
+    not_a_sponsor_guess: true
+    fail_closed_default: DO_NOT_CONTRACT_RAW_AUDIT_POLICIES
+    affected_rows: [M11-MIGSEC-004, M11-MIGSEC-005, M11-MIGSEC-011, "021-P0-03", "021-P0-04", "021-P0-08", "024-X05"]
+    source_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    future_evidence:
+      test_leases: [TEST-015, TEST-CATALOG, TEST-BROWSER]
+      required:
+        - "Consumer inventory with exact files/roles/fields."
+        - "Safe projection replacement and maker-checker/admin regression."
+        - "Raw secret denial, secret sentinel and historical checksum."
+
+  - dependency_id: M11-TECH-SAFE-TRIGGER-01
+    category: AUDIT
+    classification: TECHNICAL_PREREQUISITE
+    required_fact: "Specialized participant audit trigger/projection is installed and catalog-proven before hardened OTP executes."
+    not_a_sponsor_guess: true
+    fail_closed_default: OTP_DISABLED
+    affected_rows: [M11-MIGSEC-005, M11-MIGSEC-011, "021-P0-04", "024-X05"]
+    source_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    future_evidence:
+      test_leases: [TEST-015, TEST-CATALOG]
+      required: ["Trigger inventory/order, secret sentinel, one-event cardinality and rollback proof."]
+
+  - dependency_id: M11-TECH-QUIESCE-01
+    category: QUIESCE
+    classification: TECHNICAL_PREREQUISITE
+    required_fact: "Working traffic-disable, drain counter, zero-in-flight assertion, abort and recovery procedure."
+    not_a_sponsor_guess: true
+    fail_closed_default: DO_NOT_REQUEST_MAINTENANCE_APPROVAL
+    affected_rows: [M11-MIGSEC-006, M11-MIGSEC-008, M11-MIGSEC-012, "021-P0-07", "024-X06"]
+    source_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+    future_evidence:
+      test_leases: [TEST-ROLLOUT, TEST-BROWSER]
+      required: ["Isolated rehearsal evidence before sponsor maintenance-window choice."]
+
+  - dependency_id: M11-TECH-PROVIDER-01
+    category: PROVIDER
+    classification: TECHNICAL_PREREQUISITE
+    required_fact: "After sponsor approval, configured adapter, secret handling, delivery callback/receipt and observability contract."
+    not_a_sponsor_guess: true
+    fail_closed_default: PROVIDER_NOT_CONFIGURED
+    affected_rows: ["021-P0-02", "024-X04"]
+    source_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    future_evidence:
+      test_leases: [TEST-PROVIDER, TEST-013, TEST-015]
+      required: ["Configured-provider delivery proof separate from isolated OTP engine proof."]
+
+orchestration_prerequisite_matrix:
+  - dependency_id: M11-ORCH-CORRECTIONS-01
+    classification: ORCHESTRATION_PREREQUISITE
+    required: "Corrected 010/011/013/014/015/017 and response manifests exist."
+    affected_rows: ALL_31
+    fail_closed_default: KEEP_025_QUEUED
+  - dependency_id: M11-ORCH-REVIEW-01
+    classification: ORCHESTRATION_PREREQUISITE
+    required: "Harness 030 executes review 025 only after corrected inputs exist."
+    affected_rows: ALL_31
+    fail_closed_default: NO_IMPLEMENTATION_OR_TEST_LEASE
+  - dependency_id: M11-ORCH-QA-01
+    classification: ORCHESTRATION_PREREQUISITE
+    required: "Corrected 009r accepted and one QA owner proposed."
+    affected_rows: ALL_31
+    fail_closed_default: NO_TEST_IMPLEMENTATION
+  - dependency_id: M11-ORCH-COLLISION-01
+    classification: ORCHESTRATION_PREREQUISITE
+    required: "Fresh ACTIVE_WORKTREE_LEASES.csv check and exact non-overlapping source/test ownership."
+    affected_rows: ALL_31
+    fail_closed_default: NO_LEASE
+
+sponsor_decision_order:
+  - order: 1
+    decision: "Planner and Operations per-action authority."
+    when: "Corrected packets expose the exact action list and current canonical citations."
+  - order: 2
+    decision: "OTP provider approval or explicit runtime block."
+    when: "Provider options and governed operating contract are supplied; no test/dev substitute."
+  - order: 3
+    decision: "Conditional safe-audit audience expansion, only if technical inventory identifies a real gap."
+    when: "Global consumer inventory is complete."
+  - order: 4
+    decision: "Future implementation/test owner and exact leases."
+    when: "Review 025 and review 033 permit a sponsor lease decision."
+  - order: 5
+    decision: "Rehearsed maintenance/quiesce window."
+    when: "Technical quiesce rehearsal passes and the integrated stack is ready."
+
+sponsor_brief:
+  decisions_needed_now: []
+  reason: >-
+    Corrected packets and technical discovery do not yet exist. Premature
+    choices would ask the sponsor to decide without the exact action/provider,
+    catalog, audit-consumer or rehearsal evidence.
+  future_questions:
+    - "Which explicitly listed Planner actions are authorized?"
+    - "Which explicitly listed Operations actions/overrides are authorized?"
+    - "Approve the governed OTP provider, or retain runtime blocked?"
+    - "After inventory, does any additional role need safe—not raw—audit evidence?"
+    - "After rehearsal, approve the bounded no-traffic maintenance window?"
+
+row_coverage_summary:
+  provider_rows: ["021-P0-02", "024-X04"]
+  persona_rows: ["021-P1-02", "024-X01", "024-X02"]
+  owner_schema_rows: [M11-MIGSEC-001, M11-MIGSEC-002, M11-MIGSEC-003, "021-P1-01", "021-P1-04"]
+  audit_rows: [M11-MIGSEC-004, M11-MIGSEC-005, M11-MIGSEC-011, "021-P0-03", "021-P0-04", "021-P0-08", "024-X05"]
+  quiesce_rows: [M11-MIGSEC-006, M11-MIGSEC-008, M11-MIGSEC-012, "021-P0-07", "024-X06"]
+
+follow_on_state:
+  packet: KIMI-M11-FUTURE-TEST-READINESS-REVIEW-033
+  status: QUEUED_SAFE_FOLLOW_ON_NOT_DISPATCHED
+  remains_blocked_by:
+    - CORRECTED_PACKETS_NOT_RETURNED
+    - REVIEW_025_NOT_EXECUTED
+    - CORRECTED_009R_NOT_ACCEPTED
+    - SPONSOR_AND_TECHNICAL_DEPENDENCIES_NOT_READY
+
+read_only_verdict:
+  sponsor_choices_taken: 0
+  technical_prerequisites_completed: 0
+  tests_written_or_run: false
+  dispatch_attempted: false
+  review_025_executed: false
+  leases_issued: false
+  requirement_completion_change: 0
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+
+validation:
+  yaml_parse: PASS
+  sponsor_vs_technical_separation_checked: PASS
+  fail_closed_defaults_present: PASS
+  affected_rows_mapped: PASS
+  source_packets_mapped: PASS
+  future_evidence_mapped: PASS
+  no_decision_inferred: PASS
+  review_033_remains_blocked: PASS
+  non_mutating_boundary_checked: PASS

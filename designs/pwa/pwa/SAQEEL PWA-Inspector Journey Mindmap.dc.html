@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="saqeel/styles.css">
+<template id="__bundler_thumbnail" data-bg-color="#12161f">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="800" fill="#12161f"/><g stroke="#47b381" stroke-width="6" fill="none"><path d="M170 400H360"/><path d="M360 200V600"/><path d="M360 200H560M360 400H560M360 600H560"/></g><rect x="60" y="360" width="110" height="80" rx="14" fill="#182233"/><g fill="#182233"><rect x="560" y="160" width="150" height="80" rx="12"/><rect x="560" y="360" width="150" height="80" rx="12"/><rect x="560" y="560" width="150" height="80" rx="12"/></g><circle cx="360" cy="200" r="9" fill="#47b381"/><circle cx="360" cy="400" r="9" fill="#47b381"/><circle cx="360" cy="600" r="9" fill="#47b381"/><text x="600" y="730" fill="#8aa0b8" font-family="sans-serif" font-size="34" text-anchor="middle">Inspector Journey Mindmap</text></svg>
+</template>
+<style>
+  html, body { height:100%; margin:0; }
+  .mm-root { min-height:100dvh; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); }
+  .mm-bar { position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); }
+  .mm-btn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; color:var(--text-secondary); }
+  .mm-btn[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); border-color:var(--action-primary); }
+  .mm-legend { display:flex; gap:14px; flex-wrap:wrap; }
+  .mm-leg { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-secondary); }
+  .mm-sw { width:10px; height:10px; border-radius:50%; flex:none; }
+  .mm-canvas { padding:32px 40px 80px; overflow:auto; }
+  .mm-tree { display:inline-flex; align-items:flex-start; }
+  .mm-node { display:flex; align-items:center; }
+  .mm-card { position:relative; display:flex; align-items:center; gap:9px; padding:10px 13px; border:1px solid var(--border-subtle); border-inline-start:4px solid var(--c,var(--border-strong)); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); cursor:pointer; white-space:nowrap; min-height:40px; }
+  .mm-card.root { border-inline-start-width:1px; background:var(--action-primary); color:var(--text-on-action); border-color:var(--action-primary); font-weight:700; box-shadow:var(--shadow-lg); }
+  .mm-card.stage { font-weight:600; }
+  .mm-chev { width:18px; height:18px; border-radius:6px; background:var(--surface-sunken); display:grid; place-items:center; font-size:12px; color:var(--text-secondary); flex:none; }
+  .mm-card.root .mm-chev { background:rgba(255,255,255,.2); color:#fff; }
+  .mm-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .mm-tt { display:flex; flex-direction:column; gap:1px; }
+  .mm-lbl { font-size:13.5px; line-height:1.25; }
+  .mm-rt { font-size:10.5px; color:var(--text-muted); font-family:var(--font-mono); }
+  .mm-card.root .mm-rt { color:rgba(255,255,255,.7); }
+  .mm-kids { position:relative; display:flex; flex-direction:column; gap:12px; padding-inline-start:30px; margin-inline-start:14px; }
+  .mm-kids::before { content:""; position:absolute; inset-inline-start:0; top:16px; bottom:16px; width:2px; background:var(--border-strong); }
+  .mm-kids > .mm-node { position:relative; }
+  .mm-kids > .mm-node::before { content:""; position:absolute; inset-inline-start:-30px; top:20px; width:30px; height:2px; background:var(--border-strong); }
+  .mm-count { font-size:10px; font-weight:700; padding:1px 6px; border-radius:999px; background:var(--surface-sunken); color:var(--text-muted); }
+  .mm-card.root .mm-count { background:rgba(255,255,255,.2); color:#fff; }
+  .dv-wrap { display:flex; flex-direction:column; gap:14px; max-width:1500px; }
+  .dv-note { font-size:12px; color:var(--text-muted); max-width:90ch; }
+  .dv-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; max-width:1500px; }
+  .dv-modcard { border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-primary); overflow:hidden; }
+  .dv-modname { padding:10px 14px; font-size:13px; font-weight:700; background:var(--surface-secondary); border-block-end:1px solid var(--border-subtle); }
+  .dv-lanes { display:flex; flex-direction:column; }
+  .dv-lanerow { display:grid; grid-template-columns:110px auto; align-items:start; gap:4px 10px; padding:8px 14px; border-block-end:1px solid var(--border-subtle); }
+  .dv-lanerow:last-child { border-block-end:0; }
+  .dv-lanename { font-size:11px; font-weight:600; color:var(--text-muted); padding-top:1px; }
+  .dv-status { display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; }
+  .dv-dot2 { width:9px; height:9px; border-radius:50%; flex:none; }
+  .dv-meta2 { grid-column:2; display:flex; flex-direction:column; gap:1px; font-size:10px; color:var(--text-muted); line-height:1.35; }
+  .dv-legend { display:flex; gap:16px; flex-wrap:wrap; padding:4px 2px; }
+  .dv-leg { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-secondary); }
+</style>
+</helmet>
+<div class="mm-root" dir="{{ dir }}" lang="{{ lang }}" data-theme="dark">
+  <div class="mm-bar">
+    <strong style="font-size:14px; word-break:break-word;">{{ boardTitle }}</strong>
+    <span class="mm-rt" style="color:var(--text-muted);">{{ revLabel }}</span>
+    <button class="mm-btn" aria-pressed="{{ isJourney }}" onClick="{{ showJourney }}">{{ t.vJourney }}</button>
+    <button class="mm-btn" aria-pressed="{{ isApi }}" onClick="{{ showApi }}">{{ t.vApi }}</button>
+    <button class="mm-btn" aria-pressed="{{ isDelivery }}" onClick="{{ showDelivery }}">{{ t.vDelivery }}</button>
+    <span style="flex:1;"></span>
+    <div class="mm-legend">{{ legend }}</div>
+    <sc-if value="{{ isDelivery }}" hint-placeholder-val="{{ false }}"></sc-if>
+    <sc-if value="{{ notDelivery }}" hint-placeholder-val="{{ true }}">
+      <button class="mm-btn" onClick="{{ expandAll }}">{{ t.expand }}</button>
+      <button class="mm-btn" onClick="{{ collapseAll }}">{{ t.collapse }}</button>
+    </sc-if>
+    <button class="mm-btn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </div>
+  <div class="mm-canvas"><sc-if value="{{ isDelivery }}" hint-placeholder-val="{{ false }}">{{ deliveryBoard }}</sc-if><sc-if value="{{ notDelivery }}" hint-placeholder-val="{{ true }}">{{ tree }}</sc-if></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { lang:"en", collapsed:{}, view:"journey" };
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? { title:"رحلة المفتش — خريطة ذهنية قابلة للطي", langBtnLabel:"EN", expand:"توسيع الكل", collapse:"طيّ الكل", vJourney:"الرحلة", vApi:"واجهات API والتعاملات", vDelivery:"تسليم الويب/الإدارة" }
+                 : { title:"Inspector journey — collapsible mindmap", langBtnLabel:"AR", expand:"Expand all", collapse:"Collapse all", vJourney:"Journey", vApi:"API & transactions", vDelivery:"Web/Admin Delivery" };
+    const C={ ok:"var(--status-compliant)", part:"var(--status-major)", blk:"var(--status-critical)", dec:"var(--text-muted)", ext:"#22b8cf" };
+    const CL = ar ? [["ok","يعمل"],["part","جزئي"],["blk","محظور/غير موصول"],["dec","قرار"],["ext","صناعي (خارجي)"]] : [["ok","Working"],["part","Partial"],["blk","Blocked / not wired"],["dec","Decision"],["ext","Senaei (external)"]];
+    const legend = CL.map(([k,l],i)=>h("span",{key:i,className:"mm-leg"}, h("span",{className:"mm-sw",style:{background:C[k]}}), l));
+
+    const S=(en,arv)=>ar?arv:en;
+    // Full journey tree (grounded in the architecture + route coverage)
+    const TREE = { id:"root", label:S("Inspector PWA — full journey","تطبيق المفتش — الرحلة الكاملة"), root:true, kids:[
+      { id:"s1", label:S("1 · Auth & launch","١ · الدخول والإطلاق"), s:"ok", kids:[
+        {id:"s1a",label:S("Login","تسجيل الدخول"),rt:"/login",s:"ok"},{id:"s1b",label:S("Launch splash","شاشة الإطلاق"),rt:"/launch",s:"ok"},
+        {id:"s1c",label:S("Forgot → OTP → reset","نسيان → OTP → إعادة"),rt:"/reset",s:"ok"},{id:"s1d",label:S("Biometric / Trusted devices","بصمة / أجهزة موثوقة"),rt:"/field/settings/devices",s:"ok"}]},
+      { id:"s2", label:S("2 · Home & discovery","٢ · الرئيسية"), s:"ok", kids:[
+        {id:"s2a",label:S("Field Dashboard","لوحة الميدان"),rt:"/field",s:"ok"},{id:"s2b",label:S("Notifications","الإشعارات"),rt:"/field/notifications",s:"ok"},{id:"s2c",label:S("Global search","بحث شامل"),rt:"/field/search",s:"ok"}]},
+      { id:"s3", label:S("3 · Task selection","٣ · اختيار المهمة"), s:"ok", kids:[
+        {id:"s3a",label:S("My Tasks","مهامي"),rt:"/field/my-tasks",s:"ok"},{id:"s3b",label:S("Establishments","المنشآت"),rt:"/field/establishments",s:"ok"},{id:"s3c",label:S("Drafts (resume)","المسودات"),rt:"/field/drafts",s:"ok"}]},
+      { id:"s4", label:S("4 · Preparation","٤ · التحضير"), s:"ok", kids:[
+        {id:"s4a",label:S("Preparation / readiness","التحضير والجاهزية"),rt:"/field/[visitId]",s:"ok"},{id:"s4b",label:S("Report Package Foundation","أساس حزمة التقرير"),rt:"PreExecution",s:"ok"},{id:"s4c",label:S("Factory 360 (offline)","المصنع 360"),rt:"/field/factory-360",s:"ok"}]},
+      { id:"s5", label:S("5 · Mode branch","٥ · تفرّع النمط"), s:"part", kids:[
+        {id:"s5a",label:S("Physical","ميداني"),s:"ok"},{id:"s5b",label:S("Virtual","عن بُعد"),s:"ok"},{id:"s5c",label:S("Immediate (entry+lock rule)","فوري"),s:"part"}]},
+      { id:"s6", label:S("6 · Journey & arrival","٦ · الرحلة والوصول"), s:"ok", kids:[
+        {id:"s6a",label:S("Travel / live route","التنقّل"),rt:"/field/[visitId]/travel",s:"ok"},{id:"s6b",label:S("Arrival (geofence)","الوصول"),rt:"confirm_arrival",s:"ok"},{id:"s6c",label:S("Outside-geofence request","خارج النطاق"),s:"ok"},{id:"s6d",label:S("Unable to access","تعذّر الوصول"),s:"ok"}]},
+      { id:"s7", label:S("7 · Execution","٧ · التنفيذ"), s:"ok", kids:[
+        {id:"s7a",label:S("Execution Shell","هيكل التنفيذ"),rt:"/field/inspection/[id]",s:"ok"},{id:"s7b",label:S("Item execution + evidence","تنفيذ البنود"),rt:"runtime.ts",s:"ok"},{id:"s7c",label:S("Violations + action forms","المخالفات"),s:"ok"},{id:"s7d",label:S("Visit results","المخرجات"),s:"ok"}]},
+      { id:"s8", label:S("8 · Records / محاضر","٨ · المحاضر"), s:"ok", kids:[
+        {id:"r1",label:S("Summons · Fact-finding · Violation","استدعاء · واقعة · مخالفة"),s:"ok"},{id:"r2",label:S("Sample · Destruction","عينة · إتلاف"),s:"ok"},{id:"r3",label:S("Seizure · Lift-seizure","حجز · رفع حجز"),s:"ok"},{id:"r4",label:S("PL/Factory closure + reopening","إغلاق/إعادة فتح"),s:"ok"},{id:"r5",label:S("Samples/seizure wiring","ربط العينات/الحجز"),s:"blk"},{id:"r6",label:S("Reports library / viewer","مكتبة التقارير"),s:"ok"}]},
+      { id:"s9", label:S("9 · Report types","٩ · أنواع التقارير"), s:"ok", kids:[
+        {id:"t1",label:S("Visit Report","تقرير الزيارة"),s:"ok"},{id:"t2",label:S("Chemical Clearance","فسح كيميائي"),s:"ok"},{id:"t3",label:S("Customs Exemption","إعفاء جمركي"),s:"ok"},{id:"t4",label:S("Safety","سلامة"),s:"ok"},{id:"t5",label:S("Challenge (overlay)","رصد تحدي"),s:"ok"},{id:"t6",label:S("Visit Statement","إفادة الزيارة"),s:"ok"}]},
+      { id:"s10", label:S("10 · Completion & signature","١٠ · الإنهاء والتوقيع"), s:"ok", kids:[
+        {id:"c1",label:S("Review summary","ملخّص المراجعة"),s:"ok"},{id:"c2",label:S("Acknowledgement + signature","الإقرار والتوقيع"),rt:"DEC-009",s:"ok"},{id:"c3",label:S("Feedback QR + PDF","رمز التقييم"),s:"blk"}]},
+      { id:"s11", label:S("11 · Submission","١١ · الإرسال"), s:"ok", kids:[
+        {id:"u1",label:S("Immutable version vN","نسخة نهائية"),rt:"submission_versions",s:"ok"},{id:"u2",label:S("Offline queued","في الطابور"),s:"ok"}]},
+      { id:"s12", label:S("12 · Review outcome","١٢ · نتيجة المراجعة"), s:"ok", kids:[
+        {id:"o1",label:S("Under review","قيد المراجعة"),s:"ok"},{id:"o2",label:S("Returned → correction → resubmit","إرجاع → تصحيح"),s:"ok"},{id:"o3",label:S("Approved / Rejected","اعتماد / رفض"),s:"ok"}]},
+      { id:"s13", label:S("13 · Cancellation","١٣ · الإلغاء"), s:"ok", kids:[
+        {id:"x1",label:S("Request (Operations decides)","طلب (العمليات تقرّر)"),rt:"migration 0020",s:"ok"},{id:"x2",label:S("Approved → terminal read-only","معتمد → مقفل"),s:"ok"}]},
+      { id:"s14", label:S("14 · Reports & history","١٤ · التقارير والسجل"), s:"part", kids:[
+        {id:"h1",label:S("Final report PDF","التقرير النهائي"),s:"part"},{id:"h2",label:S("Prior visits / version history","الزيارات السابقة"),s:"ok"},{id:"h3",label:S("Conflict resolution","حل التعارض"),rt:"/field/settings/conflicts",s:"ok"}]},
+    ]};
+
+    // ── API & transactions tree (grounded in repo RPCs + HTTP routes + Senaei + breakages) ──
+    const TREE_API = { id:"aroot", label:S("API & transactions — how the PWA transacts","واجهات API والتعاملات"), root:true, kids:[
+      { id:"a1", label:S("HTTP routes (only 3)","مسارات HTTP (٣ فقط)"), s:"ok", kids:[
+        {id:"a1a",label:S("F360 offline snapshot","لقطة المصنع 360"),rt:"/api/field/factory-360/snapshot",s:"ok"},
+        {id:"a1b",label:S("Journey ETA","زمن وصول الرحلة"),rt:"/api/routing/eta",s:"part"},
+        {id:"a1c",label:S("Global search","بحث شامل"),rt:"/api/shell/search",s:"ok"}]},
+      { id:"a2", label:S("Supabase RPCs (~190) — main layer","دوال Supabase (~١٩٠)"), s:"ok", kids:[
+        {id:"a2a",label:S("Auth / RBAC","الصلاحيات"),rt:"is_assigned_inspector · has_capability",s:"ok"},
+        {id:"a2b",label:S("Preparation","التحضير"),rt:"save_visit_preparation · confirm_visit_ready",s:"ok"},
+        {id:"a2c",label:S("Journey / arrival","الرحلة والوصول"),rt:"start_journey · confirm_arrival · request_geo_override",s:"ok"},
+        {id:"a2d",label:S("Cancellation / return","الإلغاء والإرجاع"),rt:"request_visit_cancellation · request_active_cancellation",s:"ok"},
+        {id:"a2e",label:S("Execution / penalties","التنفيذ والجزاءات"),rt:"issue_penalties_after_approval · next_inspection_no",s:"ok"},
+        {id:"a2f",label:S("Virtual / OTP","العن بُعد و OTP"),rt:"vp_request_otp · vp_verify_otp · vs_mark_session_verified",s:"ok"},
+        {id:"a2g",label:S("Submission / review","الإرسال والمراجعة"),rt:"submission_versions (client) · reviews guards",s:"part"}]},
+      { id:"a3", label:S("External Senaei provider","مزوّد صناعي الخارجي"), s:"ext", kids:[
+        {id:"a3a",label:S("Auth / profile","الدخول والملف"),rt:"/api/inspection/auth",s:"ext"},
+        {id:"a3b",label:S("Regulations (list + id)","اللوائح"),rt:"/regulations · /regulations/{id}",s:"ext"},
+        {id:"a3c",label:S("Tasks (list + show)","المهام"),rt:"/tasks · Show Task",s:"ext"},
+        {id:"a3d",label:S("Plant production line","خط إنتاج المصنع"),rt:"Plant Production Line",s:"ext"},
+        {id:"a3e",label:S("Submit inspection","إرسال التفتيش"),rt:"POST submit-inspection/{task}",s:"ext"}]},
+      { id:"a4", label:S("Offline stores (IndexedDB)","مخازن دون اتصال"), s:"ok", kids:[
+        {id:"a4a",label:S("packages · drafts","حزم · مسودات"),rt:"lib/offline.ts",s:"ok"},
+        {id:"a4b",label:S("outbox (submit + ops)","صندوق الصادر"),rt:"idempotency_key",s:"ok"},
+        {id:"a4c",label:S("conflicts","التعارضات"),rt:"inspector-asked",s:"ok"}]},
+      { id:"a5", label:S("⚠ BREAKAGES — endpoints/JSON needed","⚠ الأعطال — نحتاج نقاط اتصال"), s:"blk", kids:[
+        {id:"b1",label:S("BRK-1 Feedback: schema + scan route + PDF","التغذية الراجعة: مخطط + مسار مسح + PDF"),s:"blk"},
+        {id:"b2",label:S("BRK-2 Video session provider","مزوّد فيديو"),s:"blk"},
+        {id:"b3",label:S("BRK-3 Map/route provider + tiles","مزوّد خرائط/مسار"),s:"part"},
+        {id:"b4",label:S("BRK-4 F360 gov domains CONTRACT_NOT_SUPPLIED","نطاقات F360 غير مزوّدة"),s:"blk"},
+        {id:"b5",label:S("BRK-5 Samples/seizure submit wiring","ربط إرسال العينات/الحجز"),s:"blk"},
+        {id:"b6",label:S("BRK-6 Notification delivery (SMS/email/push)","توصيل الإشعارات"),s:"part"},
+        {id:"b7",label:S("BRK-7 Review-decision RPCs + queue","دوال قرار المراجعة"),s:"part"},
+        {id:"b8",label:S("BRK-8 Cross-channel receiving queues","طوابير الاستقبال بين القنوات"),s:"part"}]},
+    ]};
+    const REV = { id:"WA-SHELL-r6", from:"WA-SHELL-r5", delta:S("M1 Dashboard lane reconciled per sponsor-approved M1 baseline (M1-DASH-r1, SAQEEL M1 Dashboard.dc.html): Design green, Frontend green candidate, Service Wiring amber (Analytics/Execution cutover blocked), QA amber (fixture-only evidence), Sponsor approved (design baseline only, not full KPI-live acceptance). F0/M2/M3/M4 lanes unchanged from WA-SHELL-r5.","تصالح مسار لوحة M1 وفق الأساس المعتمد من الراعي (M1-DASH-r1): التصميم أخضر، الواجهة أخضر مرشّح، ربط الخدمة كهرماني (تحويل التحليلات/التنفيذ محظور)، الجودة كهرماني (دليل توضيحي فقط)، الراعي معتمد (أساس التصميم فقط). لا تغيير في مسارات F0/M2/M3/M4.") };
+    const ST = {
+      grey:{c:"var(--text-muted)", sym:"○", lbl:S("Not started","لم يبدأ")},
+      amber:{c:"var(--status-major)", sym:"◐", lbl:S("Active/partial","نشط/جزئي")},
+      green:{c:"var(--status-compliant)", sym:"●", lbl:S("Verified","موثّق")},
+      red:{c:"var(--status-critical)", sym:"✕", lbl:S("Blocked/failed","محظور/فشل")},
+      na:{c:"var(--text-muted)", sym:"—", lbl:S("N/A","لا ينطبق")},
+    };
+    const LANES = [["design",S("Design","التصميم")],["frontend",S("Frontend","الواجهة")],["service",S("Service Wiring","ربط الخدمة")],["qa",S("QA","الجودة")],["sponsor",S("Sponsor","الراعي")]];
+    const cell=(status,owner,evidence,date,blocker)=>({status,owner,evidence,date,blocker});
+    const grey5 = ()=>({design:cell("grey"),frontend:cell("grey"),service:cell("grey"),qa:cell("grey"),sponsor:cell("grey")});
+    const MODULES = [
+      { id:"F0", name:S("F0 · Shared SAQEEL foundation — shell authority","F0 · الأساس المشترك — سلطة الهيكل"), lanes:{
+        design:cell("green","Design","WA-SHELL-r4 independently validated (Codex) against O-26: exact rail/routes, real bilingual wordmark, scale-to-fit evidence at 1440/1024/768–899/412/390/320 × EN·AR × light·dark, reachable mobile search/date-region/AI/theme/language, truthful Loading/Unauthorized/Provider-unavailable states, no /field destination","2026-07-24"),
+        frontend:cell("red","FE","Runtime shell is non-compliant with WA-SHELL-r4 — not implemented",null,"No corrected build exists yet; shell not wired to real routes/permissions per module"),
+        service:cell("amber","Platform","Existing RLS/audit/version services proven, but not reconciled against the corrected shell's route/permission targets","2026-07-22"),
+        qa:cell("red","QA","No corrected runtime build or test suite exists to verify against",null,"Awaiting an implementation build to test"),
+        sponsor:cell("amber","Sponsor","Awaiting explicit sponsor consent to proceed to implementation despite passing design validation","2026-07-24","Sponsor consent + recorded implementation lease required before build"),
+      }},
+      { id:"M2", name:S("Execution #1 / Contract M2 · Planning & Visits","التنفيذ #1 / العقد M2 · التخطيط والزيارات"), lanes:{
+        design:cell("amber","Design","WA-DES-036 correction in progress (this revision)","2026-07-24"),
+        frontend:cell("amber","FE","Awaiting rebuild against corrected mapping","2026-07-24"),
+        service:cell("green","Platform","Proven only for RLS/audit/version services","2026-07-22"),
+        qa:cell("amber","QA","Original focused 16/16 is historical; new composition untested","2026-07-22"),
+        sponsor:cell("amber","Sponsor","Implementation consent recorded; final screen acceptance not granted","2026-07-24"),
+      }},
+      { id:"M1", name:S("M1 · Dashboard","M1 · لوحة القيادة"), lanes:{
+        design:cell("green","Design","M1-DASH-r1 reconciled vs dashboard.xlsx/DASH-001..016/WA-SP-010..028/WA-M1-AC-001..006/SRC-DES-025/046 — SAQEEL M1 Dashboard.dc.html","2026-07-24"),
+        frontend:cell("green","FE","Candidate — F0 shell reused; not yet built in app/dashboard","2026-07-24"),
+        service:cell("amber","Platform","Analytics and Execution cutover remain blocked; only RLS/audit baseline proven","2026-07-24"),
+        qa:cell("amber","QA","Fixture-only evidence; formula/policy tests not yet run against real data","2026-07-24"),
+        sponsor:cell("green","Sponsor","M1 dashboard design baseline approved — design reconciliation only, not full KPI-live acceptance","2026-07-24"),
+      }},
+      { id:"M3", name:S("M3 · Operations Center","M3 · مركز العمليات"), lanes:{ ...grey5(), design:cell("amber","Design","WA-DES-033-C3 and WA-DES-034-C3 visibly reviewed against /operations and /operations/live. Premium shell, responsive controls, hard states and the three truthful location-provenance states are present in the live design surfaces, but design authority is not yet consumable: the platform exposes no immutable revision token/export hash for the currently visible provenance-adjusted C3, the registered 21,270-byte C3 export (SHA-256 ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279) is the older projected-route predecessor, and repository CURRENT_SLICE remains M2 awaiting Product Owner approval. No M3 design or requirement completion credit. Open P1 corrections before acceptance: make Active inspectors inspector-first and operationally scannable instead of exposing an unbounded fixture-heavy dump; selection must open a meaningful detail hierarchy with source-backed inspector name, factory, region, canonical operational state, valid state-entered time, visit reference and the entity’s own location-provenance metadata; impossible future, invalid or contradictory timestamps must fail closed as unavailable/invalid data rather than render as ‘Since’; use a source-backed locale-specific person name when available, otherwise keep the official name inside automatic bidirectional isolation without inventing transliteration; retain distinct Loading, RLS-empty, query Error, tile/provider failure, No positions and Direct-route unauthorized states. Current runtime evidence still shows fixture-heavy rows, impossible future ‘Since’ dates, Arabic-only names in English and a global projected-route disclosure, so parity is not certified.","2026-07-25") } },
+      { id:"M4", name:S("M4 · Factories & Factory 360","M4 · المصانع و٣٦٠"), lanes:{ ...grey5(), design:cell("amber","Design","Shell reconciliation started; CR/license model + 8-tab IA not yet re-verified against reference","2026-07-24") } },
+      { id:"M5", name:S("M5 · Reviews/Cases/Tasks","M5 · المراجعات/الحالات/المهام"), lanes:grey5() },
+      { id:"M6", name:S("M6 · Compliance/Enforcement/Committee/Risk","M6 · الامتثال/الإنفاذ/اللجنة/المخاطر"), lanes:grey5() },
+      { id:"M7", name:S("M7 · Reports/OCR/AI/Incidents","M7 · التقارير/OCR/الذكاء الاصطناعي/الحوادث"), lanes:grey5() },
+      { id:"M8", name:S("M8 · Admin Identity/Roles/Security","M8 · إدارة الهوية/الأدوار/الأمن"), lanes:grey5() },
+      { id:"M9", name:S("M9 · Admin Workflows/Forms/Lookups/KPI","M9 · سير العمل/النماذج/القوائم/المؤشرات"), lanes:grey5() },
+      { id:"M10", name:S("M10 · Admin Integrations/GIS/Execution/Provider Health","M10 · التكاملات/نظم المعلومات الجغرافية/التنفيذ/صحة المزوّد"), lanes:grey5() },
+      { id:"M11", name:S("M11 · Auth/Portal/Profile/Virtual/Shared States","M11 · الدخول/البوابة/الملف/الافتراضي/الحالات المشتركة"), lanes:grey5() },
+    ];
+    const legendDelivery = Object.entries(ST).filter(([k])=>k!=="na").map(([k,v],i)=>h("span",{key:i,className:"dv-leg"}, h("span",{className:"dv-dot2",style:{background:v.c}}), v.sym+" "+v.lbl));
+    const dLane=(labelText,l,i)=>{ const s=ST[l.status]; return h("div",{className:"dv-lanerow",key:i},
+      h("div",{className:"dv-lanename"}, labelText),
+      h("div",{className:"dv-status",style:{color:s.c}}, h("span",{className:"dv-dot2",style:{background:s.c}}), s.sym+" "+s.lbl),
+      h("div",{className:"dv-meta2"},
+        l.owner?h("span",{key:"o"}, l.owner+(l.date?" · "+l.date:"")):null,
+        l.evidence?h("span",{key:"e"}, l.evidence):null,
+        l.blocker?h("span",{key:"b",style:{color:ST.red.c}}, l.blocker):null,
+      ),
+    ); };
+    const deliveryBoard = h("div",{className:"dv-wrap"},
+      h("div",{className:"dv-legend"}, legendDelivery),
+      h("div",{className:"dv-note"}, S(
+        "Every non-grey lane shows owner, evidence, last-updated date and blocker when applicable. One overall module color is prohibited; grey does not mean no product exists — existing routes may already function pending Phase-1 redesign certification.",
+        "يعرض كل مسار غير رمادي المالك والدليل وتاريخ آخر تحديث والمعيق عند وجوده. يُمنع لون واحد إجمالي للوحدة؛ الرمادي لا يعني عدم وجود منتج — قد تعمل المسارات الحالية بانتظار اعتماد إعادة التصميم للمرحلة الأولى.",
+      )),
+      h("div",{className:"dv-cards"},
+        MODULES.map(m=>h("div",{className:"dv-modcard",key:m.id},
+          h("div",{className:"dv-modname"}, m.name),
+          h("div",{className:"dv-lanes"}, LANES.map(([k,l],i)=>dLane(l,m.lanes[k],i))),
+        )),
+      ),
+    );
+    const isCol=(id)=>!!st.collapsed[id];
+    const toggle=(id)=>this.setState(s=>({collapsed:{...s.collapsed,[id]:!s.collapsed[id]}}));
+    const render=(n)=>{
+      const kids=n.kids||[]; const col=isCol(n.id); const has=kids.length>0;
+      const card=h("div",{className:"mm-card"+(n.root?" root":"")+(n.kids?" stage":""),style:n.s?{"--c":C[n.s]}:null,onClick:has?()=>toggle(n.id):null},
+        has?h("span",{className:"mm-chev"}, col?"+":"−"):(n.s?h("span",{className:"mm-dot",style:{background:C[n.s]}}):null),
+        h("span",{className:"mm-tt"}, h("span",{className:"mm-lbl"},n.label), n.rt?h("span",{className:"mm-rt"},n.rt):null),
+        has?h("span",{className:"mm-count"},String(kids.length)):null);
+      return h("div",{className:"mm-node",key:n.id}, card, (has&&!col)?h("div",{className:"mm-kids"}, kids.map(render)):null);
+    };
+
+    const isDelivery = st.view==="delivery";
+    const ACTIVE = st.view==="api" ? TREE_API : TREE;
+    const allIds=[]; (function walk(n){ if(n.kids&&n.kids.length){allIds.push(n.id); n.kids.forEach(walk);} })(ACTIVE);
+    return {
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      legend: isDelivery ? null : legend,
+      tree: h("div",{className:"mm-tree"}, render(ACTIVE)),
+      deliveryBoard, isDelivery, notDelivery: !isDelivery,
+      isJourney: st.view==="journey"?"true":"false", isApi: st.view==="api"?"true":"false",
+      showJourney:()=>this.setState({view:"journey",collapsed:{}}), showApi:()=>this.setState({view:"api",collapsed:{}}),
+      showDelivery:()=>this.setState({view:"delivery",collapsed:{}}),
+      expandAll:()=>this.setState({collapsed:{}}),
+      collapseAll:()=>{ const c={}; allIds.forEach(id=>{ if(id!==ACTIVE.id)c[id]=true; }); this.setState({collapsed:c}); },
+      revLabel: "rev "+REV.id+" ← "+REV.from,
+      boardTitle: isDelivery ? S("Web/Admin delivery status","حالة تسليم الويب/الإدارة") : t.title,
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<script src="./ksa-adm1-map.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style> html, body { height: 100%; margin: 0; } </style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:30px; height:30px; flex:none; color:var(--nav-indicator);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+      <span style="display:flex; align-items:baseline; gap:8px;"><span lang="ar" style="font-weight:600; font-size:21px; line-height:28px; color:var(--nav-text-active);">صقيل</span><span lang="ar" style="font-size:12px; color:var(--nav-text);">صناعي</span></span>
+    </div>
+    <nav style="flex:1; overflow-y:auto; padding-block-end:8px;">
+      <div class="sidebar-group">Overview</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">Dashboard</span></a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><span class="nav-label">Operations Center</span></a>
+      <div class="sidebar-group">Administration</div>
+      <a class="nav-item is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.5 2.5M16.5 16.5 19 19M19 5l-2.5 2.5M7.5 16.5 5 19"/><circle cx="12" cy="12" r="3.2"/></svg><span class="nav-label">Field &amp; Offline Ops</span></a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/></svg><span class="nav-label">Trusted Devices</span></a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-8M4 20h16"/></svg><span class="nav-label">Execution Settings</span></a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/></svg><span class="nav-label">Users</span></a>
+    </nav>
+    <div style="padding:8px 0; border-block-start:1px solid var(--nav-border);"><a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m13 17-5-5 5-5M19 17l-5-5 5-5"/></svg><span class="nav-label">Back to Control Panel</span></a></div>
+  </aside>
+
+  <main style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 24px;">
+        <div class="breadcrumb"><a href="#">Administration</a><span class="sep">/</span><span>Field &amp; Offline Operations</span></div>
+        <span class="grow"></span>
+        <span class="badge badge-compliant"><span class="dot"></span>Live · refreshed 00:12</span>
+        <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="Toggle theme">
+          <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+          <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+        </button>
+        <span class="avatar" style="background:var(--action-primary); color:#fff;">OA</span>
+      </div>
+      <div style="display:flex; align-items:flex-end; gap:14px; padding:0 24px 14px; flex-wrap:wrap;">
+        <div><h1 style="font-family:var(--font-body); font-size:23px; font-weight:700; letter-spacing:-0.02em; margin:0;">Field &amp; Offline Operations</h1><div class="t-caption" style="margin-block-start:4px;">The operator's window into the field app — sync health, conflicts, offline packages, devices</div></div>
+        <span class="grow"></span>
+        <span class="badge badge-info">read model · RLS-scoped to your regions</span>
+      </div>
+    </header>
+
+    <div style="padding:20px 24px 80px; display:flex; flex-direction:column; gap:18px;">
+      <div class="panel" style="padding:14px 16px; border-inline-start:3px solid var(--action-primary); display:flex; gap:11px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:18px; height:18px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        <span class="t-compact" style="color:var(--text-secondary);">Offline work is <strong>durable and idempotent</strong>: the field app queues operations and replays them safely on reconnect. Server truth is never silently overwritten — divergences surface here as <strong>explicit conflicts</strong> for a human to resolve. Forcing a resync is an audited operator action.</span>
+      </div>
+
+      <div class="kpi-grid" style="grid-template-columns:repeat(5,minmax(0,1fr));">
+        <div class="kpi"><div class="kpi-label">Devices online</div><div class="kpi-value">18<span class="unit">/23</span></div><div class="kpi-delta">5 offline · queuing locally</div></div>
+        <div class="kpi"><div class="kpi-label">Pending outbox ops</div><div class="kpi-value">47</div><div class="kpi-delta">across 6 inspectors</div></div>
+        <div class="kpi"><div class="kpi-label">Open conflicts</div><div class="kpi-value" style="color:var(--status-warning);">3</div><div class="kpi-delta">need human resolution</div></div>
+        <div class="kpi"><div class="kpi-label">Failed syncs</div><div class="kpi-value" style="color:var(--status-critical);">2</div><div class="kpi-delta">auto-retry + manual</div></div>
+        <div class="kpi"><div class="kpi-label">Stale packages</div><div class="kpi-value">5</div><div class="kpi-delta">devices on old version</div></div>
+      </div>
+
+      <div class="panel" style="padding:0; overflow:hidden; height:340px; position:relative;">
+        <div style="position:absolute; top:10px; inset-inline-start:12px; z-index:4; font-weight:600; font-size:12.5px; background:rgba(10,20,30,.6); color:#eaf3fb; padding:4px 10px; border-radius:6px;">Device fleet — last known position</div>
+        <ksa-adm1-map mode="ops" markers="{{ deviceMarkers }}" style="position:absolute; inset:0; width:100%; height:100%;"></ksa-adm1-map>
+      </div>
+
+      <div class="seg" style="align-self:flex-start;">
+        <button class="seg-opt" aria-pressed="{{ isSync }}" onClick="{{ pickSync }}">Sync &amp; outbox</button>
+        <button class="seg-opt" aria-pressed="{{ isConflict }}" onClick="{{ pickConflict }}">Conflicts</button>
+        <button class="seg-opt" aria-pressed="{{ isPackages }}" onClick="{{ pickPackages }}">Offline packages</button>
+        <button class="seg-opt" aria-pressed="{{ isDevices }}" onClick="{{ pickDevices }}">Devices &amp; sessions</button>
+      </div>
+
+      <!-- SYNC & OUTBOX -->
+      <sc-if value="{{ isSync }}" hint-placeholder-val="{{ true }}">
+        <div class="panel" style="padding:16px 18px;">
+          <div style="display:flex; gap:16px; flex-wrap:wrap; margin-block-end:14px;">
+            <div class="t-caption">Outbox by operation kind:</div>
+            <sc-for list="{{ opKinds }}" as="k" hint-placeholder-count="6"><span class="badge badge-neutral">{{ k.name }} · {{ k.count }}</span></sc-for>
+          </div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Inspector</th><th>Device</th><th>Last sync</th><th class="cell-num">Pending</th><th>Detail</th><th>State</th><th></th></tr></thead><tbody>
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+              <tr>
+                <td>{{ r.inspector }}</td>
+                <td><span class="id-code">{{ r.device }}</span></td>
+                <td class="t-caption">{{ r.lastSync }}</td>
+                <td class="cell-num">{{ r.pending }}</td>
+                <td class="t-caption">{{ r.detail }}</td>
+                <td><span class="badge {{ r.badge }}"><span class="dot"></span>{{ r.state }}</span></td>
+                <td><button class="btn btn-ghost btn-sm">{{ r.action }}</button></td>
+              </tr>
+            </sc-for>
+          </tbody></table></div>
+          <p class="t-caption" style="margin:12px 0 0;">Replay is order-preserved and idempotent — a forced resync cannot double-post an operation.</p>
+        </div>
+      </sc-if>
+
+      <!-- CONFLICTS -->
+      <sc-if value="{{ isConflict }}" hint-placeholder-val="{{ false }}">
+        <div class="stack" style="gap:12px;">
+          <sc-for list="{{ conflicts }}" as="c" hint-placeholder-count="3">
+            <div class="panel" style="padding:16px 18px; border-inline-start:3px solid var(--status-warning);">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><span class="badge badge-warning"><span class="dot"></span>conflict</span><span style="font-weight:600; font-size:14px;">{{ c.title }}</span><span class="grow"></span><span class="id-code t-caption">{{ c.ref }} · {{ c.device }}</span></div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-block-start:12px;">
+                <div style="padding:11px 13px; background:var(--surface-sunken); border-radius:8px;"><div class="t-label">Device value (offline)</div><div style="font-size:13.5px; margin-block-start:3px;">{{ c.deviceValue }}</div></div>
+                <div style="padding:11px 13px; background:var(--surface-sunken); border-radius:8px;"><div class="t-label">Server value (authoritative)</div><div style="font-size:13.5px; margin-block-start:3px;">{{ c.serverValue }}</div></div>
+              </div>
+              <div style="display:flex; gap:8px; margin-block-start:12px; flex-wrap:wrap;"><button class="btn btn-secondary btn-sm">Keep server</button><button class="btn btn-secondary btn-sm">Keep device</button><button class="btn btn-primary btn-sm">Open record</button></div>
+              <p class="t-caption" style="margin:10px 0 0;">{{ c.note }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- OFFLINE PACKAGES -->
+      <sc-if value="{{ isPackages }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:16px 18px;">
+          <p class="t-caption" style="margin:0 0 14px;">Version-locked inspection packages cached to devices. A published version is immutable; pushing an update re-caches on each device's next online window — an in-progress inspection keeps the version it started with.</p>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Package</th><th>Version</th><th class="cell-num">Items</th><th class="cell-num">Size</th><th>Devices current</th><th>Stale</th><th></th></tr></thead><tbody>
+            <sc-for list="{{ packages }}" as="p" hint-placeholder-count="3">
+              <tr><td>{{ p.name }}</td><td><span class="id-code">{{ p.version }}</span></td><td class="cell-num">{{ p.items }}</td><td class="cell-num t-caption">{{ p.size }}</td><td class="cell-num">{{ p.current }}</td><td class="cell-num"><span class="{{ p.staleClass }}">{{ p.stale }}</span></td><td><button class="btn btn-ghost btn-sm" aria-disabled="{{ p.pushDisabled }}" style="opacity:{{ p.pushOpacity }};">Push update</button></td></tr>
+            </sc-for>
+          </tbody></table></div>
+        </div>
+      </sc-if>
+
+      <!-- DEVICES & SESSIONS -->
+      <sc-if value="{{ isDevices }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:16px 18px;">
+          <p class="t-caption" style="margin:0 0 14px;">Trusted field devices and their sessions. Revoking a device forces re-enrolment and OTP on next login; queued offline work stays safe on the device until it can sync.</p>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Device</th><th>Inspector</th><th>OS</th><th>Last seen</th><th>Trust</th><th></th></tr></thead><tbody>
+            <sc-for list="{{ devices }}" as="d" hint-placeholder-count="4">
+              <tr><td><span class="id-code">{{ d.id }}</span></td><td>{{ d.inspector }}</td><td class="t-caption">{{ d.os }}</td><td class="t-caption">{{ d.lastSeen }}</td><td><span class="badge {{ d.badge }}">{{ d.trust }}</span></td><td><button class="btn btn-ghost btn-sm">{{ d.action }}</button></td></tr>
+            </sc-for>
+          </tbody></table></div>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: "dark", view: "sync" };
+  renderVals() {
+    const v = this.state.view, set = x => () => this.setState({ view: x });
+    return {
+      deviceMarkers: JSON.stringify([
+        { lng:46.71,lat:24.71,band:"low",label:"Inspector 04" }, { lng:39.19,lat:21.49,band:"medium",label:"Inspector 11" },
+        { lng:50.05,lat:26.42,band:"low",label:"Inspector 02" }, { lng:43.5,lat:26.3,band:"high",label:"Inspector 07 (offline)" },
+        { lng:39.6,lat:24.5,band:"low",label:"Inspector 15" },
+      ]),
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      isSync: v === "sync", isConflict: v === "conflict", isPackages: v === "packages", isDevices: v === "devices",
+      pickSync: set("sync"), pickConflict: set("conflict"), pickPackages: set("packages"), pickDevices: set("devices"),
+      opKinds: [
+        { name: "response", count: 19 }, { name: "evidence", count: 14 }, { name: "geo_checkin", count: 5 },
+        { name: "submit", count: 4 }, { name: "factory_check", count: 3 }, { name: "geo_override_request", count: 2 },
+      ],
+      rows: [
+        { inspector: "Khalid Al-Otaibi", device: "iPad-2291", lastSync: "2 min ago", pending: "0", detail: "—", state: "synced", badge: "badge-compliant", action: "View" },
+        { inspector: "Mansour Al-Harbi", device: "iPad-2288", lastSync: "offline 22 min", pending: "12", detail: "evidence 6 · response 4 · submit 1 · geo_checkin 1", state: "offline", badge: "badge-warning", action: "View" },
+        { inspector: "Faisal Al-Dossari", device: "iPad-2301", lastSync: "syncing…", pending: "8", detail: "replaying outbox", state: "syncing", badge: "badge-info", action: "View" },
+        { inspector: "Nayef Al-Qahtani", device: "iPad-2277", lastSync: "1 hr ago", pending: "1", detail: "1 conflict blocks submit", state: "conflict", badge: "badge-warning", action: "Resolve" },
+        { inspector: "Turki Al-Mutairi", device: "iPad-2265", lastSync: "failed 08:41", pending: "2", detail: "network 5xx · auto-retry", state: "failed", badge: "badge-critical", action: "Force resync" },
+      ],
+      conflicts: [
+        { title: "Checklist response diverged", ref: "VS-40219 · item FS-014", device: "iPad-2277", deviceValue: "No — captured offline 09:12", serverValue: "Yes — section reopened on review (v2)", note: "Explicit record; never auto-merged. Resolving is audited and blocks submit until settled." },
+        { title: "Arrival outside window", ref: "VS-40160 · geo_checkin", device: "iPad-2288", deviceValue: "device clock 13:58, ±8m", serverValue: "window closed 13:30 (server-authoritative)", note: "Late/out-of-window is decided server-side; device time is evidence only." },
+        { title: "Evidence hash mismatch", ref: "EV-2201", device: "iPad-2301", deviceValue: "re-uploaded after edit", serverValue: "original SHA on file", note: "Integrity divergence — verify provenance before accepting." },
+      ],
+      packages: [
+        { name: "Fire Safety Package", version: "v3", items: "42", size: "1.2 MB", current: "21", stale: "2", staleClass: "id-code", pushDisabled: "false", pushOpacity: "1" },
+        { name: "Environmental Package", version: "v5", items: "31", size: "0.9 MB", current: "23", stale: "0", staleClass: "t-caption", pushDisabled: "true", pushOpacity: ".45" },
+        { name: "General Safety Package", version: "v2", items: "58", size: "1.6 MB", current: "20", stale: "3", staleClass: "id-code", pushDisabled: "false", pushOpacity: "1" },
+      ],
+      devices: [
+        { id: "iPad-2291", inspector: "Khalid Al-Otaibi", os: "iPadOS 18.1", lastSeen: "2 min ago", trust: "trusted", badge: "badge-compliant", action: "Revoke" },
+        { id: "iPad-2288", inspector: "Mansour Al-Harbi", os: "iPadOS 17.5", lastSeen: "offline 22 min", trust: "trusted", badge: "badge-compliant", action: "Revoke" },
+        { id: "iPad-2265", inspector: "Turki Al-Mutairi", os: "iPadOS 18.1", lastSeen: "1 day ago", trust: "enrolment pending", badge: "badge-warning", action: "Approve" },
+        { id: "iPad-2240", inspector: "—", os: "iPadOS 16.7", lastSeen: "31 days ago", trust: "revoked", badge: "badge-neutral", action: "Re-enrol" },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -16,7 +16,17 @@
 /* Split variant (login): fixed credential column on the start side, story
    panel takes the rest. The story panel disappears on small screens. */
 .lg-page--split { display: grid; grid-template-columns: minmax(420px, 500px) minmax(0, 1fr); }
-@media (max-width: 960px) { .lg-page--split { grid-template-columns: 1fr; } }
+
+/* Product-Owner rule (2026-07-26): the credential card is the whole page on
+   iPad and any responsive width; the atlas belongs only to the stretched web
+   canvas. Below the desktop breakpoint the story panel is REMOVED, not
+   restacked — an atlas sliding under the card was never the intent. Touch
+   devices are excluded by pointer as well as width, so an iPad in landscape
+   (1024-1366px) still gets the card alone. */
+@media (max-width: 1024px), (pointer: coarse) {
+  .lg-page--split { grid-template-columns: 1fr; }
+  .lg-page--split .lg-story { display: none; }
+}
 
 /* ---- credential panel -------------------------------------------------- */
 .lg-panel { display: flex; flex-direction: column; min-inline-size: 0;
@@ -24,7 +34,7 @@
   padding: var(--space-8) clamp(24px, 3vw, 44px);
   background: var(--surface-primary);
   border-inline-end: 1px solid var(--border-subtle); }
-@media (max-width: 960px) { .lg-panel { border-inline-end: none; } }
+@media (max-width: 1024px), (pointer: coarse) { .lg-panel { border-inline-end: none; } }
 
 .lg-lockup { display: flex; align-items: center; gap: var(--space-3); }
 .lg-lockup__mark { inline-size: 42px; block-size: 42px; color: var(--text-primary); flex-shrink: 0; }

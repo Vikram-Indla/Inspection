@@ -1,0 +1,421 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-REPOSITORY-AUTHORITY-TARGET-MAP-071
+title: Trusted Devices repository authority and future target map
+status: MAP_COMPLETE_AUTHORITY_CONFLICTS_UNRESOLVED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_AUTHORITY_MAPPING
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  authority_records_changed: 0
+  leases_granted: 0
+  reason: >-
+    This packet identifies existing authority and possible future
+    change-control destinations. It does not choose policy, authorize a target,
+    edit a control or confer file ownership.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-REPOSITORY-AUTHORITY-TARGET-MAP-071
+  source_task: DEV-PRE-GOV-01
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+    - M10-ADMIN-DEVICE-COMMAND-MDM-HAZARD-TO-CHANGE-BOUNDARY-069
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NO-WAIT-PREFLIGHT-BACKLOG-070
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  do_not_touch:
+    - all listed current and future authority targets
+    - design, application, database, provider, data, test and evidence files
+    - branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only authority discovery; current M2 slice does not authorize M10 Devices changes.
+
+authority_precedence:
+  - Approved requirement and acceptance registers define mandatory outcomes.
+  - Sponsor decisions recorded through change control define unresolved policy.
+  - Canonical domain RBAC/state records define cross-module vocabulary.
+  - Governed design route maps and fingerprints define visual authority only after approval.
+  - Migrations/RLS/RPCs define current runtime enforcement, not product policy by themselves.
+  - Application source defines current consumer behavior, not missing provider/policy authority.
+  - Tests and evidence prove behavior but cannot create authority.
+  - Coordination packets identify gaps and recommendations only.
+
+authority_targets:
+  - target_id: AUTH-REQ-01
+    domain: Mandatory device requirements and acceptance
+    current_authority:
+      - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+      - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+      - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    current_fact: MVP2-REQ/AC-0176, 0184, 0186 and 0244 plus WA-M8-AC-001..006 remain mandatory.
+    conflict:
+      - Coverage reconciliation points to CD-056 R2 artifacts not located as governed route-level authority in the reviewed repository.
+      - Implementation-status labels exceed current route/provider evidence.
+    future_target:
+      mode: PRESERVE_NO_SCOPE_EDIT
+      files: Same requirement and acceptance rows; only status/evidence links may change after proven acceptance under authorized change control.
+    future_owner: REQUIREMENTS_GOVERNANCE
+    prerequisite: None for preservation; sponsor change control for any amendment.
+    forbidden: Removing, weakening or marking a row complete because a provider remains held.
+
+  - target_id: AUTH-DEC-01
+    domain: Sponsor device-command decisions
+    current_authority:
+      - product-contract/governance/decision_register.csv
+      - product-contract/governance/OPEN_DECISIONS.yaml
+    current_fact: No DEV-CMD-DEC-01..10 canonical entries exist; checklist 067 remains advisory coordination.
+    conflict: Ten necessary role/lifecycle/provider/design decisions have no canonical recorded authority.
+    future_target:
+      mode: CHANGE_CONTROL_REQUIRED
+      files:
+        - product-contract/governance/decision_register.csv
+        - product-contract/governance/OPEN_DECISIONS.yaml if still open after filing
+      required_fields: Decision IDs, sponsor answer, owner, date/evidence, downstream authority, status and preservation boundary.
+    future_owner: SPONSOR_AND_GOVERNANCE
+    prerequisite: Complete compatible sponsor answers pass checklist 067.
+    forbidden: Recording an inferred answer or using coordination YAML as the decision register.
+
+  - target_id: AUTH-RBAC-01
+    domain: Canonical roles and device capabilities
+    current_authority:
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/governance/decision_register.csv
+      - supabase/migrations/0001_foundation.sql
+    current_fact: Domain RBAC has no Device Admin/Mobile Admin row; foundation role vocabulary contains security_admin and ops.
+    conflicting_consumers:
+      - apps/web/src/lib/shell-navigation.ts uses security_admin for Devices navigation.
+      - mvp3_issue_device_command permits ops or security_admin.
+      - mvp3_devices_read includes assigned self, ops, security_admin and auditor.
+      - web-admin ROUTE_INVENTORY/CURRENT_TO_TARGET_MIGRATION report inspector.
+    future_target:
+      mode: CHANGE_CONTROL_REQUIRED
+      files:
+        - product-contract/domain/rbac_matrix.csv
+        - product-contract/governance/decision_register.csv
+        - role/capability schema authority only if D01 creates or remaps capabilities
+      required_fields: Canonical persona/role, read/register/assign and each command/rescue capability, scope, denial and lifecycle owner.
+    future_owner: GOVERNANCE
+    prerequisite: DEV-CMD-DEC-01 and DEV-CMD-DEC-02 approved.
+    forbidden: Treating navigation, current RLS or requirement labels as the missing canonical decision.
+
+  - target_id: AUTH-STATE-01
+    domain: Device and command lifecycle
+    current_authority:
+      - product-contract/domain/state_transitions.csv
+      - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+    current_fact: Domain transitions contain no Device/Device Command object; migration embeds unsafe local transition behavior.
+    conflict: Runtime Resume sets Trusted from any state while no canonical transition authorizes it.
+    future_target:
+      mode: CHANGE_CONTROL_THEN_ADDITIVE_IMPLEMENTATION
+      files:
+        - product-contract/domain/state_transitions.csv
+        - product-contract/governance/decision_register.csv
+        - one ordered additive migration after policy approval
+      required_fields: Every source state/command/target, actor, guard, version/conflict, side effect, approval, audit and terminal behavior.
+    future_owner: GOVERNANCE_THEN_IMPLEMENTATION_DB
+    prerequisite: DEV-CMD-DEC-02..06 approved and provider stages reconciled.
+    forbidden: Back-solving policy from current RPC code.
+
+  - target_id: AUTH-AUDIT-01
+    domain: Approval, audit, correlation and immutable command evidence
+    current_authority:
+      - product-contract/domain/state_transitions.csv
+      - existing audit ontology/semantic-event authorities
+      - mvp3_device_commands schema
+    current_fact: Command table has requester/reason/times/status but no approver, before/after, policy version, receipt, correlation or immutable audit authority.
+    conflict: Existing rollback probe directly writes acknowledged after reset role.
+    future_target:
+      mode: CHANGE_CONTROL_THEN_ADDITIVE_IMPLEMENTATION
+      files:
+        - canonical audit/transition authority named by governance
+        - one ordered additive migration and audit tests
+      required_fields: Requester/approver/system actors, command/device identity, before/after, version, correlation/idempotency, receipt and tamper rule.
+    future_owner: GOVERNANCE_THEN_IMPLEMENTATION_DB
+    prerequisite: DEV-CMD-DEC-03 and DEV-CMD-DEC-06 approved.
+    forbidden: Privileged table mutation as a product acknowledgement or evidence authority.
+
+  - target_id: AUTH-PROVIDER-01
+    domain: MDM provider and fail-closed hold
+    current_authority:
+      - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+      - product-contract/governance/decision_register.csv
+      - product-contract/mvp3/MVP3_RETROFIT_INTEGRATION_MAP.csv
+      - product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md
+    current_fact: Evidence/integration narrative says MDM held, but hold register rows MVP3-HOLD-001..008 contain no MDM entry.
+    conflict: RUNTIME_CERTIFIED_MDM_HELD has no matching canonical hold and no approved provider contract.
+    future_target:
+      mode: PROVIDER_CHANGE_CONTROL_REQUIRED
+      files:
+        - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv for D09-A or held portions of D09-C
+        - product-contract/governance/decision_register.csv
+        - separately authorized provider contract pointer for D09-B or D09-C
+      required_fields: Provider/hold scope, credential owner, attestation/transport/receipt, retry/privacy/release evidence and fail-closed behavior.
+    future_owner: SPONSOR_PROVIDER_SECURITY_GOVERNANCE
+    prerequisite: DEV-CMD-DEC-09 approved.
+    forbidden: Provider selection, credentials or enablement from sponsor answer alone.
+
+  - target_id: AUTH-DESIGN-01
+    domain: Route-specific visual and interaction authority
+    current_authority:
+      - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+      - product-contract/web-admin-phase1/SCREEN_BATCH_LEDGER.csv
+      - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+      - product-contract/design/claude-design-mvp1/00_START_HERE.md
+    current_fact:
+      - WA-DES-015 is registered only to /admin.
+      - WA-DES-004 currently includes /admin/devices under M9 despite review finding it is not the correct Devices authority.
+      - MVP3 reconciliation names CD-056 R2 frames without a route-specific governed repository fingerprint package.
+    conflict: WA-DES-015 is nearest observed source, but neither it nor CD-056 currently has accepted /admin/devices route lineage.
+    future_target:
+      mode: GOVERNED_DESIGN_IDENTITY_REQUIRED
+      files:
+        - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+        - product-contract/web-admin-phase1/SCREEN_BATCH_LEDGER.csv
+        - route design package/fingerprint authority under the governed design location
+        - CURRENT_TO_TARGET_MIGRATION.csv after design acceptance
+      required_fields: Stable design ID/revision/hash, parent lineage, route, owner module, states, viewports/locales/themes/a11y and acceptance status.
+    future_owner: CLAUDE_DESIGN_GOVERNANCE_THEN_SPONSOR
+    prerequisite: DEV-CMD-DEC-01..09 recorded and DEV-CMD-DEC-10 selected.
+    forbidden: Reusing WA-DES-004/011/041/043 or inventing an ID outside governance.
+
+  - target_id: AUTH-ROUTE-01
+    domain: Web/Admin route planning and migration authority
+    current_authority:
+      - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+      - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+      - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+      - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+    current_fact: Route is owned by M8 package, but current files list Users/Roles design sources, inspector persona, no detected RPC and only loading/empty/error.
+    conflict:
+      - Runtime action invokes mvp3_issue_device_command despite migration row saying no RPC statically detected.
+      - Navigation/RLS/RPC role facts disagree with inspector owner in inventory/migration.
+      - M8 package do-not-touch excludes Field/offline while Device acceptance is inherently cross-surface.
+    future_target:
+      mode: PLAN_AMENDMENT_AFTER_AUTHORITY
+      files: The four Web/Admin planning maps above, without changing accepted requirements.
+      required_fields: Correct design lineage, role/capability, RPC/service, lifecycle/audit, Field dependency, tests, states and evidence.
+    future_owner: WEB_ADMIN_GOVERNANCE
+    prerequisite: RBAC, design, provider/hold and lifecycle authority accepted.
+    forbidden: Editing the current M2 slice or treating M8 route plan as a Device implementation lease.
+
+  - target_id: AUTH-EXEC-01
+    domain: Task routing, current slice and implementation lease
+    current_authority:
+      - product-contract/execution/CURRENT_SLICE.yaml
+      - product-contract/execution/TASK_ROUTER.yaml
+      - product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml
+    current_fact: Current slice is M2 Planning/Visits, awaiting Product Owner approval, and explicitly excludes Field, migrations and providers.
+    conflict: No current slice authorizes M10 Devices governance/design/implementation/test mutation.
+    future_target:
+      mode: NEW_CHANGE_CONTROL_AND_SLICE_REQUIRED
+      files:
+        - TASK_ROUTER.yaml only if new intent/context is needed
+        - a new CURRENT_SLICE record after current stop gate and sponsor consent
+        - exact file leases/owners in coordination authority
+      required_fields: IDs, requirements, acceptance, design, routes, engines, files, provider/DB boundary, tests, evidence, rollback and do-not-touch.
+    future_owner: ORCHESTRATOR_AND_SPONSOR
+    prerequisite: Policy/design/provider gates pass and current slice stop condition is respected.
+    forbidden: Starting Devices mutation under TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.
+
+  - target_id: AUTH-DB-01
+    domain: Current lifecycle, trust and package data enforcement
+    current_authority:
+      - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+      - supabase/migrations/20260723090200_mvp3_devices_self_enroll_insert.sql
+      - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+    current_fact: mvp3_devices, mvp3_device_commands and package-open guard exist; self-enrollment is pending/fail-closed.
+    conflict:
+      - Resume is unsafe.
+      - Revoke absent.
+      - Expire packages has no effect.
+      - Trust evidence/provider receipt/audit lifecycle incomplete.
+      - Schema reuse names sync/outbox foundations but Devices route does not consume them.
+    future_target:
+      mode: ADDITIVE_FORWARD_ONLY_AFTER_LEASE
+      files:
+        - one or serialized additive migrations
+        - generated types only through one integration owner
+      required_objects: Versioned lifecycle, terminal guards, trust evidence, idempotency, receipt/audit, invalidation and all package-operation enforcement.
+    future_owner: IMPLEMENTATION_DB
+    prerequisite: AUTH-STATE-01, AUTH-AUDIT-01 and AUTH-PROVIDER-01 accepted; exact DB lease granted.
+    forbidden: Destructive rewrite, direct status repair or migration under this read-only task.
+
+  - target_id: AUTH-SERVICE-01
+    domain: Provider and Admin command service boundary
+    current_authority:
+      - apps/web/src/app/(app)/admin/mvp3-actions.ts
+      - apps/web/src/components/Mvp3ActionForm.tsx
+      - no approved MDM adapter located
+    current_fact: Generic server action validates command/reason, calls RPC and reports queued; raw DB error and hard-coded pending text remain.
+    conflict: No provider dispatch/receipt service, version precondition, idempotency or provider-unavailable contract exists.
+    future_target:
+      mode: SEPARATE_ROUTE_SERVICE_AND_PROVIDER_ADAPTER_AFTER_LEASE
+      files:
+        - Devices-specific server action/service
+        - provider adapter/receipt service only if provider execution approved
+        - shared action/i18n files only through a sole integration owner
+    future_owner: IMPLEMENTATION_ADMIN_UI_AND_IMPLEMENTATION_PROVIDER_WITH_SEPARATE_FILES
+    prerequisite: Stable DB/provider interfaces and accepted design error semantics.
+    forbidden: Shared-file overlap or provider implementation while held.
+
+  - target_id: AUTH-ADMIN-UI-01
+    domain: Admin Devices consumer
+    current_authority:
+      - apps/web/src/app/(app)/admin/devices/page.tsx
+      - apps/web/src/app/(app)/admin/devices/loading.tsx
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/src/lib/i18n.ts
+    current_fact: Route shows trust table, generic forms and truncated command list.
+    conflict: Missing eligible-state controls, revoke, approval/provider/receipt evidence, sync health, correct failures, stable design, reviewed Arabic and responsive/a11y proof.
+    future_target:
+      mode: ROUTE_LOCAL_IMPLEMENTATION_AFTER_ACCEPTED_DESIGN
+      files:
+        - route-local page/components/styles
+        - shared shell/i18n/common components only under serialized integration lease
+    future_owner: IMPLEMENTATION_ADMIN_UI
+    prerequisite: AUTH-DESIGN-01, AUTH-RBAC-01, AUTH-STATE-01, AUTH-PROVIDER-01 and service interfaces accepted.
+    forbidden: Designing behavior in code or editing shared files under parallel module leases.
+
+  - target_id: AUTH-FIELD-01
+    domain: Field package and device consumer
+    current_authority:
+      - apps/web/src/app/(app)/field/settings/devices
+      - Field package/open/submission routes and actions
+      - apps/web/e2e/field-settings-contract.spec.ts
+      - apps/web/e2e/field-settings-rls-live.spec.ts
+    current_fact: Self-enrollment is pending/fail-closed; current cross-certification covers neither trusted-device approval nor all download/open/sync/submit boundaries.
+    conflict: Current M8 package explicitly excludes /field/** even though MVP2-REQ-0184/0244 require cross-surface enforcement.
+    future_target:
+      mode: SEPARATE_FIELD_LEASE_AFTER_SHARED_CONTRACT
+      files: Exact package/device Field call sites named by future impact inventory.
+    future_owner: IMPLEMENTATION_FIELD_OFFLINE
+    prerequisite: DB trust/package contract and terminal/invalidation policy accepted.
+    forbidden: Field edits from a Web/Admin-only route lease.
+
+  - target_id: AUTH-OFFLINE-01
+    domain: Offline queue, sync health, conflict and replay consumer
+    current_authority:
+      - apps/web/src/lib/offline.ts
+      - product-contract/domain/state_transitions.csv STM-SYNC-001 and STM-SYNC-002
+      - apps/web/e2e/field-offline-isolation.spec.ts
+      - apps/web/e2e/offline-drill.spec.ts
+      - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+    current_fact: Canonical offline queue has sync/conflict foundations; no approved Device sync-health formula/source/action or trust-change replay/invalidation contract exists.
+    conflict: Requirement demands operational sync rescue while current route shows only last-seen and commands.
+    future_target:
+      mode: EXTEND_CANONICAL_OFFLINE_ENGINE_AFTER_POLICY
+      files:
+        - offline/sync source and projection files identified by future impact inventory
+        - state_transitions.csv additions after sponsor/governance approval
+    future_owner: GOVERNANCE_THEN_IMPLEMENTATION_FIELD_OFFLINE
+    prerequisite: DEV-CMD-DEC-07 and DEV-CMD-DEC-08 accepted.
+    forbidden: A second sync engine, fabricated health metrics or silent replay overwrite.
+
+  - target_id: AUTH-TEST-01
+    domain: Acceptance test authority
+    current_authority:
+      - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+      - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+      - apps/web/e2e/field-settings-rls-live.spec.ts
+      - apps/web/e2e/field-offline-isolation.spec.ts
+      - apps/web/e2e/offline-drill.spec.ts
+      - apps/web/e2e/cd-008-009-packages.spec.ts
+      - supabase/tests/mvp3_retrofit_live_probe.sql
+    current_fact: Existing tests are static, route smoke, adjacent behavior or one rollback path; Field RLS live suite is opt-in.
+    conflict: No single test authority covers the 46 negative and 14 positive lifecycle cases.
+    future_target:
+      mode: NEW_FOCUSED_TESTS_AFTER_EXPECTED_OUTCOMES_APPROVED
+      files: Future spec partition named in crosswalk 065, created only under QA lease.
+    future_owner: QA
+    prerequisite: Approved expected outcomes, deterministic fixtures, implementation revisions and provider/hold state.
+    forbidden: Encoding unanswered policy, counting skipped tests or using mocks as genuine provider evidence.
+
+  - target_id: AUTH-EVIDENCE-01
+    domain: Acceptance evidence and binary storage
+    current_authority:
+      - product-contract/evidence/EVIDENCE_STATUS.md
+      - product-contract/evidence/AC_LEDGER.csv
+      - docs/DOCUMENTATION_STORAGE_POLICY.md
+      - external INSPECTION_DOCS_ROOT/07_TEST_EVIDENCE_AND_SCREENSHOTS
+    current_fact: Text indexes remain in Git and binary evidence external; no route-specific Devices binary/runtime manifest was located.
+    conflict: MVP3 implementation/certification labels are not backed by provider, route action/persona or full visual evidence.
+    future_target:
+      mode: NEW_EVIDENCE_INDEX_AFTER_EXECUTION
+      files:
+        - one textual Devices evidence certificate/index in product-contract/evidence
+        - external binary manifest entries with path, size, SHA-256, authority and lifecycle
+    future_owner: QA_EVIDENCE_CURATOR_THEN_INDEPENDENT_REVIEW
+    prerequisite: Immutable test/provider/design/runtime outputs exist.
+    forbidden: Recommitting binaries, upgrading source/smoke proof or manufacturing provider receipts.
+
+conflict_index:
+  - conflict_id: AUTH-CON-01
+    subject: Device Admin/Mobile Admin requirement roles versus Security Admin/Ops/runtime consumers.
+    targets: [AUTH-RBAC-01, AUTH-ROUTE-01]
+    result: BLOCK
+  - conflict_id: AUTH-CON-02
+    subject: Domain lifecycle lacks Device transitions while current RPC performs unsafe transitions.
+    targets: [AUTH-STATE-01, AUTH-DB-01]
+    result: BLOCK
+  - conflict_id: AUTH-CON-03
+    subject: MDM-held evidence/status has no MDM provider-hold row.
+    targets: [AUTH-PROVIDER-01]
+    result: BLOCK
+  - conflict_id: AUTH-CON-04
+    subject: WA-DES-004 maps Devices, WA-DES-015 is nearest observed source, and CD-056 lacks accepted route lineage.
+    targets: [AUTH-DESIGN-01]
+    result: BLOCK
+  - conflict_id: AUTH-CON-05
+    subject: Route migration says Inspector/no RPC while navigation, RLS and action/RPC disagree.
+    targets: [AUTH-RBAC-01, AUTH-ROUTE-01, AUTH-SERVICE-01]
+    result: RETURN_FOR_MAPPING_CORRECTION
+  - conflict_id: AUTH-CON-06
+    subject: Current M2 slice excludes M10 Devices, Field, migrations and providers.
+    targets: [AUTH-EXEC-01]
+    result: BLOCK_MUTATION
+  - conflict_id: AUTH-CON-07
+    subject: Sync/outbox reuse is declared but no source/action ownership or Devices sync dashboard exists.
+    targets: [AUTH-OFFLINE-01, AUTH-ADMIN-UI-01]
+    result: BLOCK
+  - conflict_id: AUTH-CON-08
+    subject: Implementation/runtime-certified labels exceed the located Admin action/provider/visual evidence.
+    targets: [AUTH-REQ-01, AUTH-TEST-01, AUTH-EVIDENCE-01]
+    result: RETURN_FOR_STATUS_EVIDENCE_RECONCILIATION
+
+future_change_sequence:
+  - AUTH-DEC-01
+  - [AUTH-RBAC-01, AUTH-STATE-01, AUTH-AUDIT-01, AUTH-PROVIDER-01]
+  - AUTH-DESIGN-01
+  - [AUTH-ROUTE-01, AUTH-EXEC-01]
+  - [AUTH-DB-01, AUTH-SERVICE-01, AUTH-ADMIN-UI-01, AUTH-FIELD-01, AUTH-OFFLINE-01]
+  - AUTH-TEST-01
+  - AUTH-EVIDENCE-01
+  - independent review and sponsor acceptance
+
+review:
+  disposition: BLOCK
+  code: BLOCK_AUTHORITY_CONFLICTS_AND_CURRENT_SLICE_BOUNDARY
+  validation_summary:
+    authority_targets: 16
+    conflicts: 8
+    current_controls_modified: 0
+    leases_granted: 0
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+    mode: READ_ONLY
+    source_task: DEV-PRE-GOV-02
+    objective: >-
+      Produce a null-valued field schema for future role, transition, approval,
+      trust, receipt, invalidation, sync and provider-hold records, preserving
+      every sponsor-controlled field as unresolved and editing no authority.

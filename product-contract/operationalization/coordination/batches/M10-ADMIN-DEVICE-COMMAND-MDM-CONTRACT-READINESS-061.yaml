@@ -1,0 +1,507 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+title: Trusted Devices command, MDM acknowledgement and evidence contract readiness
+status: BLOCKED_PENDING_SPONSOR_PROVIDER_AND_SECURITY_CONTRACT_DECISIONS
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_CONTRACT_READINESS
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    This packet defines the contract boundary required to correct Devices but
+    records no sponsor decision, provider behavior, design acceptance or
+    implementation evidence. Current queued Resume still restores trusted state
+    before acknowledgement, no canonical command acknowledgement/completion
+    path exists, Device Admin/Mobile Admin role semantics are unresolved, and
+    external MDM remains held without a formal provider-register row.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+  gate: M10 Trusted Devices command and MDM contract
+  route: /admin/devices
+  channel: ADMIN
+  process_ids: [G2-P00]
+  module_id: M3-06
+  module_design_id: CD-056
+  direct_requirement_ids: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+  contextual_requirement_ids:
+    - MVP2-REQ-0074
+    - MVP2-REQ-0178
+    - MVP2-REQ-0180
+    - MVP2-REQ-0181
+    - MVP2-REQ-0185
+  acceptance_ids:
+    - MVP2-AC-0176
+    - MVP2-AC-0184
+    - MVP2-AC-0186
+    - MVP2-AC-0244
+    - WA-M8-AC-001..006
+  predecessor: M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-041 or CD-056
+    - Devices, Field/iPad, offline, package, sync or provider application code
+    - database, migrations, RPCs, data, seeds, tests or evidence
+    - design, route, screen, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Governance analysis only. It creates no product, design, provider,
+    database, test, mapping, branch, lease or status mutation.
+
+authority_summary:
+  current_device_states: [pending, trusted, suspended, revoked, wipe_pending, wiped]
+  current_commands: [suspend, resume, remote_wipe, expire_packages]
+  current_command_states: [queued, acknowledged, completed, failed, dependency_blocked]
+  current_roles:
+    navigation: [security_admin]
+    device_read: [assigned_user_self, ops, security_admin, auditor]
+    command_read: [ops, security_admin, auditor]
+    command_request: [ops, security_admin]
+  requirement_personas:
+    - Device Admin
+    - Mobile Admin
+    - Security Admin
+    - Inspector
+  canonical_RBAC_rows_for_Device_Admin_or_Mobile_Admin: absent
+  provider_status_claim: RUNTIME_CERTIFIED_MDM_HELD
+  formal_MDM_hold_row: absent
+  production_hold: MVP3-HOLD-008
+  design_authority:
+    nearest_route_expression: WA-DES-015_devices_state
+    family: CD-056_R2
+    route_frame_governed: false
+    consumer_status: NON_CONSUMABLE
+
+contract_principles:
+  - >-
+    Requested, locally enforced, transmitted, acknowledged, completed and
+    externally observed states are different facts and must never share one
+    ambiguous label.
+  - >-
+    A server may fail closed immediately for new package access, but a positive
+    trusted or wiped claim requires genuine authoritative evidence.
+  - >-
+    No last-seen value, MDM reference, app-compliant boolean or queued command
+    proves online status, attestation freshness, delivery or completion.
+  - >-
+    Revoked and wiped are terminal until a separately governed re-enrollment
+    process proves a new identity and fresh attestation.
+  - >-
+    Every state-changing request requires exact actor, reason, affected device,
+    before state, desired state, version, timestamp and immutable evidence.
+  - >-
+    Provider absence, offline devices, duplicate requests and stale state must
+    fail without restoring trust, losing the request or claiming remote effect.
+  - >-
+    Design fixture devices, names, outbox values, timestamps and health labels
+    are never runtime truth.
+
+trust_fact_model_required:
+  facts_that_must_be_distinct:
+    enrollment:
+      values: [unregistered, pending, approved, revoked]
+      authority: sponsor_governance_to_define
+    local_access_enforcement:
+      meaning: Whether server package download/open/submit is allowed now.
+      source: canonical_server_policy
+    desired_remote_state:
+      meaning: Requested MDM/device state, not observed state.
+      source: governed_command_request
+    observed_remote_state:
+      meaning: Last device/MDM-attested state.
+      source: approved_provider_or_device_receipt
+    app_compliance:
+      meaning: Result against an identified app-policy version.
+      source: approved_policy_and_attestation
+    MDM_attestation:
+      meaning: Provider-verified enrollment/management fact with provenance and time.
+      source: approved_provider_contract
+    last_contact:
+      meaning: Timestamp only; no health threshold may be inferred.
+    package_access:
+      meaning: Download, open and submit decisions plus immutable outcomes.
+  current_schema_conflation:
+    field: trust_status
+    unsafe_effect: Resume writes trusted while only a request has been queued.
+  implementation_rule: >-
+    Governance may choose schema, views or derived state later, but the UI,
+    APIs, tests and evidence must preserve these semantic distinctions.
+
+minimum_safe_transition_contract:
+  pending:
+    positive_transition: TRUSTED
+    allowed_only_after:
+      - authorized approval under a governed Device Admin/Security role
+      - assigned-user and device identity validation
+      - fresh approved MDM attestation
+      - app compliance against a visible governing policy version
+      - immutable approval and attestation evidence
+    current_support: absent
+  trusted:
+    suspend:
+      local_effect: Server package access may fail closed immediately.
+      remote_effect: Must remain requested or awaiting acknowledgement until genuine evidence.
+    revoke:
+      required: true
+      local_effect: Server download/open/submit and sync must fail closed immediately.
+      remote_effect: Separate device/MDM acknowledgement may remain pending.
+      current_command: absent
+    remote_wipe:
+      local_effect: Move only to wipe_pending or equivalent requested state.
+      completed_effect: Wiped only after genuine receipt.
+    expire_packages:
+      trust_effect: none
+      package_effect: Must identify affected manifests/packages and prove server invalidation plus device receipt.
+  suspended:
+    resume:
+      forbidden_until:
+        - fresh MDM/device acknowledgement
+        - fresh app-policy compliance
+        - current assignment and device identity validated
+        - no revoke or wipe terminal condition
+      current_behavior: UNSAFE_IMMEDIATE_TRUSTED
+    revoke_or_wipe:
+      decision_required: true
+  revoked:
+    resume: FORBIDDEN
+    reactivation: SEPARATE_REENROLLMENT_CONTRACT_REQUIRED
+    package_and_sync_access: DENIED
+    current_enforcement_complete: false
+  wipe_pending:
+    resume: FORBIDDEN
+    wiped: GENUINE_COMPLETION_RECEIPT_REQUIRED
+    failed_or_blocked: Must remain non-trusted and visibly unresolved.
+  wiped:
+    resume: FORBIDDEN
+    reactivation: SEPARATE_REENROLLMENT_WITH_NEW_ATTESTATION_REQUIRED
+  any_state:
+    duplicate_same_command: IDEMPOTENT_OR_EXPLICIT_DUPLICATE_NO_SECOND_EFFECT
+    contradictory_pending_command: REJECT_OR_REQUIRE_GOVERNED_SUPERSESSION
+    stale_expected_version: REJECT_WITH_RELOAD_NO_SILENT_OVERWRITE
+    provider_unavailable: DEPENDENCY_BLOCKED_NO_POSITIVE_REMOTE_STATE
+  governance_boundary: >-
+    This matrix records non-negotiable safety constraints. Sponsor and Security
+    must decide the remaining allowed source-state/command combinations; this
+    reviewer does not invent them.
+
+command_lifecycle_contract:
+  queued:
+    meaning: Persisted authorized request only.
+    forbidden_claims: [transmitted, received, acknowledged, applied, completed]
+  acknowledged:
+    unresolved_semantic: >-
+      Governance must define whether this means provider accepted, device
+      received or device applied. One label may not ambiguously cover all three.
+    required_evidence:
+      - authoritative actor/source
+      - timestamp
+      - correlation and receipt identity
+      - request identity and device identity
+  completed:
+    required:
+      - authoritative completion receipt
+      - completed_at invariant
+      - result/effect code
+      - receipt digest or tamper-evident reference
+      - observed device state and app/MDM policy versions where applicable
+    forbidden: Direct privileged table update used as product evidence.
+  failed:
+    required:
+      - safe stable failure code
+      - no positive device-state claim
+      - retry eligibility and current local enforcement truth
+  dependency_blocked:
+    required:
+      - exact held dependency
+      - local fail-closed effect
+      - no delivery or completion claim
+  current_gap:
+    canonical_authenticated_transition: absent
+    provider_callback_contract: absent
+    acknowledgement_actor: undefined
+    completion_invariant: absent
+    receipt: absent
+    immutable_audit: absent
+
+command_request_contract:
+  required_input:
+    - device_id
+    - command
+    - meaningful_reason
+    - expected_device_version_or_state_token
+    - idempotency_key
+    - declared_scope_for_expire_packages
+  required_server_validation:
+    - authenticated actor and per-command authority
+    - exact current-state transition eligibility
+    - assignment and device identity integrity
+    - no terminal-state resurrection
+    - no incompatible pending command
+    - destructive-action approval if governance requires it
+    - provider/hold readiness where remote effect is required
+  required_output:
+    - stable command/request ID
+    - accepted current state and desired state
+    - actor and requested time
+    - local enforcement effect
+    - provider state
+    - next evidence expected
+  current_input: [device_id, command, reason]
+  current_output_to_UI: generic_queued_message_only
+
+permission_decisions_required:
+  role_vocabulary:
+    issue: Requirements name Device Admin and Mobile Admin but canonical RBAC has no such role.
+    options_requiring_sponsor_selection:
+      - Map bounded device capabilities to existing security_admin and ops.
+      - Create a governed role through change control.
+    prohibited: Silently treat ops, inspector or navigation visibility as Device Admin.
+  per_command_authority:
+    suspend: DECISION_REQUIRED
+    resume: DECISION_REQUIRED_AND_MUST_NOT_BYPASS_ATTESTATION
+    revoke: DECISION_REQUIRED
+    remote_wipe: DECISION_REQUIRED_HIGH_IMPACT
+    expire_packages: DECISION_REQUIRED_WITH_PACKAGE_SCOPE
+  dual_control:
+    current: absent
+    decision: >-
+      Sponsor/Security must decide whether remote wipe, revoke and trust restore
+      need an independent approver. Do not label maker-checker before approval.
+  read_personas:
+    security_admin: full governed administrative view
+    ops: current full data and command authority but no navigation; reconcile
+    auditor: read-only, no rendered controls
+    assigned_user_self: own device only on the appropriate Field/self-service surface
+    unrelated_authenticated: denied or verified scoped-empty without data leakage
+  direct_route_rule: >-
+    A route-specific admission or explicitly designed read-only persona state is
+    required. RLS remains authoritative and navigation is not authorization.
+
+offline_and_degraded_contract:
+  device_offline:
+    visible_truth:
+      - last successful contact time with source and as-of
+      - command remains queued or awaiting acknowledgement
+      - local server access enforcement state
+      - remote effect unknown
+    forbidden:
+      - invented offline threshold
+      - completed remote action
+      - empty outbox or successful sync inference
+  MDM_unavailable:
+    command_state: dependency_blocked
+    local_state: explicit fail-closed truth
+    recovery: retry only after provider readiness and idempotency validation
+  Field_package_offline:
+    required_truth:
+      - server access denied or allowed
+      - cached-device package state unknown until device receipt
+      - manifest expiry as separate fact
+      - invalidation request and acknowledgement as separate facts
+    forbidden: Claiming cached package deletion from an expire request.
+  stale_last_seen:
+    rule: Show timestamp, never health/severity until threshold authority exists.
+  command_source_failure:
+    rule: Unavailable is not no commands; preserve device source independently.
+  device_source_failure:
+    rule: Do not render zero trusted or an actionable command surface.
+  partial_sources:
+    rule: Each source declares its own success, failure, RLS scope and completeness.
+  session_or_permission_loss:
+    rule: Fail without retaining destructive controls or sensitive command detail.
+
+evidence_and_audit_contract:
+  request_evidence:
+    - command_id
+    - idempotency_key
+    - correlation_id
+    - device identifier safe display
+    - actor
+    - reason
+    - requested_at
+    - before state and expected version
+    - desired state
+    - local enforcement effect
+  transport_evidence:
+    - approved provider identity
+    - transmitted_at
+    - provider request reference safe display
+    - provider acceptance or dependency-blocked outcome
+  acknowledgement_evidence:
+    - acknowledgement authority
+    - acknowledged_at
+    - device/provider identity
+    - receipt identity or digest
+    - observed state
+  completion_evidence:
+    - completed_at
+    - verified result
+    - resulting trust and package-access state
+    - applicable MDM/app policy versions
+    - failure or partial-effect detail when not complete
+  audit_invariant:
+    - append-only or immutable event
+    - actor, action, object, before, after, reason and time
+    - retrieval visible from the command/device context
+  current_UI_gap: >-
+    Command evidence currently shows only command, reason and status, omitting
+    device, requester, times, correlation, before/after, provider and receipt.
+
+design_contract_before_correction:
+  authority_prerequisites:
+    - Bind WA-DES-015 Devices as the route expression of CD-056 R2.
+    - Retrieve and fingerprint the CD-056 package and exact Devices frame.
+    - Allocate the governed route screen identity and exact requirement ownership.
+    - Remove WA-DES-004, WA-DES-043 and WA-DES-011 as route authorities.
+  information_architecture:
+    - Device identity, assignee and enrollment truth.
+    - Local access, desired remote and observed remote state separated.
+    - MDM attestation and app-policy evidence with provenance.
+    - Eligible governed actions with consequence and required reason.
+    - Command timeline tied to device, actor, time and receipt.
+    - Offline/degraded and policy-held explanation.
+  prohibited_content:
+    - online or offline health without approved derivation
+    - outbox or sync counts without real source
+    - fixture people, devices, OS versions or timestamps as runtime data
+    - Trusted immediately after queuing Resume
+    - Wiped after requesting Remote wipe
+    - Packages expired without exact server and device effects
+    - raw MDM references, secrets, payloads or internal errors
+  action_safety:
+    - state-valid commands only
+    - unique accessible action name with device and consequence
+    - destructive confirmation for wipe/revoke/expiry as governance requires
+    - pending state and duplicate prevention
+    - neutral denied/error/conflict states with focus recovery
+  accessibility_and_language:
+    - complete English/LTR and approved Arabic/RTL semantics
+    - identifiers and receipt codes directionally isolated
+    - light/dark parity
+    - 1440, 1200, 1024, 768, 412, 390 and 320 layouts
+    - keyboard, screen-reader, zoom/reflow and reduced-motion evidence
+
+acceptance_evidence_matrix:
+  design_authority:
+    required:
+      - exact WA-DES-015 Devices frame fingerprint
+      - CD-056 lineage
+      - state index and limitation register
+      - all persona, lifecycle, degraded, locale, theme and viewport frames
+  source_contract:
+    required:
+      - allowed and rejected transition tests
+      - terminal-state resurrection denial
+      - duplicate/idempotency and stale-version tests
+      - per-command role and dual-control tests
+      - append-only audit and evidence retrieval tests
+  provider_contract:
+    while_held:
+      - dependency-blocked behavior
+      - no positive acknowledgement/completion state
+      - local fail-closed access
+    before_live_acceptance:
+      - approved provider and credentials boundary
+      - authenticated callback or polling authority
+      - real transport, acknowledgement and completion receipt
+      - timeout, retry, duplicate and invalid-receipt negatives
+  package_and_offline:
+    required:
+      - unregistered, pending, suspended, revoked, wipe-pending and wiped denial
+      - compliant trusted positive path
+      - app-policy failure
+      - download, open and submit enforcement
+      - expire-package server effect and offline-device acknowledgement
+      - cached stale package, offline command and reconnection behavior
+      - sync/outbox/conflict/replay evidence if retained in scope
+  UI_runtime:
+    required:
+      - Security Admin, Ops, Auditor, assigned self, unrelated, Field and anonymous matrix
+      - action visibility, confirmation, pending, denial, failure, conflict and persistence
+      - per-source unavailable, verified empty and bounded history
+      - actor/time/device/before-after/receipt presentation
+      - EN/AR, RTL/LTR, themes, viewports, keyboard, focus, screen reader, zoom and reduced motion
+  completion_rule: >-
+    No screenshot, route smoke, structural SQL assertion, privileged direct
+    update or mocked provider response can alone satisfy these criteria.
+
+sponsor_and_governance_decisions:
+  - id: DEV-CMD-DEC-01
+    owner: SPONSOR_SECURITY
+    question: What canonical role owns Device Admin and Mobile Admin capabilities?
+    status: PENDING
+  - id: DEV-CMD-DEC-02
+    owner: SPONSOR_SECURITY
+    question: Which source state and role may request each command?
+    status: PENDING
+  - id: DEV-CMD-DEC-03
+    owner: SPONSOR_SECURITY
+    question: Do remote wipe, revoke, package expiry or trust restoration require independent approval?
+    status: PENDING
+  - id: DEV-CMD-DEC-04
+    owner: SPONSOR_SECURITY_PRODUCT
+    question: Is revoked or wiped terminal, with reactivation only through governed re-enrollment?
+    recommendation: APPROVE_TERMINAL_WITH_SEPARATE_REENROLLMENT
+    status: PENDING
+  - id: DEV-CMD-DEC-05
+    owner: SPONSOR_SECURITY
+    question: What authoritative evidence permits pending or suspended to become trusted?
+    recommendation: FRESH_MDM_ATTESTATION_PLUS_APP_POLICY_AND_ASSIGNMENT
+    status: PENDING
+  - id: DEV-CMD-DEC-06
+    owner: SPONSOR_OPERATIONS_SECURITY
+    question: What exactly do acknowledged and completed mean, and which actor may assert them?
+    status: PENDING
+  - id: DEV-CMD-DEC-07
+    owner: SPONSOR_PRODUCT
+    question: What exact server and offline-device effects must Expire packages perform?
+    status: PENDING
+  - id: DEV-CMD-DEC-08
+    owner: SPONSOR_OPERATIONS
+    question: Does sync health/outbox/replay belong on this route, and what are the approved sources and thresholds?
+    status: PENDING
+  - id: DEV-CMD-DEC-09
+    owner: GOVERNANCE_PROVIDER
+    question: Register the external MDM provider contract and formal fail-closed hold.
+    status: PENDING
+  - id: DEV-CMD-DEC-10
+    owner: GOVERNANCE_DESIGN
+    question: Bind and fingerprint WA-DES-015 Devices under CD-056 with exact screen and requirement ownership.
+    status: PENDING
+
+reviewer_disposition:
+  acknowledgement:
+    - Existing pending self-enrollment and package-open denial are useful fail-closed foundations.
+    - Suspend can support immediate local access denial if remote effect remains explicitly unacknowledged.
+    - Queueing is already described as different from completed wipe.
+  return:
+    - Replace ambiguous trust and command labels with the fact model in this packet.
+    - Reconcile role vocabulary, per-command authority and design lineage.
+    - Remove invented online/offline, outbox and sync-health content.
+  block:
+    - Resume must not restore trusted state before fresh authoritative acknowledgement.
+    - Revoked and wiped devices must not be resurrected by ordinary Resume.
+    - No acknowledgement, completion, wipe, expiry or sync claim without genuine evidence.
+    - No design or implementation lease until the ten decisions are recorded.
+  decision: BLOCK_DUE_TO_MISSING_CONTRACT
+  recommended_action: APPROVE_CONTRACT_DECISIONS_BEFORE_DESIGN_OR_BUILD
+
+safe_follow_on:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+  objective: >-
+    Convert DEV-CMD-DEC-01 through DEV-CMD-DEC-10 into a concise business
+    decision packet with recommended options, consequences and explicit
+    non-authorizations for sponsor review.
+  constraints:
+    - Read-only; no design, application, Field/iPad, provider, database, test, evidence or mapping mutation.
+    - No branch, lease, main, setup/Inspection or stash change.

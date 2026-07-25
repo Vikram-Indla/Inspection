@@ -1,0 +1,279 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-ITEMS-RUNTIME-REMEDIATION-PREFLIGHT-031
+title: Collision-safe Admin Inspection Items authority and runtime remediation preflight
+status: PREFLIGHT_READY_AUTHORITY_DECISION_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-ITEMS-RUNTIME-PERMISSION-MAPPING-030
+  design_dependency: M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050
+  route: /admin/items
+  detail_route: /admin/items/:id/runtime-preview
+  screen_ids: [SCR-ADM-020]
+  package: M9
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  requirements:
+    - MVP1-M09-002
+    - MVP1-M09-005
+    - MVP1-M09-007
+    - MVP1-M09-010 through MVP1-M09-015
+    - MVP1-M09-018 through MVP1-M09-025
+    - MVP1-M09-028
+    - MVP1-M09-030
+    - CR-450
+    - CR-453
+    - CR-455
+    - CR-458 through CR-463
+    - CR-466 through CR-473
+    - CR-476
+    - CR-478
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+authority_decisions:
+  - id: ITEM-DEC-001
+    question: Which record is the sole operational inspection-item authority?
+    recommended_answer: Immutable approved compliance_entity_versions, resolved through one current/effective head.
+  - id: ITEM-DEC-002
+    question: How does an approved item version become consumable by package publication and existing legacy foreign keys?
+    required_output: Transactional projection/compatibility contract with stable item ID/code and no dual writable truth.
+  - id: ITEM-DEC-003
+    question: Does every create, successor publication, deactivation and reactivation require a checker distinct from the maker?
+    recommended_answer: YES
+  - id: ITEM-DEC-004
+    question: Which item fields are immutable identity and which are versioned semantics?
+    recommended_split:
+      identity: [stable item ID, stable code]
+      versioned: [clause dependency, titles, guidance, response model, evidence rule, scoring, active/effective state]
+  - id: ITEM-DEC-005
+    question: What effective instant/timezone activates and deactivates an item for future package publication?
+  - id: ITEM-DEC-006
+    question: What happens to draft package versions referencing a predecessor when a successor activates or the item deactivates?
+  - id: ITEM-DEC-007
+    question: Which personas may read the complete item catalogue, immutable versions and legal dependency graph?
+  - id: ITEM-DEC-008
+    question: May a published item version ever be deleted or corrected in place?
+    recommended_answer: NO; correction requires a new version and history is undeletable.
+  - id: ITEM-DEC-009
+    question: Should package-level response/evidence/required/scoring overrides remain allowed, and which authority wins in preview and runtime?
+  - id: ITEM-DEC-010
+    question: How are existing inspection_item_versions and frozen package snapshots migrated/reconciled with governed versions?
+
+target_contract:
+  item_identity:
+    - Stable item identity and code are undeletable once created.
+    - Every item belongs to an effective regulation/clause version.
+    - Identity creation is governed, audited and not immediately active.
+  item_version_states:
+    - draft
+    - pending_approval
+    - approved_future
+    - active
+    - superseded
+    - deactivated
+    - rejected
+  invariants:
+    - Only narrow governed RPCs can create or transition operational item authority.
+    - Checker identity is auth.uid and differs from maker.
+    - Approved item versions are immutable and undeletable.
+    - Every accepted change has a new version, actor, correlation ID and effective time.
+    - At most one item version is effective for new package publication at an instant.
+    - Package publication resolves and freezes the exact effective item version and dependencies.
+    - Existing package, visit and inspection snapshots never change.
+    - Deactivation blocks new package use only according to the approved effective-time and pinned-work rule.
+    - Live/draft projection and exact frozen inspector runtime are labelled and never conflated.
+  concurrency:
+    - Item-identity scoped lock for publication and deactivation.
+    - Expected revision/CAS for draft edits and decisions.
+    - Stable conflict codes with no silent overwrite or duplicate effective head.
+
+proposed_lease_sequence:
+  - lease_id: ITEM-LEASE-CONTRACT-001
+    order: 1
+    owner: ONE_ITEM_AUTHORITY_CONTRACT_OWNER
+    purpose: Decide ITEM-DEC-001..010 and freeze authority, lifecycle, compatibility, dependency and consumer contracts.
+    artifacts_only:
+      - item identity/version schema
+      - state and actor transition matrix
+      - legacy-to-governed compatibility matrix
+      - package/runtime resolution contract
+      - dependency and impact matrix
+      - migration and rollback-forward plan
+    do_not_touch: [product code, database, tests, data, design]
+  - lease_id: ITEM-LEASE-DB-001
+    order: 2
+    owner: ONE_DATABASE_ITEM_GOVERNANCE_ENGINEER
+    purpose: Make the selected item authority non-bypassable, immutable, versioned and transactionally projected.
+    proposed_paths:
+      - one new forward-only Supabase migration
+      - one new transactional item-governance negative probe
+    entry_criteria:
+      - ITEM-DEC-001..010 approved.
+      - Migration and database-object ownership recorded.
+      - Compliance Requests, Regulations, Packages, Violations and Audit owners reconciled.
+    exit_criteria:
+      - Direct REST cannot create active authority, mutate semantics/lifecycle or delete item history.
+      - Submit, approve, activate, supersede, deactivate and reactivate transitions are explicit and audited.
+      - Same-version semantic/status changes are impossible.
+      - Clause/effective-regulation dependency is database enforced.
+      - One compatibility projection feeds package publication without a second writable truth.
+      - Existing frozen package snapshots retain stable traceability.
+  - lease_id: ITEM-LEASE-PACKAGE-RUNTIME-001
+    order: 3
+    owner: ONE_ITEM_RUNTIME_INTEGRATION_ENGINEER
+    purpose: Converge package publication, impact and runtime consumers on the selected item-version resolver.
+    proposed_scope:
+      - package item selection and publication freeze
+      - item usage/impact service
+      - Field immutable snapshot resolution and fallback removal plan
+      - review, report, dashboard and AI label/context lineage
+    collision_rule: >-
+      Packages, Field, Review, Reports, Dashboard, AI, Factory 360 and Planning
+      owners must consent before any shared path is leased.
+    exit_criteria:
+      - Future package publication freezes exact effective governed item versions.
+      - Historical package/visit/inspection snapshots remain byte-stable.
+      - Impact names exact package versions, overrides, future work and pinned execution.
+      - Every consumer either uses frozen truth or explicitly labelled current governed truth.
+  - lease_id: ITEM-LEASE-UI-001
+    order: 4
+    owner: ONE_M9_WEB_ENGINEER
+    purpose: Implement accepted Design 050 against frozen item-governance and read-model contracts.
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/items/**
+      - route-local translations and styles only
+    entry_criteria:
+      - Stable accepted Design 050 revision.
+      - Item RPC/read-model and impact contracts frozen.
+      - ITEM-DEC-001..010 approved.
+    exit_criteria:
+      - Maker and checker experiences are distinct.
+      - Complete semantic successor editing is available without raw JSON or direct table mutation.
+      - Draft, approval, future, active, superseded, deactivated and conflict states are honest.
+      - Exact impact is visible before approval/deactivation.
+      - Exact published preview uses the same frozen renderer contract as Field.
+      - EN/AR, RTL/LTR, light/dark and responsive behavior are accepted.
+  - lease_id: ITEM-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    purpose: Certify item governance, package/runtime parity and browser evidence.
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-items-runtime.spec.ts
+      - new supabase/tests/m9_item_governance_negative_probe.sql
+      - evidence under approved INSPECTION_DOCS_ROOT
+
+seeder_and_fixture_plan:
+  owner: DEDICATED_SEEDER_LANE
+  isolation:
+    - unique seed_batch_id
+    - isolated regulation and clause lineage
+    - isolated item family and governed successor versions
+    - isolated package family using base and package-level overrides
+    - isolated future/published/superseded/deactivated package versions
+    - isolated visits and inspections pinned before and after item change
+    - complete cleanup manifest
+    - transaction rollback for database-negative probes
+  personas:
+    - compliance_admin maker
+    - distinct compliance_admin checker
+    - form_admin maker
+    - reviewer
+    - unauthorized administrator
+    - planner
+    - assigned inspector
+    - unassigned inspector
+    - anonymous
+  item_cases:
+    - new draft item
+    - stale concurrent draft
+    - pending approval successor
+    - approved future successor
+    - active current version
+    - superseded version frozen in published package
+    - scheduled deactivation with active pinned execution
+    - reactivation as a new governed version
+    - package-level response/evidence/required/scoring override
+    - malformed clause, response, evidence and scoring dependency
+  data_safety: No shared regulation, item, package, visit or inspection may be mutated by certification.
+
+focused_test_matrix:
+  p0:
+    - id: ITEM-TST-001
+      proof: Direct REST create/update/status/delete against operational item authority fails with zero mutation.
+    - id: ITEM-TST-002
+      proof: Maker cannot approve or publish own item change; checker identity is auth.uid and cannot be supplied.
+    - id: ITEM-TST-003
+      proof: Approved, active, superseded and deactivated item versions reject every update and delete.
+    - id: ITEM-TST-004
+      proof: Every semantic and lifecycle change creates a distinct immutable version with actor, correlation and effective time.
+    - id: ITEM-TST-005
+      proof: Missing/inactive/future regulation or clause dependency blocks item approval atomically.
+    - id: ITEM-TST-006
+      proof: Approved governed item version becomes the exact source used by package publication without dual writable state.
+    - id: ITEM-TST-007
+      proof: Package publication freezes governed item version ID, full semantics and package-level overrides.
+    - id: ITEM-TST-008
+      proof: Existing package, visit and inspection snapshots remain unchanged after item successor or deactivation.
+    - id: ITEM-TST-009
+      proof: Deactivation blocks only approved future use and does not break pinned active/historical execution.
+    - id: ITEM-TST-010
+      proof: Concurrent publish/deactivate operations produce one deterministic effective head and no lost update.
+    - id: ITEM-TST-011
+      proof: Item identity and history cannot be deleted, including an otherwise unreferenced item.
+  p1:
+    - id: ITEM-TST-012
+      proof: Exact published Admin preview equals Field rendering from the same frozen package snapshot.
+    - id: ITEM-TST-013
+      proof: Draft/live projection is explicitly labelled and cannot be mistaken for historical execution.
+    - id: ITEM-TST-014
+      proof: Impact names exact package versions, overrides, future visits and pinned inspections.
+    - id: ITEM-TST-015
+      proof: Complete response, evidence, guidance, scoring and dependency successor edit passes governed lifecycle.
+    - id: ITEM-TST-016
+      proof: Unauthorized personas cannot read or mutate restricted catalogue/version/dependency data.
+    - id: ITEM-TST-017
+      proof: EN/AR, LTR/RTL, light/dark, 1440/1024, keyboard and screen-reader evidence passes.
+
+protected_regression:
+  - apps/web/e2e/cd-007-items.spec.ts
+  - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+  - apps/web/e2e/compliance-library.spec.ts
+  - apps/web/e2e/cd-008-009-packages.spec.ts
+  - apps/web/e2e/compliance-requests.spec.ts
+  - apps/web/e2e/execution-crossmodule-contract.spec.ts
+  - apps/web/e2e/golden-journey.spec.ts
+  - supabase/tests/0032_m09_live_release_probe.sql
+  - existing inspection_item_versions and compliance_entity_versions history
+  - existing package, visit and inspection frozen snapshots
+
+collision_register:
+  hotspots:
+    - inspection_items RLS, validation and archive triggers
+    - inspection_item_versions and compliance_entity_versions/heads
+    - compliance request publish RPC and compatibility view
+    - regulation_clauses and regulation version dependencies
+    - package version validation and item snapshots
+    - Field item resolver and workspace
+    - review, report, dashboard and AI item consumers
+    - audit events and correlation IDs
+    - shared shell/navigation
+  active_peer_packets:
+    - M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050
+    - M9-ADMIN-PACKAGES-RUNTIME-REMEDIATION-PREFLIGHT-029
+    - KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+  touched_by_this_lane: false
+  rule: Recheck every path immediately before lease; one owner per file, migration and shared database object.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the single-authority, compatibility, maker-checker, effective-time
+    and package-override decisions first. Then lease database governance,
+    package/runtime integration, accepted Design 050 UI and independent
+    certification separately. Do not count /admin/items, its “Save new
+    version” label or the existence of compliance_entity_versions as
+    end-to-end item governance completion.

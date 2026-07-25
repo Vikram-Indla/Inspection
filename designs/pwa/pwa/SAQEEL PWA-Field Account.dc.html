@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .fa-wrap { max-width: 640px; margin: 0 auto; width:100%; padding: 18px 18px 40px; display:flex; flex-direction:column; gap:14px; }
+  .fa-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); }
+  .fa-seg { display:flex; gap:6px; padding:10px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); overflow-x:auto; }
+  .fa-seg button { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; cursor:pointer; white-space:nowrap; color:var(--text-secondary); }
+  .fa-seg button[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+  .fld { display:flex; flex-direction:column; gap:6px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <div class="fa-seg">
+    <button aria-pressed="{{ isSplash }}" onClick="{{ goSplash }}">{{ t.tabSplash }}</button>
+    <button aria-pressed="{{ isLogin }}" onClick="{{ goLogin }}">{{ t.tabLogin }}</button>
+    <button aria-pressed="{{ isNotif }}" onClick="{{ goNotif }}">{{ t.tabNotif }}</button>
+    <button aria-pressed="{{ isProfile }}" onClick="{{ goProfile }}">{{ t.tabProfile }}</button>
+    <span class="grow"></span>
+    <button aria-pressed="false" onClick="{{ toggleLang }}" style="border-radius:999px; font-weight:700;">{{ t.langBtnLabel }}</button>
+    <button aria-pressed="false" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}" style="border-radius:999px;">{{ themeLabel }}</button>
+  </div>
+
+  <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1; display:grid; place-items:center; padding:24px; background:var(--nav-bg);">
+      <div style="text-align:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:72px;height:72px; margin:0 auto 20px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+        <div style="display:flex; align-items:baseline; gap:10px; justify-content:center;"><span style="font-weight:700; font-size:32px; color:var(--nav-text-active);">{{ t.brand1 }}</span><span style="font-size:16px; color:var(--nav-text);">{{ t.brand2 }}</span></div>
+        <div class="t-caption" style="color:var(--nav-text); margin-block-start:8px;">{{ t.tagline }}</div>
+        <div style="margin-block-start:28px; display:flex; gap:5px; justify-content:center;"><span style="width:8px;height:8px;border-radius:50%;background:var(--nav-indicator);opacity:.9;"></span><span style="width:8px;height:8px;border-radius:50%;background:var(--nav-text);opacity:.4;"></span><span style="width:8px;height:8px;border-radius:50%;background:var(--nav-text);opacity:.4;"></span></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div class="fa-wrap" style="justify-content:center; flex:1;">
+      <div style="text-align:center; margin-block-end:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px; margin:0 auto 14px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg><h1 style="font-size:22px; font-weight:700; margin:0;">{{ authTitle }}</h1><p class="t-caption" style="margin:6px 0 0;">{{ authDesc }}</p></div>
+
+      <sc-if value="{{ authSignin }}" hint-placeholder-val="{{ true }}">
+        <div class="fa-card" style="padding:22px; display:flex; flex-direction:column; gap:16px;">
+          <sc-if value="{{ trustedDevice }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding-block-end:4px;">
+              <span style="width:56px; height:56px; border-radius:16px; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:28px;height:28px;"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01M9.5 15c.9.7 4.1.7 5 0"/></svg></span>
+              <div class="t-caption" style="text-align:center;">{{ t.trustedDeviceNote }}</div>
+              <button class="btn btn-primary btn-block btn-lg">{{ t.faceAuth }}</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; color:var(--text-muted); font-size:12px;"><span style="flex:1; height:1px; background:var(--border-subtle);"></span>{{ t.orDivider }}<span style="flex:1; height:1px; background:var(--border-subtle);"></span></div>
+          </sc-if>
+          <label class="fld"><span>{{ t.email }}</span><input class="input" dir="ltr" value="inspector@mim.gov.sa"></label>
+          <label class="fld"><span>{{ t.password }}</span><div class="input-affix"><input class="input" type="password" value="••••••••••"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div></label>
+          <button class="btn btn-primary btn-block btn-lg">{{ t.login }}</button>
+          <a href="#" onClick="{{ goForgot }}" style="text-align:center; font-size:13px;">{{ t.forgotPw }}</a>
+        </div>
+        <div class="t-caption" style="text-align:center; display:flex; align-items:center; gap:6px; justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-compliant-text)" stroke-width="1.7" style="width:14px;height:14px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>{{ t.sessionNote }}</div>
+        <a href="SAQEEL%20PWA-Field%20Biometric.dc.html" target="_top" style="text-align:center; font-size:12.5px; color:var(--text-secondary); text-decoration:none;">{{ t.manageBiometric }}</a>
+      </sc-if>
+
+      <sc-if value="{{ authForgot }}" hint-placeholder-val="{{ false }}">
+        <div class="fa-card" style="padding:22px; display:flex; flex-direction:column; gap:16px;">
+          <p class="t-caption" style="margin:0;">{{ t.forgotDesc }}</p>
+          <label class="fld"><span>{{ t.email }}</span><input class="input" dir="ltr" value="inspector@mim.gov.sa"></label>
+          <button class="btn btn-primary btn-block btn-lg" onClick="{{ goOtp }}">{{ t.sendCode }}</button>
+          <a href="#" onClick="{{ goSignin }}" style="text-align:center; font-size:13px;">{{ t.backToLogin }}</a>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ authOtp }}" hint-placeholder-val="{{ false }}">
+        <div class="fa-card" style="padding:22px; display:flex; flex-direction:column; gap:16px;">
+          <p class="t-caption" style="margin:0;">{{ t.otpDesc }}</p>
+          <div style="display:flex; gap:8px; justify-content:center;">
+            <sc-for list="{{ otpDigits }}" as="d" hint-placeholder-count="6"><input class="input" dir="ltr" maxlength="1" value="{{ d.v }}" style="width:40px; text-align:center; font-size:18px; padding:10px 0;"></sc-for>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" onClick="{{ goReset }}">{{ t.verifyCode }}</button>
+          <a href="#" style="text-align:center; font-size:13px;">{{ t.resendCode }}</a>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ authReset }}" hint-placeholder-val="{{ false }}">
+        <div class="fa-card" style="padding:22px; display:flex; flex-direction:column; gap:16px;">
+          <label class="fld"><span>{{ t.newPassword }}</span><input class="input" type="password" placeholder="••••••••••"></label>
+          <label class="fld"><span>{{ t.confirmPassword }}</span><input class="input" type="password" placeholder="••••••••••"></label>
+          <button class="btn btn-primary btn-block btn-lg" onClick="{{ goSuccess }}">{{ t.resetPw }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ authSuccess }}" hint-placeholder-val="{{ false }}">
+        <div class="fa-card" style="padding:32px 22px; display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;">
+          <span style="width:56px; height:56px; border-radius:50%; background:var(--status-compliant-soft); color:var(--status-compliant-text); display:grid; place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div style="font-weight:700; font-size:17px;">{{ t.successTitle }}</div>
+          <p class="t-caption" style="margin:0;">{{ t.successDesc }}</p>
+          <button class="btn btn-primary btn-block btn-lg" onClick="{{ goSignin }}">{{ t.backToLogin }}</button>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isNotif }}" hint-placeholder-val="{{ false }}">
+    <div class="fa-wrap">
+      <h1 style="font-size:19px; font-weight:700; margin:4px 0;">{{ t.tabNotif }}</h1>
+      <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="2">
+        <button class="fa-card" style="padding:15px 17px; text-align:start; cursor:pointer; width:100%; border-inline-start:3px solid {{ n.accent }};">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font-weight:600; font-size:14px; flex:1;">{{ n.title }}</span><sc-if value="{{ n.unread }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:var(--status-critical);flex:none;"></span></sc-if></div>
+          <div class="t-caption" style="margin-block-start:4px;">{{ n.sender }} · <span class="id-code">{{ n.date }}</span></div>
+          <div style="font-size:13px; color:var(--text-secondary); margin-block-start:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">{{ n.preview }}</div>
+        </button>
+      </sc-for>
+      <div class="t-caption" style="text-align:center; margin-block-start:6px;">{{ t.notifScopeNote }}</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+    <div class="fa-wrap">
+      <div class="fa-card" style="padding:22px; display:flex; align-items:center; gap:14px;">
+        <span class="avatar avatar-lg" style="background:var(--action-primary); color:#fff; width:56px; height:56px; font-size:20px;">{{ t.avatarLetter }}</span>
+        <div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:17px;">{{ t.fullName }}</div><div class="t-caption">{{ t.role }}</div><div class="t-caption id-code" style="margin-block-start:2px;">inspector@mim.gov.sa</div></div>
+        <a href="SAQEEL%20PWA-Field%20Settings.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.settings }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+      </div>
+
+      <div class="fa-card" style="padding:6px 0;">
+        <div style="padding:10px 18px 6px; font-size:12px; color:var(--text-muted); font-weight:600;">{{ t.account }}</div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle);"><span class="t-caption" style="width:150px;">{{ t.personalId }}</span><span class="id-code" style="flex:1;">1234562384</span></div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle);"><span class="t-caption" style="width:150px;">{{ t.mobile }}</span><span class="id-code" style="flex:1;">0512338274</span></div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle);"><span class="t-caption" style="width:150px;">{{ t.entity }}</span><span style="flex:1; font-size:13.5px;">{{ t.role }}</span></div>
+      </div>
+
+      <div class="fa-card" style="padding:6px 0;">
+        <div style="padding:10px 18px 6px; font-size:12px; color:var(--text-muted); font-weight:600;">{{ t.settings }}</div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle);"><span style="flex:1; font-size:14px;">{{ t.appearance }}</span><div class="seg"><button class="seg-opt" aria-pressed="{{ isLight }}" onClick="{{ setLight }}">{{ t.light }}</button><button class="seg-opt" aria-pressed="{{ isDark }}" onClick="{{ setDark }}">{{ t.dark }}</button></div></div>
+        <div style="display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle);"><span style="flex:1; font-size:14px;">{{ t.language }}</span><div class="seg"><button class="seg-opt" aria-pressed="{{ isAr }}" onClick="{{ setAr }}">العربية</button><button class="seg-opt" aria-pressed="{{ isEn }}" onClick="{{ setEn }}">English</button></div></div>
+        <label class="check" style="padding:14px 18px; border-block-start:1px solid var(--border-subtle); margin:0;"><input type="checkbox" checked>{{ t.taskNotifs }}</label>
+      </div>
+
+      <button class="btn btn-danger btn-block">{{ t.logout }}</button>
+      <div class="t-caption" style="text-align:center;">{{ t.footer }}</div>
+    </div>
+  </sc-if>
+  <div aria-hidden="true" style="height:58px; flex:none;"></div>
+  <nav style="position:fixed; inset-inline:0; bottom:0; z-index:30; display:flex; background:var(--nav-bg); color:var(--nav-text); padding-block-end:env(safe-area-inset-bottom);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span style="font-size:11px;">{{ t.navHome }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20My%20Tasks.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg><span style="font-size:11px;">{{ t.navTasks }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Establishments.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/></svg><span style="font-size:11px;">{{ t.navEst }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Notifications.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:11px;">{{ t.navNotif }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text-active);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg><span style="font-size:11px;">{{ t.navAccount }}</span></a>
+  </nav>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", view: "splash", lang: "en", authStep: "signin" };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        tabSplash:"البداية", tabLogin:"تسجيل الدخول", tabNotif:"الإشعارات", tabProfile:"الحساب والإعدادات",
+        feedbackQr:"رمز التقييم", theme:"الوضع", langBtnLabel:"EN",
+        brand1:"صقيل", brand2:"صناعي", tagline:"منصة التفتيش الصناعي",
+        loginTitle:"تسجيل الدخول", loginDesc:"ادخل بحسابك لمتابعة أعمال التفتيش الصناعي وإدارتها",
+        email:"البريد الإلكتروني", password:"كلمة المرور", login:"تسجيل الدخول", forgotPw:"هل نسيت كلمة المرور؟",
+        sessionNote:"كل إجراء داخل جلستك موثّق ومراجَع · اتصال مشفّر",
+        trustedDeviceNote:"جهاز موثوق ومُسجّل · DVC-77120", faceAuth:"فتح بالتعرف على الوجه", orDivider:"أو",
+        manageBiometric:"إدارة القفل الحيوي وأجهزتك الموثوقة",
+        forgotTitle:"استعادة كلمة المرور", forgotDesc:"أدخل بريدك الإلكتروني وسنرسل لك رمز تحقق لإعادة تعيين كلمة المرور.",
+        sendCode:"إرسال الرمز", backToLogin:"العودة لتسجيل الدخول",
+        otpTitle:"رمز التحقق", otpDesc:"أدخل رمز التحقق المكوّن من 6 أرقام المرسَل إلى بريدك الإلكتروني.",
+        verifyCode:"تحقق", resendCode:"إعادة إرسال الرمز",
+        resetTitle:"تعيين كلمة مرور جديدة", newPassword:"كلمة المرور الجديدة", confirmPassword:"تأكيد كلمة المرور", resetPw:"تعيين كلمة المرور",
+        successTitle:"تم بنجاح", successDesc:"تم تحديث كلمة المرور. يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.",
+        notifScopeNote:"الإشعارات معروضة ضمن نطاق صلاحيتك فقط.",
+        avatarLetter:"خ", fullName:"خالد العتيبي", role:"مفتش · وزارة الصناعة والثروة المعدنية",
+        account:"الحساب", personalId:"المعرّف الشخصي", mobile:"الجوال", entity:"الجهة",
+        settings:"الإعدادات", appearance:"المظهر", light:"فاتح", dark:"داكن", language:"اللغة",
+        taskNotifs:"إشعارات المهام والمواعيد", logout:"تسجيل الخروج", footer:"صقيل — وزارة الصناعة والثروة المعدنية © 2026",
+        navHome:"الرئيسية", navTasks:"مهامي", navEst:"المنشآت", navNotif:"الإشعارات", navAccount:"حسابي",
+      },
+      en: {
+        tabSplash:"Splash", tabLogin:"Login", tabNotif:"Notifications", tabProfile:"Account & Settings",
+        feedbackQr:"Feedback QR", theme:"Theme", langBtnLabel:"AR",
+        brand1:"SAQEEL", brand2:"Industrial", tagline:"Industrial Inspection Platform",
+        loginTitle:"Sign In", loginDesc:"Sign in to manage and follow up on industrial inspection work",
+        email:"Email", password:"Password", login:"Sign in", forgotPw:"Forgot your password?",
+        sessionNote:"Every action in your session is logged and audited · Encrypted connection",
+        trustedDeviceNote:"Trusted & enrolled device · DVC-77120", faceAuth:"Unlock with Face ID", orDivider:"or",
+        manageBiometric:"Manage biometric lock & trusted devices",
+        forgotTitle:"Forgot Password", forgotDesc:"Enter your email and we'll send a verification code to reset your password.",
+        sendCode:"Send code", backToLogin:"Back to sign in",
+        otpTitle:"Verification Code", otpDesc:"Enter the 6-digit verification code sent to your email.",
+        verifyCode:"Verify", resendCode:"Resend code",
+        resetTitle:"Set New Password", newPassword:"New password", confirmPassword:"Confirm password", resetPw:"Reset password",
+        successTitle:"Success", successDesc:"Your password has been updated. You can now sign in with your new password.",
+        notifScopeNote:"Notifications are shown within your authority scope only.",
+        avatarLetter:"K", fullName:"Khaled Al-Otaibi", role:"Inspector · Ministry of Industry and Mineral Resources",
+        account:"Account", personalId:"Personal ID", mobile:"Mobile", entity:"Entity",
+        settings:"Settings", appearance:"Appearance", light:"Light", dark:"Dark", language:"Language",
+        taskNotifs:"Task & appointment notifications", logout:"Sign out", footer:"SAQEEL — Ministry of Industry and Mineral Resources © 2026",
+        navHome:"Home", navTasks:"My Tasks", navEst:"Establishments", navNotif:"Notifications", navAccount:"Account",
+      },
+    };
+    const t = STR[lang];
+    const v = this.state.view;
+    const set = (k, val) => () => this.setState({ [k]: val });
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      themeLabel: this.state.theme === "dark" ? "☾" : "☀",
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      isAr: lang === "ar", isEn: lang === "en", setAr: () => this.setState({ lang: "ar" }), setEn: () => this.setState({ lang: "en" }),
+      setLight: set("theme", "light"), setDark: set("theme", "dark"),
+      isSplash: v === "splash", isLogin: v === "login", isNotif: v === "notif", isProfile: v === "profile",
+      goSplash: set("view", "splash"), goLogin: () => this.setState({ view: "login", authStep: "signin" }), goNotif: set("view", "notif"), goProfile: set("view", "profile"),
+      authSignin: this.state.authStep === "signin", authForgot: this.state.authStep === "forgot", authOtp: this.state.authStep === "otp", authReset: this.state.authStep === "reset", authSuccess: this.state.authStep === "success",
+      authTitle: { signin: t.loginTitle, forgot: t.forgotTitle, otp: t.otpTitle, reset: t.resetTitle, success: t.successTitle }[this.state.authStep],
+      authDesc: { signin: t.loginDesc, forgot: t.forgotDesc, otp: t.otpDesc, reset: "", success: "" }[this.state.authStep],
+      goSignin: e => { if (e && e.preventDefault) e.preventDefault(); this.setState({ authStep: "signin" }); },
+      goForgot: e => { if (e && e.preventDefault) e.preventDefault(); this.setState({ authStep: "forgot" }); },
+      goOtp: () => this.setState({ authStep: "otp" }),
+      goReset: () => this.setState({ authStep: "reset" }),
+      goSuccess: () => this.setState({ authStep: "success" }),
+      otpDigits: [0, 1, 2, 3, 4, 5].map(() => ({ v: "" })),
+      trustedDevice: true,
+      notifs: lang === "ar" ? [
+        { title: "تحديث بيانات الترخيص الصناعي", sender: "نايف بن فهد الدوسري", date: "2026/07/22 - 11:00 ص", preview: "نود إحاطتكم علماً بأنه قد تم تحديث بيانات الترخيص الصناعي ضمن خدمات وزارة الصناعة والثروة المعدنية.", unread: true, accent: "var(--action-primary)" },
+        { title: "مهمة تفتيش جديدة", sender: "نظام التفتيش", date: "2026/07/21 - 09:30 ص", preview: "تم إسناد مهمة تفتيش جديدة إليكم برقم 192994. يرجى مراجعة قائمة المهام للبدء.", unread: false, accent: "var(--border-strong)" },
+      ] : [
+        { title: "Industrial license data updated", sender: "Nayef bin Fahd Al-Dosari", date: "2026/07/22 - 11:00 AM", preview: "This is to inform you that the industrial license data has been updated within Ministry of Industry services.", unread: true, accent: "var(--action-primary)" },
+        { title: "New inspection task", sender: "Inspection System", date: "2026/07/21 - 09:30 AM", preview: "A new inspection task #192994 has been assigned to you. Please check My Tasks to begin.", unread: false, accent: "var(--border-strong)" },
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>

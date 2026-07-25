@@ -1,0 +1,536 @@
+schema_version: "1.0"
+packet_id: M10-WA-DES-007-C1-DESIGN-LEASE-READINESS-026
+title: WA-DES-007-C1 Factory Data Integration design-write lease readiness
+status: DRAFT_NON_CONSUMABLE_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_write_authorized: false
+implementation_authorized: false
+
+task_contract:
+  task_id: M10-WA-DES-007-C1-DESIGN-LEASE-READINESS-026
+  gate: M10 Factory Data Integration design correction consent
+  process_ids: ["G2-P00", "G2-P12"]
+  contextual_requirement_ids: ["CR-410..CR-429"]
+  direct_control_plane_primary_range: NONE_IN_478_BASELINE
+  acceptance_ids:
+    - WA-M10-AC-001
+    - WA-M10-AC-002
+    - WA-M10-AC-003
+    - WA-M10-AC-004
+    - WA-M10-AC-005
+    - WA-M10-AC-006
+    - WA-AC-0410..0429
+  route: /admin/integrations/factory-data
+  dependencies:
+    - M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+    - M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+    - TASK-FACTORY-360-COMPLETE-010
+    - SENAEI_API_CONTRACT_NOT_SUPPLIED
+    - sponsor_consent_for_SD-023-03
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design before sponsor consent and named lease
+    - frozen requirement, route, or design mappings
+    - product code, tests, test evidence, data, providers, environment, migrations, seeds, or Supabase
+    - Factory 360 dossier, Spatial Canvas, Integration Hub, or external-provider scope
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 9df1b8534e766c24d3dfdbc51eecb6a5fa1e84d3
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-CORRECTED-GOVERNANCE-SEQUENCE-009.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CORRECTED-PACKETS-INDEPENDENT-REVIEW-023.yaml
+    - product-contract/operationalization/coordination/batches/M10-WA-DES-006-C1-DESIGN-LEASE-READINESS-025.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This is a read-only design-consent packet. It does not begin another
+    application batch or modify the active Planning/Visits approval slice.
+
+authority:
+  design_workspace:
+    - design/claude-design-mvp1/00_START_HERE.md
+    - design/claude-design-mvp1/prompts/00_MASTER_DESIGN_CONSTITUTION.md
+    - design/claude-design-mvp1/acceptance/DESIGN_SIGNOFF_CHECKLIST.md
+    - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+  mapping: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  requirements: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  external_contract_register: product-contract/seeding-discovery/EXTERNAL_SOURCE_CONTRACT_REGISTER.csv
+  application_sources:
+    - apps/web/src/app/(app)/admin/integrations/factory-data/layout.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/page.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/CsvImportForm.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/MasterDataForms.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/actions.ts
+  current_test: apps/web/e2e/factory360-admin-control-plane.spec.ts
+  current_test_class: SOURCE_CONTRACT_ONLY
+  historical_evidence_boundary: >-
+    A historical focused Factory 360 suite recorded 34/34 PASS, but this lease
+    does not treat that as current end-to-end certification of every Factory
+    Data design state, role, audit event, concurrent action, language, theme,
+    responsive viewport, or accessibility path.
+
+stable_identity:
+  logical_design_id: WA-DES-007
+  correction_revision: WA-DES-007-C1
+  title: SAQEEL Factory Data Integration
+  filename: SAQEEL Admin Integrations Data - WA-DES-007-C1.dc.html
+  route: /admin/integrations/factory-data
+  lineage_kind: CORRECTIVE_SUCCESSOR
+  predecessor:
+    filename: SAQEEL Admin Integrations Data.dc.html
+    bytes: 12588
+    sha256: a35484895fbb0965ef63f42842a832c7dcd69a164069e1f0e059a1fae17f049b
+    reference_viewport: 1160x880
+    fingerprint_reverified_on: "2026-07-25"
+  identity_rule: >-
+    WA-DES-007-C1 is a correction revision, not a new page. It remains
+    non-consumable until export fingerprinting, independent review, sponsor
+    acceptance, and controlled mapping replacement are complete.
+
+collision_check:
+  checked_scope:
+    - repository design and product-contract files
+    - design route map
+    - operational coordination packets
+  exact_successor_identity_matches_outside_predecessor_and_queue_packets: 0
+  filename_collision_found: false
+  route_collision:
+    route: /admin/integrations/factory-data
+    result: UNIQUE_REAL_ROUTE_FOR_WA-DES-007-C1
+  excluded_competing_authorities:
+    - identity: WA-DES-008
+      route: /admin/integrations
+      reason: Integration registry, events, and exports; not factory-data staging.
+    - identity: WA-DES-012
+      route_claim: /admin/integrations/senaei
+      reason: NO_CODE_MATCH and non-consumable; must not compete with WA-DES-007.
+    - route: /admin/gis/spatial
+      reason: Distinct feature-held Spatial Canvas.
+  conclusion: IDENTITY_CAN_BE_RESERVED_ONLY_AFTER_SPONSOR_CONSENT
+
+independent_mapping_findings:
+  validation: CONFIRMED_WITH_CORRECTION
+  nearest_design: WA-DES-007
+  required_corrections:
+    - Use WA-DES-007 alone rather than the seven-design M10 bundle.
+    - Replace CR-001..CR-478 with approved contextual traceability; do not invent a primary requirement.
+    - Replace fictional Technical Admin with the exact role boundary.
+    - Include CsvImportForm, MasterDataForms, layout, and server actions.
+    - Preserve staging truth and remove remote synchronization implications.
+    - Preserve exact empty, unavailable, partial-write, denial, conflict, and test-failure states.
+
+permission_contract:
+  route_guard: AdminRouteBoundary
+  exact_allowed_roles:
+    - security_admin
+    - workflow_admin
+    - compliance_admin
+  action_guard:
+    - getVerifiedUser
+    - user_roles exact allowlist
+    - RLS remains authoritative
+  denied_states:
+    - anonymous_or_expired_session
+    - authenticated_without_allowed_role
+    - role_check_unavailable
+    - action_RLS_denied
+  confidentiality:
+    - Do not expose factories, external identifiers, staging custody, rejected rows, reconciliation, or representative contacts to denied personas.
+    - Menu visibility is not authorization.
+    - Error text must not reveal raw database or provider internals.
+
+real_capability_contract:
+  provider_truth:
+    provider_label: Senaei
+    state: NOT_CONFIGURED_AND_NOT_VERIFIED_HERE
+    remote_call_from_page: false
+    missing_contract: SENAEI_API_CONTRACT_NOT_SUPPLIED
+    rule: Provider configuration, database rows, fixtures, or prior runs do not prove connectivity.
+  csv_staging:
+    action: stageFactoryCsv
+    schema_version: factory360-v2-staging-1
+    maximum_file_bytes: 2097152
+    maximum_data_rows: 5000
+    required_headers: [cr_number, license_number, plant_number]
+    custody:
+      - SHA-256 file fingerprint
+      - one senaei_sync_runs record
+      - one factory_import_batches record
+      - factory_import_rows records
+    statuses:
+      - pending
+      - rejected
+    accepted_rows_written: 0
+    guarantees:
+      - Unknown, duplicate, missing-required, malformed, oversized, and over-limit CSV input fails safely.
+      - Staging never upserts factories, commercial registrations, licences, or plants.
+      - A failed batch or row write marks prior custody records failed where the current action provides it.
+      - Duplicate custody exposes a safe code rather than an imported claim.
+  local_master_data:
+    action: mutateFactoryMasterData
+    operations:
+      - key: document
+        table: factory_documents
+        outcome: Add document metadata only; no binary upload.
+      - key: representative
+        table: factory_representatives
+        outcome: Add a representative within the selected authorized context.
+      - key: product
+        table: factory_products
+        outcome: Add a product and optional non-negative annual capacity.
+      - key: material
+        table: factory_materials
+        outcome: Add a local or imported raw-material record.
+      - key: representative_status
+        table: factory_representatives
+        outcome: Activate or deactivate an existing selected-factory representative.
+    immutable_external_truth:
+      - CR number
+      - licence number
+      - plant number
+      - provider source identity
+    excluded:
+      - source import or apply
+      - reconciliation decision
+      - Factory 360 dossier edit
+      - risk or compliance calculation
+      - visit, inspection, or corrective-action workflow
+
+audit_concurrency_and_truth:
+  audit:
+    source_expectation: RLS-protected tables have row-audit triggers.
+    current_UI_claim: Saved and audit-recorded
+    runtime_evidence_status: NOT_PROVEN_BY_CURRENT_SOURCE_TEST
+    design_rule: >-
+      Do not claim "audit-recorded" solely from action success. The corrected
+      design may say "Saved" and separately show audit evidence only when a
+      source-backed audit record is returned or independently proven.
+  concurrency:
+    representative_status_version_guard: absent
+    local_insert_idempotency_guard: not_evidenced
+    csv_duplicate_custody: Database duplicate is mapped to CSV_BATCH_ALREADY_STAGED after a run record may already exist.
+    design_rule: >-
+      Include stale/conflict and duplicate-custody states, preserve input, and
+      disclose current runtime gaps. Never imply silent-overwrite prevention or
+      atomic all-or-nothing custody beyond the action's actual behavior.
+  data_truth:
+    - Staged is not accepted, imported, synchronized, reconciled, or authoritative.
+    - Empty is distinct from unavailable, RLS-hidden, and not configured.
+    - Fixture/example values are visibly labelled and excluded from acceptance evidence.
+    - Raw staged row payloads and sensitive representative contacts do not appear in history.
+
+bounded_history_and_completeness:
+  observed_reads:
+    factories: {limit: 250, total_count: absent}
+    sync_runs: {limit: 20, total_count: absent}
+    import_batches: {limit: 20, total_count: absent}
+    rejected_rows: {limit: 50, total_count: absent}
+    reconciliation_records: {limit: 30, total_count: absent}
+  design_requirements:
+    - Label each history as recent or loaded records, never complete history.
+    - Show total counts only when returned by a counted query.
+    - Do not imply the 250-factory selector is the full national registry.
+    - Annotate pagination/load-more as an implementation gap until it exists.
+    - Preserve selected factory and filters across pagination only after runtime proof.
+  risk: Partial data can masquerade as complete custody, reconciliation, or factory coverage.
+
+information_architecture:
+  shell:
+    brand: Approved SAQEEL | صقيل identity
+    forbidden_branding: ["صقيل صناعي in English shell", "Industrial sub-brand"]
+    title: Factory data integration
+    context: Control plane only
+  regions:
+    - Provider contract truth
+    - CSV staging and validation
+    - Governed factory selector and read-only dossier link
+    - Local document, representative, product, and material controls
+    - Representative activation status
+    - Recent sync and import custody
+    - Recent rejected staged rows
+    - Recent reconciliation records
+  separation_rules:
+    - Do not add a Factory Data/Spatial Canvas segmented switch.
+    - Do not merge Integration Hub provider registry actions.
+    - Do not place Factory 360 dossier editing on this route.
+
+required_state_matrix:
+  route_and_sources:
+    - loading
+    - populated
+    - empty_factories
+    - empty_runs
+    - empty_rejections
+    - empty_reconciliation
+    - schema_unavailable
+    - provider_not_configured
+    - partial_source_failure
+    - unauthorized
+    - RLS_hidden
+    - bounded_history_completeness_unknown
+  csv:
+    - no_file
+    - client_preview_valid
+    - client_preview_invalid
+    - server_validation_failed
+    - staging_pending
+    - staged_success_zero_accepted
+    - all_rows_rejected
+    - duplicate_batch
+    - run_insert_failed
+    - batch_insert_failed
+    - row_insert_partial_failure
+    - retry_without_duplicate_claim
+  master_data:
+    - no_factory_selected
+    - selected_factory
+    - submitting
+    - saved_without_unproven_audit_claim
+    - validation_error_with_input_preserved
+    - permission_denied
+    - write_failure
+    - representative_not_found
+    - stale_or_conflict
+    - sensitive_contact_masked_outside_selected_context
+  test_and_evidence:
+    - source_test_pass_runtime_unproven
+    - focused_test_failure
+    - runtime_negative_failure
+    - visual_or_accessibility_failure
+  test_failure_rule: >-
+    A failing required test or missing runtime evidence blocks acceptance. The
+    design status must remain returned/blocked and must not be converted into a
+    warning, completion percentage, or visual-only approval.
+
+responsive_matrix:
+  viewports:
+    - 1440x900
+    - 1160x880
+    - 1024x768
+    - 768x1024
+    - 412x915
+    - 390x844
+    - 320x568
+  desktop: Provider and staging may share a row; master-data and history remain clearly separated.
+  tablet: Forms and histories stack without clipped identifiers, fields, statuses, or actions.
+  mobile: Single-column task order; factory selection precedes controls; no peeking submenu icons.
+  minimum_reflow: No task loss, overlap, or two-dimensional page scroll.
+  table_rule: Use labelled cards or a named horizontal region; preserve header and action semantics.
+
+language_bidi_theme:
+  locales:
+    - {locale: en, direction: ltr}
+    - {locale: ar, direction: rtl}
+  bidi_rules:
+    - Use logical layout and mirror directional structure.
+    - Isolate hashes, batch IDs, error codes, schema versions, CR/licence/plant identifiers, emails, and phone numbers appropriately.
+    - Localize headings, hints, errors, statuses, provider truth, staging distinctions, recovery, and empty/degraded states.
+    - Require qualified native-Arabic review before acceptance.
+  themes: [light, dark]
+  theme_evidence:
+    - shell, banners, provider status, file control, selector, forms, tables, badges, links, and focus
+    - body, heading, caption, placeholder, disabled, error, success, warning, unavailable, and RLS-hidden contrast
+    - long identifier readability without relying on underlined body text as the only action affordance
+
+accessibility_contract:
+  structure:
+    - One h1 and ordered region headings.
+    - Programmatic labels, required/optional hints, field errors, and result associations.
+    - Each form and status action has a unique accessible name.
+  keyboard:
+    - File chooser, factory selector, forms, representative toggles, histories, dossier link, pagination placeholder, and retry are operable.
+    - Visible single focus treatment in both themes.
+    - Forty-four-pixel minimum targets.
+    - Validation focuses the summary or first invalid field without clearing input.
+  announcements:
+    - file preview and validation
+    - staging progress and safe result counts
+    - local mutation result
+    - source unavailable, partial failure, conflict, and test failure
+  content:
+    - Status uses text, icon, and shape rather than color alone.
+    - Long hashes and IDs wrap or truncate with accessible full values.
+    - Tables retain programmatic headers or become labelled records.
+  zoom_reflow:
+    - Prove 200 percent zoom.
+    - Prove 400 percent or 320 CSS-pixel equivalent reflow.
+
+error_and_degraded_contract:
+  safe_error_codes:
+    - CSV_FILE_REQUIRED
+    - CSV_SCHEMA_VERSION_UNSUPPORTED
+    - CSV_FILE_SIZE_INVALID
+    - CSV_UNCLOSED_QUOTE
+    - CSV_HAS_NO_DATA_ROWS
+    - CSV_DUPLICATE_HEADER
+    - CSV_UNKNOWN_HEADER
+    - CSV_REQUIRED_HEADER_MISSING
+    - CSV_ROW_LIMIT_EXCEEDED
+    - CSV_COLUMN_COUNT_MISMATCH
+    - CSV_BATCH_ALREADY_STAGED
+    - CSV_STAGE_RUN_FAILED
+    - CSV_STAGE_BATCH_FAILED
+    - CSV_STAGE_ROWS_FAILED
+  rules:
+    - Do not display raw row payloads, SQL, provider URLs, stack traces, or database messages.
+    - One source failure does not zero or fabricate healthy sources.
+    - Preserve chosen-file context only where privacy and browser security permit.
+    - Preserve master-data input after safe validation or write failure.
+    - Show which region is unavailable without declaring the whole provider unhealthy.
+
+acceptance_evidence_plan:
+  design_return:
+    - Corrected editable design export under the stable filename.
+    - Export byte size, SHA-256, viewport inventory, and predecessor lineage.
+    - Predecessor-versus-successor record proving removal of fabricated provider, history, counts, IDs, and imported claims.
+    - Component/action/state annotations for layout, page, CSV, master-data forms, and both server actions.
+    - Full permission, data, audit, concurrency, failure, responsive, theme, RTL, accessibility, and bounded-history matrices.
+    - Explicit implementation-gap register and test-failure status treatment.
+  later_runtime_not_authorized_here:
+    - Each allowed role can load and perform only permitted actions.
+    - Anonymous, denied role, role-read failure, and direct-action RLS denial leak no data and change no rows.
+    - Valid, invalid, duplicate, oversized, malformed, all-rejected, and partial-write CSV paths.
+    - Proof that staging writes no accepted/imported factory truth.
+    - Each local operation persists after refresh with source identifiers unchanged.
+    - Audit actor, object, before/after, action, and timestamp for staging and local mutations.
+    - Concurrent representative and duplicate-batch behavior.
+    - Empty, unavailable, RLS-hidden, partial-source, and bounded-history completeness.
+    - No raw provider/database errors or representative-contact leakage.
+    - EN/AR RTL, light/dark, all viewports, keyboard, zoom, focus, target size, and automated accessibility.
+    - Required focused and protected regression suites with zero unexplained failure.
+
+acceptance_mapping:
+  - id: WA-M10-AC-001
+    priority: P0
+    design_evidence: Real provider truth, strict CSV staging, retained local actions, source data, and implementation gaps.
+  - id: WA-M10-AC-002
+    priority: P0
+    design_evidence: Unauthorized, RLS, validation, duplicate, partial-write, conflict, provider, and test-failure states.
+  - id: WA-M10-AC-003
+    priority: P1
+    design_evidence: Corrected fixed-viewport export with zero unapproved difference.
+  - id: WA-M10-AC-004
+    priority: P1
+    design_evidence: EN/AR RTL, light/dark, desktop/tablet/mobile/reflow, keyboard, and accessibility.
+  - id: WA-M10-AC-005
+    priority: P0
+    design_evidence: Exact roles, RLS, audit truth, source immutability, custody, Factory 360 and Spatial boundaries.
+  - id: WA-M10-AC-006
+    priority: P1
+    design_evidence: Stable IDs, contextual requirements, export fingerprint, limitations, evidence index, and change record.
+
+p0_return_gates:
+  - id: P0-IDENTITY
+    return_if: Route, design identity, revision, filename, or predecessor lineage differs.
+  - id: P0-STAGING-TRUTH
+    return_if: Staged rows are called imported, accepted, synchronized, reconciled, or authoritative.
+  - id: P0-PROVIDER
+    return_if: Senaei connectivity, endpoint, contract, provider health, freshness, mapping, or success is invented.
+  - id: P0-WORKFLOW
+    return_if: Import/apply, reconciliation decision, publication, approval, or another unsupported workflow is added.
+  - id: P0-PERMISSION
+    return_if: Technical Admin or another fictional role replaces the exact three-role boundary.
+  - id: P0-CONFIDENTIALITY
+    return_if: Denied personas see factory source IDs, custody, rejected rows, reconciliation, or representative contacts.
+  - id: P0-SOURCE
+    return_if: External CR, licence, plant, provider, or official factory truth becomes locally editable.
+  - id: P0-AUDIT
+    return_if: Audit completion is asserted solely from action success without runtime audit evidence.
+  - id: P0-CONCURRENCY
+    return_if: Stale representative update, duplicate batch, or partial custody is silently overwritten or falsely marked atomic.
+  - id: P0-DATA
+    return_if: Any run, filename, date, correlation ID, hash, count, external ID, outcome, reason, fixture, metric, or policy is fabricated.
+  - id: P0-FAILURE
+    return_if: Required test failure, runtime negative failure, or missing evidence is hidden or converted into completion.
+  - id: P0-SCOPE
+    return_if: Spatial Canvas, Integration Hub, Factory 360 dossier editing, risk, compliance, visit, inspection, or corrective-action logic is added.
+  - id: P0-TRACEABILITY
+    return_if: The page claims all 478 requirements or direct ownership of Factory 360 route behaviors.
+
+p1_return_gates:
+  - id: P1-RESPONSIVE
+    return_if: Any required viewport clips, overlaps, hides a task, scrolls the page horizontally, or exposes peeking navigation.
+  - id: P1-RTL
+    return_if: Arabic is untranslated, directionally broken, or corrupts hashes, IDs, codes, contact data, or schema versions.
+  - id: P1-THEME
+    return_if: Light/dark controls, statuses, focus, text, borders, placeholders, disabled, error, or unavailable states lack contrast.
+  - id: P1-A11Y
+    return_if: Headings, labels, hints, errors, focus, targets, announcements, table semantics, or full identifier access is missing.
+  - id: P1-HISTORY
+    return_if: Bounded histories or the 250-factory selector are presented as complete without totals and pagination proof.
+  - id: P1-FEEDBACK
+    return_if: Progress, success, validation, denial, partial failure, conflict, or retry loses context or misstates custody.
+  - id: P1-EVIDENCE
+    return_if: Fingerprint, visual matrix, state index, annotations, gap register, test status, or predecessor comparison is absent.
+
+design_write_lease:
+  current_state: NOT_ISSUED
+  owner: null
+  permitted_artifact:
+    identity: WA-DES-007-C1
+    filename: SAQEEL Admin Integrations Data - WA-DES-007-C1.dc.html
+  permitted_work:
+    - Correct the predecessor within the proven staging and local-control boundary.
+    - Produce every design and evidence state named in this packet.
+    - Export and fingerprint the correction for independent review.
+  issue_preconditions:
+    - Sponsor explicitly approves the WA-DES-007-C1 correction.
+    - One named Claude Design writer is recorded.
+    - No concurrent writer owns WA-DES-007, WA-DES-007-C1, or this route's design file.
+    - Writer acknowledges all P0/P1 return gates and the missing provider contract.
+  expiry: End of one corrected export and evidence return.
+
+review_sequence:
+  - "Sponsor: approve or decline the bounded design correction."
+  - "Orchestrator: name one design writer and recheck identity/file collisions."
+  - "Claude Design writer: produce corrected design and evidence only."
+  - "Codex independent reviewer: apply every P0/P1 return gate without editing the design."
+  - "Sponsor: accept, return, or reject the corrected design."
+  - "Governance: fingerprint and update frozen mapping only through approved change control."
+  - "Implementation owner: receive a separate non-overlapping lease after design acceptance."
+
+readiness_decision:
+  identity_ready: true
+  predecessor_fingerprint_verified: true
+  capability_boundary_ready: true
+  permission_data_audit_concurrency_contract_ready: true
+  state_and_evidence_plan_ready: true
+  sponsor_consent_present: false
+  named_design_writer_present: false
+  live_design_write_allowed: false
+  implementation_allowed: false
+  consumable_status: NON_CONSUMABLE
+  recommendation: APPROVE_BOUNDED_DESIGN_LEASE_FOR_SPONSOR_CONSENT
+  block_reason: >-
+    Sponsor consent and one named collision-free writer are absent.
+    SENAEI_API_CONTRACT_NOT_SUPPLIED remains an external block. Runtime audit,
+    concurrency, bounded-history completeness, full persona, negative, theme,
+    language, responsive, accessibility, and protected-regression evidence
+    remain required and cannot be inferred from the source-only test.
+
+rollback:
+  action: Delete only this draft packet if rejected.
+  product_or_design_rollback_required: false
+  unrelated_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-WA-DES-008-C1-DESIGN-LEASE-READINESS-027
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  route: /admin/integrations
+  design_identity: WA-DES-008-C1
+  scope: >-
+    Prepare the Integration Hub correction lease and P0/P1 design-return gates
+    using only the real registry, event, and export-job capabilities, exact
+    permissions, provider-held truth, bounded histories, error isolation,
+    responsive, bilingual, theme, and accessibility states. Make no live
+    design, mapping, code, test, provider, data, or branch change.
+  collision_check_required_before_dispatch: true

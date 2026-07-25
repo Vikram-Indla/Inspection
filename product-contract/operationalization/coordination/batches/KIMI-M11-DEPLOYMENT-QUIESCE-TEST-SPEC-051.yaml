@@ -1,0 +1,519 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051
+status: READ_ONLY_FUTURE_DEPLOYMENT_TEST_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze future M11 deployment tests for dependency preflight, expansion,
+  application switch, provider/OTP pause, quiesce and drain, active-session
+  handling, uninterrupted 013-to-015 contraction, certification, audit
+  continuity, event cardinality and roll-forward recovery. This is a
+  specification only; no deployment or test is executed.
+
+frozen_authority:
+  KIMI-M11-TEST-EVIDENCE-GAP-MAP-032: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 920d500d5f2bdfa55da2fb2acac32b28346e3d668d7ac40f3ab88e00150d24fa
+  KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 782eba637010837658bb185cddda47c804b92f991cb504faced92bbb82c39b6a
+  KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048: f54e977cd7f69182e4044a30884873f8eb67e7b5b723216287a9797874d190a0
+  KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049: 2b056513d9f920c7d8fc48526ee2e77ccd2571a990eabf26afee1ea4353affd7
+  KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050: d969a53143543d6c4fae0df81e4c979d5e27b6e4ff298682995bf75fd24d47a7
+
+hard_boundary:
+  - "No actual test, SQL, migration, deployment, provider, product, application, database, design, data, seed, branch or stash change."
+  - "No migration filename, maintenance window, timeout, drain threshold, retry count, provider value or operational SLA is invented."
+  - "All identities, phases, traffic and failures are symbolic test-contract classes."
+  - "After security contraction, recovery is roll-forward and fail-closed; no broad privilege or direct DML restoration."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+required_phase_order:
+  - dependency_and_collision_preflight
+  - database_expansion
+  - application_switch_with_OTP_and_provider_callbacks_disabled
+  - safe_projection_and_specialized_participant_trigger_verified
+  - traffic_quiesce_gate_closed
+  - active_mutations_drained_to_zero
+  - contract_013
+  - immediate_no_traffic_successor_015
+  - catalog_runtime_and_regression_certification
+  - controlled_feature_resume
+
+phase_invariants:
+  - "Every phase consumes evidence from its predecessor and fails closed when evidence is absent."
+  - "Expansion remains backward-compatible with the pre-switch application."
+  - "The switched application uses only governed paths before direct DML or generic append contraction."
+  - "OTP requests and provider callbacks are disabled before quiesce and remain disabled until certification permits resume."
+  - "No new mutation enters after the quiesce gate closes."
+  - "Contract starts only after the in-flight mutation count is proven zero."
+  - "013 and 015 run as an uninterrupted no-traffic sequence under exact sequential ownership."
+  - "Safe participant trigger/projection exists before any hardened OTP path can execute."
+  - "Historical audit remains immutable and every global audit consumer remains safe."
+  - "Failed post-contract certification keeps the feature disabled and invokes roll-forward repair."
+
+identity_fixtures:
+  - id: FX-DEP-ORCHESTRATION-CONTROLLER
+    class: proposed_control_owner
+  - id: FX-DEP-DATABASE-EXPANSION-OWNER
+    class: proposed_implementation_owner
+  - id: FX-DEP-APPLICATION-SWITCH-OWNER
+    class: proposed_implementation_owner
+  - id: FX-DEP-CONTRACT-013-OWNER
+    class: proposed_implementation_owner
+  - id: FX-DEP-CONTRACT-015-OWNER
+    class: proposed_implementation_owner
+  - id: FX-DEP-PROVIDER-OWNER
+    class: proposed_integration_owner
+  - id: FX-DEP-GLOBAL-AUDIT-CONSUMER-OWNER
+    class: proposed_integration_owner
+  - id: FX-DEP-QA-CERTIFIER
+    class: proposed_QA_owner
+  - id: FX-DEP-INDEPENDENT-REVIEWER
+    class: reviewer
+  - id: FX-DEP-ASSIGNED-INSPECTOR
+    class: ordinary_session
+  - id: FX-DEP-PLANNER
+    class: ordinary_session
+  - id: FX-DEP-REVIEWER
+    class: ordinary_session
+
+symbolic_fixtures:
+  preflight:
+    - FX-DEP-CORRECTED-PACKETS-ACCEPTED
+    - FX-DEP-CORRECTED-PACKETS-MISSING
+    - FX-DEP-CATALOG-MANIFEST-EXACT
+    - FX-DEP-CATALOG-MANIFEST-MISMATCH
+    - FX-DEP-LEASES-NONOVERLAPPING
+    - FX-DEP-LEASE-COLLISION
+    - FX-DEP-MIGRATION-CHAIN-EXACT
+    - FX-DEP-MIGRATION-CHAIN-DRIFT
+    - FX-DEP-PROVIDER-CONFIGURED
+    - FX-DEP-PROVIDER-NOT-CONFIGURED
+    - FX-DEP-AUDIT-CONSUMERS-COMPLETE
+    - FX-DEP-AUDIT-CONSUMER-UNKNOWN
+  phases:
+    - FX-DEP-EXPANSION-NOT-STARTED
+    - FX-DEP-EXPANSION-COMPLETE
+    - FX-DEP-APPLICATION-PRE-SWITCH
+    - FX-DEP-APPLICATION-SWITCHED
+    - FX-DEP-OTP-ENABLED
+    - FX-DEP-OTP-DISABLED
+    - FX-DEP-PROVIDER-CALLBACKS-ENABLED
+    - FX-DEP-PROVIDER-CALLBACKS-DISABLED
+    - FX-DEP-QUIESCE-OPEN
+    - FX-DEP-QUIESCE-CLOSED
+    - FX-DEP-IN-FLIGHT-NONZERO
+    - FX-DEP-IN-FLIGHT-ZERO
+    - FX-DEP-013-NOT-RUN
+    - FX-DEP-013-COMPLETE
+    - FX-DEP-015-NOT-RUN
+    - FX-DEP-015-COMPLETE
+    - FX-DEP-CERTIFICATION-PASSED
+    - FX-DEP-CERTIFICATION-FAILED
+  active_work:
+    - FX-DEP-ACTIVE-SESSION-PRE-SWITCH
+    - FX-DEP-ACTIVE-SESSION-POST-SWITCH
+    - FX-DEP-ACTIVE-OTP-ATTEMPT
+    - FX-DEP-ACTIVE-PROVIDER-ATTEMPT
+    - FX-DEP-ACTIVE-CLOSE
+    - FX-DEP-NEW-MUTATION-AFTER-QUIESCE
+  failures:
+    - FX-DEP-EXPANSION-FAILURE
+    - FX-DEP-SWITCH-FAILURE
+    - FX-DEP-DRAIN-FAILURE
+    - FX-DEP-013-FAILURE
+    - FX-DEP-015-FAILURE
+    - FX-DEP-CERTIFICATION-FAILURE
+    - FX-DEP-RESUME-FAILURE
+  audit:
+    - FX-DEP-HISTORICAL-AUDIT-SET
+    - FX-DEP-GLOBAL-AUDIT-CONSUMER-SET
+    - FX-DEP-PARTICIPANT-SECRET-SENTINEL
+
+expected_result_vocabulary:
+  PREFLIGHT_PASS: "Every authority, dependency, owner, lease and manifest gate is exact."
+  PREFLIGHT_BLOCK: "Deployment does not start; no partial change."
+  PHASE_PASS: "Phase completes with required predecessor evidence and no prohibited side effect."
+  QUIESCED: "New mutations denied and in-flight count proven zero."
+  ACTIVE_WORK_HANDLED: "In-flight work follows the accepted drain/finish/fail-closed contract without silent loss."
+  NO_TRAFFIC: "No M11 mutation between contract 013 start and successor 015 completion."
+  ROLLBACK_CLEAN: "Pre-contract failed phase restores compatible prior state without privilege widening."
+  ROLL_FORWARD_FAIL_CLOSED: "Post-contract failure keeps feature disabled and repairs forward."
+  ONE_SEMANTIC_EVENT: "Each committed transition produces exactly one semantic event."
+  AUDIT_CONTINUOUS: "Historical audit immutable; safe consumers remain operational without raw participant secrets."
+  RELEASE_READY: "All catalog, runtime, negative, regression and evidence gates pass."
+
+test_groups:
+  PREFLIGHT_DEPENDENCY_AND_COLLISION:
+    cases:
+      - id: M11-051-PRE-001
+        fixtures:
+          - FX-DEP-CORRECTED-PACKETS-ACCEPTED
+          - FX-DEP-CATALOG-MANIFEST-EXACT
+          - FX-DEP-LEASES-NONOVERLAPPING
+          - FX-DEP-MIGRATION-CHAIN-EXACT
+          - FX-DEP-AUDIT-CONSUMERS-COMPLETE
+        action: "Evaluate complete preflight."
+        expected: PREFLIGHT_PASS
+        evidence: [packet_hash_manifest, catalog_manifest_hash, lease_snapshot, migration_chain_hash, audit_consumer_manifest]
+      - id: M11-051-PRE-002
+        fixtures: [FX-DEP-CORRECTED-PACKETS-MISSING]
+        action: "Attempt deployment preflight."
+        expected: PREFLIGHT_BLOCK
+        evidence: [missing_input_manifest, deployment_phase_state]
+      - id: M11-051-PRE-003
+        fixtures: [FX-DEP-CATALOG-MANIFEST-MISMATCH]
+        action: "Attempt deployment preflight."
+        expected: PREFLIGHT_BLOCK
+        evidence: [catalog_diff, deployment_phase_state]
+      - id: M11-051-PRE-004
+        fixtures: [FX-DEP-LEASE-COLLISION]
+        action: "Attempt deployment preflight."
+        expected: PREFLIGHT_BLOCK
+        evidence: [collision_manifest, deployment_phase_state]
+      - id: M11-051-PRE-005
+        fixtures: [FX-DEP-MIGRATION-CHAIN-DRIFT]
+        action: "Attempt deployment preflight."
+        expected: PREFLIGHT_BLOCK
+        evidence: [migration_chain_diff, deployment_phase_state]
+      - id: M11-051-PRE-006
+        fixtures: [FX-DEP-AUDIT-CONSUMER-UNKNOWN]
+        action: "Attempt raw-audit contraction preflight."
+        expected: PREFLIGHT_BLOCK
+        evidence: [consumer_inventory_gap, contract_phase_state]
+      - id: M11-051-PRE-007
+        fixtures: [FX-DEP-PROVIDER-NOT-CONFIGURED]
+        action: "Evaluate deployment versus runtime completion."
+        expected: "Security remediation may proceed only with OTP/provider paths disabled; runtime provider completion remains blocked."
+        evidence: [provider_state_attestation, OTP_feature_state, release_scope]
+
+  DATABASE_EXPANSION:
+    cases:
+      - id: M11-051-EXP-001
+        fixtures: [FX-DEP-EXPANSION-NOT-STARTED, FX-DEP-APPLICATION-PRE-SWITCH]
+        action: "Apply future expansion in isolated rehearsal."
+        expected: PHASE_PASS
+        evidence: [expansion_manifest, catalog_before_after, migration_result]
+      - id: M11-051-EXP-002
+        fixtures: [FX-DEP-EXPANSION-COMPLETE, FX-DEP-APPLICATION-PRE-SWITCH]
+        action: "Exercise pre-switch application."
+        expected: "Backward-compatible behavior; no premature governed-path requirement."
+        evidence: [pre_switch_regression_matrix, error_scan]
+      - id: M11-051-EXP-003
+        fixtures: [FX-DEP-EXPANSION-COMPLETE, FX-DEP-PARTICIPANT-SECRET-SENTINEL]
+        action: "Verify safe projection and specialized participant trigger before switch."
+        expected: "Safe trigger/projection present; sentinel excluded; historical audit unchanged."
+        evidence: [trigger_manifest, projection_manifest, sentinel_scan, historical_checksum]
+      - id: M11-051-EXP-004
+        fixtures: [FX-DEP-EXPANSION-FAILURE]
+        action: "Force expansion failure."
+        expected: ROLLBACK_CLEAN
+        evidence: [catalog_before_after, application_regression_result, audit_before_after]
+
+  APPLICATION_SWITCH:
+    cases:
+      - id: M11-051-SWI-001
+        fixtures: [FX-DEP-EXPANSION-COMPLETE, FX-DEP-APPLICATION-SWITCHED, FX-DEP-OTP-DISABLED]
+        action: "Exercise switched application governed paths."
+        expected: PHASE_PASS
+        evidence: [application_path_manifest, direct_DML_attempt_count, governed_RPC_results]
+      - id: M11-051-SWI-002
+        fixtures: [FX-DEP-APPLICATION-SWITCHED]
+        action: "Attempt direct session/participant DML and generic append fallback."
+        expected: "No application fallback; only governed paths."
+        evidence: [application_call_trace, direct_DML_count, generic_append_count]
+      - id: M11-051-SWI-003
+        fixtures: [FX-DEP-APPLICATION-SWITCHED, FX-DEP-OTP-ENABLED]
+        action: "Attempt switch acceptance with OTP still enabled."
+        expected: PREFLIGHT_BLOCK
+        evidence: [feature_state, switch_acceptance_result]
+      - id: M11-051-SWI-004
+        fixtures: [FX-DEP-SWITCH-FAILURE]
+        action: "Force application-switch failure before contraction."
+        expected: "Restore compatible pre-switch application state; expansion may remain inert."
+        evidence: [application_version_before_after, database_compatibility_result, feature_state]
+
+  PROVIDER_AND_OTP_PAUSE_RESUME:
+    cases:
+      - id: M11-051-OTP-001
+        fixtures: [FX-DEP-OTP-DISABLED, FX-DEP-PROVIDER-CALLBACKS-DISABLED]
+        action: "Attempt OTP request and provider callback before quiesce."
+        expected: "Fail closed with zero provider attempt/callback mutation."
+        evidence: [OTP_result, provider_attempt_count, callback_mutation_count]
+      - id: M11-051-OTP-002
+        fixtures: [FX-DEP-OTP-ENABLED, FX-DEP-PROVIDER-CALLBACKS-ENABLED, FX-DEP-QUIESCE-CLOSED]
+        action: "Attempt contract preflight."
+        expected: PREFLIGHT_BLOCK
+        evidence: [feature_state, contract_start_attestation]
+      - id: M11-051-OTP-003
+        fixtures: [FX-DEP-CERTIFICATION-PASSED, FX-DEP-PROVIDER-CONFIGURED]
+        action: "Resume provider/OTP under final approved contract."
+        expected: "Only after all final provider, callback, ACL, audit and regression evidence passes."
+        evidence: [resume_gate_manifest, final_feature_state, first_safe_request_result]
+      - id: M11-051-OTP-004
+        fixtures: [FX-DEP-CERTIFICATION-PASSED, FX-DEP-PROVIDER-NOT-CONFIGURED]
+        action: "Attempt provider/OTP resume."
+        expected: "Provider runtime remains disabled and truthful."
+        evidence: [provider_state, feature_state, UI_API_copy]
+      - id: M11-051-OTP-005
+        fixtures: [FX-DEP-RESUME-FAILURE]
+        action: "Force resume failure."
+        expected: ROLL_FORWARD_FAIL_CLOSED
+        evidence: [feature_state, recovery_action, grant_manifest]
+
+  QUIESCE_DRAIN_AND_ACTIVE_WORK:
+    cases:
+      - id: M11-051-QUI-001
+        fixtures: [FX-DEP-QUIESCE-OPEN, FX-DEP-IN-FLIGHT-NONZERO]
+        action: "Close quiesce gate."
+        expected: "Existing accepted in-flight work remains observable; new mutation gate closes."
+        evidence: [quiesce_transition, in_flight_count, new_mutation_result]
+      - id: M11-051-QUI-002
+        fixtures: [FX-DEP-QUIESCE-CLOSED, FX-DEP-NEW-MUTATION-AFTER-QUIESCE]
+        action: "Attempt new M11 mutation."
+        expected: QUIESCED
+        evidence: [normalized_result, mutation_count, event_count]
+      - id: M11-051-QUI-003
+        fixtures: [FX-DEP-QUIESCE-CLOSED, FX-DEP-IN-FLIGHT-NONZERO]
+        action: "Attempt contract start."
+        expected: "Blocked until zero."
+        evidence: [in_flight_count, contract_start_attestation]
+      - id: M11-051-QUI-004
+        fixtures: [FX-DEP-QUIESCE-CLOSED, FX-DEP-IN-FLIGHT-ZERO]
+        action: "Approve contract start."
+        expected: QUIESCED
+        evidence: [drain_attestation, mutation_gate_state]
+      - id: M11-051-QUI-005
+        fixtures: [FX-DEP-ACTIVE-SESSION-PRE-SWITCH, FX-DEP-ACTIVE-SESSION-POST-SWITCH]
+        action: "Exercise accepted active-session handling across switch."
+        expected: ACTIVE_WORK_HANDLED
+        evidence: [session_state_timeline, user_result, audit_correlation]
+      - id: M11-051-QUI-006
+        fixtures: [FX-DEP-ACTIVE-OTP-ATTEMPT, FX-DEP-ACTIVE-PROVIDER-ATTEMPT]
+        action: "Close quiesce while OTP/provider attempt is active."
+        expected: "Drain/reconcile according to final idempotency contract; no false delivered fact."
+        evidence: [attempt_timeline, final_provider_state, delivered_event_count]
+      - id: M11-051-QUI-007
+        fixtures: [FX-DEP-ACTIVE-CLOSE]
+        action: "Close quiesce while close transition is active."
+        expected: ACTIVE_WORK_HANDLED
+        evidence: [transaction_timeline, final_state, semantic_event_count]
+      - id: M11-051-QUI-008
+        fixtures: [FX-DEP-DRAIN-FAILURE]
+        action: "Fail to reach zero in-flight state."
+        expected: "Contract blocked; feature remains quiesced; no forced termination is invented."
+        evidence: [in_flight_count, contract_state, recovery_decision]
+
+  CONTRACT_ORDER_013_015:
+    cases:
+      - id: M11-051-CON-001
+        fixtures: [FX-DEP-QUIESCE-CLOSED, FX-DEP-IN-FLIGHT-ZERO, FX-DEP-013-NOT-RUN, FX-DEP-015-NOT-RUN]
+        action: "Rehearse exact 013 then immediate 015 sequence."
+        expected: NO_TRAFFIC
+        evidence: [phase_timeline, owner_handoff, no_traffic_attestation, migration_chain_hash]
+      - id: M11-051-CON-002
+        fixtures: [FX-DEP-013-NOT-RUN, FX-DEP-015-COMPLETE]
+        action: "Attempt 015 before 013."
+        expected: PREFLIGHT_BLOCK
+        evidence: [ordering_result, catalog_state]
+      - id: M11-051-CON-003
+        fixtures: [FX-DEP-013-COMPLETE, FX-DEP-015-NOT-RUN, FX-DEP-NEW-MUTATION-AFTER-QUIESCE]
+        action: "Attempt traffic between contract steps."
+        expected: "Denied; contract cannot be certified if traffic occurs."
+        evidence: [mutation_result, no_traffic_gate_result, certification_state]
+      - id: M11-051-CON-004
+        fixtures: [FX-DEP-013-FAILURE]
+        action: "Force failure before 013 commits."
+        expected: "Transaction rollback if available; remain quiesced and fail closed."
+        evidence: [catalog_before_after, feature_state, recovery_plan]
+      - id: M11-051-CON-005
+        fixtures: [FX-DEP-013-COMPLETE, FX-DEP-015-FAILURE]
+        action: "Force failure after 013 contraction."
+        expected: ROLL_FORWARD_FAIL_CLOSED
+        evidence: [catalog_state, feature_state, prohibited_rollback_scan, forward_repair_plan]
+      - id: M11-051-CON-006
+        fixtures: [FX-DEP-013-COMPLETE, FX-DEP-015-COMPLETE]
+        action: "Inspect exact function signatures, ACLs, policies, triggers and generic append contraction."
+        expected: "Final accepted catalog manifest."
+        evidence: [post_contract_catalog_manifest, catalog_diff]
+
+  EVENT_CARDINALITY_AND_AUDIT_CONTINUITY:
+    cases:
+      - id: M11-051-AUD-001
+        fixtures: [FX-DEP-HISTORICAL-AUDIT-SET]
+        action: "Compare historical audit before expansion, switch, contract and certification."
+        expected: AUDIT_CONTINUOUS
+        evidence: [historical_row_counts, historical_checksum_series]
+      - id: M11-051-AUD-002
+        fixtures: [FX-DEP-GLOBAL-AUDIT-CONSUMER-SET]
+        action: "Exercise every inventoried global audit consumer at each phase."
+        expected: AUDIT_CONTINUOUS
+        evidence: [phase_consumer_matrix, safe_field_manifest, regression_result]
+      - id: M11-051-AUD-003
+        fixtures: [FX-DEP-PARTICIPANT-SECRET-SENTINEL]
+        action: "Exercise participant transitions before and after contract."
+        expected: "Zero secret sentinel in raw future audit, safe projection, UI, logs or evidence."
+        evidence: [phase_storage_scan, projection_scan, UI_scan, log_scan, evidence_scan]
+      - id: M11-051-AUD-004
+        fixtures: [FX-DEP-APPLICATION-SWITCHED]
+        action: "Commit each governed transition exactly once."
+        expected: ONE_SEMANTIC_EVENT
+        evidence: [transition_event_matrix, semantic_event_counts, safe_generic_fact_counts]
+      - id: M11-051-AUD-005
+        fixtures: [FX-DEP-CERTIFICATION-FAILED]
+        action: "Force failed transition and certification cases."
+        expected: "No orphan semantic event or audit residue."
+        evidence: [rollback_event_matrix, orphan_scan]
+
+  POST_DEPLOY_CERTIFICATION:
+    cases:
+      - id: M11-051-CRT-001
+        fixtures: [FX-DEP-015-COMPLETE]
+        action: "Run future catalog owner/ACL/policy/function/trigger/dependency suite."
+        expected: "All exact catalog gates pass."
+        evidence: [catalog_suite_result, catalog_snapshot_hash]
+      - id: M11-051-CRT-002
+        fixtures: [FX-DEP-015-COMPLETE]
+        action: "Run future persona, direct-DML, neutrality, provider, callback, concurrency, rollback and redaction suites."
+        expected: "All required negative and positive cases pass or remain truthfully blocked."
+        evidence: [suite_result_manifest, blocked_case_manifest]
+      - id: M11-051-CRT-003
+        identities: [FX-DEP-ASSIGNED-INSPECTOR, FX-DEP-PLANNER, FX-DEP-REVIEWER]
+        action: "Exercise final ordinary-persona browser/RPC flows."
+        expected: "Only exact authority paths succeed; no legacy fallback."
+        evidence: [persona_flow_matrix, application_call_trace]
+      - id: M11-051-CRT-004
+        fixtures: [FX-DEP-CERTIFICATION-FAILED]
+        action: "Attempt feature release."
+        expected: ROLL_FORWARD_FAIL_CLOSED
+        evidence: [release_gate_result, feature_state, grant_manifest]
+      - id: M11-051-CRT-005
+        fixtures: [FX-DEP-CERTIFICATION-PASSED]
+        action: "Evaluate release gate."
+        expected: RELEASE_READY
+        evidence: [certification_manifest, reviewer_signoff, evidence_bundle_hash]
+      - id: M11-051-CRT-006
+        fixtures: [FX-DEP-CERTIFICATION-PASSED]
+        action: "Check legacy direct DML, old OTP signatures, generic append and raw audit paths."
+        expected: "All remain absent or denied."
+        evidence: [legacy_path_scan, execute_matrix, table_command_matrix]
+
+  RECOVERY_AND_ABORT:
+    cases:
+      - id: M11-051-REC-001
+        fixtures: [FX-DEP-EXPANSION-FAILURE]
+        action: "Recover before application switch."
+        expected: ROLLBACK_CLEAN
+        evidence: [catalog_before_after, application_regression_result]
+      - id: M11-051-REC-002
+        fixtures: [FX-DEP-SWITCH-FAILURE]
+        action: "Recover before security contraction."
+        expected: "Compatible prior application restored; no privilege widening."
+        evidence: [application_version, catalog_state, grant_manifest]
+      - id: M11-051-REC-003
+        fixtures: [FX-DEP-DRAIN-FAILURE]
+        action: "Abort contract start."
+        expected: "Remain quiesced; diagnose and drain without forced data loss."
+        evidence: [feature_state, in_flight_manifest, recovery_plan]
+      - id: M11-051-REC-004
+        fixtures: [FX-DEP-013-COMPLETE, FX-DEP-015-FAILURE]
+        action: "Attempt restoration of old OTP functions, direct DML or broad grants."
+        expected: "Prohibited; roll forward only."
+        evidence: [prohibited_recovery_scan, final_grant_manifest]
+      - id: M11-051-REC-005
+        fixtures: [FX-DEP-CERTIFICATION-FAILURE]
+        action: "Apply future roll-forward repair and recertify."
+        expected: "Feature remains disabled until complete certification passes."
+        evidence: [repair_chain, feature_state_timeline, recertification_result]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - predecessor_commit
+    - migration_chain_hash
+    - active_lease_snapshot_hash
+    - accepted_catalog_manifest_hash
+    - phase
+    - proposed_owner_identity_class
+    - result
+    - independent_reviewer
+  required_outputs:
+    - phase_timeline_and_owner_handoffs
+    - preflight_dependency_and_collision_manifest
+    - application_and_feature_state_timeline
+    - in_flight_count_and_no_traffic_attestation
+    - catalog_before_after
+    - provider_and_OTP_pause_resume_state
+    - audit_checksums_consumer_results_and_event_cardinality
+    - recovery_or_certification_result
+    - evidence_bundle_hash
+  integrity_rules:
+    - "Every phase start cites predecessor evidence."
+    - "No hidden/unindexed migration, test, evidence file or owner handoff."
+    - "No secret, provider payload, personal data, raw application row or runtime query in evidence."
+    - "A failed phase, checksum, redaction, teardown or reviewer signoff blocks release."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-ROLLOUT: apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+    TEST-010: supabase/tests/m11_010_creation_atomicity_security.sql
+    TEST-011: supabase/tests/m11_011_window_actions_security.sql
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-014: supabase/tests/m11_014_join_begin_atomicity.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+    TEST-PROVIDER: apps/web/e2e/m11-provider-truth.spec.ts
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Implementation, application-switch, provider, contract and QA owners remain mutually exclusive where files overlap."
+    - "Re-read active leases immediately before issuance."
+    - "Record predecessor commit and migration-chain checksum."
+    - "Stop on path, migration filename, function signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_rehearsal_or_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final dependency, owner/ACL, migration, application-switch, quiesce, provider, audit-consumer and evidence manifests."
+    - "Fresh collision preflight and sponsor-approved non-overlapping implementation/QA leases."
+
+queued_next:
+  packet: KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Consolidate 032 and 042-051 into a sponsor-facing future QA lease decision; issue no lease."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  required_phase_order_present: PASS
+  required_phase_count: 10
+  identity_fixture_count: 12
+  test_group_count: 9
+  test_case_count: 50
+  unique_test_case_ids: PASS
+  referenced_identities_defined: PASS
+  proposed_test_path_count: 9
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

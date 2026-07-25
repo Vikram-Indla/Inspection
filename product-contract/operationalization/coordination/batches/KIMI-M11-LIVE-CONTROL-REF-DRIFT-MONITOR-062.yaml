@@ -1,0 +1,110 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-LIVE-CONTROL-REF-DRIFT-MONITOR-062
+status: READ_ONLY_REF_MONITOR_COMPLETE_BLOCKED_MANIFEST
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Re-resolve the two authoritative control refs and three blobs from packet
+  061, detect drift and immediately check whether a complete M11 dispatch
+  manifest exists without fetching, switching refs or changing any state.
+
+authority:
+  visibility_reconciliation: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+  bootstrap: SAQEEL_M11_CONTROL_BOOTSTRAP_V1
+
+hard_boundary:
+  - "Read-only local Git ref/blob inspection plus this one owned packet."
+  - "No fetch, checkout, branch, worktree, merge, push, queue/slice/lease edit, decision or lease inference."
+  - "No implementation, QA, test execution, SQL, data, design, provider, stash or requirement credit."
+
+expected_and_observed:
+  product_control:
+    ref: origin/main
+    expected_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    observed_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    result: PASS_NO_DRIFT
+    work_queue:
+      expected_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      observed_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      result: PASS_NO_DRIFT
+    current_slice:
+      expected_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      observed_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      result: PASS_NO_DRIFT
+  coordination_control:
+    ref: origin/codex/orchestration-control-plane
+    expected_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+    observed_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+    result: PASS_NO_DRIFT
+    active_lease_registry:
+      expected_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      observed_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      result: PASS_NO_DRIFT
+
+task_row_cross_ref:
+  task_id: TASK-EXECUTION-MODULE-001
+  origin_main_row_sha256: 7e5aec813134572c386c57c7d5082e7323018fef0b6193f5d74b1176a9d17d6d
+  orchestration_ref_row_sha256: 7e5aec813134572c386c57c7d5082e7323018fef0b6193f5d74b1176a9d17d6d
+  row_content_matches: true
+  status: IN_PROGRESS
+  owner_text: "Kimi implementation and QA + Sponsor acceptance authority"
+  authority_effect: >-
+    The task row is consistent between refs, but it remains queue intent and
+    not an active file/object lease.
+
+dispatch_manifest_fallback_check:
+  required_schema: SAQEEL_M11_CONTROL_BOOTSTRAP_V1
+  required_fields: 22
+  complete_authorized_manifest_found: false
+  exact_active_M11_lease_row_found: false
+  files_with_schema_reference:
+    - KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+  classification: SPECIFICATION_ONLY_NO_DISPATCH
+  effect:
+    - "Do not infer a manifest from 061."
+    - "Do not infer a lease from matching task-row text."
+    - "Keep M11 implementation and QA blocked."
+
+verdict:
+  ref_and_hash_drift: ACK_NO_DRIFT
+  task_row_cross_ref: ACK_MATCH
+  dispatch_readiness: BLOCK
+  exact_reason: BLOCK_NO_COMPLETE_AUTHORIZED_M11_DISPATCH_MANIFEST_OR_LEASE
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+  leases_issued: 0
+
+queued_next:
+  packet: KIMI-M11-DISPATCH-MANIFEST-DRY-VALIDATOR-063
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Build and validate a non-authoritative, deliberately inactive example of
+    the 22-field bootstrap manifest for each of the three authority options so
+    missing fields and unsafe ordering are exposed before any real decision.
+  prohibited:
+    - "No real actor, owner, worktree, branch or lease assignment; no shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  refs_expected: 2
+  refs_matched: 2
+  control_blobs_expected: 3
+  control_blobs_matched: 3
+  task_rows_compared: 2
+  task_rows_matching: 2
+  authorized_dispatch_manifests_found: 0
+  exact_M11_leases_found: 0
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

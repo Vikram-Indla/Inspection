@@ -1,0 +1,335 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-STATUS-RUNTIME-PERMISSION-MAPPING-024
+title: Independent Planning Status authority, transition and consumer validation
+status: VALIDATED_INCORRECT_AUTHORITY_MAPPING_BLOCK_P0
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  package: M9
+  route: /admin/planning/status
+  implementation_contract: PLN-CON-014
+  mode: READ_ONLY
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  screen_scope:
+    - Planning Status Rules read-only projection
+  canonical_requirements:
+    primary:
+      - [MVP1-M02-015, CR-067, WA-AC-0067, WA-EV-0067]
+      - [MVP1-M02-016, CR-068, WA-AC-0068, WA-EV-0068]
+    lifecycle_dependencies:
+      - [MVP1-M02-008, CR-060, WA-AC-0060, WA-EV-0060]
+      - [MVP1-M02-009, CR-061, WA-AC-0061, WA-EV-0061]
+      - [MVP1-M02-010, CR-062, WA-AC-0062, WA-EV-0062]
+      - [MVP1-M02-011, CR-063, WA-AC-0063, WA-EV-0063]
+      - [MVP1-M02-014, CR-066, WA-AC-0066, WA-EV-0066]
+      - [MVP1-M02-029, CR-081, WA-AC-0081, WA-EV-0081]
+      - [MVP1-M02-030, CR-082, WA-AC-0082, WA-EV-0082]
+      - [MVP1-M02-034, CR-086, WA-AC-0086, WA-EV-0086]
+    atomic:
+      - REQ-R0C-00185
+      - REQ-R0C-00186
+      - REQ-R0C-00188
+      - REQ-R0C-00189
+      - REQ-R0C-00190
+      - REQ-R0C-00191
+      - REQ-R0C-00192
+      - REQ-R0C-00193
+      - REQ-R0C-00194
+      - REQ-R0C-00195
+      - REQ-R0C-00202
+      - REQ-R0C-00203
+      - REQ-R0C-00204
+      - REQ-R0C-00205
+      - REQ-R0C-00206
+      - REQ-R0C-00207
+      - REQ-R0C-00236
+      - REQ-R0C-01452
+    canonical_transitions:
+      - STM-PLAN-001
+      - STM-PLAN-002
+      - STM-VIS-001
+      - STM-VIS-002
+      - STM-VIS-003
+  web_admin_acceptance:
+    - WA-M9-AC-001 through WA-M9-AC-006
+  blanket_CR_001_through_CR_478_route_claim: PROHIBITED
+  design_dependency:
+    packet: M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047
+    state: DEPENDENCY_ONLY
+    rule: Design identity and revision cannot prove runtime authority.
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+validated_route:
+  exists: true
+  file: apps/web/src/app/(app)/admin/planning/status/page.tsx
+  components: INLINE_SERVER_RENDER_ONLY
+  claimed_source:
+    table: config_versions
+    filters:
+      - engine=workflow
+      - status=published
+    ordering: effective_from descending
+    limit: 1
+  fallback:
+    states: [planned, acknowledged, in_execution, completed, closed]
+    transition_ids: [STM-PLAN-002, STM-VIS-001, STM-VIS-002, STM-VIS-003, republish]
+  static_capabilities:
+    - planning.publish
+    - planning.manage
+    - planning.cancel
+    - planning.reassign
+    - planning.reschedule
+  codex_validation: INCORRECT_MAPPING
+  reason: >-
+    The route maps Planning's effective status authority to a generic latest
+    workflow config row, but no Planning runtime consumer reads config_versions.
+    Real transitions are enforced inconsistently by enum shape, publish RPCs,
+    application update filters, RLS, expiry functions and execution guards.
+
+real_status_authorities:
+  - authority: Database enum
+    source: supabase/migrations/0001_foundation.sql
+    contract: planning_status = draft|published|returned|cancelled|expired
+    limitation: Enum constrains values, not allowed state-to-state transitions.
+  - authority: Canonical transition catalogue
+    source: product-contract/domain/state_transitions.csv
+    transitions:
+      - STM-PLAN-001 Draft→Validated
+      - STM-PLAN-002 Validated→Published
+      - STM-VIS-001 Published→Returned
+      - STM-VIS-002 Published/Returned→Cancelled
+      - STM-VIS-003 Eligible active→Expired
+    limitation: Catalogue is documentation, not a runtime evaluator.
+  - authority: Publish RPCs
+    sources:
+      - supabase/migrations/20260723090000_planning_publish_capability_convergence.sql
+      - earlier superseded publish migrations retained in history
+    transitions:
+      - visit_plans draft→validated→published
+      - visits draft→published
+    enforcement: Transactional guards and side effects for bulk/single publish.
+  - authority: Visit management server actions
+    sources:
+      - apps/web/src/app/(app)/visits/[id]/actions.ts
+      - apps/web/src/app/(app)/visits/actions.ts
+    transitions:
+      - published→returned
+      - returned→published
+      - published/returned→cancelled
+      - reschedule/reassign/edit with application filters
+    limitation: Application filters are bypassable through direct permitted REST update.
+  - authority: Expiry engine
+    source: supabase/migrations/20260721030100_planning_canonical_structures.sql
+    transition: governed published candidates→expired
+    evidence: _expire_lapsed_visits_core plus visit lifecycle/audit/notification writes.
+  - authority: RLS and audit
+    sources:
+      - supabase/migrations/0002_rbac_audit.sql
+      - supabase/migrations/20260721030000_planning_capabilities.sql
+      - supabase/migrations/20260721030100_planning_canonical_structures.sql
+    limitation: RLS authorizes table updates but does not encode the canonical transition graph.
+  - authority: Generic workflow configuration
+    source:
+      - apps/web/src/app/(app)/admin/workflows/**
+      - apps/web/src/lib/workflow/**
+    runtime_consumer_status: NOT_CONSUMED_BY_PLANNING_TRANSITIONS
+    note: applyGovernedTransition is dark by default and explicitly does not patch the operational object state.
+
+source_and_render_findings:
+  - id: ST-P0-001
+    priority: P0
+    finding: The displayed config is not the Planning runtime authority.
+    evidence: >-
+      Repository-wide application search finds config_versions reads only in
+      this page and Workflow administration/transition code; Planning publish,
+      return, republish, cancel and expiry paths do not resolve it.
+    implication: Publishing a workflow configuration can change this table without changing actual Planning behavior.
+  - id: ST-P0-002
+    priority: P0
+    finding: Query can select the wrong workflow object and wrong effective version.
+    evidence: >-
+      It filters only engine/status, not object_id/object name, scheduled_from,
+      effective_from<=now, scope or in-flight binding, then takes the newest row.
+    implication: A Review, Risk or future-scheduled workflow may be presented as Planning's active rules.
+  - id: ST-P0-003
+    priority: P0
+    finding: Fallback contradicts the canonical Planning lifecycle.
+    evidence: >-
+      Fallback uses planned, acknowledged, in_execution, completed and closed.
+      CR-067/REQ-R0C-00205 require Draft, Published, Returned, Cancelled and
+      Expired, with Cancelled/Expired final and Returned pre-start only.
+    implication: Provider failure or missing data produces misinformation instead of an unavailable state.
+  - id: ST-P0-004
+    priority: P0
+    finding: Payload parser is incompatible with the MVP2 normalized workflow shape.
+    evidence: >-
+      Page types states as string[] and guard/side_effects as scalar/legacy
+      fields. Current workflow libraries use state objects, guards arrays and
+      fx objects; asPayload validates only that arrays exist.
+    implication: Valid current definitions can render object values incorrectly or omit guards and side effects.
+  - id: ST-P0-005
+    priority: P0
+    finding: Banner claim that the database enforces displayed transitions is false.
+    evidence: >-
+      planning_status enum constrains values only. visits UPDATE RLS permits
+      authorized updates without a state-transition trigger; canonical guards
+      reside in selected RPCs/actions and are not derived from this payload.
+    implication: Direct REST or another permitted code path can bypass application-only transition filters.
+  - id: ST-P0-006
+    priority: P0
+    finding: Status change, lifecycle event and notification are not atomic in Visit actions.
+    evidence: >-
+      return/republish/cancel commit the visits update, then append
+      visit_lifecycle_events and notifications. Failures are reported after the
+      status already changed.
+    implication: The effective state can lack its required semantic timeline or notification consequence.
+  - id: ST-P0-007
+    priority: P0
+    finding: Source Workflow governance is not certifiable.
+    evidence: M9 Workflow mapping 020 found absent route guard, broad writes, bypassable published immutability, unwired CAS and incomplete maker-checker.
+    implication: Even as a display source, config_versions is not safe enough to be called authoritative.
+  - id: ST-P1-001
+    priority: P1
+    finding: Route exposes workflow payload and inactive governance context to deep-linked authenticated users.
+    evidence: No route-local authorization exists and config_versions SELECT allows any authenticated user.
+  - id: ST-P1-002
+    priority: P1
+    finding: Capability effects are hard-coded and semantically inaccurate.
+    evidence: planning.manage is labelled create/edit before publication although publish and multiple actions depend on separate capability and legacy role seams.
+  - id: ST-P1-003
+    priority: P1
+    finding: Page combines Visit Plan, Visit, operational and execution-like fallback states without object boundaries.
+    implication: Users cannot tell which aggregate owns each state or transition.
+
+permissions_and_concurrency:
+  route_guard: ABSENT
+  navigation_visibility: ADMIN_ROLES
+  direct_read: ANY_AUTHENTICATED_NON_FIELD_USER
+  config_source_RLS: ANY_AUTHENTICATED_READ
+  real_write_authorization:
+    publish: planner role OR planning.publish capability through RPC
+    visit_updates: legacy planner/ops and permissive capability policies
+    expiry: scheduled/security-definer engine plus authenticated scoped entry points
+  transition_specific_database_guard: NOT_FOUND_FOR_GENERAL_VISITS_UPDATE
+  display_version_concurrency: NOT_APPLICABLE_READ_ONLY
+  source_concurrency: NOT_WIRED_PER_M9_WORKFLOW_020
+  in_flight_version_binding: NOT_PROVEN
+
+consumer_and_dependency_impact:
+  consumers_of_config_versions_status_page_source:
+    - /admin/planning/status
+  consumers_of_actual_planning_status:
+    - /planning
+    - /planning/bulk
+    - /planning/bulk/review
+    - /planning/single
+    - /planning/immediate
+    - /planning/plans/:id
+    - /visits
+    - /visits/:id
+    - /visits/calendar
+    - /visits/workload
+    - /operations
+    - /field/**
+    - notifications and dashboards
+  risk: >-
+    Correcting only this read-only page changes no enforcement. Replacing real
+    guards without a cross-module transition inventory can regress Planning,
+    Execution, Field, Operations, notification, audit and expiry behavior.
+
+audit_version_maker_checker:
+  generic_row_audit: visits and visit_plans have audit_row_change triggers.
+  semantic_lifecycle: visit_lifecycle_events is append-only.
+  gap: Application transitions can commit before semantic event/notification failure.
+  version_source: config_versions is versioned but not consumed by actual Planning transitions.
+  maker_checker: Workflow source has a distinct-identity constraint but incomplete capability and bypass protections.
+  concurrency:
+    publish_RPCS: transactionally guarded
+    visit_actions: conditional state filters detect some races
+    direct_REST: no canonical graph guard or general CAS
+
+test_and_browser_evidence:
+  present:
+    - file: apps/web/e2e/cd-044-admin-planning.spec.ts
+      coverage: Page banner, Workflow link, fallback-compatible STM-VIS-001 cell and static planning.publish row.
+    - file: apps/web/e2e/cd-027-visit-detail.spec.ts
+      coverage: Source assertions for returned-state and republish behavior.
+    - file: apps/web/e2e/cd-045-downstream-contract.spec.ts
+      coverage: Selected downstream notification/event keys.
+    - source: product-contract/domain/state_transitions.csv
+      coverage: Canonical transition catalogue.
+  missing:
+    - Proof that the page selected the correct Planning object and effective version.
+    - Test distinguishing live source from fallback.
+    - Failure test that forbids displaying static fallback as current rules.
+    - Compatibility test for legacy and normalized MVP2 payload shapes.
+    - Authenticated deep-link authorization tests.
+    - Direct REST invalid-transition denial for every planning_status pair.
+    - Atomic status/audit/lifecycle/notification negative tests.
+    - In-flight version binding and scheduled activation evidence.
+    - Cross-module parity test between displayed rules and every runtime guard.
+    - EN/AR, LTR/RTL, light/dark, responsive, keyboard, accessibility and visual-diff evidence.
+  readiness: NOT_READY_FOR_CERTIFICATION
+
+verdict:
+  validation: INCORRECT_MAPPING
+  recommended_action: BLOCK
+  sponsor_decision: >-
+    Do not approve the Planning Status page as an authoritative rules view.
+    Approve a bounded contract exercise first: identify the executable Planning
+    transition authority and decide whether config_versions will become its
+    real source or the page will render a verified compiled projection of the
+    existing canonical engines.
+
+p0_prerequisites:
+  - Select and document one executable Planning transition authority.
+  - Bind displayed data to the exact Planning aggregate, effective version, scope and in-flight version.
+  - Remove misinformation fallback; show explicit unavailable/degraded state.
+  - Enforce invalid transitions at a non-bypassable database/RPC boundary.
+  - Make status, semantic lifecycle, audit and required consequences atomic or durably correlated.
+  - Correct Workflow source governance from packet 020 before consuming it as authority.
+
+p1_prerequisites:
+  - Add route authorization matching the approved Planning configuration/read persona.
+  - Separate Visit Plan, Visit and operational/execution aggregate states.
+  - Derive capability effects from the governed permission/transition contract.
+  - Support only an approved normalized payload shape or an explicit lossless adapter.
+  - Add cross-module parity, RLS, negative-path, bilingual, responsive and accessibility evidence.
+
+queued_successor:
+  packet_id: M9-ADMIN-PLANNING-STATUS-RUNTIME-REMEDIATION-PREFLIGHT-025
+  mode: READ_ONLY
+  scope: >-
+    Define collision-safe transition-contract, database enforcement, projection,
+    UI and independent QA leases without selecting an architecture by assumption.
+  no_lease_claimed: true
+
+evidence:
+  - product-contract/domain/state_transitions.csv
+  - product-contract/domain/atomic_scope.csv
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  - apps/web/src/app/(app)/admin/planning/status/page.tsx
+  - apps/web/src/app/(app)/admin/workflows/actions.ts
+  - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+  - apps/web/src/app/(app)/visits/[id]/actions.ts
+  - apps/web/src/app/(app)/visits/actions.ts
+  - apps/web/src/lib/planning/lifecycle.ts
+  - apps/web/src/lib/workflow/lifecycles.ts
+  - apps/web/src/lib/workflow/governed-transition.ts
+  - supabase/migrations/0001_foundation.sql
+  - supabase/migrations/0002_rbac_audit.sql
+  - supabase/migrations/20260721030000_planning_capabilities.sql
+  - supabase/migrations/20260721030100_planning_canonical_structures.sql
+  - supabase/migrations/20260723090000_planning_publish_capability_convergence.sql
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - apps/web/e2e/cd-027-visit-detail.spec.ts
+  - apps/web/e2e/cd-045-downstream-contract.spec.ts

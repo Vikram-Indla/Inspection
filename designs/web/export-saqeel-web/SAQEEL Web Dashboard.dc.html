@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .wd-scroll { scroll-behavior: smooth; }
+  .wd-graticule { background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size: 26px 26px; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <!-- SHELL SIDEBAR -->
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item is-active" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main-content" tabindex="-1" class="wd-scroll" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <details class="r5-scope"><summary aria-label="Date scope"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Last 30 days</span></summary><div class="r5-pop"><label class="r5-field"><span class="t-label">From</span><input class="input" type="date" value="2026-06-26"></label><label class="r5-field"><span class="t-label">To</span><input class="input" type="date" value="2026-07-25"></label><button class="btn btn-secondary btn-sm" type="button">Apply</button></div></details>
+      <label class="r5-scope"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope"><option>All regions</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <!-- GLOBAL TOP BAR -->
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 24px;">
+        <button class="btn btn-secondary" style="border-radius:var(--radius-full);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>Last 30 days</button>
+        <button class="btn btn-secondary" style="border-radius:var(--radius-full);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 6 6 10 6 13a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg>All Regions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px; height:14px;"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button class="btn btn-icon btn-ghost" style="position:relative;" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span style="position:absolute; top:1px; inset-inline-end:0; min-width:17px; height:15px; padding:0 3px; border-radius:8px; background:var(--status-critical); color:#fff; font-size:9px; font-weight:700; display:grid; place-items:center; line-height:1;">99+</span></button>
+        <button class="btn btn-icon btn-ghost" aria-label="Analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V10M10 20V4M16 20v-8M4 20h16"/></svg></button>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; padding:2px 24px 16px;">
+        <h1 style="font-family:var(--font-body); font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Dashboard</h1>
+        
+      </div>
+    </header>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div style="padding:16px 24px 80px; display:flex; flex-direction:column; gap:18px;">
+
+      <!-- CONTROLS -->
+      <div class="panel" style="padding:14px 16px; display:flex; flex-direction:column; gap:12px;">
+        <div class="seg" style="align-self:flex-start;"><button class="seg-opt" aria-pressed="{{ isStrategic }}" onClick="{{ pickStrategic }}">Strategic View</button><button class="seg-opt" aria-pressed="{{ isOperational }}" onClick="{{ pickOperational }}">Operational View</button></div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div class="input-affix" style="flex:0 1 260px; min-width:150px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search CR, factory, visit…"></div>
+          <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>2026-06-20 → 2026-07-20</button>
+          <select class="select" style="width:150px;"><option>All regions</option><option>Riyadh</option><option>Eastern</option><option>Western</option></select>
+          <button class="btn btn-primary">Apply</button>
+          <span class="grow"></span>
+          <span class="badge badge-compliant"><span class="dot"></span>Live · refreshed 02:31</span>
+          <button class="btn btn-ghost btn-sm">Export</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; border-block-start:1px solid var(--border-subtle); padding-block-start:10px;">
+          <span class="id-code" style="font-size:11px; color:var(--text-muted);">Scope: 2026-06-20 → 2026-07-20 · Asia/Riyadh · policy v14 · all regions · Access-controlled</span>
+          <span class="grow"></span>
+          <span class="badge badge-warning"><span class="dot"></span>1 source partial: Licence registry</span>
+        </div>
+      </div>
+
+      <!-- ============ STRATEGIC ============ -->
+      <sc-if value="{{ isStrategic }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+
+        <!-- STATUS RAIL -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <span class="exc-chip exc-critical"><span class="exc-mark"></span>6 licences expired</span>
+          <span class="exc-chip exc-major"><span class="exc-mark"></span>18 factories need intervention</span>
+          <span class="exc-chip exc-warning"><span class="exc-mark"></span>Fire-safety violations +108% (3 mo)</span>
+          <span class="exc-chip exc-pending"><span class="exc-mark"></span>Coverage &amp; uninspected: policy not configured</span>
+        </div>
+
+        <!-- METRIC STRIP (primary) -->
+        <div class="kpi-grid">
+          <div class="kpi"><button class="kpi-info" onClick="{{ methodCompliance }}" aria-label="Methodology"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg></button><div class="kpi-label">National compliance rate</div><div class="kpi-value">92.0<span class="unit">%</span></div><div class="kpi-delta"><span class="delta down">▼ 1.2 pts</span> vs prev period</div></div>
+          <div class="kpi"><button class="kpi-info" onClick="{{ methodRepeat }}" aria-label="Methodology"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg></button><div class="kpi-label">Repeat violation rate</div><div class="kpi-value">15<span class="unit">%</span></div><div class="kpi-delta">27 of 180 factories</div></div>
+          <div class="kpi"><button class="kpi-info" onClick="{{ methodLicence }}" aria-label="Methodology"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg></button><div class="kpi-label">Licence exposure</div><div class="kpi-value" style="color:var(--status-critical);">6</div><div class="kpi-delta">expired · <span class="delta">+14 ≤30d</span></div></div>
+          <div class="kpi"><button class="kpi-info" onClick="{{ methodCoverage }}" aria-label="Why"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg></button><div class="kpi-label">Inspection coverage</div><div style="margin-block:2px;"><span class="badge badge-pending"><span class="dot"></span>Not configured</span></div><div class="kpi-delta">Needs cycle policy</div></div>
+        </div>
+
+        <!-- MAP-LED CANVAS + CONTEXT RAIL -->
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px; align-items:stretch;">
+          <div class="map-panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:580px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-block-end:1px solid var(--border-subtle); flex-wrap:wrap;">
+              <span style="font-weight:600; font-size:13px;">National decision canvas</span>
+              <div class="seg" style="margin-inline-start:8px;">
+                <sc-for list="{{ mapLayers }}" as="ly" hint-placeholder-count="5"><button class="seg-opt" aria-pressed="{{ ly.on }}" onClick="{{ ly.pick }}">{{ ly.label }}</button></sc-for>
+              </div>
+              <span class="grow"></span>
+              <span class="id-code" style="font-size:10.5px; color:var(--text-muted);">Mapbox GL · GeoMap · updated 2 min ago</span>
+            </div>
+            <div class="wd-graticule" style="position:relative; flex:1; background-color:var(--surface-sunken);">
+              <div style="position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:24px;">
+                <div><div style="font-size:13px; font-weight:500; color:var(--text-secondary);">Live basemap renders here (Mapbox GL / shared GeoMap)</div><div class="t-caption" style="max-width:46ch; margin-block-start:6px;">Region choropleth for the “{{ activeLayerLabel }}” layer, factory clusters, and provenance-tagged pins. Selection cross-filters the metric strip, analytics and ranked list. No synthetic roads or routes are drawn.</div></div>
+              </div>
+              <div class="map-panel" style="position:absolute; top:12px; inset-inline-start:12px; padding:10px 12px; width:180px;">
+                <div class="t-label" style="margin-block-end:6px;">Legend · {{ activeLayerLabel }}</div>
+                <div class="stack" style="gap:5px;">
+                  <div class="map-legend-row"><span class="swatch" style="background:var(--status-compliant);"></span>≥ 85% healthy</div>
+                  <div class="map-legend-row"><span class="swatch" style="background:var(--status-warning);"></span>75–84% attention</div>
+                  <div class="map-legend-row"><span class="swatch" style="background:var(--status-critical);"></span>&lt; 75% critical</div>
+                </div>
+                <div class="t-caption" style="margin-block-start:8px;">Provenance: official · planner · observed</div>
+              </div>
+              <div style="position:absolute; bottom:10px; inset-inline-end:12px;" class="id-code"><span style="font-size:10px; color:var(--text-muted); background:var(--map-panel); padding:3px 8px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">© Mapbox © OpenStreetMap</span></div>
+            </div>
+          </div>
+
+          <div class="panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+            <div class="panel-header"><div class="panel-title">Ranked intervention</div><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">synced to map</span></div>
+            <div style="flex:1; overflow-y:auto;">
+              <sc-for list="{{ regions }}" as="r" hint-placeholder-count="5">
+                <button onClick="{{ r.pick }}" style="display:flex; align-items:center; gap:10px; width:100%; text-align:start; padding:11px 16px; border:0; border-block-end:1px solid var(--border-subtle); background:{{ r.bg }}; cursor:pointer; font:inherit;">
+                  <span class="exc {{ r.excClass }}"><span class="exc-mark"></span></span>
+                  <span style="flex:1; min-width:0;"><span style="display:block; font-weight:600; font-size:13px;">{{ r.name }}</span><span class="t-caption">{{ r.detail }}</span></span>
+                  <span class="id-code" style="font-size:12px; color:{{ r.color }};">{{ r.value }}%</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTIC FIELDS -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px;">
+          <div class="panel" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span class="panel-title" style="font-size:13.5px;">Compliance rate trend</span><button class="btn btn-ghost btn-sm" onClick="{{ methodCompliance }}" style="height:22px; padding-inline:6px; font-size:11px;">ⓘ</button></div>
+            <div class="t-caption" style="margin-block-start:2px;">Compliant ÷ (compliant + non-compliant) · N/A excluded</div>
+            <div style="display:flex; align-items:flex-end; gap:10px; height:70px; margin-block-start:16px;">
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; height:52px; background:var(--accent-soft); border-radius:2px 2px 0 0; position:relative;"><div style="position:absolute; inset-inline:0; bottom:0; height:46px; background:var(--action-primary); border-radius:2px 2px 0 0;"></div></div><span class="t-caption">Apr</span></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; height:52px; background:var(--accent-soft); border-radius:2px 2px 0 0; position:relative;"><div style="position:absolute; inset-inline:0; bottom:0; height:49px; background:var(--action-primary); border-radius:2px 2px 0 0;"></div></div><span class="t-caption">May</span></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;"><div style="width:100%; height:52px; background:var(--accent-soft); border-radius:2px 2px 0 0; position:relative;"><div style="position:absolute; inset-inline:0; bottom:0; height:48px; background:var(--action-primary); border-radius:2px 2px 0 0;"></div></div><span class="t-caption">Jun</span></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span class="panel-title" style="font-size:13.5px;">Risk distribution</span><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">Health Score bands · 525</span></div>
+            <div class="t-caption" style="margin-block-start:2px;">Governed Health Score — distinct from Risk Score</div>
+            <div style="display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; margin-block:14px 12px;"><div style="width:3.8%; background:var(--status-critical);"></div><div style="width:12.4%; background:var(--status-major);"></div><div style="width:26.7%; background:var(--status-info);"></div><div style="width:57.1%; background:var(--status-compliant);"></div></div>
+            <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--text-secondary);"><span class="row" style="gap:5px;"><span class="dot" style="background:var(--status-critical); width:8px; height:8px; border-radius:50%;"></span>Critical 20</span><span class="row" style="gap:5px;"><span class="dot" style="background:var(--status-major); width:8px; height:8px; border-radius:50%;"></span>High 65</span><span class="row" style="gap:5px;"><span class="dot" style="background:var(--status-info); width:8px; height:8px; border-radius:50%;"></span>Medium 140</span><span class="row" style="gap:5px;"><span class="dot" style="background:var(--status-compliant); width:8px; height:8px; border-radius:50%;"></span>Low 300</span></div>
+          </div>
+          <div class="panel" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span class="panel-title" style="font-size:13.5px;">Decision mix — Level 2</span><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">100 decisions</span></div>
+            <div class="t-caption" style="margin-block-start:2px;">Approve / Return / Reject of latest L2 outcomes</div>
+            <div style="display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; margin-block:14px 12px;"><div style="width:78%; background:var(--status-compliant);"></div><div style="width:18%; background:var(--status-warning);"></div><div style="width:4%; background:var(--status-critical);"></div></div>
+            <div style="display:flex; gap:14px; font-size:11.5px; color:var(--text-secondary);"><span>Approved <b>78</b></span><span>Returned <b>18</b></span><span>Rejected <b>4</b></span></div>
+          </div>
+          <div class="panel" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span class="panel-title" style="font-size:13.5px;">Violation trend</span><span class="id-code" style="font-size:10.5px; color:var(--status-critical-text);">Fire safety +108%</span></div>
+            <div class="t-caption" style="margin-block-start:2px;">By regulation &amp; severity · official issue date</div>
+            <div style="display:flex; align-items:flex-end; gap:10px; height:64px; margin-block-start:14px;">
+              <div style="flex:1; display:flex; align-items:flex-end; gap:3px;"><div style="flex:1; height:29px; background:var(--status-critical); opacity:.55; border-radius:2px 2px 0 0;"></div><div style="flex:1; height:38px; background:var(--status-major); opacity:.55; border-radius:2px 2px 0 0;"></div><div style="flex:1; height:22px; background:var(--status-info); opacity:.55; border-radius:2px 2px 0 0;"></div></div>
+              <div style="flex:1; display:flex; align-items:flex-end; gap:3px;"><div style="flex:1; height:43px; background:var(--status-critical); opacity:.78; border-radius:2px 2px 0 0;"></div><div style="flex:1; height:33px; background:var(--status-major); opacity:.78; border-radius:2px 2px 0 0;"></div><div style="flex:1; height:26px; background:var(--status-info); opacity:.78; border-radius:2px 2px 0 0;"></div></div>
+              <div style="flex:1; display:flex; align-items:flex-end; gap:3px;"><div style="flex:1; height:60px; background:var(--status-critical); border-radius:2px 2px 0 0;"></div><div style="flex:1; height:31px; background:var(--status-major); border-radius:2px 2px 0 0;"></div><div style="flex:1; height:19px; background:var(--status-info); border-radius:2px 2px 0 0;"></div></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span class="panel-title" style="font-size:13.5px;">Risk-to-attention mismatch</span><button class="btn btn-ghost btn-sm" onClick="{{ methodRiskAtt }}" style="height:22px; padding-inline:6px; font-size:11px;">ⓘ</button></div>
+            <div class="t-caption" style="margin-block-start:2px;">Visits per factory by risk band</div>
+            <div style="margin-block-start:12px; display:flex; flex-direction:column; gap:8px;">
+              <div class="row" style="gap:10px;"><span style="width:60px; font-size:12px; color:var(--status-critical-text); font-weight:500;">Critical</span><div class="progress grow"><i style="width:90%;"></i></div><span class="id-code" style="font-size:11px;">2.25</span></div>
+              <div class="row" style="gap:10px;"><span style="width:60px; font-size:12px; color:var(--status-major-text); font-weight:500;">High</span><div class="progress grow"><i style="width:84%;"></i></div><span class="id-code" style="font-size:11px;">2.10</span></div>
+              <div class="row" style="gap:10px;"><span style="width:60px; font-size:12px; color:var(--text-secondary);">Medium</span><div class="progress grow"><i style="width:80%;"></i></div><span class="id-code" style="font-size:11px;">2.00</span></div>
+              <div class="row" style="gap:10px;"><span style="width:60px; font-size:12px; color:var(--status-compliant-text);">Low</span><div class="progress grow"><i style="width:76%;"></i></div><span class="id-code" style="font-size:11px;">1.90</span></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;"><span class="panel-title" style="font-size:13.5px;">Checklist items per authority</span><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">counted per package</span></div>
+            <div style="margin-block-start:14px; display:flex; flex-direction:column; gap:8px;">
+              <div class="row" style="gap:10px;"><span style="width:130px; font-size:12px; color:var(--text-secondary);">Ministry of Industry</span><div class="progress grow"><i style="width:100%;"></i></div><span class="id-code" style="font-size:11px; color:var(--text-muted);">140 · 6 regs</span></div>
+              <div class="row" style="gap:10px;"><span style="width:130px; font-size:12px; color:var(--text-secondary);">Civil Defense</span><div class="progress grow"><i style="width:43%; background:var(--status-info);"></i></div><span class="id-code" style="font-size:11px; color:var(--text-muted);">60 · 2 regs</span></div>
+              <div class="row" style="gap:10px;"><span style="width:130px; font-size:12px; color:var(--text-secondary);">MODON</span><div class="progress grow"><i style="width:31%; background:var(--status-warning);"></i></div><span class="id-code" style="font-size:11px; color:var(--text-muted);">44 · 3 regs</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOT-CONFIGURED (coverage/uninspected) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="panel empty" style="padding:24px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><div class="empty-title">Coverage — not configured</div><p>Inspection-cycle policy (eligible factories, frequency, due rule, qualifying completion) must be published in Admin before coverage can be calculated. No value is invented.</p><button class="btn btn-secondary btn-sm">Open cycle policy →</button></div>
+          <div class="panel empty" style="padding:24px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div class="empty-title">Uninspected factories — not configured</div><p>Requires published factory-eligibility rules and the inspection cycle. Available as soon as the governing policy version is effective.</p><button class="btn btn-secondary btn-sm">Open eligibility policy →</button></div>
+        </div>
+
+        <!-- STRATEGIC SUMMARY -->
+        <div class="panel" style="border-inline-start:3px solid var(--action-primary); padding:0; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:14px 18px; border-block-end:1px solid var(--border-subtle);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--action-primary)" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/></svg>
+            <span style="font-weight:600; font-size:13.5px;">Strategic summary</span>
+            <span class="badge badge-info" style="margin-inline-start:auto;">Advisory only · traceable</span>
+          </div>
+          <div>
+            <div style="display:flex; gap:12px; padding:11px 18px; border-block-end:1px solid var(--border-subtle); align-items:baseline;"><span style="width:7px; height:7px; border-radius:50%; background:var(--status-critical); flex:none; position:relative; top:5px;"></span><span style="flex:1; font-size:13px; line-height:1.55; color:var(--text-secondary);">Compliance decreased <b style="color:var(--status-critical-text);">4%</b> in the Chemical sector — concentrated across Jubail and Dammam.</span><a href="#compliance" style="font-size:11.5px; font-weight:600; white-space:nowrap;">Verify records →</a></div>
+            <div style="display:flex; gap:12px; padding:11px 18px; border-block-end:1px solid var(--border-subtle); align-items:baseline;"><span style="width:7px; height:7px; border-radius:50%; background:var(--status-warning); flex:none; position:relative; top:5px;"></span><span style="flex:1; font-size:13px; line-height:1.55; color:var(--text-secondary);">Fire-safety violations rising a third straight month (12 → 18 → 25).</span><a href="#violations" style="font-size:11.5px; font-weight:600; white-space:nowrap;">Verify records →</a></div>
+            <div style="display:flex; gap:12px; padding:11px 18px; align-items:baseline;"><span style="width:7px; height:7px; border-radius:50%; background:var(--status-compliant); flex:none; position:relative; top:5px;"></span><span style="flex:1; font-size:13px; line-height:1.55; color:var(--text-secondary);">Approval rate improved to <b style="color:var(--status-compliant-text);">98%</b>; returned submissions fell by a third.</span><a href="#decisions" style="font-size:11.5px; font-weight:600; white-space:nowrap;">Verify records →</a></div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ============ OPERATIONAL ============ -->
+      <sc-if value="{{ isOperational }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <span class="exc-chip exc-critical"><span class="exc-mark"></span>6 visits expire ≤ 48h</span>
+          <span class="exc-chip exc-major"><span class="exc-mark"></span>8 SLA-risk visits (Riyadh)</span>
+          <span class="exc-chip exc-warning"><span class="exc-mark"></span>2 GPS overrides today</span>
+          <span class="exc-chip exc-pending"><span class="exc-mark"></span>9 pending approvals</span>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Active executions</div><div class="kpi-value">37</div><div class="kpi-delta">journey started, not submitted</div></div>
+          <div class="kpi"><div class="kpi-label">Expiring soon</div><div class="kpi-value" style="color:var(--status-critical);">6</div><div class="kpi-delta"><span class="delta down">within 48h</span></div></div>
+          <div class="kpi"><div class="kpi-label">Pending approvals</div><div class="kpi-value">9</div><div class="kpi-delta">awaiting L2 decision</div></div>
+          <div class="kpi"><div class="kpi-label">GPS overrides today</div><div class="kpi-value" style="color:var(--status-warning);">2</div><div class="kpi-delta">outside expected radius</div></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+          <div class="map-panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:520px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-block-end:1px solid var(--border-subtle);"><span style="font-weight:600; font-size:13px;">Live operations</span><span class="grow"></span><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">Mapbox GL · live &amp; projected distinct · 30s</span></div>
+            <div class="wd-graticule" style="position:relative; flex:1; background-color:var(--surface-sunken);">
+              <div style="position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:24px;"><div><div style="font-size:13px; font-weight:500; color:var(--text-secondary);">Live inspector &amp; visit layer (Mapbox GL / GeoMap)</div><div class="t-caption" style="max-width:44ch; margin-block-start:6px;">Actual immutable journey path only; planned route shown only when a routing provider returns geometry. Live vs projected positions are labelled distinctly.</div></div></div>
+              <div class="map-panel" style="position:absolute; top:12px; inset-inline-start:12px; padding:10px 12px;"><div class="t-label" style="margin-block-end:6px;">Inspector state</div><div class="stack" style="gap:5px;"><div class="map-legend-row"><span class="swatch" style="background:var(--status-info);"></span>On the way</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-warning);"></span>Arrived</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-compliant);"></span>Executing</div></div></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Live activity</div></div>
+            <ul class="timeline" style="padding:16px 18px;">
+              <li><span class="tl-dot is-accent"></span><div class="tl-title">VS-40219 submitted for approval</div><div class="tl-meta"><span class="id-code">Al Rasheed Steel</span> · K. Al-Otaibi · 12m</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">Journey started — VS-40195</div><div class="tl-meta">Gulf Textiles · S. Hamdan · 22m</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">GPS override — VS-40160</div><div class="tl-meta">observed 412m from planned pin · 38m</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">Inspection approved — INS-88213</div><div class="tl-meta">L2 · 2 violations · 2h</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px;">
+          <div class="panel" style="padding:18px 20px;">
+            <div class="panel-title" style="font-size:13.5px;">Visit pipeline</div>
+            <div class="t-caption" style="margin-block-start:2px;">Draft / Published / Returned / Cancelled / Expired</div>
+            <div style="display:flex; gap:8px; margin-block-start:14px;">
+              <div style="flex:1; text-align:center; border-top:3px solid var(--status-info); padding-block-start:8px;"><div class="t-metric" style="font-size:22px;">18</div><div class="t-caption">Draft</div></div>
+              <div style="flex:1; text-align:center; border-top:3px solid var(--status-compliant); padding-block-start:8px;"><div class="t-metric" style="font-size:22px;">64</div><div class="t-caption">Published</div></div>
+              <div style="flex:1; text-align:center; border-top:3px solid var(--status-warning); padding-block-start:8px;"><div class="t-metric" style="font-size:22px;">9</div><div class="t-caption">Returned</div></div>
+              <div style="flex:1; text-align:center; border-top:3px solid var(--status-critical); padding-block-start:8px;"><div class="t-metric" style="font-size:22px;">5</div><div class="t-caption">Cancelled</div></div>
+              <div style="flex:1; text-align:center; border-top:3px solid var(--status-disabled); padding-block-start:8px;"><div class="t-metric" style="font-size:22px;">3</div><div class="t-caption">Expired</div></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:18px 20px;">
+            <div class="panel-title" style="font-size:13.5px;">Today's schedule load</div>
+            <div class="t-caption" style="margin-block-start:2px;">Visits assigned today, by inspector · relative</div>
+            <div style="margin-block-start:12px; display:flex; flex-direction:column; gap:8px;">
+              <div class="row" style="gap:10px;"><span style="width:96px; font-size:12px; color:var(--text-secondary);">K. Al-Otaibi</span><div class="progress grow"><i style="width:100%; background:var(--status-warning);"></i></div><span class="id-code" style="font-size:11px; color:var(--status-warning-text);">5</span></div>
+              <div class="row" style="gap:10px;"><span style="width:96px; font-size:12px; color:var(--text-secondary);">S. Hamdan</span><div class="progress grow"><i style="width:80%;"></i></div><span class="id-code" style="font-size:11px;">4</span></div>
+              <div class="row" style="gap:10px;"><span style="width:96px; font-size:12px; color:var(--text-secondary);">M. Qahtani</span><div class="progress grow"><i style="width:60%;"></i></div><span class="id-code" style="font-size:11px;">3</span></div>
+              <div class="row" style="gap:10px;"><span style="width:96px; font-size:12px; color:var(--text-secondary);">N. Al-Harbi</span><div class="progress grow"><i style="width:0%;"></i></div><span class="id-code" style="font-size:11px; color:var(--text-muted);">0</span></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header" style="border-inline-start:3px solid var(--action-primary);"><div class="panel-title" style="font-size:13.5px;">Operational nudges</div><span class="badge badge-info">CTA opens pre-filled</span></div>
+            <div>
+              <div style="display:flex; gap:10px; align-items:center; padding:11px 16px; border-block-end:1px solid var(--border-subtle);"><span class="dot" style="width:8px; height:8px; border-radius:50%; background:var(--status-critical);"></span><span style="flex:1; font-size:12.5px;">6 published visits expire within 48h, unacknowledged.</span><button class="btn btn-primary btn-sm">Open</button></div>
+              <div style="display:flex; gap:10px; align-items:center; padding:11px 16px; border-block-end:1px solid var(--border-subtle);"><span class="dot" style="width:8px; height:8px; border-radius:50%; background:var(--status-warning);"></span><span style="flex:1; font-size:12.5px;">8 high-risk visits in Riyadh approaching SLA.</span><button class="btn btn-primary btn-sm">Assign</button></div>
+              <div style="display:flex; gap:10px; align-items:center; padding:11px 16px;"><span class="dot" style="width:8px; height:8px; border-radius:50%; background:var(--status-warning);"></span><span style="flex:1; font-size:12.5px;">2 inspectors have no visits while 4 carry 3+.</span><button class="btn btn-primary btn-sm">Rebalance</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <!-- METHODOLOGY DRAWER -->
+  <sc-if value="{{ methodOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeMethod }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:40;"></div>
+    <div class="drawer" style="z-index:41;">
+      <div class="drawer-header"><div><div class="panel-title" style="font-size:15px;">{{ method.label }}</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">{{ method.id }}</div></div><button class="btn btn-ghost btn-sm btn-icon" onClick="{{ closeMethod }}" aria-label="Close">✕</button></div>
+      <div class="drawer-body">
+        <dl class="desc" style="grid-template-columns:auto 1fr; gap:8px 14px;">
+          <dt>Business question</dt><dd>{{ method.q }}</dd>
+          <dt>Value</dt><dd>{{ method.value }}</dd>
+          <dt>Numerator</dt><dd>{{ method.num }}</dd>
+          <dt>Denominator</dt><dd>{{ method.den }}</dd>
+          <dt>Exclusions</dt><dd>{{ method.excl }}</dd>
+          <dt>Time basis</dt><dd>{{ method.time }}</dd>
+          <dt>Formula version</dt><dd><span class="id-code">{{ method.formulaV }}</span></dd>
+          <dt>Policy version</dt><dd><span class="id-code">{{ method.policyV }}</span></dd>
+          <dt>Source freshness</dt><dd>{{ method.fresh }}</dd>
+          <dt>Drill route</dt><dd><a href="#">{{ method.drill }}</a></dd>
+        </dl>
+      </div>
+      <div style="padding:16px; border-block-start:1px solid var(--border-subtle);"><button class="btn btn-secondary btn-block">Open records</button></div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440, &quot;height&quot;: 900}}">
+class Component extends DCLogic {
+  state = { view: "strategic", theme: "dark", layer: 0, region: "Eastern", method: null };
+
+  renderVals() {
+    const LAYERS = ["Health", "Compliance", "Violations", "Licence", "Coverage", "Risk↔Attention"];
+    const REGIONS = [
+      ["Eastern", 71, "1,240 / 1,590 answered", "crit"],
+      ["Southern", 80, "402 / 503 answered", "warning"],
+      ["Western", 85, "905 / 1,065 answered", "warning"],
+      ["Riyadh", 94, "1,820 / 1,936 answered", "compliant"],
+      ["Northern", 92, "310 / 337 answered", "compliant"],
+    ];
+    const TONE = { crit: "var(--status-critical)", warning: "var(--status-warning)", compliant: "var(--status-compliant)" };
+    const METRICS = {
+      compliance: { id: "STR-COMP-RATE-v3", label: "National compliance rate", q: "How compliant is the industrial sector?", value: "92.0% (▼1.2 pts)", num: "Compliant eligible answers (92,000)", den: "Compliant + non-compliant (100,000)", excl: "N/A, unknown, excluded responses", time: "2026-06-20 → 2026-07-20 · Asia/Riyadh", formulaV: "formula v3", policyV: "policy v14", fresh: "Live · 2 min ago", drill: "Compliance explorer → region/sector" },
+      repeat: { id: "STR-REPEAT-VIOL-v2", label: "Repeat violation rate", q: "How often does the same failure recur?", value: "15% (27 of 180)", num: "Factories with same item failed 2+ times / 12 mo", den: "Factories with ≥1 violation", excl: "Item version changes without stable lineage", time: "Rolling 12 months · Asia/Riyadh", formulaV: "formula v2", policyV: "policy v14", fresh: "Live · 2 min ago", drill: "Enforcement recurrence register" },
+      licence: { id: "STR-LIC-EXPOSURE-v1", label: "Licence exposure", q: "What regulatory risk is on the books?", value: "6 expired · 14 expiring ≤30d", num: "Factories with expired / expiring industrial licence", den: "n/a (count)", excl: "Non-active licence stages", time: "As of today · Asia/Riyadh", formulaV: "formula v1", policyV: "expiring-soon = 30d (policy v14)", fresh: "Partial · licence registry stale 41 min", drill: "Licence exposure list + map" },
+      coverage: { id: "STR-COVERAGE-v0", label: "Inspection coverage", q: "Are we meeting the national inspection target?", value: "Not configured", num: "Qualifying completed inspections", den: "Eligible factories due in cycle", excl: "Requires published eligibility", time: "Per published cycle", formulaV: "pending", policyV: "no effective cycle policy", fresh: "Unavailable until policy is published", drill: "Admin → inspection-cycle policy" },
+      riskAtt: { id: "STR-RISK-ATTN-v1", label: "Risk-to-attention mismatch", q: "Are the riskiest factories inspected more?", value: "Critical 2.25 vs Low 1.90 visits/factory", num: "Visits in period per factory", den: "Factories in risk band", excl: "Draft/cancelled visits", time: "Selected period · Asia/Riyadh", formulaV: "formula v1", policyV: "risk snapshot = band at visit time", fresh: "Live · 2 min ago", drill: "Risk-to-attention map" },
+    };
+    const set = (k, v) => () => this.setState({ [k]: v });
+    return {
+      view: this.state.view, theme: this.state.theme,
+      isStrategic: this.state.view === "strategic", isOperational: this.state.view === "operational",
+      isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      pickStrategic: set("view", "strategic"), pickOperational: set("view", "operational"),
+      setLight: set("theme", "light"), setDark: set("theme", "dark"),
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      activeLayerLabel: LAYERS[this.state.layer],
+      mapLayers: LAYERS.map((label, i) => ({ label, on: i === this.state.layer, pick: () => this.setState({ layer: i }) })),
+      regions: REGIONS.map(([name, value, detail, tone]) => ({
+        name, value, detail, color: TONE[tone], excClass: tone === "crit" ? "exc-critical" : tone === "warning" ? "exc-warning" : "exc-compliant",
+        bg: this.state.region === name ? "var(--accent-soft)" : "transparent",
+        pick: () => this.setState({ region: name }),
+      })),
+      methodCompliance: () => this.setState({ method: METRICS.compliance }),
+      methodRepeat: () => this.setState({ method: METRICS.repeat }),
+      methodLicence: () => this.setState({ method: METRICS.licence }),
+      methodCoverage: () => this.setState({ method: METRICS.coverage }),
+      methodRiskAtt: () => this.setState({ method: METRICS.riskAtt }),
+      methodOpen: !!this.state.method,
+      method: this.state.method || {},
+      closeMethod: () => this.setState({ method: null }),
+    };
+  }
+}
+</script>
+</body>
+</html>

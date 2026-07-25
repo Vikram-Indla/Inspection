@@ -1,0 +1,373 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-ACCESS-RUNTIME-REMEDIATION-PREFLIGHT-012
+title: Bounded engineering preflight for /admin/access remediation
+status: READY_AS_PLAN_BLOCKED_FOR_IMPLEMENTATION
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+predecessor:
+  packet_id: M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011
+  verdict: BLOCKED_REQUIREMENT_MAPPING_AND_RUNTIME_PERMISSION_REMEDIATION
+  completion_credit: 0
+
+authority_and_scope:
+  repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 1a2ab6ab4219ea5d420ee2d2a8f68ffd1834b0af
+  task_mode: READ_ONLY_ENGINEERING_PREFLIGHT
+  route: /admin/access
+  screen_id: SCR-ADM-090
+  package: M8
+  process_ids: [G2-P00]
+  no_completion_credit: true
+  implementation_lease_issued: false
+  design_lease_issued: false
+  data_lease_issued: false
+  do_not_touch:
+    - product application source
+    - test source or evidence
+    - Supabase, migrations, seeds or shared data
+    - Claude Design, WA-DES-043, WA-DES-011 or CD-050
+    - branches, stashes, main or setup/Inspection
+    - frozen product-contract artifacts
+  unrelated_dirty_paths_preserved:
+    - product-contract/operationalization/coordination/batches/M2-VS-002-WA-DES-045-DESIGN-CORRECTION-DISPATCH-042.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011.yaml
+
+requirement_and_acceptance_contract:
+  exact_screen:
+    screen_id: SCR-ADM-090
+    persona: Security Admin
+    purpose: Manage role permissions and data scope
+    required_information:
+      - role matrix
+      - channel
+      - object
+      - action
+      - scope
+      - segregation rules
+    required_actions:
+      - create role
+      - assign permission
+      - compare
+      - publish
+    negative_states:
+      - privilege conflict
+      - segregation violation
+  exact_rbac:
+    id: RBAC-006
+    actor: Security Admin
+    actions: [View, Create, Edit, Publish]
+    scope: All roles
+    restriction: Cannot grant beyond own administrative authority.
+  web_admin_acceptance:
+    WA-M8-AC-001: Authorized source-backed behavior and real-service interactions.
+    WA-M8-AC-002: Safe unauthorized, validation, stale/conflict, provider and RLS/RBAC negatives.
+    WA-M8-AC-003: Zero-unapproved-difference fixed-viewport visual parity.
+    WA-M8-AC-004: EN/LTR, AR/RTL, responsive, keyboard and accessibility parity.
+    WA-M8-AC-005: Backend, workflow, audit, version, maker-checker and adjacent-route regression.
+    WA-M8-AC-006: Complete truthful requirement/design/route/evidence trace.
+  transferred_family_contracts:
+    - [MVP2-REQ-0192, MVP2-AC-0192, MVP2-EV-0192]
+    - [MVP2-REQ-0227, MVP2-AC-0227, MVP2-EV-0227]
+    - [MVP2-REQ-0241, MVP2-AC-0241, MVP2-EV-0241]
+    - [MVP2-REQ-0256, MVP2-AC-0256, MVP2-EV-0256]
+  baseline_traceability:
+    source_rows: 478
+    exact_atomic_row_for_admin_access: NOT_FOUND
+    blanket_CR_001_through_CR_478_mapping: INVALID_FOR_COMPLETION
+    gate: BLOCKED_PENDING_ATOMIC_MAPPING_OR_CHANGE_CONTROL
+
+evidence_reviewed:
+  route_and_components:
+    - apps/web/src/app/(app)/admin/access/page.tsx
+    - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+    - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+    - apps/web/src/app/(app)/admin/access/actions.ts
+    - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+  database:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0010_fix_access_roster_visibility.sql
+    - supabase/migrations/20260720010000_factory360_v2_foundation.sql
+    - supabase/migrations/20260721110000_execution_access_grants.sql
+    - supabase/migrations/20260722120000_planning_role_permissions_audit.sql
+  tests:
+    - apps/web/e2e/execution-access-contract.spec.ts
+    - apps/web/e2e/cd-044-admin-planning.spec.ts
+    - apps/web/e2e/cd-004-admin-control-plane-home.spec.ts
+  governance:
+    - product-contract/execution/EXECUTION_DECISION_LOG.md
+    - product-contract/governance/OPEN_DECISIONS.yaml
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  evidence_facts:
+    - D-006 states one security_admin can make access changes and maker-checker is deferred.
+    - OPEN_DECISIONS.yaml contains no corresponding access/maker-checker decision entry.
+    - WA-M8-AC-001 through WA-M8-AC-006 remain PLANNED_NOT_IMPLEMENTED.
+    - DSG-014 for SCR-ADM-090 remains not_started.
+    - The role_permissions audit migration is authored, while its live application is unproved here.
+    - The live suite deliberately does not assert role_permissions audit rows.
+
+decision_blockers:
+  - id: M8-DEC-001
+    priority: P0
+    question: >-
+      Does access governance retain D-006 single-security_admin direct audited
+      writes, or adopt maker-checker for sensitive access changes?
+    conflict: >-
+      D-006 defers maker-checker, while MVP2-REQ-0227 and MVP2-REQ-0241 require
+      maker-checker or sensitive-action approvals.
+    required_owner: Sponsor plus product governance
+    implementation_effect:
+      single_authority: Harden existing atomic RPC path without approval workflow.
+      dual_control: Add immutable request, review, approval, publish and self-review denial.
+  - id: M8-DEC-002
+    priority: P0
+    question: >-
+      Are capabilities/role_capabilities/user_capability_grants and
+      permissions/role_permissions intentionally separate authority domains?
+    required_owner: Architecture plus product governance
+    implementation_effect: Defines which catalogue, guard and effective-access explanation owns each action.
+  - id: M8-DEC-003
+    priority: P0
+    question: >-
+      Is /admin/access a deny-by-route Security Admin control plane, or an
+      authenticated read-only roster with Security Admin mutation controls?
+    required_owner: Product governance
+    implementation_effect: Determines route admission, roster data minimization and unauthorized evidence.
+  - id: M8-DEC-004
+    priority: P0
+    question: >-
+      Are Create role, Compare and Publish mandatory MVP1 behavior for
+      SCR-ADM-090, or must the screen contract be changed to the current
+      seed-managed catalogue?
+    required_owner: Product governance
+    implementation_effect: Defines whether immutable version and publication engines must be built.
+
+technical_risks:
+  - id: M8-RISK-001
+    priority: P0
+    risk: Stronger role_permissions server-action guards are bypassable through direct table access.
+    evidence: >-
+      f360_role_permissions_admin permits every security_admin insert, update and
+      delete; admin.access.manage and own-authority checks exist only in the action.
+    fail_closed_correction: Remove direct write grant and expose guarded RPCs or equivalent database-enforced checks.
+  - id: M8-RISK-002
+    priority: P0
+    risk: Sole-security-admin invariant can race.
+    evidence: admin_revoke_role performs count-then-delete without row/advisory serialization.
+    fail_closed_correction: Serialize on a stable access-governance key and prove two-session contention.
+  - id: M8-RISK-003
+    priority: P0
+    risk: Concurrent duplicate grants are not deterministically idempotent.
+    evidence: Grant RPCs perform existence-check then plain insert without conflict-safe retry semantics.
+    fail_closed_correction: Lock or conflict-safe insert with deterministic replay result and one semantic audit event.
+  - id: M8-RISK-004
+    priority: P0
+    risk: Access changes have no stale/version boundary.
+    evidence: No expected version, revision, request identifier or published matrix head is supplied.
+    fail_closed_correction: Add an explicit revision contract appropriate to M8-DEC-001 and M8-DEC-004.
+  - id: M8-RISK-005
+    priority: P1
+    risk: One logical change can produce ambiguous duplicate audits.
+    evidence: user_roles carries a generic trigger and access RPCs append EXE-ACCESS semantic rows.
+    fail_closed_correction: Define one correlated semantic event and a documented relationship to row-level audit.
+  - id: M8-RISK-006
+    priority: P1
+    risk: Provider/read failures appear as empty or read-only rather than explicit degraded states.
+    evidence: Page logs gate/source errors and reduces missing data to false or empty arrays.
+    fail_closed_correction: Preserve each source state and render unavailable/retry without granting authority.
+  - id: M8-RISK-007
+    priority: P1
+    risk: Static policy-count copy can be mistaken for live evidence.
+    evidence: UI states 54 policies without querying the current policy inventory.
+    fail_closed_correction: Remove the count or source it from a governed, testable read.
+
+bounded_remediation_work_packages:
+  - id: M8-REM-01
+    name: Traceability and governance closure
+    authority: GOVERNANCE_ONLY
+    prerequisites: []
+    outputs:
+      - exact atomic baseline mapping or approved change-controlled requirement
+      - recorded dispositions for M8-DEC-001 through M8-DEC-004
+      - reconciled screen, RBAC, family and route lineage
+    exit_acceptance: [WA-M8-AC-006]
+    product_files: []
+  - id: M8-REM-02
+    name: Non-bypassable database authorization and concurrency
+    authority: NEW_DATABASE_LEASE_REQUIRED
+    prerequisites: [M8-REM-01]
+    outputs:
+      - new additive migration only
+      - guarded mutation RPCs for every access write path
+      - own-authority and segregation enforcement in the database
+      - serialized sole-admin and duplicate-grant behavior
+      - correlated append-only semantic audit
+    exit_acceptance: [WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+    prohibited: Rewriting any applied migration.
+  - id: M8-REM-03
+    name: Route admission and truthful source states
+    authority: APPLICATION_LEASE_REQUIRED
+    prerequisites: [M8-REM-01, M8-REM-02]
+    outputs:
+      - route behavior matching M8-DEC-003
+      - explicit gate and per-source unavailable states
+      - no hard-coded unsupported policy count
+      - reconciled effective-access explanation
+      - create/compare/publish behavior or approved truthful removal
+    exit_acceptance: [WA-M8-AC-001, WA-M8-AC-002]
+  - id: M8-REM-04
+    name: Deterministic access-governance fixtures
+    authority: SEED_AND_SHARED_DATA_LEASE_REQUIRED
+    prerequisites: [M8-REM-01, M8-REM-02]
+    outputs:
+      - reserved users for positive and negative personas
+      - at least two Security Admin holders for safe revoke testing
+      - reversible role and capability fixtures
+      - stable request and audit correlation identities
+      - cleanup and reconciliation proof
+    exit_acceptance: [WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+    hard_rule: Seeder must never mutate sponsor or unrelated shared accounts.
+  - id: M8-REM-05
+    name: Runtime, RLS, concurrency and regression certification
+    authority: TEST_AND_BROWSER_LEASE_REQUIRED
+    prerequisites: [M8-REM-02, M8-REM-03, M8-REM-04]
+    outputs:
+      - direct REST bypass denial
+      - unauthorized route/data proof
+      - self-target and own-authority denial
+      - same-grant concurrent replay
+      - concurrent sole-admin revocation contention
+      - exact semantic audit correlation and no ambiguous duplication
+      - stale/conflict, validation, degraded, recovery and session-expiry proof
+      - adjacent /admin and /admin/security-access regression
+    exit_acceptance: [WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+  - id: M8-REM-06
+    name: Visual and evidence certification
+    authority: BROWSER_EVIDENCE_LEASE_REQUIRED
+    prerequisites: [M8-REM-03, M8-REM-04, M8-REM-05]
+    outputs:
+      - populated, loading, empty, validation, unauthorized and read-only frames
+      - stale, degraded and recovery frames
+      - EN/LTR and AR/RTL
+      - dark and light
+      - fixed design viewport, 1024, 412 or 390, and 320 reflow
+      - keyboard, focus and accessibility report
+      - requirement/design/route/evidence manifest
+    exit_acceptance: [WA-M8-AC-003, WA-M8-AC-004, WA-M8-AC-006]
+
+proposed_future_lease_boundaries:
+  application:
+    - apps/web/src/app/(app)/admin/access/page.tsx
+    - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+    - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+    - apps/web/src/app/(app)/admin/access/actions.ts
+    - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+  database:
+    - one new forward-only migration path allocated after lease
+  tests:
+    - apps/web/e2e/web-admin-m8-admin-access-runtime.spec.ts
+    - one new transaction-wrapped database probe allocated after lease
+  evidence:
+    - one new route-specific evidence directory allocated after browser lease
+  explicit_exclusions:
+    - /admin/security-access implementation
+    - shared shell or navigation redesign
+    - Claude Design artifacts
+    - unrelated admin packages
+    - existing migrations and historical evidence
+
+implementation_entry_gate:
+  all_required:
+    - M8-REM-01 complete and approved.
+    - Exact code, migration, test, seed and evidence leases recorded.
+    - Live migration inventory captured read-only.
+    - Fixture users and cleanup contract approved.
+    - Design dependency disposition received without granting it code authority.
+  current_result: BLOCKED
+
+rollback_and_recovery_contract:
+  source:
+    - Every future implementation slice begins from an identified commit and clean leased paths.
+    - Existing migrations are immutable; correction uses a new forward-only migration.
+    - Application and test changes remain isolated to the named lease paths.
+  database:
+    - All database probes run inside a transaction and roll back fixture mutations.
+    - Remote fixture creation requires fixed reserved identities and an explicit cleanup script.
+    - Reconciliation must prove role, capability, permission and audit counts return to the expected state.
+    - If cleanup or reconciliation fails, certification stops and the shared data lease remains blocked.
+  access_safety:
+    - Never remove the final verified Security Admin.
+    - Never test revocation against sponsor, operator or unrelated shared accounts.
+    - Preserve a separately verified recovery administrator before mutation testing.
+    - A denied or conflicted access change must leave grants, matrix head and audit state unchanged except for an approved denied-attempt event.
+  release:
+    - No rollback depends on editing or deleting an applied migration.
+    - Application rollback must remain compatible with the forward database shape.
+    - A fail-closed feature boundary is required if application and migration deployment cannot be atomic.
+
+stop_conditions:
+  - Current slice or lease authority does not name every file and shared-data target.
+  - Atomic requirement mapping or approved change control is absent.
+  - Any of M8-DEC-001 through M8-DEC-004 remains required for the selected implementation plan.
+  - Live migration inventory differs from repository migration assumptions.
+  - The reserved recovery Security Admin cannot be independently verified.
+  - Test fixtures overlap sponsor, operator or another active lane's data.
+  - Direct table mutation can bypass the selected database guard.
+  - Concurrent tests can remove the last Security Admin or leave nondeterministic state.
+  - Audit correlation cannot distinguish attempt, mutation, replay and row-trigger events.
+  - Cleanup or post-test reconciliation does not return the fixture set to its expected state.
+  - Product, test, design, migration or evidence files overlap another active lease.
+  - Any required P0 acceptance or negative path fails or lacks evidence.
+
+next_queued_task:
+  packet_id: M8-ADMIN-ACCESS-CONCURRENCY-RLS-ENGINEERING-DESIGN-013
+  status: QUEUED_READY_READ_ONLY
+  owner_lane: CLAUDE_CODE_ENGINEERING
+  objective: >-
+    Draft two bounded non-mutating engineering contracts for the access mutation
+    boundary: Plan A retains single-authority D-006; Plan B introduces
+    maker-checker. Both must specify database authorization, serialization,
+    idempotency, audit correlation, negative tests, fixtures and exact future
+    lease paths without writing implementation.
+  start_inputs:
+    - M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011
+    - M8-ADMIN-ACCESS-RUNTIME-REMEDIATION-PREFLIGHT-012
+    - D-006
+    - SCR-ADM-090
+    - RBAC-006
+    - WA-M8-AC-001 through WA-M8-AC-006
+  completion_credit: 0
+
+following_non_overlapping_admin_runtime_audit:
+  packet_id: M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+  status: QUEUED_BEHIND_013
+  owner_lane: CLAUDE_CODE_RUNTIME_REVIEW
+  route: /admin/audit
+  boundary: READ_ONLY_APPLICATION_DATABASE_TEST_AND_EVIDENCE_MAPPING
+  non_overlap:
+    - No /admin/access source, test, seed or migration files.
+    - No Claude Design mutation or design authority decision.
+    - No implementation lease or shared-data mutation.
+  objective: >-
+    Independently map the real audit route, components, RLS, append-only
+    guarantees, query/export boundaries, sensitive-field visibility, tests and
+    browser-evidence readiness against exact canonical requirements and
+    acceptance IDs.
+  authority_correction: /admin/audit is package M9; no governed screen identity exists.
+  dependency:
+    - Start only after packet 013 is recorded, or earlier if the orchestrator
+      assigns a separate non-overlapping Claude Code reviewer.
+  completion_credit: 0
+
+validation:
+  verdict: PREFLIGHT_COMPLETE_IMPLEMENTATION_BLOCKED
+  product_mutation: false
+  test_mutation: false
+  data_or_seed_mutation: false
+  design_mutation: false
+  lease_or_branch_mutation: false
+  sponsor_decision_invented: false

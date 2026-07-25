@@ -4,17 +4,24 @@
 // explicit records, never silent overwrites.
 import { createClient } from "@supabase/supabase-js";
 import { supabaseBrowser } from "@/lib/supabase";
+import {
+  resolveInspectionPackageCache,
+  sealInspectionPackage,
+  verifyInspectionPackage,
+  packageCacheNamespace,
+  type CachedInspectionPackage,
+  type PackageAuthority,
+  type PackageIntegrityResult,
+} from "@/lib/offline-package-integrity";
+export type { CachedInspectionPackage, PackageIntegrityResult } from "@/lib/offline-package-integrity";
 
 const LEGACY_DB = "mim-field-v1";
-const DB_PREFIX = "mim-field-v1:";
 const LEGACY_RESOLUTION_KEY = "mim-field-v1:legacy-resolution";
 const STORE_NAMES = ["drafts", "packages", "outbox", "conflicts"] as const;
 type StoreName = typeof STORE_NAMES[number];
 
 export function offlineDatabaseName(userId: string): string {
-  const verifiedUserId = userId.trim();
-  if (!verifiedUserId) throw new Error("A verified user id is required for offline storage");
-  return `${DB_PREFIX}${verifiedUserId}`;
+  return packageCacheNamespace(userId);
 }
 export type SyncState = "synced" | "offline" | "pending" | "syncing" | "conflict" | "failed";
 export type OutboxOp =
@@ -43,7 +50,15 @@ export type OutboxOp =
   // Phase 5 (§18, D-018) — invalidate (never delete) the ACTIVE violation
   // candidate when its triggering response flipped back to Compliant. Replays
   // after the response op it follows (FIFO); a missing candidate is a no-op.
-  | { kind: "violation_invalidate"; inspection_id: string; violation_id: string | null; violation_code_id: string | null; reason: string; queued_at: string };
+  | { kind: "violation_invalidate"; inspection_id: string; violation_id: string | null; violation_code_id: string | null; reason: string; queued_at: string }
+  // SCR-IPAD-630 (FLD-FND-001..003) — inspector finding narrative for a mapped
+  // violation. `id` is a client-generated idempotency key: replay UPSERTs the
+  // findings row by id (an ambiguous retry never duplicates), and FIFO order
+  // guarantees the finding is persisted BEFORE the submit op that references it.
+  // The violations.finding_id column is immutable post-insert
+  // (guard_violation_invalidate), so it is never mutated from the client — the
+  // finding↔violation association rides findings.item_id + the submission manifest.
+  | { kind: "finding"; id: string; inspection_id: string; item_id: string; severity: string; description: string; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 export type CachedRouteEstimate = {
   etaMinutes: number;
@@ -98,6 +113,35 @@ function createUserOfflineStore(userId: string) {
     },
     cachePackage: (inspection: string, def: unknown) => tx(verifiedUserId, "packages", "readwrite", s => s.put(def, inspection)),
     getPackage: (inspection: string) => tx<unknown>(verifiedUserId, "packages", "readonly", s => s.get(inspection)),
+    cacheVerifiedPackage: async (key: string, input: {
+      packageVersionId: string;
+      packageVersionLabel: string;
+      authorityChecksum: string | null;
+      definition: unknown;
+    }): Promise<CachedInspectionPackage> => {
+      const cached = await sealInspectionPackage(input);
+      await tx(verifiedUserId, "packages", "readwrite", store => store.put(cached, key));
+      return cached;
+    },
+    verifyCachedPackage: async (key: string, authority?: PackageAuthority): Promise<PackageIntegrityResult> => {
+      const value = await tx<unknown>(verifiedUserId, "packages", "readonly", store => store.get(key));
+      return verifyInspectionPackage(value, authority);
+    },
+    resolveVerifiedPackage: (input: {
+      visitId: string;
+      inspectionId: string | null;
+      authority: PackageAuthority;
+    }): Promise<PackageIntegrityResult> => {
+      return resolveInspectionPackageCache({
+        ...input,
+        cache: {
+          get: key => tx<unknown>(verifiedUserId, "packages", "readonly", store => store.get(key)),
+          put: async (key, value) => {
+            await tx(verifiedUserId, "packages", "readwrite", store => store.put(value, key));
+          },
+        },
+      });
+    },
     // FLD-JRN-003/004 — the last provider estimate is a display-only offline
     // value. It never mutates workflow state and is always surfaced as stale.
     cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx(verifiedUserId, "packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
@@ -413,6 +457,21 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           inspection_id: op.inspection_id, item_id: op.item_id,
           state: op.state, reason: op.reason, reverted_at: op.reverted_at,
         }, { onConflict: "inspection_id,item_id" }));
+        if (error) throw error;
+      } else if (op.kind === "finding") {
+        // SCR-IPAD-630 / FLD-FND-001..003 — idempotent UPSERT of the finding row
+        // by its client-generated id, so an ambiguous retry (or a duplicate op)
+        // collapses to ONE row. Severity is the frozen canonical level captured
+        // at save. RLS (findings_rw) authorizes the assigned inspector only; the
+        // audit trigger records the write. Ordered before the submit op (FIFO),
+        // so a submitted inspection always carries persisted findings. The
+        // violations.finding_id link is NEVER written here — it is immutable
+        // post-insert (guard_violation_invalidate); the association is item_id +
+        // the submission manifest. Pre-existing findings table only — no DDL.
+        const { error } = await guard.network(() => sb.from("findings").upsert({
+          id: op.id, inspection_id: op.inspection_id, item_id: op.item_id,
+          severity: op.severity, description: op.description,
+        }, { onConflict: "id" }));
         if (error) throw error;
       } else if (op.kind === "violation_invalidate") {
         // §18 / D-018 — invalidate, never delete. Targets the row by id when

@@ -1,0 +1,562 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-VALIDATOR-PREFLIGHT-036D
+title: Compliance Request authority-response deterministic validator preflight
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: ACK_VALIDATOR_PREFLIGHT_SYNTHETIC_PASS_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  packet_quality_gate: PASS
+  synthetic_validation_gate: PASS
+  validator_implementation_gate: BLOCKED
+  response_evaluation_gate: NOT_EVALUATED
+  real_responses_loaded: 0
+  real_selections_loaded: 0
+  synthetic_business_values_loaded: 0
+  lease_authority_granted: false
+  implementation_authority_granted: false
+  migration_authority_granted: false
+  remote_ddl_authority_granted: false
+  shared_data_authority_granted: false
+  provider_authority_granted: false
+  design_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    This packet specifies deterministic validation and tests it only with
+    abstract validity states. It never populates a response envelope, answer,
+    selection, parameter, evidence item, hash, expiry or acknowledgement.
+    Synthetic PASS proves rule consistency and coverage, not business
+    acceptance and not implementation authority.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-VALIDATOR-PREFLIGHT-036D
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  business_function: >-
+    Make future Compliance authority-response review repeatable and
+    fail-closed before an answer can enter the independent decision receipt.
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-SCHEMA-036C
+    source_sha256: d71022d45875a76461598ce7dd8e2ed5d0c1d563064ae41a84c97bb7835f87e1
+    source_status: ACK_BLANK_SCHEMA_READY_RESPONSES_NULL_IMPLEMENTATION_BLOCKED
+  upstream_question_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B
+    source_sha256: 79ae921b8ce7241c362f1d6b074e274729b1537b39f3c948fc1bcd4009565923
+  only_writable_output:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-VALIDATOR-PREFLIGHT-036D.yaml
+  prohibited:
+    - product code, tests, migrations, database objects or business data
+    - designs, mappings or design authority
+    - branches, stashes, main, setup/Inspection, merge or deployment
+    - real or synthetic business answers, option selections or policy values
+    - real evidence, signatures, response hashes or authority attestations
+    - lease, receipt, implementation or acceptance authority
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: fb82a12cce5dcf26afebc8e41fd649e274ef9797
+  existing_untracked_source_preserved:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-SCHEMA-036C.yaml
+  concurrent_orchestration_files_preserved:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-SCHEMAS-084.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-ANSWER-INTAKE-SELF-CHECK-082.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-DRY-RUN-COVERAGE-CERTIFICATE-054N.yaml
+  concurrent_orchestration_files_observed_during_validation:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-VALIDATOR-085.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-ANSWER-CHANGE-CONTROL-RECEIPT-SCHEMA-083.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-CHAIN-INTEGRITY-RECHECK-054O.yaml
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+validator_contract:
+  validator_id: SAQEEL-CCR-AUTHORITY-RESPONSE-VALIDATOR-036D
+  validator_version: "1.0"
+  input_schema_id: SAQEEL-CCR-AUTHORITY-RESPONSE-036C
+  input_schema_sha256: d71022d45875a76461598ce7dd8e2ed5d0c1d563064ae41a84c97bb7835f87e1
+  accepted_input: >-
+    A separate immutable populated response artifact conforming to 036C.
+    The blank 036C source is never edited in place.
+  forbidden_input:
+    - chat transcript as authority
+    - mutable response without bundle hash
+    - secret, credential or service-role key
+    - unversioned evidence
+    - response whose source packet hashes differ from the validator contract
+  deterministic_rules:
+    - Same canonical response bytes, evidence bytes, authority records and evaluation time yield the same verdict and ordered reason codes.
+    - Validation never supplies a default, converts null to another value or repairs the response.
+    - Validator clock is an explicit input and is recorded in validator output.
+    - BLOCK reasons take precedence over RETURN reasons; RETURN takes precedence over ACK.
+    - Reason codes are de-duplicated and emitted in stage order, then catalogue order.
+    - All failures are accumulated; validation does not stop after the first reason.
+    - ACK remains decision-receipt eligibility only and grants zero implementation authority.
+  output_fields:
+    evaluated_at: explicit validator-clock input
+    validator_identity: immutable validator identity/version
+    source_hash_check: PASS or FAIL
+    authority_check: PASS, RETURN or BLOCK
+    completeness_check: PASS or RETURN
+    evidence_hash_check: PASS, RETURN or BLOCK
+    expiry_check: PASS, RETURN or BLOCK
+    incompatibility_check: PASS, RETURN or BLOCK
+    preservation_check: PASS, RETURN or BLOCK
+    unresolved_point_check: PASS or RETURN
+    verdict: ACK, RETURN or BLOCK
+    reason_codes: ordered non-empty list unless verdict is ACK
+    independent_review_reference: required for a real evaluation
+
+evaluation_stages:
+  - stage: 00_PARSE_AND_SOURCE
+    checks:
+      - response artifact parses
+      - schema ID/version match
+      - 035, 036A, 036B and 036C source IDs and hashes match
+      - no duplicate keys or hidden control characters
+    return_reasons: [R-000-SCHEMA-OR-STRUCTURE-INCOMPLETE]
+    block_reasons: [B-001-SOURCE-HASH-MISMATCH, B-002-DUPLICATE-OR-AMBIGUOUS-KEY]
+  - stage: 01_RESPONSE_STATE
+    checks:
+      - response is a new immutable artifact
+      - response status and version are present
+      - prior version is not overwritten
+    return_reasons: [R-010-RESPONSE-IDENTITY-INCOMPLETE]
+    block_reasons: [B-010-PRIOR-RESPONSE-OVERWRITE]
+  - stage: 02_AUTHORITY_AND_DELEGATION
+    checks:
+      - respondent identity, role and authority basis
+      - delegation chain, scope, validity and signature
+      - authority covers every answered question
+    return_reasons: [R-020-AUTHORITY-MATERIAL-INCOMPLETE, R-021-DELEGATION-MATERIAL-INCOMPLETE]
+    block_reasons: [B-020-AUTHORITY-INVALID-EXPIRED-OR-OUT-OF-SCOPE, B-021-DELEGATION-INVALID-OR-CYCLIC, B-022-SIGNATURE-HASH-MISMATCH]
+  - stage: 03_SELECTIONS_AND_ENVELOPES
+    checks:
+      - nine choice sets each contain exactly one allowed option
+      - nine question IDs/input IDs match source order
+      - required parameters are non-null and correctly typed
+      - NOT_APPLICABLE has a signed incompatible-option rationale
+    return_reasons:
+      - R-030-SELECTION-MISSING
+      - R-031-QUESTION-RESPONSE-INCOMPLETE
+      - R-032-PARAMETER-INCOMPLETE
+      - R-033-NOT-APPLICABLE-RATIONALE-INCOMPLETE
+    block_reasons:
+      - B-030-SELECTION-CARDINALITY-OR-VALUE-INVALID
+      - B-031-QUESTION-ID-OR-INPUT-ID-MISMATCH
+  - stage: 04_EVIDENCE_AND_HASHES
+    checks:
+      - required evidence is present and question-linked
+      - evidence/content/metadata/response/bundle hashes use canonical bytes
+      - hashes match exact content
+      - evidence is not revoked or prohibited
+    return_reasons: [R-040-EVIDENCE-MISSING-OR-UNLINKED, R-041-HASH-MISSING]
+    block_reasons: [B-040-HASH-MISMATCH, B-041-EVIDENCE-REVOKED-OR-PROHIBITED]
+  - stage: 05_VALIDITY_EXPIRY_AND_SUPERSESSION
+    checks:
+      - valid_from, expiry or no-expiry basis, review date and timezone
+      - evaluation time falls inside authority and evidence validity
+      - superseded bundle chain is complete, acyclic and immutable
+      - change triggers do not invalidate the response
+    return_reasons: [R-050-VALIDITY-MATERIAL-INCOMPLETE, R-051-SUPERSESSION-LINK-MISSING]
+    block_reasons: [B-050-NOT-YET-VALID-EXPIRED-OR-REVOKED, B-051-SUPERSESSION-CYCLE-OR-HASH-DIVERGENCE]
+  - stage: 06_INCOMPATIBILITIES
+    checks: INC-001 through INC-015 in numeric order
+    return_reasons: [R-INC-004, R-INC-005, R-INC-010, R-INC-011]
+    block_reasons:
+      - B-INC-001
+      - B-INC-002
+      - B-INC-003
+      - B-INC-006
+      - B-INC-007
+      - B-INC-008
+      - B-INC-009
+      - B-INC-012
+      - B-INC-013
+      - B-INC-014
+      - B-INC-015
+  - stage: 07_PRESERVATION
+    checks: ACK-PRES-001 through ACK-PRES-012 in numeric order
+    return_reasons: [R-070-PRESERVATION-ACK-NULL-IN-DRAFT]
+    block_reasons: [B-070-PRESERVATION-ACK-FALSE, B-071-PRESERVATION-ACK-NULL-AT-SUBMISSION]
+  - stage: 08_ATTESTATION_AND_UNRESOLVED
+    checks:
+      - complete/accurate, no-inference and no-lease attestations are true
+      - signer and signature are valid
+      - unresolved points are empty
+    return_reasons: [R-080-ATTESTATION-INCOMPLETE, R-081-UNRESOLVED-POINTS-PRESENT]
+    block_reasons: [B-080-LEASE-OR-IMPLEMENTATION-AUTHORITY-ATTEMPT]
+  - stage: 09_VERDICT
+    checks:
+      - any BLOCK reason yields BLOCK
+      - otherwise any RETURN reason yields RETURN
+      - otherwise yield ACK
+      - record all ordered reason codes and input hashes
+
+abstract_state_rules:
+  parse_and_source:
+    PASS: []
+    STRUCTURE_INCOMPLETE: [RETURN, R-000-SCHEMA-OR-STRUCTURE-INCOMPLETE]
+    SOURCE_HASH_MISMATCH: [BLOCK, B-001-SOURCE-HASH-MISMATCH]
+    DUPLICATE_OR_AMBIGUOUS_KEY: [BLOCK, B-002-DUPLICATE-OR-AMBIGUOUS-KEY]
+  response_identity:
+    PASS: []
+    INCOMPLETE: [RETURN, R-010-RESPONSE-IDENTITY-INCOMPLETE]
+    PRIOR_OVERWRITE: [BLOCK, B-010-PRIOR-RESPONSE-OVERWRITE]
+  authority:
+    PASS: []
+    MISSING_DRAFT: [RETURN, R-020-AUTHORITY-MATERIAL-INCOMPLETE]
+    INVALID_OR_OUT_OF_SCOPE: [BLOCK, B-020-AUTHORITY-INVALID-EXPIRED-OR-OUT-OF-SCOPE]
+    DELEGATION_INCOMPLETE: [RETURN, R-021-DELEGATION-MATERIAL-INCOMPLETE]
+    DELEGATION_INVALID_OR_CYCLIC: [BLOCK, B-021-DELEGATION-INVALID-OR-CYCLIC]
+    SIGNATURE_HASH_MISMATCH: [BLOCK, B-022-SIGNATURE-HASH-MISMATCH]
+  selections:
+    PASS: []
+    MISSING: [RETURN, R-030-SELECTION-MISSING]
+    INVALID_OR_MULTIPLE: [BLOCK, B-030-SELECTION-CARDINALITY-OR-VALUE-INVALID]
+  envelope:
+    PASS: []
+    REQUIRED_RESPONSE_NULL: [RETURN, R-031-QUESTION-RESPONSE-INCOMPLETE]
+    REQUIRED_PARAMETER_NULL: [RETURN, R-032-PARAMETER-INCOMPLETE]
+    NOT_APPLICABLE_INCOMPLETE: [RETURN, R-033-NOT-APPLICABLE-RATIONALE-INCOMPLETE]
+    ID_MISMATCH: [BLOCK, B-031-QUESTION-ID-OR-INPUT-ID-MISMATCH]
+  evidence:
+    PASS: []
+    MISSING_OR_UNLINKED: [RETURN, R-040-EVIDENCE-MISSING-OR-UNLINKED]
+    HASH_MISSING: [RETURN, R-041-HASH-MISSING]
+    HASH_MISMATCH: [BLOCK, B-040-HASH-MISMATCH]
+    REVOKED_OR_PROHIBITED: [BLOCK, B-041-EVIDENCE-REVOKED-OR-PROHIBITED]
+  validity:
+    PASS: []
+    MATERIAL_INCOMPLETE: [RETURN, R-050-VALIDITY-MATERIAL-INCOMPLETE]
+    NOT_YET_VALID_EXPIRED_OR_REVOKED: [BLOCK, B-050-NOT-YET-VALID-EXPIRED-OR-REVOKED]
+  supersession:
+    PASS_OR_NO_PRIOR: []
+    LINK_MISSING: [RETURN, R-051-SUPERSESSION-LINK-MISSING]
+    CYCLE_OR_HASH_DIVERGENCE: [BLOCK, B-051-SUPERSESSION-CYCLE-OR-HASH-DIVERGENCE]
+  preservation:
+    "TRUE": []
+    NULL_DRAFT: [RETURN, R-070-PRESERVATION-ACK-NULL-IN-DRAFT]
+    NULL_SUBMITTED: [BLOCK, B-071-PRESERVATION-ACK-NULL-AT-SUBMISSION]
+    "FALSE": [BLOCK, B-070-PRESERVATION-ACK-FALSE]
+  attestation:
+    PASS: []
+    INCOMPLETE: [RETURN, R-080-ATTESTATION-INCOMPLETE]
+    LEASE_ATTEMPT: [BLOCK, B-080-LEASE-OR-IMPLEMENTATION-AUTHORITY-ATTEMPT]
+  unresolved_points:
+    EMPTY: []
+    PRESENT: [RETURN, R-081-UNRESOLVED-POINTS-PRESENT]
+
+incompatibility_rule_map:
+  INC-001: [BLOCK, B-INC-001]
+  INC-002: [BLOCK, B-INC-002]
+  INC-003: [BLOCK, B-INC-003]
+  INC-004: [RETURN, R-INC-004]
+  INC-005: [RETURN, R-INC-005]
+  INC-006: [BLOCK, B-INC-006]
+  INC-007: [BLOCK, B-INC-007]
+  INC-008: [BLOCK, B-INC-008]
+  INC-009: [BLOCK, B-INC-009]
+  INC-010: [RETURN, R-INC-010]
+  INC-011: [RETURN, R-INC-011]
+  INC-012: [BLOCK, B-INC-012]
+  INC-013: [BLOCK, B-INC-013]
+  INC-014: [BLOCK, B-INC-014]
+  INC-015: [BLOCK, B-INC-015]
+
+reason_order:
+  - B-001-SOURCE-HASH-MISMATCH
+  - B-002-DUPLICATE-OR-AMBIGUOUS-KEY
+  - R-000-SCHEMA-OR-STRUCTURE-INCOMPLETE
+  - B-010-PRIOR-RESPONSE-OVERWRITE
+  - R-010-RESPONSE-IDENTITY-INCOMPLETE
+  - B-020-AUTHORITY-INVALID-EXPIRED-OR-OUT-OF-SCOPE
+  - B-021-DELEGATION-INVALID-OR-CYCLIC
+  - B-022-SIGNATURE-HASH-MISMATCH
+  - R-020-AUTHORITY-MATERIAL-INCOMPLETE
+  - R-021-DELEGATION-MATERIAL-INCOMPLETE
+  - B-030-SELECTION-CARDINALITY-OR-VALUE-INVALID
+  - B-031-QUESTION-ID-OR-INPUT-ID-MISMATCH
+  - R-030-SELECTION-MISSING
+  - R-031-QUESTION-RESPONSE-INCOMPLETE
+  - R-032-PARAMETER-INCOMPLETE
+  - R-033-NOT-APPLICABLE-RATIONALE-INCOMPLETE
+  - B-040-HASH-MISMATCH
+  - B-041-EVIDENCE-REVOKED-OR-PROHIBITED
+  - R-040-EVIDENCE-MISSING-OR-UNLINKED
+  - R-041-HASH-MISSING
+  - B-050-NOT-YET-VALID-EXPIRED-OR-REVOKED
+  - B-051-SUPERSESSION-CYCLE-OR-HASH-DIVERGENCE
+  - R-050-VALIDITY-MATERIAL-INCOMPLETE
+  - R-051-SUPERSESSION-LINK-MISSING
+  - B-INC-001
+  - B-INC-002
+  - B-INC-003
+  - R-INC-004
+  - R-INC-005
+  - B-INC-006
+  - B-INC-007
+  - B-INC-008
+  - B-INC-009
+  - R-INC-010
+  - R-INC-011
+  - B-INC-012
+  - B-INC-013
+  - B-INC-014
+  - B-INC-015
+  - B-070-PRESERVATION-ACK-FALSE
+  - B-071-PRESERVATION-ACK-NULL-AT-SUBMISSION
+  - R-070-PRESERVATION-ACK-NULL-IN-DRAFT
+  - B-080-LEASE-OR-IMPLEMENTATION-AUTHORITY-ATTEMPT
+  - R-080-ATTESTATION-INCOMPLETE
+  - R-081-UNRESOLVED-POINTS-PRESENT
+
+synthetic_test_policy:
+  no_business_values: >-
+    Fixtures contain abstract state labels and check IDs only. They contain no
+    answer, option selection, policy value, authority identity, evidence bytes,
+    timestamp, hash or response artifact.
+  base_fixture: ABSTRACT_ALL_CHECKS_PASS_WITHOUT_BUSINESS_PAYLOAD
+  evaluator: >-
+    Resolve each abstract state through abstract_state_rules and each triggered
+    incompatibility through incompatibility_rule_map; order and de-duplicate
+    reasons using reason_order; verdict is BLOCK if any B reason exists,
+    otherwise RETURN if any R reason exists, otherwise ACK.
+  result_fields: [fixture_id, expected_verdict, actual_verdict, expected_reasons, actual_reasons, result]
+
+synthetic_cases:
+  global_precedence:
+    - fixture_id: SYN-GLOBAL-001
+      abstract_signals: []
+      expected_verdict: ACK
+      expected_reasons: []
+      actual_verdict: ACK
+      actual_reasons: []
+      result: PASS
+    - fixture_id: SYN-GLOBAL-002
+      abstract_signals:
+        - [envelope, REQUIRED_PARAMETER_NULL]
+      expected_verdict: RETURN
+      expected_reasons: [R-032-PARAMETER-INCOMPLETE]
+      actual_verdict: RETURN
+      actual_reasons: [R-032-PARAMETER-INCOMPLETE]
+      result: PASS
+    - fixture_id: SYN-GLOBAL-003
+      abstract_signals:
+        - [envelope, REQUIRED_PARAMETER_NULL]
+        - [evidence, HASH_MISMATCH]
+      expected_verdict: BLOCK
+      expected_reasons: [R-032-PARAMETER-INCOMPLETE, B-040-HASH-MISMATCH]
+      actual_verdict: BLOCK
+      actual_reasons: [R-032-PARAMETER-INCOMPLETE, B-040-HASH-MISMATCH]
+      result: PASS
+    - fixture_id: SYN-GLOBAL-004
+      abstract_signals:
+        - [authority, INVALID_OR_OUT_OF_SCOPE]
+        - [evidence, HASH_MISMATCH]
+        - [unresolved_points, PRESENT]
+      expected_verdict: BLOCK
+      expected_reasons:
+        - B-020-AUTHORITY-INVALID-EXPIRED-OR-OUT-OF-SCOPE
+        - B-040-HASH-MISMATCH
+        - R-081-UNRESOLVED-POINTS-PRESENT
+      actual_verdict: BLOCK
+      actual_reasons:
+        - B-020-AUTHORITY-INVALID-EXPIRED-OR-OUT-OF-SCOPE
+        - B-040-HASH-MISMATCH
+        - R-081-UNRESOLVED-POINTS-PRESENT
+      result: PASS
+  nine_envelopes:
+    - [SYN-Q01-NULL, CCR-036B-Q01, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q02-NULL, CCR-036B-Q02, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q03-NULL, CCR-036B-Q03, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q04-NULL, CCR-036B-Q04, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q05-NULL, CCR-036B-Q05, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q06-NULL, CCR-036B-Q06, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q07-NULL, CCR-036B-Q07, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q08-NULL, CCR-036B-Q08, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+    - [SYN-Q09-NULL, CCR-036B-Q09, envelope, REQUIRED_PARAMETER_NULL, RETURN, R-032-PARAMETER-INCOMPLETE, PASS]
+  authority_and_delegation:
+    - [SYN-AUTH-001, authority, MISSING_DRAFT, RETURN, R-020-AUTHORITY-MATERIAL-INCOMPLETE, PASS]
+    - [SYN-AUTH-002, authority, INVALID_OR_OUT_OF_SCOPE, BLOCK, B-020-AUTHORITY-INVALID-EXPIRED-OR-OUT-OF-SCOPE, PASS]
+    - [SYN-AUTH-003, authority, DELEGATION_INCOMPLETE, RETURN, R-021-DELEGATION-MATERIAL-INCOMPLETE, PASS]
+    - [SYN-AUTH-004, authority, DELEGATION_INVALID_OR_CYCLIC, BLOCK, B-021-DELEGATION-INVALID-OR-CYCLIC, PASS]
+    - [SYN-AUTH-005, authority, SIGNATURE_HASH_MISMATCH, BLOCK, B-022-SIGNATURE-HASH-MISMATCH, PASS]
+  selections_and_parameters:
+    - [SYN-SEL-001, selections, MISSING, RETURN, R-030-SELECTION-MISSING, PASS]
+    - [SYN-SEL-002, selections, INVALID_OR_MULTIPLE, BLOCK, B-030-SELECTION-CARDINALITY-OR-VALUE-INVALID, PASS]
+    - [SYN-PARAM-001, envelope, NOT_APPLICABLE_INCOMPLETE, RETURN, R-033-NOT-APPLICABLE-RATIONALE-INCOMPLETE, PASS]
+    - [SYN-PARAM-002, envelope, ID_MISMATCH, BLOCK, B-031-QUESTION-ID-OR-INPUT-ID-MISMATCH, PASS]
+  evidence_and_hashes:
+    - [SYN-HASH-001, evidence, MISSING_OR_UNLINKED, RETURN, R-040-EVIDENCE-MISSING-OR-UNLINKED, PASS]
+    - [SYN-HASH-002, evidence, HASH_MISSING, RETURN, R-041-HASH-MISSING, PASS]
+    - [SYN-HASH-003, evidence, HASH_MISMATCH, BLOCK, B-040-HASH-MISMATCH, PASS]
+    - [SYN-HASH-004, evidence, REVOKED_OR_PROHIBITED, BLOCK, B-041-EVIDENCE-REVOKED-OR-PROHIBITED, PASS]
+    - [SYN-HASH-005, parse_and_source, SOURCE_HASH_MISMATCH, BLOCK, B-001-SOURCE-HASH-MISMATCH, PASS]
+  expiry_and_supersession:
+    - [SYN-EXP-001, validity, MATERIAL_INCOMPLETE, RETURN, R-050-VALIDITY-MATERIAL-INCOMPLETE, PASS]
+    - [SYN-EXP-002, validity, NOT_YET_VALID_EXPIRED_OR_REVOKED, BLOCK, B-050-NOT-YET-VALID-EXPIRED-OR-REVOKED, PASS]
+    - [SYN-SUP-001, supersession, LINK_MISSING, RETURN, R-051-SUPERSESSION-LINK-MISSING, PASS]
+    - [SYN-SUP-002, supersession, CYCLE_OR_HASH_DIVERGENCE, BLOCK, B-051-SUPERSESSION-CYCLE-OR-HASH-DIVERGENCE, PASS]
+  incompatibilities:
+    - [SYN-INC-001, INC-001, BLOCK, B-INC-001, PASS]
+    - [SYN-INC-002, INC-002, BLOCK, B-INC-002, PASS]
+    - [SYN-INC-003, INC-003, BLOCK, B-INC-003, PASS]
+    - [SYN-INC-004, INC-004, RETURN, R-INC-004, PASS]
+    - [SYN-INC-005, INC-005, RETURN, R-INC-005, PASS]
+    - [SYN-INC-006, INC-006, BLOCK, B-INC-006, PASS]
+    - [SYN-INC-007, INC-007, BLOCK, B-INC-007, PASS]
+    - [SYN-INC-008, INC-008, BLOCK, B-INC-008, PASS]
+    - [SYN-INC-009, INC-009, BLOCK, B-INC-009, PASS]
+    - [SYN-INC-010, INC-010, RETURN, R-INC-010, PASS]
+    - [SYN-INC-011, INC-011, RETURN, R-INC-011, PASS]
+    - [SYN-INC-012, INC-012, BLOCK, B-INC-012, PASS]
+    - [SYN-INC-013, INC-013, BLOCK, B-INC-013, PASS]
+    - [SYN-INC-014, INC-014, BLOCK, B-INC-014, PASS]
+    - [SYN-INC-015, INC-015, BLOCK, B-INC-015, PASS]
+  preservation:
+    acknowledgement_ids:
+      - ACK-PRES-001
+      - ACK-PRES-002
+      - ACK-PRES-003
+      - ACK-PRES-004
+      - ACK-PRES-005
+      - ACK-PRES-006
+      - ACK-PRES-007
+      - ACK-PRES-008
+      - ACK-PRES-009
+      - ACK-PRES-010
+      - ACK-PRES-011
+      - ACK-PRES-012
+    false_each_expected: [BLOCK, B-070-PRESERVATION-ACK-FALSE]
+    null_draft_each_expected: [RETURN, R-070-PRESERVATION-ACK-NULL-IN-DRAFT]
+    null_submitted_each_expected: [BLOCK, B-071-PRESERVATION-ACK-NULL-AT-SUBMISSION]
+    actual_false_each: [12, 12, BLOCK, B-070-PRESERVATION-ACK-FALSE]
+    actual_null_draft_each: [12, 12, RETURN, R-070-PRESERVATION-ACK-NULL-IN-DRAFT]
+    actual_null_submitted_each: [12, 12, BLOCK, B-071-PRESERVATION-ACK-NULL-AT-SUBMISSION]
+    result: PASS
+  attestation_and_unresolved:
+    - [SYN-ATT-001, attestation, INCOMPLETE, RETURN, R-080-ATTESTATION-INCOMPLETE, PASS]
+    - [SYN-ATT-002, attestation, LEASE_ATTEMPT, BLOCK, B-080-LEASE-OR-IMPLEMENTATION-AUTHORITY-ATTEMPT, PASS]
+    - [SYN-UNR-001, unresolved_points, PRESENT, RETURN, R-081-UNRESOLVED-POINTS-PRESENT, PASS]
+
+synthetic_execution:
+  method: >-
+    Read this packet and 036C, validate source IDs/hashes, resolve only the
+    abstract labels above, compare actual verdict/reasons with expected values,
+    and write no external file, response, selection, evidence or hash.
+  executed_at: "2026-07-25T11:23:22+03:00"
+  runner: in_memory_ruby_abstract_state_evaluator
+  total_cases: 85
+  passed_cases: 85
+  failed_cases: 0
+  incompatibility_cases_passed: 15/15
+  preservation_variants_passed: 36/36
+  nine_envelopes_passed: 9/9
+  deterministic_repeat_passed: true
+  source_blank_bundle_still_all_null: true
+  result: PASS
+
+ack_return_block_rules:
+  ACK:
+    preconditions:
+      - no BLOCK or RETURN reason
+      - all input/schema/source/authority/selection/parameter/evidence/hash/expiry/incompatibility/preservation/attestation checks pass
+      - unresolved points empty
+    effect: Eligible only for independent recording in dormant receipt 036.
+  RETURN:
+    preconditions:
+      - no BLOCK reason
+      - at least one correctable missing, null, incomplete, UNKNOWN or unlinked condition
+    effect: Preserve the submitted response and request a new corrected version.
+  BLOCK:
+    preconditions:
+      - at least one invalid authority, tamper/hash, expiry/revocation, prohibited incompatibility, preservation failure or authority-expansion condition
+    effect: No accepted receipt; formal authority correction or change control required.
+  precedence: BLOCK_over_RETURN_over_ACK
+  implementation_effect_for_all_verdicts: BLOCKED_UNTIL_SEPARATE_CONTRACT_AND_SERIAL_LEASE_GATES
+
+global_stop_conditions:
+  - Any real response, selection, parameter, evidence, hash, expiry, authority identity or acknowledgement is loaded.
+  - A synthetic state includes a business value or is represented as authority evidence.
+  - The validator supplies defaults, repairs an input or suppresses a reason.
+  - Reason order or precedence is non-deterministic.
+  - A source hash, evidence hash, expiry, authority or preservation failure is downgraded.
+  - ACK is treated as an implementation, database, provider, data, merge or release lease.
+  - Product, test, design, database, data, branch, stash, main or setup is modified.
+
+gate_check:
+  task_packet_result: PASS
+  synthetic_validation_result: PASS
+  real_response_result: NOT_EVALUATED
+  validator_implementation_result: BLOCKED
+  next_allowed_action: >-
+    Run the in-memory abstract synthetic suite, record results only in this
+    packet and keep 036C blank. If clean, queue the read-only intake-custody
+    preflight; no validator implementation or response intake is authorized.
+  browser_readiness: NOT_READY_DECISION_ONLY
+
+rollback:
+  this_packet: Remove only this packet if returned; no product, test, design, database, data, branch or remote state changed.
+  synthetic_run: >-
+    Synthetic execution is derived only from abstract labels and creates no
+    response or external artifact; rollback is removal of this packet.
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-INTAKE-CUSTODY-PREFLIGHT-036E
+  mode: READ_ONLY_CONTROL_PLANE
+  start_condition: Validator preflight and synthetic coverage pass; no signed response is available.
+  scope: >-
+    Define append-only custody, naming, source-hash pinning, authority
+    verification, evidence storage boundaries, supersession and independent
+    handoff for a future response artifact. Keep all response fields null and
+    do not implement intake, grant a lease or modify product, test, design,
+    database, data, branch, stash, main or setup state.
+  safe_because: >-
+    It prevents an eventual response from being overwritten or detached from
+    its authority and hashes without inventing a business answer.
+
+validation:
+  yaml_parse: PASS
+  source_sha_match: PASS
+  source_question_ids_9_match: PASS
+  source_choice_sets_9_match: PASS
+  source_incompatibilities_15_match: PASS
+  source_preservation_acknowledgements_12_match: PASS
+  source_blank_response_still_all_null: PASS
+  no_real_or_synthetic_business_values: PASS
+  global_precedence_cases_pass: PASS
+  nine_envelope_cases_pass: PASS
+  authority_delegation_cases_pass: PASS
+  selection_parameter_cases_pass: PASS
+  evidence_hash_cases_pass: PASS
+  expiry_supersession_cases_pass: PASS
+  all_15_incompatibility_cases_pass: PASS
+  all_12_preservation_variants_pass: PASS
+  attestation_unresolved_cases_pass: PASS
+  deterministic_repeat_pass: PASS
+  no_answer_or_lease_authority: PASS
+  completion_credit_zero: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS

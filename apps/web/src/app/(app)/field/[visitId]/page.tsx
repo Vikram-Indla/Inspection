@@ -598,6 +598,9 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     factoryName,
     packPolicyVersion: null,
     packageLabel: (effectivePackageRow as { version_label?: string | null } | null)?.version_label ?? null,
+    packageVersionId: effectivePackageRow?.id ?? null,
+    packageDefinition: effectivePackageRow?.definition ?? null,
+    packageChecksum: snapshot?.checksum ?? null,
     packageStatus: v.planning_status ?? null,
     crNumber: facIds.cr_number,
     officialLocation: packOfficialLocation,
@@ -643,6 +646,17 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     ackRepeatReviewed: tr("field.pack.ackRepeatReviewed", "Repeat findings reviewed", "تمت مراجعة المخالفات المتكررة"),
     required: tr("field.pack.required", "required", "مطلوب"),
     downloadOffline: tr("field.pack.downloadOffline", "Download for offline", "تنزيل للعمل دون اتصال"),
+    downloadingOffline: tr("field.pack.downloadingOffline", "Verifying download…", "جارٍ التحقق من التنزيل…"),
+    downloadUnavailable: tr("field.pack.downloadUnavailable", "Not downloaded", "لم يتم التنزيل"),
+    downloadFailed: tr("field.pack.downloadFailed", "Download failed — try again", "فشل التنزيل — حاول مرة أخرى"),
+    retryDownload: tr("field.pack.retryDownload", "Download current package", "تنزيل الحزمة الحالية"),
+    integrityVerified: tr("field.pack.integrityVerified", "Offline package verified", "تم التحقق من حزمة العمل دون اتصال"),
+    integrityFailed: tr("field.pack.integrityFailed", "Cached package failed integrity check", "فشلت الحزمة المحفوظة في فحص السلامة"),
+    packageOutdated: tr("field.pack.packageOutdated", "Cached package is outdated — download the current version", "الحزمة المحفوظة قديمة — نزّل الإصدار الحالي"),
+    legacyUnverified: tr("field.pack.legacyUnverified", "Cached package needs verification", "تحتاج الحزمة المحفوظة إلى التحقق"),
+    offlineUnavailable: tr("field.pack.offlineUnavailable", "Connect to download", "اتصل بالإنترنت للتنزيل"),
+    packageVersion: tr("field.pack.packageVersion", "Version", "الإصدار"),
+    packageHash: tr("field.pack.packageHash", "Authority checksum", "بصمة المرجع"),
     checkIn: tr("field.pack.checkIn", "Check in — startup", "تسجيل الوصول — البدء"),
     checkInBlocked: tr("field.pack.checkInBlocked", "Check in — review required", "تسجيل الوصول — مطلوب مراجعة"),
     startupNote: tr("field.pack.startupNote", "Opens the governed startup; check-in gates are enforced there.", "يفتح البدء المحكوم؛ تُطبَّق بوابات تسجيل الوصول هناك."),
@@ -721,6 +735,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           </div>
         )}
         {showPreparation && (
+          <div id="preparation" className="sq-anchor-target">
           <PreExecution
             visitId={v.id}
             ready={visitReady}
@@ -743,6 +758,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             draft={preparationDraft}
             strings={prepStrings}
           />
+          </div>
         )}
         {factoryUnverifiedManual && (
           <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>

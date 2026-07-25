@@ -1,0 +1,473 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048
+status: READ_ONLY_FUTURE_ERROR_NEUTRALITY_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze future M11 tests proving that missing, out-of-scope and unauthorized
+  conditions are indistinguishable across UI, governed RPC, Data API, export
+  and provider callback boundaries. Cover status, message, payload shape,
+  timing class, audit behavior and secret leakage without executing tests or
+  selecting implementation details.
+
+frozen_authority:
+  KIMI-M11-TEST-EVIDENCE-GAP-MAP-032: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 920d500d5f2bdfa55da2fb2acac32b28346e3d668d7ac40f3ab88e00150d24fa
+  KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 782eba637010837658bb185cddda47c804b92f991cb504faced92bbb82c39b6a
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, Data API, provider, design, data, seed, export, branch or stash change."
+  - "No real or realistic identifier, secret, OTP, provider payload, credential, person, factory or application row."
+  - "No HTTP status, latency threshold, retry value or provider callback response is invented."
+  - "The exact final status/message/payload contract must come from accepted corrected packets."
+  - "Timing comparison uses only governed equivalence classes; no numeric threshold is specified here."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+neutrality_contract:
+  exact_authority_token: VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE
+  paired_conditions:
+    - MISSING_RESOURCE
+    - EXISTING_OUT_OF_SCOPE_RESOURCE
+    - EXISTING_RESOURCE_UNAUTHORIZED_ACTION
+  equivalent_dimensions:
+    - transport_status_class
+    - application_error_code_or_token
+    - human_message_key_and_rendered_copy
+    - payload_schema_and_field_presence
+    - body_byte_hash_after_nondeterministic_field_exclusion
+    - redirect_or_navigation_result
+    - export_artifact_presence_and_metadata
+    - provider_invocation_count
+    - audit_and_semantic_event_cardinality
+    - timing_equivalence_class
+    - secret_and_internal_error_absence
+  forbidden_disclosures:
+    - raw_SQL_error
+    - RLS_policy_name_or_predicate
+    - function_name_or_internal_signature
+    - owner_or_schema_identity
+    - extension_or_dependency_detail
+    - provider_identifier_endpoint_payload_or_error
+    - resource_identifier_or_state
+    - row_count_existence_oracle
+    - secret_or_secret_derivative
+    - stack_trace_or_debug_metadata
+
+persona_fixtures:
+  - FX-NEU-PUBLIC
+  - FX-NEU-ANON
+  - FX-NEU-AUTHENTICATED-UNRELATED
+  - FX-NEU-UNASSIGNED-INSPECTOR
+  - FX-NEU-ASSIGNED-INSPECTOR
+  - FX-NEU-REVIEWER
+  - FX-NEU-AUDITOR
+  - FX-NEU-PLANNER
+  - FX-NEU-OPERATIONS
+  - FX-NEU-APPLICATION-ADMIN
+  - FX-NEU-PROVIDER-ADAPTER
+
+symbolic_fixtures:
+  resource_pairs:
+    - id: FX-NEU-VISIT-PAIR
+      missing: FX-NEU-VISIT-MISSING
+      out_of_scope: FX-NEU-VISIT-OUT-OF-SCOPE
+    - id: FX-NEU-SESSION-PAIR
+      missing: FX-NEU-SESSION-MISSING
+      out_of_scope: FX-NEU-SESSION-OUT-OF-SCOPE
+    - id: FX-NEU-PARTICIPANT-PAIR
+      missing: FX-NEU-PARTICIPANT-MISSING
+      out_of_scope: FX-NEU-PARTICIPANT-OUT-OF-SCOPE
+    - id: FX-NEU-AUDIT-PAIR
+      missing: FX-NEU-AUDIT-MISSING
+      out_of_scope: FX-NEU-AUDIT-OUT-OF-SCOPE
+    - id: FX-NEU-EXPORT-PAIR
+      missing: FX-NEU-EXPORT-MISSING
+      out_of_scope: FX-NEU-EXPORT-OUT-OF-SCOPE
+  action_classes:
+    - FX-NEU-STATUS-READ
+    - FX-NEU-SAFE-AUDIT-READ
+    - FX-NEU-CREATE
+    - FX-NEU-RESCHEDULE
+    - FX-NEU-WAITING-OPEN
+    - FX-NEU-JOIN
+    - FX-NEU-BEGIN
+    - FX-NEU-OTP-REQUEST
+    - FX-NEU-OTP-VERIFY
+    - FX-NEU-CLOSE
+    - FX-NEU-EXPORT-CSV
+    - FX-NEU-EXPORT-JSON
+    - FX-NEU-PROVIDER-CALLBACK
+  failure_classes:
+    - FX-NEU-DATA-API-ZERO-ROW
+    - FX-NEU-DATA-API-RLS-DENIAL
+    - FX-NEU-RPC-NOT-FOUND
+    - FX-NEU-RPC-UNAUTHORIZED
+    - FX-NEU-RPC-WRONG-STATE
+    - FX-NEU-PROVIDER-NOT-CONFIGURED
+    - FX-NEU-PROVIDER-UNAVAILABLE
+    - FX-NEU-PROVIDER-REJECTED
+    - FX-NEU-PROVIDER-INDETERMINATE
+    - FX-NEU-INTERNAL-FUNCTION-FAILURE
+  sentinels:
+    - FX-NEU-SECRET-SENTINEL
+    - FX-NEU-SQL-ERROR-SENTINEL
+    - FX-NEU-RLS-SENTINEL
+    - FX-NEU-PROVIDER-SENTINEL
+    - FX-NEU-STACK-SENTINEL
+
+expected_result_vocabulary:
+  NEUTRAL_EQUIVALENT: "Paired conditions match every required neutrality dimension."
+  DENY_NO_ORACLE: "Denied without resource, authority, state, provider or internal detail."
+  ZERO_SIDE_EFFECT: "No state, provider attempt, audit, event or export artifact is created."
+  SAFE_AUDIT_ONLY: "Only approved non-secret denial fact, if required by final contract, with equal cardinality for paired conditions."
+  ZERO_LEAK: "No forbidden disclosure or sentinel appears."
+  BLOCKED_CONTRACT: "Case cannot run until exact final public error contract exists."
+
+test_groups:
+  GOVERNED_RPC_READ:
+    cases:
+      - id: M11-048-RPC-R-001
+        personas: [FX-NEU-AUTHENTICATED-UNRELATED, FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-VISIT-PAIR, FX-NEU-STATUS-READ]
+        action: "Compare missing versus existing out-of-scope status read."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_SIDE_EFFECT]
+        evidence: [status_pair, token_pair, message_pair, payload_schema_pair, body_hash_pair, timing_class_pair]
+      - id: M11-048-RPC-R-002
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR]
+        fixtures: [FX-NEU-AUDIT-PAIR, FX-NEU-SAFE-AUDIT-READ]
+        action: "Compare missing versus out-of-scope safe audit read."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_LEAK]
+        evidence: [status_pair, payload_schema_pair, body_hash_pair, prohibited_field_scan]
+      - id: M11-048-RPC-R-003
+        personas: [FX-NEU-PLANNER, FX-NEU-OPERATIONS, FX-NEU-APPLICATION-ADMIN]
+        fixtures: [FX-NEU-SESSION-PAIR, FX-NEU-STATUS-READ]
+        action: "Compare missing versus out-of-scope read without inferring role authority."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [persona_status_pairs, persona_body_hash_pairs, timing_class_pairs]
+      - id: M11-048-RPC-R-004
+        personas: [FX-NEU-PUBLIC, FX-NEU-ANON]
+        fixtures: [FX-NEU-VISIT-PAIR, FX-NEU-STATUS-READ]
+        action: "Attempt caller-facing read."
+        expected: DENY_NO_ORACLE
+        evidence: [role_result_matrix, provider_attempt_count, audit_event_count]
+
+  GOVERNED_RPC_WRITE:
+    cases:
+      - id: M11-048-RPC-W-001
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-SESSION-PAIR, FX-NEU-JOIN]
+        action: "Compare join on missing versus out-of-scope session."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_SIDE_EFFECT]
+        evidence: [status_pair, token_pair, body_hash_pair, row_before_after, event_before_after]
+      - id: M11-048-RPC-W-002
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-SESSION-PAIR, FX-NEU-BEGIN]
+        action: "Compare begin on missing versus out-of-scope session."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_SIDE_EFFECT]
+        evidence: [response_pair, visit_session_inspection_before_after, event_before_after]
+      - id: M11-048-RPC-W-003
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-PARTICIPANT-PAIR, FX-NEU-OTP-REQUEST]
+        action: "Compare OTP request on missing versus out-of-scope participant."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_SIDE_EFFECT, ZERO_LEAK]
+        evidence: [response_pair, provider_attempt_count_pair, participant_before_after, forbidden_scan]
+      - id: M11-048-RPC-W-004
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-PARTICIPANT-PAIR, FX-NEU-OTP-VERIFY]
+        action: "Compare OTP verify on missing versus out-of-scope participant."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_SIDE_EFFECT, ZERO_LEAK]
+        evidence: [response_pair, participant_before_after, event_before_after, forbidden_scan]
+      - id: M11-048-RPC-W-005
+        personas: [FX-NEU-PLANNER, FX-NEU-OPERATIONS]
+        fixtures: [FX-NEU-SESSION-PAIR, FX-NEU-RESCHEDULE, FX-NEU-WAITING-OPEN, FX-NEU-CLOSE]
+        action: "Compare missing/out-of-scope outcomes for each action without inferred positive authority."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [persona_action_response_pairs, state_before_after, event_before_after]
+      - id: M11-048-RPC-W-006
+        personas: [FX-NEU-PUBLIC, FX-NEU-ANON, FX-NEU-AUTHENTICATED-UNRELATED]
+        fixtures: [FX-NEU-VISIT-PAIR, FX-NEU-CREATE]
+        action: "Attempt atomic creation."
+        expected: [DENY_NO_ORACLE, ZERO_SIDE_EFFECT]
+        evidence: [persona_response_matrix, session_participant_counts, audit_event_counts]
+
+  DATA_API:
+    cases:
+      - id: M11-048-DAT-001
+        personas: [FX-NEU-PUBLIC, FX-NEU-ANON, FX-NEU-AUTHENTICATED-UNRELATED]
+        fixtures: [FX-NEU-DATA-API-ZERO-ROW, FX-NEU-DATA-API-RLS-DENIAL]
+        action: "Compare direct table SELECT result shapes."
+        expected: "No resource existence or policy detail; direct access denied according to final ACL/RLS contract."
+        evidence: [status_pair, payload_schema_pair, row_count_disclosure_check, forbidden_scan]
+      - id: M11-048-DAT-002
+        personas: [FX-NEU-ASSIGNED-INSPECTOR, FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-VISIT-PAIR]
+        action: "Attempt direct table INSERT, UPDATE and DELETE."
+        expected: DENY_NO_ORACLE
+        evidence: [persona_table_command_matrix, state_before_after, error_schema]
+      - id: M11-048-DAT-003
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR, FX-NEU-APPLICATION-ADMIN]
+        fixtures: [FX-NEU-AUDIT-PAIR]
+        action: "Attempt raw audit Data API read."
+        expected: [DENY_NO_ORACLE, ZERO_LEAK]
+        evidence: [persona_read_matrix, returned_field_manifest, forbidden_scan]
+      - id: M11-048-DAT-004
+        personas: [FX-NEU-AUTHENTICATED-UNRELATED]
+        fixtures: [FX-NEU-INTERNAL-FUNCTION-FAILURE]
+        action: "Induce internal function/constraint failure through governed call."
+        expected: "Normalized public error only; no Data API or database internals."
+        evidence: [client_error_schema, forbidden_scan, audit_behavior]
+
+  UI:
+    cases:
+      - id: M11-048-UI-001
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-VISIT-PAIR, FX-NEU-STATUS-READ]
+        action: "Navigate to missing and out-of-scope resource."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [rendered_copy_pair, DOM_schema_pair, navigation_pair, screenshot_pair, timing_class_pair]
+      - id: M11-048-UI-002
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-PARTICIPANT-PAIR, FX-NEU-OTP-REQUEST]
+        action: "Trigger UI OTP request."
+        expected: [NEUTRAL_EQUIVALENT, ZERO_SIDE_EFFECT, ZERO_LEAK]
+        evidence: [rendered_copy_pair, DOM_forbidden_scan, provider_attempt_count_pair]
+      - id: M11-048-UI-003
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR]
+        fixtures: [FX-NEU-AUDIT-PAIR]
+        action: "Open safe audit UI."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [rendered_copy_pair, DOM_schema_pair, navigation_pair]
+      - id: M11-048-UI-004
+        personas: [FX-NEU-PLANNER, FX-NEU-OPERATIONS, FX-NEU-APPLICATION-ADMIN]
+        fixtures: [FX-NEU-VISIT-PAIR]
+        action: "Exercise UI actions lacking exact authority."
+        expected: DENY_NO_ORACLE
+        evidence: [persona_action_copy_matrix, DOM_forbidden_scan, route_result]
+      - id: M11-048-UI-005
+        personas: [FX-NEU-ASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-INTERNAL-FUNCTION-FAILURE, FX-NEU-PROVIDER-UNAVAILABLE]
+        action: "Compare internal and provider failures."
+        expected: "Governed user copy; no raw function/provider difference that exposes internals."
+        evidence: [message_key_pair, DOM_forbidden_scan, log_forbidden_scan]
+
+  EXPORT:
+    cases:
+      - id: M11-048-EXP-001
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR]
+        fixtures: [FX-NEU-EXPORT-PAIR, FX-NEU-EXPORT-CSV]
+        action: "Compare CSV export for missing and out-of-scope resource."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [status_pair, artifact_presence_pair, filename_metadata_pair, body_hash_pair]
+      - id: M11-048-EXP-002
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR]
+        fixtures: [FX-NEU-EXPORT-PAIR, FX-NEU-EXPORT-JSON]
+        action: "Compare JSON export for missing and out-of-scope resource."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [status_pair, artifact_presence_pair, response_schema_pair, body_hash_pair]
+      - id: M11-048-EXP-003
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR, FX-NEU-OPERATIONS, FX-NEU-APPLICATION-ADMIN]
+        fixtures: [FX-NEU-EXPORT-PAIR]
+        action: "Attempt export without exact authority."
+        expected: DENY_NO_ORACLE
+        evidence: [persona_export_matrix, artifact_created_count, metadata_disclosure_scan]
+      - id: M11-048-EXP-004
+        personas: [FX-NEU-REVIEWER]
+        fixtures: [FX-NEU-SECRET-SENTINEL]
+        action: "Induce a prohibited field in candidate export."
+        expected: "Whole artifact quarantined; no partial or empty substitute."
+        evidence: [redaction_result, artifact_release_count, client_result]
+
+  PROVIDER_CALLBACK:
+    cases:
+      - id: M11-048-CBK-001
+        personas: [FX-NEU-PROVIDER-ADAPTER]
+        fixtures: [FX-NEU-PARTICIPANT-PAIR, FX-NEU-PROVIDER-CALLBACK]
+        action: "Compare callback for missing and out-of-scope correlation."
+        expected: BLOCKED_CONTRACT
+        evidence: [future_callback_contract, future_response_pair]
+      - id: M11-048-CBK-002
+        personas: [FX-NEU-PROVIDER-ADAPTER]
+        fixtures: [FX-NEU-PROVIDER-NOT-CONFIGURED]
+        action: "Attempt callback while provider contract is absent."
+        expected: "Denied; no participant lookup, mutation or resource disclosure."
+        evidence: [callback_access_state, participant_before_after, audit_before_after]
+      - id: M11-048-CBK-003
+        personas: [FX-NEU-PROVIDER-ADAPTER]
+        fixtures: [FX-NEU-PROVIDER-REJECTED, FX-NEU-PROVIDER-INDETERMINATE]
+        action: "Attempt to pass raw provider outcome through public client response."
+        expected: ZERO_LEAK
+        evidence: [callback_payload_scan, client_response_scan, audit_projection_scan]
+      - id: M11-048-CBK-004
+        personas: [FX-NEU-AUTHENTICATED-UNRELATED, FX-NEU-ASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-PROVIDER-CALLBACK]
+        action: "Attempt provider callback endpoint as application persona."
+        expected: DENY_NO_ORACLE
+        evidence: [persona_callback_matrix, provider_attempt_count, state_before_after]
+
+  AUDIT_BEHAVIOR:
+    cases:
+      - id: M11-048-AUD-001
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-VISIT-PAIR]
+        action: "Compare audit/event effects of missing and out-of-scope governed requests."
+        expected: "Equal safe denial behavior and zero resource-specific semantic event."
+        evidence: [audit_count_pair, semantic_event_count_pair, safe_field_manifest]
+      - id: M11-048-AUD-002
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR]
+        fixtures: [FX-NEU-AUDIT-PAIR]
+        action: "Compare safe projection of denial evidence."
+        expected: "No existence oracle in actor, object, action, count or timestamps exposed to the caller."
+        evidence: [projection_schema_pair, row_count_pair, field_value_class_pair]
+      - id: M11-048-AUD-003
+        personas: [FX-NEU-ASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-PROVIDER-UNAVAILABLE, FX-NEU-PROVIDER-REJECTED]
+        action: "Compare provider failure audit behavior."
+        expected: "No delivered event; no raw provider detail; governed safe fact only if final contract requires it."
+        evidence: [event_type_pair, delivered_event_count, forbidden_scan]
+      - id: M11-048-AUD-004
+        personas: [FX-NEU-AUTHENTICATED-UNRELATED]
+        fixtures: [FX-NEU-INTERNAL-FUNCTION-FAILURE]
+        action: "Induce internal failure."
+        expected: "No secret-bearing or internal-detail audit disclosure to application personas."
+        evidence: [safe_projection_result, raw_audit_denial, forbidden_scan]
+
+  TIMING_CLASS_AND_PAYLOAD_SHAPE:
+    cases:
+      - id: M11-048-TIM-001
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-VISIT-PAIR, FX-NEU-STATUS-READ]
+        action: "Classify repeated missing and out-of-scope response timings."
+        expected: "Same governed timing equivalence class; no numeric threshold specified here."
+        evidence: [timing_sample_metadata, timing_class_pair, reviewer_assessment]
+      - id: M11-048-TIM-002
+        personas: [FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-PARTICIPANT-PAIR, FX-NEU-OTP-REQUEST]
+        action: "Compare provider-invocation and no-invocation branches."
+        expected: "Authorization/resource guard precedes provider use; paired unauthorized cases invoke provider zero times."
+        evidence: [provider_attempt_count_pair, timing_class_pair]
+      - id: M11-048-PAY-001
+        personas: [FX-NEU-AUTHENTICATED-UNRELATED, FX-NEU-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-NEU-SESSION-PAIR]
+        action: "Compare payload keys, nullability, array/object shape and content type."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [schema_pair, content_type_pair, body_hash_pair]
+      - id: M11-048-PAY-002
+        personas: [FX-NEU-REVIEWER, FX-NEU-AUDITOR]
+        fixtures: [FX-NEU-EXPORT-PAIR]
+        action: "Compare headers, filename metadata, size disclosure and artifact presence."
+        expected: NEUTRAL_EQUIVALENT
+        evidence: [header_pair, filename_pair, artifact_presence_pair, size_class_pair]
+
+  SECRET_AND_INTERNAL_ERROR_LEAKAGE:
+    cases:
+      - id: M11-048-LEK-001
+        fixtures:
+          - FX-NEU-SECRET-SENTINEL
+          - FX-NEU-SQL-ERROR-SENTINEL
+          - FX-NEU-RLS-SENTINEL
+          - FX-NEU-PROVIDER-SENTINEL
+          - FX-NEU-STACK-SENTINEL
+        action: "Scan UI, RPC, Data API, export, audit projection and logs."
+        expected: ZERO_LEAK
+        evidence: [UI_scan, RPC_scan, Data_API_scan, export_scan, audit_scan, log_scan]
+      - id: M11-048-LEK-002
+        fixtures: [FX-NEU-SECRET-SENTINEL]
+        action: "Attempt value-derived hash, prefix, suffix or equality token in public error/evidence."
+        expected: ZERO_LEAK
+        evidence: [derivative_scan, evidence_release_manifest]
+      - id: M11-048-LEK-003
+        fixtures: [FX-NEU-INTERNAL-FUNCTION-FAILURE]
+        action: "Compare client and safe-audit results."
+        expected: "No function, owner, schema, extension, policy or stack detail."
+        evidence: [client_forbidden_scan, safe_audit_forbidden_scan]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - code_commit
+    - migration_chain_hash
+    - fixture_pair_hash
+    - ordinary_persona_or_provider_identity_class
+    - compared_condition_classes
+    - result
+    - independent_reviewer
+  required_outputs:
+    - status_token_message_pairs
+    - payload_schema_and_body_hash_pairs
+    - timing_equivalence_class_pairs
+    - provider_invocation_count_pairs
+    - audit_and_semantic_event_cardinality_pairs
+    - export_artifact_behavior_pairs
+    - forbidden_disclosure_and_sentinel_scan
+    - state_before_after
+    - teardown_result
+  integrity_rules:
+    - "Nondeterministic fields may be excluded only by a predeclared comparison rule."
+    - "No numeric timing threshold is inferred; the future approved harness defines the measurement method."
+    - "No real resource, provider, secret or internal error text is released."
+    - "A failed pair comparison, redaction, teardown or reviewer signoff invalidates the case."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+    TEST-PROVIDER: apps/web/e2e/m11-provider-truth.spec.ts
+  ownership_boundaries:
+    TEST-013: "OTP/provider authorization and neutral database boundary."
+    TEST-015: "Safe audit, raw denial, neutral token and event behavior."
+    TEST-CATALOG: "ACL/policy/function boundary proof for Data API and RPC exposure."
+    TEST-BROWSER: "UI, API and export status/message/payload/timing-class equivalence."
+    TEST-PROVIDER: "Callback identity, provider outcome normalization and false-success prevention."
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "No implementation worker edits a leased QA path."
+    - "Stop on path, migration, signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final public error, persona, RPC, Data API, export, provider-callback and audit contracts."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+
+queued_next:
+  packet: KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Provider callback identity, replay, signature/authentication class, scope, neutral response and audit only; no provider values invented."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  persona_fixture_count: 11
+  test_group_count: 9
+  test_case_count: 38
+  unique_test_case_ids: PASS
+  proposed_test_path_count: 5
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

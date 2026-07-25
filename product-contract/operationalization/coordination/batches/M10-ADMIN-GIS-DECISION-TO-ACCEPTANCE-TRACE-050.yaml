@@ -1,0 +1,777 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-DECISION-TO-ACCEPTANCE-TRACE-050
+title: GIS sponsor decision to requirement and acceptance trace
+status: ACK_TRACE_WITH_EXPLICIT_UNTRACED_AUTHORITY_GAPS_BLOCK_IMPLEMENTATION
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_TRACEABILITY_REVIEW
+
+purpose: >
+  Map every decision category and held boundary in
+  M10-ADMIN-GIS-CONSOLIDATED-SPONSOR-CONSENT-PACKET-048 to exact known
+  requirements, acceptance IDs, future test and evidence obligations, and stop
+  conditions. This trace does not infer a sponsor answer, create a requirement,
+  grant authority or authorize implementation.
+
+review_boundary:
+  source_packet: M10-ADMIN-GIS-CONSOLIDATED-SPONSOR-CONSENT-PACKET-048
+  decision_categories_reviewed: 13
+  held_boundary_category_reviewed: 1
+  exact_primary_478_rows_for_admin_GIS: 0
+  contextual_478_rows_reviewed: 36
+  transferred_rows_reviewed: 3
+  option_selected: false
+  sponsor_answer_inferred: false
+  authority_granted: false
+  implementation_lease_granted: false
+  future_ownership_envelopes: UNGRANTED
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+canonical_authority:
+  screen:
+    id: SCR-ADM-070
+    name: GIS & Geofence Settings
+    route: /admin/gis
+    personas: GIS Admin; Technical Admin
+    purpose: Manage factory coordinates, geofence rules, arrival thresholds and override policy.
+    acceptance: DSG-012
+  corrective_design:
+    id: WA-DES-006-C1
+    status: DRAFT_NON_CONSUMABLE_NOT_CREATED
+    sponsor_acceptance: PENDING
+  package_acceptance:
+    - id: WA-M10-AC-001
+      meaning: Authorized source-backed behavior and real-service wiring.
+    - id: WA-M10-AC-002
+      meaning: Authorization, validation, stale/conflict, provider and RLS/RBAC failures fail safely.
+    - id: WA-M10-AC-003
+      meaning: Zero unapproved visual difference from accepted design.
+    - id: WA-M10-AC-004
+      meaning: EN/LTR, AR/RTL, responsive, keyboard and accessibility acceptance.
+    - id: WA-M10-AC-005
+      meaning: Backend, workflow, audit, version and adjacent-route regression.
+    - id: WA-M10-AC-006
+      meaning: Complete and truthful ID/evidence index.
+  special_component_acceptance:
+    - id: SPC-GIS-001
+      meaning: Synchronized list, legend, attribution and keyboard selection.
+    - id: SPC-GIS-002
+      meaning: Official/observed coordinates, geofence result and accuracy/freshness remain distinguishable.
+    - id: SPC-GIS-003
+      meaning: Override reason, evidence, permission, approval and audit consequence.
+    - id: SPC-GIS-004
+      meaning: Provider failure preserves operational data and recovery.
+    - id: SPC-GIS-005
+      meaning: Offline state never implies current tiles or route data.
+    - id: SPC-GIS-006
+      meaning: Tracking scope, freshness and retention dependency remain visible.
+    - id: SPC-GIS-007
+      meaning: Non-color status, accessibility and reduced-motion support.
+    - id: SPC-GIS-008
+      meaning: Aggregate zones are not represented as legal boundaries.
+  transferred_requirements:
+    - requirement_id: MVP2-REQ-0072
+      acceptance_id: MVP2-AC-0072
+      evidence_id: MVP2-EV-0072
+      obligation: GIS Admin governance for official/verified pins, geofence rules, map layers, offline packs and privacy.
+      status: NEEDS_REVIEW
+    - requirement_id: MVP2-REQ-0075
+      acceptance_id: MVP2-AC-0075
+      evidence_id: MVP2-EV-0075
+      obligation: Field route, geofence, pin provenance, offline map, check-in proof and geotagged evidence.
+      status: NEEDS_REVIEW
+    - requirement_id: MVP2-REQ-0233
+      acceptance_id: MVP2-AC-0233
+      evidence_id: MVP2-EV-0233
+      obligation: GIS governance, snapshots, accuracy, exception workflow and offline maps without unsupported legal-evidence claims.
+      status: NEEDS_REVIEW
+  decisions_and_holds:
+    DEC-002:
+      frozen_register_status: OPEN
+      interim_record: ACCEPTED_INTERIM_2026-07-11
+      formalization: PENDING_CC_DEC_001
+      trace_rule: >
+        Existing values may be identified as interim configurable defaults, but
+        no future packet may call them formally closed or final while the
+        frozen register and OPEN_DECISIONS still identify DEC-002 as open.
+    MVP3-HOLD-002: OPEN
+    MVP3-HOLD-006: OPEN_WHERE_LEGAL_RETENTION_OR_BACKUP_APPLIES
+
+decision_traces:
+  - decision_id: DECISION-01
+    category: Authoritative writer
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-038 / WA-AC-0038
+        - CR-046 / WA-AC-0046
+        - CR-136 / WA-AC-0136
+        - CR-145 / WA-AC-0145
+        - CR-150 / WA-AC-0150
+        - CR-155 / WA-AC-0155
+    package_acceptance:
+      - WA-M10-AC-001
+      - WA-M10-AC-002
+      - WA-M10-AC-005
+      - WA-M10-AC-006
+    special_acceptance:
+      - SPC-GIS-002
+      - SPC-GIS-003
+      - SPC-GIS-006
+    future_test_obligations:
+      - Prove exactly one final activation path for each shared field.
+      - Prove a non-authoritative screen cannot activate the same field.
+      - Prove direct route, rendered control, action and database policy agree.
+      - Regress Field, Planning, Operations, Factory 360 and Visit Detail consumers.
+    evidence_gate:
+      - Runtime recording of each authorized and unauthorized writer path.
+      - Database before/after and audit evidence with one governing version.
+      - Requirement-to-route-to-action-to-policy index.
+    stop_conditions:
+      - sponsor writer choice absent or contradictory
+      - overlapping field writers remain
+      - canonical capability mapping absent
+      - WA-DES-006-C1 not accepted for affected UI
+    direct_478_row_for_single_writer_model: NONE_FOUND
+
+  - decision_id: DECISION-02
+    category: Complete field ownership
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-124 / WA-AC-0124
+        - CR-135 / WA-AC-0135
+        - CR-136 / WA-AC-0136
+        - CR-140 / WA-AC-0140
+        - CR-144 / WA-AC-0144
+        - CR-145 / WA-AC-0145
+        - CR-150 / WA-AC-0150
+        - CR-155 / WA-AC-0155
+        - CR-156 / WA-AC-0156
+    field_trace:
+      GPS_accuracy_threshold: [CR-124, CR-140, MVP2-REQ-0233]
+      arrival_detection_radius: [CR-145, CR-150, CR-151, CR-155]
+      shared_geofence_default_radius: [CR-145, CR-150, CR-155, MVP2-REQ-0072]
+      telemetry_interval: [CR-135, CR-136]
+      route_deviation_rule: [CR-144]
+      GIS_retention_rule: [MVP2-REQ-0072, MVP2-REQ-0233, MVP3-HOLD-006]
+      geofence_override_policy: [CR-156, CR-442, MVP2-REQ-0072, MVP2-REQ-0233]
+      per_factory_radius_exception: [CR-038, CR-046, CR-155, CR-414]
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-002, SPC-GIS-003, SPC-GIS-006]
+    future_test_obligations:
+      - For each field, prove its one owner or explicit non-editable hold.
+      - Prove held values cannot be edited or described as newly approved.
+      - Prove required downstream behavior survives any editor move.
+    evidence_gate:
+      - Field-owner matrix tied to exact action and database column or policy object.
+      - Positive, unauthorized and held-state runtime evidence per field.
+    stop_conditions:
+      - any field owner remains implicit
+      - NOT_IN_CURRENT_RELEASE removes mandatory active behavior
+      - retention is presented as approved while MVP3-HOLD-006 remains open
+
+  - decision_id: DECISION-03
+    category: Read and write authority
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-037 / WA-AC-0037
+        - CR-038 / WA-AC-0038
+        - CR-046 / WA-AC-0046
+        - CR-091 / WA-AC-0091
+        - CR-414 / WA-AC-0414
+        - CR-431 / WA-AC-0431
+        - CR-442 / WA-AC-0442
+        - CR-443 / WA-AC-0443
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005]
+    special_acceptance: [SPC-GIS-001, SPC-GIS-003, SPC-GIS-006]
+    future_test_obligations:
+      - Direct GET denial and no sensitive payload for every unauthorized persona.
+      - Authorized reduced and full reads match selected capabilities.
+      - Planner and unrelated Admin mutation denials match page and database behavior.
+      - Revoked delegated capability stops working without stale access.
+    evidence_gate:
+      - Browser, server-action and database-policy matrix using real personas.
+      - Payload inspection proving no hidden precise coordinates or full raw settings.
+    stop_conditions:
+      - Technical Admin label lacks an existing canonical mapping
+      - page, action and RLS disagree
+      - hidden navigation is the only access control
+      - authenticated identity alone can read full GIS data
+    direct_478_row_for_admin_route_entitlement: NONE_FOUND
+
+  - decision_id: DECISION-04
+    category: Minimum persona data disclosure
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-037 / WA-AC-0037
+        - CR-091 / WA-AC-0091
+        - CR-101 / WA-AC-0101
+        - CR-117 / WA-AC-0117
+        - CR-123 / WA-AC-0123
+        - CR-135 / WA-AC-0135
+        - CR-136 / WA-AC-0136
+        - CR-157 / WA-AC-0157
+        - CR-161 / WA-AC-0161
+        - CR-414 / WA-AC-0414
+        - CR-431 / WA-AC-0431
+        - CR-442 / WA-AC-0442
+        - CR-443 / WA-AC-0443
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-004, WA-M10-AC-005]
+    special_acceptance: [SPC-GIS-001, SPC-GIS-002, SPC-GIS-006, SPC-GIS-007]
+    future_test_obligations:
+      - Verify FULL, REDUCED, MASKED, OWN_SCOPE or NONE for every persona/data cell.
+      - Verify purpose and surface limits across Planning, Field, Operations, Factory 360 and Visit Detail.
+      - Verify effective policy version can be shown without exposing full policy.
+      - Verify exact coordinates and telemetry are masked or denied outside approved scope.
+    evidence_gate:
+      - Persona-by-purpose response-shape snapshots with sensitive fields identified.
+      - Browser proof that screen content matches the returned projection.
+      - RLS/API negative evidence for cross-scope record access.
+    stop_conditions:
+      - any persona/data cell remains blank
+      - approved business purpose or surface is unnamed
+      - precise data is returned solely because the user is authenticated
+      - audit visibility is treated as write authority
+    direct_478_row_for_complete_persona_projection_matrix: NONE_FOUND
+
+  - decision_id: DECISION-05
+    category: Factory radius governance, precedence and reset
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-038 / WA-AC-0038
+        - CR-046 / WA-AC-0046
+        - CR-145 / WA-AC-0145
+        - CR-150 / WA-AC-0150
+        - CR-154 / WA-AC-0154
+        - CR-155 / WA-AC-0155
+        - CR-156 / WA-AC-0156
+        - CR-157 / WA-AC-0157
+        - CR-414 / WA-AC-0414
+        - CR-442 / WA-AC-0442
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-002, SPC-GIS-003]
+    future_test_obligations:
+      - Prove selected direct or approval-controlled lifecycle.
+      - Prove exception precedence over shared default and visible inheritance.
+      - Prove clear-to-inherit and replacement preserve history and reject stale screens.
+      - Prove shared-default change never rewrites stored exceptions or historical outcomes.
+    evidence_gate:
+      - Runtime before/after for create, expire, clear and replace.
+      - Atomic audit including reason, versions, actor and resulting inheritance.
+      - Downstream Factory 360, Field and Operations display evidence.
+    stop_conditions:
+      - governance, precedence or reset choice absent
+      - immediate unreviewed activation combined with approval-controlled exception
+      - historical check-in outcome recalculated
+
+  - decision_id: DECISION-06
+    category: Concurrent edit protection
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual_preserved:
+        - CR-038 / WA-AC-0038
+        - CR-046 / WA-AC-0046
+        - CR-155 / WA-AC-0155
+        - CR-160 / WA-AC-0160
+        - CR-161 / WA-AC-0161
+        - CR-174 / WA-AC-0174
+    package_acceptance: [WA-M10-AC-002, WA-M10-AC-005]
+    special_acceptance: [SPC-GIS-003]
+    future_test_obligations:
+      - Two clients load one version; first save succeeds and second stale save fails.
+      - Zero-row update is a visible failure.
+      - Same-field conflict never overwrites.
+      - Field-level merge, if selected, proves only unchanged independent fields merge.
+    evidence_gate:
+      - Deterministic two-session browser plus database evidence.
+      - Comparison/retry UI in EN/AR and keyboard flow.
+    stop_conditions:
+      - no original version/value is supplied on save
+      - last-writer-wins remains possible
+      - stale failure loses either proposal
+    direct_478_row_explicitly_requiring_GIS_CAS: NONE_FOUND
+
+  - decision_id: DECISION-07
+    category: Audit truth and visibility
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-123 / WA-AC-0123
+        - CR-124 / WA-AC-0124
+        - CR-140 / WA-AC-0140
+        - CR-144 / WA-AC-0144
+        - CR-152 / WA-AC-0152
+        - CR-153 / WA-AC-0153
+        - CR-154 / WA-AC-0154
+        - CR-156 / WA-AC-0156
+        - CR-157 / WA-AC-0157
+        - CR-158 / WA-AC-0158
+        - CR-160 / WA-AC-0160
+        - CR-161 / WA-AC-0161
+        - CR-173 / WA-AC-0173
+        - CR-442 / WA-AC-0442
+        - CR-443 / WA-AC-0443
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-002, SPC-GIS-003, SPC-GIS-006]
+    future_test_obligations:
+      - Force required audit failure and prove business change rolls back.
+      - Prove one scoped event or correctly linked technical/business events.
+      - Prove before/after, actor, capability, reason, versions, object and time.
+      - Prove reader, masking and export permissions separately from write authority.
+    evidence_gate:
+      - Transaction/database proof plus user-visible result.
+      - Authorized and unauthorized audit reader evidence.
+      - Immutable history and correlation replay evidence.
+    stop_conditions:
+      - audit failure is logged but change reports success
+      - required event cannot be read as one governed change
+      - precise location leaks through audit or export
+
+  - decision_id: DECISION-08
+    category: Policy activation timing
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual_preserved:
+        - CR-145 / WA-AC-0145
+        - CR-150 / WA-AC-0150
+        - CR-151 / WA-AC-0151
+        - CR-159 / WA-AC-0159
+        - CR-160 / WA-AC-0160
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005]
+    special_acceptance: [SPC-GIS-002, SPC-GIS-006]
+    future_test_obligations:
+      - Prove exact timezone and inclusive activation boundary.
+      - Prove a scheduled policy never activates early and can be cancelled or replaced.
+      - Prove journey-start or publication boundary stores the matching version.
+      - Prove open-client behavior at the activation instant.
+    evidence_gate:
+      - Controlled-clock tests immediately before, at and after effective time.
+      - Version lineage in policy, journey/visit and audit records.
+    stop_conditions:
+      - timezone or boundary is unstated
+      - lifecycle boundary and lineage choice are incompatible
+      - future policy becomes effective early
+    direct_478_row_explicitly_defining_shared_GIS_policy_activation: NONE_FOUND
+
+  - decision_id: DECISION-09
+    category: Online and offline policy lineage
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-117 / WA-AC-0117
+        - CR-123 / WA-AC-0123
+        - CR-124 / WA-AC-0124
+        - CR-135 / WA-AC-0135
+        - CR-140 / WA-AC-0140
+        - CR-144 / WA-AC-0144
+        - CR-145 / WA-AC-0145
+        - CR-150 / WA-AC-0150
+        - CR-151 / WA-AC-0151
+        - CR-152 / WA-AC-0152
+        - CR-153 / WA-AC-0153
+        - CR-154 / WA-AC-0154
+        - CR-155 / WA-AC-0155
+        - CR-156 / WA-AC-0156
+        - CR-157 / WA-AC-0157
+        - CR-159 / WA-AC-0159
+        - CR-160 / WA-AC-0160
+        - CR-162 / WA-AC-0162
+        - CR-443 / WA-AC-0443
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-002, SPC-GIS-003, SPC-GIS-005, SPC-GIS-006]
+    future_test_obligations:
+      - Prove selected pin/resolve model through check-in, arrival and Visit Detail.
+      - Remove future hard-coded labels and retain honest provenance on historical labels.
+      - Queue offline evidence under one version, change server policy, then replay safely.
+      - Distinguish capture-time, pinned and current server versions.
+    evidence_gate:
+      - Online/offline payloads, server transition result, audit and Visit Detail screenshots.
+      - Negative replay under changed or suspended policy.
+    stop_conditions:
+      - client-asserted label is presented as server-resolved
+      - queued evidence is rewritten or dropped
+      - server accepts a transition under an incompatible policy without disclosure
+
+  - decision_id: DECISION-10
+    category: Open-client refresh
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+      contextual:
+        - CR-130 / WA-AC-0130
+        - CR-136 / WA-AC-0136
+        - CR-137 / WA-AC-0137
+        - CR-138 / WA-AC-0138
+        - CR-162 / WA-AC-0162
+        - CR-431 / WA-AC-0431
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005]
+    special_acceptance: [SPC-GIS-001, SPC-GIS-004, SPC-GIS-005]
+    future_test_obligations:
+      - Keep Admin, Operations and Field open while policy changes.
+      - Prove notice, revalidation, reconfirmation or valid pinned behavior.
+      - Prove polling/push failure still revalidates before sensitive action.
+      - Prove no two Admin screens claim different accepted current versions after propagation.
+    evidence_gate:
+      - Multi-session browser recording and server version evidence.
+      - Cache invalidation/revalidation timing with failure recovery.
+    stop_conditions:
+      - refresh choice contradicts lineage
+      - policy-sensitive action trusts a stale client value
+      - stale screen silently re-saves old data
+    direct_478_row_explicitly_defining_admin_policy_change_propagation: NONE_FOUND
+
+  - decision_id: DECISION-11
+    category: Emergency suspension
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-151 / WA-AC-0151
+        - CR-156 / WA-AC-0156
+        - CR-158 / WA-AC-0158
+        - CR-159 / WA-AC-0159
+        - CR-162 / WA-AC-0162
+        - CR-174 / WA-AC-0174
+        - CR-442 / WA-AC-0442
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-003, SPC-GIS-004, SPC-GIS-005, SPC-GIS-006]
+    future_test_obligations:
+      - Prove authorized suspension, notification, reason and atomic audit.
+      - Prove selected active-journey and new-journey consequences.
+      - Prove non-map evidence remains available.
+      - Prove queued offline transition cannot silently complete while suspended.
+      - Prove resume or safe-version activation is a new governed action.
+    evidence_gate:
+      - Field and Operations browser states, database status, audit and recovery evidence.
+    stop_conditions:
+      - emergency actor lacks canonical capability
+      - pinned journey continues despite declared immediate harm
+      - suspension discards evidence or partially transitions workflow
+    direct_478_row_explicitly_defining_GIS_policy_emergency_suspension: NONE_FOUND
+
+  - decision_id: DECISION-12
+    category: Existing-data transition
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-038 / WA-AC-0038
+        - CR-046 / WA-AC-0046
+        - CR-123 / WA-AC-0123
+        - CR-135 / WA-AC-0135
+        - CR-152 / WA-AC-0152
+        - CR-153 / WA-AC-0153
+        - CR-154 / WA-AC-0154
+        - CR-157 / WA-AC-0157
+        - CR-158 / WA-AC-0158
+        - CR-159 / WA-AC-0159
+        - CR-160 / WA-AC-0160
+        - CR-161 / WA-AC-0161
+        - CR-173 / WA-AC-0173
+        - CR-174 / WA-AC-0174
+        - CR-414 / WA-AC-0414
+        - CR-442 / WA-AC-0442
+        - CR-443 / WA-AC-0443
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-002, SPC-GIS-003, SPC-GIS-005, SPC-GIS-006]
+    future_test_obligations:
+      - Inventory current engine values, exceptions, immutable events, queued events and client labels.
+      - Prove selected preserve/hold/republish treatment without rewriting history.
+      - Prove append-only correction provenance where separately approved.
+      - Prove migration rollback leaves original evidence intact.
+    evidence_gate:
+      - Before/after counts, hashes or immutable identifiers.
+      - Sample lineage across Admin, Field, Operations, Factory 360 and Visit Detail.
+      - Explicit DEC-002 interim-versus-formal status in evidence.
+    stop_conditions:
+      - historical record is edited or deleted
+      - queued evidence is replaced silently
+      - interim DEC-002 values are called formally final
+      - provenance gap is hidden
+
+  - decision_id: DECISION-13
+    category: Recovery and rollback
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-160 / WA-AC-0160
+        - CR-161 / WA-AC-0161
+        - CR-162 / WA-AC-0162
+        - CR-173 / WA-AC-0173
+        - CR-174 / WA-AC-0174
+        - CR-443 / WA-AC-0443
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance: [SPC-GIS-004, SPC-GIS-005, SPC-GIS-006]
+    future_test_obligations:
+      - Restore prior accepted value only as a new governed change.
+      - Cancel a future version only before its effective instant.
+      - Re-run activation, conflict, audit, refresh and lineage checks on recovery.
+      - Prove failure leaves current policy and historical evidence intact.
+    evidence_gate:
+      - Version history, audit, controlled-clock and consumer refresh evidence.
+    stop_conditions:
+      - effective history is edited or deleted
+      - prior value is restored without current safety validation
+      - failed recovery leaves partial configuration
+    direct_478_row_explicitly_defining_GIS_configuration_rollback: NONE_FOUND
+
+  - decision_id: DECISION-14
+    category: Explicit held boundaries
+    exact_requirements:
+      transferred:
+        - MVP2-REQ-0072 / MVP2-AC-0072
+        - MVP2-REQ-0075 / MVP2-AC-0075
+        - MVP2-REQ-0233 / MVP2-AC-0233
+      contextual:
+        - CR-091 / WA-AC-0091
+        - CR-101 / WA-AC-0101
+        - CR-117 / WA-AC-0117
+        - CR-129 / WA-AC-0129
+        - CR-130 / WA-AC-0130
+        - CR-137 / WA-AC-0137
+        - CR-138 / WA-AC-0138
+        - CR-414 / WA-AC-0414
+        - CR-431 / WA-AC-0431
+    package_acceptance: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-003, WA-M10-AC-004, WA-M10-AC-005, WA-M10-AC-006]
+    special_acceptance:
+      - SPC-GIS-001
+      - SPC-GIS-002
+      - SPC-GIS-004
+      - SPC-GIS-005
+      - SPC-GIS-006
+      - SPC-GIS-007
+      - SPC-GIS-008
+    hold_trace:
+      Spatial_Canvas:
+        authority_gap: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+        stop: No mutation until exact screen, capability, audit and acceptance authority exist.
+      Mapbox_runtime_style_geography:
+        hold: MVP3-HOLD-002
+        stop: No production-certified claim without token, approved style and geographic authority evidence.
+      offline_map_packs:
+        hold: MVP3-HOLD-002
+        stop: No offline-capable claim without pack download, version, expiry and offline evidence.
+      legal_evidence_and_retention:
+        hold: MVP3-HOLD-006 where applicable
+        stop: No legal-evidence, destructive-retention or backup claim without formal approval.
+    future_test_obligations:
+      - Provider unavailable, unauthorized style, timeout, partial tile, retry and recovery.
+      - List and non-map evidence remain usable throughout provider failure.
+      - Offline state truthfully distinguishes cached and current data.
+      - Spatial mutation is denied while screen identity/capability remains held.
+      - Legal-boundary and privacy copy never overclaims.
+    evidence_gate:
+      - Exact-clause hold closure packet plus controlled runtime evidence.
+      - EN/AR, light/dark, keyboard, reduced-motion and responsive map/list pack.
+    stop_conditions:
+      - a held clause is treated as closed by a general provider success
+      - schema-only spatial or offline tables are claimed as wired
+      - map failure hides required operational facts
+
+contextual_row_coverage:
+  - { requirement_id: CR-037, acceptance_id: WA-AC-0037, decisions: [DECISION-03, DECISION-04] }
+  - { requirement_id: CR-038, acceptance_id: WA-AC-0038, decisions: [DECISION-01, DECISION-03, DECISION-05, DECISION-06, DECISION-12] }
+  - { requirement_id: CR-046, acceptance_id: WA-AC-0046, decisions: [DECISION-01, DECISION-03, DECISION-05, DECISION-06, DECISION-12] }
+  - { requirement_id: CR-091, acceptance_id: WA-AC-0091, decisions: [DECISION-03, DECISION-04, DECISION-14] }
+  - { requirement_id: CR-101, acceptance_id: WA-AC-0101, decisions: [DECISION-04, DECISION-14] }
+  - { requirement_id: CR-117, acceptance_id: WA-AC-0117, decisions: [DECISION-04, DECISION-09, DECISION-14] }
+  - { requirement_id: CR-123, acceptance_id: WA-AC-0123, decisions: [DECISION-04, DECISION-07, DECISION-09, DECISION-12] }
+  - { requirement_id: CR-124, acceptance_id: WA-AC-0124, decisions: [DECISION-02, DECISION-07, DECISION-09] }
+  - { requirement_id: CR-129, acceptance_id: WA-AC-0129, decisions: [DECISION-14] }
+  - { requirement_id: CR-130, acceptance_id: WA-AC-0130, decisions: [DECISION-10, DECISION-14] }
+  - { requirement_id: CR-135, acceptance_id: WA-AC-0135, decisions: [DECISION-02, DECISION-04, DECISION-09, DECISION-12] }
+  - { requirement_id: CR-136, acceptance_id: WA-AC-0136, decisions: [DECISION-01, DECISION-02, DECISION-04, DECISION-10] }
+  - { requirement_id: CR-137, acceptance_id: WA-AC-0137, decisions: [DECISION-10, DECISION-14] }
+  - { requirement_id: CR-138, acceptance_id: WA-AC-0138, decisions: [DECISION-10, DECISION-14] }
+  - { requirement_id: CR-140, acceptance_id: WA-AC-0140, decisions: [DECISION-02, DECISION-07, DECISION-09] }
+  - { requirement_id: CR-144, acceptance_id: WA-AC-0144, decisions: [DECISION-02, DECISION-07, DECISION-09] }
+  - { requirement_id: CR-145, acceptance_id: WA-AC-0145, decisions: [DECISION-01, DECISION-02, DECISION-05, DECISION-08, DECISION-09] }
+  - { requirement_id: CR-150, acceptance_id: WA-AC-0150, decisions: [DECISION-01, DECISION-02, DECISION-05, DECISION-08, DECISION-09] }
+  - { requirement_id: CR-151, acceptance_id: WA-AC-0151, decisions: [DECISION-02, DECISION-08, DECISION-09, DECISION-11] }
+  - { requirement_id: CR-152, acceptance_id: WA-AC-0152, decisions: [DECISION-07, DECISION-09, DECISION-12] }
+  - { requirement_id: CR-153, acceptance_id: WA-AC-0153, decisions: [DECISION-07, DECISION-09, DECISION-12] }
+  - { requirement_id: CR-154, acceptance_id: WA-AC-0154, decisions: [DECISION-05, DECISION-07, DECISION-09, DECISION-12] }
+  - { requirement_id: CR-155, acceptance_id: WA-AC-0155, decisions: [DECISION-01, DECISION-02, DECISION-05, DECISION-06, DECISION-09] }
+  - { requirement_id: CR-156, acceptance_id: WA-AC-0156, decisions: [DECISION-02, DECISION-05, DECISION-07, DECISION-09, DECISION-11] }
+  - { requirement_id: CR-157, acceptance_id: WA-AC-0157, decisions: [DECISION-04, DECISION-05, DECISION-07, DECISION-09, DECISION-12] }
+  - { requirement_id: CR-158, acceptance_id: WA-AC-0158, decisions: [DECISION-07, DECISION-11, DECISION-12] }
+  - { requirement_id: CR-159, acceptance_id: WA-AC-0159, decisions: [DECISION-08, DECISION-09, DECISION-11, DECISION-12] }
+  - { requirement_id: CR-160, acceptance_id: WA-AC-0160, decisions: [DECISION-06, DECISION-07, DECISION-08, DECISION-09, DECISION-12, DECISION-13] }
+  - { requirement_id: CR-161, acceptance_id: WA-AC-0161, decisions: [DECISION-04, DECISION-06, DECISION-07, DECISION-12, DECISION-13] }
+  - { requirement_id: CR-162, acceptance_id: WA-AC-0162, decisions: [DECISION-09, DECISION-10, DECISION-11, DECISION-13] }
+  - { requirement_id: CR-173, acceptance_id: WA-AC-0173, decisions: [DECISION-07, DECISION-12, DECISION-13] }
+  - { requirement_id: CR-174, acceptance_id: WA-AC-0174, decisions: [DECISION-06, DECISION-11, DECISION-12, DECISION-13] }
+  - { requirement_id: CR-414, acceptance_id: WA-AC-0414, decisions: [DECISION-03, DECISION-04, DECISION-05, DECISION-12, DECISION-14] }
+  - { requirement_id: CR-431, acceptance_id: WA-AC-0431, decisions: [DECISION-03, DECISION-04, DECISION-10, DECISION-14] }
+  - { requirement_id: CR-442, acceptance_id: WA-AC-0442, decisions: [DECISION-03, DECISION-04, DECISION-05, DECISION-07, DECISION-11, DECISION-12] }
+  - { requirement_id: CR-443, acceptance_id: WA-AC-0443, decisions: [DECISION-03, DECISION-04, DECISION-07, DECISION-09, DECISION-12, DECISION-13] }
+
+coverage_validation:
+  contextual_rows_expected: 36
+  contextual_rows_traced: 36
+  contextual_rows_untraced: []
+  transferred_rows_expected: 3
+  transferred_rows_traced: 3
+  transferred_rows_untraced: []
+  package_acceptance_expected: 6
+  package_acceptance_traced: 6
+  special_acceptance_expected: 8
+  special_acceptance_traced: 8
+  decision_categories_expected: 13
+  decision_categories_traced: 13
+  held_boundary_category_traced: true
+
+untraced_authority_and_contract_gaps:
+  - gap_id: GIS-TRACE-GAP-01
+    item: Dedicated primary Admin GIS requirement in the 478-row baseline
+    result: NONE_FOUND
+    consequence: Contextual consumer rows cannot be counted complete from SCR-ADM-070.
+    stop: No 478-row completion credit for the Admin GIS screen.
+  - gap_id: GIS-TRACE-GAP-02
+    item: Exact 478-row requirement for single-writer convergence and field ownership
+    result: NONE_FOUND
+    consequence: Safety is derived from transferred governance plus WA-M10 functional, security and regression acceptance.
+    stop: Sponsor and governed change control must establish the operating model before a lease.
+  - gap_id: GIS-TRACE-GAP-03
+    item: Exact 478-row requirement for GIS stale-write/CAS behavior
+    result: NONE_FOUND
+    consequence: The obligation is acceptance-derived and protects existing rows from corruption.
+    stop: No implementation may retain silent last-writer-wins or false success.
+  - gap_id: GIS-TRACE-GAP-04
+    item: Exact 478-row requirement for shared-policy activation scheduling
+    result: NONE_FOUND
+    consequence: Activation must be governed before multiple versions can be implemented.
+    stop: No timing behavior may be invented from code defaults.
+  - gap_id: GIS-TRACE-GAP-05
+    item: Exact 478-row requirement for emergency GIS policy suspension
+    result: NONE_FOUND
+    consequence: Failure-integrity rows CR-162 and CR-174 constrain safety but do not choose the operating response.
+    stop: Sponsor choice and capability mapping required.
+  - gap_id: GIS-TRACE-GAP-06
+    item: Exact 478-row requirement for GIS configuration rollback
+    result: NONE_FOUND
+    consequence: Immutable audit rows constrain recovery but do not choose a rollback model.
+    stop: Sponsor choice required; no historical rewrite.
+  - gap_id: GIS-TRACE-GAP-07
+    item: Complete persona-by-data projection contract
+    result: NONE_FOUND
+    consequence: Contextual persona rows state business use but do not authorize every full/reduced/masked field.
+    stop: Every matrix cell and purpose must be approved before RLS/projection change.
+  - gap_id: GIS-TRACE-GAP-08
+    item: Technical Admin canonical identity
+    result: UNMAPPED
+    consequence: SCR-ADM-070 screen label cannot create a role or capability.
+    stop: Map to an existing canonical capability or leave unresolved.
+  - gap_id: GIS-TRACE-GAP-09
+    item: Spatial Canvas governed screen identity
+    result: MISSING
+    consequence: /admin/gis/spatial cannot inherit SCR-ADM-070 mutation authority by proximity.
+    stop: Keep mutation held until screen, capability, audit and acceptance are governed.
+  - gap_id: GIS-TRACE-GAP-10
+    item: Corrective design authority
+    result: WA-DES-006-C1_NOT_CREATED_OR_ACCEPTED
+    consequence: WA-M10 visual and accessibility implementation cannot start.
+    stop: Preserve predecessor; require separately identified immutable successor and sponsor acceptance.
+  - gap_id: GIS-TRACE-GAP-11
+    item: DEC-002 canonical status
+    result: ACCEPTED_INTERIM_BUT_FORMALLY_OPEN
+    consequence: Existing seeded defaults have interim sponsor provenance but are not a formally closed frozen-register decision.
+    stop: Do not call values final; complete CC-DEC-001 before governed publication.
+  - gap_id: GIS-TRACE-GAP-12
+    item: Future isolated test file and evidence-pack identifiers
+    result: NOT_YET_NAMED_OR_LEASED
+    consequence: This trace defines proof obligations but does not fabricate implementation assets.
+    stop: Name exact tests, fixtures and evidence only in an approved bounded lease.
+
+future_evidence_gate_summary:
+  functional:
+    acceptance: [WA-M10-AC-001, MVP2-AC-0072, MVP2-AC-0075, MVP2-AC-0233]
+    minimum: Authorized real-service writer, consumer and transition behavior.
+  negative_security:
+    acceptance: [WA-M10-AC-002]
+    minimum: Direct-route, RLS, field ownership, stale, audit, provider, emergency and replay negatives.
+  visual:
+    acceptance: [WA-M10-AC-003, DSG-012]
+    dependency: WA-DES-006-C1 accepted.
+  locale_responsive_accessibility:
+    acceptance: [WA-M10-AC-004, SPC-GIS-001, SPC-GIS-007]
+    minimum: EN/AR, LTR/RTL, 1440/1024/412/390/320, keyboard, screen reader and reduced motion.
+  regression:
+    acceptance: [WA-M10-AC-005]
+    minimum: Admin, Field, Planning, Operations, Dashboard, Factory 360, Visit Detail, server arrival and offline replay.
+  evidence:
+    acceptance: [WA-M10-AC-006]
+    minimum: Requirement, decision, screen, route, action, policy, test, fixture and binary-evidence index.
+  provider_and_map:
+    acceptance: [SPC-GIS-001, SPC-GIS-002, SPC-GIS-003, SPC-GIS-004, SPC-GIS-005, SPC-GIS-006, SPC-GIS-007, SPC-GIS-008]
+    hold: MVP3-HOLD-002 remains open until exact clauses close.
+
+overall_stop_conditions:
+  - sponsor response to packet 048 is absent or fails compatibility validation
+  - any untraced authority gap is filled by inference
+  - DEC-002 is called formally resolved before governed change control
+  - WA-DES-006-C1 is absent or unaccepted for UI work
+  - Spatial Canvas screen identity remains missing for mutation work
+  - provider, offline or legal hold is treated as generally closed
+  - exact future test, fixture, evidence and file envelope is not approved
+  - implementation and reviewer ownership are not separated
+
+review_recommendation:
+  ACK:
+    - ACK trace coverage for all 36 contextual rows, three transferred rows, six package acceptance IDs and eight GIS special acceptance IDs.
+    - ACK the explicit distinction between requirement-backed obligations and sponsor/change-control decisions.
+  RETURN:
+    - RETURN any future packet that counts contextual rows as Admin GIS completion or calls an untraced operating choice a source requirement.
+    - RETURN any evidence claim that treats interim DEC-002 defaults as formally final.
+  BLOCK:
+    - BLOCK implementation and lease assignment until packet 048 is answered, untraced authority gaps are governed, and the post-consent gate passes.
+  current: ACK_TRACE_BLOCK_IMPLEMENTATION
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-UNTRACED-AUTHORITY-GAP-REGISTER-051
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Convert the twelve explicit untraced items in packet 050 into a bounded
+    authority-gap register that identifies the existing owner, exact resolution
+    artifact, dependency order and evidence needed for closure without proposing
+    sponsor answers, creating requirements, granting authority or naming
+    implementation files.
+  non_overlap:
+    - no product, design, data, test, fixture, evidence, shared control, branch or lease mutation

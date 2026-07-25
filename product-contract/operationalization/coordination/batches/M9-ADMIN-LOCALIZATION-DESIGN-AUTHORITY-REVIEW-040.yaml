@@ -1,0 +1,631 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-LOCALIZATION-DESIGN-AUTHORITY-REVIEW-040
+title: Admin Localization Studio design-authority review
+status: BLOCKED_INCORRECT_REGISTERED_MAPPING_AND_ACCEPTED_CD018_SUCCESSOR_REQUIRED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+review_mode: READ_ONLY
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+application_mutated: false
+tests_mutated: false
+data_mutated: false
+mapping_mutated: false
+branch_or_lease_mutated: false
+sponsor_decision_recorded: false
+
+collision_check:
+  checked_on: "2026-07-25"
+  active_localization_owner_found: false
+  confirmed_non_overlap:
+    - lane: claude_code_live_watch
+      owns: M2 Planning Visit List governance
+      overlap: none
+    - lane: kimi_live_watch
+      owns: M11 catalog evidence and preauthorization
+      overlap: none
+  independent_runtime_worker_available: false
+  disposition: SAFE_FOR_READ_ONLY_DESIGN_AUTHORITY_REVIEW_ONLY
+  rule: Do not claim runtime certification without an independent runtime reviewer.
+
+task_contract:
+  task_id: M9-ADMIN-LOCALIZATION-DESIGN-AUTHORITY-REVIEW-040
+  gate: Admin Localization design authority and bounded semantic delta
+  process_ids: [CROSS_CUTTING, SB19]
+  package_id: M9
+  channel: ADMIN
+  route: /admin/localization
+  logical_screen_ids:
+    runtime_claim: SCR-ADM-100
+    claude_design_prompt: ADM-LOCALIZATION
+    canonical_catalogue: NONE
+  engines: [ENG-12, I18N, AUDIT, VERSION]
+  requirement_ids:
+    directly_mapped_478_rows: NONE_FOUND
+    cross_cutting_preservation: CR-001_THROUGH_CR-478
+    related_foundation: [MVP1-FND-011]
+    note: >-
+      Localization is a cross-cutting supplemental control surface. The 478-row
+      preservation boundary does not make all 478 rows direct requirements of
+      this route and does not authorize a new canonical screen ID.
+  acceptance_ids:
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+    systems: [DSG-A11Y-001]
+    route_specific_design_acceptance: NONE_REGISTERED
+  dependencies:
+    - governed_screen_identity_and_catalogue_mapping
+    - corrected_WA-DES-009_010_route_authority
+    - accepted_CD-018_R2_package
+    - exact_Localization_Reviewer_persona_to_role_mapping
+    - DEC-004_scope_resolution_or_explicit_current_safe_boundary
+    - accepted_full_wordmark_and_shell_asset_reconciliation
+    - route_guard_and_read_disclosure_contract
+    - translation_placeholder_and_pluralization_contract
+    - draft_concurrency_and_atomic_sync_contract
+    - current_browser_and_negative_path_evidence
+  do_not_touch:
+    - live Claude Design or any design/export/evidence binary
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - application source, tests, migrations, seeds, Supabase, providers or shared data
+    - Notifications, Forms, Workflows, Risk, Audit, Planning, Field/iPad or shared Admin shell
+    - branches, commits, pushes, merges, leases, main, setup/Inspection or stashes
+    - another worker's packet or dirty file
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 1feaed30
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This packet records read-only design-to-source truth only. It does not
+    authorize M9 implementation, route cutover, or override the active M2 stop.
+
+authority_sources:
+  canonical:
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv
+    - design/claude-design-mvp1/authority/STORYBOARD_COVERAGE_MAP.csv
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+    - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+    - product-contract/domain/atomic_scope.csv
+    - product-contract/evidence/AC_LEDGER.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+    - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml
+    - product-contract/governance/decision_register.csv
+  claude_design:
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/individual-admin-prompts/CD-018_PREMIUM_CLAUDE_DESIGN_PROMPT.md
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_DEEP_REVIEW_R1.md
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_CORRECTION_PROMPT_R2.md
+    - design/claude-design-mvp1/prompts/systems/ARABIC_RTL_ACCESSIBILITY_AND_RESPONSIVE.md
+  runtime_source_inspected_read_only:
+    - apps/web/src/app/(app)/admin/localization/page.tsx
+    - apps/web/src/app/(app)/admin/localization/Manager.tsx
+    - apps/web/src/app/(app)/admin/localization/actions.ts
+    - apps/web/src/app/(app)/admin/localization/loading.tsx
+    - apps/web/src/lib/i18n.ts
+    - apps/web/src/lib/i18n-sync.ts
+    - apps/web/src/lib/shell-navigation.ts
+    - apps/web/src/components/Shell.tsx
+    - apps/web/src/components/ShellClient.tsx
+    - apps/web/src/components/SaqeelBrandMark.tsx
+    - apps/web/src/app/astryx.css
+    - supabase/migrations/0013_ui_strings_localization.sql
+    - supabase/migrations/0014_ui_strings_history_sync.sql
+  source_inspection_limit: >-
+    Source inspection establishes implemented contracts and apparent gaps. It
+    is not browser, live-database, RLS, visual, accessibility, translation,
+    responsive, concurrency or end-to-end certification.
+
+registered_design_inventory:
+  canonical_payload:
+    design_id: WA-DES-010
+    filename: SAQEEL Admin Lookups.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Lookups.dc.html
+    registered_route: /admin/localization
+    target_persona: Configuration roles
+    reference_viewport: 1160x840
+    bytes: 12358
+    sha256: 11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d
+    actual_design_subject: Reference Lists
+    actual_objects:
+      - Authorities
+      - Regions and cities
+      - Activity codes
+      - Document types
+      - Violation codes
+      - Fuel types
+    actual_actions: [Select list, Search, Add value, Edit]
+    classification: INCORRECT_MAPPING_TO_LOCALIZATION_STUDIO
+  identical_alias:
+    design_id: WA-DES-009
+    filename: SAQEEL Admin Lookups copy.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Lookups copy.dc.html
+    registered_route: /admin/localization
+    bytes: 12358
+    sha256: 11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d
+    unique_payload: false
+    duplicate_of: WA-DES-010
+    classification: IDENTICAL_ALIAS_NOT_SECOND_AUTHORITY
+  visual_defects:
+    - English Reference Lists screen shows generated Arabic-only صقيل صناعي brand lettering.
+    - It presents static fixture counts and values without live-data authority.
+    - Language and Translations appears only as a navigation link, not a designed mode.
+    - It supplies no translation workflow, source drift, placeholder, history, restore or review state.
+    - It has no true Arabic RTL frame, dark proof, narrow proof or accessibility evidence.
+  mapping_truth: >-
+    WA-DES-009 and WA-DES-010 are byte-identical lookup-management designs.
+    Their registration to /admin/localization does not make their Reference
+    Lists content an exact Localization Studio design. The mapping is incorrect.
+
+claude_design_CD_018:
+  identity: ADM-LOCALIZATION
+  status: SUPPLEMENTAL_NOT_CANONICAL_SCREEN_CATALOGUE_ID
+  prompt_exists: true
+  prompt_route: /admin/localization
+  prompt_personas: [Localization Reviewer, Admin]
+  prompt_persona_contract_issue: Localization_Reviewer_not_in_canonical_persona_or_role_register
+  required_objects:
+    - Search
+    - module and screen filter
+    - English source
+    - Arabic edit
+    - status
+    - context screenshot link
+    - placeholders
+    - history
+    - restore
+    - CSV export
+    - approve
+  required_states:
+    - draft
+    - needs review
+    - approved
+    - source drift
+    - missing Arabic
+    - placeholder error
+    - restored
+  stale_prompt_paths:
+    root_claim: apps/web/src/app/admin/localization
+    actual_current_root: apps/web/src/app/(app)/admin/localization
+  prior_R1:
+    reviewed: true
+    verdict: BLOCKED
+    package_retained_in_current_inventory: false
+    localization_specific_findings:
+      - prior 412 image was a fit-scaled desktop-like layout in blank canvas
+      - source discovery was absent
+      - screen identity and route mapping required correction
+      - only actual actions may be represented
+  corrected_R2:
+    prompt_exists: true
+    returned_package_found: false
+    accepted_visuals_found: false
+    accepted_manifest_found: false
+    accepted_wiring_map_found: false
+  classification: PROMPT_AND_REJECTED_HISTORY_EXIST_ACCEPTED_SUCCESSOR_MISSING
+
+screen_and_route_mapping:
+  application_route: /admin/localization
+  route_exists: true
+  primary_component: apps/web/src/app/(app)/admin/localization/page.tsx
+  manager_component: apps/web/src/app/(app)/admin/localization/Manager.tsx
+  server_actions: apps/web/src/app/(app)/admin/localization/actions.ts
+  runtime_comment_identity: SCR-ADM-100
+  claude_design_identity: ADM-LOCALIZATION
+  canonical_catalogue_identity: NONE
+  WA_design_mapping: WA-DES-009_AND_WA-DES-010
+  validation: INCORRECT_MAPPING
+  correction: >-
+    The route and capability are real, but the registered designs depict
+    lookup-family administration. CD-018 describes the nearest Localization
+    capability, yet it is supplemental, its screen ID is not reconciled, its
+    prior package failed review, and no accepted R2 is present.
+  recommended_mapping_action: CORRECT
+
+shell_and_information_architecture:
+  approved_shell_authority:
+    primary_option: Lookup Management
+    target_hub: /admin/planning/lookups
+    child_routes:
+      - /admin/localization
+      - /admin/planning/status
+      - /admin/planning/expiry
+    cutover_requires: explicit_APPROVED_FOR_CUTOVER_after_lookup_certification
+  current_control_branch_navigation:
+    primary_entry:
+      label: Reference Lists
+      route: /admin/localization
+      roles: [compliance_admin, workflow_admin, security_admin]
+    advanced_entry:
+      label: Language and Translations
+      route: /admin/localization
+      roles: [compliance_admin, security_admin, workflow_admin]
+  conflict: >-
+    The same route appears twice under different meanings, while the accepted
+    shell authority says Localization is a child of the Lookup Management hub.
+    This review does not authorize a navigation or route change.
+
+current_source_capability:
+  dictionary:
+    - Reads key, English source, Arabic value, status, context and orphan flag.
+    - Calculates total, translated, reviewed and coverage counts from the read.
+    - Searches key, English and Arabic and filters draft, reviewed, missing and orphaned.
+    - Exports the filtered rows as UTF-8 BOM CSV.
+  authoring:
+    - Adds a draft key with English source, optional Arabic and context.
+    - Saves Arabic and returns the row to draft.
+    - Marks a non-null Arabic row reviewed.
+    - Detects missing double-brace placeholders in the client before save.
+    - Flags Arabic length above a simple 1.3-times English heuristic.
+  synchronization:
+    - Scans TypeScript and TSX source for literal t key and English pairs.
+    - Inserts new keys, updates changed English, orphans removed keys and revives reappearing keys.
+    - English drift downgrades a previously reviewed row to draft in the database trigger.
+  history:
+    - Trigger snapshots prior row state into ui_string_revisions.
+    - Shows the five newest revisions.
+    - Restore changes Arabic only and re-enters draft.
+    - Orphans are retained rather than deleted.
+  runtime:
+    - English is the code fallback.
+    - Arabic uses ui_strings with English fallback for missing values.
+    - Dictionary reads use a public/anonymous read policy for pre-auth surfaces.
+    - A request cache and runtime cache reduce repeat reads.
+  honest_boundary: >-
+    No machine translation provider, screenshot context link, pluralization
+    engine, full-screen impact preview, or separate approval workflow is proven.
+
+permissions_and_data_truth:
+  prompt_personas: [Localization Reviewer, Admin]
+  runtime_write_roles:
+    - compliance_admin
+    - security_admin
+    - workflow_admin
+  route_level_writer_guard: not_found_in_page_or_layout
+  read_policy:
+    ui_strings: public_using_true
+    ui_string_revisions: public_using_true
+  navigation_visibility:
+    writer_roles_only: true
+    security_boundary: false
+  actions_visible_to_non_writer_direct_route_user: true_by_source_composition
+  write_denial_behavior: zero_row_or_neutral_error_after_submission
+  gap: >-
+    Navigation hides the destination for non-writers, but direct authenticated
+    route access can render the dictionary and write controls. RLS blocks
+    mutations, yet UI action visibility and public revision-history disclosure
+    are not reconciled to a governed read-only persona contract.
+
+audit_version_and_concurrency_truth:
+  versioning:
+    ui_string_revision_trigger: present
+    old_row_snapshot: present
+    recent_history_UI_limit: 5
+    restore_as_draft: present
+    delete_policy: absent
+  audit:
+    generic_audit_events_trigger_on_ui_strings: not_found
+    revision_changed_by: present
+    change_source_runtime_setting_set_by_actions: not_found
+    likely_effect: change_source_defaults_to_panel_for_sync_and_restore_too
+    implication: >-
+      Revision history exists, but it is not the same as a proven generic audit
+      event chain and its source label may not distinguish panel, sync and restore.
+  concurrency:
+    updated_at_exists: true
+    updated_at_used_as_compare_and_set: false
+    row_version: absent
+    stale_conflict_guard: absent
+    retained_input_conflict_recovery: absent
+    risk: >-
+      Concurrent reviewers can overwrite the same Arabic value; the later save
+      wins and only history preserves the prior value. No user-facing conflict
+      prevents silent semantic replacement.
+  sync_atomicity:
+    transaction_or_RPC: absent
+    mutation_sequence: inserts_then_per_row_EN_updates_then_orphan_batch_then_revive_batch
+    partial_failure_possible: true
+    recovery_contract: retry_without_exact_partial_summary
+    implication: >-
+      A failed later synchronization step can leave earlier changes committed.
+      The route needs truthful partial-result and reconciliation behavior.
+
+language_RTL_and_wordmark_truth:
+  accepted_brand:
+    DEC-011_full_wordmark: "صقيل | صناعي"
+    DEC-035_web_admin_expanded_graphite_asset: supplied_bilingual_dark_surface_wordmark
+    collapsed_asset: supplied_green_shield_check
+  WA_DES_010:
+    English_screen_wordmark: generated_Arabic_صقيل_صناعي
+    correctness: FAILS_CURRENT_ACCEPTED_WEB_ADMIN_ASSET_AUTHORITY
+  control_branch_source:
+    expanded_shell_wordmark: generated_Arabic_صقيل_plus_صناعي
+    current_state_record: revamp_uses_supplied_bilingual_SAQEEL_bar_صقيل_asset
+    reconciliation: >-
+      This orchestration branch source differs from the accepted revamp shell
+      record. The discrepancy requires branch/runtime reconciliation and cannot
+      be certified or fixed by this read-only lane.
+  localization_screen:
+    document_locale: cookie_driven_EN_or_AR
+    document_direction: inherited_from_shell_runtime
+    Arabic_inputs: explicit_dir_RTL_and_lang_AR
+    English_source_and_keys: explicit_or_implicit_LTR
+    mixed_direction_dates_in_history: numeric_class_without_explicit_bdi
+    status_and_action_order_in_RTL: not_runtime_proven
+  DEC-004: OPEN
+  safe_boundary: >-
+    Existing accepted Saqeel decisions require English/Arabic switching and
+    true RTL, but DEC-004 remains open for the exact wider Arabic scope. Do not
+    invent terminology, reviewer authority, or release completeness.
+
+design_versus_code_delta:
+  registered_WA_design_has_code_lacks_or_different:
+    - Reference-list families, versioned retirement and external sync ownership.
+    - Lookup-family side navigation and consumed-by context.
+    - These belong to Lookup Management, not the current ui_strings workflow.
+  code_has_registered_WA_design_lacks:
+    - Translation search and status filters.
+    - Inline Arabic editing.
+    - Placeholder mismatch protection.
+    - Source synchronization and orphan recovery.
+    - Revision history and restore-as-draft.
+    - CSV export and coverage KPIs.
+  CD_018_requires_code_lacks_or_unproven:
+    - Module and screen filter.
+    - Exact live screen-context link and freshness.
+    - Pluralization contract.
+    - Governed Localization Reviewer persona.
+    - Complete approved visual risk and impact preview.
+    - Native responsive, theme, RTL and accessibility evidence.
+  current_source_defects_or_unproven:
+    - No canonical catalogue screen ID or route-specific design acceptance row.
+    - Incorrect WA-DES-009/010 mapping.
+    - No accepted CD-018 R2 handoff.
+    - Duplicate shell entries point to the same route under different meanings.
+    - Direct-route users may see write controls before RLS denies them.
+    - Revision history is public and not reconciled to disclosure requirements.
+    - No generic audit_events proof for ui_strings.
+    - change_source is not explicitly set for sync or restore.
+    - No stale-save concurrency guard.
+    - Sync is not atomic and lacks a precise partial-result recovery state.
+    - Source scan assumes deployed source availability and literal t-call grammar.
+    - Placeholder check covers double braces only and no accepted pluralization grammar exists.
+    - Long-Arabic warning uses a heuristic, not measured layout impact.
+    - Accepted bilingual shell asset is absent from WA-DES-010 and differs from this branch source.
+
+existing_external_visual_evidence:
+  path: /Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/web-admin-phase1/M9/localization-001
+  files:
+    - name: after-admin-localization-en-dark-1440x900.png
+      actual_raster: 1123x891
+      sha256: 723becf50df81cca8e67d4561cc5048ed4a727231660167be43535a531b114ac
+    - name: after-admin-localization-en-light-1440x900.png
+      actual_raster: 1440x2328
+      sha256: 1baf432b18edf875adcd4ee18c657534e8a5e71778458ed4a01db9039f5cb5ca
+    - name: after-admin-localization-ar-dark-390x844.png
+      actual_raster: 440x5742
+      sha256: 30b44741ea9a36fbd1ca1c48b42d1fa6e4c450fc862e9ea37721f34e805320b9
+  classification: HISTORICAL_RUNTIME_SCREENSHOTS_NOT_EXACT_VIEWPORT_DESIGN_AUTHORITY
+  observation: >-
+    The screenshots help identify a later source-backed composition and correct
+    English-locale bilingual asset direction, but their actual raster sizes do
+    not match two filenames and they were not generated or runtime-certified
+    in this lane. They cannot close visual, responsive or design acceptance.
+
+required_states:
+  access:
+    - AUTHORIZED_WRITER
+    - GOVERNED_READ_ONLY_IF_APPROVED
+    - UNAUTHORIZED_ZERO_DISCLOSURE
+    - ANONYMOUS_DICTIONARY_READ_BOUNDARY
+    - SESSION_EXPIRED
+    - ROLE_LOOKUP_FAILED
+  registry:
+    - LOADING
+    - POPULATED
+    - VERIFIED_EMPTY
+    - READ_FAILED_NOT_ZERO
+    - NO_FILTER_MATCH
+    - DRAFT
+    - REVIEWED
+    - MISSING_ARABIC
+    - ORPHANED
+    - SOURCE_DRIFT
+    - RESTORED_AS_DRAFT
+  authoring:
+    - UNSAVED
+    - SAVING
+    - SAVED
+    - SAVE_DENIED_OR_FAILED_INPUT_RETAINED
+    - PLACEHOLDER_MISMATCH
+    - PLURALIZATION_UNSUPPORTED_OR_INVALID
+    - LONG_ARABIC_LAYOUT_RISK
+    - STALE_CONCURRENT_CONFLICT_INPUT_RETAINED
+    - REVIEW_BLOCKED_MISSING_ARABIC
+    - REVIEW_BLOCKED_STALE_SOURCE
+  sync:
+    - SCAN_PENDING
+    - SCAN_UNAVAILABLE
+    - VERIFIED_NO_CHANGE
+    - KEYS_ADDED
+    - ENGLISH_DRIFTED
+    - KEYS_ORPHANED
+    - KEYS_REVIVED
+    - PARTIAL_COMMIT_RECONCILIATION_REQUIRED
+  history:
+    - HISTORY_LOADING
+    - HISTORY_AVAILABLE
+    - HISTORY_VERIFIED_EMPTY
+    - HISTORY_UNAVAILABLE
+    - RESTORE_PENDING
+    - RESTORE_FAILED_INPUT_AND_CURRENT_VALUE_PRESERVED
+  presentation:
+    - ENGLISH_LTR_LIGHT
+    - ENGLISH_LTR_DARK
+    - APPROVED_ARABIC_RTL_LIGHT
+    - APPROVED_ARABIC_RTL_DARK
+    - DESKTOP_1440x900
+    - REFERENCE_1160x840
+    - TABLET_1024x768
+    - MOBILE_412x915_OR_390x844
+    - MOBILE_320x800
+    - KEYBOARD_AND_SCREEN_READER
+    - ZOOM_REFLOW_AND_REDUCED_MOTION
+
+responsive_theme_language_accessibility:
+  current_source_strengths:
+    - localization rows collapse to one column below 900px
+    - logical CSS properties are used in the local layout
+    - Arabic editor fields declare RTL and Arabic language
+    - form fields have labels and action feedback uses alert or status semantics
+    - statuses combine text and appearance
+  missing_or_unproven:
+    - native 1440, 1160, 1024, 412 or 390, and 320 design/runtime captures
+    - bounded page height and usable virtualization or pagination for large dictionaries
+    - sticky review context without hiding actions
+    - long Arabic, mixed-direction keys, placeholders and dates without clipping
+    - exact full-document RTL order, focus order and icon direction
+    - light/dark contrast and disabled/focus/error parity
+    - keyboard-only search, filtering, editing, review, history and restore
+    - focus recovery after save, sync, history load and restore
+    - screen-reader distinction between source, translation, state and history
+    - 48px target and 16px input proof
+    - 200/400 percent zoom, reflow and reduced-motion proof
+    - error summary and exact-field focus for large result sets
+
+test_truth:
+  route_focused_spec: not_found
+  related_source_or_cross_route_tests:
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/cd-026-visit-management.spec.ts
+    - scripts/i18n_sync.py
+    - scripts/seed_arabic.py
+  missing_proof:
+    - exact route load, search, filter and UTF-8 CSV
+    - save draft and refresh persistence
+    - review guard and Arabic-empty negative
+    - placeholder mismatch and valid placeholder runtime journeys
+    - source drift downgrade, orphan and revive
+    - history isolation and restore-as-draft
+    - RLS writer, direct-route nonwriter and anonymous disclosure boundaries
+    - concurrent save collision and retained-input recovery
+    - partial synchronization failure and reconciliation
+    - accepted wordmark in English and Arabic shells
+    - EN/AR, RTL/LTR, light/dark and responsive matrix
+    - keyboard, screen reader, focus, zoom, reflow and accessibility
+  certification_status: SOURCE_AND_HISTORICAL_EVIDENCE_REVIEW_ONLY_NOT_RUNTIME_OR_DESIGN_ACCEPTANCE
+
+p0_stops:
+  - {id: L10N-DES-P0-01, criterion: WA-DES-009 and WA-DES-010 remain one byte-identical lookup design and are not accepted as exact Localization Studio authority.}
+  - {id: L10N-DES-P0-02, criterion: Governance assigns one non-colliding canonical or supplemental screen identity and route-specific design acceptance row.}
+  - {id: L10N-DES-P0-03, criterion: CD-018 returns one clean corrected R2 package with current paths, stable frames, manifest, component map, wiring map, checklist and native PNG evidence.}
+  - {id: L10N-DES-P0-04, criterion: Prior R1 source-discovery and false-native-viewport failures are independently closed.}
+  - {id: L10N-DES-P0-05, criterion: Lookup Management and Language and Translations route ownership is reconciled without duplicate same-route meanings or premature cutover.}
+  - {id: L10N-DES-P0-06, criterion: Localization Reviewer and Admin map to exact runtime roles, read scope, route guard, UI actions and RLS policies without invented roles.}
+  - {id: L10N-DES-P0-07, criterion: Anonymous dictionary and revision-history disclosure is explicitly approved or narrowed without breaking pre-auth localization.}
+  - {id: L10N-DES-P0-08, criterion: Source, Arabic, placeholder, pluralization, context and review semantics are exact and fail closed.}
+  - {id: L10N-DES-P0-09, criterion: Generic audit versus revision history and change-source attribution are truthful and complete.}
+  - {id: L10N-DES-P0-10, criterion: Draft saves have an optimistic concurrency token and retained-input conflict recovery.}
+  - {id: L10N-DES-P0-11, criterion: Source synchronization is atomic or exposes exact partial results with safe reconciliation and retry.}
+  - {id: L10N-DES-P0-12, criterion: Source scanning is proven in the deployment model and never treats unavailable source as verified no change.}
+  - {id: L10N-DES-P0-13, criterion: The accepted bilingual shell wordmark asset and shield are used consistently; Arabic-only generated lettering is not accepted on the English shell.}
+  - {id: L10N-DES-P0-14, criterion: DEC-004 remains explicit and no unapproved Arabic terminology or completeness claim is invented.}
+  - {id: L10N-DES-P0-15, criterion: Every loading, empty, unavailable, stale, conflict, partial-sync and recovery state remains distinguishable.}
+  - {id: L10N-DES-P0-16, criterion: One independent runtime reviewer proves route, RLS, history, sync, concurrency and regression behavior.}
+  - {id: L10N-DES-P0-17, criterion: No Localization claim upgrades all 478 requirements or the complete application to translated or reviewed.}
+  - {id: L10N-DES-P0-18, criterion: One collision-free design writer is named only after P0-01 through P0-17 pass.}
+
+p1_stops:
+  - {id: L10N-DES-P1-01, criterion: Search, filtering, source, Arabic edit, status, context, placeholder, history, restore, sync and export follow one explicit review task order.}
+  - {id: L10N-DES-P1-02, criterion: Review confidence and affected-screen context lead the hierarchy rather than raw coverage percentage.}
+  - {id: L10N-DES-P1-03, criterion: Verified empty, read failure, no filter match and source-scan unavailable remain visually distinct.}
+  - {id: L10N-DES-P1-04, criterion: Native 1440, 1160, 1024, 412 or 390, and 320 evidence proves bounded reflow without horizontal or action loss.}
+  - {id: L10N-DES-P1-05, criterion: English and approved Arabic have semantic, task, light/dark and RTL/LTR parity.}
+  - {id: L10N-DES-P1-06, criterion: Long Arabic, mixed-direction keys, placeholders, dates and status metadata remain readable and correctly isolated.}
+  - {id: L10N-DES-P1-07, criterion: Keyboard task completion, focus recovery, screen-reader semantics, zoom, reflow and reduced motion pass.}
+  - {id: L10N-DES-P1-08, criterion: Save, review, sync and restore errors retain user input and identify exact affected key and safe next action.}
+  - {id: L10N-DES-P1-09, criterion: Large dictionaries remain usable with source-backed counts, bounded rendering and no misleading completeness claim.}
+  - {id: L10N-DES-P1-10, criterion: Exact screen, design, requirement, component, action, table, policy, trigger, test and evidence links are complete.}
+
+governance_decisions:
+  - id: L10N-DES-DEC-01
+    decision: Remove the incorrect Localization meaning from WA-DES-009/010 mapping and retain those identities only for Lookup Management.
+  - id: L10N-DES-DEC-02
+    decision: Approve ADM-LOCALIZATION as a governed supplemental screen identity or allocate a canonical catalogue ID through change control.
+  - id: L10N-DES-DEC-03
+    decision: Correct CD-018 to current route-group paths and accept one complete R2 successor after independent review.
+  - id: L10N-DES-DEC-04
+    decision: Reconcile Lookup Management hub and Localization child-route navigation without duplicate route meanings.
+  - id: L10N-DES-DEC-05
+    decision: Map Localization Reviewer and Admin to exact roles, read disclosure, write controls and RLS boundaries.
+  - id: L10N-DES-DEC-06
+    decision: Approve anonymous dictionary/revision disclosure, placeholder/pluralization grammar and screen-context freshness.
+  - id: L10N-DES-DEC-07
+    decision: Approve revision/audit attribution, optimistic concurrency and atomic-or-reconcilable synchronization.
+  - id: L10N-DES-DEC-08
+    decision: Reconcile the accepted supplied bilingual wordmark asset with the target implementation branch and design frames.
+  - id: L10N-DES-DEC-09
+    decision: Preserve DEC-004 as open wherever exact Arabic scope or terminology lacks approval.
+  - id: L10N-DES-DEC-10
+    decision: After independent P0/P1 review, issue one bounded CD-018 design-successor lease; implementation remains separately gated.
+
+collision_safe_design_lease:
+  current_state: NOT_ISSUABLE
+  blockers:
+    - incorrect WA-DES-009/010 route meaning
+    - no governed route-specific screen and acceptance identity
+    - rejected CD-018 R1 and no returned accepted R2
+    - open persona, disclosure, placeholder, concurrency, sync and wordmark contracts
+    - no independent current runtime certification
+  future_candidate_after_all_stops:
+    writer: Claude Design
+    editable_target: exactly one CD-018 R2 successor
+    predecessor_context:
+      - rejected CD-018 R1 findings
+      - current /admin/localization source
+    WA_DES_009_010: read_only_lookup_predecessor_not_localization_canvas
+    shared_shell: read_only
+    no_new_identity: true_unless_L10N-DES-DEC-02_approves_change_control
+    prohibited_parallel_writers:
+      - any writer touching the same CD-018 successor
+      - any writer changing WA-DES-009/010 while mapping correction is pending
+      - any writer touching shared Admin shell or the same evidence index
+  implementation_boundary: >-
+    Design acceptance grants no code lease. A later implementation lease must
+    name exact route, manager, action, i18n, sync, migration, test and evidence
+    files and avoid every concurrently owned file.
+
+reviewer_recommendation:
+  recommendation: RETURN_FOR_MAPPING_AND_DESIGN_AUTHORITY_CORRECTION
+  recommended_action: CORRECT
+  BUILD: BLOCK
+  WIRE: BLOCK
+  UPDATE: BLOCK
+  CHANGE_DESIGN: REQUIRED_AFTER_IDENTITY_AND_CONTRACT_DECISIONS
+  sponsor_business_decision: >-
+    Keep the real Localization capability and its history. Do not force the
+    Reference Lists design onto it. Correct the mapping, govern one Localization
+    identity, return the rejected CD-018 package as a native evidence-backed R2,
+    settle role/disclosure/concurrency/sync/wordmark contracts, and independently
+    prove runtime behavior before any implementation lease.
+
+safe_follow_on:
+  task_id: M9-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-041
+  objective: >-
+    After a fresh collision check, read-only validate /admin/audit, ADM-AUDIT
+    or CD-019 authority, append-only/RLS truth, filters/detail/version/correlation
+    claims, privacy and export holds, responsive/RTL/accessibility states and
+    required handoff evidence.
+  constraints:
+    - Do not start if another active lane owns Admin Audit or CD-019 sources.
+    - Do not touch Localization, Notifications, Forms, Workflows, Risk, Planning or shared Admin shell.
+    - No live design, product, test, data, mapping, branch, lease, main, setup/Inspection or stash mutation.

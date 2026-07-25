@@ -1,0 +1,342 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-PERMISSION-AUDIT-012
+status: INDEPENDENT_REVIEW_COMPLETE_READ_ONLY
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+review_scope: "M11 virtual-session permission, neutral-error and audit boundaries"
+
+authority:
+  requirements: [CR-337..CR-356]
+  acceptance:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  permission_contracts:
+    - RBAC-007
+    - RBAC-008
+    - RBAC-009
+    - RBAC-011
+    - RBAC-012
+    - RBAC-014
+  process: P06B
+  transitions:
+    - STM-VIR-001
+    - STM-VIR-002
+    - STM-VIR-003
+  sources:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/domain/process_catalog.yaml
+    - product-contract/domain/state_transitions.csv
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0018_w4_notifications_reviews.sql
+    - supabase/migrations/0021_fix_broad_rls.sql
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715170000_cd041_verified_transition_guard.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+
+current_access_map:
+  planner:
+    route_read: >-
+      Reads all RLS-visible virtual sessions and participants through the staff
+      role allowlists.
+    allowed_by_current_system:
+      - "Schedule sessions and insert participants."
+      - "Reschedule, open waiting room, mark join, close and append timeline events."
+      - "Request, verify and inspect OTP status."
+      - "Read the session-scoped audit RPC and the global audit_events table."
+      - "Directly insert/update/delete participant rows."
+      - "Directly append arbitrary event names/details through vs_append_event."
+      - "Use beginRemote's RBAC-009 fallback to change visit/session execution state."
+    authority_alignment:
+      scheduling_and_management: PARTIALLY_ALIGNED_WITH_RBAC_007
+      execution_start: OVERBROAD
+      otp_and_participant_mutation: OVERBROAD_OR_INSUFFICIENT_AUTHORITY
+
+  operations:
+    route_read: >-
+      Reads all RLS-visible virtual sessions and participants through the staff
+      role allowlists.
+    allowed_by_current_system:
+      - "Every planner capability listed above."
+      - "Update an existing inspection.started_at through the broad inspections_update policy."
+      - "Use beginRemote's fallback to update visit, session and inspection execution facts."
+    authority_alignment:
+      operational_management: PARTIALLY_ALIGNED_WITH_RBAC_008
+      inspection_execution: OVERBROAD_AGAINST_INSPECTOR_ONLY_CR_355
+
+  reviewer:
+    route_read: >-
+      Reads virtual sessions and participants, session-scoped audit output and
+      the global audit_events table.
+    allowed_by_current_system:
+      - "Request and verify OTP and read OTP status."
+      - "Directly insert/update/delete participant rows, including joined_at, verified_at and verification_record."
+      - "Invoke joinParticipant and persist participant joined_at before the session update is denied."
+      - "Invoke beginRemote and update an existing inspection.started_at before later visit/session mutations are denied."
+    denied_by_current_system:
+      - "Direct virtual_sessions update through vs_write."
+      - "vs_mark_session_verified transition, proven by the existing reviewer negative test."
+    authority_alignment:
+      audit_read_for_CR_348_CR_353: ALIGNED_IN_INTENT
+      mutation: >-
+        OVERBROAD. CR-348 and CR-353 give Reviewer read/audit outcomes with no
+        user mutation action; RBAC-011 forbids editing inspector content.
+
+  assigned_inspector:
+    route_read: "Own assigned visit/session through is_assigned_inspector."
+    allowed_by_current_system:
+      - "Schedule, reschedule, open waiting room, mark join, close and begin."
+      - "Request/verify OTP and read OTP status."
+      - "Read the session-scoped audit RPC."
+      - "Directly insert/update/delete participant rows."
+      - "Directly append arbitrary timeline events."
+    authority_alignment:
+      governed_actions: MOSTLY_ALIGNED_WITH_CR_337_TO_CR_356_AND_RBAC_009
+      direct_participant_and_event_DML: OVERBROAD_BYPASS_OF_GOVERNED_ACTIONS
+
+  unassigned_inspector:
+    intended: "No access to unassigned visits under RBAC-009."
+    denied_by_current_system:
+      - "Session SELECT after 0021."
+      - "Participant SELECT/UPDATE after 0021."
+      - "OTP request/verify/status after 0023/20260715180000."
+      - "Session audit RPC after 20260715190000."
+    overbroad_path: >-
+      virtual_sessions INSERT remains governed by 0002's FOR ALL policy with
+      WITH CHECK (true). For INSERT, the role-based USING expression is not the
+      row check, so an authenticated unassigned user can attempt/create a session
+      for a known visit ID even though the inserted row is not subsequently
+      selectable.
+
+  factory_representative:
+    canonical_boundary: >-
+      RBAC-014 allows Join/Verify/Provide evidence/Respond for the representative's
+      own appointment/session and forbids internal review/admin data.
+    current_implementation: >-
+      No Supabase Auth principal, participant-owned token or external
+      representative route is implemented. The representative is a database row;
+      staff/assigned inspector operates OTP on the representative's behalf.
+    classification: UNDERBROAD_AND_BOUNDARY_BLOCKED
+    blocker: >-
+      DEC-005/RBAC-014 final factory-facing boundary remains a product decision.
+      Do not invent credentials, portal access or participant tokens in this audit.
+
+confirmed_findings:
+  - finding_id: M11-PERM-001
+    severity: P0
+    classification: OVERBROAD_SESSION_INSERT
+    evidence:
+      - "supabase/migrations/0002_rbac_audit.sql:79-80 defines vs_write FOR ALL with WITH CHECK (true)."
+      - "supabase/migrations/0021_fix_broad_rls.sql replaces vs_read but does not replace vs_write."
+      - "apps/web/src/app/(app)/virtual/actions.ts:16-47 checks only authentication and relies on RLS for role authority."
+    impact: >-
+      An authenticated user outside planner/ops/assigned-inspector scope can
+      create or cause an invisible partial virtual session for a known visit.
+    required_boundary: >-
+      010 must enforce planner/ops/assigned-inspector authorization inside the
+      atomic RPC and a forward-only migration must correct the INSERT policy.
+
+  - finding_id: M11-PERM-002
+    severity: P0
+    classification: OTP_AND_JOIN_BYPASS_BY_DIRECT_PARTICIPANT_DML
+    evidence:
+      - "supabase/migrations/0021_fix_broad_rls.sql:29-42 grants vp_rw FOR ALL to ops/reviewer/auditor/compliance_admin/planner/assigned inspector."
+      - "virtual_participants includes joined_at, verified_at and verification_record."
+      - "RLS restricts rows but not columns or governed mutation paths."
+    impact: >-
+      Authorized readers, including Reviewer, can directly set verification/join
+      facts or delete participants without using OTP/join RPC semantics. Generic
+      DML audit does not make the bypass lawful.
+    required_boundary: >-
+      Separate participant SELECT from mutation policies; permit verification
+      and join changes only through governed RPCs/actions with role, state and
+      column guards.
+
+  - finding_id: M11-PERM-003
+    severity: P0
+    classification: REVIEWER_MUTATION_EXCEEDS_REQUIREMENT
+    evidence:
+      - "CR-348 and CR-353 list Reviewer with no user action and audit/history outputs."
+      - "RBAC-011 is review-decision scope and forbids editing inspector content."
+      - "OTP RPC allowlists and vp_rw include reviewer."
+    impact: >-
+      Reviewer can initiate/verify identity and directly change participant
+      execution facts, exceeding the M11 reviewer role.
+    disposition: >-
+      RETURN for permission correction or explicit sponsor authority. Do not
+      infer that audit visibility authorizes execution mutation.
+
+  - finding_id: M11-PERM-004
+    severity: P0
+    classification: NON_INSPECTOR_BEGIN_AND_PARTIAL_STATE
+    evidence:
+      - "CR-355 assigns Start Inspection to Inspector."
+      - "apps/web/src/app/(app)/virtual/[id]/actions.ts:199-210 catches RBAC-009 failure and performs a direct visit CAS fallback for planner/ops."
+      - "The action ignores inspection.started_at update failures and CAS failures, then continues to session advance/redirect."
+      - "Reviewer can update inspections through 0024 but cannot update visit/session, producing a different partial state."
+    impact: >-
+      Planner/ops can bypass the inspector-only transition authority; reviewer,
+      planner or transient failures can leave inspection, visit and session
+      states inconsistent while the action redirects as if execution began.
+    required_boundary: >-
+      Remove the non-inspector workflow fallback. One inspector-authorized
+      transactional transition must govern inspection, visit and session state.
+
+  - finding_id: M11-PERM-005
+    severity: P0
+    classification: SENSITIVE_OTP_HASH_EXPOSED_THROUGH_AUDIT_SEAM
+    evidence:
+      - "supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql:22-34 stores the full participant UPDATE row, including verification_record, in audit_events.after_state."
+      - "supabase/migrations/20260715190000_cd042_audit_read_seam.sql:33-44 returns after_state unredacted as detail."
+      - "The OTP status migration explicitly states a six-digit code hash must never reach the client."
+    impact: >-
+      Assigned inspector and staff callers of vs_audit_trail can receive a
+      brute-forceable code_hash and other verification internals.
+    required_boundary: >-
+      Redact verification secrets from audit read output while preserving the
+      immutable source audit record; add a test asserting code_hash and raw
+      verification_record are absent.
+
+  - finding_id: M11-PERM-006
+    severity: P1
+    classification: FORGEABLE_TIMELINE_SEMANTICS
+    evidence:
+      - "vs_append_event accepts arbitrary p_event and p_detail."
+      - "Execution is granted to authenticated and relies only on row RLS."
+    impact: >-
+      Planner, ops or assigned inspector can append arbitrary event claims that
+      look like governed session history.
+    required_boundary: >-
+      Restrict event creation to governed transition RPCs or an approved event
+      allowlist with state/actor guards. Do not invent new event names.
+
+  - finding_id: M11-PERM-007
+    severity: P0
+    classification: JOIN_ACTION_PARTIAL_SUCCESS_AND_FALSE_CONFIRMATION
+    evidence:
+      - "joinParticipant updates joined_at first."
+      - "The subsequent virtual_sessions update at actions.ts:113-114 ignores both error and zero-row result."
+      - "The action can return '<name> joined' after only the participant mutation."
+    impact: >-
+      Caller sees success while canonical session state may remain unchanged;
+      audit/timeline facts can disagree.
+    required_boundary: "Make participant join, session advance and semantic event atomic."
+
+  - finding_id: M11-PERM-008
+    severity: P1
+    classification: NON_NEUTRAL_EXISTENCE_ORACLES
+    evidence:
+      - "OTP RPCs return 'participant not found' before authorization but RBAC-014 for an existing unauthorized participant."
+      - "vp_otp_status returns not_found before authorization."
+      - "vs_audit_trail returns session not found before authorization."
+    impact: "Direct RPC callers can distinguish nonexistent from existing out-of-scope identifiers."
+    required_boundary: "Use one neutral not-found-or-out-of-scope response at the security boundary."
+
+audit_boundary:
+  confirmed_present:
+    - "Generic append-only INSERT/UPDATE/DELETE triggers cover virtual_sessions and virtual_participants."
+    - "OTP_SENT, OTP_VERIFIED and OTP_FAILED semantic events are inserted explicitly."
+    - "closeSession writes closed state and semantic timeline event in one row update."
+    - "vs_audit_trail is session-scoped by object IDs."
+  missing_or_unproven:
+    - "No test proves audit read output redacts code_hash/verification_record."
+    - "No test proves direct participant DML cannot bypass join/verification semantics; it currently can."
+    - "No test proves unauthorized session INSERT is denied; current policy is overbroad."
+    - "No runtime matrix covers planner/ops/reviewer/assigned/unassigned action permissions."
+    - "No test proves planner/ops/reviewer cannot begin remote execution."
+    - "No test covers neutral not-found/out-of-scope equality."
+    - "Unauthorized attempts are not recorded as audit evidence; the contract does not currently define whether every denial must be audited, so this remains INSUFFICIENT_AUTHORITY rather than an invented requirement."
+  integrity_gaps:
+    - "scheduleSession is non-atomic; owned by 010."
+    - "joinParticipant is non-atomic and can return false success."
+    - "openWaitingRoom/reschedule use separate state/timeline writes; generic DML audit remains, but semantic timeline can be missing."
+    - "beginRemote spans inspection, visit, session and timeline writes without one atomic boundary."
+
+test_coverage_map:
+  proven:
+    - "Assigned inspector verified transition and integration path."
+    - "Reviewer denied by vs_mark_session_verified."
+    - "Closed-session immutability and stale-state boundaries."
+    - "Unassigned inspector denied by vp_otp_status."
+    - "Unassigned inspector denied by vs_audit_trail."
+    - "Planner can read OTP status and audit trail."
+  missing:
+    - "vp_request_otp and vp_verify_otp authorization matrix; already returned in 009."
+    - "virtual_sessions INSERT attack by unassigned inspector and Reviewer."
+    - "Direct participant verified_at/joined_at/delete attack by Reviewer and other broad roles."
+    - "Role matrix for schedule/reschedule/wait/join/close/begin."
+    - "Begin partial-state negative cases for planner, ops and reviewer."
+    - "vs_append_event arbitrary-event rejection."
+    - "Audit secret-redaction assertion."
+    - "Neutral-error equivalence for missing versus out-of-scope IDs."
+    - "Factory representative own-session access; blocked because no representative principal/token contract exists."
+
+recommended_lease_routing:
+  existing_010:
+    include:
+      - M11-PERM-001
+      - "Atomic scheduling authorization and rollback proof."
+    exclude:
+      - "Execution start, participant DML, audit redaction and list filtering."
+  existing_011:
+    include:
+      - "Execution-window rule only."
+    exclude:
+      - M11-PERM-004
+  new_permission_lease_required:
+    suggested_id: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    scope:
+      - M11-PERM-002
+      - M11-PERM-003
+      - M11-PERM-008
+      - "Exact role/action/RPC/RLS negative matrix."
+  new_transition_lease_required:
+    suggested_id: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    scope:
+      - M11-PERM-004
+      - M11-PERM-007
+      - "Join and begin transactional state integrity."
+  new_audit_lease_required:
+    suggested_id: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    scope:
+      - M11-PERM-005
+      - M11-PERM-006
+      - "Secret redaction and governed semantic-event creation."
+  sponsor_boundary:
+    scope: "Factory representative principal/own-session access under RBAC-014 and DEC-005."
+  isolated_existing_decision:
+    packet: M11-CR337-LIST-SEMANTIC-DECISION-001
+    rule: "This permission audit does not change or broaden the CR-337 list decision."
+
+reviewer_recommendation: RETURN_FOR_PERMISSION_AND_AUDIT_CORRECTION
+completion_bar: >-
+  M11 cannot pass WA-M11-AC-002 or WA-M11-AC-005 while any P0 permission,
+  secret-disclosure, false-success or partial-state path remains open or
+  unevidenced.
+
+operational_state:
+  kimi_status: COMPLETED
+  kimi_active: false
+  dispatched: false
+  mac_state: MANUAL_UNLOCK_REQUIRED
+  writes:
+    application: false
+    tests: false
+    migrations: false
+    database: false
+    ui: false
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  role_matrix_checked: PASS
+  scope_isolation_checked: PASS

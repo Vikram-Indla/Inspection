@@ -1,0 +1,500 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+status: READ_ONLY_GAP_MAP_REVALIDATED_NO_TEST_OR_LEASE_EXECUTION
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Map every one of the 31 future correction-acceptance rows to current reusable
+  test/evidence candidates, missing proof paths, and a proposed exact
+  non-overlapping future test-file owner. Existing evidence is pre-correction
+  and cannot certify the future M11 stack.
+
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  prior_gap_source: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  ownership_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  collision_preflight: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+  active_security_review: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
+  acceptance_harness: KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
+  planned_negative_matrix: KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+  unaccepted_test_return: KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+
+hard_boundary:
+  - "No test, product, application, database, remote DDL, migration, data, UI or seed write."
+  - "No dispatch, review 025 execution, branch/worktree change or lease issuance."
+  - "Every owner and path below is PROPOSED_NOT_ISSUED."
+  - "Existing source-only or historical evidence is never promoted to runtime certification."
+  - "Zero change to the 478-row completion count."
+
+current_candidate_asset_catalog:
+  A01:
+    path: apps/web/e2e/cd-041-virtual-backend.spec.ts
+    sha256: 22da73947435f4b7491ec974884eb55d427128e58acccdf091fdfe7bda220721
+    kind: SOURCE_CONTRACT_TEST
+    reusable_for: "Verified-transition wiring and no client-only verified-state update."
+    limitation: "No final function catalog/ACL, multi-persona, concurrency or post-013 stack proof."
+  A02:
+    path: apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+    sha256: 438eafa6f14d61b7182bb399daeb63acf65fac26f4500abb276099998d8559e4
+    kind: DRIVEN_BROWSER_AND_REST
+    reusable_for: "Begin-after-verification positive path, Reviewer denial and closed-session immutability."
+    limitation: "Uses legacy direct-DML fixtures and dev-code behavior; does not prove final governed creation/OTP/permission stack."
+  A03:
+    path: apps/web/e2e/cd-042-otp-status-authz.spec.ts
+    sha256: 88906bf0ec39672203cf0d93c1a46355c8966cd0c00b9fa60d2b0d92380ca3c8
+    kind: DRIVEN_RPC_AUTHORIZATION
+    reusable_for: "Unassigned-caller denial harness shape."
+    limitation: "Planner-positive OTP status contradicts 022 assigned-Inspector-only OTP authority and must not be retained as expected behavior."
+  A04:
+    path: apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    sha256: f87c7328b4796c138259b7ec94583200e77d1493eba655382bf473cbb7fbd910
+    kind: DRIVEN_AUDIT_RPC
+    reusable_for: "Session audit scoping and unauthorized-caller denial harness shape."
+    limitation: "Planner-positive legacy seam and OTP_SENT read do not prove raw-secret denial, safe projection, all-role policy closure or historical integrity."
+  A05:
+    path: apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+    sha256: ac1dc6fcc59ca98d2dc83497bcc3934030acf042c2b1753e3c6e29f968890b06
+    kind: DRIVEN_BROWSER_BOUNDARY
+    reusable_for: "Closed immutability, offline UI stop and one stale-close conflict."
+    limitation: "Does not coordinate database transactions or prove shared lock order, rollback atomicity or zero-row behavior."
+  A06:
+    path: apps/web/e2e/neutral-error-sweep.spec.ts
+    sha256: 15df88d82e10c5e7fad705a7679b40b71a0a881996d0632a3c21f17731c9ea09
+    kind: SOURCE_ERROR_REDACTION_TEST
+    reusable_for: "Raw provider text not rendered from existing virtual-session actions."
+    limitation: "Does not prove identical missing/out-of-scope status/token/body at the database and application boundaries."
+  A07:
+    path: product-contract/evidence/B6-EV-001-otp-flow.txt
+    sha256: eb99e198e1b9fe3cffefdceebf53a3fd26e0cc81aa78fd67324e21fe4d2e8613
+    kind: HISTORICAL_OTP_EVIDENCE
+    reusable_for: "Candidate assertions for attempts, cooldown, resend, lockout and event cardinality."
+    limitation: "Explicitly uses a dev provider/code and is not acceptable final no-secret/provider evidence."
+  A08:
+    path: product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
+    sha256: f2085ed8dbff56fdebcd08591d68f459eaa6575ef67e9c312b15f601b3d39a68
+    kind: HISTORICAL_LIVE_GATE
+    reusable_for: "Evidence format and verified-transition availability history."
+    limitation: "Predates the corrected stack and cannot prove final migrations, permissions or audit safety."
+  A09:
+    path: product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md
+    sha256: 8559ce3abc7b6c85f247869a4af3f28e78f82be5509a226fe7474988b332570c
+    kind: HISTORICAL_REGRESSION_EVIDENCE
+    reusable_for: "Candidate neutral-copy and no raw-provider-text assertions."
+    limitation: "Does not cover M11 anti-enumeration pairs or corrected RPCs."
+  A10:
+    path: product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016.yaml
+    sha256: 0fc12cc064d5c5df69f05a960ecd8736c6f4639a58592337b1b1cdd3dadda6ca
+    kind: PLANNED_28_CASE_MATRIX
+    reusable_for: "Authorized, unauthorized, rollback, concurrency, audit, secret and neutral proof shapes."
+    limitation: "Not implemented or executed; excludes 011 and predates the final 31-row acceptance harness."
+  A11:
+    path: product-contract/operationalization/coordination/batches/KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001.yaml
+    sha256: d9857f77523c03e00d1c011bdafe0c0ab44cbfaeb11b4923c5c355d5470953db
+    kind: UNACCEPTED_TEST_SPEC_RETURN
+    reusable_for: "Fixture isolation, deterministic OTP controls and atomicity characterization corrections."
+    limitation: "Still undispatched/unaccepted and cannot authorize any test implementation."
+
+current_truth:
+  rows_with_complete_current_proof: 0
+  rows_with_reusable_candidate_assets: 25
+  rows_with_no_direct_current_candidate: 6
+  severity_distribution:
+    P0: 16
+    P1: 9
+    CONTRADICTION: 6
+  missing_proof_distribution:
+    POSITIVE: 13
+    NEGATIVE: 18
+    UNAUTHORIZED: 17
+    CONCURRENCY: 14
+    AUDIT: 22
+    PROVIDER: 2
+  reason: >-
+    All current runtime/source evidence predates the corrected packet stack.
+    Several tests encode legacy Planner OTP/audit positives, direct table fixture
+    writes or dev_code behavior that the corrected stack must remove.
+
+proposed_future_test_file_leases:
+  status: PROPOSED_NOT_ISSUED
+  exclusivity_rule: "Each exact path has one owner; no implementation worker edits any proposed test file."
+  leases:
+    TEST-010:
+      owner: M11_SQL_010_QA_OWNER_TBD
+      exact_path: supabase/tests/m11_010_creation_atomicity_security.sql
+      scope: "Creation positive/negative/direct-DML/rollback/concurrency/audit proof."
+    TEST-011:
+      owner: M11_SQL_011_QA_OWNER_TBD
+      exact_path: supabase/tests/m11_011_window_actions_security.sql
+      scope: "Window boundaries, creation successor, reschedule, waiting, zero-row and join/reschedule race proof."
+    TEST-013:
+      owner: M11_SQL_013_QA_OWNER_TBD
+      exact_path: supabase/tests/m11_013_permission_otp_security.sql
+      scope: "Persona/DML/RLS/OTP/provider-blocked/concurrency/policy/index proof."
+    TEST-014:
+      owner: M11_SQL_014_QA_OWNER_TBD
+      exact_path: supabase/tests/m11_014_join_begin_atomicity.sql
+      scope: "Join/begin positive/negative/rollback/concurrency/event proof."
+    TEST-015:
+      owner: M11_SQL_015_QA_OWNER_TBD
+      exact_path: supabase/tests/m11_015_audit_neutral_security.sql
+      scope: "Raw-audit denial, safe projection/trigger, secret sentinel, neutral pairs, history and event proof."
+    TEST-CATALOG:
+      owner: M11_SECURITY_CATALOG_QA_OWNER_TBD
+      exact_path: supabase/tests/m11_stack_security_catalog.sql
+      scope: "proconfig/proacl/owner/dependency/pg_policy/table-ACL/trigger/index catalog proof."
+    TEST-ROLLOUT:
+      owner: M11_ROLLOUT_QA_OWNER_TBD
+      exact_path: apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+      scope: "Static expand/switch/quiesce/013→015 contract/recovery and ownership-manifest proof."
+    TEST-BROWSER:
+      owner: M11_STACK_BROWSER_QA_OWNER_TBD
+      exact_path: apps/web/e2e/m11-remediation-stack.spec.ts
+      scope: "Final ordinary-persona browser/RPC positive, unauthorized, neutral and regression proof."
+    TEST-PROVIDER:
+      owner: M11_PROVIDER_QA_OWNER_TBD
+      exact_path: apps/web/e2e/m11-provider-truth.spec.ts
+      scope: "Provider-unavailable fail-closed and separately authorized delivery proof."
+  collision_result: "Nine unique paths, nine exclusive proposed owners, zero path overlap."
+
+gap_classes:
+  POSITIVE:
+    missing:
+      - "Atomic authorized creation for each exactly authorized persona."
+      - "Inclusive window success for creation/reschedule/waiting/join/begin."
+      - "Assigned-Inspector join, OTP, verified, begin and close."
+      - "Reviewer/Auditor safe audit read and preserved global audit consumers."
+  NEGATIVE:
+    missing:
+      - "Before/after window, wrong state, stale revision, zero-row and forced rollback for every governed RPC."
+      - "Direct INSERT/UPDATE/DELETE denial across PUBLIC, anon and authenticated."
+      - "Missing/out-of-scope byte-equivalent responses for every governed public RPC."
+  UNAUTHORIZED:
+    missing:
+      - "Ordinary-session persona matrix across assigned/unassigned Inspector, Reviewer, Auditor, Planner and Operations."
+      - "No service_role, owner or BYPASSRLS proof substitution."
+  CONCURRENCY:
+    missing:
+      - "Duplicate creation, join/reschedule, begin/begin, request/request and verify/verify coordinated transactions."
+      - "Deterministic visit→session→participants UUID→inspection lock evidence and final cardinality."
+  AUDIT:
+    missing:
+      - "Secret sentinel across raw rows, safe projection, RPC JSON, DOM, logs and exported evidence."
+      - "Safe participant trigger ordering, one-event cardinality, rollback residue absence and historical checksum."
+      - "All-role raw policy denial and global maker-checker consumer regression."
+  PROVIDER:
+    missing:
+      - "No-provider runtime fail-closed without dev_code, secret seam or false delivery."
+      - "Transaction-local isolated OTP injection for engine proof."
+      - "Approved configured provider delivery evidence; impossible until provider authority and configuration exist."
+
+closure_row_map:
+  - id: M11-MIGSEC-001
+    severity: P0
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A01, A10]
+    current_status: PARTIAL_SOURCE_SHAPE_ONLY
+    missing_paths: [POSITIVE, UNAUTHORIZED, AUDIT]
+    proposed_test_leases: [TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_017, EXACT_FUNCTION_IDENTITIES_AND_DEPENDENCIES]
+  - id: M11-MIGSEC-002
+    severity: P0
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A02, A03, A04]
+    current_status: PARTIAL_RPC_DENIAL_NO_ACL_CATALOG
+    missing_paths: [UNAUTHORIZED, AUDIT]
+    proposed_test_leases: [TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_017, FINAL_FUNCTION_SIGNATURES]
+  - id: M11-MIGSEC-003
+    severity: P0
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: [A01, A02]
+    current_status: PARTIAL_SINGLE_FUNCTION_ONLY
+    missing_paths: [POSITIVE, UNAUTHORIZED, NEGATIVE]
+    proposed_test_leases: [TEST-CATALOG, TEST-010, TEST-014]
+    impossible_until: [CORRECTED_010_013_014, EXACT_FUNCTION_OWNER]
+  - id: M11-MIGSEC-004
+    severity: P0
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A04]
+    current_status: LEGACY_SAFE_SEAM_SHAPE_ONLY
+    missing_paths: [UNAUTHORIZED, AUDIT]
+    proposed_test_leases: [TEST-015, TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_015, GLOBAL_AUDIT_CONSUMER_INVENTORY]
+  - id: M11-MIGSEC-005
+    severity: P0
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A04, A07]
+    current_status: CURRENT_EVIDENCE_EXPOSES_LEGACY_SECRET_RISK
+    missing_paths: [AUDIT, CONCURRENCY]
+    proposed_test_leases: [TEST-015, TEST-CATALOG]
+    impossible_until: [CORRECTED_015_SAFE_TRIGGER, SECRET_SENTINEL_FIXTURE]
+  - id: M11-MIGSEC-006
+    severity: P0
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A10]
+    current_status: PLANNED_NOT_EXECUTED
+    missing_paths: [POSITIVE, CONCURRENCY, AUDIT]
+    proposed_test_leases: [TEST-ROLLOUT, TEST-CATALOG]
+    impossible_until: [CORRECTED_013_015_017, EXACT_OTP_SIGNATURES]
+  - id: M11-MIGSEC-007
+    severity: P0
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: [A07, A10]
+    current_status: LEGACY_SEQUENTIAL_ONLY
+    missing_paths: [CONCURRENCY, NEGATIVE, AUDIT]
+    proposed_test_leases: [TEST-013, TEST-015]
+    impossible_until: [CORRECTED_013_015, ISOLATED_OTP_INJECTION_AUTHORIZED]
+  - id: M11-MIGSEC-008
+    severity: P0
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A10]
+    current_status: SPECIFICATION_ONLY
+    missing_paths: [POSITIVE, NEGATIVE, CONCURRENCY]
+    proposed_test_leases: [TEST-ROLLOUT, TEST-BROWSER]
+    impossible_until: [CORRECTED_017, INTEGRATED_STACK_AND_QUIESCE_REHEARSAL]
+  - id: M11-MIGSEC-009
+    severity: P1
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: []
+    current_status: ABSENT
+    missing_paths: [UNAUTHORIZED, NEGATIVE, AUDIT]
+    proposed_test_leases: [TEST-CATALOG, TEST-013]
+    impossible_until: [CORRECTED_013, FINAL_POLICY_AND_TABLE_ACL_MANIFEST]
+  - id: M11-MIGSEC-010
+    severity: P1
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: []
+    current_status: ABSENT
+    missing_paths: [UNAUTHORIZED, NEGATIVE]
+    proposed_test_leases: [TEST-CATALOG, TEST-013]
+    impossible_until: [CORRECTED_013_017, FINAL_HELPER_DEPENDENCY_GRAPH]
+  - id: M11-MIGSEC-011
+    severity: P1
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A02, A04, A05, A07]
+    current_status: PARTIAL_UNCORRELATED_EVENTS
+    missing_paths: [CONCURRENCY, AUDIT, NEGATIVE]
+    proposed_test_leases: [TEST-015, TEST-010, TEST-014]
+    impossible_until: [CORRECTED_010_014_015, SAFE_TRIGGER_ORDER]
+  - id: M11-MIGSEC-012
+    severity: P1
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A05, A10]
+    current_status: PARTIAL_STALE_UI_ONLY
+    missing_paths: [NEGATIVE, CONCURRENCY, AUDIT]
+    proposed_test_leases: [TEST-ROLLOUT, TEST-BROWSER]
+    impossible_until: [CORRECTED_017, PRE_POST_CONTRACT_DISABLE_REHEARSAL]
+
+  - id: "021-P0-01"
+    severity: P0
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: [A02, A03]
+    current_status: CONTRADICTORY_PLANNER_POSITIVE_EXISTS
+    missing_paths: [POSITIVE, UNAUTHORIZED]
+    proposed_test_leases: [TEST-013, TEST-BROWSER]
+    impossible_until: [CORRECTED_013, ASSIGNED_INSPECTOR_OTP_FIXTURE]
+  - id: "021-P0-02"
+    severity: P0
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A06, A07, A09]
+    current_status: LEGACY_DEV_PROVIDER_AND_UI_REDACTION_ONLY
+    missing_paths: [PROVIDER, NEGATIVE, AUDIT]
+    proposed_test_leases: [TEST-PROVIDER, TEST-013, TEST-BROWSER]
+    impossible_until: [CORRECTED_013_017, APPROVED_PROVIDER_FOR_LIVE_DELIVERY]
+  - id: "021-P0-03"
+    severity: P0
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A04]
+    current_status: NO_ALL_ROLE_RAW_DENIAL_PROOF
+    missing_paths: [UNAUTHORIZED, AUDIT]
+    proposed_test_leases: [TEST-015, TEST-BROWSER]
+    impossible_until: [CORRECTED_015, FINAL_RAW_AUDIT_POLICIES]
+  - id: "021-P0-04"
+    severity: P0
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: []
+    current_status: ABSENT
+    missing_paths: [AUDIT, POSITIVE]
+    proposed_test_leases: [TEST-015, TEST-CATALOG]
+    impossible_until: [CORRECTED_015, SAFE_TRIGGER_INSTALLED_BEFORE_OTP]
+  - id: "021-P0-05"
+    severity: P0
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: [A02]
+    current_status: ORDINARY_PERSONA_ONLY_NO_PUBLIC_ANON_MATRIX
+    missing_paths: [UNAUTHORIZED, NEGATIVE]
+    proposed_test_leases: [TEST-013, TEST-CATALOG]
+    impossible_until: [CORRECTED_013, FINAL_TABLE_ACLS]
+  - id: "021-P0-06"
+    severity: P0
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A06, A09]
+    current_status: PROVIDER_TEXT_REDACTION_ONLY
+    missing_paths: [NEGATIVE, UNAUTHORIZED]
+    proposed_test_leases: [TEST-015, TEST-BROWSER]
+    impossible_until: [CORRECTED_010_011_013_014_015, FINAL_PUBLIC_RPC_SET]
+  - id: "021-P0-07"
+    severity: P0
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: []
+    current_status: ABSENT
+    missing_paths: [CONCURRENCY, NEGATIVE]
+    proposed_test_leases: [TEST-ROLLOUT]
+    impossible_until: [CORRECTED_017, QUIESCE_DRAIN_REHEARSAL_AUTHORITY]
+  - id: "021-P0-08"
+    severity: P0
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A04, A08]
+    current_status: SESSION_LOCAL_ONLY_NO_GLOBAL_CONSUMER_PROOF
+    missing_paths: [POSITIVE, AUDIT]
+    proposed_test_leases: [TEST-015, TEST-BROWSER]
+    impossible_until: [CORRECTED_015, GLOBAL_AUDIT_CONSUMER_INVENTORY]
+  - id: "021-P1-01"
+    severity: P1
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A01]
+    current_status: SOURCE_PATTERN_NO_DEPENDENCY_CATALOG
+    missing_paths: [UNAUTHORIZED, AUDIT]
+    proposed_test_leases: [TEST-CATALOG]
+    impossible_until: [CORRECTED_017, FINAL_FUNCTION_DEPENDENCY_GRAPH]
+  - id: "021-P1-02"
+    severity: P1
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A03, A04]
+    current_status: LEGACY_PERSONA_EXPECTATIONS_CONTRADICT_022
+    missing_paths: [POSITIVE, UNAUTHORIZED]
+    proposed_test_leases: [TEST-010, TEST-011, TEST-013, TEST-BROWSER]
+    impossible_until: [CORRECTED_017, PLANNER_OPERATIONS_ACTION_AUTHORITY]
+  - id: "021-P1-03"
+    severity: P1
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A05, A10]
+    current_status: ONE_STALE_CLOSE_NOT_LOCK_ORDER
+    missing_paths: [CONCURRENCY]
+    proposed_test_leases: [TEST-010, TEST-011, TEST-013, TEST-014]
+    impossible_until: [CORRECTED_010_011_013_014_017, COORDINATED_TRANSACTION_HARNESS]
+  - id: "021-P1-04"
+    severity: P1
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: []
+    current_status: ABSENT
+    missing_paths: [AUDIT]
+    proposed_test_leases: [TEST-CATALOG]
+    impossible_until: [CORRECTED_017, EXACT_OWNER_AND_EXTENSION_SCHEMA]
+  - id: "021-P1-05"
+    severity: P1
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: [A03]
+    current_status: ONE_RPC_ZERO_DENIAL_NO_POLICY_INDEX_PROOF
+    missing_paths: [NEGATIVE, AUDIT]
+    proposed_test_leases: [TEST-013, TEST-CATALOG]
+    impossible_until: [CORRECTED_013, FINAL_POLICY_PREDICATES_AND_INDEXES]
+
+  - id: "024-X01"
+    severity: CONTRADICTION
+    primary_packet: KIMI-M11-ATOMIC-FIX-LEASE-010
+    current_candidates: [A01, A10, A11]
+    current_status: NO_ATOMIC_CREATION_RUNTIME_PROOF
+    missing_paths: [POSITIVE, UNAUTHORIZED, CONCURRENCY, AUDIT, NEGATIVE]
+    proposed_test_leases: [TEST-010, TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_009R_010, ATOMIC_CREATION_RPC]
+  - id: "024-X02"
+    severity: CONTRADICTION
+    primary_packet: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    current_candidates: []
+    current_status: ABSENT
+    missing_paths: [POSITIVE, NEGATIVE, UNAUTHORIZED, CONCURRENCY, AUDIT]
+    proposed_test_leases: [TEST-011, TEST-BROWSER]
+    impossible_until: [CORRECTED_011, PLANNER_OPERATIONS_ACTION_AUTHORITY]
+  - id: "024-X03"
+    severity: CONTRADICTION
+    primary_packet: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    current_candidates: [A02, A05, A10]
+    current_status: PARTIAL_BEGIN_UI_NO_ATOMIC_JOIN_BEGIN
+    missing_paths: [POSITIVE, UNAUTHORIZED, CONCURRENCY, AUDIT, NEGATIVE]
+    proposed_test_leases: [TEST-014, TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_014, FINAL_JOIN_BEGIN_RPCS]
+  - id: "024-X04"
+    severity: CONTRADICTION
+    primary_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    current_candidates: [A02, A03, A07, A10]
+    current_status: LEGACY_OTP_AND_DIRECT_DML_ASSUMPTIONS
+    missing_paths: [POSITIVE, UNAUTHORIZED, CONCURRENCY, AUDIT, PROVIDER, NEGATIVE]
+    proposed_test_leases: [TEST-013, TEST-CATALOG, TEST-PROVIDER, TEST-BROWSER]
+    impossible_until: [CORRECTED_013_015, FINAL_OTP_HANDOFF, PROVIDER_AUTHORITY_FOR_LIVE_DELIVERY]
+  - id: "024-X05"
+    severity: CONTRADICTION
+    primary_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    current_candidates: [A04, A06, A07, A09, A10]
+    current_status: LEGACY_AUDIT_SEAM_WITH_SECRET_RISK
+    missing_paths: [UNAUTHORIZED, AUDIT, CONCURRENCY, NEGATIVE]
+    proposed_test_leases: [TEST-015, TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_015, GLOBAL_AUDIT_CONSUMER_INVENTORY, SAFE_TRIGGER]
+  - id: "024-X06"
+    severity: CONTRADICTION
+    primary_packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    current_candidates: [A10]
+    current_status: PLANNED_MATRIX_NO_CORRECTED_ROLLOUT
+    missing_paths: [POSITIVE, NEGATIVE, CONCURRENCY, AUDIT]
+    proposed_test_leases: [TEST-ROLLOUT, TEST-CATALOG, TEST-BROWSER]
+    impossible_until: [CORRECTED_017, CORRECTED_009R_ACCEPTED, INTEGRATED_STACK]
+
+impossibility_summary:
+  corrected_packets_required_for_all_rows: true
+  corrected_009r_and_single_QA_owner_required_for_runtime_certification: true
+  provider_authority:
+    rows: ["021-P0-02", "024-X04"]
+    rule: "Fail-closed/no-secret behavior can be tested without a provider; successful live delivery cannot."
+  unresolved_persona_authority:
+    rows: ["021-P1-02", "024-X01", "024-X02"]
+    rule: "Planner/Operations positive expectations remain impossible until exact canonical action authority is cited."
+  unresolved_function_owner_or_extension_schema:
+    rows: [M11-MIGSEC-001, M11-MIGSEC-002, M11-MIGSEC-003, "021-P1-04"]
+  global_audit_inventory:
+    rows: [M11-MIGSEC-004, M11-MIGSEC-005, "021-P0-03", "021-P0-04", "021-P0-08", "024-X05"]
+  quiesce_and_integrated_stack:
+    rows: [M11-MIGSEC-006, M11-MIGSEC-008, M11-MIGSEC-012, "021-P0-07", "024-X06"]
+
+evidence_capture_contract:
+  future_only:
+    - "Fresh isolated PostgreSQL/Supabase-compatible database per run."
+    - "Ordinary authenticated persona sessions; no service_role/BYPASSRLS proof."
+    - "Unique run_id fixture graph and deterministic teardown."
+    - "Before/after rows, affected counts, stable token/body, catalog rows, lock ordering and final cardinality."
+    - "Audit secret sentinel across raw table access, safe projection, RPC JSON, DOM, logs and export."
+    - "Correlated browser, SQL, catalog and audit evidence hashes."
+  storage_rule: "Evidence location and ownership must follow docs/README.md and docs/DOCUMENTATION_STORAGE_POLICY.md at future lease start."
+
+read_only_verdict:
+  current_stack_certifiable_against_31_rows: false
+  current_rows_proven: 0
+  proposed_test_leases_issued: false
+  tests_written_or_run: false
+  review_025_executed: false
+  requirement_completion_change: 0
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  closure_rows_expected: 31
+  closure_rows_mapped: 31
+  closure_row_ids_unique: PASS
+  reusable_candidate_rows: 25
+  no_direct_candidate_rows: 6
+  severity_distribution_checked: PASS
+  missing_proof_distribution_checked: PASS
+  current_assets_fingerprinted: PASS
+  gap_classes_complete: PASS
+  proposed_test_path_count: 9
+  proposed_file_paths_unique: PASS
+  owners_proposed_not_issued: PASS
+  impossible_rows_identified: PASS
+  review_025_not_executed: PASS
+  non_mutating_boundary_checked: PASS

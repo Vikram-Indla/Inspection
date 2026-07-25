@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .rl-wrap { max-width:860px; width:100%; margin:0 auto; padding:16px 18px 40px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); }
+  .rl-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; }
+  .rl-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:13px; padding:9px 16px; cursor:pointer; color:var(--text-secondary); border-inline-end:1px solid var(--border-input); min-height:42px; }
+  .rl-seg button:last-child { border-inline-end:0; }
+  .rl-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .rl-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .rl-row { display:flex; align-items:center; gap:12px; padding:13px 16px; border-block-end:1px solid var(--border-subtle); cursor:pointer; }
+  .rl-row:last-child { border-block-end:0; }
+  .rl-row:hover { background:var(--surface-secondary); }
+  .rl-ic { width:34px; height:34px; border-radius:9px; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; flex:none; }
+  .rl-open { border:0; background:none; color:var(--action-primary); font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
+  .doc-sec { padding:14px 18px; border-block-end:1px solid var(--border-subtle); }
+  .doc-sec:last-child { border-block-end:0; }
+  .doc-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+  .doc-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 22px; margin-top:8px; }
+  .doc-grid .v { font-size:13.5px; font-weight:600; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <button class="rl-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="rl-wrap">
+    <div class="rl-seg">
+      <button aria-pressed="{{ isRecords }}" onClick="{{ showRecords }}">{{ t.tabRecords }}</button>
+      <button aria-pressed="{{ isVisits }}" onClick="{{ showVisits }}">{{ t.tabVisits }}</button>
+    </div>
+
+    <sc-if value="{{ isRecords }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <p class="t-caption" style="margin:0;">{{ t.recordsHint }}</p>
+        <div class="card">
+          <sc-for list="{{ records }}" as="r" hint-placeholder-count="6">
+            <div class="rl-row" onClick="{{ r.open }}">
+              <span class="rl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:17px;height:17px;"><path d="M8 2h6l4 4v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v4h4"/></svg></span>
+              <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:14px;">{{ r.title }}</div><div class="t-caption"><span class="id-code">{{ r.no }}</span> · {{ r.date }}</div></div>
+              <span class="badge {{ r.badgeClass }}">{{ r.status }}</span>
+              <button class="rl-open">{{ t.openDoc }} ›</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isVisits }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <p class="t-caption" style="margin:0;">{{ t.visitsHint }}</p>
+        <div class="card">
+          <sc-for list="{{ visits }}" as="v" hint-placeholder-count="4">
+            <div class="rl-row" onClick="{{ v.open }}">
+              <span class="rl-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:17px;height:17px;"><path d="M3 9h18M3 5h18v14H3zM8 3v4M16 3v4"/></svg></span>
+              <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:14px;">{{ v.type }}</div><div class="t-caption"><span class="id-code">{{ v.no }}</span> · {{ v.date }} · {{ v.inspector }}</div></div>
+              <span class="badge {{ v.badgeClass }}">{{ v.outcome }}</span>
+              <button class="rl-open">{{ t.openDoc }} ›</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showDoc }}" hint-placeholder-val="{{ false }}">
+      <div class="card">
+        <div style="padding:16px 18px; border-block-end:1px solid var(--border-subtle); display:flex; align-items:flex-start; gap:14px;">
+          <div style="flex:1;"><div class="doc-k">{{ t.docLabel }}</div><div style="font-size:18px; font-weight:700; margin-top:2px;">{{ docTitle }}</div><div class="t-caption" style="margin-top:2px;">{{ t.headerSub }} · <span class="id-code">{{ docNo }}</span></div></div>
+          <span class="badge badge-completed">{{ t.signed }}</span>
+          <button class="btn btn-icon btn-ghost" onClick="{{ closeDoc }}" aria-label="{{ t.close }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:18px;height:18px;"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div class="doc-sec"><div class="doc-grid"><div><div class="doc-k">{{ t.dDate }}</div><div class="v">2026-07-20</div></div><div><div class="doc-k">{{ t.dInspector }}</div><div class="v">{{ t.inspectorVal }}</div></div></div></div>
+        <div class="doc-sec"><div class="doc-k">{{ t.dBody }}</div><div style="margin-top:8px; font-size:13.5px; line-height:1.6;">{{ docBody }}</div></div>
+        <div class="doc-sec" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-secondary">{{ t.downloadPdf }}</button>
+          <button class="btn btn-secondary">{{ t.print }}</button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:860,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", tab:"records", doc:null };
+  renderVals(){
+    const ar=this.state.lang==="ar", st=this.state;
+    const t = ar ? {
+      back:"رجوع", headerTitle:"مكتبة التقارير", headerSub:"شركة الأمل لتدريب العمال", theme:"الوضع", langBtnLabel:"EN",
+      tabRecords:"محاضر الزيارة", tabVisits:"زيارات المنشأة السابقة",
+      recordsHint:"المحاضر المُنشأة في هذه الزيارة — اضغط لعرض المستند.", visitsHint:"تقارير الزيارات السابقة لهذه المنشأة (تبويب ملف المنشأة).",
+      openDoc:"عرض المستند", docLabel:"تفاصيل التقرير", signed:"موقّع", close:"إغلاق",
+      dDate:"التاريخ", dInspector:"المفتش", inspectorVal:"عبدالله الشهري", dBody:"الملخّص", downloadPdf:"تنزيل PDF", print:"طباعة",
+      records:[
+        ["مذكرة استدعاء","47072301","2026-07-20","موقّع","badge-completed","استدعاء لاستكمال نواقص الترخيص الصناعي قبل تنفيذ الإجراء."],
+        ["محضر إثبات واقعة","47072302","2026-07-20","موقّع","badge-completed","توثيق الواقعة عند الوصول للموقع."],
+        ["محضر ضبط مخالفة","47072303","2026-07-20","موقّع","badge-major","مخالفتان مرصودتان مرتبطتان بالمواد النظامية."],
+        ["محضر سحب عينة","47072304","2026-07-20","موقّع","badge-completed","سحب عينة منتج لفحص المطابقة في المختبر."],
+        ["محضر إغلاق خط إنتاج","47072305","2026-07-20","بانتظار التوقيع","badge-warning","إغلاق خط التعبئة لعدم استيفاء اشتراطات السلامة."],
+        ["محضر إتلاف منتجات مخالفة","47072306","2026-07-20","موقّع","badge-completed","إتلاف مواد خام غير مطابقة وفق المحضر."],
+      ],
+      visits:[
+        ["زيارة رقابية","VS-39804","2026-04-12","عبدالله الشهري","معتمد","badge-completed"],
+        ["زيارة متابعة","VS-38122","2026-01-28","ريم الغامدي","معتمد","badge-completed"],
+        ["زيارة بلاغ","VS-37650","2025-11-03","تركي الغامدي","مرفوض","badge-critical"],
+        ["زيارة خدمية","VS-36901","2025-08-19","ناصر السعيد","معتمد","badge-completed"],
+      ],
+    } : {
+      back:"Back", headerTitle:"Reports library", headerSub:"Al-Amal Worker Training Co.", theme:"Theme", langBtnLabel:"AR",
+      tabRecords:"Visit records", tabVisits:"Prior establishment visits",
+      recordsHint:"Records created on this visit — tap to view the document.", visitsHint:"Prior visit reports for this establishment (establishment-file tab).",
+      openDoc:"Open document", docLabel:"Report details", signed:"Signed", close:"Close",
+      dDate:"Date", dInspector:"Inspector", inspectorVal:"Abdullah Al-Shehri", dBody:"Summary", downloadPdf:"Download PDF", print:"Print",
+      records:[
+        ["Summons memo","47072301","2026-07-20","Signed","badge-completed","Summons to complete industrial-license deficiencies before the action."],
+        ["Fact-finding record","47072302","2026-07-20","Signed","badge-completed","Incident documented on arrival at the site."],
+        ["Violation record","47072303","2026-07-20","Signed","badge-major","Two observed violations linked to statutory articles."],
+        ["Sample collection record","47072304","2026-07-20","Signed","badge-completed","Product sample collected for lab conformity testing."],
+        ["Production-line closure record","47072305","2026-07-20","Awaiting signature","badge-warning","Packaging line closed for unmet safety requirements."],
+        ["Destruction record","47072306","2026-07-20","Signed","badge-completed","Non-compliant raw materials destroyed per the record."],
+      ],
+      visits:[
+        ["Regulatory visit","VS-39804","2026-04-12","Abdullah Al-Shehri","Approved","badge-completed"],
+        ["Follow-up visit","VS-38122","2026-01-28","Reem Al-Ghamdi","Approved","badge-completed"],
+        ["Complaint visit","VS-37650","2025-11-03","Turki Al-Ghamdi","Rejected","badge-critical"],
+        ["Service visit","VS-36901","2025-08-19","Nasser Al-Saeed","Approved","badge-completed"],
+      ],
+    };
+    const openDoc=(title,no,body)=>this.setState({doc:{title,no,body}});
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      isRecords: st.tab==="records"?"true":"false", isVisits: st.tab==="visits"?"true":"false",
+      showRecords:()=>this.setState({tab:"records",doc:null}), showVisits:()=>this.setState({tab:"visits",doc:null}),
+      records: t.records.map(([title,no,date,status,badgeClass,body])=>({title,no,date,status,badgeClass, open:()=>openDoc(title,no,body)})),
+      visits: t.visits.map(([type,no,date,inspector,outcome,badgeClass])=>({type,no,date,inspector,outcome,badgeClass, open:()=>openDoc(type,no, ar?"مستند الزيارة المعتمد متاح للعرض والتنزيل.":"The approved visit document is available to view and download.")})),
+      showDoc: st.doc?"true":"false", docTitle: st.doc?.title||"", docNo: st.doc?.no||"", docBody: st.doc?.body||"",
+      closeDoc:()=>this.setState({doc:null}),
+    };
+  }
+}
+</script>
+</body>
+</html>

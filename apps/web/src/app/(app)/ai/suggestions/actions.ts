@@ -3,8 +3,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
-import { canDispose, isDispositionAllowed, isSuggestionSurfaceAllowed, type AiDisposition } from "@/lib/ai/suggestions";
-import { getGeminiProvider } from "@/lib/providers/ai-gemini";
+import { adapterMaySuggest, AI_INITIAL_DISPOSITION, canDispose, isDispositionAllowed, isSuggestionSurfaceAllowed, type AiDisposition } from "@/lib/ai/suggestions";
+import { geminiProviderState, getGeminiProvider } from "@/lib/providers/ai-gemini";
 
 // TASK-MVP2-M2-11-ASSISTIVE-AI-001 · MVP2-REQ-0056..0066,0217..0223 · CD-048.
 // Governed AI-suggestion actions (ai_dockets_v1 default OFF). AI is advisory only:
@@ -30,7 +30,7 @@ export async function proposeSuggestion(_: AiResult, formData: FormData): Promis
   if (!text) return { error: "Suggestion content is required." };
   if (!evidence_refs.length) return { error: "At least one evidence reference is required." };
   const { data, error } = await sb.from("ai_suggestions").insert({
-    surface, suggestion: { text, evidence_refs, clause_refs, confidence: null, confidence_status: "not_supplied" }, disposition: "proposed", provider_status: "unavailable",
+    surface, suggestion: { text, evidence_refs, clause_refs, confidence: null, confidence_status: "not_supplied" }, disposition: AI_INITIAL_DISPOSITION, provider_status: "unavailable",
   }).select("id").maybeSingle();
   if (error) { logProviderError("ai propose", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (data?.id) await sb.from("ai_events").insert({ suggestion_id: data.id, event_type: "proposed", actor: user.id, payload: { surface } });
@@ -53,12 +53,21 @@ export async function generateAiSuggestion(_: AiResult, formData: FormData): Pro
   if (!surface) return { error: "A surface is required." };
   if (!isSuggestionSurfaceAllowed(surface)) return { error: "AI must never generate legal source text on this surface." };
   if (!evidence_refs.length) return { error: "At least one evidence reference is required before generation." };
+  // Fail-closed, asserted twice on purpose: the adapter state gate refuses any
+  // state other than 'configured', and the factory returns null without a key.
+  // Neither path fabricates a suggestion.
+  if (!adapterMaySuggest(geminiProviderState())) {
+    return { error: "AI provider is unavailable (fail-closed — no AI key configured)." };
+  }
   const provider = getGeminiProvider();
-  if (!provider) return { error: "AI provider is unavailable (fail-closed — GEMINI_API_KEY not configured)." };
+  if (!provider) return { error: "AI provider is unavailable (fail-closed — no AI key configured)." };
   const gen = await provider.generate(surface, context);
   if (!gen.ok || !gen.text) return { error: `AI provider did not return a usable suggestion (${gen.reason ?? "unknown"}).` };
   const { data, error } = await sb.from("ai_suggestions").insert({
-    surface, suggestion: { text: gen.text, source: "gemini", evidence_refs, clause_refs, confidence: null, confidence_status: "provider_not_supplied" }, disposition: "proposed", provider_status: "configured",
+    // AI_INITIAL_DISPOSITION, never a provider-chosen outcome: a generated
+    // suggestion enters the docket exactly like a human-proposed one and still
+    // needs a human disposition before it means anything.
+    surface, suggestion: { text: gen.text, source: "gemini", evidence_refs, clause_refs, confidence: null, confidence_status: "provider_not_supplied" }, disposition: AI_INITIAL_DISPOSITION, provider_status: "configured",
   }).select("id").maybeSingle();
   if (error) { logProviderError("ai generate", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (data?.id) await sb.from("ai_events").insert({ suggestion_id: data.id, event_type: "proposed", actor: user.id, payload: { surface, source: "gemini" } });

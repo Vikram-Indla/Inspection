@@ -1,0 +1,134 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SESSION-LIST-FILTER-LEASE-TBD
+status: REVIEWER_READY_BLOCKED_ON_MISSING_CONTRACT
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+lease_type: READ_ONLY_IMPLEMENTATION_AND_ROLLBACK_SPECIFICATION
+
+business_function: >-
+  Make /virtual show exactly the CR-337 set: today's confirmed virtual
+  inspections in the authenticated inspector's allowed scope, with all other
+  sessions excluded.
+
+authority:
+  requirement_ids: [CR-337]
+  acceptance_ids:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  requirement_source: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance_source: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  evidence_ids:
+    - WA-EV-0337
+    - WA-M11-EV-001
+    - WA-M11-EV-002
+    - WA-M11-EV-005
+
+current_defect:
+  classification: CONFIRMED_P0_LIST_CORRECTNESS_DEFECT
+  evidence:
+    - "apps/web/src/app/(app)/virtual/page.tsx:13-15 loads all RLS-visible virtual_sessions ordered by appointment_at."
+    - "The session query has no today boundary."
+    - "The session query does not constrain the joined visit to the confirmed predicate."
+    - "apps/web/src/app/(app)/virtual/page.tsx:19-21 filters only missing visit/factory joins."
+    - "apps/web/src/app/(app)/virtual/page.tsx:51-52 labels the surface 'confirmed sessions only'."
+  business_effect: >-
+    Past, future or otherwise non-confirmed sessions can appear on a page that
+    claims to show only today's confirmed virtual inspections.
+
+missing_contract:
+  blocker_decision: BLOCK_DUE_TO_MISSING_CONTRACT
+  unresolved:
+    - id: M11-LIST-D01
+      question: "Which authoritative timezone defines today's lower and upper boundary for CR-337?"
+      reason: >-
+        CR-337 says today but does not name a timezone. A timezone must not be
+        inferred from the browser, database host or an unrelated module.
+    - id: M11-LIST-D02
+      question: "Which stored predicate means confirmed for CR-337?"
+      reason: >-
+        virtual_sessions has no confirmed state. The current code uses published
+        visits for unscheduled rows, while the session list applies no visit
+        confirmation filter. Published, appointment-confirmed and preparation
+        readiness are not interchangeable without explicit authority.
+  prohibited_until_resolved:
+    - "Do not implement a day boundary."
+    - "Do not equate confirmed with published, scheduled, verified or ready by assumption."
+    - "Do not claim CR-337 parity."
+
+implementation_shape_after_decision:
+  query:
+    - "Apply the approved timezone's inclusive start and exclusive next-day boundary to the authoritative approved date/time column."
+    - "Apply the approved confirmed predicate through the joined visit/session relationship."
+    - "Retain execution_mode = virtual."
+    - "Retain RLS as the first authorization boundary; never broaden list scope in application filtering."
+    - "Use deterministic ordering by appointment_at plus a stable identifier tie-break."
+  data_display:
+    - "Display execution date/time, inspector, factory and report/inspection information required by CR-337 when present."
+    - "Surface a truthful missing/degraded state when required related information is unavailable; do not infer it."
+    - "Keep the unscheduled-published-visit scheduling section logically separate from the confirmed-today session list."
+  prohibited:
+    - "Client-only filtering over an unbounded session query."
+    - "Invented timezone, confirmation state or fallback record."
+    - "Changes to atomic session creation, execution-window enforcement, OTP or provider behavior."
+
+owned_files_proposed_after_unblock:
+  application:
+    - apps/web/src/app/(app)/virtual/page.tsx
+  tests:
+    - apps/web/e2e/web-admin-m11-virtual-list.spec.ts
+  migration: []
+  rule: >-
+    Add a database view/RPC only if the approved predicate cannot be expressed
+    safely with the current RLS-scoped relation query; that expansion requires
+    a separately reviewed lease amendment.
+
+test_contract_after_unblock:
+  inclusion:
+    - "Approved confirmed predicate and timestamp inside today's approved boundary appears."
+    - "Both day-boundary edges follow the approved inclusive/exclusive rule."
+  exclusion:
+    - "Previous-day session is absent."
+    - "Next-day session is absent."
+    - "Non-confirmed session is absent."
+    - "Non-virtual visit is absent."
+    - "RLS-out-of-scope session is absent."
+  display:
+    - "Execution date/time, inspector, factory and report/inspection facts match source rows."
+    - "Missing joined facts produce a truthful degraded/empty state rather than a false record."
+  regression:
+    - "The unscheduled virtual-visit scheduling area remains functional and separately scoped."
+    - "Open-room links resolve only for returned list rows."
+
+rollback_plan:
+  rule: >-
+    Revert only the bounded query/UI/test change. Do not alter or delete session,
+    participant, visit, inspection or audit data.
+  trigger: "Any P0 authorization, boundary, confirmation, data-truth or regression failure."
+
+acceptance_gate:
+  pass_only_if:
+    - "M11-LIST-D01 and M11-LIST-D02 are explicitly resolved in canonical authority."
+    - "Inclusion and exclusion tests pass at both approved day boundaries."
+    - "RLS and required-data display tests pass."
+    - "Runtime/browser evidence and M11 manifest are complete and truthful."
+  completion_claim: >-
+    Do not mark CR-337 accepted until the missing contract is resolved and every
+    P0 runtime, negative, RLS and data-truth case passes independent review.
+
+lease_separation:
+  excluded_packets:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  rule: "Today-and-confirmed list filtering is the only defect owned by this lease."
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_009R_ACCEPTANCE_AND_MISSING_CONTRACT
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  scope_separation_checked: PASS

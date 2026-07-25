@@ -1,0 +1,233 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+status: READY_TO_DISPATCH_AFTER_MANUAL_MAC_UNLOCK
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+review_decision: RETURN_FOR_CORRECTION
+
+business_function: >-
+  Correct the M11 behavioral-test lease before any test implementation or
+  product change. The corrected lease must prove the canonical virtual-session
+  list contract, isolate OTP authorization controls deterministically, and
+  distinguish a downstream orphan-state characterization from a true forced
+  partial-write reproduction.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  control_branch: codex/orchestration-control-plane
+  source_branch: docs/saqeel-inspector-inventory
+  source_commit: 3323a8ef3d788c1c157a9bf0d63e32a3d9334e42
+  source_packet: KIMI-M11-NEGATIVE-TEST-SPEC-009
+  requirements:
+    - CR-337
+    - CR-338
+    - CR-350
+    - CR-351
+    - CR-352
+    - RBAC-014
+  acceptance:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  evidence:
+    - WA-M11-EV-001
+    - WA-M11-EV-002
+    - WA-M11-EV-005
+
+write_boundary:
+  packet_write_performed: true
+  application_writes_performed: false
+  test_writes_performed: false
+  database_writes_performed: false
+  product_contract_writes_performed: false
+  browser_or_ui_use_performed: false
+  prohibited:
+    - "Application, test, migration, seed, provider, product-contract or shared-data mutation."
+    - "Computer Use, browser control or Kimi UI while the Mac is locked."
+    - "Starting any queued implementation lease before this return is corrected and reviewed."
+    - "Combining atomicity, execution-window and session-list defects in one lease."
+    - "Modifying main, setup/Inspection, any stash or any worker-owned dirty path."
+
+observed_handoff:
+  kimi_status: COMPLETED
+  source_status: DELIVERED_AWAITING_CODEX_REVIEW
+  writes_claimed: ZERO
+  tests_claimed: ZERO
+  reviewer_result: RETURN_FOR_CORRECTION
+
+corrections:
+  - correction_id: 009-R01
+    severity: P0
+    subject: "CR-337 today-and-confirmed list contract"
+    finding: >-
+      Case 009-C01 stages an appointment in a wide random future window and
+      expects the session to appear on /virtual, then classifies the case
+      PASS-NOW. That behavior contradicts CR-337, which requires today's
+      confirmed virtual inspection and states that only confirmed virtual
+      visits are displayed.
+    source_evidence:
+      - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv:338"
+      - "apps/web/src/app/(app)/virtual/page.tsx:13-15 queries every virtual_sessions row without a date filter."
+      - "apps/web/src/app/(app)/virtual/page.tsx:19-21 keeps rows with a joined visit and factory but does not enforce confirmed/published status."
+      - "apps/web/src/app/(app)/virtual/page.tsx:51-52 labels the surface 'confirmed sessions only'."
+    required_correction:
+      - "Add deterministic inclusion proof for a session within today's canonical window and with the required confirmed visit status."
+      - "Add deterministic exclusion proof for non-today and non-confirmed sessions."
+      - "Do not use a far-future fixture as positive CR-337 evidence."
+      - "Classify the current unfiltered list behavior FAILS_UNTIL_FIX."
+      - "Keep the product correction in a later independent session-list lease."
+    completion_bar: >-
+      The corrected lease cites exact fixture timestamps/statuses, exact list
+      assertions, safe isolation and cleanup, and truthfully marks current
+      behavior as failing until the separate list-filter implementation lands.
+
+  - correction_id: 009-R02
+    severity: P0
+    subject: "C06 OTP authorization positive-control isolation"
+    finding: >-
+      Case 009-C06 proposes request and verify on the same reviewer participant
+      while expecting sent and no_code. A successful request creates an active
+      code, so verification with 000000 is wrong unless it accidentally matches.
+      Reusing that participant for a later planner request also encounters the
+      resend cooldown. The stated result is nondeterministic and internally
+      inconsistent.
+    source_evidence:
+      - "supabase/migrations/0023_fix_otp_rpc_authorization.sql:20-56"
+      - "supabase/migrations/0023_fix_otp_rpc_authorization.sql:58-95"
+    required_correction:
+      - "Retain an unassigned inspector as the denied persona for both RPCs."
+      - "Give each reviewer and planner positive-control RPC its own fresh participant/session, or explicitly reset a sacrificial record between calls."
+      - "State deterministic expected status and audit/database state for each isolated call."
+      - "Prove denial causes no verification-record mutation and no OTP audit row."
+    completion_bar: >-
+      No case depends on an active code, cooldown or resend counter created by
+      another persona/control leg.
+
+  - correction_id: 009-R03
+    severity: P0
+    subject: "D-M11-001 characterization honesty and deterministic invariant"
+    finding: >-
+      Case 009-C12 manually stages an orphan virtual session. It does not force
+      scheduleSession to create a session and then fail the participant insert,
+      so it cannot be described as reproducing the partial-write path requested
+      by packet 009. Its proposed assertion also allows either a working schedule
+      path or a visibly flagged orphan, which is not one deterministic contract.
+    source_evidence:
+      - "apps/web/src/app/(app)/virtual/actions.ts:42-47 persists virtual_sessions."
+      - "apps/web/src/app/(app)/virtual/actions.ts:50-55 inserts participants separately and returns without rollback on failure."
+      - "apps/web/src/app/(app)/virtual/actions.ts:37-39 blocks retry when any session exists."
+      - "No scheduling transaction RPC or rollback cleanup was found in the canonical migrations."
+    required_correction:
+      - "Rename manual orphan staging as downstream orphan-and-retry-guard characterization only."
+      - "Choose one exact expected invariant and one exact assertion; remove the OR condition."
+      - "Classify true participant-insert-failure reproduction as BLOCKED until a safe, rollback-only test fault seam is authorized."
+      - "Do not mutate a shared live database or install a permanent test backdoor."
+      - "A rollback-only temporary trigger or a test-local server seam may be proposed, but it must be separately authorized and removed automatically."
+    completion_bar: >-
+      The lease no longer claims that a manually inserted orphan proves the
+      scheduleSession partial-write sequence, and every expected-failure case
+      has one deterministic future contract.
+
+  - correction_id: 009-R04
+    severity: P0
+    subject: "Atomicity fix authority and lease separation"
+    finding: >-
+      Case 009-C12 calls the fix shape a backend/product decision and presents
+      compensating delete, transactional RPC and a state-filtered guard as
+      equivalent candidates. They are not equivalent: compensating delete can
+      fail, and a state-filtered guard does not make session-plus-participants
+      creation atomic.
+    required_correction:
+      - "Remove the unresolved product-decision classification from the test lease."
+      - "Record one transactional database RPC as the 010 implementation recommendation."
+      - "Preserve RLS, role scope, unique visit guard and append-only audit behavior."
+      - "Keep notification delivery post-commit and report degradation honestly."
+      - "Reject compensating delete as the atomicity solution."
+      - "Do not combine 010 with execution-window enforcement or list filtering."
+    completion_bar: >-
+      The corrected handoff treats 010 as a bounded transactional implementation
+      lease and does not broaden it into other M11 defects.
+
+scope_hygiene:
+  remove_or_correct_claims:
+    - >-
+      Do not state that 009-C01 closes an unrelated G18. Packet 009 is an M11
+      test-lease review and must report only its assigned requirement,
+      acceptance and evidence coverage.
+    - >-
+      Do not report any of the 478 rows accepted because packet 009 is a
+      read-only specification packet with no executed tests or runtime evidence.
+  preserved_findings:
+    - "Reviewer is allowed by the OTP RPC allowlist; unassigned inspector is the correct denial persona."
+    - "G1, G6 and G7 remain P0 certification gaps."
+    - "D-M11-001 remains a confirmed product defect."
+    - "Provider-dependent live-video proof remains blocked on its own contract and is outside this correction."
+
+current_blocker:
+  code: MANUAL_MAC_UNLOCK_REQUIRED
+  state: BLOCKED_FOR_DISPATCH_ONLY
+  detail: >-
+    Kimi completed packet 009, but the Mac locked before this reviewer return
+    could be sent. Lock-safe transcript and repository evidence were used for
+    review. No UI or automatic-unlock attempt is permitted.
+  operational_truth:
+    kimi_active: false
+    kimi_status: COMPLETED
+    correction_dispatched: false
+  unblock_condition: >-
+    Sponsor manually unlocks the Mac. The reviewer then dispatches this exact
+    return packet to the existing Kimi conversation and confirms a new first
+    token or running status before reporting Kimi active.
+
+queued_leases:
+  - packet_id: KIMI-M11-ATOMIC-FIX-LEASE-010
+    order: 1
+    status: QUEUED_NOT_STARTED
+    scope: "Transactional virtual session and participant creation."
+    gate: >-
+      Start only after 009 correction is delivered, corrected, independently
+      reviewed and accepted, followed by a fresh SAQEEL OS bootstrap.
+    must_not_include:
+      - "Execution-window enforcement."
+      - "Today/confirmed session-list filtering."
+
+  - packet_id: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    order: 2
+    status: QUEUED_NOT_STARTED
+    scope: >-
+      Enforce CR-338's planned execution window through one server/database
+      guard reused by schedule/start, waiting-room open, join and begin actions.
+    guardrails:
+      - "Do not invent grace periods, thresholds or early/late tolerances."
+      - "Do not combine with atomicity."
+      - "Do not combine with list filtering."
+
+  - packet_id: KIMI-M11-SESSION-LIST-FILTER-LEASE-TBD
+    order: 3
+    status: QUEUED_NOT_STARTED
+    scope: >-
+      Correct /virtual to display the CR-337 today-and-confirmed set and add
+      bounded inclusion/exclusion runtime proof.
+    guardrails:
+      - "Resolve canonical timezone/day-boundary semantics from existing authority; do not invent them."
+      - "Do not combine with atomicity or execution-window enforcement."
+
+dispatch_message: >-
+  RETURN FOR CORRECTION — KIMI-M11-NEGATIVE-TEST-SPEC-009. Load and obey the
+  SAQEEL session-start command and operating system, then apply every correction
+  in product-contract/operationalization/coordination/batches/
+  KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001.yaml. Remain read-only. Do not
+  implement tests, product code, migrations or data changes. Return a corrected
+  009r lease with exact case IDs, fixtures, assertions, isolation and truthful
+  PASS-NOW / FAILS-UNTIL-FIX / BLOCKED classifications. Do not start 010, 011
+  or the session-list implementation lease.
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  queue_separation_checked: PASS
+  dispatch_status: NOT_DISPATCHED

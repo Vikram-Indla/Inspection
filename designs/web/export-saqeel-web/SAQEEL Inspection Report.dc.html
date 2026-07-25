@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .rp-canvas { min-height: 100vh; background: var(--surface-canvas); padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .rp-doc { width: min(880px, 100%); background: var(--surface-primary); border: 1px solid var(--border-subtle); border-radius: 6px; box-shadow: var(--shadow-lg); padding: 40px 48px; }
+  .rp-sec { margin-block-start: 26px; }
+  .rp-sec h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); border-block-end: 1px solid var(--border-subtle); padding-block-end: 6px; margin: 0 0 12px; }
+  .rp-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 12px 24px; margin: 0; }
+  .rp-facts dt { font-size: 11px; color: var(--text-muted); }
+  .rp-facts dd { margin: 2px 0 0; font-size: 13.5px; }
+  @media print { .rp-toolbar { display: none; } .rp-canvas { padding: 0; background: #fff; } .rp-doc { box-shadow: none; border: 0; border-radius: 0; } }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="font-family:var(--font-body); color:var(--text-primary);">
+  <div class="rp-toolbar" style="position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:12px; padding:12px 20px; background:var(--nav-bg); color:var(--nav-text-active);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px; color:var(--nav-indicator);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+    <span style="font-weight:600; font-size:14px;">Official inspection report</span>
+    <span class="grow"></span>
+    <span class="badge badge-compliant"><span class="dot"></span>Approved · immutable v3</span>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="Theme" style="color:var(--nav-text-active);">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+    <button class="btn btn-primary btn-sm">Export PDF (A4)</button>
+  </div>
+
+  <div class="rp-canvas">
+    <div class="rp-doc">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:30px; height:30px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg><div><div style="font-weight:700; font-size:20px;">صناعي صقيل</div><div class="t-caption">SAQEEL Industrial Inspection</div></div></div>
+        </div>
+        <div style="text-align:end;"><div class="id-code" style="font-size:13px;">INS-88213 · v3</div><div class="t-caption">Report no. RPT-88213</div><div class="t-caption">Submitted 2026-05-18 09:12 · Asia/Riyadh</div></div>
+      </div>
+      <h1 style="font-size:22px; font-weight:700; letter-spacing:-0.01em; margin:20px 0 4px;">Fire Safety Inspection</h1>
+      <div class="t-caption">Assembled from governed immutable records · scored against locked package version</div>
+
+      <div class="rp-sec">
+        <h2>Factory identity</h2>
+        <dl class="rp-facts"><div><dt>Factory</dt><dd>Al Rasheed Steel Works · <span class="id-code">F-2231</span></dd></div><div><dt>CR number</dt><dd><span class="id-code">1010445213</span></dd></div><div><dt>Industrial licence</dt><dd><span class="id-code">IL-44718</span></dd></div><div><dt>Region / city</dt><dd>Eastern · Dammam</dd></div><div><dt>Activity class</dt><dd>Basic metals</dd></div><div><dt>Risk band (saved)</dt><dd>High · 78</dd></div></dl>
+      </div>
+
+      <div class="rp-sec">
+        <h2>Visit configuration</h2>
+        <dl class="rp-facts"><div><dt>Type / mode</dt><dd>Bulk · Scheduled</dd></div><div><dt>Window</dt><dd class="id-code">2026-05-18 09:00–12:00</dd></div><div><dt>Inspector</dt><dd>K. Al-Otaibi · assignment accepted</dd></div><div><dt>State</dt><dd>published → submitted</dd></div><div><dt>Locked package</dt><dd>Fire Safety <span class="id-code">v3 (frozen)</span></dd></div><div><dt>Scope</dt><dd>42 items · 6 sections</dd></div></dl>
+      </div>
+
+      <div class="rp-sec">
+        <h2>Per-item responses <span class="t-caption" style="text-transform:none; letter-spacing:0; font-weight:400;">from immutable submission snapshot</span></h2>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Item</th><th>Response</th><th>Note</th><th class="cell-num">Evidence</th></tr></thead><tbody>
+          <tr><td><span class="id-code">FS-014</span> Emergency exit unobstructed</td><td><span class="badge badge-critical">No</span></td><td class="t-caption">East exit blocked by pallets</td><td class="cell-num">3</td></tr>
+          <tr><td><span class="id-code">FS-016</span> Exit signage illuminated</td><td><span class="badge badge-compliant">Yes</span></td><td class="t-caption">—</td><td class="cell-num">1</td></tr>
+          <tr><td><span class="id-code">FS-021</span> Extinguisher pressure</td><td><span class="badge badge-compliant">Pass</span></td><td class="t-caption">—</td><td class="cell-num">2</td></tr>
+          <tr><td><span class="id-code">EL-233</span> Panel labelling</td><td><span class="badge badge-warning">No</span></td><td class="t-caption">Sub-panel B unlabelled</td><td class="cell-num">1</td></tr>
+        </tbody></table></div>
+      </div>
+
+      <div class="rp-sec">
+        <h2>Violations &amp; penalties</h2>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Code</th><th>Severity</th><th>Penalty ref</th><th>Legal basis</th><th>Mapping</th></tr></thead><tbody>
+          <tr><td><span class="id-code">FS-014</span> Blocked egress</td><td><span class="badge badge-critical">Critical</span></td><td class="id-code">PN-2231</td><td>FS-2019 §4.2 · Civil Defense</td><td class="id-code">v3</td></tr>
+          <tr><td><span class="id-code">EL-233</span> Unlabelled panel</td><td><span class="badge badge-warning">Major</span></td><td class="id-code">—</td><td>IND-2021 §9</td><td class="id-code">v3</td></tr>
+        </tbody></table></div>
+      </div>
+
+      <div class="rp-sec">
+        <h2>Corrective action forms</h2>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Item</th><th>Correction</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead><tbody>
+          <tr><td><span class="id-code">FS-014</span></td><td>Clear &amp; re-certify egress</td><td>Plant manager</td><td class="id-code">2026-05-25</td><td><span class="badge badge-warning">open</span></td></tr>
+        </tbody></table></div>
+      </div>
+
+      <div class="rp-sec">
+        <h2>Evidence manifest</h2>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Type</th><th>Linked item</th><th>Captured</th><th>SHA-256</th></tr></thead><tbody>
+          <tr><td>Photo</td><td class="id-code">FS-014</td><td class="id-code">09:06</td><td class="id-code">9f2c41ab77e0…</td></tr>
+          <tr><td>Photo</td><td class="id-code">FS-014</td><td class="id-code">09:07</td><td class="id-code">c18de5a2b3f1…</td></tr>
+          <tr><td>Document</td><td class="id-code">FS-021</td><td class="id-code">09:22</td><td class="id-code">a7b0…</td></tr>
+        </tbody></table></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div class="rp-sec">
+          <h2>Version history</h2>
+          <ul class="timeline" style="margin-block-start:4px;">
+            <li><span class="tl-dot is-accent"></span><div class="tl-title">v3 · approved</div><div class="tl-meta">L2 m.qahtani · 2026-05-18</div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">v2 · returned</div><div class="tl-meta">Egress, Electrical · 2026-05-12</div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">v1 · superseded</div><div class="tl-meta">2026-05-10</div></li>
+          </ul>
+        </div>
+        <div class="rp-sec">
+          <h2>Review decision</h2>
+          <dl class="rp-facts" style="grid-template-columns:1fr;"><div><dt>Decision</dt><dd><span class="badge badge-compliant">Approved (L2)</span></dd></div><div><dt>Reviewer</dt><dd>m.qahtani · maker ≠ checker</dd></div><div><dt>Decided</dt><dd class="id-code">2026-05-18 14:31</dd></div></dl>
+        </div>
+      </div>
+
+      <div class="rp-sec">
+        <h2>Inspector acknowledgement</h2>
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;"><div style="width:220px; height:80px; border:1px solid var(--border-subtle); border-radius:6px; background:var(--surface-sunken); display:grid; place-items:center; color:var(--text-muted); font-style:italic;">K. Al-Otaibi</div><dl class="rp-facts" style="grid-template-columns:1fr;"><div><dt>Signed</dt><dd>Yes · at official location · GPS attached</dd></div><div><dt>Timestamp</dt><dd class="id-code">2026-05-18 12:04</dd></div></dl></div>
+      </div>
+
+      <div style="margin-block-start:28px; border-block-start:1px solid var(--border-subtle); padding-block-start:12px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <span class="t-caption">Official record · immutable · Access-controlled read. Browser print-to-PDF (A4) is the production PDF path.</span>
+        <span class="id-code t-caption">Generated 2026-07-21</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1000,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: "dark" };
+  renderVals() {
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+    };
+  }
+}
+</script>
+</body>
+</html>

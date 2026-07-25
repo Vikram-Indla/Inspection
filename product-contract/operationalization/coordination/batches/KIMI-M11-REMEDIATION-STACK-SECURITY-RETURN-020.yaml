@@ -1,0 +1,434 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-REMEDIATION-STACK-SECURITY-RETURN-020
+status: READY_TO_DISPATCH_AFTER_MANUAL_MAC_UNLOCK
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+review_decision: RETURN_FOR_CORRECTION
+source_review: KIMI-M11-MIGRATION-SECURITY-REVIEW-019
+supersedes_sequence_in: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+
+business_function: >-
+  Correct the complete M11 remediation stack before implementation so atomic
+  workflow paths, permission contraction, OTP security and safe audit delivery
+  land without privilege bypass, secret exposure, broken valid actions or
+  database/application version skew.
+
+correction_scope:
+  packets_to_revise:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    - KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+  findings_to_close:
+    - M11-MIGSEC-001
+    - M11-MIGSEC-002
+    - M11-MIGSEC-003
+    - M11-MIGSEC-004
+    - M11-MIGSEC-005
+    - M11-MIGSEC-006
+    - M11-MIGSEC-007
+    - M11-MIGSEC-008
+    - M11-MIGSEC-009
+    - M11-MIGSEC-010
+    - M11-MIGSEC-011
+    - M11-MIGSEC-012
+
+non_negotiable_function_security_contract:
+  security_definer:
+    - "Use only when the governed RPC must write after ordinary direct table DML is revoked or must read protected source audit."
+    - "Set search_path='' on every new or replaced SECURITY DEFINER function."
+    - "Schema-qualify every relation, function, type, sequence and extension function."
+    - "Check auth.uid() is non-null before any read/write that can disclose existence."
+    - "Recheck exact role, assignment, row relationship, state, window and immutable-field conditions inside the transaction."
+    - "Do not rely on RLS inside a definer function; owner privileges can bypass it."
+  security_invoker:
+    - "Use for public wrappers/read paths only when final table grants and RLS are sufficient and do not reopen direct DML."
+    - "Do not certify an invoker RPC against pre-013 policies; prove it against the final contract state."
+  helper_location:
+    - "Helper-only definer functions belong in a non-exposed private schema with no direct PUBLIC/anon grant."
+    - "A Data API RPC that must remain in public still uses search_path='', full qualification, explicit in-body authorization and exact grants."
+  prohibited_patterns:
+    - "search_path=public"
+    - "search_path=public,extensions"
+    - "unqualified relation/helper names inside a definer"
+    - "SECURITY DEFINER added merely to bypass a permission failure"
+    - "caller authorization based only on TO authenticated"
+
+non_negotiable_function_acl_contract:
+  per_exact_signature:
+    - "REVOKE ALL/EXECUTE FROM PUBLIC."
+    - "REVOKE ALL/EXECUTE FROM anon."
+    - "REVOKE obsolete direct grants from authenticated before the final intended regrant."
+    - "GRANT EXECUTE only to authenticated for a caller-facing governed RPC."
+    - "REVOKE ALL FROM PUBLIC, anon, authenticated for trigger-only/helper-only functions."
+  overload_rule: >-
+    Inventory pg_proc by namespace, proname and identity arguments. Drop or
+    revoke every obsolete overload in the same forward migration; a name-only
+    revoke is not accepted.
+  catalog_proof:
+    - "Function namespace, owner, prosecdef, proconfig and proacl."
+    - "No PUBLIC/anon executable overload."
+    - "No direct helper execution beyond the reviewed wrapper/RPC."
+
+corrected_function_and_object_ownership:
+  KIMI_M11_ATOMIC_FIX_LEASE_010:
+    owns:
+      - "Atomic create-session-plus-initial-participants RPC."
+      - "Creation role/assignment/state validation inside the RPC."
+      - "Trigger-generated creation audit transactionality."
+    must_preserve:
+      - "Published virtual visit, representative-name, assignment, unique-visit and plausible-date guards."
+      - "Post-commit scheduling notifications."
+    must_not_own:
+      - "Window predicate definition."
+      - "Post-creation participant/session DML policy."
+      - "OTP, join, begin or audit-read functions."
+
+  KIMI_M11_EXECUTION_WINDOW_LEASE_011:
+    owns:
+      - "One canonical private window containment/live-time guard."
+      - "Replacement of 010 creation RPC to call the guard for appointment containment."
+      - "Governed reschedule RPC using the same appointment guard."
+      - "Governed waiting-room-open RPC using database live time."
+      - "Window integration contract consumed by 014 join/begin RPCs."
+    must_preserve:
+      - "Advance scheduling is allowed; only appointment containment is checked at scheduling/reschedule."
+      - "Inclusive [window_start,window_end] semantics with no tolerance."
+      - "Reschedule stale/concurrent-join protection."
+    must_not_own:
+      - "Join/begin transactionality."
+      - "Close/cancel."
+      - "List filtering or CR-337."
+
+  KIMI_M11_BEGIN_ATOMICITY_LEASE_014:
+    owns:
+      - "Inspector-only atomic participant-join RPC."
+      - "Inspector-only atomic begin RPC."
+      - "Join/begin existing semantic event writes inside those transactions."
+    must_call:
+      - "011 canonical window guard."
+      - "Canonical operational/workflow transition authority."
+    must_preserve:
+      - "Verified/readiness/frozen-package/Ready-created-inspection preconditions."
+      - "Common execution-engine redirect after commit."
+    must_not_own:
+      - "Generic append RPC."
+      - "OTP functions."
+      - "Direct table policies."
+
+  KIMI_M11_PERMISSION_HARDENING_LEASE_013:
+    expansion_owns_before_app_switch:
+      - "Governed close/cancel RPC with mandatory reason, immutable closed state, safe event and post-commit notification."
+      - "Final governed vs_mark_session_verified definition compatible with contracted table DML."
+      - "Initial hardened vp_request_otp, vp_verify_otp and vp_otp_status definitions."
+      - "OTP participant-row locking/atomic compare-and-set and one-event cardinality."
+    contract_owns_after_app_switch:
+      - "Operation-specific virtual_sessions and virtual_participants RLS policies."
+      - "Revocation of direct authenticated INSERT/UPDATE/DELETE that bypasses governed RPCs."
+      - "Removal of legacy FOR ALL policies and obsolete function grants."
+    otp_handoff_to_015:
+      - "013 freezes the exact role/assignment predicate, row lock and counter/state transition."
+      - "015 is the sequential successor for the same three OTP signatures."
+      - "015 may add neutral errors and remove secret output but may not weaken 013 authorization/locking."
+    must_not_own:
+      - "Audit projection or raw audit policy restriction."
+      - "Generic semantic append restriction."
+
+  KIMI_M11_AUDIT_BOUNDARY_LEASE_015:
+    expansion_owns_before_app_switch:
+      - "Safe session-audit projection/RPC with explicit allowlisted fields."
+      - "Application-compatible safe audit result contract."
+    contract_owns_after_013:
+      - "Sequential replacement of all three OTP RPCs preserving 013 authorization and locking."
+      - "Neutral missing/out-of-scope result for OTP/audit boundaries."
+      - "Removal of dev_code and every secret-bearing OTP return."
+      - "Restriction of raw virtual_participant audit rows from all ordinary staff policies."
+      - "Virtual-participant-specific safe generic audit trigger for future writes."
+      - "Restriction/removal of generic authenticated vs_append_event authority."
+    must_preserve:
+      - "Historical immutable audit rows at rest."
+      - "Safe Reviewer/Inspector lifecycle and verification facts."
+      - "Existing accepted semantic events written only by governed RPCs."
+    must_not_own:
+      - "OTP authorization role expansion."
+      - "Workflow transition logic."
+
+corrected_rls_and_direct_privilege_contract:
+  virtual_sessions:
+    select:
+      - "Keep explicit role/assigned-Inspector row visibility required by the application."
+      - "Use explicit TO authenticated."
+    insert:
+      - "After application switch, ordinary authenticated direct INSERT is revoked/denied."
+      - "010/011 governed creation RPC remains the only creation path."
+    update:
+      - "After application switch, ordinary authenticated direct UPDATE is revoked/denied."
+      - "Reschedule/open-waiting/join/verify/begin/close occur only through their governed RPC."
+    delete: "No ordinary authenticated DELETE."
+  virtual_participants:
+    select:
+      - "Keep explicit role/assigned-Inspector row visibility required by the room."
+      - "Use explicit TO authenticated."
+    insert:
+      - "After application switch, initial creation occurs only inside 010/011 governed RPC."
+    update:
+      - "After application switch, joined_at/verified_at/verification_record change only inside governed RPCs."
+    delete: "No ordinary authenticated DELETE."
+  policy_replacement:
+    - "Inventory every pg_policy row for both tables before mutation."
+    - "Drop every overlapping FOR ALL/permissive policy and create exact per-command policies in one transaction."
+    - "UPDATE policy uses both USING and WITH CHECK and has compatible SELECT visibility."
+    - "Do not add a restrictive policy beside a surviving broad permissive policy."
+  recursion:
+    - "Keep dependency direction participant policy → session → private role/assignment helper."
+    - "Session policies must not query virtual_participants."
+    - "Run all commands for all personas and assert no recursion/stack-depth/silent zero-row anomaly."
+
+corrected_otp_transaction_contract:
+  ownership: "013 initial definition, 015 exact sequential replacement."
+  row_lock:
+    - "Resolve neutral existence/scope authorization before revealing resource facts."
+    - "Lock the authorized participant row before reading/updating verification_record counters/state."
+    - "Request increments resend/cooldown state from the locked current row."
+    - "Verify consumes/advances the locked current code exactly once."
+  concurrency:
+    - "Two valid verify calls produce one verified_at and one OTP_VERIFIED semantic event."
+    - "Concurrent resend/request cannot exceed accepted engine settings."
+    - "Stale counter writes cannot reduce attempts or resends."
+  secrets:
+    - "Never return dev_code, code_hash or raw verification_record."
+    - "Never include them in application errors, logs, DOM or evidence."
+    - "Provider behavior remains honest/not_configured unless an approved provider exists."
+  settings:
+    - "Read existing accepted engine_settings values."
+    - "Do not invent or alter digits, expiry, attempts, resend, cooldown or provider values."
+
+corrected_raw_audit_and_secret_capture_contract:
+  raw_policy_inventory:
+    required:
+      - audit_read
+      - audit_read_compliance
+      - "Every additional permissive audit_events SELECT policy found in pg_policy."
+    rule: >-
+      All policies are OR-combined. Replace every path that lets ordinary roles
+      select raw virtual_participant audit rows.
+  historical_rows:
+    - "Do not update/delete historical immutable audit rows."
+    - "Ordinary staff cannot directly SELECT historical virtual_participant before_state/after_state."
+    - "Required evidence is available only through the safe allowlisted projection."
+    - "Record a security disposition for privileged operational access to historical secret-bearing rows."
+  future_rows:
+    - "Do not modify the global audit_row_change function for this bounded M11 fix."
+    - "Replace only trg_audit_virtual_participants with a specialized trigger function."
+    - "Specialized function writes allowed participant identity/join/verified business fields, never verification_record/code_hash/dev_code."
+    - "Trigger function uses search_path='', fully qualified objects and no caller EXECUTE grant."
+  semantic_audit:
+    - "OTP_SENT/OTP_FAILED/OTP_VERIFIED after_state remains limited to safe counters/facts."
+    - "No generic secret row plus semantic row duplication."
+    - "Denied/rolled-back work creates no success event."
+  safe_projection:
+    - "Explicit allowlist only; no whole-row minus-key fallback."
+    - "Safe lifecycle fields remain available to Reviewer and assigned Inspector."
+
+corrected_trigger_contract:
+  - "Prefer 011 guard calls inside governed RPCs; do not add an order-dependent window trigger."
+  - "Retain trg_guard_virtual and prove every governed state change passes it."
+  - "Replace only the virtual-participant generic audit trigger in 015 contract phase."
+  - "Inventory trigger names/order/events/functions before and after each migration."
+  - "Forced failure rolls back trigger-generated and explicit audit rows in the same transaction."
+  - "One business transition produces one semantic event; generic row audit is not counted as a duplicate semantic event."
+
+corrected_expand_switch_contract_rollout:
+  phase_0_specification:
+    required:
+      - "Corrected 009r accepted."
+      - "010/011/014/013/015/017 revised to this return packet."
+      - "Independent source/security review passes."
+
+  phase_1_database_expand:
+    ordered_steps:
+      - "010 adds atomic authorized creation RPC."
+      - "011 adds private window guard and governed create/reschedule/open-waiting definitions."
+      - "014 adds governed join/begin definitions."
+      - "013 expansion adds governed close/verify and locked OTP definitions."
+      - "015 expansion adds safe audit projection."
+    compatibility:
+      - "Old application remains functional during this phase."
+      - "No broad policy/grant is claimed fixed yet."
+      - "No P0 security-complete claim is allowed."
+    gate:
+      - "New functions exist with secure search_path and exact ACLs."
+      - "Old and new callable paths are characterized on an isolated database."
+
+  phase_2_application_switch:
+    required_changes:
+      - "Schedule uses 010/011 create RPC."
+      - "Reschedule/open waiting use 011 RPCs."
+      - "Join/begin use 014 RPCs."
+      - "Close/mark verified/OTP use 013 expansion RPCs."
+      - "Audit rendering uses 015 safe projection."
+      - "Application no longer calls generic vs_append_event or direct governed-column DML."
+    gate:
+      - "Authorized paths pass before contraction."
+      - "Logs/metrics show no old direct mutation/RPC path."
+      - "Rollback is still possible only to the compatible pre-contract application."
+
+  phase_3_database_contract:
+    ordered_steps:
+      - "013 drops broad policies, revokes direct DML/obsolete RPC grants and installs final operation-specific policies."
+      - "015 sequentially replaces OTP functions with neutral/no-secret definitions."
+      - "015 restricts every raw audit policy, replaces participant audit trigger and removes generic append authority."
+    gate:
+      - "Final catalog matches the exact function/policy/trigger/ACL manifest."
+      - "Final-stack persona, direct-DML, concurrency, rollback and secret-sentinel tests pass."
+    point_of_no_old_app_rollback: true
+
+  phase_4_verify_and_promote:
+    required:
+      - "All 28 matrix-016 cases pass."
+      - "All 39 preservation-audit-018 regression gates pass."
+      - "Migration-security-019 P0/P1 findings independently closed."
+      - "Browser/API/data/audit evidence correlates by isolated run_id."
+    completion_rule: "Only this final state may be proposed for sponsor consent."
+
+corrected_rollback_and_disable:
+  before_contract:
+    - "Application may roll back only to the explicitly tested compatible version."
+    - "Expansion functions may remain dormant; remove only with a forward migration if required."
+  after_contract:
+    - "Roll-forward only; do not restore old application paths."
+    - "Never regrant FOR ALL, direct participant/session mutation, PUBLIC execute, raw audit access or generic append."
+  fail_closed_actions:
+    creation: "Disable create; never restore sequential inserts."
+    reschedule_waiting: "Disable governed action; never bypass window."
+    join_begin: "Disable governed action; never restore sequential writes or Planner/Operations fallback."
+    otp: "Disable request/verify/status; never return dev_code or bypass assignment."
+    audit: "Disable audit read/rendering; never return raw source JSON."
+    close_cancel: "Disable close/cancel; never direct-update a guarded session."
+  preservation:
+    - "No business row deletion."
+    - "No historical audit rewrite/delete."
+    - "No applied migration edit."
+
+exact_packet_amendments:
+  - correction_id: 020-R01
+    target: KIMI-M11-ATOMIC-FIX-LEASE-010
+    severity: P0
+    required_text: >-
+      Declare secure definer/invoker model, search_path='', schema qualification,
+      exact ACLs, in-function authorization and final 013 compatibility.
+
+  - correction_id: 020-R02
+    target: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    severity: P0
+    required_text: >-
+      Own governed reschedule/open-waiting replacements and a private shared
+      predicate; prohibit an order-dependent window trigger.
+
+  - correction_id: 020-R03
+    target: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    severity: P0
+    required_text: >-
+      Declare secure function/ACL model, call 011 guard and canonical transition,
+      and prove final post-013 behavior.
+
+  - correction_id: 020-R04
+    target: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    severity: P0
+    required_text: >-
+      Split expansion/contract responsibilities; add governed close/verify,
+      locked OTP definitions, exact policy/privilege manifest and OTP handoff to 015.
+
+  - correction_id: 020-R05
+    target: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    severity: P0
+    required_text: >-
+      Split expansion/contract; close all raw audit policies, stop future secret
+      capture, succeed 013 on OTP functions and remove generic append authority.
+
+  - correction_id: 020-R06
+    target: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    severity: P0
+    required_text: >-
+      Replace one-step promotion with phase-1 expand, phase-2 application switch,
+      phase-3 contract and phase-4 certification; record OTP successor ownership.
+
+  - correction_id: 020-R07
+    target: ALL_FUNCTION_PACKETS
+    severity: P0
+    required_text: >-
+      search_path='', full qualification, auth/role/row/state checks, exact
+      PUBLIC/anon revokes, intended authenticated grant and overload inventory.
+
+  - correction_id: 020-R08
+    target: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    severity: P0
+    required_text: >-
+      Lock authorized participant row and make OTP request/verify counters,
+      consumption, verified_at and semantic event cardinality concurrency safe.
+
+  - correction_id: 020-R09
+    target: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    severity: P0
+    required_text: >-
+      Restrict audit_read, audit_read_compliance and every catalog-discovered
+      overlapping policy; historical rows immutable, ordinary raw access denied.
+
+  - correction_id: 020-R10
+    target: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    severity: P0
+    required_text: >-
+      Replace only the virtual-participant generic audit trigger with an
+      allowlisted safe trigger so new code_hash/verification_record is never copied.
+
+  - correction_id: 020-R11
+    target: ALL_POLICY_AND_TRIGGER_PACKETS
+    severity: P1
+    required_text: >-
+      Add pg_policy/pg_trigger dependency, permissive-OR, recursion, trigger
+      order and final catalog proofs.
+
+  - correction_id: 020-R12
+    target: ALL_STACK_PACKETS
+    severity: P1
+    required_text: >-
+      Add compatible expansion rollback and post-contract roll-forward-only,
+      fail-closed disable behavior with no privilege widening.
+
+acceptance_of_corrected_return:
+  pass_only_if:
+    - "Every 020-R01 through 020-R12 amendment appears in the target packet."
+    - "Function/RPC/policy/trigger/file ownership is non-overlapping and sequential."
+    - "Every existing valid M11 action has a governed replacement before direct DML is contracted."
+    - "019's 8 P0 and 4 P1 findings have explicit proof gates."
+    - "CR-337 and DEC-005 remain isolated."
+  reviewer_verdict_after_resubmission:
+    - ACCEPT_CORRECTED_STACK_FOR_IMPLEMENTATION_DISPATCH
+    - RETURN_FOR_FURTHER_SECURITY_CORRECTION
+  current_verdict: RETURNED_NOT_ACCEPTED
+
+dispatch_message: >-
+  RETURN FOR SECURITY CORRECTION — load
+  KIMI-M11-REMEDIATION-STACK-SECURITY-RETURN-020 and revise packets
+  010/011/014/013/015/017 exactly as specified. Do not implement product,
+  migration or test code during this correction turn. Return corrected
+  orchestration packets plus a 020-R01..R12 closure matrix for independent
+  review. Preserve CR-337 and DEC-005 isolation.
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_REQUIRED
+  kimi_status: COMPLETED
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  findings_mapped: PASS
+  packet_boundaries_checked: PASS
+  rollout_order_checked: PASS
+  function_security_checked: PASS
+  raw_audit_secret_boundary_checked: PASS
+  rollback_checked: PASS
+  CR_337_DEC_005_separation_checked: PASS

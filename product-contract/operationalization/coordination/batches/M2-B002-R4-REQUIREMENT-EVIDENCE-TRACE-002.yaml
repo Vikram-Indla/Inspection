@@ -1,0 +1,539 @@
+packet:
+  id: M2-B002-R4-REQUIREMENT-EVIDENCE-TRACE-002
+  title: M2 current-slice requirement-to-evidence trace audit
+  created_at: "2026-07-25"
+  owner: Codex orchestration
+  reviewed_packets:
+    - M2-B002-R4-EVIDENCE-AND-CONTINUITY-CORRECTION
+    - M2-B002-R4-EVIDENCE-PLAN-OPTIMIZATION-001
+  status: BLOCKED_INCOMPLETE_REQUIREMENT_EVIDENCE
+  executable: false
+  classification: GOVERNANCE_ONLY_TRACEABILITY
+  m2_product_state: BLOCKED_FOR_PRODUCT_EDITS
+  m3_state: BLOCKED_UNCHANGED
+
+scope:
+  task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  batch_id: WA-P1-M2-BATCH-002
+  requirements: CR-001..CR-098
+  package_acceptance:
+    - WA-M2-AC-001
+    - WA-M2-AC-002
+    - WA-M2-AC-003
+    - WA-M2-AC-004
+    - WA-M2-AC-005
+    - WA-M2-AC-006
+  shared_acceptance_referenced_by_slice:
+    - WA-SHELL-AC-002
+    - WA-SHELL-AC-013
+  screens:
+    - WA-DES-036 Planning landing
+    - WA-DES-045 Visits list
+    - WA-DES-045 Visit detail
+  current_m2_head: 48c58863a183c80171025c5770c4e3440392802b
+
+hard_boundaries:
+  allowed:
+    - Read-only requirement, acceptance, route, test, and evidence inspection.
+    - Governance trace packet creation.
+    - Read-only Mac lock monitoring.
+  prohibited:
+    - Capture, implementation, design, test, data, migration, branch, or lease mutation.
+    - Browser or Claude operation while the Mac is locked.
+    - Main, setup/Inspection, remote, provider, deployment, or stash action.
+
+requirement_source:
+  file: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  exact_rows: 98
+  ids: CR-001..CR-098
+  source_sha256_recorded_per_row: c2ab27f60bf697780acf16d2b50f0f359b1bf78c1b89725bad3b1ab3005f04b9
+  current_row_status: BASELINED_NOT_IMPLEMENTED
+  exact_one_to_one_trace_rule: >-
+    For NNN from 001 through 098, CR-NNN maps to WA-AC-0NNN and
+    WA-EV-0NNN. Read-only validation passed for all 98 rows.
+  warning: >-
+    The optimized visual evidence plan does not by itself upgrade any of these
+    98 atomic requirement rows. Their current BASELINED_NOT_IMPLEMENTED status
+    conflicts with broad claims that the complete M2 requirement range already
+    has functional evidence.
+
+optimized_evidence_namespace:
+  primary_images:
+    count: 104
+    core:
+      count: 84
+      id_template: IMG-CORE-{source}-{screen}-{viewport}-{mode}
+    design_state_atlases:
+      count: 6
+      id_template: IMG-DES-ATLAS-{screen}-{context}
+    runtime_states:
+      count: 14
+      id_template: IMG-RT-STATE-{screen}-{state}-{context}
+  runtime_state_traces:
+    count: 28
+    id_template: TRACE-RT-{screen}-{state}-{context}
+  viewport_equivalence:
+    count: 24
+    id_template: EQ-412-390-{source}-{screen}-{mode}
+  omitted_mode_probes:
+    count: 36
+    id_template: PROBE-MODE-{source}-{screen}-{viewport}-{mode}
+  interpretation: >-
+    These units prove visual composition, responsive/theme/direction behavior,
+    and selected negative-state presentation. They are not substitutes for
+    workflow, transaction, RLS, audit, immutable-version, provider, scheduler,
+    notification-delivery, attachment, or data-integrity tests.
+
+requirement_trace_groups:
+  - group: M2-REQ-G01
+    name: Entry, method selection, and workspace navigation
+    exact_requirements:
+      - CR-001
+      - CR-011
+      - CR-021
+      - CR-034
+      - CR-043
+      - CR-053
+      - CR-071
+    atomic_acceptance: WA-AC-0001;WA-AC-0011;WA-AC-0021;WA-AC-0034;WA-AC-0043;WA-AC-0053;WA-AC-0071
+    atomic_evidence: WA-EV-0001;WA-EV-0011;WA-EV-0021;WA-EV-0034;WA-EV-0043;WA-EV-0053;WA-EV-0071
+    optimized_evidence:
+      images:
+        - IMG-CORE-*-WA-DES-036_PLANNING_LANDING-*
+        - IMG-CORE-*-WA-DES-045_VISITS_LIST-*
+      traces:
+        - TRACE-RT-PLANNING_LANDING-UNAUTHORIZED-*
+        - TRACE-RT-PLANNING_VISITS_LIST-UNAUTHORIZED-*
+      probes:
+        - EQ-412-390-*-WA-DES-036_PLANNING_LANDING-*
+        - PROBE-MODE-*-WA-DES-036_PLANNING_LANDING-*
+    proves:
+      - Visible method and Visit Management entry points.
+      - Route-level authorized and unauthorized presentation.
+      - Locale, theme, direction, and responsive visibility.
+    does_not_prove:
+      - Every role reaches exactly the methods permitted by policy.
+      - Each method opens and completes its workflow.
+      - CR-001 Inspector routing while DEC-025 is open.
+    additional_required:
+      - Non-skipped role matrix and navigation journey.
+      - Sponsor disposition of DEC-025.
+      - Route permission and fail-closed tests.
+    status: PARTIAL_BLOCKED_DEC_025
+
+  - group: M2-REQ-G02
+    name: Bulk planning, assignment, review, publish, and bulk lifecycle
+    exact_requirements:
+      - CR-002..CR-010
+      - CR-012..CR-015
+      - CR-017..CR-020
+      - CR-022..CR-025
+      - CR-027..CR-033
+    atomic_acceptance: >-
+      WA-AC-0002..0010;WA-AC-0012..0015;WA-AC-0017..0020;
+      WA-AC-0022..0025;WA-AC-0027..0033
+    atomic_evidence: >-
+      WA-EV-0002..0010;WA-EV-0012..0015;WA-EV-0017..0020;
+      WA-EV-0022..0025;WA-EV-0027..0033
+    optimized_evidence:
+      images:
+        - IMG-CORE-*-WA-DES-036_PLANNING_LANDING-*
+      interpretation: ENTRY_POINT_AND_HIGH_LEVEL_STATUS_ONLY
+    proves:
+      - Bulk entry remains represented from Planning landing.
+    does_not_prove:
+      - Criteria semantics, factory matching, selection, configuration, assignment, validation, review, publish, child Visit creation, notification, audit, bulk edit, or bulk cancellation.
+    additional_required:
+      - Bulk criteria unit and integration tests.
+      - Real RLS factory-search evidence.
+      - Selection and invalidation tests.
+      - Atomic publish and forced-failure rollback proof.
+      - Assignment availability and race negatives.
+      - Notification and calendar integration evidence.
+      - Audit and immutable-version evidence.
+      - Bulk edit/cancel guard and same-plan tests.
+    status: NOT_PROVEN_BY_OPTIMIZED_VISUAL_SET
+
+  - group: M2-REQ-G03
+    name: AI Planning Summary
+    exact_requirements:
+      - CR-016
+      - CR-026
+    atomic_acceptance: WA-AC-0016;WA-AC-0026
+    atomic_evidence: WA-EV-0016;WA-EV-0026
+    decision: DEC-026
+    optimized_evidence: NONE
+    does_not_prove:
+      - AI summary generation, advisory provenance, fail-closed behavior, or an approved Phase 2 deferral.
+    additional_required:
+      - Sponsor disposition of DEC-026.
+      - If retained in MVP1, provider contract, provenance, privacy, unavailable, and advisory-only tests.
+      - If deferred, approved change-control evidence that defers only the AI sub-capability.
+    status: BLOCKED_SPONSOR_DECISION
+
+  - group: M2-REQ-G04
+    name: Single Visit Planning
+    exact_requirements:
+      - CR-035..CR-042
+    atomic_acceptance: WA-AC-0035..0042
+    atomic_evidence: WA-EV-0035..0042
+    optimized_evidence:
+      images:
+        - IMG-CORE-*-WA-DES-036_PLANNING_LANDING-*
+      interpretation: ENTRY_POINT_ONLY
+    does_not_prove:
+      - Factory/license resolution, profile/location verification, configuration, assignment, review, atomic publish, audit, or immutable linkage.
+    additional_required:
+      - Resolver exact/multiple/no-match tests.
+      - Location provenance and missing-location negative.
+      - Configuration and assignment validation.
+      - Atomic publish and audit/version evidence.
+    status: NOT_PROVEN_BY_OPTIMIZED_VISUAL_SET
+
+  - group: M2-REQ-G05
+    name: Immediate Visit creation and notification
+    exact_requirements:
+      - CR-044..CR-050
+      - CR-052
+    atomic_acceptance: WA-AC-0044..0050;WA-AC-0052
+    atomic_evidence: WA-EV-0044..0050;WA-EV-0052
+    optimized_evidence:
+      images:
+        - IMG-CORE-*-WA-DES-036_PLANNING_LANDING-*
+      interpretation: ENTRY_POINT_ONLY
+    does_not_prove:
+      - Existing/manual factory paths, mandatory location, configuration, assignment, creation, notification, or audit.
+    additional_required:
+      - Existing and unregistered factory journeys.
+      - Mandatory location and provenance negatives.
+      - Authorized Planner/Inspector role matrix.
+      - Atomic create and idempotency evidence.
+      - Notification event creation and delivery-state evidence.
+    status: NOT_PROVEN_BY_OPTIMIZED_VISUAL_SET
+
+  - group: M2-REQ-G06
+    name: Immediate Visit to Field Execution handoff
+    exact_requirements:
+      - CR-051
+    atomic_acceptance: WA-AC-0051
+    atomic_evidence: WA-EV-0051
+    optimized_evidence: NONE
+    ownership:
+      M2: >-
+        May prove creation-side handoff intent and the guarded transition request.
+      FIELD_OR_EXECUTION: >-
+        Must prove inspection start, execution-workspace appearance, downstream
+        ownership, offline behavior where applicable, and execution lifecycle.
+    incorrectly_claimed_if: M2_CLAIMS_END_TO_END_COMPLETION_ALONE
+    additional_required:
+      - Cross-module contract test.
+      - Field/Execution owner evidence.
+      - Independent end-to-end review.
+    status: SPLIT_OWNERSHIP_NOT_PROVEN
+
+  - group: M2-REQ-G07
+    name: Visit list, KPIs, search/filter, parent views, bulk actions, calendar, map, conflicts, notification, and expiry
+    exact_requirements:
+      - CR-054..CR-056
+      - CR-059
+      - CR-063
+      - CR-067..CR-070
+      - CR-072..CR-075
+      - CR-083..CR-093
+      - CR-098
+    atomic_acceptance: >-
+      WA-AC-0054..0056;WA-AC-0059;WA-AC-0063;WA-AC-0067..0070;
+      WA-AC-0072..0075;WA-AC-0083..0093;WA-AC-0098
+    atomic_evidence: >-
+      WA-EV-0054..0056;WA-EV-0059;WA-EV-0063;WA-EV-0067..0070;
+      WA-EV-0072..0075;WA-EV-0083..0093;WA-EV-0098
+    optimized_evidence:
+      images:
+        - IMG-CORE-*-WA-DES-045_VISITS_LIST-*
+        - IMG-DES-ATLAS-WA-DES-045_VISITS_LIST-*
+        - IMG-RT-STATE-PLANNING_VISITS_LIST-*-*
+      traces:
+        - TRACE-RT-PLANNING_VISITS_LIST-*-*
+      probes:
+        - EQ-412-390-*-WA-DES-045_VISITS_LIST-*
+        - PROBE-MODE-*-WA-DES-045_VISITS_LIST-*
+    proves:
+      - List/KPI/search/filter controls and states are represented.
+      - Populated, empty, loading, read-error, unauthorized, and stale/degraded presentation.
+      - Locale, theme, direction, responsive layout, and selected accessibility behavior.
+    does_not_prove:
+      - Correct KPI formulas or query semantics.
+      - Search/filter/sort/pagination results.
+      - Edit, reassign, reschedule, cancel, or bulk guards.
+      - Parent campaign progress.
+      - Assignment Center, calendar, and map route behavior.
+      - Conflict-engine blocking.
+      - Notification delivery.
+      - Scheduler-driven final expiry and immutability.
+    additional_required:
+      - Formula-to-query tests with seeded or existing governed data.
+      - Search/filter/sort/pagination interaction tests.
+      - Lifecycle transition and prohibited-state negatives.
+      - Same-plan and not-started bulk-action guards.
+      - Visit Plan, workload, calendar, and map route evidence.
+      - Map unavailable and zero-coordinate negatives.
+      - Conflict validation and atomic blocking evidence.
+      - Notification event plus provider-state evidence.
+      - Scheduler/RPC expiry and final-state immutability proof.
+    shared_or_split_rows:
+      CR-093: >-
+        M2 owns planning event semantics; F0 owns shared notification-shell
+        presentation, and provider delivery remains a separately governed integration.
+      CR-098: >-
+        M2 owns lifecycle semantics and list representation; scheduler operation
+        requires database/operations evidence, not images.
+    status: PARTIAL_PRESENTATION_ONLY
+
+  - group: M2-REQ-G08
+    name: Visit detail, actions, returned flow, timeline, audit, attachments, and notes
+    exact_requirements:
+      - CR-057
+      - CR-058
+      - CR-060..CR-062
+      - CR-064..CR-066
+      - CR-076..CR-082
+      - CR-094..CR-097
+    atomic_acceptance: >-
+      WA-AC-0057;WA-AC-0058;WA-AC-0060..0062;WA-AC-0064..0066;
+      WA-AC-0076..0082;WA-AC-0094..0097
+    atomic_evidence: >-
+      WA-EV-0057;WA-EV-0058;WA-EV-0060..0062;WA-EV-0064..0066;
+      WA-EV-0076..0082;WA-EV-0094..0097
+    optimized_evidence:
+      images:
+        - IMG-CORE-*-WA-DES-045_VISIT_DETAIL-*
+        - IMG-DES-ATLAS-WA-DES-045_VISIT_DETAIL-*
+        - IMG-RT-STATE-PLANNING_VISIT_DETAIL-*-*
+      traces:
+        - TRACE-RT-PLANNING_VISIT_DETAIL-*-*
+      probes:
+        - EQ-412-390-*-WA-DES-045_VISIT_DETAIL-*
+        - PROBE-MODE-*-WA-DES-045_VISIT_DETAIL-*
+    proves:
+      - Detail, state domains, action region, audit/timeline region, and negative-state presentation.
+      - Locale, theme, direction, responsive layout, and selected accessibility behavior.
+    does_not_prove:
+      - Edit/reassign/reschedule/cancel/return/republish guards or persistence.
+      - Duplicate/conflict prevention.
+      - Stable Visit and Visit Plan identifiers.
+      - Attachment upload/download/remove security.
+      - Note visibility, editing, or audit.
+      - Append-only timeline/audit immutability.
+    additional_required:
+      - Positive and negative lifecycle-transition tests.
+      - Started/final-state immutability tests.
+      - Duplicate/conflict transaction tests.
+      - Identifier preservation assertions.
+      - Signed attachment access and unauthorized negatives.
+      - Notes RLS, persistence, and audit tests.
+      - Database-level append-only audit tests.
+    status: PARTIAL_PRESENTATION_ONLY
+
+group_coverage_validation:
+  exact_total_requirements: 98
+  duplicate_requirement_ids: 0
+  missing_requirement_ids: 0
+  interpretation: >-
+    Every CR-001..CR-098 appears in exactly one trace group. Grouping does not
+    merge or waive its one-to-one WA-AC and WA-EV row.
+
+package_acceptance_trace:
+  WA-M2-AC-001:
+    category: FUNCTIONAL
+    current_ledger_status: REVIEW_READY_FOCUSED_PASS
+    optimized_units:
+      - 104 images support visible routes, controls, and states only.
+      - 28 traces support negative-state rendering only.
+    missing:
+      - Complete positive interaction evidence for all 98 atomic rows.
+      - Real transaction, RLS, audit, notification, scheduler, attachment, and downstream handoff evidence.
+    corrected_status: BLOCKED_INCOMPLETE_ATOMIC_REQUIREMENT_EVIDENCE
+  WA-M2-AC-002:
+    category: NEGATIVE_SECURITY
+    current_ledger_status: REVIEW_READY_FOCUSED_PASS
+    optimized_units:
+      - 14 runtime negative-state images.
+      - 28 deterministic negative-state traces.
+    missing:
+      - RLS cross-persona negatives.
+      - Invalid workflow transition and final-state immutability.
+      - Provider, notification, attachment, conflict, atomicity, and scheduler negatives.
+    corrected_status: PARTIAL_NOT_PACKAGE_PASS
+  WA-M2-AC-003:
+    category: VISUAL
+    current_ledger_status: AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL
+    optimized_units:
+      - 84 core images, including all four modes at 1440x900.
+    missing:
+      - Stable accepted R4 revision.
+      - Zero-diff comparison result.
+      - Sponsor visual decision.
+      - F0 shared-focus correction before final capture.
+    corrected_status: BLOCKED_STABLE_R4_F0_AND_SPONSOR
+  WA-M2-AC-004:
+    category: RTL_RESPONSIVE_A11Y
+    current_ledger_status: REVIEW_READY_AR_390_AXE_PASS
+    optimized_units:
+      - 84 core images.
+      - 24 412/390 equivalence probes.
+      - 36 omitted-mode probes.
+      - Required keyboard and axe assertion bundles.
+    missing:
+      - Native-Arabic human review.
+      - Completed optimized evidence manifest.
+      - F0 focus certification.
+      - Promotion of any failed equivalence cell.
+    corrected_status: BLOCKED_NATIVE_ARABIC_AND_EVIDENCE
+  WA-M2-AC-005:
+    category: REGRESSION
+    current_ledger_status: FOCUSED_PASS_BASELINE_29_OF_38_WITH_9_PREEXISTING_FAILURES
+    optimized_units: NONE_SUFFICIENT
+    missing:
+      - Protected test suite at immutable certification head.
+      - Exact ownership and disposition for every existing failure.
+      - F0 focus regression pass.
+      - Cross-module CR-051 handoff regression.
+    corrected_status: BLOCKED_REGRESSION_AND_SHARED_FOUNDATION
+  WA-M2-AC-006:
+    category: EVIDENCE
+    current_ledger_status: REVIEW_PACKET_RECORDED
+    optimized_units:
+      - 104 primary image manifest rows.
+      - 28 trace rows.
+      - 24 equivalence rows.
+      - 36 omitted-mode probe rows.
+    missing:
+      - Actual captured artifacts.
+      - Recomputed hashes, bytes, dimensions, routes, personas, revision, and HEAD.
+      - One-to-one linkage to all WA-EV-0001..0098.
+      - Independent evidence review.
+    corrected_status: BLOCKED_ARTIFACTS_AND_TRACE_LINKS_MISSING
+
+shared_acceptance_trace:
+  WA-SHELL-AC-002:
+    criterion: Sidebar hierarchy, grouping, order, child routes, and fail-closed permissions
+    authoritative_owner: F0
+    M2_may_prove:
+      - Planning and Visit Management leaf destinations appear and open for authorized users.
+    M2_may_not_claim:
+      - Complete shell hierarchy, global ordering, shared collapse/drawer behavior, or all-role permission filtering.
+    optimized_units:
+      - Core images show local shell context but do not certify the global shell.
+    current_result: NOT_M2_PASS_F0_GATE_OPEN
+  WA-SHELL-AC-013:
+    criterion: Planning owns Visits and certified redirects preserve deep links and authorization
+    ownership:
+      M2:
+        - Planning-owned preview routes and target components.
+        - Local permission behavior.
+      F0_OR_CUTOVER_OWNER:
+        - Canonical redirect policy.
+        - Bookmark/deep-link compatibility.
+        - Shared routing and cutover.
+    optimized_units:
+      - Core list/detail images and route traces prove preview targets only.
+    missing:
+      - Approved cutover.
+      - Redirect implementation.
+      - Deep-link, query, bookmark, and authorization regression.
+    current_result: REGISTERED_NOT_IMPLEMENTED_NOT_M2_PASS
+
+incorrect_or_split_ownership_claims:
+  - id: F0-FOCUS
+    rows_affected:
+      - WA-M2-AC-003
+      - WA-M2-AC-004
+      - WA-M2-AC-005
+    owner: F0
+    reason: Shared legacy/canonical CSS and shell-search focus selectors.
+    M2_rule: CONSUME_CERTIFIED_BEHAVIOR_DO_NOT_EDIT_SHARED_CSS
+  - id: SHELL-NAV
+    rows_affected:
+      - WA-SHELL-AC-002
+    owner: F0
+    reason: Global shell hierarchy and permission filtering are foundation scope.
+  - id: VISITS-CUTOVER
+    rows_affected:
+      - WA-SHELL-AC-013
+    owner: F0_OR_EXPLICIT_CUTOVER_OWNER_WITH_M2_SUPPORT
+    reason: Preview route existence is not canonical redirect certification.
+  - id: IMMEDIATE-EXECUTION
+    rows_affected:
+      - CR-051
+      - WA-AC-0051
+      - WA-EV-0051
+    owner: M2_AND_FIELD_OR_EXECUTION
+    reason: M2 cannot certify the downstream execution workspace alone.
+  - id: PLANNING-NOTIFICATION
+    rows_affected:
+      - CR-052
+      - CR-093
+      - WA-AC-0052
+      - WA-AC-0093
+    owner: M2_EVENT_SEMANTICS_PLUS_F0_SHARED_SURFACE_PLUS_PROVIDER_GOVERNANCE
+    reason: Event generation, shared display, and delivery provider are separate proofs.
+  - id: NATIVE-ARABIC
+    rows_affected:
+      - WA-M2-AC-004
+    owner: QUALIFIED_HUMAN_REVIEWER
+    reason: Automated RTL and screenshots do not prove native Arabic quality.
+
+human_and_independent_gaps:
+  sponsor:
+    - DEC-025 Planning selector role routing.
+    - DEC-026 AI Planning Summary scope or deferral.
+    - Stable R4 versus revision 1784904309230874 authority.
+    - WA-M2-AC-003 visual acceptance.
+    - Any later cutover and redirect authorization.
+  native_arabic:
+    - Terminology, grammar, truncation, bidi reading order, and action clarity across all three screens and negative states.
+  independent_review:
+    - Stable design revision and semantic delta.
+    - Exact 104-image, 28-trace, 24-equivalence, and 36-probe manifest.
+    - All 98 atomic requirement evidence links.
+    - F0 focus result and non-overlapping ownership.
+    - CR-051 and notification split ownership.
+    - Regression failure disposition.
+
+readiness_verdict:
+  optimized_visual_plan: CONDITIONALLY_TRACEABLE
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_partially_supported_by_visual_or_state_evidence: 51
+  atomic_requirements_with_entry_point_only_or_no_optimized_visual_proof: 47
+  package_acceptance_passed: 0
+  reason: >-
+    The optimized evidence plan is a visual/state certification plan for three
+    screens. It does not replace the missing atomic functional evidence for
+    CR-001..CR-098, and every source requirement row remains recorded as
+    BASELINED_NOT_IMPLEMENTED.
+
+post_unlock_preflight:
+  id: M2-B002-R4-OPTIMIZED-CAPTURE-PREFLIGHT
+  state: QUEUED_NOT_DISPATCHED
+  additional_entry_conditions_from_this_trace:
+    - Stable R4 handoff and sponsor revision decision.
+    - DEC-025 and DEC-026 honest disposition or explicit blocker retention.
+    - F0 focus disposition.
+    - Requirement evidence index plan for all WA-EV-0001..0098.
+    - Real non-empty RLS records available without unapproved seeding.
+  behavior_on_unlock: >-
+    Notify the orchestrator only. Do not capture, operate Claude Design, seed,
+    edit, or issue a lease without explicit dispatch.
+
+unlock_monitor:
+  last_observed:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+
+final_disposition:
+  trace_packet: COMPLETE_AS_GOVERNANCE_DRAFT
+  m2_implementation: BLOCKED
+  m2_capture: QUEUED_NOT_DISPATCHED
+  f0_focus: SEPARATE_BLOCKER
+  field_execution: SEPARATE_REQUIRED_EVIDENCE
+  m3: BLOCKED

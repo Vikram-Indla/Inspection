@@ -1,0 +1,338 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-041
+title: Admin Audit design-authority and code-delta review
+status: BLOCKED_MISSING_FINGERPRINTED_CD054_DESIGN_AND_SCREEN_IDENTITY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+review_mode: READ_ONLY
+live_design_mutated: false
+application_mutated: false
+tests_mutated: false
+data_mutated: false
+mapping_mutated: false
+branch_or_lease_mutated: false
+sponsor_decision_recorded: false
+
+predecessors:
+  reviews:
+    - packet_id: M8-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-035
+      finding: CD-054 is logical authority but its exact route frame and governed screen identity are unresolved.
+    - packet_id: M9-ADMIN-AUDIT-PRIMARY-FRAME-RETRIEVAL-READINESS-036
+      finding: The claimed CD-054 R2 package, renders and SHA-256 manifest were not retrievable.
+  rule: >-
+    This packet independently rechecks current source and records the semantic
+    delta. It does not convert an implementation-status pointer into design
+    evidence and does not reopen any design or implementation lease.
+
+collision_check:
+  checked_on: "2026-07-25"
+  claude_code_live_watch:
+    overlap: none
+    reported_scope: M2 CR-053 WA-DES-045 governance and isolated seeder manifest
+  kimi_live_watch:
+    overlap: none
+    reported_scope: M11 preauthorization and chat-dispatch lane
+  disposition: SAFE_FOR_READ_ONLY_REVIEW_ONLY
+  rule: Runtime certification requires an independently assigned runtime reviewer.
+
+task_contract:
+  task_id: M9-ADMIN-AUDIT-DESIGN-AUTHORITY-REVIEW-041
+  route: /admin/audit
+  package_id: M9
+  module_id: M3-04
+  primary_design_id: CD-054
+  upstream_module: M2-05
+  historical_prompt_id: CD-019
+  historical_label: ADM-AUDIT
+  governed_screen_id: NONE
+  engines: [ENG-12, AUDIT, VERSION, IMMUTABLE]
+  requirement_ids:
+    module: [MVP2-REQ-0230, MVP2-REQ-0237, MVP2-REQ-0254]
+    mvp1_foundation: [MVP1-FND-003]
+    related_mvp1_generators:
+      - MVP1-M02-014
+      - MVP1-M02-045
+      - MVP1-M04-019
+      - MVP1-M04-034
+      - MVP1-M04-048
+      - MVP1-M04-060
+      - MVP1-M04-093
+      - MVP1-M04-113
+      - MVP1-M04-130
+      - MVP1-M04-152
+      - MVP1-M04-169
+      - MVP1-M04-187
+      - MVP1-M04-205
+      - MVP1-M04-222
+      - MVP1-M05-007
+      - MVP1-M05-012
+      - MVP1-M06-009
+      - MVP1-M06-027
+      - MVP1-M06-039
+      - MVP1-M06-049
+      - MVP1-M06-050
+      - MVP1-M09-015
+    preservation: CR-001_THROUGH_CR-478
+    note: >-
+      Related generator rows are audit producers and consumers; they are not
+      silently promoted to direct completion claims for this browser. The 478
+      rows remain the non-regression boundary.
+  acceptance_ids:
+    module: [MVP2-AC-0230, MVP2-AC-0237, MVP2-AC-0254]
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+  dependencies:
+    - exact_fingerprinted_CD054_R2_return_package
+    - exact_route_frame_and_stable_frame_ids
+    - governed_screen_identity_for_/admin/audit
+    - exact_CD054_to_route_component_state_crosswalk
+    - privacy_redaction_export_retention_and_legal_contracts
+    - current_browser_RLS_responsive_RTL_theme_accessibility_evidence
+  do_not_touch:
+    - live Claude Design and exported design binaries
+    - frozen design, screen, route, requirement, acceptance or evidence mappings
+    - application source, tests, migrations, seeds, Supabase or providers
+    - branches, leases, main, setup/Inspection or stashes
+    - another worker's dirty path or packet
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 1feaed30
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This read-only packet cannot authorize M9 work or override the active M2
+    approval stop.
+
+authority_sources:
+  canonical:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/domain/atomic_scope.csv
+    - product-contract/evidence/AC_LEDGER.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  design_history:
+    - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/individual-admin-prompts/CD-019_PREMIUM_CLAUDE_DESIGN_PROMPT.md
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_DEEP_REVIEW_R1.md
+    - /Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_CORRECTION_PROMPT_R2.md
+  source_inspected_read_only:
+    - apps/web/src/app/(app)/admin/audit/page.tsx
+    - apps/web/src/app/(app)/admin/audit/loading.tsx
+    - apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+    - apps/web/src/lib/audit-replay.ts
+    - apps/web/src/components/ShellClient.tsx
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0005_audit_absolute_immutability.sql
+    - supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql
+    - apps/web/e2e/mvp2-m2-05-audit-replay.spec.ts
+    - apps/web/e2e/mvp2-m2-05-contract.spec.ts
+  inspection_limit: >-
+    Source and historical artifact inspection is not current browser, live
+    database, visual, RLS, accessibility or end-to-end certification.
+
+design_inventory_validation:
+  claimed_primary:
+    design_id: CD-054
+    module: M3-04
+    claimed_package: CD-054_M3-04_R2_FINAL
+    claimed_renders: CD-054_R2_FINAL/renders/01..06-CD-054_R2.png
+    logical_requirement_mapping: confirmed
+    returned_package_found: false
+    editable_source_found: false
+    standalone_html_found: false
+    exact_frame_ids_found: false
+    render_files_found: false
+    SHA256_manifest_found: false
+    validation: INSUFFICIENT_EVIDENCE
+  nearest_registered_secondary:
+    design_id: WA-DES-015
+    route_registered: /admin
+    state_key: audit
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    bytes: 42071
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    observed:
+      - Audit Trail replay heading
+      - chronological fixture timeline
+      - append-only and object-scoped disclosure
+      - enabled Export scoped control
+      - Arabic-only wordmark on an English Admin shell
+    validation: CONFIRMED_WITH_CORRECTION
+    correction: >-
+      This is a secondary visual ancestor, not exact /admin/audit authority.
+      Its Export control is unsupported and its events are unlabelled fixtures.
+      The English shell Arabic-only wordmark fails the accepted language parity
+      expectation.
+  historical_CD019:
+    prompt_exists: true
+    exact_route: /admin/audit
+    prior_R1_verdict: BLOCKED
+    corrected_R2_return_found: false
+    stale_source_root: apps/web/src/app/admin/audit
+    current_source_root: apps/web/src/app/(app)/admin/audit
+    validation: INSUFFICIENT_EVIDENCE
+  exact_design_match:
+    status: NO_CONSUMABLE_EXACT_DESIGN_MATCH
+    reason: >-
+      CD-054 is a binding logical pointer without retrievable stable artifacts;
+      WA-DES-015 is registered only to /admin; CD-019 is an unaccepted prompt
+      lineage without a retained corrected return.
+
+application_mapping:
+  route_exists: true
+  route: /admin/audit
+  primary_component: apps/web/src/app/(app)/admin/audit/page.tsx
+  workspace_component: apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+  capability: Inspection Flight Recorder
+  modes: [recorder, reconstruct, compare, ledger, custody, print]
+  authorized_roles:
+    - auditor
+    - ops
+    - security_admin
+    - leadership
+    - reviewer
+    - planner
+    - compliance_admin
+  explicit_negative_role: inspector
+  reads:
+    generic: audit_events
+    semantic: audit_semantic_events
+    ontology:
+      - audit_event_ontology_versions
+      - audit_event_ontology_entries
+      - audit_event_registry
+      - audit_event_order_constraints
+    replay_rpc: audit_replay_case
+  immutable_truth:
+    generic: UPDATE_AND_DELETE_TRIGGER_BLOCKED
+    semantic: UPDATE_AND_DELETE_TRIGGER_BLOCKED
+  route_validation: CONFIRMED
+
+semantic_delta:
+  parity:
+    - Real route and replay workspace exist.
+    - Chronology, before/after, correlation and provenance are represented.
+    - Generic records are labelled non-canonical and semantic degradation is explicit.
+    - Unauthorized state is zero-disclosure in the rendered workspace.
+    - Append-only database triggers exist for generic and semantic audit rows.
+    - EN and AR label sets, document direction and a bilingual loading state exist.
+  code_beyond_WA_DES_015:
+    - reconstruction, comparison, completeness, custody and print-safe modes
+    - semantic provenance, integrity and chain status
+    - ontology-backed expected-event ledger
+    - bounded-history and policy-held disclosure
+    - source-error, degraded, empty and unauthorized states
+  design_beyond_code_or_unproven:
+    - WA-DES-015 Export scoped is not implemented or governed.
+    - CD-019 actor, object, action and date filters are not fully implemented.
+    - CD-019 sensitive redaction, export, retention and tamper-evidence controls are held.
+    - No accepted stable design proves the current six-mode workspace.
+  current_source_risks:
+    - Queries execute before the workspace renders unauthorized, relying on RLS.
+    - compliance_admin object-scoped results are not labelled partial.
+    - Generic and portfolio reads stop at 250 without next-page navigation.
+    - Client q search covers the bounded loaded snapshot but can look global.
+    - Generic and semantic rows may represent the same business change twice.
+    - Before, after and payload JSON have no approved field-redaction contract.
+    - Print-safe is not a legal export or evidence package.
+    - Localized date display does not expose a governed timezone policy.
+    - Dialog Tab handling returns focus only to Close rather than cycling all controls.
+  functional_implication: >-
+    Existing replay behavior must be preserved. A design may reorganize the
+    workspace only after it shows bounded scope, provenance, RLS, partial
+    history and held policy truth without adding fake export or legal proof.
+  wiring_implication: >-
+    BUILD, WIRE and UPDATE are blocked. First retrieve and validate CD-054 or
+    create a governed successor; separately approve any privacy/export contract.
+
+required_states:
+  - loading
+  - verified_empty
+  - auditor_ops_security_full_scope
+  - leadership_reviewer_planner_compliance_partial_scope
+  - inspector_unauthorized_zero_disclosure
+  - generic_only_degraded
+  - semantic_source_unavailable
+  - generic_source_unavailable
+  - ontology_or_registry_unavailable
+  - bounded_portfolio
+  - truncated_case_history
+  - recorder
+  - reconstruct_no_event
+  - reconstructed
+  - compare_changed_and_unchanged
+  - conflict
+  - completeness_unavailable_partial_and_certifiable
+  - custody_not_assessed
+  - integrity_mismatch_and_chain_incomplete
+  - export_redaction_retention_and_legal_held
+  - EN_LTR_and_AR_RTL_light_and_dark
+  - desktop_tablet_mobile_reflow
+  - keyboard_focus_zoom_reflow_and_reduced_motion
+
+p0_stops:
+  - {id: AUD-041-P0-01, criterion: Retrieve and fingerprint the exact CD-054 R2 return package.}
+  - {id: AUD-041-P0-02, criterion: Reconcile a governed screen identity for /admin/audit without inventing one.}
+  - {id: AUD-041-P0-03, criterion: Register exact route frame IDs and the CD-054-to-component/state crosswalk.}
+  - {id: AUD-041-P0-04, criterion: Keep WA-DES-015 secondary and remove or disable unsupported Export scoped.}
+  - {id: AUD-041-P0-05, criterion: Label every design record, actor, count, date, hash and outcome as fixture unless source-backed.}
+  - {id: AUD-041-P0-06, criterion: Reconcile route authorization, generic RLS and semantic object RLS for every role.}
+  - {id: AUD-041-P0-07, criterion: Preserve append-only triggers and prohibit generic-to-semantic promotion without proof.}
+  - {id: AUD-041-P0-08, criterion: Expose bounded search, pagination, truncation and completeness limits.}
+  - {id: AUD-041-P0-09, criterion: Resolve sensitive payload masking and purpose-bound disclosure before showing reveal.}
+  - {id: AUD-041-P0-10, criterion: Keep export, retention, redaction, watermark, purge and legal status fail-closed.}
+  - {id: AUD-041-P0-11, criterion: Distinguish verified empty, partial, degraded, unavailable, error and unauthorized states.}
+  - {id: AUD-041-P0-12, criterion: Do not claim runtime, production, legal or 478-row completion from design review.}
+
+p1_stops:
+  - {id: AUD-041-P1-01, criterion: Correct the Arabic-only wordmark in the English Admin shell lineage.}
+  - {id: AUD-041-P1-02, criterion: Specify all six modes at representative operational scale.}
+  - {id: AUD-041-P1-03, criterion: Prove EN/LTR and approved AR/RTL with mixed-script IDs and long content.}
+  - {id: AUD-041-P1-04, criterion: Prove light/dark semantic and contrast parity.}
+  - {id: AUD-041-P1-05, criterion: Prove desktop, tablet and mobile reflow without two-dimensional scrolling.}
+  - {id: AUD-041-P1-06, criterion: Specify complete keyboard, focus-cycle, announcement, zoom and print behavior.}
+  - {id: AUD-041-P1-07, criterion: Show time source and governed timezone truth without inventing policy.}
+  - {id: AUD-041-P1-08, criterion: Cross-link every action and state to source, RLS, audit, tests and evidence.}
+
+reviewer_verdict:
+  mapping_status: INSUFFICIENT_EVIDENCE
+  recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+  recommended_action: CHANGE_DESIGN
+  secondary_action_after_authority: CORRECT
+  implementation_actions_now:
+    BUILD: BLOCKED
+    WIRE: BLOCKED
+    UPDATE: BLOCKED
+  sponsor_business_decision: >-
+    Do not approve an Audit redesign or wiring lease yet. Require the actual
+    fingerprinted CD-054 package and governed /admin/audit screen identity.
+    If the package cannot be recovered, authorize one Claude Design successor
+    built from the real replay source and the stops above. Keep privacy/export
+    extensions blocked until their contracts exist.
+
+safe_next_design_task:
+  task_id: M9-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-042
+  mode: READ_ONLY_ONLY_AFTER_ORCHESTRATOR_COLLISION_CHECK
+  objective: >-
+    Validate the real Admin GIS route against its registered design inventory,
+    provider truth, governance states and exact screen identity without
+    touching Audit, Operations, map data or application code.
+
+stop_condition:
+  mapping_validation_report: complete
+  incorrect_and_ambiguous_mapping_list: complete
+  missing_evidence_list: complete
+  sponsor_recommendation: complete
+  ownership_boundary:
+    before_consent: Claude Design owns design correction; Codex owns independent review; application remains read-only.
+    after_consent: Exactly one implementation CLI may own exact leased files; this reviewer remains read-only.
+  product_code_changed: false

@@ -29,12 +29,14 @@ export default async function FactoryDataPage({ searchParams }: { searchParams: 
     <div className="sq-grid" style={{ marginBlock: "var(--space-4)" }}>
       <section className="panel stack" style={{ padding: "var(--space-6)" }} aria-labelledby="provider-state"><h3 id="provider-state">Senaei provider</h3>
         <span className="badge badge-warning">Not configured / not verified here</span><p className="t-caption">No remote call is made from this page. Undocumented provider domains remain <bdi>SENAEI_API_CONTRACT_NOT_SUPPLIED</bdi>.</p>
+        <p className="t-caption">The governed endpoint contract and its recorded live-call verification state are shown in <Link href="/admin/integrations/senai-data?tab=endpoints">SENAI data management</Link>. Configuration is not connectivity.</p>
       </section>
       <section className="panel stack" style={{ padding: "var(--space-6)" }} aria-labelledby="csv-stage"><h3 id="csv-stage">CSV staging and validation</h3><CsvImportForm /></section>
     </div>
 
     <section className="panel stack" style={{ padding: "var(--space-6)", marginBlockEnd: "var(--space-4)" }} aria-labelledby="master-data"><h3 id="master-data">Governed factory master-data controls</h3>
       <p className="t-caption">These retained operations are audit-triggered and RLS-enforced. They do not edit external CR, license, or plant identifiers.</p>
+      <p className="t-caption"><strong>FND-007 — no write-back.</strong> Everything saved here is recorded in SAQEEL only. No establishment or factory master-data change is forwarded to SENAI: the governed endpoint contract contains no master-data write endpoint, so there is no path for one. Where SENAI remains the source of truth, this screen holds SAQEEL-side metadata as pending-integration scaffolding until a governed reconciliation runs — it does not amend the source.</p>
       <form method="get" className="row"><label className="sq-field" style={{ flex: 1 }}><span className="sq-field__label">Factory</span><select className="sq-select" name="factory" defaultValue={selectedFactory}><option value="">Select a factory</option>{factories.map(factory => <option key={factory.id} value={factory.id}>{factory.name} · {factory.factory_code ?? factory.cr_number ?? "—"}</option>)}</select></label><button className="btn btn-secondary btn-touch">Open controls</button></form>
       {selected ? <><p><strong>{selected.name}</strong> · CR <bdi>{selected.cr_number ?? "—"}</bdi> · License <bdi>{selected.license_number ?? "—"}</bdi> · <Link href={`/factories/${selected.id}`}>Open read-only dossier</Link></p><MasterDataForms factoryId={selected.id} representatives={representativesRead.data ?? []} /></> : null}
     </section>

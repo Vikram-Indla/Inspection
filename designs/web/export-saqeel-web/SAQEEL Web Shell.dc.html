@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .wsh-note { font-size:11px; color:var(--text-muted); padding:7px 16px; background:var(--surface-sunken); border-block-end:1px dashed var(--border-strong); }
+  .wsh-evbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:9px 16px; background:var(--surface-sunken); border-block-end:1px dashed var(--border-strong); }
+  .wsh-evlabel { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin-inline-end:2px; }
+  .wsh-pill { padding:5px 11px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--text-secondary); white-space:nowrap; }
+  .wsh-pill.is-active { border-color:var(--action-primary); background:var(--accent-soft); color:var(--accent-text); }
+  .wsh-stagewrap { overflow:auto; padding:22px; background:repeating-linear-gradient(45deg, var(--surface-sunken) 0 10px, var(--surface-canvas) 10px 20px); display:flex; justify-content:center; }
+  .wsh-stagetag { text-align:center; font-size:11px; color:var(--text-muted); margin-block-end:8px; font-family:monospace; }
+  .wsh-scalebox { flex:none; position:relative; overflow:hidden; }
+  .wsh-frame { box-shadow:var(--shadow-lg); border:1px solid var(--border-strong); border-radius:12px; overflow:hidden; position:absolute; top:0; left:0; background:var(--surface-canvas); transform-origin:top left; }
+  .wsh-drawerbackdrop, .wsh-sheetbackdrop { position:absolute; inset:0; background:rgba(0,0,0,.42); z-index:60; }
+  .wsh-rail-drawer { position:absolute; inset-block:0; inset-inline-start:0; z-index:70; }
+  .wsh-mininav { display:flex; align-items:center; gap:6px; height:48px; border-block-end:1px solid var(--border-subtle); background:var(--surface-primary); padding:0 10px; flex:none; }
+  .wsh-sheet { position:absolute; inset-inline:0; inset-block-end:0; z-index:80; background:var(--surface-primary); border-start-start-radius:14px; border-start-end-radius:14px; box-shadow:var(--shadow-lg); padding:14px 16px 18px; max-height:78%; overflow-y:auto; }
+  .wsh-sheetrow { display:flex; align-items:center; gap:10px; padding:9px 0; border-block-end:1px solid var(--border-subtle); }
+  .wsh-sheetrow:last-child { border-block-end:0; }
+  .wsh-evpanel { padding:14px 16px; }
+  .wsh-navmap { display:grid; grid-template-columns:1fr auto; gap:5px 12px; font-size:12px; }
+  .wsh-navmap dt { font-weight:600; }
+  .wsh-navmap dd { margin:0; font-family:monospace; font-size:10.5px; color:var(--text-muted); }
+  .wsh-navmap .grp { grid-column:1 / -1; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin-block-start:8px; }
+</style>
+</helmet>
+
+<div style="font-family:var(--font-body); color:var(--text-primary); background:var(--surface-canvas);">
+<div class="wsh-note">
+  <b>WA-SHELL-SRC-001 reference</b> — rev <span class="id-code">WA-SHELL-r4</span> ← WA-SHELL-r3. Bound against <span class="id-code">Saqeel Web(3).html</span>, 104,507 bytes, SHA-256 <span class="id-code">b870e068…bab9bc2</span>. Every named frame below scales to fit this canvas — nothing sits off-screen. Wordmark: real asset <span class="id-code">export-wordmark-icons/saqeel-wordmark-dark-mode.svg</span>. Status: <b>REGISTERED_NOT_IMPLEMENTED</b> — design reference only, runtime parity unproven.
+</div>
+
+<div class="wsh-evbar">
+  <span class="wsh-evlabel">Frame</span>
+  <button class="wsh-pill {{ f1440 }}" onClick="{{ setFrame1440 }}">1440×900</button>
+  <button class="wsh-pill {{ f1024 }}" onClick="{{ setFrame1024 }}">1024×768</button>
+  <button class="wsh-pill {{ f800 }}" onClick="{{ setFrame800 }}">768–899 drawer</button>
+  <button class="wsh-pill {{ f412 }}" onClick="{{ setFrame412 }}">412×915</button>
+  <button class="wsh-pill {{ f390 }}" onClick="{{ setFrame390 }}">390×844</button>
+  <button class="wsh-pill {{ f320 }}" onClick="{{ setFrame320 }}">320×568</button>
+  <span style="width:1px; height:18px; background:var(--border-subtle); margin:0 4px;"></span>
+  <button class="wsh-pill {{ tLight }}" onClick="{{ setLight }}">Light</button>
+  <button class="wsh-pill {{ tDark }}" onClick="{{ setDark }}">Dark</button>
+  <button class="wsh-pill {{ lEn }}" onClick="{{ setEn }}">EN·LTR</button>
+  <button class="wsh-pill {{ lAr }}" onClick="{{ setAr }}">AR·RTL</button>
+  <span style="width:1px; height:18px; background:var(--border-subtle); margin:0 4px;"></span>
+  <span class="wsh-evlabel">State</span>
+  <select class="select" style="font-size:11.5px; padding:5px 8px;" value="{{ uiState }}" onChange="{{ setUiState }}">
+    <option value="default">Default</option><option value="loading">Loading</option><option value="empty">Empty / no results</option>
+    <option value="error">Error</option><option value="unauthorized">Unauthorized</option><option value="degraded">Degraded</option>
+    <option value="unavailable">Provider unavailable</option>
+  </select>
+  <span class="wsh-evlabel">Scale</span>
+  <span class="id-code" style="font-size:11px;">{{ scalePct }}%</span>
+</div>
+
+<div class="wsh-stagewrap">
+  <div class="wsh-scalebox" style="width:{{ scaledW }}px; height:{{ scaledH }}px;">
+  <div class="wsh-stagetag">{{ frameLabel }} · {{ themeLabel }} · {{ langLabel }} · scaled {{ scalePct }}% to fit</div>
+  <div class="wsh-frame" style="width:{{ frameW }}px; height:{{ frameH }}px; transform:scale({{ scale }}); overflow:hidden; background:var(--surface-canvas); border:1px solid #ccc;" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+    <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+      <div class="wsh-mininav">
+        <button class="btn btn-icon btn-ghost" aria-label="Menu" onClick="{{ toggleDrawer }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <img src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL" style="height:18px; width:auto;">
+        <span class="grow"></span>
+        <button class="btn btn-icon btn-ghost" style="position:relative;" aria-label="Notifications"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+        <button class="btn btn-icon btn-ghost" aria-label="{{ t.moreActions }}" onClick="{{ toggleSheet }}"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+        <span class="avatar" style="background:var(--action-primary); color:#fff; width:26px; height:26px; font-size:11px;">AS</span>
+      </div>
+      <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}"><div class="wsh-drawerbackdrop" onClick="{{ toggleDrawer }}"></div></sc-if>
+      <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+        <div class="wsh-sheetbackdrop" onClick="{{ toggleSheet }}"></div>
+        <div class="wsh-sheet">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-block-end:10px;"><b style="font-size:13.5px;">{{ t.moreActions }}</b><button class="btn btn-ghost btn-icon btn-sm" onClick="{{ toggleSheet }}">✕</button></div>
+          <div class="wsh-sheetrow"><div class="input-affix" style="flex:1;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="{{ t.search }}" style="width:100%; border-radius:var(--radius-full); background:var(--surface-secondary); border-color:var(--border-subtle);"></div></div>
+          <div class="wsh-sheetrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span style="flex:1; font-size:13px;">{{ t.dateRange }}</span><span class="id-code" style="font-size:11px; color:var(--text-muted);">▾</span></div>
+          <div class="wsh-sheetrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span style="flex:1; font-size:13px;">{{ t.allRegions }}</span><span class="id-code" style="font-size:11px; color:var(--text-muted);">▾</span></div>
+          <div class="wsh-sheetrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v3M12 18v3M5 12H2M22 12h-3M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2"/><circle cx="12" cy="12" r="3.4"/></svg><span style="flex:1; font-size:13px;">{{ t.aiAssist }}</span></div>
+          <div class="wsh-sheetrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span style="flex:1; font-size:13px;">{{ t.theme }}</span><button class="wsh-pill" style="padding:3px 9px;" onClick="{{ setLight }}">Light</button><button class="wsh-pill" style="padding:3px 9px;" onClick="{{ setDark }}">Dark</button></div>
+          <div class="wsh-sheetrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16M4 12h16M4 19h10"/></svg><span style="flex:1; font-size:13px;">{{ t.language }}</span><button class="wsh-pill" style="padding:3px 9px;" onClick="{{ setEn }}">EN</button><button class="wsh-pill" style="padding:3px 9px;" onClick="{{ setAr }}">AR</button></div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <div style="display:flex; height:calc(100% - {{ topOffset }}px);">
+      <sc-if value="{{ showRail }}" hint-placeholder-val="{{ true }}">
+      <aside class="sidebar {{ railDrawerClass }}" style="display:flex; flex-direction:column; inline-size:248px; flex:none; height:100%; background:var(--nav-bg); color:var(--nav-text); {{ railStyle }}">
+        <div class="sidebar-brand" style="display:flex; justify-content:center; padding-block:16px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+    </div>
+        <nav style="flex:1; overflow-y:auto; padding-block-end:8px;">
+          <div class="sidebar-group">{{ t.gOverview }}</div>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">{{ t.dashboard }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg><span class="nav-label">{{ t.opsCenter }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/><path d="M3 21h18"/></svg><span class="nav-label">{{ t.factory360 }}</span></a>
+          <div class="sidebar-group">{{ t.gOperations }}</div>
+          <a class="nav-item is-active"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="nav-label">{{ t.planning }}</span></a>
+          <a class="nav-item" style="font-weight:600;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5.5 3.5 9.5 8 11 4.5-1.5 8-5.5 8-11V5z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span class="nav-label">{{ t.inspection }}</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-inline-start:auto;"><path d="m6 9 6 6 6-6"/></svg></a>
+          <a class="nav-item" style="padding-inline-start:36px; font-weight:500;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 12 3 3 6-6"/></svg><span class="nav-label">{{ t.execution }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 12 3 3 6-6"/></svg><span class="nav-label">{{ t.review }}</span></a>
+          <div class="sidebar-group">{{ t.gCompliance }}</div>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 11h6M9 15h6"/></svg><span class="nav-label">{{ t.compLib }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 12 3 3 6-6"/></svg><span class="nav-label">{{ t.approvalQ }}</span><span class="nav-count" style="background:var(--status-critical); color:#fff;">3</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 3 7v5c0 5 4 8 9 9 5-1 9-4 9-9V7z"/><path d="M12 8v5M9.5 10.5h5"/></svg><span class="nav-label">{{ t.enforceLib }}</span></a>
+          <div class="sidebar-group">{{ t.gInsights }}</div>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-8M4 20h16"/></svg><span class="nav-label">{{ t.analytics }}</span></a>
+          <div class="sidebar-group">{{ t.gAdmin }}</div>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M17 11l2 2 3-3"/></svg><span class="nav-label">{{ t.usersRoles }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h7"/></svg><span class="nav-label">{{ t.lookups }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span class="nav-label">{{ t.riskConfig }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span class="nav-label">{{ t.surveyConfig }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="nav-label">{{ t.notifConfig }}</span></a>
+          <a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3v4M16 3v4M4 9h16"/><rect x="4" y="5" width="16" height="16" rx="2"/><path d="m9 14 2 2 4-4"/></svg><span class="nav-label">{{ t.integrations }}</span></a>
+        </nav>
+        <div style="padding:8px 0; border-block-start:1px solid var(--nav-border);"><a class="nav-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m13 17-5-5 5-5M19 17l-5-5 5-5"/></svg><span class="nav-label">{{ t.collapse }}</span></a></div>
+      </aside>
+      </sc-if>
+
+      <div style="display:flex; flex-direction:column; min-width:0; flex:1;">
+        <sc-if value="{{ showFullHeader }}" hint-placeholder-val="{{ true }}">
+        <header style="display:flex; align-items:center; gap:8px; flex-wrap:nowrap; padding:10px 16px; border-block-end:1px solid var(--border-subtle); background:var(--surface-primary); color:var(--text-primary); overflow:hidden;">
+          <div class="input-affix" style="flex:1 1 120px; min-width:0; max-width:300px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="{{ t.search }}" style="width:100%; border-radius:var(--radius-full); background:var(--surface-secondary); border-color:var(--border-subtle);"></div>
+          <button class="btn btn-ghost btn-sm" style="flex:none; white-space:nowrap;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>{{ t.dateRange }}</button>
+          <button class="btn btn-ghost btn-sm" style="flex:none; white-space:nowrap;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>{{ t.allRegions }}</button>
+          <span class="grow" style="flex:1 1 0; min-width:4px;"></span>
+          <button class="btn btn-icon btn-ghost" style="position:relative; flex:none;" aria-label="Notifications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="nav-count" style="position:absolute; top:0px; inset-inline-end:0px; background:var(--status-critical); color:#fff; font-size:9px; padding:0 4px;">3</span></button>
+          <button class="btn btn-icon btn-ghost" aria-label="AI assist"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v3M12 18v3M5 12H2M22 12h-3M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2"/><circle cx="12" cy="12" r="3.4"/></svg></button>
+          <button class="btn btn-icon btn-ghost" aria-label="Toggle theme"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+          <button style="padding:6px 11px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); flex:none;">{{ t.langBtn }}</button>
+          <div style="width:1px; height:22px; background:var(--border-subtle); flex:none;"></div>
+          <button style="display:flex; align-items:center; gap:6px; border:0; background:none; cursor:pointer; padding:2px; font:inherit; flex:none;"><span class="avatar" style="background:var(--action-primary); color:#fff; width:28px; height:28px; font-size:11.5px;">AS</span><span style="line-height:1.15;"><span style="display:block; font-size:12px; font-weight:600; text-align:start; white-space:nowrap;">a.saleh</span><span style="display:block; font-size:10.5px; color:var(--text-muted); text-align:start;">{{ t.planner }}</span></span></button>
+        </header>
+        </sc-if>
+
+        <div style="padding:16px 18px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1;">
+          <sc-if value="{{ stDefault }}" hint-placeholder-val="{{ true }}"><p class="t-caption" style="margin:0;">{{ t.frameNote }}</p></sc-if>
+          <sc-if value="{{ stLoading }}" hint-placeholder-val="{{ false }}"><div style="display:flex; flex-direction:column; gap:8px;"><div class="skeleton" style="height:14px; border-radius:5px; width:60%;"></div><div class="skeleton" style="height:34px; border-radius:8px;"></div><div class="skeleton" style="height:34px; border-radius:8px;"></div></div></sc-if>
+          <sc-if value="{{ stEmpty }}" hint-placeholder-val="{{ false }}"><div class="panel" style="padding:26px; text-align:center;"><b style="font-size:13px;">{{ t.emptyTitle }}</b><p class="t-caption" style="margin:6px 0 0;">{{ t.emptyBody }}</p></div></sc-if>
+          <sc-if value="{{ stError }}" hint-placeholder-val="{{ false }}"><div class="alert alert-critical"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><div><b>{{ t.errorTitle }}</b><p class="t-caption" style="margin:2px 0 0;">{{ t.errorBody }}</p></div></div></sc-if>
+          <sc-if value="{{ stUnauthorized }}" hint-placeholder-val="{{ false }}"><div class="alert alert-info"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div><b>{{ t.unauthorizedTitle }}</b><p class="t-caption" style="margin:2px 0 0;">{{ t.unauthorizedBody }}</p></div></div></sc-if>
+          <sc-if value="{{ stDegraded }}" hint-placeholder-val="{{ false }}"><div class="panel" style="padding:14px; display:flex; gap:8px; align-items:center; border-color:var(--status-major);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" style="color:var(--status-major); flex:none;"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span class="t-caption">{{ t.degradedBody }}</span></div></sc-if>
+          <sc-if value="{{ stUnavailable }}" hint-placeholder-val="{{ false }}"><div class="alert alert-warning"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><div><b>{{ t.unavailableTitle }}</b><p class="t-caption" style="margin:2px 0 0;">{{ t.unavailableBody }}</p></div></div></sc-if>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="panel wsh-evpanel" style="max-width:640px; margin:0 22px 22px;">
+  <div class="panel-title" style="margin-block-end:8px;">{{ t.routeMapTitle }}</div>
+  <dl class="wsh-navmap">
+    <div class="grp">{{ t.gOverview }}</div>
+    <dt>{{ t.dashboard }}</dt><dd>/dashboard</dd>
+    <dt>{{ t.opsCenter }}</dt><dd>/operations</dd>
+    <dt>{{ t.factory360 }}</dt><dd>/factories</dd>
+    <div class="grp">{{ t.gOperations }}</div>
+    <dt>{{ t.planning }}</dt><dd>/planning</dd>
+    <dt>{{ t.inspection }} › {{ t.execution }}</dt><dd>/planning/visits?view=execution</dd>
+    <dt>{{ t.review }}</dt><dd>/reviews</dd>
+    <div class="grp">{{ t.gCompliance }}</div>
+    <dt>{{ t.compLib }}</dt><dd>/admin/regulations</dd>
+    <dt>{{ t.approvalQ }}</dt><dd>/admin/compliance-approvals</dd>
+    <dt>{{ t.enforceLib }}</dt><dd>/enforcement</dd>
+    <div class="grp">{{ t.gInsights }}</div>
+    <dt>{{ t.analytics }}</dt><dd>/dashboard?view=analytics</dd>
+    <div class="grp">{{ t.gAdmin }}</div>
+    <dt>{{ t.usersRoles }}</dt><dd>/admin/access</dd>
+    <dt>{{ t.lookups }}</dt><dd>/admin/planning/lookups</dd>
+    <dt>{{ t.riskConfig }}</dt><dd>/admin/risk</dd>
+    <dt>{{ t.surveyConfig }}</dt><dd>/admin/items</dd>
+    <dt>{{ t.notifConfig }}</dt><dd>/admin/notifications</dd>
+    <dt>{{ t.integrations }}</dt><dd>/admin/integrations</dd>
+  </dl>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { frame: "1440", theme: "light", lang: "en", drawerOpen: false, sheetOpen: false, uiState: "default" };
+  renderVals() {
+    const st = this.state;
+    const FRAMES = {
+      "1440": { w: 1440, h: 900, label: "1440×900", narrow: false },
+      "1024": { w: 1024, h: 768, label: "1024×768", narrow: false },
+      "800": { w: 850, h: 700, label: "768–899 drawer", narrow: true },
+      "412": { w: 412, h: 915, label: "412×915", narrow: true },
+      "390": { w: 390, h: 844, label: "390×844", narrow: true },
+      "320": { w: 320, h: 568, label: "320×568", narrow: true },
+    };
+    const f = FRAMES[st.frame];
+    const ar = st.lang === "ar";
+    const AVAIL_W = 860, AVAIL_H = 640;
+    const scale = Math.min(1, AVAIL_W / f.w, AVAIL_H / f.h);
+    const T = {
+      en: { gOverview:"Overview", gOperations:"Operations", gCompliance:"Compliance", gInsights:"Insights", gAdmin:"Administration",
+        dashboard:"Dashboard", opsCenter:"Operations Center", factory360:"Factory 360", planning:"Planning", inspection:"Inspection",
+        execution:"Execution", review:"Review & Approval", compLib:"Compliance Library", approvalQ:"Approval Queue", enforceLib:"Enforcement Library",
+        analytics:"Analytics", usersRoles:"Users & Roles", lookups:"Lookup Management", riskConfig:"Risk Configuration", surveyConfig:"Survey Configuration",
+        notifConfig:"Notification Configuration", integrations:"Integration Management", collapse:"Collapse navigation",
+        search:"Search…", dateRange:"Date range", allRegions:"All Regions", langBtn:"AR", planner:"Planner",
+        moreActions:"More · shell actions", aiAssist:"AI assist", theme:"Theme", language:"Language",
+        frameNote:"Module content mounts here. This shell owns search, date/region, notifications, AI, theme, language and account — module pages must not duplicate them.",
+        routeMapTitle:"Route map (spec evidence — not shown in the sponsor-facing rail)",
+        emptyTitle:"No results", emptyBody:"Nothing matches the current scope. Clear filters to see everything available to your role.",
+        errorTitle:"Something went wrong", errorBody:"The shell could not complete this request (ERR-SHELL-001). Nothing was changed. Try again.",
+        unauthorizedTitle:"Not authorized for this module", unauthorizedBody:"Your role does not include this destination. Contact an administrator if you believe this is wrong.",
+        degradedBody:"Running in a degraded state — some shell-owned scope controls (date/region) are unavailable; results shown are unfiltered, not a fabricated success.",
+        unavailableTitle:"Service unavailable", unavailableBody:"A required backing service is unavailable. This is not a fabricated empty or success state.",
+      },
+      ar: { gOverview:"نظرة عامة", gOperations:"العمليات", gCompliance:"الامتثال", gInsights:"الرؤى", gAdmin:"الإدارة",
+        dashboard:"لوحة القيادة", opsCenter:"مركز العمليات", factory360:"المصنع ٣٦٠", planning:"التخطيط", inspection:"التفتيش",
+        execution:"التنفيذ", review:"المراجعة والاعتماد", compLib:"مكتبة الامتثال", approvalQ:"قائمة الاعتماد", enforceLib:"مكتبة الإنفاذ",
+        analytics:"التحليلات", usersRoles:"المستخدمون والأدوار", lookups:"إدارة القوائم", riskConfig:"إعدادات المخاطر", surveyConfig:"إعدادات الاستبيان",
+        notifConfig:"إعدادات الإشعارات", integrations:"إدارة التكاملات", collapse:"طيّ التنقل",
+        search:"بحث…", dateRange:"نطاق التاريخ", allRegions:"كل المناطق", langBtn:"EN", planner:"مخطّط",
+        moreActions:"المزيد · إجراءات الهيكل", aiAssist:"مساعد الذكاء الاصطناعي", theme:"السمة", language:"اللغة",
+        frameNote:"يُركَّب محتوى الوحدة هنا. يملك هذا الهيكل البحث والتاريخ/المنطقة والإشعارات والذكاء الاصطناعي والسمة واللغة والحساب — يجب ألا تُكرّرها صفحات الوحدات.",
+        routeMapTitle:"خريطة المسارات (دليل مواصفات — غير معروضة في الشريط الموجّه للراعي)",
+        emptyTitle:"لا نتائج", emptyBody:"لا شيء يطابق النطاق الحالي. امسح عوامل التصفية لعرض كل ما هو متاح لدورك.",
+        errorTitle:"حدث خطأ ما", errorBody:"تعذّر على الهيكل إتمام هذا الطلب (ERR-SHELL-001). لم يتغيّر شيء. حاول مجدداً.",
+        unauthorizedTitle:"غير مصرّح لهذه الوحدة", unauthorizedBody:"لا يشمل دورك هذه الوجهة. تواصل مع مسؤول إن اعتقدت أن هذا خطأ.",
+        degradedBody:"يعمل في حالة متدهورة — بعض عناصر التحكم المملوكة للهيكل (التاريخ/المنطقة) غير متاحة؛ النتائج المعروضة غير مصفّاة، وليست حالة نجاح ملفّقة.",
+        unavailableTitle:"الخدمة غير متاحة", unavailableBody:"خدمة أساسية غير متاحة. هذه ليست حالة فارغة أو ناجحة ملفّقة.",
+      },
+    };
+    const t = T[st.lang];
+    const set = (k) => () => this.setState({ frame: k, drawerOpen: false, sheetOpen: false });
+    return {
+      frameW: f.w, frameH: f.h, frameLabel: f.label, scale, scalePct: Math.round(scale * 100),
+      scaledW: Math.round(f.w * scale), scaledH: Math.round(f.h * scale),
+      themeLabel: st.theme === "dark" ? "Dark" : "Light", langLabel: ar ? "AR·RTL" : "EN·LTR",
+      theme: st.theme, dir: ar ? "rtl" : "ltr", lang: st.lang, t,
+      isNarrow: f.narrow,
+      showRail: !f.narrow || st.drawerOpen, showFullHeader: !f.narrow,
+      topOffset: f.narrow ? 48 : 0,
+      railDrawerClass: f.narrow ? "wsh-rail-drawer" : "",
+      railStyle: f.narrow ? "box-shadow:var(--shadow-lg);" : "",
+      drawerOpen: st.drawerOpen, toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen, sheetOpen: false })),
+      sheetOpen: st.sheetOpen, toggleSheet: () => this.setState(s => ({ sheetOpen: !s.sheetOpen, drawerOpen: false })),
+      f1440: st.frame === "1440" ? "is-active" : "", f1024: st.frame === "1024" ? "is-active" : "",
+      f800: st.frame === "800" ? "is-active" : "", f412: st.frame === "412" ? "is-active" : "",
+      f390: st.frame === "390" ? "is-active" : "", f320: st.frame === "320" ? "is-active" : "",
+      setFrame1440: set("1440"), setFrame1024: set("1024"), setFrame800: set("800"),
+      setFrame412: set("412"), setFrame390: set("390"), setFrame320: set("320"),
+      tLight: st.theme === "light" ? "is-active" : "", tDark: st.theme === "dark" ? "is-active" : "",
+      setLight: () => this.setState({ theme: "light" }), setDark: () => this.setState({ theme: "dark" }),
+      lEn: !ar ? "is-active" : "", lAr: ar ? "is-active" : "",
+      setEn: () => this.setState({ lang: "en" }), setAr: () => this.setState({ lang: "ar" }),
+      uiState: st.uiState, setUiState: (e) => this.setState({ uiState: e.target.value }),
+      stDefault: st.uiState === "default", stLoading: st.uiState === "loading", stEmpty: st.uiState === "empty",
+      stError: st.uiState === "error", stUnauthorized: st.uiState === "unauthorized", stDegraded: st.uiState === "degraded",
+      stUnavailable: st.uiState === "unavailable",
+    };
+  }
+}
+
+</script>
+</body>
+</html>

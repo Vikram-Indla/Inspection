@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .tv-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 16px 18px 110px; display:flex; flex-direction:column; gap:14px; }
+  .tv-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); }
+  .tv-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .tv-pin { position:absolute; transform:translate(-50%,-100%); }
+  .tv-stat { flex:1; text-align:center; padding:10px 8px; }
+  .tv-stat + .tv-stat { border-inline-start:1px solid var(--border-subtle); }
+  /* Animated live-route flow: dashes stream toward the destination, matching the Dashboard's fd-route-flow. */
+  @keyframes tv-route-flow { to { stroke-dashoffset: -24; } }
+  .tv-route { animation: tv-route-flow 1.1s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { .tv-route { animation: none; } }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:15px;">{{ t.title }}</div><div class="t-caption">{{ reco.factory }}</div></div>
+    <span class="badge {{ stateBadge }}">{{ stateLabel }}</span>
+    <button class="tv-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="tv-wrap">
+
+    <div class="tv-card" style="overflow:hidden;">
+      <div style="position:relative; height:280px; background:var(--surface-sunken);">
+        <div style="position:absolute; inset:0; background-image:radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size:22px 22px;"></div>
+        <svg viewBox="0 0 400 280" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;"><path d="M60 240 Q130 190 200 150 T340 60" fill="none" stroke="var(--border-strong)" stroke-width="6" stroke-linecap="round" opacity="0.35"/><path class="tv-route" d="M60 240 Q130 190 200 150 T340 60" fill="none" stroke="var(--action-primary)" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/></svg>
+        <div class="tv-pin" style="inset-inline-start:60px; top:240px;"><span style="display:block; width:14px; height:14px; border-radius:50%; background:var(--status-info); border:3px solid var(--surface-primary); box-shadow:0 0 0 5px color-mix(in srgb,var(--status-info) 30%,transparent);"></span></div>
+        <div class="tv-pin" style="inset-inline-start:340px; top:60px;"><svg viewBox="0 0 24 24" fill="var(--status-critical)" stroke="var(--surface-primary)" stroke-width="1.2" style="width:28px;height:28px;"><path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8z"/><circle cx="12" cy="10" r="2.6" fill="var(--surface-primary)"/></svg></div>
+        <span class="id-code" style="position:absolute; bottom:8px; inset-inline-end:10px; font-size:10px; color:var(--text-muted); background:var(--surface-primary); padding:3px 8px; border-radius:6px;">Mapbox GL · {{ t.liveGps }}</span>
+      </div>
+      <div style="display:flex; padding:12px 16px; border-block-start:1px solid var(--border-subtle);">
+        <div class="tv-stat"><div class="id-code" style="font-weight:700; font-size:16px;">{{ travel.eta }}</div><div class="t-caption">{{ t.eta }}</div></div>
+        <div class="tv-stat"><div class="id-code" style="font-weight:700; font-size:16px;">{{ travel.distance }}</div><div class="t-caption">{{ t.distance }}</div></div>
+        <div class="tv-stat"><div class="id-code" style="font-weight:700; font-size:16px;">{{ travel.speed }}</div><div class="t-caption">{{ t.speed }}</div></div>
+      </div>
+    </div>
+
+    <div class="tv-card" style="padding:16px 18px;">
+      <div style="display:flex; align-items:center; gap:9px; margin-block-end:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:18px;height:18px;"><path d="M12 2 4 5v6c0 5.5 3.5 9.5 8 11 4.5-1.5 8-5.5 8-11V5z"/></svg><span style="font-weight:600; font-size:14px;">{{ t.geofenceTitle }}</span></div>
+
+      <div style="position:relative; height:150px; border-radius:10px; background:var(--surface-sunken); overflow:hidden; margin-block-end:10px;">
+        <div style="position:absolute; inset:0; background-image:radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size:18px 18px;"></div>
+        <div style="position:absolute; inset-inline-start:96px; top:60px; width:14px; height:14px; border-radius:50%; background:var(--status-info); border:3px solid var(--surface-primary); box-shadow:0 0 0 4px color-mix(in srgb,var(--status-info) 25%,transparent);"></div>
+        <span style="position:absolute; inset-inline-start:86px; top:82px; font-size:10px; color:var(--text-muted);">{{ t.registeredLoc }}</span>
+        <div style="position:absolute; inset-inline-start:{{ actualPinX }}; top:60px; width:14px; height:14px; border-radius:50%; background:{{ actualPinColor }}; border:3px solid var(--surface-primary);"></div>
+        <span style="position:absolute; inset-inline-start:{{ actualLabelX }}; top:82px; font-size:10px; color:var(--text-muted);">{{ t.actualLoc }}</span>
+        <div class="panel" style="position:absolute; top:8px; inset-inline-end:8px; padding:7px 10px; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:{{ matchTextColor }};"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">{{ matchIcon }}</svg>{{ matchLabel }}</div>
+      </div>
+
+      <sc-if value="{{ inGeofence }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:11px 13px; background:var(--status-compliant-soft); color:var(--status-compliant-text); display:flex; gap:8px; align-items:center; font-size:12.5px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px; flex:none;"><path d="M20 6 9 17l-5-5"/></svg>{{ t.inRangeNote }}</div>
+      </sc-if>
+      <sc-if value="{{ !inGeofence }}" hint-placeholder-val="{{ true }}">
+        <div class="panel" style="padding:11px 13px; background:var(--status-warning-soft); color:var(--status-warning-text); display:flex; gap:8px; align-items:center; font-size:12.5px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; flex:none;"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>{{ t.outOfRangeNote }}</div>
+      </sc-if>
+      <div class="t-caption" style="margin-block-start:8px;">{{ t.geofenceRadius }}: <span class="id-code">150m</span> · {{ t.accuracy }}: <span class="id-code">{{ travel.accuracy }}</span></div>
+    </div>
+
+    <div class="tv-card" style="padding:16px 18px; display:flex; gap:10px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:16px;height:16px; flex:none; margin-block-start:2px;"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z"/></svg>
+      <span style="font-size:12.5px; color:var(--text-secondary); line-height:1.5;">{{ t.aiRouteNote }}</span>
+    </div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <button class="btn btn-secondary" onClick="{{ simulateArrival }}">{{ t.simulateArrival }}</button>
+    <span class="grow"></span>
+    <a href="SAQEEL%20PWA-Field%20Establishment%20File.dc.html" target="_top" class="btn btn-primary" style="{{ confirmDisabledStyle }}">{{ t.confirmArrival }}</a>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", inGeofence: false };
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", backArrow:"M15 6l-6 6 6 6", title:"الرحلة إلى الموقع", langBtnLabel:"EN",
+        liveGps:"تتبّع مباشر", eta:"الوقت المتوقع", distance:"المسافة", speed:"السرعة",
+        geofenceTitle:"التحقق الجغرافي من الوصول", inRangeNote:"داخل نطاق المنشأة — يمكن تأكيد الوصول.", outOfRangeNote:"لا تزال خارج نطاق المنشأة (150م) — تابع التنقل.",
+        geofenceRadius:"نطاق التسييج", accuracy:"دقة الموقع",
+        registeredLoc:"الموقع المسجّل", actualLoc:"موقع الزيارة الفعلي", locMatch:"الموقع تطابق الموقع", locMismatch:"عدم تطابق الموقع",
+        aiRouteNote:"تم تعديل المسار بسبب ازدحام معتدل قرب الطريق 2 — الوصول المتوقع لم يتأثر.",
+        simulateArrival:"محاكاة الوصول (تجريبي)", confirmArrival:"تأكيد الوصول والمتابعة",
+        stateEnRoute:"في الطريق", stateArrived:"تم الوصول",
+      },
+      en: { back:"Back", backArrow:"M9 6l6 6-6 6", title:"Journey to Site", langBtnLabel:"AR",
+        liveGps:"Live GPS", eta:"Est. Arrival", distance:"Distance", speed:"Speed",
+        geofenceTitle:"Geofenced Arrival Verification", inRangeNote:"Within establishment radius — arrival can be confirmed.", outOfRangeNote:"Still outside the establishment's 150m radius — keep navigating.",
+        geofenceRadius:"Geofence Radius", accuracy:"GPS Accuracy",
+        registeredLoc:"Registered location", actualLoc:"Actual visit location", locMatch:"Location matches", locMismatch:"Location mismatch",
+        aiRouteNote:"Route adjusted for moderate traffic near Route 2 — estimated arrival unaffected.",
+        simulateArrival:"Simulate Arrival (demo)", confirmArrival:"Confirm Arrival & Continue",
+        stateEnRoute:"En Route", stateArrived:"Arrived",
+      },
+    };
+    const t = STR[lang];
+    const reco = { factory: ar ? "شركة معادن الخليج — الدمام" : "Gulf Metal Industries — Dammam" };
+    const inGeo = this.state.inGeofence;
+    const travel = inGeo
+      ? { eta: "0 " + (ar ? "دقيقة" : "min"), distance: "0 " + (ar ? "م" : "m"), speed: "0 " + (ar ? "كم/س" : "km/h"), accuracy: "±5m" }
+      : { eta: "12 " + (ar ? "دقيقة" : "min"), distance: "6.4 " + (ar ? "كم" : "km"), speed: "42 " + (ar ? "كم/س" : "km/h"), accuracy: "±8m" };
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t, reco, travel,
+      inGeofence: inGeo, stateBadge: inGeo ? "badge-compliant" : "badge-warning", stateLabel: inGeo ? t.stateArrived : t.stateEnRoute,
+      actualPinX: inGeo ? "96px" : "196px", actualLabelX: inGeo ? "82px" : "182px",
+      actualPinColor: inGeo ? "var(--status-compliant-text)" : "var(--status-critical)",
+      matchTextColor: inGeo ? "var(--status-compliant-text)" : "var(--status-critical-text)",
+      matchLabel: inGeo ? t.locMatch : t.locMismatch,
+      matchIcon: inGeo ? React.createElement("path", { d: "M20 6 9 17l-5-5" }) : React.createElement(React.Fragment, null, React.createElement("circle", { cx: 12, cy: 12, r: 9 }), React.createElement("path", { d: "M12 8v4M12 16h.01" })),
+      simulateArrival: () => this.setState({ inGeofence: true }),
+      confirmDisabledStyle: inGeo ? "" : "opacity:.45; pointer-events:none;",
+    };
+  }
+}
+
+</script>
+</body>
+</html>

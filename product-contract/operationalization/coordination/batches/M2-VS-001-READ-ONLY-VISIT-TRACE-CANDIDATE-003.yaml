@@ -1,0 +1,308 @@
+packet_id: M2-VS-001-READ-ONLY-VISIT-TRACE-CANDIDATE-003
+packet_type: build_readiness_candidate
+created_at: "2026-07-25"
+module: M2_PLANNING
+status: BUILD_READY_AFTER_GATES
+current_dispatch_status: BLOCKED
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+  credit_granted: false
+  reason: "This packet defines a candidate only; it does not implement or prove any requirement."
+
+repository_boundary:
+  authoritative_repository: /Users/vikramindla/Developer/Inspection
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head: 37829f4241c17a424c1481cdb50cad1b64552e5d
+  product_worktree: /Users/vikramindla/Developer/Inspection-codex-planning-m2
+  product_branch: codex/planning-m2-saqeel-correction
+  observed_product_head: 48c58863a183c80171025c5770c4e3440392802b
+  product_checkpoint: 22173ec8
+  product_mutation_authorized_by_this_packet: false
+  lease_issued_by_this_packet: false
+  prohibited:
+    - main
+    - setup/Inspection
+    - existing_stashes
+    - M3_product_work
+
+candidate:
+  slice_id: M2-VS-001
+  name: Read-only Visit Trace
+  business_outcome: >
+    A planning-authorized business user can enter Planning, view only the visits
+    permitted by RLS, open one visit, and inspect its lifecycle and audit history
+    without any mutation path.
+  why_smallest_coherent: >
+    It reuses existing routes, reads, and detail timelines while excluding KPI,
+    advanced-search, filter, pagination, assignment, scheduling, notification,
+    attachment, note, and workflow-mutation claims.
+  backend_change: NONE
+  schema_change: NONE
+  rls_change: NONE
+  api_change: NONE
+  routes:
+    - /planning
+    - /planning/visits?wa_preview=1
+    - /planning/visits/[id]?wa_preview=1
+
+requirement_contract:
+  exact_count: 8
+  rows:
+    - requirement_id: CR-053
+      acceptance_id: WA-AC-0053
+      evidence_id: WA-EV-0053
+      claim: Visit Management Workspace
+    - requirement_id: CR-057
+      acceptance_id: WA-AC-0057
+      evidence_id: WA-EV-0057
+      claim: View Visit Details
+    - requirement_id: CR-065
+      acceptance_id: WA-AC-0065
+      evidence_id: WA-EV-0065
+      claim: Activity Timeline
+    - requirement_id: CR-066
+      acceptance_id: WA-AC-0066
+      evidence_id: WA-EV-0066
+      claim: Audit Trail
+    - requirement_id: CR-071
+      acceptance_id: WA-AC-0071
+      evidence_id: WA-EV-0071
+      claim: Planning Visit Management Workspace
+    - requirement_id: CR-076
+      acceptance_id: WA-AC-0076
+      evidence_id: WA-EV-0076
+      claim: Read-only Visit Details until explicit Edit
+    - requirement_id: CR-096
+      acceptance_id: WA-AC-0096
+      evidence_id: WA-EV-0096
+      claim: Immutable Activity Timeline
+    - requirement_id: CR-097
+      acceptance_id: WA-AC-0097
+      evidence_id: WA-EV-0097
+      claim: Immutable Audit History
+  package_acceptance_ids:
+    - WA-M2-AC-001
+    - WA-M2-AC-002
+    - WA-M2-AC-003
+    - WA-M2-AC-004
+    - WA-M2-AC-005
+    - WA-M2-AC-006
+  explicitly_excluded_claims:
+    - CR-054
+    - CR-055
+    - CR-056
+    - CR-072
+    - CR-073
+    - CR-074
+    - CR-075
+  exclusion_reason: >
+    Existing preview behavior does not yet prove canonical KPI, server-side search,
+    advanced filters, or true pagination/sorting/grouping contracts.
+
+existing_implementation_basis:
+  routes_and_components:
+    - path: apps/web/src/app/(app)/planning/visits/page.tsx
+      role: Double-gated preview wrapper for the existing visits page.
+    - path: apps/web/src/app/(app)/planning/visits/[id]/page.tsx
+      role: Double-gated preview wrapper for existing visit detail.
+    - path: apps/web/src/app/(app)/visits/page.tsx
+      role: RLS-scoped read model for visits and related planning data.
+    - path: apps/web/src/app/(app)/visits/VisitsBoard.tsx
+      role: Existing list presentation; requires a true read-only preview mode.
+    - path: apps/web/src/app/(app)/visits/[id]/page.tsx
+      role: Existing visit graph, lifecycle, location, package, inspection, and audit read model.
+    - path: apps/web/src/app/(app)/visits/[id]/DualStateRibbon.tsx
+      role: Existing plan-versus-operational state presentation.
+    - path: apps/web/src/lib/planning/access.ts
+      role: Existing fail-closed planning capability resolver to reuse.
+  existing_service_evidence:
+    - "supabaseServer reads visits under RLS."
+    - "Detail reads audit_events and append-only visit lifecycle/location records."
+    - "Planning access resolver exposes planning_access_class and has_planning_capability."
+  defects_blocking_current_claim:
+    - >
+      VisitsBoard target preview still exposes checkbox, bulk form, and server-action
+      mutation paths.
+    - >
+      Visit-detail target preview still renders ActionBar, Attachments, and NotesEditor.
+    - >
+      Preview wrappers do not yet enforce planning.view through the existing
+      fail-closed access resolver.
+    - >
+      Audit empty state currently conflates no records with denied/unavailable audit data.
+
+authorization_contract:
+  required_capability: planning.view
+  initial_role_boundary: business_staff
+  data_boundary: existing RLS
+  fail_closed: true
+  pending_decision: DEC-025
+  pending_decision_effect: >
+    Inspector access must remain denied until DEC-025 explicitly authorizes and
+    defines the Inspector selector behavior.
+  negative_authorization_paths:
+    - anonymous_denied
+    - admin_without_planning_view_denied
+    - inspector_denied_until_DEC-025
+    - cross_org_visit_indistinguishable_from_not_found
+    - capability_rpc_failure_neutral_deny
+
+read_only_and_audit_contract:
+  allowed:
+    - RLS-scoped visit list read
+    - RLS-scoped visit detail read
+    - lifecycle timeline read
+    - audit history read
+  forbidden:
+    - bulk actions
+    - assignment
+    - scheduling
+    - status transition
+    - attachment mutation
+    - notes mutation
+    - notification mutation
+    - page-load expiry or workflow mutation
+  audit_expectation:
+    - "No new audit event is created by list or detail viewing."
+    - "Existing lifecycle and audit rows are rendered without mutation."
+    - "Update/delete attempts against immutable history are denied by existing database/RLS controls."
+
+ownership_boundary:
+  M2:
+    owns:
+      - Planning entry composition for this slice
+      - Planning preview route wrappers
+      - M2-only read-only presentation switch
+      - M2 functional and evidence tests
+    must_not_touch:
+      - workflow transition actions
+      - Field journey writes
+      - notification provider behavior
+      - shared shell cutover
+  F0:
+    owns:
+      - shared shell
+      - global navigation and cutover
+      - shared focus correction
+      - global tokens
+      - global localization behavior
+    prerequisite: "F0 focus correction must be certified before final visual proof."
+  Field_Execution:
+    owns:
+      - operational journey state
+      - location and geofence writes
+      - inspection execution mutations
+    boundary: "M2 may read those states but must not modify Field-owned files or semantics."
+  M3:
+    status: BLOCKED
+    reason: "This candidate creates no M3 authority, lease, or implementation dependency."
+
+draft_future_file_lease:
+  issued: false
+  files:
+    - apps/web/src/app/(app)/planning/PlanningPreview.tsx
+    - apps/web/src/app/(app)/planning/visits/page.tsx
+    - apps/web/src/app/(app)/planning/visits/[id]/page.tsx
+    - apps/web/src/app/(app)/visits/page.tsx
+    - apps/web/src/app/(app)/visits/VisitsBoard.tsx
+    - apps/web/src/app/(app)/visits/[id]/page.tsx
+    - apps/web/src/app/(app)/visits/[id]/DualStateRibbon.tsx
+    - apps/web/e2e/web-admin-m2-batch-002.spec.ts
+  prohibited_files:
+    - apps/web/src/app/(app)/visits/actions.ts
+    - apps/web/src/app/(app)/visits/[id]/actions.ts
+    - Field-owned journey or inspection mutation files
+    - F0 shared-shell files
+  collision_rule: >
+    The lease may be issued only after central ACTIVE_WORKTREE_LEASES.csv records
+    the exact files and confirms no active owner collision.
+
+test_contract:
+  functional:
+    - "Authorized planner opens Planning, visits list, and one visit detail."
+    - "Lifecycle and audit entries correspond to the selected visit."
+    - "Honest empty state appears when RLS returns zero rows."
+    - "Query failure appears as unavailable, never as an empty-success claim."
+  negative:
+    - "Missing SAQEEL_M2_PREVIEW=enabled returns 404."
+    - "Missing wa_preview=1 returns 404."
+    - "Unauthorized role and planning capability denial fail closed."
+    - "Cross-organization visit id reveals no record existence."
+    - "Preview exposes no checkbox, bulk action, ActionBar, attachment editor, or NotesEditor."
+    - "List/detail view produces no visit, lifecycle, audit, attachment, note, or notification write."
+    - "Audit read denial is distinct from a legitimate zero-event history."
+    - "Attempted immutable-history update/delete is denied."
+  quality:
+    - "English and Arabic, including RTL."
+    - "Light and dark themes."
+    - "1440, 1024, 390, and 320 CSS-pixel viewports."
+    - "Keyboard traversal, visible focus, and automated accessibility checks."
+    - "No service-role client, RLS bypass, permanent mock, or skipped data-dependent assertion."
+  regression:
+    - "Canonical /visits behavior outside preview remains unchanged."
+    - "Field and Execution state semantics remain unchanged."
+    - "Shared shell and route cutover remain unchanged."
+
+browser_proof_contract:
+  capture_preconditions:
+    - unlocked_mac_session
+    - accepted_stable_R4_revision
+    - certified_F0_focus_base
+    - deterministic_non_mock_RLS_data
+    - exact_build_commit
+  required_frames:
+    - "Planner Planning entry: English/light and Arabic/dark."
+    - "RLS-scoped visit list: desktop, tablet, and mobile."
+    - "Visit detail with lifecycle timeline and audit history."
+    - "Neutral unavailable/denied state."
+    - "Honest zero-row empty state."
+    - "Keyboard focus proof on every interactive control."
+  runtime_assertions:
+    - "No mutation controls are present in the preview DOM."
+    - "No mutation network request occurs during the journey."
+    - "Before/after database snapshots show no mutation."
+    - "Evidence identifies route, viewport, locale, theme, role, data fixture, and commit."
+
+exact_prerequisites:
+  - id: P1
+    blocker: "Stable immutable R4/WA-DES-045 handoff and sponsor revision decision are absent."
+    owner: Claude_Design_and_sponsor
+  - id: P2
+    blocker: "DEC-025 remains open; initial execution must explicitly remain business_staff-only."
+    owner: sponsor_product_authority
+  - id: P3
+    blocker: "F0 focus correction is not yet certified as the immutable visual base."
+    owner: F0
+  - id: P4
+    blocker: "No central M2 file lease exists."
+    owner: orchestrator
+  - id: P5
+    blocker: "Deterministic RLS-visible visit/detail/audit records are not yet evidenced."
+    owner: approved_data_seeding_or_existing_data_owner
+  - id: P6
+    blocker: "Current preview still exposes mutations and lacks explicit planning.view enforcement."
+    owner: future_M2_implementation_lease_holder
+  - id: P7
+    blocker: "Independent mapping and exact file-collision review must pass before lease."
+    owner: independent_reviewer
+  - id: P8
+    blocker: "Mac session is locked, so browser proof cannot be captured now."
+    owner: runtime_environment
+
+decision:
+  verdict: BUILD_READY_AFTER_GATES
+  dispatch_now: BLOCKED
+  rationale: >
+    The slice is coherent, uses existing routes and services, and needs no backend
+    change. It cannot be dispatched until the eight prerequisites are resolved.
+
+queued_follow_on:
+  task_id: M2-VS-001-AUTHORITY-AND-READONLY-PREFLIGHT
+  status: QUEUED_NOT_DISPATCHED
+  purpose: >
+    Recheck accepted design authority, DEC-025 boundary, F0 focus certification,
+    central lease collisions, RLS-visible evidence data, and every preview mutation
+    surface before any implementation lease is issued.
+  mutation_authority: NONE

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pl-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 12px 20px; margin: 0; }
+  .pl-facts dt { font-size: 11px; color: var(--text-muted); margin-block-end: 2px; }
+  .pl-facts dd { margin: 0; font-size: 13.5px; }
+  .pl-group { border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; background: var(--surface-secondary); }
+  .pl-leaf { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--surface-primary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 10px; }
+  .pl-tool { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 16px; background:var(--surface-sunken); border-block-end:1px dashed var(--border-strong); font-size:11.5px; color:var(--text-muted); }
+  .pl-toolgrp { display:flex; gap:4px; background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:8px; padding:3px; }
+  .pl-toolbtn { padding:5px 10px; border-radius:6px; border:0; background:none; font:inherit; font-size:11px; font-weight:600; cursor:pointer; color:var(--text-secondary); white-space:nowrap; }
+  .pl-toolbtn.is-active { background:var(--action-primary); color:#fff; }
+  .pl-specbtn { padding:6px 12px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--text-secondary); }
+  .pl-specpanel { position:fixed; inset-block:0; inset-inline-end:0; width:400px; max-width:92vw; background:var(--surface-primary); border-inline-start:1px solid var(--border-subtle); box-shadow:var(--shadow-lg); z-index:200; overflow-y:auto; padding:20px; }
+  .pl-spec-h { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); margin:18px 0 6px; }
+  .pl-spec-h:first-child{ margin-top:0; }
+  .pl-spec-p { font-size:12px; color:var(--text-secondary); margin:0 0 8px; line-height:1.5; }
+  .pl-spec-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+  .pl-spec-select { font:inherit; font-size:12px; padding:5px 8px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--surface-secondary); color:var(--text-primary); }
+  .pl-specbackdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:150; }
+  .pl-createwrap { position:relative; }
+  .pl-createmenu { position:absolute; top:calc(100% + 6px); inset-inline-start:0; background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:10px; box-shadow:var(--shadow-lg); min-width:230px; z-index:50; overflow:hidden; }
+  .pl-createmenu button { display:block; width:100%; text-align:start; padding:10px 14px; background:none; border:0; font:inherit; font-size:13px; cursor:pointer; color:var(--text-primary); }
+  .pl-createmenu button:hover { background:var(--surface-secondary); }
+  .pl-createmenu .d { font-size:11px; color:var(--text-muted); display:block; margin-top:1px; }
+  .pl-filterbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 16px; }
+  .pl-pill { padding:6px 12px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:12px; font-weight:600; color:var(--text-secondary); cursor:pointer; display:flex; gap:6px; align-items:center; }
+  .pl-pill.is-active { border-color:var(--action-primary); background:var(--accent-soft); color:var(--accent-text); }
+  .pl-morefilters { display:flex; gap:8px; flex-wrap:wrap; padding:0 16px 12px; }
+  .pl-drawerbtn { display:none; width:36px; height:36px; border-radius:8px; border:1px solid var(--border-subtle); background:var(--surface-secondary); align-items:center; justify-content:center; cursor:pointer; color:var(--text-secondary); flex:none; }
+  .pl-drawerbackdrop { position:absolute; inset:0; background:rgba(0,0,0,.4); z-index:70; }
+  .pl-devicewrap { overflow:auto; padding:22px; background:repeating-conic-gradient(var(--surface-sunken) 0% 25%, var(--surface-canvas) 0% 50%) 50%/16px 16px; }
+  .pl-devicelabel { font-size:11px; color:var(--text-muted); margin-block-end:8px; font-weight:600; }
+  .pl-device { position:relative; overflow:hidden; box-shadow:var(--shadow-lg); border-radius:10px; margin:0 auto; }
+  .pl-shellgrid { display:grid; grid-template-columns:248px 1fr; height:100%; }
+  [data-mode="drawer"] .pl-shellgrid, [data-mode="mobile"] .pl-shellgrid { grid-template-columns:1fr; }
+  [data-mode="drawer"] aside, [data-mode="mobile"] aside {
+    position:absolute; inset-block:0; inset-inline-start:0; z-index:80; width:248px;
+    transform:translateX(-100%); transition:transform .18s ease;
+  }
+  [dir="rtl"][data-mode="drawer"] aside, [dir="rtl"][data-mode="mobile"] aside { transform:translateX(100%); }
+  .pl-device.pl-drawer-open aside { transform:translateX(0) !important; }
+  [data-mode="desktop"] .pl-drawerbtn { display:none; }
+  [data-mode="drawer"] .pl-drawerbtn, [data-mode="mobile"] .pl-drawerbtn { display:flex; }
+  main.pl-main { overflow-y:auto; height:100%; display:flex; flex-direction:column; min-width:0; }
+  [data-mode="mobile"] .pl-shellsearch-text { display:none; }
+  [data-mode="mobile"] .pl-hdr-name { display:none; }
+  [data-mode="mobile"] .pl-actionbar .btn-secondary span, [data-mode="mobile"] .pl-actionbar .pl-createwrap .btn span.d { }
+  [data-mode="mobile"] .pl-resptable table, [data-mode="mobile"] .pl-resptable thead, [data-mode="mobile"] .pl-resptable tbody, [data-mode="mobile"] .pl-resptable tr, [data-mode="mobile"] .pl-resptable td { display:block; width:100%; }
+  [data-mode="mobile"] .pl-resptable thead { display:none; }
+  [data-mode="mobile"] .pl-resptable tr { border:1px solid var(--border-subtle); border-radius:10px; margin-bottom:10px; padding:8px 12px; }
+  [data-mode="mobile"] .pl-resptable td { display:flex; justify-content:space-between; gap:10px; padding:5px 0 !important; border:0 !important; font-size:12.5px; }
+  [data-mode="mobile"] .pl-resptable td[data-label]::before { content: attr(data-label); font-size:10.5px; color:var(--text-muted); font-weight:600; }
+  [data-mode="mobile"] .pl-pagebar-title { font-size:18px !important; }
+  [data-mode="mobile"] .pl-actionbar { flex-wrap:wrap; }
+</style>
+</helmet>
+
+<div dir="ltr" style="background:var(--surface-canvas); min-height:100vh; font-family:var(--font-body);">
+
+  <div class="pl-tool">
+    <span><b>{{ t.previewLabel }}</b> · {{ revLabel }}</span>
+    <div class="pl-toolgrp">
+      <sc-for list="{{ frames }}" as="fr" hint-placeholder-count="5">
+        <button class="pl-toolbtn" aria-pressed="{{ fr.active }}" onClick="{{ fr.pick }}">{{ fr.short }}</button>
+      </sc-for>
+    </div>
+    <span class="grow"></span>
+    <button class="pl-specbtn" onClick="{{ toggleSpec }}">{{ t.specBtn }}</button>
+  </div>
+
+  <sc-if value="{{ specOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="pl-specbackdrop" onClick="{{ toggleSpec }}"></div>
+    <div class="pl-specpanel">
+      <div style="display:flex; align-items:center; justify-content:space-between;"><b style="font-size:14px;">{{ t.specTitle }}</b><button class="btn btn-ghost btn-icon" onClick="{{ toggleSpec }}">✕</button></div>
+      <p class="pl-spec-p" style="margin-top:8px;">{{ t.specIntro }}</p>
+
+      <div class="pl-spec-h">{{ t.specFramesH }}</div>
+      <p class="pl-spec-p">{{ t.specFramesBody }}</p>
+
+      <div class="pl-spec-h">{{ t.specShellH }}</div>
+      <p class="pl-spec-p">{{ t.specShellBody }}</p>
+
+      <div class="pl-spec-h">{{ t.specRoutesH }}</div>
+      <p class="pl-spec-p">{{ t.specRoutesBody }}</p>
+
+      <div class="pl-spec-h">{{ t.specFilterH }}</div>
+      <p class="pl-spec-p">{{ t.specFilterBody }}</p>
+
+      <div class="pl-spec-h">{{ t.specFixturesH }}</div>
+      <p class="pl-spec-p">{{ t.specFixturesBody }}</p>
+
+      <div class="pl-spec-h">{{ t.specStateH }}</div>
+      <div class="pl-spec-row"><span style="font-size:12px; min-width:84px;">{{ t.specVisitList }}</span><select class="pl-spec-select" value="{{ visitListState }}" onChange="{{ setVisitListState }}"><option value="normal">{{ t.stNormal }}</option><option value="empty">{{ t.stEmpty }}</option><option value="loading">{{ t.stLoading }}</option><option value="unavailable">{{ t.stUnavailable }}</option><option value="unauthorized">{{ t.stUnauthorized }}</option></select></div>
+      <div class="pl-spec-row"><span style="font-size:12px; min-width:84px;">{{ t.specDraftList }}</span><select class="pl-spec-select" value="{{ draftState }}" onChange="{{ setDraftState }}"><option value="normal">{{ t.stNormal }}</option><option value="empty">{{ t.stEmpty }}</option><option value="loading">{{ t.stLoading }}</option><option value="unavailable">{{ t.stUnavailable }}</option></select></div>
+
+      <div class="pl-spec-h">{{ t.specRevH }}</div>
+      <p class="pl-spec-p">{{ revLabel }} — {{ t.specDelta }}</p>
+    </div>
+  </sc-if>
+
+  <div class="pl-devicewrap">
+    <div class="pl-devicelabel">{{ frameLabel }}</div>
+    <div class="pl-device{{ drawerCls }}" data-mode="{{ frameMode }}" style="width:{{ frameW }}px; height:{{ frameH }}px;">
+      <div class="pl-shellgrid" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="background:var(--surface-canvas); color:var(--text-primary);">
+
+        <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item is-active" href="SAQEEL%20Planning.dc.html" data-route="/planning" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+        <sc-if value="{{ isOverlayMode }}" hint-placeholder-val="{{ false }}"><div class="pl-drawerbackdrop" onClick="{{ toggleDrawer }}"></div></sc-if>
+
+        <main id="main-content" tabindex="-1" class="pl-main">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+          <!-- THE authenticated shell header — one, real, owns search/notifications/AI/account/lang/theme -->
+          <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px; padding:10px 18px;">
+            <button class="pl-drawerbtn" onClick="{{ toggleDrawer }}" aria-label="Menu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <div class="input-affix pl-shellsearch-text" style="flex:1; min-width:0; max-width:360px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="{{ t.shellSearchPh }}" style="border-radius:var(--radius-full); background:var(--surface-secondary); border-color:var(--border-subtle);"></div>
+            <span class="grow"></span>
+            <button class="pl-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+            <div style="width:1px; height:22px; background:var(--border-subtle);"></div>
+            <button class="btn btn-icon btn-ghost" aria-label="{{ t.notifications }}" style="position:relative;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span style="position:absolute; top:2px; inset-inline-end:2px; width:7px; height:7px; border-radius:50%; background:var(--status-critical);"></span></button>
+            <button class="btn btn-icon btn-ghost" aria-label="{{ t.aiAssist }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M5 12H2M22 12h-3M6 6l2 2M18 18l-2-2M6 18l2-2M18 6l-2 2"/><circle cx="12" cy="12" r="3.4"/></svg></button>
+          </header>
+
+          <a id="page-body" tabindex="-1"></a>
+    <div style="display:flex; align-items:flex-start; gap:14px; padding:16px 24px 8px; flex-wrap:wrap;">
+            <div><h1 class="pl-pagebar-title" style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">{{ t.title }}</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">{{ t.tagline }}</div></div>
+            <span class="grow"></span>
+            <div class="seg">
+              <button class="seg-opt" aria-pressed="{{ is_list }}" onClick="{{ go_list }}">{{ t.tabList }}</button>
+              <button class="seg-opt" aria-pressed="{{ is_plans }}" onClick="{{ go_plans }}">{{ t.tabPlans }}</button>
+            </div>
+          </div>
+          <div class="pl-actionbar" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:0 24px 14px;">
+            <div class="pl-createwrap">
+              <button class="btn btn-primary" onClick="{{ toggleCreate }}">{{ t.createVisit }} <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-inline-start:4px;"><path d="m6 9 6 6 6-6"/></svg></button>
+              <sc-if value="{{ createOpen }}" hint-placeholder-val="{{ false }}">
+                <div class="pl-createmenu">
+                  <button onClick="{{ go_bulk }}">{{ t.methodBulkTitle }}<span class="d">{{ t.methodBulkDesc }}</span></button>
+                  <button onClick="{{ go_single }}">{{ t.methodSingleTitle }}<span class="d">{{ t.methodSingleDesc }}</span></button>
+                  <button onClick="{{ go_immediate }}">{{ t.methodImmediateTitle }}<span class="d">{{ t.methodImmediateDesc }}</span></button>
+                </div>
+              </sc-if>
+            </div>
+            <button class="btn btn-secondary"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 20h16"/></svg><span>{{ t.exportCsv }}</span></button>
+            <button class="btn btn-ghost btn-icon" aria-label="{{ t.refresh }}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg></button>
+            <span class="grow"></span>
+            <a href="#" class="btn btn-ghost">{{ t.visitMgmtLink }} <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-inline-start:4px;"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+          </div>
+
+          <div style="padding:2px 24px 80px; display:flex; flex-direction:column; gap:20px;">
+
+            <!-- LIST (canonical, list-first) -->
+            <sc-if value="{{ is_list }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:22px;">
+
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div class="t-label">{{ t.visitListHeading }}</div>
+                <div class="panel" style="padding:0; overflow:hidden;">
+                  <div class="pl-filterbar">
+                    <div class="input-affix" style="flex:1; min-width:220px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" placeholder="{{ t.listSearchPh }}" style="border-radius:var(--radius-full); background:var(--surface-secondary); border-color:var(--border-subtle);"></div>
+                    <button class="pl-pill" aria-pressed="{{ region_all }}" onClick="{{ setRegionAll }}">{{ t.fRegion }}</button>
+                    <button class="pl-pill" onClick="{{ setRiskAll }}">{{ t.fRisk }}</button>
+                    <button class="pl-pill" onClick="{{ setMethodAll }}">{{ t.fMethod }}</button>
+                    <button class="pl-pill" onClick="{{ toggleMoreFilters }}">{{ t.fMore }}</button>
+                  </div>
+                  <sc-if value="{{ moreFiltersOpen }}" hint-placeholder-val="{{ false }}">
+                    <div class="pl-morefilters">
+                      <button class="pl-pill">{{ t.fActivity }}</button>
+                      <button class="pl-pill">{{ t.fCity }}</button>
+                      <button class="pl-pill">{{ t.fPackage }}</button>
+                      <button class="pl-pill">{{ t.fInspector }}</button>
+                      <button class="pl-pill">{{ t.fLicense }}</button>
+                      <button class="pl-pill">{{ t.fDateRange }}</button>
+                      <button class="pl-pill">{{ t.fPlanner }}</button>
+                    </div>
+                  </sc-if>
+                  <div class="pl-filterbar" style="padding-block-start:0;">
+                    <button class="pl-pill is-active" aria-pressed="{{ statusIsAll }}" onClick="{{ setStatusAll }}">{{ t.kpiAll }} · 10</button>
+                    <button class="pl-pill" onClick="{{ setStatusDraft }}">{{ t.kpiDraft }} · 4</button>
+                    <button class="pl-pill" onClick="{{ setStatusPublished }}">{{ t.kpiPublished }} · 3</button>
+                    <button class="pl-pill" onClick="{{ setStatusReturned }}">{{ t.kpiReturned }} · 1</button>
+                    <button class="pl-pill" onClick="{{ setStatusCancelled }}">{{ t.kpiCancelled }} · 1</button>
+                    <button class="pl-pill" onClick="{{ setStatusExpired }}">{{ t.kpiExpired }} · 1</button>
+                  </div>
+                </div>
+
+                <sc-if value="{{ visitNormal }}" hint-placeholder-val="{{ true }}">
+                <div class="panel pl-resptable" style="padding:0; overflow:auto;">
+                  <table class="table"><thead><tr>
+                    <th>{{ t.colVisit }}</th><th>{{ t.colFactory }}</th><th>{{ t.colRegion }}</th><th>{{ t.colRisk }}</th><th>{{ t.colMethod }}</th><th>{{ t.colStatus }}</th>
+                    <th>{{ t.colScheduled }} ↕</th><th>{{ t.colInspector }}</th><th>{{ t.colCreated }} ↕</th><th></th>
+                  </tr></thead><tbody>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51028</td><td data-label="{{ t.colFactory }}">Al Rasheed Steel Works</td><td data-label="{{ t.colRegion }}">Eastern</td><td data-label="{{ t.colRisk }}"><span class="badge badge-critical">High</span></td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-onhold">{{ t.kpiDraft }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-29</td><td data-label="{{ t.colInspector }}">—</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-24</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51027</td><td data-label="{{ t.colFactory }}">Najd Dairy Factory</td><td data-label="{{ t.colRegion }}">Riyadh</td><td data-label="{{ t.colRisk }}"><span class="badge badge-warning">Medium</span></td><td data-label="{{ t.colMethod }}">{{ t.methodImmediateTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-info">{{ t.kpiPublished }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-25</td><td data-label="{{ t.colInspector }}">M. Fahad</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-24</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51022</td><td data-label="{{ t.colFactory }}">Jubail Chemicals Co.</td><td data-label="{{ t.colRegion }}">Eastern</td><td data-label="{{ t.colRisk }}"><span class="badge badge-critical">High</span></td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-info">{{ t.kpiPublished }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-27</td><td data-label="{{ t.colInspector }}">S. Qahtani</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-23</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51019</td><td data-label="{{ t.colFactory }}">Al Khobar Metals</td><td data-label="{{ t.colRegion }}">Eastern</td><td data-label="{{ t.colRisk }}"><span class="badge badge-warning">Medium</span></td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-info">{{ t.kpiPublished }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-26</td><td data-label="{{ t.colInspector }}">A. Zahrani</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-22</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51015</td><td data-label="{{ t.colFactory }}">Dammam Textiles</td><td data-label="{{ t.colRegion }}">Eastern</td><td data-label="{{ t.colRisk }}"><span class="badge badge-onhold">Low</span></td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-onhold">{{ t.kpiDraft }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-30</td><td data-label="{{ t.colInspector }}">—</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-22</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51010</td><td data-label="{{ t.colFactory }}">Yanbu Petrochem</td><td data-label="{{ t.colRegion }}">Madinah</td><td data-label="{{ t.colRisk }}"><span class="badge badge-critical">High</span></td><td data-label="{{ t.colMethod }}">{{ t.methodImmediateTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-critical">{{ t.kpiReturned }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-21</td><td data-label="{{ t.colInspector }}">M. Fahad</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-19</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-51004</td><td data-label="{{ t.colFactory }}">Riyadh Foods Ltd</td><td data-label="{{ t.colRegion }}">Riyadh</td><td data-label="{{ t.colRisk }}"><span class="badge badge-onhold">Low</span></td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-neutral">{{ t.kpiCancelled }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">—</td><td data-label="{{ t.colInspector }}">—</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-15</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-50990</td><td data-label="{{ t.colFactory }}">Hail Agro Processing</td><td data-label="{{ t.colRegion }}">Hail</td><td data-label="{{ t.colRisk }}"><span class="badge badge-warning">Medium</span></td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-neutral">{{ t.kpiExpired }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">—</td><td data-label="{{ t.colInspector }}">—</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-08</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-50985</td><td data-label="{{ t.colFactory }}">Al Rasheed Coatings</td><td data-label="{{ t.colRegion }}">Eastern</td><td data-label="{{ t.colRisk }}"><span class="badge badge-warning">Medium</span></td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-info">{{ t.kpiPublished }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-07-24</td><td data-label="{{ t.colInspector }}">S. Qahtani</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-06</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colVisit }}">VS-50978</td><td data-label="{{ t.colFactory }}">Tabuk Livestock Feed</td><td data-label="{{ t.colRegion }}">Tabuk</td><td data-label="{{ t.colRisk }}"><span class="badge badge-onhold">Low</span></td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td data-label="{{ t.colStatus }}"><span class="badge badge-onhold">{{ t.kpiDraft }}</span></td><td class="id-code" data-label="{{ t.colScheduled }}">2026-08-02</td><td data-label="{{ t.colInspector }}">—</td><td class="id-code" data-label="{{ t.colCreated }}">2026-07-04</td><td><button class="btn btn-ghost btn-icon" aria-label="{{ t.viewRow }}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td></tr>
+                  </tbody></table>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-muted);"><span>{{ t.pagerLabel }}</span><div style="display:flex; gap:6px;"><button class="btn btn-ghost btn-sm" disabled="">{{ t.prev }}</button><button class="btn btn-ghost btn-sm">{{ t.next }}</button></div></div>
+                </sc-if>
+
+                <sc-if value="{{ visitEmpty }}" hint-placeholder-val="{{ false }}">
+                <div class="panel" style="padding:32px; text-align:center;"><b style="font-size:13.5px;">{{ t.stateEmptyTitleV }}</b><p class="t-caption" style="max-width:48ch; margin:6px auto 0;">{{ t.stateEmptyBodyV }}</p></div>
+                </sc-if>
+                <sc-if value="{{ visitLoading }}" hint-placeholder-val="{{ false }}">
+                <div class="panel" style="padding:0; overflow:hidden;"><div style="padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+                  <div class="skeleton" style="height:16px; border-radius:6px;"></div><div class="skeleton" style="height:16px; border-radius:6px;"></div><div class="skeleton" style="height:16px; border-radius:6px; width:70%;"></div>
+                </div></div>
+                </sc-if>
+                <sc-if value="{{ visitUnavailable }}" hint-placeholder-val="{{ false }}">
+                <div class="alert alert-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><div><b>{{ t.stateUnavailableTitle }}</b><p class="t-caption" style="margin:2px 0 0;">{{ t.stateUnavailableBody }}</p></div></div>
+                </sc-if>
+                <sc-if value="{{ visitUnauthorized }}" hint-placeholder-val="{{ false }}">
+                <div class="alert alert-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div><b>{{ t.stateUnauthorizedTitle }}</b><p class="t-caption" style="margin:2px 0 0;">{{ t.stateUnauthorizedBody }}</p></div></div>
+                </sc-if>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div class="t-label">{{ t.draftListHeading }}</div>
+                <sc-if value="{{ draftNormal }}" hint-placeholder-val="{{ true }}">
+                <div class="panel" style="padding:0; overflow:hidden;">
+                  <div class="panel-header"><div class="panel-title">{{ t.listTableHeading }}</div><span class="badge badge-onhold">10 {{ t.draftsWord }}</span></div>
+                  <div class="table-wrap pl-resptable" style="border:0; max-height:340px; overflow-y:auto;"><table class="table"><thead><tr><th>{{ t.colPlan }}</th><th>{{ t.colMethod }}</th><th>{{ t.colCreated }}</th><th>{{ t.colPlanner }}</th><th></th></tr></thead><tbody>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-672</td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 04:01</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-672</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-671</td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 04:01</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-671</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-668</td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 03:59</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-668</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-666</td><td data-label="{{ t.colMethod }}">{{ t.methodImmediateTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 03:41</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-666</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-665</td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 03:40</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-665</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-664</td><td data-label="{{ t.colMethod }}">{{ t.methodBulkTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 03:39</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-664</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-663</td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 03:39</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-663</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-660</td><td data-label="{{ t.colMethod }}">{{ t.methodImmediateTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">24 Jul 2026, 03:38</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-660</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-658</td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">23 Jul 2026, 02:51</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-658</a></td></tr>
+                    <tr><td class="id-code" data-label="{{ t.colPlan }}">BP-657</td><td data-label="{{ t.colMethod }}">{{ t.methodSingleTitle }}</td><td class="id-code" data-label="{{ t.colCreated }}">23 Jul 2026, 02:51</td><td data-label="{{ t.colPlanner }}">A. Planner</td><td><a href="#" class="id-code">{{ t.continueLink }} BP-657</a></td></tr>
+                  </tbody></table></div>
+                </div>
+                </sc-if>
+                <sc-if value="{{ draftEmpty }}" hint-placeholder-val="{{ false }}">
+                <div class="panel" style="padding:28px; text-align:center;"><b style="font-size:13.5px;">{{ t.stateEmptyTitleD }}</b><p class="t-caption" style="max-width:48ch; margin:6px auto 0;">{{ t.stateEmptyBodyD }}</p></div>
+                </sc-if>
+                <sc-if value="{{ draftLoading }}" hint-placeholder-val="{{ false }}">
+                <div class="panel" style="padding:14px 16px; display:flex; flex-direction:column; gap:10px;"><div class="skeleton" style="height:16px; border-radius:6px;"></div><div class="skeleton" style="height:16px; border-radius:6px; width:60%;"></div></div>
+                </sc-if>
+                <sc-if value="{{ draftUnavailable }}" hint-placeholder-val="{{ false }}">
+                <div class="alert alert-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><div><b>{{ t.stateDraftUnavailableTitle }}</b><p class="t-caption" style="margin:2px 0 0;">{{ t.stateDraftUnavailableBody }}</p></div></div>
+                </sc-if>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- BULK -->
+            <sc-if value="{{ is_bulk }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:16px; align-items:start;">
+              <div class="stack" style="gap:16px; min-width:0;">
+                <div class="panel" style="padding:18px 20px;">
+                  <div class="panel-title" style="margin-block-end:4px;">Criteria — factory master</div>
+                  <p class="t-caption" style="margin:0 0 14px;">Nested ALL / ANY tree over region · risk band · activity class · city. Eligibility is re-evaluated at publish.</p>
+                  <div class="pl-group">
+                    <div class="row" style="gap:8px; margin-block-end:10px;"><span class="badge badge-info">ALL of</span><span class="t-caption">match every rule below</span></div>
+                    <div class="stack" style="gap:8px;">
+                      <div class="pl-leaf"><span class="tag">Region</span><span class="id-code">is</span><span style="font-weight:500;">Eastern</span><span class="grow"></span><button class="btn btn-ghost btn-sm">✕</button></div>
+                      <div class="pl-leaf"><span class="tag">Risk band</span><span class="id-code">in</span><span style="font-weight:500;">High, Critical</span><span class="grow"></span><button class="btn btn-ghost btn-sm">✕</button></div>
+                      <div class="pl-group" style="background:var(--surface-primary);">
+                        <div class="row" style="gap:8px; margin-block-end:10px;"><span class="badge badge-pending">ANY of</span><span class="t-caption">match at least one</span></div>
+                        <div class="stack" style="gap:8px;">
+                          <div class="pl-leaf"><span class="tag">Activity</span><span class="id-code">is</span><span style="font-weight:500;">Chemicals</span></div>
+                          <div class="pl-leaf"><span class="tag">Activity</span><span class="id-code">is</span><span style="font-weight:500;">Metals</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="margin-block-start:10px; display:flex; gap:8px;"><button class="btn btn-secondary btn-sm">+ Rule</button><button class="btn btn-ghost btn-sm">+ Group</button></div>
+                  </div>
+                </div>
+                <div class="panel" style="padding:0; overflow:hidden;">
+                  <div class="panel-header"><div class="panel-title">Eligibility ledger</div><span class="badge badge-compliant">128 eligible</span></div>
+                  <div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Outcome</th><th class="cell-num">Factories</th><th>Reason</th></tr></thead><tbody>
+                    <tr><td><span class="badge badge-compliant">Eligible</span></td><td class="cell-num">128</td><td class="t-caption">match criteria · no active visit</td></tr>
+                    <tr><td><span class="badge badge-warning">Excluded</span></td><td class="cell-num">22</td><td class="t-caption">active visit already open</td></tr>
+                    <tr><td><span class="badge badge-warning">Excluded</span></td><td class="cell-num">9</td><td class="t-caption">licence expired — not inspectable</td></tr>
+                    <tr><td><span class="badge badge-pending">Unavailable</span></td><td class="cell-num">—</td><td class="t-caption">region read degraded (partial)</td></tr>
+                  </tbody></table></div>
+                </div>
+              </div>
+              <div class="stack" style="gap:16px;">
+                <div class="panel" style="padding:18px 20px;">
+                  <div class="t-label" style="margin-block-end:6px;">Targeting lens</div>
+                  <div style="display:flex; align-items:baseline; gap:8px;"><span class="kpi-value" style="font-size:34px;">128</span><span class="t-caption">factories → 128 visits under 1 plan</span></div>
+                </div>
+                <div class="panel" style="padding:18px 20px;">
+                  <div class="t-label" style="margin-block-end:12px;">Distribution</div>
+                  <div class="t-caption" style="margin-block-end:6px;">By risk band</div>
+                  <div style="display:flex; height:14px; border-radius:7px; overflow:hidden; gap:2px; margin-block-end:12px;"><div style="width:46%; background:var(--status-critical);"></div><div style="width:54%; background:var(--status-major);"></div></div>
+                  <div class="t-caption" style="margin-block-end:6px;">By city</div>
+                  <div class="stack" style="gap:6px;">
+                    <div class="row" style="gap:10px;"><span style="width:80px; font-size:12px;">Dammam</span><div class="progress grow"><i style="width:100%;"></i></div><span class="id-code" style="font-size:11px;">61</span></div>
+                    <div class="row" style="gap:10px;"><span style="width:80px; font-size:12px;">Jubail</span><div class="progress grow"><i style="width:70%;"></i></div><span class="id-code" style="font-size:11px;">43</span></div>
+                    <div class="row" style="gap:10px;"><span style="width:80px; font-size:12px;">Al Khobar</span><div class="progress grow"><i style="width:40%;"></i></div><span class="id-code" style="font-size:11px;">24</span></div>
+                  </div>
+                </div>
+                <div class="panel" style="padding:18px 20px;">
+                  <button class="btn btn-primary btn-block">Review &amp; publish plan</button>
+                  <p class="t-caption" style="margin:10px 0 0;">Publish creates one plan and 128 visits. Eligibility is re-checked at publish; ineligible factories are dropped with a per-item reason, never silently.</p>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- SINGLE -->
+            <sc-if value="{{ is_single }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:16px; align-items:start;">
+              <div class="stack" style="gap:16px;">
+                <div class="panel" style="padding:18px 20px;">
+                  <div class="panel-title" style="margin-block-end:10px;">Find one registered factory</div>
+                  <div class="input-affix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" placeholder="CR / industrial licence / factory code / name…"></div>
+                  <p class="t-caption" style="margin:10px 0 0;">Exact = governed identifier equality. Similar name shows the differing identifier so you see what distinguishes it. Fuzzy identifier matching is deliberately not offered.</p>
+                </div>
+                <div class="panel" style="padding:0; overflow:hidden;">
+                  <div class="panel-header"><div class="panel-title">Candidates</div></div>
+                  <div>
+                    <div style="padding:12px 16px; border-block-end:1px solid var(--border-subtle);"><div class="row" style="gap:8px;"><span class="badge badge-compliant">exact</span><b>Al Rasheed Steel Works</b></div><div class="t-caption" style="margin-block-start:2px;">CR <span class="id-code">1010445213</span> · licence <span class="id-code">IL-44718</span></div></div>
+                    <div style="padding:12px 16px;"><div class="row" style="gap:8px;"><span class="badge badge-info">similar name</span> · Al Rasheed Coatings</div><div class="t-caption" style="margin-block-start:2px;">differs: licence <span class="id-code">IL-39805</span> · CR <span class="id-code">1010448890</span></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel" style="padding:18px 20px;">
+                <div class="steps" style="margin-block-end:16px;"><div class="step is-done"><span class="step-dot">1</span>Factory</div><span class="step-line"></span><div class="step is-current"><span class="step-dot">2</span>Package</div><span class="step-line"></span><div class="step"><span class="step-dot">3</span>Window</div><span class="step-line"></span><div class="step"><span class="step-dot">4</span>Review</div></div>
+                <div class="alert alert-warning" style="margin-block-end:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><div>Duplicate check: 1 active visit already open for this factory (<span class="id-code">VS-40219</span>). Proceeding creates a second — confirm intent.</div></div>
+                <div class="t-label" style="margin-block-end:8px;">Identity dossier</div>
+                <dl class="pl-facts"><div><dt>Factory</dt><dd>Al Rasheed Steel Works · <span class="id-code">F-2231</span></dd></div><div><dt>Licence</dt><dd><span class="id-code">IL-44718</span> · Active</dd></div><div><dt>Risk band</dt><dd>High</dd></div><div><dt>Package</dt><dd>Fire Safety <span class="id-code">v3</span></dd></div></dl>
+                <div style="margin-block-start:16px; display:flex; gap:8px;"><button class="btn btn-secondary">Back</button><button class="btn btn-primary grow">Continue to window</button></div>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- IMMEDIATE -->
+            <sc-if value="{{ is_immediate }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:start; max-width:1000px;">
+              <div class="panel" style="padding:0; overflow:hidden;">
+                <div class="panel-header" style="border-inline-start:3px solid var(--status-warning);"><div class="panel-title">Authority</div><span class="badge badge-warning">urgent dispatch</span></div>
+                <div style="padding:16px 18px;">
+                  <dl class="pl-facts"><div><dt>Acting role</dt><dd>Planner · a.saleh</dd></div><div><dt>Authority basis</dt><dd>Immediate-visit mandate</dd></div></dl>
+                  <div class="field" style="margin-block-start:14px;"><label>Justification <span class="req">required</span></label><textarea class="input" rows="3" placeholder="Why this cannot wait for scheduled planning…"></textarea></div>
+                  <p class="t-caption" style="margin:10px 0 0;">The justification is audited. Immediate visits bypass the plan-review step but not RLS or the package requirement.</p>
+                </div>
+              </div>
+              <div class="panel" style="padding:18px 20px;">
+                <div class="panel-title" style="margin-block-end:12px;">Target</div>
+                <div class="seg" style="margin-block-end:14px;"><button class="seg-opt is-active">Registered</button><button class="seg-opt">Unregistered</button></div>
+                <dl class="pl-facts"><div><dt>Factory</dt><dd>Najd Dairy Factory</dd></div><div><dt>CR / licence</dt><dd><span class="id-code">1010330021</span><span class="id-code">IL-30980</span></dd></div></dl>
+                <div class="alert alert-info" style="margin-block:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C8 6 6 10 6 13a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg><div>Unregistered factory is allowed here — a location is then <b>mandatory</b> and the factory is flagged system-generated until reconciled.</div></div>
+                <button class="btn btn-primary btn-block">Dispatch immediate visit</button>
+              </div>
+            </div>
+            </sc-if>
+
+            <!-- PLANS -->
+            <sc-if value="{{ is_plans }}" hint-placeholder-val="{{ false }}">
+            <div class="panel pl-resptable" style="padding:0; overflow:hidden;">
+              <div class="panel-header"><div class="panel-title">Visit plans</div><span class="badge badge-onhold">4 drafts</span></div>
+              <div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Plan</th><th>Method</th><th>Status</th><th class="cell-num">Visits</th><th>Published</th><th>Planner</th></tr></thead><tbody>
+                <tr><td data-label="Plan"><span class="id-code">PLN-2207</span> · Eastern high-risk sweep</td><td data-label="Method">Bulk</td><td data-label="Status"><span class="badge badge-info">published</span></td><td class="cell-num" data-label="Visits">128</td><td class="id-code" data-label="Published">2026-07-14</td><td data-label="Planner">a.saleh</td></tr>
+                <tr><td data-label="Plan"><span class="id-code">PLN-2206</span> · Fire-safety re-inspection</td><td data-label="Method">Bulk</td><td data-label="Status"><span class="badge badge-onhold">draft</span></td><td class="cell-num" data-label="Visits">44</td><td class="id-code" data-label="Published">—</td><td data-label="Planner">a.saleh</td></tr>
+                <tr><td data-label="Plan"><span class="id-code">PLN-2205</span> · Al Rasheed Steel</td><td data-label="Method">Single</td><td data-label="Status"><span class="badge badge-info">published</span></td><td class="cell-num" data-label="Visits">1</td><td class="id-code" data-label="Published">2026-07-10</td><td data-label="Planner">a.saleh</td></tr>
+                <tr><td data-label="Plan"><span class="id-code">PLN-2204</span> · Najd Dairy (urgent)</td><td data-label="Method">Immediate</td><td data-label="Status"><span class="badge badge-completed">executed</span></td><td class="cell-num" data-label="Visits">1</td><td class="id-code" data-label="Published">2026-07-08</td><td data-label="Planner">a.saleh</td></tr>
+              </tbody></table></div>
+            </div>
+            </sc-if>
+
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", screen: "list", createOpen: false, specOpen: false, drawerOpen: false, moreFiltersOpen: false, statusFilter: "all", visitListState: "normal", draftState: "normal", frameKey: "1440" };
+  renderVals() {
+    const S = ["list", "bulk", "single", "immediate", "plans"];
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      en: {
+        langBtnLabel: "AR", previewLabel: "Design tooling — not part of the app",
+        specBtn: "Spec notes", specTitle: "Spec notes — not part of the product UI",
+        specIntro: "Reviewer/handoff context for this screen. None of this text appears in the application frame.",
+        specFramesH: "Evidence frames", specFramesBody: "Five named, fixed-size frames are selectable above: 1440×900 desktop, 1024×768 desktop (dense), 768–899 drawer shell, 412×915 mobile, 320×568 mobile — each crossed with light/dark (shell theme toggle) and EN/AR RTL (shell language toggle). State is explicit per frame, not inferred from a live resize.",
+        specShellH: "Shell ownership", specShellBody: "The header inside the frame is the one real authenticated shell: global search, notifications, AI assist, account, and the shell-owned language/theme controls. Page content below it does not duplicate any of these.",
+        specRoutesH: "Route mapping", specRoutesBody: "Canonical routes: /planning (this screen), /planning/bulk, /planning/single, /planning/immediate, /planning/plans. Bulk/Single/Immediate are entered via the Create Visit action, not peer tabs.",
+        specFilterH: "Filter scope", specFilterBody: "Date-range and region filters shown here are illustrative controls pending backend wiring confirmation — treat as unavailable until confirmed live.",
+        specFixturesH: "Fixture disclosure", specFixturesBody: "Visit IDs, factory names, the 128-factory bulk count, eligibility ledger figures and all dates on this screen are illustrative design fixtures for layout/density review — none are sourced from repository or runtime data. Do not treat as observed production truth.",
+        specStateH: "Preview surface state", specVisitList: "Visit list", specDraftList: "Draft resume",
+        specRevH: "Revision", specDelta: "Added five named evidence frames (1440/1024/768-drawer/412/320) with explicit width+layout-mode state, selectable via the toolbar; consolidated search/notifications/AI/account/lang/theme into one real shell header inside the frame (page no longer duplicates them); delivery board unaffected by this revision.",
+        stNormal: "Normal", stEmpty: "Empty", stLoading: "Loading", stUnavailable: "Unavailable", stUnauthorized: "Unauthorized",
+        title: "Visit planning", tagline: "Planner-only · publish requires a published compliance package",
+        tabList: "List", tabPlans: "Plans",
+        shellSearchPh: "Search…", notifications: "Notifications", aiAssist: "AI assist", plannerRole: "Planner",
+        createVisit: "Create visit", exportCsv: "Export CSV", refresh: "Refresh", visitMgmtLink: "Visit management",
+        listSearchPh: "Search factories, visits…", fRegion: "Region", fRisk: "Risk band", fMethod: "Method", fMore: "More filters",
+        fActivity: "Activity class", fCity: "City", fPackage: "Package", fInspector: "Inspector", fLicense: "Licence status", fDateRange: "Date range", fPlanner: "Planner",
+        visitListHeading: "Visit list", draftListHeading: "Draft plans (secondary — resume only)",
+        kpiAll: "All", kpiDraft: "Draft", kpiPublished: "Published", kpiReturned: "Returned", kpiCancelled: "Cancelled", kpiExpired: "Expired",
+        colVisit: "Visit", colFactory: "Factory", colRegion: "Region", colRisk: "Risk", colMethod: "Method", colStatus: "Status", colScheduled: "Scheduled", colInspector: "Inspector", colCreated: "Created", colPlan: "Plan", colPlanner: "Planner",
+        viewRow: "View", pagerLabel: "1–10 of 128 visits", prev: "Prev", next: "Next",
+        draftsWord: "drafts", listTableHeading: "Draft plans — resume", continueLink: "Continue",
+        methodBulkTitle: "Bulk planning", methodBulkDesc: "AND/OR criteria over the factory master; many visits under one plan.",
+        methodSingleTitle: "Single visit", methodSingleDesc: "One registered factory via CR / industrial licence; one plan, one visit.",
+        methodImmediateTitle: "Immediate visit", methodImmediateDesc: "Urgent dispatch; unregistered factory allowed with mandatory location.",
+        stateEmptyTitleV: "No visits match", stateEmptyBodyV: "No visits match the current filters. Clear filters to see everything in your scope.",
+        stateEmptyTitleD: "No draft plans", stateEmptyBodyD: "Nothing to resume — start a new visit from Create visit.",
+        stateUnavailableTitle: "Planning data unavailable", stateUnavailableBody: "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.",
+        stateDraftUnavailableTitle: "Draft plans unavailable", stateDraftUnavailableBody: "Could not load draft plans (ERR-OPS-001). Try again.",
+        stateUnauthorizedTitle: "Authorized role required", stateUnauthorizedBody: "Visit Planning is available to internal business staff. Inspector and administration accounts use their own workspaces.",
+      },
+      ar: {
+        langBtnLabel: "EN", previewLabel: "أدوات معاينة التصميم — ليست جزءاً من التطبيق",
+        specBtn: "ملاحظات المواصفات", specTitle: "ملاحظات المواصفات — ليست جزءاً من واجهة المنتج",
+        specIntro: "سياق للمراجعة والتسليم لهذه الشاشة. لا يظهر أي من هذا النص داخل إطار التطبيق.",
+        specFramesH: "أطر الأدلة", specFramesBody: "خمسة أطر ثابتة الحجم قابلة للاختيار أعلاه: 1440×900 سطح مكتب، 1024×768 سطح مكتب مكثف، 768–899 هيكل درج، 412×915 جوال، 320×568 جوال — كل منها مع تبديل السمة الفاتحة/الداكنة واللغة عربي/إنجليزي RTL عبر الهيكل العام. الحالة صريحة لكل إطار، وليست مستنتجة من تغيير حجم حي.",
+        specShellH: "ملكية الهيكل العام", specShellBody: "الترويسة داخل الإطار هي الهيكل العام المصادق عليه الحقيقي الوحيد: البحث الشامل، الإشعارات، مساعد الذكاء الاصطناعي، الحساب، وعناصر تبديل اللغة/السمة المملوكة للهيكل. محتوى الصفحة أسفله لا يكرر أياً منها.",
+        specRoutesH: "خرائط المسارات", specRoutesBody: "المسارات القياسية: /planning (هذه الشاشة)، /planning/bulk، /planning/single، /planning/immediate، /planning/plans. يُدخل إلى جماعي/فردي/فوري عبر إجراء إنشاء زيارة.",
+        specFilterH: "نطاق التصفية", specFilterBody: "عوامل تصفية التاريخ والمنطقة هنا عناصر توضيحية بانتظار تأكيد الربط الفعلي.",
+        specFixturesH: "إفصاح البيانات التوضيحية", specFixturesBody: "معرّفات الزيارات وأسماء المصانع وعدد 128 مصنعاً وأرقام سجل الأهلية وجميع التواريخ في هذه الشاشة هي بيانات توضيحية للتصميم لمراجعة التخطيط والكثافة فقط — لا شيء منها مصدره المستودع أو بيانات التشغيل الفعلية. لا تُعامل كحقيقة إنتاج ملحوظة.",
+        specStateH: "حالة سطح المعاينة", specVisitList: "قائمة الزيارات", specDraftList: "استئناف المسودات",
+        specRevH: "المراجعة", specDelta: "أُضيفت خمسة أطر أدلة مسمّاة (1440/1024/768-درج/412/320) بحالة عرض ونمط تخطيط صريحين، قابلة للاختيار من الشريط؛ تم دمج البحث/الإشعارات/الذكاء الاصطناعي/الحساب/اللغة/السمة في هيكل عام حقيقي واحد داخل الإطار (الصفحة لم تعد تكررها)؛ لوحة التسليم غير متأثرة بهذه المراجعة.",
+        stNormal: "عادي", stEmpty: "فارغ", stLoading: "تحميل", stUnavailable: "غير متاح", stUnauthorized: "غير مصرّح",
+        title: "تخطيط الزيارات", tagline: "للمخطّطين فقط · يتطلّب النشر وجود حزمة امتثال منشورة",
+        tabList: "القائمة", tabPlans: "الخطط",
+        shellSearchPh: "بحث…", notifications: "الإشعارات", aiAssist: "مساعد الذكاء الاصطناعي", plannerRole: "مخطّط",
+        createVisit: "إنشاء زيارة", exportCsv: "تصدير CSV", refresh: "تحديث", visitMgmtLink: "إدارة الزيارات",
+        listSearchPh: "البحث عن المصانع، الزيارات…", fRegion: "المنطقة", fRisk: "فئة المخاطر", fMethod: "الطريقة", fMore: "المزيد من التصفية",
+        fActivity: "فئة النشاط", fCity: "المدينة", fPackage: "الحزمة", fInspector: "المفتش", fLicense: "حالة الرخصة", fDateRange: "نطاق التاريخ", fPlanner: "المخطّط",
+        visitListHeading: "قائمة الزيارات", draftListHeading: "خطط مسودة (ثانوية — للمتابعة فقط)",
+        kpiAll: "الكل", kpiDraft: "مسودة", kpiPublished: "منشورة", kpiReturned: "مرتجعة", kpiCancelled: "ملغاة", kpiExpired: "منتهية",
+        colVisit: "الزيارة", colFactory: "المصنع", colRegion: "المنطقة", colRisk: "المخاطر", colMethod: "الطريقة", colStatus: "الحالة", colScheduled: "موعدة", colInspector: "المفتش", colCreated: "أنشئت", colPlan: "الخطة", colPlanner: "المخطّط",
+        viewRow: "عرض", pagerLabel: "١–١٠ من ١٢٨ زيارة", prev: "السابق", next: "التالي",
+        draftsWord: "مسودات", listTableHeading: "خطط مسودة — للمتابعة", continueLink: "متابعة",
+        methodBulkTitle: "تخطيط جماعي", methodBulkDesc: "معايير AND/OR على قاعدة المصانع، زيارات متعددة ضمن خطة واحدة.",
+        methodSingleTitle: "زيارة فردية", methodSingleDesc: "مصنع مسجّل واحد عبر السجل التجاري أو الرخصة الصناعية، خطة واحدة وزيارة واحدة.",
+        methodImmediateTitle: "زيارة فورية", methodImmediateDesc: "إيفاد عاجل، يُسمح بمصنع غير مسجّل مع إلزامية الموقع.",
+        stateEmptyTitleV: "لا توجد زيارات مطابقة", stateEmptyBodyV: "لا توجد زيارات مطابقة للتصفية الحالية. امسح عوامل التصفية لعرض كل ما في نطاقك.",
+        stateEmptyTitleD: "لا توجد خطط مسودة", stateEmptyBodyD: "لا يوجد ما تتابعه — ابدأ زيارة جديدة من إنشاء زيارة.",
+        stateUnavailableTitle: "بيانات التخطيط غير متاحة", stateUnavailableBody: "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يُنشأ أو يُغيَّر شيء. حاول مجدداً.",
+        stateDraftUnavailableTitle: "خطط المسودة غير متاحة", stateDraftUnavailableBody: "تعذر تحميل خطط المسودة (ERR-OPS-001). حاول مجدداً.",
+        stateUnauthorizedTitle: "يلزم دور مصرّح له", stateUnauthorizedBody: "تخطيط الزيارات متاح لموظفي الأعمال الداخليين. تستخدم حسابات المفتش والإدارة مساحات عملها الخاصة.",
+      },
+    };
+    const t = STR[lang];
+    const st = this.state;
+    const REV = { id: "WA-DES-036-r4", from: "WA-DES-036-r3", delta: t.specDelta };
+
+    const FRAME_DEFS = [
+      { key: "1440", short: "1440×900", label: "1440×900 · Desktop", w: 1440, h: 900, mode: "desktop" },
+      { key: "1024", short: "1024×768", label: "1024×768 · Desktop (dense)", w: 1024, h: 768, mode: "desktop" },
+      { key: "768", short: "768–899", label: "768–899 · Drawer shell", w: 820, h: 900, mode: "drawer" },
+      { key: "412", short: "412×915", label: "412×915 · Mobile", w: 412, h: 915, mode: "mobile" },
+      { key: "320", short: "320×568", label: "320×568 · Mobile (small)", w: 320, h: 568, mode: "mobile" },
+    ];
+    const activeFrame = FRAME_DEFS.find(f => f.key === st.frameKey) || FRAME_DEFS[0];
+    const frames = FRAME_DEFS.map(f => ({ short: f.short, active: f.key === st.frameKey, pick: () => this.setState({ frameKey: f.key, drawerOpen: false }) }));
+    const isOverlayMode = activeFrame.mode === "drawer" || activeFrame.mode === "mobile";
+
+    const out = {
+      theme: st.theme, isLight: st.theme === "light", isDark: st.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: ar ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })),
+      t,
+      frames, frameLabel: activeFrame.label + " · " + (st.theme === "dark" ? "dark" : "light") + " · " + (ar ? "AR/RTL" : "EN/LTR"),
+      frameW: activeFrame.w, frameH: activeFrame.h, frameMode: activeFrame.mode,
+      isOverlayMode, drawerCls: st.drawerOpen ? " pl-drawer-open" : "",
+      specOpen: st.specOpen, toggleSpec: () => this.setState(s => ({ specOpen: !s.specOpen })),
+      drawerOpen: st.drawerOpen, toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      createOpen: st.createOpen, toggleCreate: () => this.setState(s => ({ createOpen: !s.createOpen })),
+      moreFiltersOpen: st.moreFiltersOpen, toggleMoreFilters: () => this.setState(s => ({ moreFiltersOpen: !s.moreFiltersOpen })),
+      revLabel: REV.id + " ← " + REV.from,
+      visitListState: st.visitListState, setVisitListState: (e) => this.setState({ visitListState: e.target.value }),
+      draftState: st.draftState, setDraftState: (e) => this.setState({ draftState: e.target.value }),
+      visitNormal: st.visitListState === "normal", visitEmpty: st.visitListState === "empty", visitLoading: st.visitListState === "loading",
+      visitUnavailable: st.visitListState === "unavailable", visitUnauthorized: st.visitListState === "unauthorized",
+      draftNormal: st.draftState === "normal", draftEmpty: st.draftState === "empty", draftLoading: st.draftState === "loading", draftUnavailable: st.draftState === "unavailable",
+      region_all: true, statusIsAll: st.statusFilter === "all",
+      setRegionAll: () => {}, setRiskAll: () => {}, setMethodAll: () => {},
+      setStatusAll: () => this.setState({ statusFilter: "all" }), setStatusDraft: () => this.setState({ statusFilter: "draft" }),
+      setStatusPublished: () => this.setState({ statusFilter: "published" }), setStatusReturned: () => this.setState({ statusFilter: "returned" }),
+      setStatusCancelled: () => this.setState({ statusFilter: "cancelled" }), setStatusExpired: () => this.setState({ statusFilter: "expired" }),
+    };
+    S.forEach(id => {
+      out["is_" + id] = st.screen === id;
+      out["go_" + id] = () => this.setState({ screen: id, createOpen: false });
+    });
+    return out;
+  }
+}
+
+</script>
+</body>
+</html>

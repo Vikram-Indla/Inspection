@@ -72,5 +72,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
   if (rep.error) notes.push("factory representative notification could not be queued");
 
   revalidatePath("/virtual");
-  return { ok: `Session scheduled for ${appointmentIso.slice(0, 16).replace("T", " ")} (M05-002)${notes.length ? ` — ${notes.join("; ")}` : ""}` };
+  return {
+    ok: `Session scheduled for ${appointmentIso.slice(0, 16).replace("T", " ")} (M05-002). Video transport is not configured; this session is not joinable${notes.length ? ` — ${notes.join("; ")}` : ""}`,
+  };
 }

@@ -1,0 +1,172 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+status: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+lease_type: READ_ONLY_IMPLEMENTATION_AND_ROLLBACK_SPECIFICATION
+
+business_function: >-
+  Preserve useful immutable session audit evidence without exposing OTP
+  secrets, forgeable semantic events or resource-existence information.
+
+authority:
+  requirement_ids:
+    - CR-348
+    - CR-349
+    - CR-350
+    - CR-351
+    - CR-352
+    - CR-353
+    - CR-356
+  acceptance_ids:
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  permission_contracts:
+    - RBAC-009
+    - RBAC-011
+    - RBAC-012
+    - RBAC-014
+  sources:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/domain/rbac_matrix.csv
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+
+prerequisites:
+  - "Corrected 009r independently reviewed and accepted."
+  - "013 and 014 interfaces agreed so this packet cannot reopen direct DML or transition bypasses."
+  - "An implementation owner and exclusive file lease recorded before writes."
+
+confirmed_findings_owned:
+  - M11-PERM-005
+  - M11-PERM-006
+  - M11-PERM-008
+
+current_defects:
+  audit_secret_exposure: >-
+    Generic participant audit stores the complete changed row and
+    vs_audit_trail returns after_state as detail. verification_record and its
+    six-digit OTP code_hash can therefore reach an authorized client.
+  forgeable_timeline: >-
+    vs_append_event accepts arbitrary event names and details from authenticated
+    callers, so an allowed row reader can create history that resembles a
+    governed transition.
+  existence_oracle: >-
+    OTP and audit RPCs return distinguishable not-found and unauthorized errors,
+    exposing whether an out-of-scope participant or session identifier exists.
+
+required_audit_projection:
+  immutable_source: >-
+    Do not rewrite or delete existing audit_events rows. Redaction belongs in
+    the authorized read seam and any new safe semantic projection.
+  always_excluded:
+    - verification_record
+    - code_hash
+    - dev_code
+    - "Any raw secret-bearing before_state or after_state object."
+  safe_session_fields:
+    - visit_id
+    - state
+    - appointment_at
+  safe_participant_fields:
+    - session_id
+    - display_name
+    - role
+    - joined_at
+    - verified_at
+  safe_envelope:
+    - occurred_at
+    - action
+    - object_type
+    - object_id
+    - actor
+  rule: >-
+    Return only an explicit allowlisted projection. Never use whole-row JSON
+    subtraction as the sole protection against future secret columns.
+
+required_neutral_error_boundary:
+  stable_token: VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE
+  applies_to:
+    - vp_request_otp
+    - vp_verify_otp
+    - vp_otp_status
+    - vs_audit_trail
+  invariant: >-
+    A missing identifier and an existing out-of-scope identifier produce the
+    same application status, stable token and safe response body.
+  non_requirement: >-
+    Do not invent denied-attempt audit requirements; the current contract does
+    not establish that every denial must be recorded.
+
+required_timeline_boundary:
+  - "Remove general authenticated authority to append arbitrary event names/details."
+  - "Write semantic events only inside the governed transition RPC that owns the business fact."
+  - "If an allowlist is unavoidable, use only event names already present in accepted contracts/code; do not invent new event taxonomy."
+  - "014 may write the existing join/begin event in its transaction; 015 owns hardening the generic append seam."
+  - "Reject direct arbitrary event append without mutating session or audit history."
+
+application_changes_required:
+  - "Map the stable neutral token consistently without leaking database messages."
+  - "Render only safe projected audit fields."
+  - "Do not log or surface OTP hashes, raw verification records or development codes."
+  - "Preserve legitimate Reviewer/audit visibility required by CR-348 and CR-353."
+
+owned_files_proposed:
+  migration:
+    - "One new forward-only Supabase migration; filename allocated by the implementation owner at lease start."
+  application:
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+  tests:
+    - "SQL audit projection, neutral-error and timeline-authorization tests."
+    - "Browser test proving safe audit rendering and neutral failure behavior."
+
+test_contract:
+  redaction:
+    - "code_hash never appears in RPC JSON, application payload, rendered HTML, logs or captured evidence."
+    - "Raw verification_record, dev_code and secret-bearing before/after objects are absent."
+    - "Legitimate authorized audit rows remain visible through the safe projection."
+    - "The immutable audit source row remains unchanged."
+  neutral_errors:
+    - "Missing and out-of-scope participant OTP request have identical status/token/body."
+    - "Missing and out-of-scope participant verify/status have identical status/token/body."
+    - "Missing and out-of-scope session audit read have identical status/token/body."
+  timeline:
+    - "Direct arbitrary event/detail append is denied and creates no semantic or generic audit row."
+    - "Governed join/begin/OTP transitions still create their existing semantic event."
+    - "No caller can forge another role's transition event."
+
+rollback_plan:
+  rule: >-
+    Use a forward-only migration/application revert. Never restore unredacted
+    audit output or arbitrary authenticated event append as a rollback shortcut.
+  trigger: "Any secret exposure, existence oracle, forged event or authorized-audit regression."
+  preserve:
+    - "Immutable audit_events history."
+    - "Existing valid semantic events."
+    - "013 least-privilege policies and 014 transactional transitions."
+
+lease_separation:
+  excludes:
+    - "Creation atomicity and INSERT authorization, owned by 010."
+    - "Execution-window semantics, owned by 011."
+    - "Direct table/RPC role policy matrix, owned by 013."
+    - "Join/begin atomicity and inspector-only enforcement, owned by 014."
+    - "Representative access, blocked on DEC-005."
+    - "Provider, SLA, threshold or list-filter changes."
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_AND_009R_ACCEPTANCE
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  scope_separation_checked: PASS

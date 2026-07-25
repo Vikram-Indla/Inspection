@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .en-wrap { max-width: 760px; margin: 0 auto; width:100%; padding: 16px 16px 96px; display:flex; flex-direction:column; gap:16px; }
+  .en-qa { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  @media (max-width:560px){ .en-qa { grid-template-columns:repeat(2,1fr); } }
+  .en-qa button { display:flex; flex-direction:column; align-items:center; gap:7px; padding:15px 8px; border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); font:inherit; font-size:12.5px; cursor:pointer; color:var(--text-primary); min-height:78px; }
+  .en-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; font:inherit; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px; flex:none; color:var(--action-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+    <div style="flex:1; min-width:0; line-height:1.3;"><div style="font-weight:700; font-size:15px;">{{ t.greeting }}</div><div class="t-caption">{{ t.sub }}</div></div>
+    <div class="seg" style="height:30px;"><button class="seg-opt" aria-pressed="{{ isEn }}" onClick="{{ setEn }}">EN</button><button class="seg-opt" aria-pressed="{{ isAr }}" onClick="{{ setAr }}">AR</button></div>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="Theme"><sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if><sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if></button>
+  </header>
+
+  <div class="en-wrap">
+    <div class="panel" style="padding:16px 18px; border-inline-start:3px solid var(--action-primary);">
+      <div style="display:flex; align-items:center; gap:8px; margin-block-end:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:17px;height:17px;"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M12 7V4M9 3h6M9.5 13h.01M14.5 13h.01M9 16.5c1 .8 5 .8 6 0"/></svg><span style="font-weight:600; font-size:13.5px;">{{ t.briefTitle }}</span><span class="grow"></span><span class="badge badge-warning" style="height:18px;">{{ t.advisory }}</span></div>
+      <p class="t-caption" style="margin:0;">{{ t.brief1 }}</p>
+      <p class="t-caption" style="margin:6px 0 0;">{{ t.brief2 }}</p>
+      <div class="t-caption" style="margin-block-start:8px; color:var(--text-muted);">{{ t.briefNote }}</div>
+    </div>
+
+    <div class="en-qa">
+      <button><span style="width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent-text);display:grid;place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px;"><path d="M12 3 4 6v6c0 5 4 8 8 9 4-1 8-4 8-9V6z"/><path d="m9.5 12 2 2 3.5-4"/></svg></span>{{ t.qaStart }}</button>
+      <button><span style="width:34px;height:34px;border-radius:10px;background:var(--surface-sunken);display:grid;place-items:center;color:var(--text-secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px;"><path d="M12 2C8 6 6 10 6 13a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg></span>{{ t.qaUrgent }}</button>
+      <button><span style="width:34px;height:34px;border-radius:10px;background:var(--surface-sunken);display:grid;place-items:center;color:var(--text-secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>{{ t.qaSearch }}</button>
+      <button><span style="width:34px;height:34px;border-radius:10px;background:var(--surface-sunken);display:grid;place-items:center;color:var(--text-secondary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px;"><path d="M3 21V8l6-3v3l6-3v3l6-3v16z"/></svg></span>{{ t.qaFacilities }}</button>
+    </div>
+
+    <div class="panel" style="padding:0; overflow:hidden;">
+      <div style="aspect-ratio:16/9; background:radial-gradient(120% 90% at 50% 20%, #16202e, #0e1620 60%, #0a1018); position:relative;">
+        <svg viewBox="0 0 400 220" style="position:absolute; inset:0; width:100%; height:100%;"><path d="M60 60 L180 40 L300 55 L340 120 L280 180 L120 190 L70 130 Z" fill="#101a26" stroke="#33507040"/><circle cx="200" cy="110" r="6" fill="var(--action-primary)" stroke="#fff" stroke-width="2"/><circle cx="250" cy="90" r="4" fill="#e5484d"/><circle cx="150" cy="130" r="4" fill="#e2a336"/></svg>
+        <div style="position:absolute; inset-inline-start:12px; bottom:12px; padding:8px 12px; background:rgba(12,18,26,.82); border:1px solid #2a3a4c; border-radius:8px; font-size:12px; color:#c4d2df;">{{ t.mapCard }}</div>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex; align-items:center; gap:10px; margin-block-end:10px;"><span style="font-weight:600; font-size:15px;">{{ t.nearest }}</span><span class="grow"></span><span class="badge badge-warning"><span class="dot"></span>{{ t.sync }}</span></div>
+      <div class="stack" style="gap:10px;">
+        <sc-for list="{{ visits }}" as="v" hint-placeholder-count="3">
+          <button class="panel" style="padding:14px 16px; text-align:start; width:100%; cursor:pointer; display:flex; align-items:center; gap:12px;">
+            <span style="width:8px; height:38px; border-radius:3px; background:{{ v.dot }}; flex:none;"></span>
+            <span style="flex:1; min-width:0;"><span style="display:block; font-weight:600; font-size:14.5px;">{{ v.factory }}</span><span class="t-caption"><span class="id-code">{{ v.ref }}</span> · {{ v.type }} · {{ v.zone }}</span></span>
+            <span style="text-align:end;"><span class="badge {{ v.badge }}" style="height:18px;">{{ v.risk }}</span><span class="t-caption" style="display:block; margin-block-start:3px;">{{ v.time }}</span></span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <nav style="position:sticky; bottom:0; display:flex; background:var(--nav-bg); color:var(--nav-text); padding-block-end:env(safe-area-inset-bottom);">
+    <a class="en-tab" style="color:var(--nav-text-active);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span style="font-size:11px;">{{ t.tabHome }}</span></a>
+    <a class="en-tab" style="color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg><span style="font-size:11px;">{{ t.tabTasks }}</span></a>
+    <a class="en-tab" style="color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/></svg><span style="font-size:11px;">{{ t.tabFacilities }}</span></a>
+    <a class="en-tab" style="color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg><span style="font-size:11px;">{{ t.tabAccount }}</span></a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:720,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  state = { theme: "dark", locale: "en" };
+  renderVals() {
+    const EN = {
+      greeting: "Good morning, Khalid", sub: "Wednesday, 22 Jul 2026 · Riyadh",
+      briefTitle: "Today's brief", advisory: "Advisory",
+      brief1: "You have 5 visits today — nearest is 8 km away.",
+      brief2: "Highest risk: Al Safwa United — review repeat findings before the visit.",
+      briefNote: "Advisory summary based on your tasks — the decision is yours.",
+      qaStart: "Start visit", qaUrgent: "Urgent visit", qaSearch: "Search facility", qaFacilities: "Facilities",
+      mapCard: "5 visits · 2 vehicles on site", nearest: "Nearest visits", sync: "Pending sync · 2",
+      tabHome: "Home", tabTasks: "Tasks", tabFacilities: "Facilities", tabAccount: "Account",
+    };
+    const AR = {
+      greeting: "صباح الخير، خالد", sub: "الأربعاء، 22 يوليو 2026 · الرياض",
+      briefTitle: "ملخص اليوم", advisory: "استشاري",
+      brief1: "لديك 5 زيارات اليوم — الأقرب على بُعد 8 كم.",
+      brief2: "الأعلى خطورة: الصفوة المتحدة — راجع المخالفات المتكررة قبل الزيارة.",
+      briefNote: "ملخص استشاري مبني على مهامك — القرار لك.",
+      qaStart: "بدء زيارة", qaUrgent: "زيارة عاجلة", qaSearch: "بحث منشأة", qaFacilities: "المنشآت",
+      mapCard: "٥ زيارات · مركبتان في الموقع", nearest: "الزيارات الأقرب", sync: "بانتظار المزامنة · ٢",
+      tabHome: "الرئيسية", tabTasks: "مهامي", tabFacilities: "المنشآت", tabAccount: "حسابي",
+    };
+    const en = this.state.locale === "en";
+    const V = [
+      { factory: "Al Safwa United Steel", ref: "VS-40219", type: "Bulk", zone: "Ind. Zone 2", risk: en ? "High" : "عالية", badge: "badge-critical", dot: "#e5484d", time: "09:00" },
+      { factory: "Najd Dairy Factory", ref: "VS-40160", type: "Immediate", zone: "Sulay", risk: en ? "Medium" : "متوسطة", badge: "badge-warning", dot: "#e2a336", time: "13:30" },
+      { factory: "Riyadh Cement Co.", ref: "VS-40233", type: "Bulk", zone: "Kharj", risk: en ? "Low" : "منخفضة", badge: "badge-compliant", dot: "#3fb27f", time: "15:30" },
+    ];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      dir: en ? "ltr" : "rtl", isEn: en, isAr: !en,
+      setEn: () => this.setState({ locale: "en" }), setAr: () => this.setState({ locale: "ar" }),
+      t: en ? EN : AR, visits: V,
+    };
+  }
+}
+</script>
+</body>
+</html>

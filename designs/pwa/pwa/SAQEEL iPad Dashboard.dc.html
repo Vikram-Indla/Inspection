@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .ip-graticule { background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size: 24px 24px; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" data-density="field" style="height:100vh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); overflow:hidden;">
+
+  <!-- FIELD TOP -->
+  <header style="display:flex; align-items:center; gap:14px; padding:12px 20px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:32px; height:32px; flex:none; color:var(--action-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+    <div style="line-height:1.2;"><div style="font-weight:600; font-size:16px;">Today · Wednesday, 22 Jul 2026</div><div class="t-caption">Riyadh Region · Asia/Riyadh · 5 assigned visits</div></div>
+    <span class="grow"></span>
+    <span class="badge badge-warning"><span class="dot"></span>Offline — 3 changes queued</span>
+    <span class="badge badge-info"><span class="dot"></span>Synced 13:41</span>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="Toggle theme">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+    <span class="avatar avatar-lg">KA</span>
+  </header>
+
+  <!-- MISSION + STATUS RAIL -->
+  <div style="padding:14px 20px 0; display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+    <div style="font-size:18px; font-weight:600;">3 visits remaining · next is high-risk</div>
+    <span class="grow"></span>
+    <span class="exc-chip exc-warning"><span class="exc-mark"></span>1 returned inspection</span>
+    <span class="exc-chip exc-pending"><span class="exc-mark"></span>1 draft to resume</span>
+    <span class="exc-chip exc-critical"><span class="exc-mark"></span>1 sync failed</span>
+  </div>
+
+  <!-- METRIC STRIP -->
+  <div style="padding:12px 20px 0;">
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Today's visits</div><div class="kpi-value">5</div><div class="kpi-delta">assigned · window begins today</div></div>
+      <div class="kpi"><div class="kpi-label">Remaining</div><div class="kpi-value">3</div><div class="kpi-delta">assigned − submitted</div></div>
+      <div class="kpi"><div class="kpi-label">Pending attention</div><div class="kpi-value" style="color:var(--status-warning);">2</div><div class="kpi-delta">returned + draft + sync</div></div>
+      <div class="kpi"><div class="kpi-label">Daily progress</div><div class="kpi-value">40<span class="unit">%</span></div><div class="kpi-delta">2 of 5 submitted <span class="id-code" style="color:var(--text-muted);">not approval</span></div></div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE: map/list/calendar + selected visit pane -->
+  <div style="flex:1; min-height:0; display:grid; grid-template-columns:1.9fr 1fr; gap:14px; padding:14px 20px 0;">
+    <!-- LEFT: workspace -->
+    <div class="panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;">
+      <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-block-end:1px solid var(--border-subtle);">
+        <div class="seg"><button class="seg-opt" aria-pressed="{{ isMap }}" onClick="{{ pickMap }}">Map</button><button class="seg-opt" aria-pressed="{{ isList }}" onClick="{{ pickList }}">List</button><button class="seg-opt" aria-pressed="{{ isCal }}" onClick="{{ pickCal }}">Calendar</button></div>
+        <span class="grow"></span>
+        <span class="id-code" style="font-size:11px; color:var(--text-muted);">Mapbox GL · location ±12m · 40s ago</span>
+      </div>
+
+      <sc-if value="{{ isMap }}" hint-placeholder-val="{{ true }}">
+        <div class="ip-graticule" style="position:relative; flex:1; min-height:0; background-color:var(--surface-sunken);">
+          <div style="position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:24px;"><div><div style="font-size:15px; font-weight:500; color:var(--text-secondary);">Today's operations map (Mapbox GL / GeoMap)</div><div class="t-caption" style="max-width:42ch; margin-block-start:6px;">Your live position (with accuracy), today's factory pins, and the selected visit. Actual journey path only; directions open in the governed provider. No invented routes or traffic.</div></div></div>
+          <div class="map-panel" style="position:absolute; top:12px; inset-inline-start:12px; padding:10px 12px;"><div class="t-label" style="margin-block-end:6px;">Provenance</div><div class="stack" style="gap:5px;"><div class="map-legend-row"><span class="swatch" style="background:var(--status-compliant);"></span>Official licence pin</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-info);"></span>Your location</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-warning);"></span>Observed / override</div></div></div>
+          <div style="position:absolute; bottom:12px; inset-inline-end:12px;" class="id-code"><span style="font-size:10px; color:var(--text-muted); background:var(--map-panel); padding:4px 9px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">© Mapbox © OpenStreetMap</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto;">
+          <sc-for list="{{ visits }}" as="v" hint-placeholder-count="4">
+            <button onClick="{{ v.pick }}" style="display:flex; align-items:center; gap:12px; width:100%; text-align:start; padding:14px 16px; border:0; border-block-end:1px solid var(--border-subtle); background:{{ v.bg }}; cursor:pointer; font:inherit; min-height:52px;">
+              <span class="id-code" style="width:52px; font-size:13px; color:var(--text-secondary);">{{ v.time }}</span>
+              <span style="flex:1; min-width:0;"><span style="display:block; font-weight:600; font-size:15px;">{{ v.factory }}</span><span class="t-caption"><span class="id-code">{{ v.ref }}</span> · {{ v.type }}</span></span>
+              <span class="exc {{ v.excClass }}"><span class="exc-mark"></span>{{ v.risk }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCal }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; overflow-y:auto; padding:16px;">
+          <ul class="timeline">
+            <li><span class="tl-dot is-accent"></span><div class="tl-title">09:00 · Al Rasheed Steel Works</div><div class="tl-meta">Executing · <span class="id-code">VS-40219</span></div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">11:00 · Gulf Textiles Ltd.</div><div class="tl-meta">Travel 25 min · SLA window 11:00–14:00</div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">13:30 · Najd Dairy Factory</div><div class="tl-meta">Immediate visit · <span class="id-code">VS-40160</span></div></li>
+          </ul>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- RIGHT: selected visit / next -->
+    <div style="display:flex; flex-direction:column; gap:12px; min-height:0; overflow-y:auto;">
+      <div class="panel" style="padding:16px; border-inline-start:3px solid var(--status-critical);">
+        <div class="row" style="justify-content:space-between; align-items:flex-start;"><span class="badge badge-critical"><span class="dot"></span>High risk</span><span class="id-code" style="font-size:12px; color:var(--text-muted);">VS-40219</span></div>
+        <div style="font-weight:600; font-size:17px; margin-block-start:8px;">Al Rasheed Steel Works</div>
+        <div class="t-caption" style="margin-block-start:2px;">Bulk · window 09:00–12:00 · <span class="id-code">CR 1010445213</span></div>
+        <dl class="desc" style="grid-template-columns:auto 1fr; gap:5px 12px; font-size:13px; margin-block-start:12px;">
+          <dt>Health Score</dt><dd><span class="badge badge-warning" style="height:18px;"><span class="dot"></span>62 · needs attention</span></dd>
+          <dt>Risk Score</dt><dd><span class="badge badge-critical" style="height:18px;"><span class="dot"></span>High</span></dd>
+          <dt>Package</dt><dd>Fire Safety Package <span class="id-code">v3 (locked)</span></dd>
+        </dl>
+        <div style="display:flex; gap:8px; margin-block-start:14px; flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onClick="{{ openPack }}">Open pre-inspection pack</button>
+          <button class="btn btn-ghost btn-sm">Factory 360</button>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:16px;">
+        <div class="t-label" style="margin-block-end:8px;">Pending attention</div>
+        <div class="stack" style="gap:8px;">
+          <div class="row" style="gap:10px;"><span class="exc exc-warning"><span class="exc-mark"></span></span><span style="flex:1; font-size:13px;">Returned — VS-40088 <span class="t-caption">2 sections to revise</span></span><button class="btn btn-ghost btn-sm">Resume</button></div>
+          <div class="row" style="gap:10px;"><span class="exc exc-pending"><span class="exc-mark"></span></span><span style="flex:1; font-size:13px;">Draft — VS-40201 <span class="t-caption">saved 2h ago</span></span><button class="btn btn-ghost btn-sm">Resume</button></div>
+          <div class="row" style="gap:10px;"><span class="exc exc-critical"><span class="exc-mark"></span></span><span style="flex:1; font-size:13px;">Sync failed — 1 evidence item <span class="t-caption">no data lost</span></span><button class="btn btn-ghost btn-sm">Retry</button></div>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:16px;">
+        <div class="t-label" style="margin-block-end:8px;">Personal performance</div>
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1;"><div class="kpi-value" style="font-size:24px;">98%</div><div class="t-caption">Approval outcomes<br><span class="id-code" style="font-size:10px;">approved L2 ÷ decided L2</span></div></div>
+          <div style="width:1px; background:var(--border-subtle);"></div>
+          <div style="flex:1;"><div class="kpi-value" style="font-size:24px;">92%</div><div class="t-caption">Checklist compliance<br><span class="id-code" style="font-size:10px;">compliant ÷ (compliant+non)</span></div></div>
+        </div>
+        <div class="t-caption" style="margin-block-start:8px; color:var(--text-muted);">Distinct metrics — approval is not compliance.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIELD ACTION BAR -->
+  <div style="display:flex; align-items:center; gap:12px; padding:12px 20px; background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="id-code" style="font-size:12px; color:var(--text-muted);">Next: Al Rasheed Steel · 4.2 km · geofence 150m</span>
+    <span class="grow"></span>
+    <button class="btn btn-secondary">Open directions</button>
+    <button class="btn btn-primary btn-lg">Start journey</button>
+  </div>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav style="display:flex; background:var(--nav-bg); color:var(--nav-text);">
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; min-height:56px; border:0; background:none; color:var(--nav-text-active); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span style="font-size:11px;">Today</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/></svg><span style="font-size:11px;">Map</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></svg><span style="font-size:11px;">Visits</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/><path d="M3 21h18"/></svg><span style="font-size:11px;">Factory 360</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit; position:relative;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span style="font-size:11px;">Sync</span><span style="position:absolute; top:8px; inset-inline-end:28px; width:7px; height:7px; border-radius:50%; background:var(--status-critical);"></span></button>
+  </nav>
+
+  <!-- PRE-INSPECTION PACK SHEET -->
+  <sc-if value="{{ packOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePack }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:40;"></div>
+    <div class="drawer" style="width:min(560px,94vw); z-index:41;">
+      <div class="drawer-header">
+        <div><div class="panel-title" style="font-size:16px;">Pre-inspection pack</div><div class="t-caption">Al Rasheed Steel · <span class="id-code">VS-40219</span> · pack policy <span class="id-code">v9</span> · package <span class="id-code">v3</span></div></div>
+        <button class="btn btn-ghost btn-icon" onClick="{{ closePack }}" aria-label="Close">✕</button>
+      </div>
+      <div style="padding:12px 16px; border-block-end:1px solid var(--border-subtle); display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <span class="badge badge-warning"><span class="dot"></span>Review — 1 blocker</span>
+        <span class="badge badge-info"><span class="dot"></span>Cached · offline ready</span>
+        <span class="id-code" style="font-size:11px; color:var(--text-muted);">freshness 12 min</span>
+      </div>
+      <div class="drawer-body" style="padding:0;">
+        <div class="accordion" style="border:0;">
+          <details open><summary>Factory, CR &amp; licence</summary><div class="accordion-body"><dl class="desc" style="grid-template-columns:auto 1fr; gap:5px 12px; font-size:13px;"><dt>CR number</dt><dd><span class="id-code">1010445213</span></dd><dt>Licence</dt><dd>Active · expires 14 Sep 2026</dd><dt>Official location</dt><dd><span class="id-code">24.7136° N, 46.6753° E</span></dd><dt>Provenance</dt><dd>Official vs observed reconciled on arrival</dd></dl></div></details>
+          <details><summary>Locked package summary</summary><div class="accordion-body t-compact" style="color:var(--text-secondary);">Fire Safety Package v3 — 42 items across 6 sections. Immutable for this visit.</div></details>
+          <details><summary>Previous approved inspection</summary><div class="accordion-body t-compact" style="color:var(--text-secondary);">18 Mar 2026 · 78% compliant · 3 findings closed. <span class="id-code">Returned/rejected context shown separately.</span></div></details>
+          <details open><summary>Repeat findings &amp; open actions</summary><div class="accordion-body"><div class="stack" style="gap:8px;"><div class="row" style="gap:8px;"><span class="exc exc-critical"><span class="exc-mark"></span></span><span style="font-size:13px;">Blocked emergency exit — failed 2× / 12 mo</span></div><div class="row" style="gap:8px;"><span class="exc exc-warning"><span class="exc-mark"></span></span><span style="font-size:13px;">Corrective action <span class="id-code">CA-3391</span> due 28 Jul</span></div></div></div></details>
+          <details><summary>Health &amp; Risk drivers</summary><div class="accordion-body"><div class="row" style="gap:16px;"><div><div class="t-caption">Health Score</div><div style="font-weight:600;">62 · attention</div></div><div><div class="t-caption">Risk Score</div><div style="font-weight:600; color:var(--status-critical-text);">High</div></div></div><div class="t-caption" style="margin-block-start:6px;">Distinct governed concepts · driver: 2 open fire-safety findings</div></div></details>
+          <details><summary>Documents &amp; evidence</summary><div class="accordion-body t-compact" style="color:var(--text-secondary);">Official documents and prior inspection evidence are kept in separate custody groups.</div></details>
+        </div>
+        <div style="padding:16px; border-block-start:1px solid var(--border-subtle);">
+          <div class="t-label" style="margin-block-end:10px;">Start-readiness</div>
+          <label class="check" style="margin-block-end:8px;"><input type="checkbox" checked>Package cached for offline</label>
+          <label class="check" style="margin-block-end:8px;"><input type="checkbox" checked>Factory 360 snapshot cached</label>
+          <label class="check"><input type="checkbox">I have reviewed repeat findings <span class="id-code" style="color:var(--status-critical-text);">required</span></label>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; padding:14px 16px; border-block-start:1px solid var(--border-subtle);">
+        <button class="btn btn-secondary grow">Download offline</button>
+        <button class="btn btn-primary grow" aria-disabled="true" style="opacity:.5; pointer-events:none;">Check in — blocked</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1194, &quot;height&quot;: 834}}">
+class Component extends DCLogic {
+  state = { theme: "dark", view: "map", visit: "VS-40219", pack: false };
+
+  renderVals() {
+    const VISITS = [
+      ["09:00", "Al Rasheed Steel Works", "VS-40219", "Bulk", "High", "exc-critical"],
+      ["11:00", "Gulf Textiles Ltd.", "VS-40195", "Single", "High", "exc-critical"],
+      ["13:30", "Najd Dairy Factory", "VS-40160", "Immediate", "Medium", "exc-warning"],
+      ["15:30", "Riyadh Cement Co.", "VS-40233", "Bulk", "Low", "exc-compliant"],
+    ];
+    const set = (k, v) => () => this.setState({ [k]: v });
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      setLight: set("theme", "light"), setDark: set("theme", "dark"),
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      isMap: this.state.view === "map", isList: this.state.view === "list", isCal: this.state.view === "calendar",
+      pickMap: set("view", "map"), pickList: set("view", "list"), pickCal: set("view", "calendar"),
+      visits: VISITS.map(([time, factory, ref, type, risk, excClass]) => ({
+        time, factory, ref, type, risk, excClass,
+        bg: this.state.visit === ref ? "var(--accent-soft)" : "transparent",
+        pick: () => this.setState({ visit: ref }),
+      })),
+      openPack: () => this.setState({ pack: true }),
+      packOpen: this.state.pack,
+      closePack: () => this.setState({ pack: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>

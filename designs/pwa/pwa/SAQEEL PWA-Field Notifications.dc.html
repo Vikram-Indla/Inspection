@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .fn-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 0 0 60px; display:flex; flex-direction:column; }
+  .fn-seg { display:flex; gap:6px; padding:10px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); overflow-x:auto; }
+  .fn-seg button { padding:7px 14px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; cursor:pointer; white-space:nowrap; color:var(--text-secondary); }
+  .fn-seg button[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+  .fn-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .fn-row { display:flex; flex-direction:column; gap:6px; padding:16px 18px; border-block-end:1px solid var(--border-subtle); cursor:pointer; background:var(--surface-primary); text-align:start; font:inherit; color:inherit; width:100%; }
+  .fn-row:hover { background:var(--surface-sunken); }
+  .fn-row.unread { background:color-mix(in srgb, var(--accent-soft) 45%, var(--surface-primary)); }
+  .fn-icn { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; flex:none; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+      <button class="btn btn-icon btn-ghost" onClick="{{ goList }}" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></button>
+    </sc-if>
+    <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+      <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    </sc-if>
+    <div style="flex:1; font-weight:700; font-size:16px;">{{ headerTitle }}</div>
+    <button class="fn-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+    <div class="fn-seg">
+      <button aria-pressed="{{ filterAll }}" onClick="{{ setFilterAll }}">{{ t.all }}</button>
+      <button aria-pressed="{{ filterUnread }}" onClick="{{ setFilterUnread }}">{{ t.unread }} ({{ unreadCount }})</button>
+    </div>
+    <div class="fn-wrap">
+      <sc-for list="{{ visibleNotifs }}" as="n" hint-placeholder-count="6">
+        <button class="fn-row" onClick="{{ n.open }}" style="{{ n.rowStyle }}">
+          <div style="display:flex; align-items:flex-start; gap:12px;">
+            <span class="fn-icn" style="background:{{ n.iconBg }}; color:{{ n.iconColor }};">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:19px;height:19px;"><path d="{{ n.iconPath }}"/></svg>
+            </span>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-weight:600; font-size:14px; flex:1;">{{ n.title }}</span>
+                <sc-if value="{{ n.unread }}" hint-placeholder-val="{{ false }}"><span class="badge" style="background:var(--status-warning-soft); color:var(--status-warning-text); height:18px;">{{ t.newBadge }}</span></sc-if>
+              </div>
+              <div class="t-caption" style="margin-block-start:3px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">{{ n.message }}</div>
+              <div class="t-caption" style="margin-block-start:6px; color:var(--text-muted);">{{ n.dateLine }}</div>
+            </div>
+          </div>
+        </button>
+      </sc-for>
+      <sc-if value="{{ emptyState }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:60px 20px; text-align:center; color:var(--text-secondary);">{{ t.empty }}</div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+    <div class="fn-wrap" style="padding:20px 18px 60px; gap:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="fn-icn" style="width:46px;height:46px;border-radius:12px; background:{{ selected.iconBg }}; color:{{ selected.iconColor }};"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:22px;height:22px;"><path d="{{ selected.iconPath }}"/></svg></span>
+        <div style="flex:1;"><div style="font-weight:700; font-size:16px;">{{ selected.title }}</div><div class="t-caption">{{ selected.dateLine }}</div></div>
+      </div>
+      <div class="panel" style="padding:16px 18px; white-space:pre-line; font-size:14px; line-height:1.7;">{{ selected.message }}</div>
+      <dl class="desc" style="grid-template-columns:auto 1fr; gap:8px 12px; font-size:13.5px;">
+        <dt>{{ t.category }}</dt><dd>{{ selected.category }}</dd>
+        <dt>{{ t.sender }}</dt><dd>{{ selected.sender }}</dd>
+        <dt>{{ t.notifId }}</dt><dd><span class="id-code">{{ selected.id }}</span></dd>
+      </dl>
+      <sc-if value="{{ selected.hasLink }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ selected.linkHref }}" target="_top" class="btn btn-primary btn-block">{{ selected.linkLabel }}</a>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", view: "list", filter: "all", readIds: [], selectedId: null };
+
+  data() {
+    return [
+      { id:"NTF-2201", category_ar:"تحديث ترخيص", category_en:"License update", unread:true, icon:"license",
+        title_ar:"تحديث بيانات الترخيص الصناعي", title_en:"Industrial license data updated",
+        msg_ar:"السادة الكرام منشأة الهدى للصناعة،\n\nنود إحاطتكم علماً بأنه قد تم تحديث بيانات الترخيص الصناعي بتاريخ 16/12/2025، وذلك ضمن خدمات وزارة الصناعة والثروة المعدنية.\n\nمع خالص التحية والتقدير،\nوزارة الصناعة والثروة المعدنية",
+        msg_en:"Dear Al-Huda Industries,\n\nThis is to inform you that your industrial license data was updated on 2025/12/16, as part of the Ministry of Industry and Mineral Resources services.\n\nRegards,\nMinistry of Industry and Mineral Resources",
+        sender_ar:"نايف بن فهد الدوسري", sender_en:"Naif bin Fahd Al-Dosari", date:"2026-07-22 · 11:00", link:null },
+      { id:"NTF-2200", category_ar:"تكليف زيارة", category_en:"Visit assignment", unread:true, icon:"assign",
+        title_ar:"تكليف بزيارة تفتيشية جديدة", title_en:"New inspection visit assigned",
+        msg_ar:"تم تكليفك بزيارة تفتيشية لمصنع الرياض للبلاستيك، منطقة الرياض، ضمن نافذة 22-24 يوليو 2026. يرجى مراجعة تفاصيل الزيارة والاستعداد للتنفيذ.",
+        msg_en:"You have been assigned an inspection visit to Riyadh Plastics Factory, Riyadh region, within the window of Jul 22-24, 2026. Please review visit details and prepare for execution.",
+        sender_ar:"نظام التخطيط", sender_en:"Planning System", date:"2026-07-22 · 08:12",
+        link:{ href:"SAQEEL PWA-Field My Tasks.dc.html", label_ar:"عرض المهمة", label_en:"View task" } },
+      { id:"NTF-2199", category_ar:"إرجاع تقرير", category_en:"Report returned", unread:false, icon:"return",
+        title_ar:"تم إرجاع تقرير الزيارة للتعديل", title_en:"Visit report returned for revision",
+        msg_ar:"تم إرجاع تقرير زيارتك لمصنع جدة للأغذية من قبل المشرف مع ملاحظات على قسم المخالفات. يرجى المراجعة والتعديل.",
+        msg_en:"Your visit report for Jeddah Foods Factory was returned by the supervisor with comments on the violations section. Please review and revise.",
+        sender_ar:"م. سارة القحطاني (مشرف)", sender_en:"Eng. Sarah Al-Qahtani (Supervisor)", date:"2026-07-21 · 16:40",
+        link:{ href:"SAQEEL PWA-Field Inspection Form.dc.html", label_ar:"فتح التقرير", label_en:"Open report" } },
+      { id:"NTF-2198", category_ar:"مزامنة", category_en:"Sync", unread:false, icon:"sync",
+        title_ar:"اكتملت مزامنة البيانات غير المتصلة", title_en:"Offline data sync completed",
+        msg_ar:"تمت مزامنة 3 تقارير و12 مرفقاً كانت محفوظة أثناء العمل بدون اتصال.",
+        msg_en:"3 reports and 12 attachments saved while offline have been synced successfully.",
+        sender_ar:"النظام", sender_en:"System", date:"2026-07-21 · 09:05", link:null },
+      { id:"NTF-2197", category_ar:"موعد", category_en:"Appointment", unread:false, icon:"calendar",
+        title_ar:"تذكير: موعد زيارة غداً الساعة 9:00 ص", title_en:"Reminder: visit scheduled tomorrow at 9:00 AM",
+        msg_ar:"لديك زيارة مجدولة لمصنع الدمام للكيماويات غداً الساعة 9:00 صباحاً. تأكد من جاهزية جهازك ووصول الموقع الجغرافي.",
+        msg_en:"You have a scheduled visit to Dammam Chemicals Factory tomorrow at 9:00 AM. Ensure your device is ready and geolocation is enabled.",
+        sender_ar:"نظام التخطيط", sender_en:"Planning System", date:"2026-07-20 · 18:00", link:null },
+      { id:"NTF-2196", category_ar:"إلغاء", category_en:"Cancellation", unread:false, icon:"cancel",
+        title_ar:"تم إلغاء زيارة مصنع الخبر للنسيج", title_en:"Al-Khobar Textiles visit cancelled",
+        msg_ar:"تم إلغاء الزيارة المجدولة لمصنع الخبر للنسيج بواسطة المخطط. السبب: تعارض في الترخيص قيد المراجعة.",
+        msg_en:"The scheduled visit to Al-Khobar Textiles was cancelled by the planner. Reason: license conflict under review.",
+        sender_ar:"نظام التخطيط", sender_en:"Planning System", date:"2026-07-19 · 13:22", link:null },
+    ];
+  }
+
+  iconMeta(key) {
+    const M = {
+      license:{ path:"M9 12h6M9 16h6M9 8h3M6 4h9l3 3v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z", bg:"var(--accent-soft)", color:"var(--accent-text)" },
+      assign:{ path:"M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11", bg:"var(--status-compliant-soft)", color:"var(--status-compliant-text)" },
+      return:{ path:"M9 14l-4-4 4-4M5 10h11a4 4 0 0 1 0 8h-1", bg:"var(--status-warning-soft)", color:"var(--status-warning-text)" },
+      sync:{ path:"M4 4v5h5M20 20v-5h-5M4.5 9a8 8 0 0 1 14.1-3.5M19.5 15a8 8 0 0 1-14.1 3.5", bg:"var(--surface-sunken)", color:"var(--text-secondary)" },
+      calendar:{ path:"M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z", bg:"var(--accent-soft)", color:"var(--accent-text)" },
+      cancel:{ path:"M12 9v4M12 16.5h.01M10.3 4.5 2.7 18a1.5 1.5 0 0 0 1.3 2.2h16a1.5 1.5 0 0 0 1.3-2.2L13.7 4.5a1.5 1.5 0 0 0-2.6 0z", bg:"var(--status-critical-soft)", color:"var(--status-critical-text)" },
+    };
+    return M[key] || M.sync;
+  }
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", theme:"الوضع", langBtnLabel:"EN", all:"الكل", unread:"غير مقروءة", newBadge:"جديد",
+        listTitle:"الإشعارات", detailTitle:"تفاصيل الإشعار", empty:"لا توجد إشعارات في هذا القسم.",
+        category:"الفئة", sender:"المرسل", notifId:"معرّف الإشعار", backArrow:"M15 6l-6 6 6 6" },
+      en: { back:"Back", theme:"Theme", langBtnLabel:"AR", all:"All", unread:"Unread", newBadge:"New",
+        listTitle:"Notifications", detailTitle:"Notification detail", empty:"No notifications in this view.",
+        category:"Category", sender:"Sender", notifId:"Notification ID", backArrow:"M9 6l6 6-6 6" },
+    };
+    const t = STR[lang];
+    const raw = this.data();
+    const readIds = this.state.readIds;
+    const withMeta = raw.map(n => {
+      const meta = this.iconMeta(n.icon);
+      const unread = n.unread && !readIds.includes(n.id);
+      return {
+        ...n, unread,
+        title: ar ? n.title_ar : n.title_en, message: ar ? n.msg_ar : n.msg_en,
+        sender: ar ? n.sender_ar : n.sender_en, category: ar ? n.category_ar : n.category_en,
+        dateLine: n.date, iconPath: meta.path, iconBg: meta.bg, iconColor: meta.color,
+        rowStyle: unread ? "" : "",
+        hasLink: !!n.link, linkHref: n.link ? n.link.href : "", linkLabel: n.link ? (ar ? n.link.label_ar : n.link.label_en) : "",
+        open: () => this.setState(s => ({ view: "detail", selectedId: n.id, readIds: s.readIds.includes(n.id) ? s.readIds : [...s.readIds, n.id] })),
+      };
+    });
+    const visibleNotifs = this.state.filter === "unread" ? withMeta.filter(n => n.unread) : withMeta;
+    const selected = withMeta.find(n => n.id === this.state.selectedId) || withMeta[0];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: ar ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      isList: this.state.view === "list", isDetail: this.state.view === "detail",
+      headerTitle: this.state.view === "list" ? t.listTitle : t.detailTitle,
+      goList: () => this.setState({ view: "list" }),
+      filterAll: this.state.filter === "all", filterUnread: this.state.filter === "unread",
+      setFilterAll: () => this.setState({ filter: "all" }), setFilterUnread: () => this.setState({ filter: "unread" }),
+      unreadCount: withMeta.filter(n => n.unread).length,
+      visibleNotifs, emptyState: visibleNotifs.length === 0, selected,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

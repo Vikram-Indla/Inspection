@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .oc-graticule { background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size: 26px 26px; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item is-active" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <main id="main-content" tabindex="-1" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope"><option>All regions</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 24px;">
+        <button class="btn btn-icon btn-ghost" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+      </div>
+      <div style="display:flex; align-items:flex-end; gap:14px; padding:2px 24px 14px; flex-wrap:wrap;">
+        <div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Operations Center</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">live · auto-refresh 30s · Access-controlled</div></div>
+        <span class="grow"></span>
+        <select class="select" style="width:150px;"><option>All regions</option><option>Eastern</option><option>Riyadh</option></select>
+        <span class="badge badge-compliant"><span class="dot"></span>Live · 00:12</span>
+        <button class="btn btn-secondary btn-sm">Export</button>
+        <div class="seg"><button class="seg-opt" aria-pressed="{{ is_command }}" onClick="{{ go_command }}">Command</button><button class="seg-opt" aria-pressed="{{ is_exceptions }}" onClick="{{ go_exceptions }}">Exceptions</button></div>
+      </div>
+    </header>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div style="padding:18px 24px 80px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- ═══ COMMAND ═══ -->
+      <sc-if value="{{ is_command }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <span class="exc-chip exc-critical"><span class="exc-mark"></span>3 GPS overrides pending decision</span>
+          <span class="exc-chip exc-major"><span class="exc-mark"></span>5 corrective actions overdue</span>
+          <span class="exc-chip exc-warning"><span class="exc-mark"></span>8 SLA at risk</span>
+          <span class="exc-chip exc-pending"><span class="exc-mark"></span>2 notifications failed</span>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Executing now</div><div class="kpi-value" style="color:var(--status-info);">9</div><div class="kpi-delta">journey started</div></div>
+          <div class="kpi"><div class="kpi-label">Overrides pending</div><div class="kpi-value" style="color:var(--status-critical);">3</div><div class="kpi-delta">expire on device clock</div></div>
+          <div class="kpi"><div class="kpi-label">SLA at risk</div><div class="kpi-value" style="color:var(--status-warning);">8</div><div class="kpi-delta">working-day breach ≤ 1d</div></div>
+          <div class="kpi"><div class="kpi-label">Corrections overdue</div><div class="kpi-value">5</div><div class="kpi-delta">blocking · owner-assigned</div></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px; align-items:stretch;">
+          <div class="map-panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:520px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-block-end:1px solid var(--border-subtle);"><span style="font-weight:600; font-size:13px;">National operations map</span><span class="grow"></span><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">Mapbox GL · live &amp; projected distinct · 30s</span></div>
+            <div class="oc-graticule" style="position:relative; flex:1; background-color:var(--surface-sunken);">
+              <div style="position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:24px;"><div><div style="font-size:13px; font-weight:500; color:var(--text-secondary);">KSA basemap — live inspector &amp; visit layer</div><div class="t-caption" style="max-width:46ch; margin-block-start:6px;">Factory pins by operational state, high-risk overlay, live inspector positions. Actual immutable path only; planned route shown only when a provider returns geometry. Live vs projected labelled distinctly.</div></div></div>
+              <div class="map-panel" style="position:absolute; top:12px; inset-inline-start:12px; padding:10px 12px;"><div class="t-label" style="margin-block-end:6px;">Operational state</div><div class="stack" style="gap:5px;"><div class="map-legend-row"><span class="swatch" style="background:var(--status-info);"></span>On the way</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-warning);"></span>Arrived</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-compliant);"></span>Executing</div></div></div>
+            </div>
+          </div>
+
+          <div class="panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+            <div class="panel-header" style="border-inline-start:3px solid var(--status-critical);"><div class="panel-title">GPS override queue</div><span class="badge badge-critical">3</span></div>
+            <div style="flex:1; overflow-y:auto;">
+              <sc-for list="{{ overrides }}" as="o" hint-placeholder-count="3">
+                <div style="padding:12px 16px; border-block-end:1px solid var(--border-subtle);">
+                  <div class="row" style="gap:8px; justify-content:space-between;"><b style="font-size:13px;">{{ o.factory }}</b><span class="id-code" style="font-size:11px; color:var(--text-muted);">exp {{ o.expires }}</span></div>
+                  <div class="t-caption" style="margin-block-start:2px;">{{ o.inspector }} · {{ o.reason }}</div>
+                  <div class="row" style="gap:10px; margin-block:8px; flex-wrap:wrap;"><span class="tag">dist {{ o.distance }}</span><span class="tag">±{{ o.accuracy }}</span><span class="tag">{{ o.evidence }} evidence</span><sc-if value="{{ o.safety }}" hint-placeholder-val="{{ false }}"><span class="badge badge-warning">safety exception</span></sc-if></div>
+                  <div style="display:flex; gap:8px;"><button class="btn btn-primary btn-sm" onClick="{{ o.decide }}">Approve</button><button class="btn btn-secondary btn-sm" onClick="{{ o.decide }}">Reject</button></div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noOverrides }}" hint-placeholder-val="{{ false }}"><div class="empty" style="padding:32px 16px;"><div class="empty-title">Queue clear</div><p>No pending geo-override requests in scope.</p></div></sc-if>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:16px; align-items:start;">
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Live monitoring</div><span class="id-code" style="font-size:10.5px; color:var(--text-muted);">auto-refresh 30s</span></div>
+            <div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Factory</th><th>Inspector</th><th>State</th><th>Geo</th><th>Region</th></tr></thead><tbody>
+              <tr><td>Al Rasheed Steel</td><td>K. Al-Otaibi</td><td><span class="badge badge-warning">arrived</span></td><td><span class="badge badge-critical">override</span></td><td>Eastern</td></tr>
+              <tr><td>Najd Dairy</td><td>M. Qahtani</td><td><span class="badge badge-compliant">executing</span></td><td><span class="badge badge-compliant">pass</span></td><td>Riyadh</td></tr>
+              <tr><td>Gulf Textiles</td><td>S. Hamdan</td><td><span class="badge badge-info">on the way</span></td><td class="t-caption">—</td><td>Western</td></tr>
+            </tbody></table></div>
+          </div>
+          <div class="stack" style="gap:16px;">
+            <div class="panel" style="padding:0; overflow:hidden;">
+              <div class="panel-header"><div class="panel-title">SLA watch</div></div>
+              <div class="stack" style="gap:0;">
+                <div class="row" style="gap:10px; padding:11px 16px; border-block-end:1px solid var(--border-subtle);"><span class="exc exc-critical"><span class="exc-mark"></span></span><span style="flex:1; font-size:12.5px;">Review decision — 3 breach ≤ today</span><span class="id-code" style="font-size:11px; color:var(--status-critical-text);">Sun–Thu</span></div>
+                <div class="row" style="gap:10px; padding:11px 16px;"><span class="exc exc-warning"><span class="exc-mark"></span></span><span style="flex:1; font-size:12.5px;">Corrective action — 5 grace nearing</span><span class="id-code" style="font-size:11px;">≤ 2d</span></div>
+              </div>
+            </div>
+            <div class="panel" style="padding:0; overflow:hidden;">
+              <div class="panel-header"><div class="panel-title">Notifications</div></div>
+              <div class="stack" style="gap:0;">
+                <div class="row" style="gap:10px; padding:10px 16px; border-block-end:1px solid var(--border-subtle);"><span style="flex:1; font-size:12.5px;">visit_expiry · push</span><span class="badge badge-critical">failed</span><button class="btn btn-ghost btn-sm">Mark handled</button></div>
+                <div class="row" style="gap:10px; padding:10px 16px; border-block-end:1px solid var(--border-subtle);"><span style="flex:1; font-size:12.5px;">returned · push</span><span class="badge badge-info">delivered</span></div>
+                <div class="row" style="gap:10px; padding:10px 16px;"><span style="flex:1; font-size:12.5px;">lic_expiry · email</span><span class="badge badge-warning">queued</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="padding:0; overflow:hidden;">
+          <div class="panel-header" style="border-inline-start:3px solid var(--status-major);"><div class="panel-title">Corrective actions — overdue</div><span class="badge badge-warning">5 blocking</span></div>
+          <div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Factory</th><th>Correction</th><th>Owner</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody>
+            <tr><td>Al Rasheed Steel</td><td>Clear &amp; re-certify egress</td><td>Plant mgr</td><td class="id-code" style="color:var(--status-critical-text);">overdue 3d</td><td><span class="badge badge-warning">open</span></td><td><button class="btn btn-secondary btn-sm">Acknowledge</button></td></tr>
+            <tr><td>Jubail Chemicals</td><td>Discharge log 90d</td><td>HSE lead</td><td class="id-code" style="color:var(--status-critical-text);">overdue 1d</td><td><span class="badge badge-warning">open</span></td><td><button class="btn btn-secondary btn-sm">Acknowledge</button></td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ═══ EXCEPTIONS ═══ -->
+      <sc-if value="{{ is_exceptions }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div><h2 style="font-size:18px; font-weight:700; margin:0;">Exception board</h2><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">,0124</div></div>
+        <div class="alert alert-immutable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div><b>Command posture.</b> Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows) ✓</div></div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px;">
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Corrective action overdue</div><span class="badge badge-warning">5</span></div>
+            <div class="stack" style="gap:0;">
+              <div class="row" style="gap:10px; padding:11px 16px; border-block-end:1px solid var(--border-subtle);"><span class="id-code" style="font-size:12px;">CASE-3391</span><span style="flex:1; font-size:12.5px;">Al Rasheed · egress</span><a href="#" style="font-size:12px;">Open case →</a></div>
+              <div class="row" style="gap:10px; padding:11px 16px;"><span class="id-code" style="font-size:12px;">CASE-3402</span><span style="flex:1; font-size:12.5px;">Jubail · discharge log</span><a href="#" style="font-size:12px;">Open case →</a></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Review overdue</div><span class="badge badge-warning">3</span></div>
+            <div class="stack" style="gap:0;">
+              <div class="row" style="gap:10px; padding:11px 16px; border-block-end:1px solid var(--border-subtle);"><span class="id-code" style="font-size:12px;">REX-118</span><span style="flex:1; font-size:12.5px;">INS-88213 · L2 breach</span><a href="#" style="font-size:12px;">Open →</a></div>
+              <div class="row" style="gap:10px; padding:11px 16px;"><span class="id-code" style="font-size:12px;">REX-121</span><span style="flex:1; font-size:12.5px;">INS-88041 · L2 breach</span><a href="#" style="font-size:12px;">Open →</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: "dark", view: "command", decided: {} };
+  renderVals() {
+    const OV = [
+      { id: "o1", factory: "Al Rasheed Steel", inspector: "K. Al-Otaibi", reason: "Site access blocked", distance: "172m", accuracy: "12m", evidence: 2, safety: true, expires: "07:41" },
+      { id: "o2", factory: "Eastern Plastics", inspector: "K. Al-Otaibi", reason: "Pin mislocated", distance: "240m", accuracy: "18m", evidence: 1, safety: false, expires: "08:02" },
+      { id: "o3", factory: "Jubail Chemicals", inspector: "S. Hamdan", reason: "Gate relocated", distance: "196m", accuracy: "9m", evidence: 3, safety: false, expires: "08:20" },
+    ];
+    const dec = this.state.decided;
+    const overrides = OV.filter(o => !dec[o.id]).map(o => ({
+      factory: o.factory, inspector: o.inspector, reason: o.reason, distance: o.distance, accuracy: o.accuracy, evidence: o.evidence, safety: o.safety, expires: o.expires,
+      decide: () => this.setState(s => ({ decided: { ...s.decided, [o.id]: true } })),
+    }));
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      is_command: this.state.view === "command", is_exceptions: this.state.view === "exceptions",
+      go_command: () => this.setState({ view: "command" }), go_exceptions: () => this.setState({ view: "exceptions" }),
+      overrides, noOverrides: overrides.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>

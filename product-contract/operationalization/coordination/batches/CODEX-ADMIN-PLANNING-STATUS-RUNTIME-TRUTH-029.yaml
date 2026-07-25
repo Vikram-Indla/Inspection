@@ -1,0 +1,697 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-PLANNING-STATUS-RUNTIME-TRUTH-029
+title: Independent Admin Planning Status runtime truth and acceptance-credit review
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY
+status: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+    accepted_designs: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The route and a live published visit-lifecycle-v4 row are real, and the
+    currently observed row displays the five canonical Planning statuses plus
+    the registered publish, return, cancel and expiry transitions. That visible
+    agreement is not executable authority. The route selects the newest
+    published row across every workflow object without effective/scheduled
+    activation resolution, and no Planning, Operations or Field consumer reads
+    this config row. Actual Planning status changes remain dispersed across
+    RPCs, application actions, an expiry function and permissive visits UPDATE
+    policies. Those paths can bypass the displayed graph, and several
+    application paths commit the status before the semantic lifecycle record or
+    notification. The source registry also permits administrative mutation of
+    published rows without an immutability trigger, complete maker-checker
+    enforcement or a config-version audit trigger. The provider fallback
+    assigns canonical transition IDs to materially wrong execution-like states.
+    Reviewer and Planner deep links succeed despite Admin-only shell navigation,
+    Arabic/RTL renders the route content in English, the exact route design and
+    screen identity are absent, and the focused test is insufficient and not
+    green. No requirement or acceptance row can receive completion credit.
+
+task_contract:
+  task_id: CODEX-ADMIN-PLANNING-STATUS-RUNTIME-TRUTH-029
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  package_id: M9
+  channel: ADMIN
+  business_capability: Read-only Planning status and transition authority projection
+  route: /admin/planning/status
+  implementation_contract: PLN-CON-014
+  do_not_touch_observed:
+    - product application code
+    - product tests
+    - design files or design mappings
+    - local or shared product data
+    - Supabase schema, policies, providers or rows
+    - branches, leases, stashes, main or setup/Inspection
+    - peer-owned orchestration packets
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_and_after: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_write: b2db1668063952f959250472ca915a6b714caf1f
+  concurrent_unowned_untracked_files_present: true
+  concurrent_files_touched: false
+  runtime_source_worktree: /Users/vikramindla/Developer/Inspection-codex-f0-shell
+  runtime_scope_diff_against_product_head:
+    route: NONE
+    shared_shell: NONE
+  runtime_worktree_authority: SAME_CANONICAL_GIT_COMMON_DIRECTORY
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_business_data_mutation: false
+  browser_business_action_submitted: false
+  mutating_test_executed: false
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/domain/state_transitions.csv
+    - product-contract/domain/atomic_scope.csv
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/screens/screen_route_catalogue.csv
+  route_and_design:
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+  runtime:
+    - apps/web/src/app/(app)/admin/planning/status/page.tsx
+    - apps/web/src/app/(app)/admin/workflows/page.tsx
+    - apps/web/src/app/(app)/admin/workflows/actions.ts
+    - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+    - apps/web/src/lib/workflow/lifecycles.ts
+    - apps/web/src/lib/workflow/transition.ts
+    - apps/web/src/lib/workflow/governed-transition.ts
+    - apps/web/src/lib/shell-navigation.ts
+  database:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0005_audit_absolute_immutability.sql
+    - supabase/migrations/20260714091726_plan_validated_state.sql
+    - supabase/migrations/20260714091727_planning_publish_guards.sql
+    - supabase/migrations/20260716120000_seco_config_versions_roles_rls.sql
+    - supabase/migrations/20260717010000_mvp2_m2_02_workflow_version_model.sql
+    - supabase/migrations/20260721030000_planning_capabilities.sql
+    - supabase/migrations/20260721030100_planning_canonical_structures.sql
+    - supabase/migrations/20260723090000_planning_publish_capability_convergence.sql
+  downstream:
+    - apps/web/src/app/(app)/planning/page.tsx
+    - apps/web/src/app/(app)/planning/bulk/actions.ts
+    - apps/web/src/app/(app)/planning/single/actions.ts
+    - apps/web/src/app/(app)/planning/plans/[id]/page.tsx
+    - apps/web/src/app/(app)/visits/page.tsx
+    - apps/web/src/app/(app)/visits/actions.ts
+    - apps/web/src/app/(app)/visits/[id]/actions.ts
+    - apps/web/src/lib/planning/lifecycle.ts
+    - apps/web/src/app/(app)/operations/page.tsx
+    - apps/web/src/app/(app)/operations/actions.ts
+    - apps/web/src/app/(app)/field/page.tsx
+    - apps/web/src/app/(app)/field/[visitId]/page.tsx
+    - apps/web/src/app/(app)/field/my-tasks/page.tsx
+  tests:
+    - apps/web/e2e/cd-044-admin-planning.spec.ts
+    - apps/web/e2e/cd-045-downstream-contract.spec.ts
+    - apps/web/e2e/cd-027-visit-detail.spec.ts
+    - supabase/tests/0029_config_versions_roles_rls_probe.sql
+    - supabase/tests/mvp2_m2_02_workflow_version_model_probe.sql
+  external_current_platform_guidance:
+    - https://supabase.com/docs/guides/database/postgres/row-level-security
+    - https://supabase.com/docs/guides/database/functions
+  peer_evidence_not_authority:
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-STATUS-RUNTIME-PERMISSION-MAPPING-024.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-STATUS-RUNTIME-REMEDIATION-PREFLIGHT-025.yaml
+
+canonical_scope:
+  ownership_correction:
+    route_inventory_claim: CR-001..CR-478
+    disposition: OVERBROAD_NOT_CREDITABLE
+    reason: >-
+      A read-only Planning transition projection cannot own every customer
+      requirement or every M9 Admin function. The direct customer obligation is
+      Visit Status Management; related rows are lifecycle and consumer
+      dependencies only.
+    canonical_change_written: false
+  direct_customer_requirement:
+    mvp1_id: MVP1-M02-015
+    customer_id: CR-067
+    acceptance_id: WA-AC-0067
+    evidence_id: WA-EV-0067
+    atomic_requirements:
+      - id: REQ-R0C-00204
+        obligation: Enforce lifecycle transitions based on business rules.
+        result: FAIL
+        reason: >-
+          The displayed config is not consumed by real Planning transitions,
+          and the broad visits UPDATE policy has no canonical state-pair guard.
+      - id: REQ-R0C-00205
+        obligation: >-
+          Valid Planning statuses are Draft, Published, Returned, Cancelled and
+          Expired; Cancelled and Expired are final; Returned is pre-start only.
+        result: FAIL
+        reason: >-
+          The live row displays the correct five statuses, but invalid direct
+          updates remain possible and the source fallback contradicts them.
+  lifecycle_dependencies:
+    - mvp1_id: MVP1-M02-008
+      ids: [CR-060, WA-AC-0060, WA-EV-0060]
+      atomic: [REQ-R0C-00185, REQ-R0C-00186, REQ-R0C-00187]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-009
+      ids: [CR-061, WA-AC-0061, WA-EV-0061]
+      atomic: [REQ-R0C-00188, REQ-R0C-00189]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-010
+      ids: [CR-062, WA-AC-0062, WA-EV-0062]
+      atomic: [REQ-R0C-00190, REQ-R0C-00191, REQ-R0C-00192]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-011
+      ids: [CR-063, WA-AC-0063, WA-EV-0063]
+      atomic: [REQ-R0C-00193, REQ-R0C-00194, REQ-R0C-00195, REQ-R0C-00196]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-014
+      ids: [CR-066, WA-AC-0066, WA-EV-0066]
+      atomic: [REQ-R0C-00202, REQ-R0C-00203]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-016
+      ids: [CR-068, WA-AC-0068, WA-EV-0068]
+      atomic: [REQ-R0C-00206, REQ-R0C-00207]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-029
+      ids: [CR-081, WA-AC-0081, WA-EV-0081]
+      atomic: [REQ-R0C-00234, REQ-R0C-00235, REQ-R0C-00236]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+    - mvp1_id: MVP1-M02-030
+      ids: [CR-082, WA-AC-0082, WA-EV-0082]
+      atomic: [REQ-R0C-00237]
+      disposition: DEPENDENCY_ONLY_NO_ROUTE_CREDIT
+  downstream_status_consumers_not_owned_by_route:
+    - mvp1_id: MVP1-M02-002
+      ids: [CR-054, WA-AC-0054, WA-EV-0054]
+      atomic: [REQ-R0C-00168, REQ-R0C-00169]
+      reason: Planning KPI behavior is implemented and tested elsewhere.
+    - mvp1_id: MVP1-M02-020
+      ids: [CR-072, WA-AC-0072, WA-EV-0072]
+      atomic: [REQ-R0C-00215, REQ-R0C-00216]
+      reason: Planning KPI summary is a consumer, not this Admin route.
+  canonical_transition_ids:
+    - id: STM-PLAN-001
+      canonical: Visit Plan Draft to Validated
+      live_route: OMITTED
+    - id: STM-PLAN-002
+      canonical: Visit Plan Validated to Published
+      live_route: DISPLAYED_AS_DRAFT_TO_PUBLISHED
+      fallback: INCORRECT_PLANNED_TO_ACKNOWLEDGED_BY_INSPECTOR
+    - id: STM-VIS-001
+      canonical: Visit Published to Returned
+      live_route: DISPLAYED_COMPATIBLY
+      fallback: INCORRECT_ACKNOWLEDGED_TO_IN_EXECUTION
+    - id: STM-VIS-002
+      canonical: Visit Published or Returned to Cancelled
+      live_route: DISPLAYED_COMPATIBLY
+      fallback: INCORRECT_IN_EXECUTION_TO_COMPLETED
+    - id: STM-VIS-003
+      canonical: Eligible active Visit to Expired
+      live_route: DISPLAYED_COMPATIBLY
+      fallback: INCORRECT_COMPLETED_TO_CLOSED
+    - id: republish
+      canonical: NO_REGISTERED_TRANSITION_ID
+      live_route: Returned to Published
+      fallback: INCORRECT_ANY_TO_PLANNED
+  web_admin_quality:
+    - [WA-M9-AC-001, P0, FAIL, "Live source exists, but it is not the executable authority or safely resolved active version."]
+    - [WA-M9-AC-002, P0, FAIL, "Denied-user, invalid transition, source mutation, stale/scheduled and fallback negative paths fail or are unproven."]
+    - [WA-M9-AC-003, P1, BLOCKED, "No exact accepted route design exists."]
+    - [WA-M9-AC-004, P1, FAIL, "Arabic business UI fails and tablet, narrow, full keyboard and accessibility evidence is absent."]
+    - [WA-M9-AC-005, P0, FAIL, "Runtime/database parity is false and the focused route test is not green."]
+    - [WA-M9-AC-006, P1, FAIL, "Exact screen/design identity and a complete acceptance evidence bundle are absent."]
+
+design_and_route_truth:
+  real_route: /admin/planning/status
+  route_component: apps/web/src/app/(app)/admin/planning/status/page.tsx
+  route_local_actions: NONE
+  route_local_loading: NONE
+  route_local_error_boundary: NONE
+  route_local_guard: NONE
+  exact_screen_catalogue_row: ABSENT
+  registered_route_specific_design: ABSENT
+  nearest_upstream_design:
+    design_id: WA-DES-014
+    filename: SAQEEL Admin Workflow Builder.dc.html
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    registered_route: /admin/workflows
+    disposition: UPSTREAM_CHANGE_DESTINATION_ONLY_NOT_ROUTE_AUTHORITY
+  secondary_admin_overview:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    registered_route: /admin
+    disposition: OVERVIEW_ONLY_NOT_ROUTE_AUTHORITY
+  result: BLOCKED_PENDING_GOVERNED_SCREEN_ID_EXACT_MAPPING_AND_ACCEPTED_ROUTE_DESIGN
+
+source_and_version_truth:
+  table: public.config_versions
+  page_query:
+    engine: workflow
+    status: published
+    object_id_filter: ABSENT
+    payload_object_filter: ABSENT
+    effective_from_lte_now: ABSENT
+    scheduled_from_resolution: ABSENT
+    ordering: effective_from_desc
+    limit: 1
+  active_version_failure: >-
+    config_versions supports multiple workflow objects and scheduled activation.
+    approvePublishWorkflow marks a future-scheduled row published and gives it
+    effective_from=now. The page can therefore display a different object or a
+    not-yet-active successor as current.
+  live_observation:
+    version_label: visit-lifecycle-v4
+    effective_from_display: 7/11/2026
+    states: [draft, published, returned, cancelled, expired]
+    transition_rows:
+      - STM-PLAN-002
+      - STM-VIS-001
+      - STM-VIS-002
+      - STM-VIS-003
+      - republish
+    result: CURRENT_ROW_VISIBLE_AND_SEMANTICALLY_CLOSE_BUT_NOT_BOUND_TO_RUNTIME
+  payload_shape:
+    route_expected: "states:string[]; transitions with guard:string and side_effects:string[]"
+    normalized_library: "states:WfState[]; transitions with guards:string[] and fx:WfSideEffect[]"
+    parser_behavior: Checks only that states and transitions are arrays.
+    impact: >-
+      A valid normalized workflow row may render object children, omit guards
+      and side effects, or fail at render time instead of degrading safely.
+  fallback:
+    trigger: Query error, no published row or non-array payload.
+    advertised_as: Static canonical visit-lifecycle-v4 copy that may be stale.
+    actual_states: [planned, acknowledged, in_execution, completed, closed]
+    result: MATERIAL_MISINFORMATION_NOT_SAFE_DEGRADATION
+
+permission_rls_lifecycle_truth:
+  anonymous:
+    browser_result: REDIRECT_TO_LOGIN
+  route_read:
+    app_guard: ABSENT
+    config_versions_select_policy: auth.uid() is not null
+    shell_navigation_roles:
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - security_admin
+      - gis_admin
+      - risk_owner
+    route_inventory_roles: [inspector, planner]
+    endpoint_matrix_persona: Planning administrator
+    observed_reviewer_deep_link: ALLOWED
+    observed_planner_deep_link: ALLOWED
+    result: CONTRADICTORY_UNGOVERNED_READ_BOUNDARY
+  config_versions_write:
+    insert_and_update_roles:
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - risk_owner
+      - gis_admin
+      - security_admin
+    engine_or_object_scope_in_policy: NONE
+    published_update_trigger: ABSENT
+    delete_policy: ABSENT
+    result: PUBLISHED_CONTENT_MUTATION_NOT_DATABASE_BLOCKED
+  maker_checker:
+    constraint: approved_by is null or approved_by differs from created_by
+    bypass: An authorized generic update may set status=published with approved_by null.
+    action_path: Filters draft and supplies the current user as approved_by.
+    result: ACTION_PATH_PARTIAL_DATABASE_GUARD_INCOMPLETE
+  source_audit:
+    config_versions_audit_trigger: ABSENT
+    row_version_bump_trigger: PRESENT
+    append_only_definition_history: DELETE_DENIED_ONLY
+    result: CONFIG_CHANGE_PROVENANCE_NOT_COMPLETE
+  actual_planning_status_update:
+    enum: [draft, validated, published, returned, cancelled, expired]
+    legacy_update_policy: planner or ops may update visits
+    transition_pair_or_terminal_with_check: ABSENT
+    application_filters: PRESENT_ON_SELECTED_ACTIONS
+    result: DIRECT_DATA_API_OR_OTHER_AUTHORIZED_PATH_CAN_BYPASS_GRAPH
+  source_platform_check: >-
+    Current Supabase guidance confirms that RLS UPDATE policies govern which
+    rows and new values are allowed and that database functions exposed through
+    the API require explicit privilege and invoker/definer care. The local
+    policy has role scope but no transition-value constraint.
+  supabase_connector:
+    intended_project: iiozvqntawxfwbgffzqu
+    project_available_to_connector: false
+    visible_unrelated_project: cyijbdeuehohvhnsywig
+    unrelated_project_queried: false
+    direct_runtime_schema_policy_check: BLOCKED_BY_CONNECTOR_PROJECT_ACCESS
+
+runtime_enforcement_and_consumer_truth:
+  consumers_of_config_versions_workflow:
+    - /admin/workflows
+    - /admin/planning/status
+    - feature_flagged_applyGovernedTransition
+  governed_transition_feature:
+    env_flag: FEATURE_WORKFLOW_TRANSITION
+    default: off
+    operational_state_write: NONE
+    route_calls_found: NONE
+  planning_publish:
+    entry_points: [publish_bulk_plan, publish_single_visit]
+    guards:
+      - authenticated planner role or converged planning.publish capability
+      - transactional validation
+      - stable advisory locking for duplicate targets
+      - assignment and package validation
+    status_source: Hard-coded SQL transitions, not config_versions.
+    audit: Generic row triggers
+    result: REAL_GUARDS_PRESENT_SEPARATE_FROM_DISPLAY_SOURCE
+  visit_return_cancel_republish:
+    entry_points: [returnVisit, cancelVisit, republishVisit, bulkCancelVisits]
+    status_source: Application conditional updates, not config_versions.
+    concurrency: Conditional state filters reject some races.
+    atomicity: >-
+      The visit update commits before visit_lifecycle_events and notifications
+      are inserted. The UI can report a committed state with a missing semantic
+      event or missing notification.
+    result: PARTIAL_GUARDS_NON_ATOMIC_CONSEQUENCES
+  expiry:
+    source: planning_expiry_rules and expire_lapsed_visits_core
+    status_source: SQL function sets expired, not config_versions.
+    lifecycle_event: Inserted by the function with rule and previous state.
+    result: SEPARATE_RULE_ENGINE_NOT_DISPLAY_SOURCE
+  Planning_consumers:
+    - /planning
+    - /planning/bulk
+    - /planning/single
+    - /planning/plans/:id
+    - /visits
+    - /visits/:id
+  Operations_consumers:
+    - /operations
+    - /operations/live
+  Field_consumers:
+    - /field
+    - /field/:visitId
+    - /field/my-tasks
+    - /field/drafts
+    - /field/map
+  downstream_data_source: visits.planning_status with operational_state kept separate
+  config_version_binding_on_visit_or_plan: NOT_FOUND
+  in_flight_version_behavior: NOT_DEFINED
+  result: DISPLAYED_CONFIG_HAS_NO_PROVEN_DOWNSTREAM_EFFECT
+
+hard_state_and_negative_path_truth:
+  present:
+    - live published payload
+    - query-error fallback warning
+    - no-published-row fallback warning
+    - states table
+    - transitions table
+    - hard-coded capability table
+  unsafe_or_missing:
+    - provider failure produces fabricated transition content
+    - no exact Planning object or scope selection
+    - no future-scheduled versus active distinction
+    - no retired or rollback lineage
+    - no source fingerprint or version ID
+    - no stale snapshot indicator or refresh control
+    - no malformed-transition validation
+    - empty state and transition arrays render as blank sections
+    - no unauthorized state
+    - no session-expired state
+    - no route loading boundary
+    - no dependency or in-flight impact
+    - no source-audit unavailable state
+  capability_map:
+    source: Hard-coded route constant
+    permission_registry_binding: NONE
+    inaccuracies:
+      - planning.manage is not the create/edit-draft capability.
+      - planning.publish is granted broadly to business_staff by default.
+      - configure-workflow permission is not shown.
+
+browser_evidence:
+  runtime_origin: Local canonical-repository worktree wired to configured non-production Supabase
+  source_equivalence:
+    route_file_diff_product_to_runtime: NONE
+    shell_file_diff_product_to_runtime: NONE
+  authorized_admin:
+    route: http://127.0.0.1:3162/admin/planning/status
+    observed:
+      - live visit-lifecycle-v4 source caption
+      - canonical five status chips
+      - five transition rows
+      - hard-coded planning capability table
+      - light and dark theme rendering
+    theme_transition:
+      before: {data_theme: dark, color_scheme: dark}
+      after: {data_theme: light, color_scheme: light}
+  reviewer:
+    route: http://localhost:3163/admin/planning/status
+    observed:
+      - direct deep-link succeeded
+      - full workflow and capability detail visible
+      - no Planning Status navigation link in rendered shell
+    result: HIDDEN_IN_NAV_BUT_DEEP_LINK_READABLE
+  planner_arabic:
+    route: http://0.0.0.0:3163/admin/planning/status
+    html_lang: ar
+    html_dir: rtl
+    shared_shell: ARABIC
+    route_title_banner_headers_and_effects: ENGLISH
+    result: ARABIC_ROUTE_CONTENT_FAIL
+  anonymous:
+    requested_route: http://saqeel.localhost:3163/admin/planning/status
+    result: REDIRECTED_TO_LOGIN
+  desktop:
+    viewport: 1280x720
+    document_scroll_width: 1265
+    horizontal_document_overflow: false
+  responsive:
+    desktop: OBSERVED
+    tablet_1024: NOT_PROVEN
+    narrow_412_390_320: NOT_PROVEN
+  accessibility:
+    positive_source_and_runtime:
+      - skip link exists
+      - native workflow link exists
+      - section headings exist
+      - table column headers use scope=col
+      - fallback warning has role=status
+    route_specific_axe: NOT_PRESENT
+    keyboard_focus_journey: NOT_PROVEN
+    screen_reader: NOT_PROVEN
+    zoom_200_400: NOT_PROVEN
+    wide_table_narrow_alternative: NOT_PRESENT
+  qualified_native_arabic_review: NOT_PERFORMED
+  prohibited_actions_confirmed:
+    - no workflow draft proposed
+    - no workflow draft edited
+    - no workflow version approved or published
+    - no visit status changed
+    - no role or permission changed
+    - no database row written
+
+test_and_validator_evidence:
+  canonical_validator:
+    command: node scripts/validate_web_admin_phase1.mjs
+    result: PASS
+    requirement_rows: 478
+    limitation: Structural inventory validation does not certify this route or runtime enforcement.
+  first_focused_attempt:
+    command: >-
+      PLAYWRIGHT_PORT=3162 npx playwright test
+      e2e/cd-044-admin-planning.spec.ts --project=e2e
+      --grep "planning status view" --reporter=line
+    result: BLOCKED_IN_SETUP
+    details:
+      setup_passed: [planner, reviewer, admin, ops]
+      setup_failed: inspector authentication timed out after an HTTP 400 resource response
+      route_tests_run: 0
+  focused_route_execution:
+    command: >-
+      PLAYWRIGHT_PORT=3162 npx playwright test
+      e2e/cd-044-admin-planning.spec.ts --project=e2e
+      --grep "planning status view" --no-deps --reporter=line
+    result: FAIL_1_PASSED_1_FAILED
+    passed: Published-workflow banner, workflow link, STM-VIS-001 and planning.publish are visible.
+    failed: Planning Lookups navigation link was not found.
+    limitation: >-
+      The passing assertion checks only one transition ID and one hard-coded
+      capability. It does not verify transition semantics, source binding,
+      active version resolution, permissions, fallback safety or consumers.
+  downstream_spec:
+    file: apps/web/e2e/cd-045-downstream-contract.spec.ts
+    route_use: Notification-popover launch point only.
+    mutation: Stages and marks notification rows.
+    executed: false
+    status_coverage: NONE
+  database_probes:
+    config_rls_probe: Checks that SELECT and broad INSERT/UPDATE policies exist, not transition or version safety.
+    version_model_probe: Checks columns, bump trigger, index and absent DELETE policy, not published UPDATE immutability.
+  readiness: NOT_READY_FOR_CERTIFICATION
+  missing_coverage:
+    - exact object and active/effective/scheduled version selection
+    - displayed-to-executable transition parity
+    - every invalid Planning state pair through Data API and RPC paths
+    - Cancelled and Expired terminal enforcement at the database boundary
+    - pre-start-only Returned enforcement at the database boundary
+    - status, audit, lifecycle event and notification atomicity
+    - published config immutability and maker-checker bypass
+    - config-version audit provenance and rollback lineage
+    - unauthorized authenticated route behavior
+    - malformed, empty, unavailable, scheduled and stale states
+    - EN/AR, LTR/RTL, light/dark, desktop/tablet/narrow
+    - keyboard/focus, automated accessibility, screen-reader and zoom
+
+p0_findings:
+  - id: PLN-ST-P0-001
+    finding: The displayed config version is not the executable Planning transition authority.
+    impact: Admins can read or publish a graph that Planning, Operations and Field never consume.
+    blocks: [REQ-R0C-00204, REQ-R0C-00205, WA-M9-AC-001, WA-M9-AC-005]
+  - id: PLN-ST-P0-002
+    finding: The route resolves the newest published workflow across all objects and ignores scheduled activation.
+    impact: A different workflow object or future successor can be shown as current Planning rules.
+    blocks: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-ST-P0-003
+    finding: The degraded fallback reuses canonical IDs for materially incorrect execution-like transitions.
+    impact: Provider loss turns into authoritative-looking misinformation.
+    blocks: [REQ-R0C-00204, REQ-R0C-00205, WA-M9-AC-001, WA-M9-AC-002]
+  - id: PLN-ST-P0-004
+    finding: Authorized visits UPDATE policies do not enforce valid transition pairs or terminal states.
+    impact: Direct Data API or another authorized path can bypass final-state and pre-start rules.
+    blocks: [REQ-R0C-00204, REQ-R0C-00205, REQ-R0C-00192, REQ-R0C-00207, WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-ST-P0-005
+    finding: Return, republish and cancel actions commit status before required lifecycle and notification consequences.
+    impact: A visible Planning state can exist without complete semantic evidence or required notification.
+    blocks: [REQ-R0C-00186, REQ-R0C-00188, REQ-R0C-00191, REQ-R0C-00202, REQ-R0C-00203, REQ-R0C-00237, WA-M9-AC-005]
+  - id: PLN-ST-P0-006
+    finding: Published config_versions rows are not protected from generic authorized UPDATE.
+    impact: The page's immutable-governed-source claim is false at the database boundary.
+    blocks: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-ST-P0-007
+    finding: Maker-checker and source audit are incomplete and bypassable.
+    impact: A published workflow may have no approver or immutable config-change audit lineage.
+    blocks: [WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-ST-P0-008
+    finding: The route parser is incompatible with the normalized workflow-library payload.
+    impact: A valid current workflow definition can render incorrectly or fail instead of degrading safely.
+    blocks: [WA-M9-AC-001, WA-M9-AC-002]
+
+p1_findings:
+  - id: PLN-ST-P1-001
+    finding: No exact route design, governed screen ID or exact route acceptance exists.
+  - id: PLN-ST-P1-002
+    finding: The route's CR-001..CR-478 ownership is overbroad.
+  - id: PLN-ST-P1-003
+    finding: Shell, route inventory, endpoint matrix and RLS declare contradictory viewer personas.
+  - id: PLN-ST-P1-004
+    finding: Reviewer and Planner can deep-link to full Admin workflow detail despite hidden navigation.
+  - id: PLN-ST-P1-005
+    finding: The route omits STM-PLAN-001 and blurs Visit Plan and Visit aggregate boundaries.
+  - id: PLN-ST-P1-006
+    finding: Capability descriptions are hard-coded and not derived from permission authority.
+  - id: PLN-ST-P1-007
+    finding: Arabic/RTL renders all route business content in English.
+  - id: PLN-ST-P1-008
+    finding: Loading, safe unavailable, empty, malformed, scheduled, stale and unauthorized states are incomplete.
+  - id: PLN-ST-P1-009
+    finding: Tablet, narrow, keyboard, automated accessibility, screen-reader and zoom evidence is absent.
+  - id: PLN-ST-P1-010
+    finding: The focused test is semantically shallow and currently not green.
+  - id: PLN-ST-P1-011
+    finding: Qualified native-Arabic review and exact fixed-viewport design comparison are absent.
+
+exact_prerequisites:
+  policy_and_contract:
+    - Select one executable Planning transition authority: config-driven runtime or a verified compiled projection of existing guards.
+    - Define separate Visit Plan, Planning Visit, operational and execution state domains.
+    - Decide the exact viewer persona and whether unpublished guards/capabilities are sensitive.
+    - Define mandatory atomic consequences versus durable-outbox consequences for each transition.
+    - Define in-flight object binding when a successor rule version activates.
+  governed_mapping:
+    - Register one exact screen-catalogue row for /admin/planning/status.
+    - Replace CR-001..CR-478 with the direct and dependent IDs in this packet.
+    - Accept and fingerprint a route-specific design without reassigning WA-DES-014 from /admin/workflows.
+  database_and_service:
+    - Add a non-bypassable valid-transition boundary for every Planning state change.
+    - Bind the read model to one Planning object, scope and active effective version.
+    - Enforce published config immutability, complete maker-checker and append-only change audit.
+    - Make state, semantic lifecycle evidence and required consequences atomic or durably correlated.
+    - Preserve existing publish, duplicate, assignment, package, expiry and concurrency guards.
+  route:
+    - Remove the fabricated fallback and show explicit unavailable/degraded truth.
+    - Support exactly one approved payload schema or a lossless, tested adapter.
+    - Display object, version ID, effective/scheduled state, source fingerprint and provenance.
+    - Separate aggregates and derive capability explanations from governed authority.
+    - Add explicit loading, empty, malformed, stale, unauthorized and dependency-impact states.
+  qa:
+    - Add route-focused source, active-version, RLS, transition-parity and negative tests.
+    - Probe every invalid state pair through authenticated Data API and canonical RPC paths.
+    - Prove source immutability, maker-checker, audit, rollback and concurrency.
+    - Prove Planning, Operations and Field consumers against the same authority or verified projection.
+    - Certify EN/LTR and AR/RTL, light/dark, desktop/tablet/narrow, keyboard/focus, accessibility and negative states.
+    - Require qualified native-Arabic review; automation may not self-certify it.
+
+rollback_and_stop_conditions:
+  rollback: No runtime rollback is required because this packet changed no product or data.
+  packet_rollback: Remove only this unique YAML packet before integration if Codex lead returns it.
+  stop_conditions:
+    - executable transition authority remains undecided
+    - route can select a non-Planning or future-scheduled workflow
+    - displayed rules and executable guards can diverge
+    - invalid transitions remain possible through an authorized API path
+    - published source remains mutable or unaudited
+    - required consequences can partially commit
+    - viewer persona, in-flight binding or aggregate boundaries are invented
+    - exact route design and screen identity remain ungoverned
+    - shared data proof lacks an isolated approved lease
+
+safe_queued_successor:
+  packet_id: CODEX-ADMIN-PLANNING-EXPIRY-RUNTIME-TRUTH-030
+  mode: READ_ONLY
+  scope: >-
+    Independently audit /admin/planning/expiry, planning_expiry_rules and the
+    scheduled expiry entry points against exact expiry requirements, personas,
+    version/effective resolution, audit, terminal-state enforcement, downstream
+    Planning/Operations/Field behavior, tests and real browser truth.
+  design_boundary: Treat design identity and revision as a separate dependency.
+  non_overlap: >-
+    Does not write the status route, workflow registry, expiry rules, database,
+    design, product, tests or shared data and does not consume any remediation
+    lease proposed for Planning Status.
+
+validation:
+  yaml_parse: PASS
+  required_packet_id_match: PASS
+  exact_one_owned_file_diff: PASS
+  product_worktree_clean: PASS
+  prohibited_paths_changed: NONE
+  canonical_validator: PASS_478_OF_478
+  verdict: PASS_PACKET_IS_INTERNALLY_VALID_RETURN_BLOCKED_ZERO_CREDIT

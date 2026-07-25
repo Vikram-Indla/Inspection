@@ -1,0 +1,399 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-DISPATCH-MANIFEST-DRY-VALIDATOR-EXAMPLES-063
+status: READ_ONLY_NON_AUTHORITATIVE_EXAMPLES_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Provide deterministic non-authoritative PASS and FAIL examples for all three
+  M11 authority options using the 22-field split-ref dispatch schema and
+  16-field lease schema without creating a real manifest, selecting an owner
+  or enabling any write.
+
+authority:
+  control_bootstrap: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+  ref_monitor: KIMI-M11-LIVE-CONTROL-REF-DRIFT-MONITOR-062
+  response_conformance: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+  preservation_audit: KIMI-M11-PRESERVATION-FLOOR-INDEPENDENT-AUDIT-058
+
+non_authoritative_guard:
+  example_only: true
+  dispatch_authorized: false
+  lease_active: false
+  real_actor_assigned: false
+  real_worktree_assigned: false
+  real_branch_assigned: false
+  shared_control_materialized: false
+  implementation_authorized: false
+  QA_authorized: false
+  requirement_credit: 0
+  rule: >-
+    Every identity, worktree, branch, timestamp and lease identifier below is
+    synthetic. These examples are validator fixtures only and must never be
+    copied into ACTIVE_WORKTREE_LEASES or treated as sponsor authority.
+
+hard_boundary:
+  - "No real dispatch manifest, owner, worktree, branch or lease is created."
+  - "No option is selected and no authority is inferred."
+  - "No fetch, checkout, branch/worktree creation, merge, push, shared-control edit, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+pinned_split_ref_values:
+  product_control_ref: origin/main
+  product_control_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  work_queue_path: product-contract/execution/WORK_QUEUE.yaml
+  work_queue_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+  current_slice_path: product-contract/execution/CURRENT_SLICE.yaml
+  current_slice_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+  coordination_control_ref: origin/codex/orchestration-control-plane
+  coordination_control_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+  lease_registry_path: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+preservation_floor:
+  requirements: 20
+  requirement_range: CR-337..CR-356
+  test_cases: 361
+  unique_test_cases: 361
+  proof_clusters: 18
+  QA_paths: 9
+  unique_QA_paths: 9
+  blockers: 12
+  requirement_credit: 0
+  waived_or_deleted: 0
+
+dispatch_schema_22_fields:
+  - canonical_repository
+  - product_control_ref
+  - product_control_commit
+  - work_queue_path
+  - work_queue_sha256
+  - current_slice_path
+  - current_slice_sha256
+  - coordination_control_ref
+  - coordination_control_commit
+  - lease_registry_path
+  - lease_registry_sha256
+  - task_id
+  - actor
+  - worktree
+  - branch
+  - exact_leased_paths
+  - exact_database_objects
+  - mode
+  - expiry_or_release_condition
+  - independent_reviewer
+  - preservation_floor
+  - requirement_credit
+
+lease_schema_16_fields:
+  - task_id
+  - named_owner
+  - repository
+  - worktree
+  - branch
+  - exact_application_paths
+  - exact_test_paths
+  - exact_database_objects
+  - migration_allocation_rule
+  - predecessor_commit
+  - baseline_hash
+  - start_time
+  - expiry_or_release_condition
+  - independent_reviewer
+  - prohibited_paths
+  - collision_stop_conditions
+
+synthetic_constants:
+  repository: /SYNTHETIC/NOT-A-REAL-WORKTREE
+  implementation_owner: SYNTHETIC_IMPLEMENTATION_OWNER
+  independent_QA_owner: SYNTHETIC_INDEPENDENT_QA_OWNER
+  reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+  inactive_start_time: "EXAMPLE_ONLY_NOT_STARTED"
+  inactive_expiry: "EXAMPLE_ONLY_NO_ACTIVE_LEASE"
+  predecessor_commit: SYNTHETIC_PREDECESSOR_COMMIT_NOT_RESOLVABLE
+  baseline_hash: SYNTHETIC_BASELINE_HASH_NOT_RESOLVABLE
+  collision_stops:
+    - "Stop on any path/object/function/migration overlap."
+    - "Stop if split-ref hashes drift."
+    - "Stop if implementation and QA owners are not independent."
+    - "Stop if preservation floor is reduced or credit exceeds zero."
+
+pass_examples:
+  - example_id: EX-063-PASS-EXECUTION-ABSORBS
+    selected_option: EXECUTION_TASK_ABSORBS_M11
+    expected_result: PASS_SCHEMA_ONLY_NOT_EXECUTABLE
+    manifest:
+      canonical_repository: /Users/vikramindla/Developer/Inspection
+      product_control_ref: origin/main
+      product_control_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+      work_queue_path: product-contract/execution/WORK_QUEUE.yaml
+      work_queue_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      current_slice_path: product-contract/execution/CURRENT_SLICE.yaml
+      current_slice_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      coordination_control_ref: origin/codex/orchestration-control-plane
+      coordination_control_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+      lease_registry_path: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+      lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      task_id: SYNTHETIC-EXECUTION-ABSORBS-M11
+      actor: SYNTHETIC_IMPLEMENTATION_OWNER
+      worktree: /SYNTHETIC/NOT-A-REAL-WORKTREE/execution-absorbs
+      branch: synthetic/example-execution-absorbs-never-create
+      exact_leased_paths:
+        - apps/web/src/app/(app)/virtual/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+        - apps/web/src/app/(app)/virtual/[id]/page.tsx
+      exact_database_objects: [virtual_sessions, virtual_participants, SYNTHETIC_ACCEPTED_VIRTUAL_RPC_SET]
+      mode: EXAMPLE_ONLY_INACTIVE_IMPLEMENTATION
+      expiry_or_release_condition: EXAMPLE_ONLY_NO_ACTIVE_LEASE
+      independent_reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+      preservation_floor: "20/361/18/9/12; zero waivers; zero credit"
+      requirement_credit: 0
+    lease:
+      task_id: SYNTHETIC-EXECUTION-ABSORBS-M11
+      named_owner: SYNTHETIC_IMPLEMENTATION_OWNER
+      repository: /SYNTHETIC/NOT-A-REAL-WORKTREE
+      worktree: /SYNTHETIC/NOT-A-REAL-WORKTREE/execution-absorbs
+      branch: synthetic/example-execution-absorbs-never-create
+      exact_application_paths:
+        - apps/web/src/app/(app)/virtual/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+        - apps/web/src/app/(app)/virtual/[id]/page.tsx
+      exact_test_paths: []
+      exact_database_objects: [virtual_sessions, virtual_participants, SYNTHETIC_ACCEPTED_VIRTUAL_RPC_SET]
+      migration_allocation_rule: EXAMPLE_ONLY_NEXT_MONOTONIC_AFTER_ACCEPTED_PREDECESSOR
+      predecessor_commit: SYNTHETIC_PREDECESSOR_COMMIT_NOT_RESOLVABLE
+      baseline_hash: SYNTHETIC_BASELINE_HASH_NOT_RESOLVABLE
+      start_time: EXAMPLE_ONLY_NOT_STARTED
+      expiry_or_release_condition: EXAMPLE_ONLY_NO_ACTIVE_LEASE
+      independent_reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+      prohibited_paths: ["main", "setup/Inspection", "all non-M11 paths", "all nine QA paths"]
+      collision_stop_conditions:
+        - "Stop on any path/object/function/migration overlap."
+        - "Stop if split-ref hashes drift."
+        - "Stop if implementation and QA owners are not independent."
+        - "Stop if preservation floor is reduced or credit exceeds zero."
+    QA_owner: SYNTHETIC_INDEPENDENT_QA_OWNER
+    assertions:
+      manifest_field_count: 22
+      lease_field_count: 16
+      split_ref_hashes_match: true
+      owner_separation: true
+      preservation_floor_matches: true
+      lease_active: false
+
+  - example_id: EX-063-PASS-M11-CHAIN
+    selected_option: M11_CHAIN_OWNS_VIRTUAL
+    expected_result: PASS_SCHEMA_ONLY_NOT_EXECUTABLE
+    manifest:
+      canonical_repository: /Users/vikramindla/Developer/Inspection
+      product_control_ref: origin/main
+      product_control_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+      work_queue_path: product-contract/execution/WORK_QUEUE.yaml
+      work_queue_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      current_slice_path: product-contract/execution/CURRENT_SLICE.yaml
+      current_slice_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      coordination_control_ref: origin/codex/orchestration-control-plane
+      coordination_control_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+      lease_registry_path: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+      lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      task_id: SYNTHETIC-M11-CHAIN-OWNS-VIRTUAL
+      actor: SYNTHETIC_IMPLEMENTATION_OWNER
+      worktree: /SYNTHETIC/NOT-A-REAL-WORKTREE/m11-chain
+      branch: synthetic/example-m11-chain-never-create
+      exact_leased_paths:
+        - apps/web/src/app/(app)/virtual/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+        - apps/web/src/app/(app)/virtual/[id]/page.tsx
+      exact_database_objects: [virtual_sessions, virtual_participants, SYNTHETIC_ACCEPTED_M11_RPC_SET]
+      mode: EXAMPLE_ONLY_INACTIVE_IMPLEMENTATION
+      expiry_or_release_condition: EXAMPLE_ONLY_NO_ACTIVE_LEASE
+      independent_reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+      preservation_floor: "20/361/18/9/12; zero waivers; zero credit"
+      requirement_credit: 0
+    lease:
+      task_id: SYNTHETIC-M11-CHAIN-OWNS-VIRTUAL
+      named_owner: SYNTHETIC_IMPLEMENTATION_OWNER
+      repository: /SYNTHETIC/NOT-A-REAL-WORKTREE
+      worktree: /SYNTHETIC/NOT-A-REAL-WORKTREE/m11-chain
+      branch: synthetic/example-m11-chain-never-create
+      exact_application_paths:
+        - apps/web/src/app/(app)/virtual/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/actions.ts
+        - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+        - apps/web/src/app/(app)/virtual/[id]/page.tsx
+      exact_test_paths: []
+      exact_database_objects: [virtual_sessions, virtual_participants, SYNTHETIC_ACCEPTED_M11_RPC_SET]
+      migration_allocation_rule: EXAMPLE_ONLY_NEXT_MONOTONIC_AFTER_ACCEPTED_PREDECESSOR
+      predecessor_commit: SYNTHETIC_PREDECESSOR_COMMIT_NOT_RESOLVABLE
+      baseline_hash: SYNTHETIC_BASELINE_HASH_NOT_RESOLVABLE
+      start_time: EXAMPLE_ONLY_NOT_STARTED
+      expiry_or_release_condition: EXAMPLE_ONLY_NO_ACTIVE_LEASE
+      independent_reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+      prohibited_paths: ["main", "setup/Inspection", "all non-M11 paths", "all nine QA paths"]
+      collision_stop_conditions:
+        - "Stop on any path/object/function/migration overlap."
+        - "Stop if split-ref hashes drift."
+        - "Stop if implementation and QA owners are not independent."
+        - "Stop if preservation floor is reduced or credit exceeds zero."
+    QA_owner: SYNTHETIC_INDEPENDENT_QA_OWNER
+    assertions:
+      manifest_field_count: 22
+      lease_field_count: 16
+      split_ref_hashes_match: true
+      owner_separation: true
+      preservation_floor_matches: true
+      lease_active: false
+
+  - example_id: EX-063-PASS-KEEP-BLOCKED
+    selected_option: KEEP_BOTH_BLOCKED
+    expected_result: PASS_SCHEMA_ONLY_REMAINS_BLOCKED
+    manifest:
+      canonical_repository: /Users/vikramindla/Developer/Inspection
+      product_control_ref: origin/main
+      product_control_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+      work_queue_path: product-contract/execution/WORK_QUEUE.yaml
+      work_queue_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      current_slice_path: product-contract/execution/CURRENT_SLICE.yaml
+      current_slice_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      coordination_control_ref: origin/codex/orchestration-control-plane
+      coordination_control_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+      lease_registry_path: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+      lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      task_id: SYNTHETIC-KEEP-BOTH-BLOCKED
+      actor: NONE_EXAMPLE_ONLY
+      worktree: NONE_EXAMPLE_ONLY
+      branch: NONE_EXAMPLE_ONLY
+      exact_leased_paths: []
+      exact_database_objects: []
+      mode: NO_LEASE_KEEP_BLOCKED
+      expiry_or_release_condition: NOT_APPLICABLE_BLOCKED
+      independent_reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+      preservation_floor: "20/361/18/9/12; zero waivers; zero credit"
+      requirement_credit: 0
+    lease:
+      task_id: SYNTHETIC-KEEP-BOTH-BLOCKED
+      named_owner: NONE_EXAMPLE_ONLY
+      repository: NONE_EXAMPLE_ONLY
+      worktree: NONE_EXAMPLE_ONLY
+      branch: NONE_EXAMPLE_ONLY
+      exact_application_paths: []
+      exact_test_paths: []
+      exact_database_objects: []
+      migration_allocation_rule: NOT_APPLICABLE_NO_LEASE
+      predecessor_commit: NOT_APPLICABLE_NO_LEASE
+      baseline_hash: NOT_APPLICABLE_NO_LEASE
+      start_time: NOT_STARTED
+      expiry_or_release_condition: NOT_APPLICABLE_BLOCKED
+      independent_reviewer: SYNTHETIC_INDEPENDENT_REVIEWER
+      prohibited_paths: ["all product, test, migration, SQL, data and shared-control paths"]
+      collision_stop_conditions: ["Any attempted write is a BLOCK."]
+    QA_owner: NONE_EXAMPLE_ONLY
+    assertions:
+      manifest_field_count: 22
+      lease_field_count: 16
+      split_ref_hashes_match: true
+      owner_separation: NOT_APPLICABLE_NO_OWNERS
+      preservation_floor_matches: true
+      lease_active: false
+
+fail_examples:
+  - example_id: EX-063-FAIL-EXECUTION-ABSORBS
+    selected_option: EXECUTION_TASK_ABSORBS_M11
+    base: EX-063-PASS-EXECUTION-ABSORBS
+    mutations:
+      - "QA_owner = SYNTHETIC_IMPLEMENTATION_OWNER"
+      - "manifest.independent_reviewer = SYNTHETIC_IMPLEMENTATION_OWNER"
+    deterministic_failures:
+      - OWNER_SEPARATION_FAILED
+      - INDEPENDENT_REVIEW_FAILED
+    expected_result: BLOCK_DUE_TO_OWNER_COLLAPSE
+
+  - example_id: EX-063-FAIL-M11-CHAIN
+    selected_option: M11_CHAIN_OWNS_VIRTUAL
+    base: EX-063-PASS-M11-CHAIN
+    mutations:
+      - "manifest.work_queue_sha256 = WRONG_HASH"
+      - "lease.exact_application_paths += apps/web/src/app/(app)/dashboard/page.tsx"
+      - "manifest.preservation_floor = 20/360/18/8/11"
+    deterministic_failures:
+      - SPLIT_REF_HASH_MISMATCH
+      - OUT_OF_SCOPE_PATH_COLLISION
+      - PRESERVATION_FLOOR_REDUCED
+    expected_result: BLOCK_DUE_TO_HASH_SCOPE_AND_COVERAGE_VIOLATION
+
+  - example_id: EX-063-FAIL-KEEP-BLOCKED
+    selected_option: KEEP_BOTH_BLOCKED
+    base: EX-063-PASS-KEEP-BLOCKED
+    mutations:
+      - "manifest.mode = ACTIVE_IMPLEMENTATION"
+      - "manifest.actor = SYNTHETIC_IMPLEMENTATION_OWNER"
+      - "manifest.exact_leased_paths = [apps/web/src/app/(app)/virtual/actions.ts]"
+      - "manifest.requirement_credit = 1"
+    deterministic_failures:
+      - BLOCKED_OPTION_ATTEMPTS_ACTIVE_LEASE
+      - BLOCKED_OPTION_ATTEMPTS_WRITE_SCOPE
+      - UNAUTHORIZED_REQUIREMENT_CREDIT
+    expected_result: BLOCK_DUE_TO_BLOCKED_OPTION_AUTHORITY_ESCALATION
+
+deterministic_validator:
+  order:
+    - "Reject unless non_authoritative_guard.example_only=true and lease_active=false."
+    - "Require exactly 22 manifest keys and exactly 16 lease keys."
+    - "Require all pinned refs, commits, paths and hashes to match."
+    - "Require the exact 20/361/18/9/12 floor, zero waivers and zero credit."
+    - "For implementation options, require distinct implementation, QA and reviewer identities."
+    - "Reject paths or database objects outside the selected exact scope."
+    - "For KEEP_BOTH_BLOCKED, require empty paths/objects, no owner, no active mode and zero credit."
+    - "Return PASS_SCHEMA_ONLY_NOT_EXECUTABLE only when all checks pass."
+  real_dispatch_rule: >-
+    Every example fails real-dispatch validation because its identities,
+    worktrees, branches, predecessor and baseline values are explicitly
+    synthetic or inactive.
+
+result:
+  verdict: ACK
+  exact_reason: ACK_SIX_DETERMINISTIC_NON_AUTHORITATIVE_EXAMPLES_VALIDATE
+  pass_examples: 3
+  fail_examples: 3
+  real_manifests_created: 0
+  real_leases_created: 0
+  option_selected: false
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-DISPATCH-VALIDATOR-MUTATION-MATRIX-064
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Expand the six examples into a compact field-by-field mutation matrix
+    proving each of the 22 manifest and 16 lease fields fails closed when
+    missing, stale, conflicting or authority-expanding.
+  prohibited:
+    - "No real manifest, identity, worktree, branch, decision, lease, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  manifest_schema_fields: 22
+  lease_schema_fields: 16
+  options_covered: 3
+  pass_examples: 3
+  fail_examples: 3
+  split_ref_hash_checks_per_pass: 5
+  preservation_floor: "20/361/18/9/12"
+  real_manifests_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

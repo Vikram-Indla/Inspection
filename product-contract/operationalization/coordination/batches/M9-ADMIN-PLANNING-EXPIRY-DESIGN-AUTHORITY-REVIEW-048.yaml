@@ -1,0 +1,506 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048
+title: Independent Planning Expiry Rules design authority and runtime-delta review
+status: RETURN_FOR_POLICY_VERSION_AND_MAPPING_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The route and scheduler integration are real, but the route has no governed
+    screen identity, exact admin-screen requirement mapping or direct accepted
+    design. Three rule families exceed the verified source obligation, enabled
+    versions remain mutable, and the single-enabled invariant is non-atomic.
+
+task_contract:
+  task_id: M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048
+  gate: M9 Planning Expiry Rules design authority
+  route: /admin/planning/expiry
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids: []
+  screen_identity_status: MISSING_GOVERNED_SCREEN_ID
+  implementation_trace_ids: [PLN-CON-013]
+  verified_source_requirements:
+    - CR-068
+    - CR-098
+  verified_source_acceptance:
+    - WA-AC-0068
+    - WA-AC-0098
+  normalized_atomic_requirements:
+    - REQ-R0C-00206
+    - REQ-R0C-00207
+  package_acceptance_only:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-003
+    - WA-M9-AC-004
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+  dependencies:
+    - governed screen identity and exact admin-screen acceptance
+    - approved policy authority for every rule family and offset
+    - atomic single-enabled version transition
+    - immutable enabled and historical versions
+    - effective-from and effective-to lifecycle contract
+    - maker-checker applicability decision
+    - optimistic concurrency contract
+    - dependency and affected-visit impact preview
+    - route-specific accepted design and immutable frame manifest
+    - unambiguous CD lineage
+  do_not_touch:
+    - live Claude Design, WA-DES-010, WA-DES-014, WA-DES-015 or any CD package
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, scheduler, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No product, design, database, test,
+    evidence, provider, mapping, scheduler, branch, lease or stash is changed.
+
+route_and_capability_validation:
+  route_exists: true
+  page:
+    path: apps/web/src/app/(app)/admin/planning/expiry/page.tsx
+    validation: CONFIRMED
+  component:
+    path: apps/web/src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx
+    validation: CONFIRMED
+  actions:
+    path: apps/web/src/app/(app)/admin/planning/expiry/actions.ts
+    validation: CONFIRMED
+  types:
+    path: apps/web/src/app/(app)/admin/planning/expiry/types.ts
+    validation: CONFIRMED
+  business_capability: >-
+    View, create, edit, enable and disable scoped visit-expiry rule versions
+    consumed by the scheduled expiry engine.
+  channel_validation: CONFIRMED_ADMIN
+  route_operationalization: >-
+    REAL_IMPLEMENTED_ADDITIONAL_ROUTE_WITHOUT_GOVERNED_SCREEN_ID
+  capability: planning.configure_expiry
+  page_gate: has_planning_capability
+  action_gate_recheck: true
+  RLS_write_gate: planning.configure_expiry
+
+source_requirement_review:
+  verified_core:
+    - requirement_id: CR-068
+      obligation: >-
+        Automatically expire visits not started within the planned visit
+        window, record audit history and make Expired final and read-only.
+    - requirement_id: CR-098
+      obligation: >-
+        Automatically move Published to Expired after the visit window passes
+        and notify the planner.
+  authorized_rule_family:
+    rule_type: not_completed_at_window_end
+    validation: CLOSEST_DIRECT_SOURCE_MATCH
+  additional_rule_families:
+    - rule_type: no_acknowledgement
+      source_authority: NOT_FOUND
+      verdict: NEEDS_APPROVED_POLICY
+    - rule_type: no_execution_start
+      source_authority: NOT_FOUND
+      verdict: NEEDS_APPROVED_POLICY
+    - rule_type: no_execution_date
+      source_authority: NOT_FOUND
+      runtime_note: Dormant because visits.window_start is non-null.
+      verdict: NEEDS_CONTRACT_AND_DATA_MODEL
+  offset_policy:
+    UI_range_minutes: 0_THROUGH_525600
+    exact_approved_thresholds: NOT_FOUND
+    implication: >-
+      The UI permits policy values up to one year without a cited approved
+      calendar, threshold or SLA authority.
+  requirement_mapping_claim:
+    route_inventory: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD_MAPPING
+  completion_rule: >-
+    CR-068 and CR-098 are dependent expiry-engine obligations, not evidence
+    that this administration screen, its extra policies or its UX are complete.
+
+expiry_engine_validation:
+  table: public.planning_expiry_rules
+  scheduler:
+    function: expire_lapsed_visits_scheduled
+    cron_name: expire-lapsed-visits
+    cadence: "*/15 * * * *"
+    UI_claim: evaluated every 15 minutes
+    validation: CONFIRMED
+  active_rule_selection:
+    enabled_required: true
+    effective_from_lte_now: true
+    effective_to_gt_now_or_null: true
+    order: rule_type then version
+  expiry_result:
+    planning_status: expired
+    rule_provenance: visits.expired_by_rule_id
+    lifecycle_event: expire
+    lifecycle_reason_key: rule_type
+    notifications:
+      - plan creator when configured
+      - inspector when configured
+    validation: CONFIRMED
+  source_scope:
+    visit_type: exact match
+    execution_mode: exact match
+    priority: exact match
+  important_behavior:
+    - Enabled overlapping versions of the same type would all be evaluated.
+    - The first matching version can expire the visit before later versions evaluate.
+    - Rule iteration order is version ascending within a rule type.
+    - No database invariant prevents overlapping enabled/effective versions.
+
+version_effective_date_concurrency:
+  schema:
+    unique_rule_type_version: true
+    unique_enabled_per_type: false
+    row_version: absent
+    updated_at: absent
+    effective_from: present
+    effective_to: present
+  creation:
+    next_version: max existing version plus one
+    created_enabled: false
+    effective_from: set immediately at creation even while disabled
+    race_behavior: unique violation asks user to refresh
+    validation: PARTIAL
+  enable:
+    sequence:
+      - disable all sibling versions
+      - enable selected version
+    transaction: false
+    database_RPC: absent
+    compare_and_set: absent
+    critical_risks:
+      - Failure of the second write can leave no version enabled after siblings changed.
+      - Concurrent enable operations can produce multiple enabled versions.
+      - The success/error language can claim nothing changed after partial sibling mutation.
+    validation: NON_ATOMIC_AND_UNSAFE
+  disable:
+    allows_zero_enabled_versions: true
+    effective_to_set: false
+    dependency_confirmation: absent
+    validation: PERMITTED_WITHOUT_POLICY_GUARD
+  edit:
+    enabled_version_editable_in_place: true
+    historical_version_editable_in_place: true
+    effective_from_reset: false
+    effective_to_updated: false
+    immutable_snapshot: false
+    implication: >-
+      A row labelled as a version can change after it has governed expiry
+      outcomes, breaking stable policy provenance.
+    validation: FAIL_IMMUTABLE_VERSION_CONTRACT
+  effective_dates:
+    future_scheduling_UI: absent
+    retirement_closes_effective_to: false
+    reactivation_opens_new_interval: false
+    overlap_guard: absent
+    validation: PRESENT_BUT_NOT_GOVERNED
+  concurrency:
+    expected_version: absent
+    CAS: absent
+    stale_conflict_state: absent
+    validation: FAIL
+
+permissions_maker_checker_audit:
+  read:
+    database_policy: any authenticated user
+    route_behavior: full read-only catalogue for non-configurers
+    validation: CONFIRMED_WITH_SCOPE_DECISION_REQUIRED
+  write:
+    page_and_actions: planning.configure_expiry
+    database_insert_and_update: planning.configure_expiry
+    delete: no policy
+    validation: CONFIRMED
+  gate_failure:
+    behavior: Page gate provider error collapses to ordinary read-only state.
+    distinct_provider_unavailable_state: absent
+    validation: CONFIRMED_WITH_CORRECTION
+  maker_checker:
+    implementation: absent
+    policy_authority: unresolved
+    implication: High-impact expiry policies can take effect on the next sweep after one actor enables them.
+  audit:
+    trigger: trg_audit_planning_expiry_rules
+    function: public.audit_row_change
+    actor: auth.uid()
+    before_after: present for updates
+    route_audit_view_or_link: absent
+    validation: CONFIRMED_BACKEND_ONLY
+  audit_semantic_gap: >-
+    Two-step enable can create separate sibling-disable and selected-enable
+    audit events without one atomic change-set or correlation identifier.
+
+transition_and_dependency_impact:
+  canonical_transition:
+    id: STM-VIS-003
+    source: Eligible active
+    target: Expired
+    actor: System
+    guard: Configured threshold reached
+    side_effects: Block execution and notify if configured.
+  final_state_requirements:
+    source_rows: [CR-068, CR-098]
+    UI_proof_of_no_edit_republish_cancel: OUTSIDE_THIS_ROUTE_AND_NOT_PROVEN_HERE
+  downstream_dependencies:
+    - visits.planning_status
+    - visits.expired_by_rule_id
+    - visit_lifecycle_events
+    - assignments
+    - inspections
+    - notifications
+    - planning and operations queues
+    - field start eligibility
+  impact_preview:
+    affected_visit_count: absent
+    already_matching_visit_list: absent
+    next_sweep_estimate: absent
+    notification_recipient_count: absent
+    overlap_conflict: absent
+    no_enabled_rule_warning: text only after action, no persistent blocking state
+    validation: MISSING
+
+screen_and_design_authority:
+  screen_catalogue:
+    exact_route_row: NOT_FOUND
+    nearest_transition_authority: NO_SEPARATE_ADMIN_EXPIRY_SCREEN
+  direct_route_design: NOT_FOUND
+  nearest_policy_pattern:
+    design_id: WA-DES-014
+    filename: SAQEEL Admin Workflow Builder.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Workflow Builder.dc.html
+    bytes: 12723
+    lines: 135
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    registered_route: /admin/workflows
+    validation: NEAREST_WORKFLOW_POLICY_PATTERN_ONLY
+  nearest_reference_list_pattern:
+    design_id: WA-DES-010
+    filename: SAQEEL Admin Lookups.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Lookups.dc.html
+    bytes: 12358
+    lines: 139
+    sha256: 11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d
+    validation: SECONDARY_VERSIONED_LIST_PATTERN_ONLY
+  admin_overview:
+    design_id: WA-DES-015
+    validation: SECONDARY_OVERVIEW_ONLY
+  immutable_revision:
+    export_shas_available: true
+    platform_revision_id_available: false
+    exact_frame_manifest_available: false
+    accepted_route_specific_revision_available: false
+    validation: INSUFFICIENT_EVIDENCE
+  CD_lineage:
+    route_test_label: CD-044
+    CD_044_registered_elsewhere: External Portal foundation
+    route_specific_CD_package: NOT_FOUND
+    validation: AMBIGUOUS_IDENTITY_COLLISION
+
+nearest_design_validation:
+  classification: NO_DIRECT_DESIGN_MATCH
+  WA_DES_014_parity:
+    - governed policy concept
+    - version concept
+    - effective-date concept
+    - maker-checker visual concept
+  WA_DES_010_parity:
+    - category navigation
+    - versioned reference-list presentation
+    - bilingual administration concept
+  code_has_design_lacks:
+    - four expiry rule families
+    - rule scope by visit type, execution mode and priority
+    - offset in minutes
+    - notification toggles
+    - enabled and disabled versions
+    - create version
+    - edit version
+    - enable and disable
+    - scheduler cadence disclosure
+    - read-only capability state
+  design_has_code_lacks:
+    - maker-checker workflow
+    - visible validation and impact
+    - immutable published-policy state
+    - scheduled activation controls
+  recommended_design_action: >-
+    Create a route-specific Planning Expiry design only after policy authority,
+    screen identity and lifecycle rules are approved. It must show immutable
+    versions, atomic activation, effective intervals, impact, overlap/conflict,
+    maker-checker decision, audit provenance and safe rollback.
+
+language_responsive_accessibility:
+  wordmark:
+    nearest_English_designs: ARABIC_ONLY_WORDMARK
+    required: English SAQEEL Industrial identity in EN and approved Arabic identity in AR.
+    validation: INCORRECT
+  English_LTR:
+    implementation: translation keys with English fallbacks
+    validation: PARTIAL
+  Arabic_RTL:
+    implementation: >-
+      Translation keys and logical spacing are used, but rule keys, capability
+      identifiers and complete runtime RTL evidence are absent.
+    design: no complete Arabic or RTL expiry state
+    validation: INSUFFICIENT_EVIDENCE
+  responsive:
+    implementation: wrapping forms and table wrappers
+    missing: runtime desktop, tablet and mobile evidence
+    design: no route-specific responsive frames
+    validation: INSUFFICIENT_EVIDENCE
+  accessibility:
+    positive:
+      - labelled native controls
+      - table header scopes
+      - status and alert feedback
+      - keyboard-native buttons
+    missing:
+      - focus order and visible focus evidence
+      - confirmation semantics for high-impact activation
+      - wide-table small-screen alternative
+      - concurrent-action announcement
+      - Arabic bidi and screen-reader evidence
+      - automated and manual accessibility results
+    validation: INSUFFICIENT_EVIDENCE
+
+hard_state_review:
+  evidenced:
+    - populated versions
+    - no versions for a rule type
+    - read-only permission state
+    - page read error
+    - action pending
+    - action success
+    - validation error
+    - provider-neutral write error
+    - enabled
+    - disabled
+    - inline edit
+    - create disabled version
+    - duplicate version race
+  missing_or_inadequate:
+    - atomic activation failure after sibling retirement
+    - concurrent double enable
+    - zero enabled versions persistent warning
+    - overlapping effective intervals
+    - stale concurrent edit
+    - immutable historical version
+    - future scheduled activation
+    - impact preview
+    - maker-checker pending and rejected
+    - audit unavailable
+    - scheduler unavailable or delayed
+    - dormant unsupported rule type
+    - unauthorized session and expired session at page level
+    - route loading
+    - light and dark evidence
+    - complete EN/LTR and AR/RTL evidence
+    - desktop, tablet and mobile evidence
+
+test_review:
+  focused_spec: apps/web/e2e/cd-044-admin-planning.spec.ts
+  covered:
+    - one seeded version can disable and re-enable
+    - new version is created disabled
+    - existing enabled version remains enabled after new disabled version creation
+  missing:
+    - concurrent enable race
+    - failure between sibling disable and selected enable
+    - immutable historical or enabled version
+    - effective_from and effective_to lifecycle
+    - active rule overlap
+    - dependency impact
+    - unauthorized direct REST write
+    - gate provider failure
+    - scheduler execution against each rule family
+    - final-state negative actions after expiry
+    - audit event correlation
+    - EN/AR, RTL/LTR, responsive, accessibility and visual evidence
+
+bounded_delta:
+  frontend_only: false
+  remote_database_change_authorized: false
+  required_before_build:
+    - approve exact screen and requirement mapping
+    - approve or remove additional rule families and offset policy
+    - define immutable version and effective interval semantics
+    - define maker-checker applicability
+    - define atomic activation and concurrency contract
+    - define dependency impact and rollback behavior
+    - resolve route-specific design and CD identity
+  implementation_boundary: >-
+    No implementation is authorized by this review. After sponsor consent, one
+    owner may lease the route, focused tests and explicitly approved additive
+    database/RPC work. The reviewer must remain read-only.
+
+evidence:
+  - product-contract/domain/state_transitions.csv
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/seeding-discovery/ENDPOINT_DATA_SOURCE_MATRIX.csv
+  - apps/web/src/app/(app)/admin/planning/expiry/page.tsx
+  - apps/web/src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx
+  - apps/web/src/app/(app)/admin/planning/expiry/actions.ts
+  - apps/web/src/app/(app)/admin/planning/expiry/types.ts
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - supabase/migrations/0025_scheduled_visit_expiry.sql
+  - supabase/migrations/20260721030000_planning_capabilities.sql
+  - supabase/migrations/20260721030100_planning_canonical_structures.sql
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Workflow Builder.dc.html
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Lookups.dc.html
+
+reviewer_recommendation:
+  outcome: RETURN_FOR_DELTA_CORRECTION
+  blockers:
+    - BLOCK_DUE_TO_UNAPPROVED_POLICY_FAMILIES_AND_THRESHOLDS
+    - BLOCK_DUE_TO_NON_ATOMIC_SINGLE_ENABLED_INVARIANT
+    - BLOCK_DUE_TO_MUTABLE_VERSION_HISTORY
+    - BLOCK_DUE_TO_MISSING_EFFECTIVE_INTERVAL_GOVERNANCE
+    - BLOCK_DUE_TO_MISSING_GOVERNED_SCREEN_ID
+    - BLOCK_DUE_TO_MISSING_EXACT_ADMIN_SCREEN_ACCEPTANCE
+    - BLOCK_DUE_TO_NO_ROUTE_SPECIFIC_ACCEPTED_DESIGN
+    - BLOCK_DUE_TO_AMBIGUOUS_CD044_LINEAGE
+    - BLOCK_DUE_TO_MISSING_IMMUTABLE_DESIGN_REVISION
+  sponsor_decision: >-
+    Do not approve the Planning Expiry route as complete and do not count any
+    of the 478 rows. Approve only a bounded policy, versioning, concurrency and
+    design correction package after exact authority is recorded.
+
+next_non_overlapping_review:
+  task_id: M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049
+  route: /admin/packages
+  mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+  scope:
+    - validate package library route, detail/editor consolidation and governed screens
+    - establish exact source requirements and acceptance identities
+    - reconcile WA-DES-002 page authority with WA-DES-005 embedded editor authority
+    - validate package lifecycle, dependencies, maker-checker, immutability, audit and concurrency
+    - review EN/AR, RTL/LTR, responsive, accessibility, wordmark and hard states
+  exclusions:
+    - /admin/planning/expiry
+    - /admin/planning/status
+    - /admin/planning/lookups
+    - /admin/workflows
+    - application, test, database, design, mapping or evidence modifications
+  queue_status: READY

@@ -1,0 +1,364 @@
+packet:
+  id: CODEX-M3-OPERATIONS-SPONSOR-BUSINESS-DECISIONS-014
+  title: Sponsor-ready M3 Operations business decisions
+  status: AWAITING_SPONSOR_DECISIONS
+  classification: BUSINESS_DECISION_PACKET_NOT_CERTIFICATION
+  source_sequence: CODEX-M3-OPERATIONS-CORRECTED-GOVERNANCE-SEQUENCE-013
+  created_by: Codex orchestration
+  purpose: >-
+    Present only the genuine sponsor choices in business language, separate
+    from technical prerequisites that engineering must satisfy automatically.
+  effect: >-
+    This packet records recommendations only. It does not apply a decision,
+    activate M3, register a lease, dispatch Claude, or authorize implementation.
+
+current_position:
+  current_authoritative_slice: M2 Planning
+  m3_active: false
+  claude_dispatch: blocked
+  mac_locked: true
+  requirements:
+    - CR-430..CR-448
+  acceptance:
+    - WA-M3-AC-001..006
+  refresh_policy:
+    decision: DEC-002
+    status: OPEN_P0
+
+how_to_use:
+  sponsor_action: Choose one option for each of the nine decisions.
+  application_rule: >-
+    Choices become effective only after they are recorded in the exact
+    authority files below through approved change control.
+  prohibition: Engineering prerequisites are not presented as optional sponsor choices.
+
+genuine_sponsor_choices:
+  - id: M3-ACT-DEC-001
+    category: DELIVERY_PRIORITY
+    business_question: When should M3 Operations become active relative to the current M2 Planning approval?
+    recommended_option: A
+    options:
+      - option: A
+        label: Queue M3 immediately after M2
+        consequence: Lowest ownership and context risk; M2 closes cleanly before M3 starts.
+      - option: B
+        label: Run M3 concurrently with M2
+        consequence: Faster, but requires a formal concurrent slice, disjoint worktrees, exact leases, and separate reviewers.
+      - option: C
+        label: Pause M2 and activate M3
+        consequence: Operations starts sooner, but Planning approval and momentum are deliberately deferred.
+    recommendation_reason: M2 is already awaiting Product Owner approval; closing it first is the shortest low-risk path.
+    exact_authority_files_affected:
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+      - product-contract/execution/CURRENT_SLICE.yaml
+      - product-contract/execution/TASK_ROUTER.yaml
+      - product-contract/CURRENT_STATE.md
+      - product-contract/sessions/SESSION_LEDGER.json
+    current_status: NOT_DECIDED
+
+  - id: M3-ACT-DEC-002
+    category: MAP_TRUTH
+    business_question: Which map truth should the product present?
+    recommended_option: A
+    options:
+      - option: A
+        label: Truthful tiered provenance
+        consequence: >-
+          Show latest recorded GPS when available; otherwise show a clearly
+          labelled schedule/factory fallback; otherwise show unavailable or
+          read-error. No fabricated route, ETA, drift, animation, or live claim.
+      - option: B
+        label: Projected markers only
+        consequence: Simpler, but discards valid recorded GPS and retains the obsolete design rule.
+      - option: C
+        label: Hide inspector map positions
+        consequence: Safest privacy posture, but materially reduces Operations monitoring value.
+    recommendation_reason: Option A provides useful logical data while preserving truth, privacy, and provenance.
+    exact_authority_files_affected:
+      - design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+      - design/claude-design-mvp1/prompts/systems/AUTHENTICATED_LIVE_OPERATIONS_MAP.md
+      - product-contract/operationalization/coordination/batches/M3-SPONSOR-DIRECTION-20260725.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+    current_status: NOT_APPLIED
+
+  - id: M3-ACT-DEC-003
+    category: PERSONA_ACCESS
+    business_question: Who may open Operations, and who is monitoring-only?
+    recommended_option: A
+    options:
+      - option: A
+        label: Operations plus Leadership
+        policy:
+          ops: Scoped operational monitoring and separately permitted actions.
+          leadership: Authorized aggregate monitoring only, with sensitive details masked.
+          planner: No Operations Center entitlement solely from the planner role.
+          auditor: Specific immutable history and audit views only where separately permitted.
+          supervisor_label: Map to the governed Operations boundary; do not create a new role key.
+        consequence: Aligns the product to existing repository roles and avoids privilege expansion.
+      - option: B
+        label: Include Planner monitoring
+        consequence: Broader visibility and navigation, but requires explicit scope/masking rules and changes the current business boundary.
+      - option: C
+        label: Operations only
+        consequence: Strongest restriction, but removes Leadership command visibility required by current product direction.
+    recommendation_reason: Option A matches the governed Operations and Leadership role model without inventing Supervisor.
+    exact_authority_files_affected:
+      - product-contract/domain/reference_data.csv
+      - product-contract/domain/rbac_matrix.csv
+      - design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+      - product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+    current_status: NOT_DECIDED
+
+  - id: M3-ACT-DEC-004
+    category: GEOGRAPHY_AND_ORGANIZATION_SCOPE
+    business_question: What data geography should each authorized user see?
+    recommended_option: A
+    options:
+      - option: A
+        label: Assigned region or branch by default
+        consequence: Users see only assigned factories, visits, inspectors, cases, and exceptions; national access requires a separate grant.
+      - option: B
+        label: Organization-wide by default
+        consequence: Easier operations, but broader exposure and weaker CR-439/CR-447 least-privilege alignment.
+      - option: C
+        label: National by role
+        consequence: Simplest model, but conflicts with region/branch scope requirements unless the contract is formally changed.
+    recommendation_reason: Option A implements least privilege and keeps national access exceptional and auditable.
+    required_business_details:
+      - Whether one user may hold multiple regions or branches.
+      - How transfers affect historical records.
+      - Whether temporary cross-region access is permitted.
+      - How factories, visits, inspectors, cases, and risk exceptions inherit scope.
+    exact_authority_files_affected:
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/governance/decision_register.csv
+      - product-contract/governance/OPEN_DECISIONS.yaml
+      - product-contract/requirements-control/OPEN_REQUIREMENT_DECISIONS.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+    current_status: NOT_DECIDED
+
+  - id: M3-ACT-DEC-005
+    category: LOCATION_PRIVACY
+    business_question: Who may see an inspector's precise identity and coordinates?
+    recommended_option: A
+    options:
+      - option: A
+        label: Scoped Operations during active journey or execution
+        policy:
+          ops: Precise identity and valid coordinates only inside authorized scope and permitted active states.
+          leadership: Aggregate or masked view; no default precise identity.
+          auditor: Immutable historical evidence only when separately authorized.
+          planner: No precise live-location entitlement solely from planner role.
+        consequence: Meets operational need while honoring CR-433 and leadership masking.
+      - option: B
+        label: All Operations viewers
+        consequence: Simpler UI, but broader privacy exposure and weaker policy control.
+      - option: C
+        label: No precise location
+        consequence: Strong privacy, but prevents supervisor live-journey monitoring.
+    recommendation_reason: Option A is the narrowest model that still satisfies active operational supervision.
+    required_business_details:
+      - active states
+      - freshness and stale behavior
+      - masking and aggregate resolution
+      - retention and audit
+    exact_authority_files_affected:
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/governance/decision_register.csv
+      - design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+      - product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+    current_status: NOT_DECIDED
+
+  - id: M3-ACT-DEC-006
+    category: OPERATIONAL_ACTIONS
+    business_question: Which roles may take action from Operations?
+    recommended_option: A
+    options:
+      - option: A
+        label: Scoped Operations actions only
+        policy:
+          resolve_action_form: Operations with matching record scope.
+          handle_notification: Recipient ownership or authorized Operations scope.
+          decide_gps_override: Operations with matching scope and workflow guard.
+          decide_active_cancellation: Operations with matching scope and canonical capability.
+          export_operational_data: Separate permission, filtered to the same authorized scope, always audited.
+          planner: No execution or review decision.
+          leadership: Read-only unless a separate explicit action grant exists.
+        consequence: Preserves monitoring versus action separation and limits forged-action impact.
+      - option: B
+        label: Operations plus Planner actions
+        consequence: Faster workload handling, but conflicts with RBAC-007 unless formally changed.
+      - option: C
+        label: Monitoring only
+        consequence: Safest, but removes override, exception, cancellation, and acknowledgement workflows from Operations.
+    recommendation_reason: Option A aligns actions with RBAC-008 and keeps Planner and Leadership from accidental mutation authority.
+    exact_authority_files_affected:
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+      - product-contract/governance/decision_register.csv
+      - product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+    current_status: NOT_DECIDED
+
+  - id: M3-ACT-DEC-007
+    category: NATIONAL_ACCESS
+    business_question: How should exceptional national visibility be granted?
+    recommended_option: A
+    options:
+      - option: A
+        label: Time-bound audited grant
+        policy: Named grantor, named grantee, reason, expiry, review, revocation, session/cache expiry, and immutable audit.
+        consequence: Supports genuine national incidents without making national visibility the default.
+      - option: B
+        label: Permanent direct grant
+        consequence: Less administration, but creates long-lived access risk and weak periodic review.
+      - option: C
+        label: Role-default national access
+        consequence: Simplest, but broadens every holder of that role and undermines assigned geography.
+    recommendation_reason: Option A provides controlled emergency or executive access with full traceability.
+    exact_authority_files_affected:
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/governance/decision_register.csv
+      - product-contract/requirements-control/OPEN_REQUIREMENT_DECISIONS.yaml
+      - product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+    current_status: NOT_DECIDED
+
+  - id: M3-ACT-DEC-008
+    category: GIS_POLICY
+    business_question: Who owns the map refresh policy, and should it be centrally configurable?
+    recommended_option: A
+    options:
+      - option: A
+        label: Central GIS/Operations policy
+        policy: GIS and Operations own one governed configuration; the UI discloses last observation, refresh state, stale state, and reconnect state.
+        consequence: Satisfies CR-431 without hard-coding a cadence and keeps policy adjustable.
+      - option: B
+        label: Fixed application interval
+        consequence: Faster to build, but creates an invented policy and is prohibited while DEC-002 is open.
+      - option: C
+        label: Manual refresh only
+        consequence: Avoids a cadence decision, but does not satisfy the configurable automatic-refresh requirement.
+    recommendation_reason: Option A separates sponsor policy ownership from the technical interval chosen by GIS/Operations specialists.
+    sponsor_choice: Approve the central-policy model and accountable owner.
+    technical_follow_up_not_sponsor_guess:
+      - permitted numeric range
+      - stale threshold
+      - offline and reconnect behavior
+      - provider and battery/load constraints
+    exact_authority_files_affected:
+      - product-contract/governance/decision_register.csv
+      - product-contract/governance/OPEN_DECISIONS.yaml
+      - product-contract/governance/DECISIONS_ACCEPTED_2026-07-11.yaml
+      - product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+    current_status: OPEN_P0
+
+  - id: M3-ACT-DEC-009
+    category: DELIVERY_SCOPE
+    business_question: Should M3 include the two governed cross-package follow-ups needed for a complete operating model?
+    recommended_option: A
+    options:
+      - option: A
+        label: Approve linked F0 and M8 follow-ups
+        policy:
+          F0: Own shared navigation and every shared Operations authorization migration.
+          M8: Own national-grant administration under /admin/access.
+          M3: Own Operations consumers and acceptance.
+        consequence: Complete end-to-end access governance while keeping ownership conflict-free.
+      - option: B
+        label: M3 only
+        consequence: Operations UI can proceed later, but navigation, shared database authority, and grant administration remain incomplete.
+      - option: C
+        label: Defer all authorization follow-ups
+        consequence: Map correction may eventually close, but broader regional, precise-location, action, and national access remain blocked.
+    recommendation_reason: Option A completes the capability without allowing M3 to take ownership of F0 or M8 files.
+    exact_authority_files_affected:
+      - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+      - product-contract/execution/TASK_ROUTER.yaml
+      - product-contract/governance/HUMAN_APPROVALS.yaml
+      - product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+      - product-contract/CURRENT_STATE.md
+    ownership_note: PACKAGE_MANIFEST ownership is already authoritative; approval schedules follow-ups and does not rewrite ownership.
+    current_status: NOT_DECIDED
+
+recommended_sponsor_response:
+  note: This is a proposed response bundle, not an applied approval.
+  choices:
+    M3-ACT-DEC-001: A
+    M3-ACT-DEC-002: A
+    M3-ACT-DEC-003: A
+    M3-ACT-DEC-004: A
+    M3-ACT-DEC-005: A
+    M3-ACT-DEC-006: A
+    M3-ACT-DEC-007: A
+    M3-ACT-DEC-008: A
+    M3-ACT-DEC-009: A
+  plain_language_effect: >-
+    Finish M2 first; use truthful tiered map data; give scoped Operations users
+    operational access, Leadership a masked monitoring view, and Planner no
+    implicit Operations privilege; default every user to assigned geography;
+    expose precise inspector location only to scoped Operations during active
+    work; keep actions separately permissioned; make national access time-bound
+    and audited; make refresh centrally configurable by GIS/Operations; and
+    complete shared work through F0 and M8 rather than overlapping M3 ownership.
+
+technical_prerequisites_not_sponsor_choices:
+  - id: TECH-M3-001
+    prerequisite: Record selected decisions in the listed authority files.
+  - id: TECH-M3-002
+    prerequisite: Keep M2 current until the selected activation option is formally applied.
+  - id: TECH-M3-003
+    prerequisite: Register Claude's exact eight-file correction lease and resolve dirty preview overlap.
+  - id: TECH-M3-004
+    prerequisite: Keep F0 ownership of shared navigation and migrations.
+  - id: TECH-M3-005
+    prerequisite: Keep M8 ownership of /admin/access.
+  - id: TECH-M3-006
+    prerequisite: Keep apps/web/src/lib/execution/capabilities.ts read-only until one exact owner is recorded.
+  - id: TECH-M3-007
+    prerequisite: Create one reconciled immutable base before downstream branches.
+  - id: TECH-M3-008
+    prerequisite: Assign migration filenames only after canonical-tail and collision checks.
+  - id: TECH-M3-009
+    prerequisite: Use isolated commits and negative gates for scope, national grants, write alignment, and projection.
+  - id: TECH-M3-010
+    prerequisite: Prove CR-430..CR-448 and WA-M3-AC-001..006, including RLS, audit, RTL, responsive, accessibility, regression, and evidence.
+  - id: TECH-M3-011
+    prerequisite: Keep /api/routing/eta unchanged and read-only unless later exact-leased.
+  - id: TECH-M3-012
+    prerequisite: Keep Claude dispatch blocked until M3 activation, decision application, lease, collision, branch, and manual-unlock gates pass.
+
+blocked_until_sponsor_application:
+  - M3 activation
+  - Claude Code dispatch
+  - design acceptance amendment
+  - lease registration
+  - implementation branches
+  - F0 migrations
+  - M3 consumers
+  - M8 grant administration
+  - integration and certification
+
+monitoring:
+  mac_state: LOCKED
+  on_manual_unlock:
+    - Report unlock immediately to root.
+    - Do not contact Claude Design.
+    - Do not dispatch Claude Code merely because the Mac is unlocked.
+    - Re-check every governance and ownership gate.
+
+no_change_attestation:
+  product: unchanged
+  tests: unchanged
+  migrations: unchanged
+  data: unchanged
+  design: unchanged
+  branches: unchanged
+  leases: unchanged
+  main: unchanged
+  setup_inspection: unchanged
+  stashes: unchanged
+  claude_design_interaction: none

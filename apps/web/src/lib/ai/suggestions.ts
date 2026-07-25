@@ -17,6 +17,17 @@ export function isDispositionAllowed(from: AiDisposition, to: AiDisposition): bo
   return DISPOSITION_TRANSITIONS[from]?.includes(to) ?? false;
 }
 
+/** A suggestion — human-proposed OR provider-generated — always enters the
+ *  docket as 'proposed'. AI never writes an accepted/rejected outcome, so the
+ *  entry disposition is a constant, not a provider-supplied value. */
+export const AI_INITIAL_DISPOSITION: AiDisposition = "proposed";
+
+/** No further transition is legal from here — the UI renders a terminal note
+ *  instead of a disposition control. */
+export function isTerminalDisposition(d: AiDisposition): boolean {
+  return (DISPOSITION_TRANSITIONS[d]?.length ?? 0) === 0;
+}
+
 /** A disposition is a HUMAN act: accept/reject requires an actor + reason. */
 export function canDispose(input: { to: AiDisposition; actor: string | null; reason: string }): { ok: boolean; why: string } {
   if (!["accepted", "rejected", "superseded"].includes(input.to)) return { ok: false, why: "Not a disposition." };

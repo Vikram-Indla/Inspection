@@ -1,0 +1,607 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-RUNTIME-TRUTH-031
+title: Independent Admin Compliance Requests runtime truth and acceptance-credit review
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY
+status: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+    accepted_designs: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The Compliance Configuration Request register, create route, governed
+    workspace, database RPCs, RLS, immutable submitted content, maker-checker
+    denial, partial approval, dependency rejection, append-only decisions,
+    independent immutable versions, atomic head switch, audit references and
+    existing notification engine are real. The live target project rendered
+    populated Admin and Reviewer journeys, an immutable publication history,
+    Planner denial and anonymous sign-in redirection. These positives do not
+    complete a canonical customer row. The engine publishes only a parallel
+    compliance_entity_versions/head model; Planning, Package and Field execution
+    continue to consume legacy package_versions and never consume the CCR heads.
+    Direct legacy Regulation, Item, Violation and Penalty authoring also remains
+    available, so the canonical "all Create/Update through CCR" rule is not
+    enforced. Effective-date activation, Scheduled state, typed component
+    validation, complete Library publication, downstream package/execution
+    locking, deactivation and historical operational consumption are absent.
+    Reviewer is falsely offered Create Request because the register's role read
+    is not filtered to the current user, although the nested route and RPC deny
+    the write. The Arabic route is RTL but its entire request business surface is
+    English. The accepted-design register still says Product Owner approval is
+    required, the route has no screen-catalogue row, no real-browser automated
+    suite exists, and the adjacent protected approval-queue contract currently
+    fails one stale assertion. Return for bounded lifecycle, downstream,
+    permission, localization, design and test remediation; block completion and
+    release credit.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-RUNTIME-TRUTH-031
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  business_capability: >-
+    Create or modify Regulation, Inspection Item, Violation and Penalty
+    configuration through one governed request; review components with
+    maker-checker; publish only valid approved hierarchy branches; retain
+    immutable versions, decisions, audit and downstream operational truth.
+  routes:
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - /admin/compliance-requests/:id
+  screen_id: NOT_REGISTERED_IN_SCREEN_CATALOGUE
+  design_id: WA-DES-019
+  acceptance_ids:
+    - WA-AC-0449..WA-AC-0478
+    - WA-M6-AC-001..006
+    - CMP-ACC-CCR-001..030
+  do_not_touch_observed:
+    - product application code
+    - product tests
+    - design files and mappings
+    - local or shared business data
+    - Supabase schema, policies, functions, providers or rows
+    - branches, leases, stashes, main or setup/Inspection
+    - peer-owned orchestration packets
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_and_after: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_write: 566cde09d6b7a9c8d74d51a522dba7dc827932c4
+  concurrent_unowned_untracked_files_present: true
+  concurrent_files_touched: false
+  runtime_source_worktree: /Users/vikramindla/Developer/Inspection-codex-f0-shell
+  runtime_source_branch: codex/f0-shell-authority-correction
+  runtime_source_head: c8bdf6d185d0326454f8d95247cfbaab10f47ae4
+  runtime_source_diff_against_product_head:
+    request_register: NONE
+    request_detail: NONE
+    request_actions: NONE
+    request_engine_migration: NONE
+  runtime_target_project: iiozvqntawxfwbgffzqu
+  runtime_worktree_preexisting_dirty_path: apps/web/node_modules
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_business_data_mutation: false
+  browser_business_action_submitted: false
+  mutating_test_executed: false
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/domain/state_transitions.csv
+    - product-contract/governance/decision_register.csv
+  route_and_design:
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+  implementation_acceptance:
+    - product-contract/acceptance/CMP_COMPLIANCE_REQUEST_ENGINE_002.csv
+    - product-contract/evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md
+  runtime:
+    - apps/web/src/app/(app)/admin/compliance-requests/layout.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/new/layout.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/actions.ts
+    - apps/web/src/app/(app)/admin/compliance-requests/ActionForm.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/loading.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/error.tsx
+    - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+    - apps/web/src/app/(app)/planning/page.tsx
+    - apps/web/src/app/(app)/planning/single/page.tsx
+    - apps/web/src/app/(app)/planning/immediate/page.tsx
+    - apps/web/src/app/(app)/field/[visitId]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+  database:
+    - supabase/migrations/20260719213000_compliance_configuration_request_engine.sql
+    - supabase/tests/compliance_request_engine_probe.sql
+  tests:
+    - apps/web/e2e/compliance-request-engine.spec.ts
+    - apps/web/e2e/compliance-approval-queue.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+  external_current_platform_guidance:
+    - https://supabase.com/docs/guides/database/postgres/row-level-security
+    - https://supabase.com/docs/guides/database/functions
+    - https://supabase.com/docs/guides/deployment/database-migrations
+  peer_evidence_not_authority:
+    - product-contract/evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md
+    - product-contract/acceptance/CMP_COMPLIANCE_APPROVAL_QUEUE_004.csv
+
+canonical_scope:
+  ownership_correction:
+    route_inventory_claim: CR-449..CR-478
+    disposition: OVERBROAD_NOT_CREDITABLE_AS_ONE_ROUTE
+    reason: >-
+      CR-449..CR-478 cover the complete Compliance Configuration domain:
+      regulations, items, violations, penalties, evidence, packages, templates,
+      sections, response rules, scoring, preview, publish validation and locked
+      execution. The request route implements a governance envelope for only
+      four entity kinds. It does not own or prove every downstream capability.
+    canonical_change_written: false
+  customer_rows:
+    direct_but_incomplete:
+      - [CR-449, WA-AC-0449, "Regulation authoring through CCR exists, but Library publication, release-date activation, attachment/authority completeness and execution consumption are absent."]
+      - [CR-450, WA-AC-0450, "Inspection Item snapshots exist, but typed response/evidence validation, reusable package consumption and operational cutover are absent."]
+      - [CR-451, WA-AC-0451, "Violation snapshots and hierarchy exist, but approved trigger behavior in execution is not supplied by CCR heads."]
+      - [CR-452, WA-AC-0452, "Penalty snapshots and hierarchy exist, but the one-penalty runtime/enforcement link and approved operational consumption are not supplied."]
+      - [CR-458, WA-AC-0458, "Immutable CCR versions exist, but packages and executed inspections remain on the legacy version model."]
+      - [CR-459, WA-AC-0459, "Draft/review/publication states exist, but Scheduled/Active/effective-date availability and exclusive live use are absent."]
+      - [CR-460, WA-AC-0460, "Four-kind parent validation exists, but full package/template/section/evidence dependency validation does not."]
+      - [CR-463, WA-AC-0463, "CCR decisions and audit rows exist, but direct legacy configuration paths bypass the complete governed history."]
+      - [CR-478, WA-AC-0478, "Field runtime locks package_versions, not compliance_entity_heads; CCR publication is not the execution authority."]
+    not_owned_or_not_implemented_here:
+      - CR-453..CR-457
+      - CR-461..CR-462
+      - CR-464..CR-477
+    open_business_decision_rows:
+      - [CR-471, WA-AC-0471, DEC-001_AND_DEC-028]
+      - [CR-472, WA-AC-0472, DEC-001_AND_DEC-028]
+  exact_atomic_request_journey:
+    core_range: REQ-R0C-01803..REQ-R0C-01896
+    implemented_source_subset:
+      - REQ-R0C-01806..01808
+      - REQ-R0C-01810..01814
+      - REQ-R0C-01816
+      - REQ-R0C-01820
+      - REQ-R0C-01835
+      - REQ-R0C-01839..01847
+      - REQ-R0C-01848..01850
+      - REQ-R0C-01853..01856
+      - REQ-R0C-01858..01860
+      - REQ-R0C-01863..01874
+      - REQ-R0C-01882
+      - REQ-R0C-01887
+      - REQ-R0C-01890..01896
+    partial_or_failed_source_subset:
+      - [REQ-R0C-01803, FAIL, "Only four untyped component kinds are supported; the complete governed hierarchy and operational cutover are not."]
+      - [REQ-R0C-01804, FAIL, "Legacy authoring/consumer paths remain operational outside CCR."]
+      - [REQ-R0C-01805, FAIL, "CCR versions are not published into the operational Compliance Library/package consumers."]
+      - [REQ-R0C-01809, FAIL, "The implementation supports request-level Return, not component Return; partial publication state can still expose Return/Reject actions."]
+      - [REQ-R0C-01815, FAIL, "Activation/deactivation is not provided by the CCR head lifecycle."]
+      - [REQ-R0C-01817..01834, FAIL, "Typed configuration, eligibility, response lookup, auto-save, progress and complete validation are absent; the UI accepts arbitrary JSON objects."]
+      - [REQ-R0C-01836..01838, FAIL, "No completion model or complete blocking validation exists before submit."]
+      - [REQ-R0C-01861..01862, FAIL, "Return changes the whole current revision; component-level return/editability and affected-dependency edit scope are not represented."]
+      - [REQ-R0C-01867, PARTIAL_NO_CREDIT, "Current/proposed snapshots render, but the Approver has no explicit revision-to-revision comparison."]
+      - [REQ-R0C-01875..01878, PARTIAL_NO_CREDIT, "Single-call rollback is source-proven, but per-approved-branch independent failure semantics and operational failure queue are not."]
+      - [REQ-R0C-01879..01881, FAIL, "Published rows never enter Scheduled/Active and no effective-date scheduler exists."]
+      - [REQ-R0C-01883..01886, FAIL, "Approved-only Library, linked Report Types and usage impact are not integrated."]
+      - [REQ-R0C-01888..01889, FAIL, "Downstream Inspection Approval/Enforcement consumption is not linked to the CCR version."]
+    supporting_entity_authority:
+      - REQ-R0C-01622..01658
+      - REQ-R0C-01659..01678
+      - REQ-R0C-01679..01704
+      - REQ-R0C-01706..01726
+      - REQ-R0C-01727..01764
+      - REQ-R0C-01765..01789
+      - REQ-R0C-01903..01924
+      - REQ-R0C-02041
+      - REQ-R0C-02131
+      - REQ-R0C-02208..02262
+  implementation_only_ids:
+    requirement_ids: CMP-REQ-CCR-001..010
+    acceptance_ids: CMP-ACC-CCR-001..030
+    disposition: >-
+      Useful implementation contracts, but they are not the canonical
+      478-row customer acceptance ledger and cannot create completion credit.
+  web_admin_quality:
+    - [WA-M6-AC-001, P0, FAIL, "The real request engine works, but publication has no authoritative Library/Planning/Field effect."]
+    - [WA-M6-AC-002, P0, FAIL, "Server/RLS denial is real; stale/conflict, full validation, legacy-bypass and downstream negatives are incomplete."]
+    - [WA-M6-AC-003, P1, BLOCKED, "WA-DES-019 is registered but still requires Product Owner approval and no current fixed-viewport comparison is recorded."]
+    - [WA-M6-AC-004, P1, FAIL, "Arabic business content is English; 390/320 shell controls exceed the viewport; complete keyboard/focus/accessibility certification is absent."]
+    - [WA-M6-AC-005, P0, FAIL, "Focused request source contract passes, but adjacent approval-queue protection is red and operational consumers are untested."]
+    - [WA-M6-AC-006, P1, FAIL, "No screen-catalogue ID, accepted design proof or complete current binary evidence manifest exists."]
+
+design_and_route_truth:
+  registered_design:
+    design_id: WA-DES-019
+    filename: SAQEEL Compliance Requests.dc.html
+    source_id: SRC-DES-019
+    sha256: 05332be7bf0ed96a70f58507aa183f2f3010adada28938bf70466fa4038fad18
+    source_manifest_status: PRIMARY_TARGET_DESIGN_PRODUCT_OWNER_SUPPLIED
+    route_map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+    declared_viewport: 1160x900
+    required_secondary_viewports: [1024x768, 412x915_OR_390x844, 320x800]
+    disposition: REGISTERED_NOT_ACCEPTED_FOR_COMPLETION
+  exact_screen_catalogue_row: ABSENT
+  route_inventory_status: CURRENT_IMPLEMENTATION_EVIDENCE_ONLY
+  current_to_target_status:
+    register: FEATURE_FLAG_OR_GUARDED_PREVIEW_REQUIRED
+    detail: FEATURE_FLAG_OR_GUARDED_PREVIEW_REQUIRED
+    create: DIRECT_REPLACEMENT_AFTER_CERTIFICATION
+    all_rows: PLANNED_NOT_IMPLEMENTED
+  observed_design_delta:
+    - The live surface is a functional request register and JSON-snapshot workspace.
+    - No current hash-matched browser-to-design comparison is recorded.
+    - Arabic shell direction does not localize request content.
+    - Existing governed behavior must be preserved in any future design revision.
+
+permission_and_service_truth:
+  route_guards:
+    register_and_detail: [compliance_admin, form_admin, reviewer]
+    create: [compliance_admin, form_admin]
+    live_admin_result: ALLOWED_WITH_CREATE_DRAFT_CONTROLS
+    live_reviewer_result: ALLOWED_WITH_REVIEW_CONTROLS
+    live_planner_result: DENIED_BEFORE_CONFIGURATION_DATA_LOAD
+    live_anonymous_result: REDIRECTED_TO_LOGIN
+  database_roles:
+    writers: [compliance_admin, form_admin]
+    reviewers_and_publishers: [compliance_admin, reviewer]
+    maker_checker: REQUEST_OWNER_CANNOT_REVIEW_OR_PUBLISH
+  rls:
+    request_read: OWNER_OR_REVIEWER
+    child_read: CCR_CAN_READ_REQUEST
+    published_version_and_head_read: ANY_AUTHENTICATED
+    direct_authenticated_dml: REVOKED_ON_EIGHT_GOVERNED_TABLES
+    mutation_surface: ELEVEN_GUARDED_SECURITY_DEFINER_RPCS
+  live_permission_defect:
+    severity: P1
+    evidence: >-
+      The register reads user_roles without filtering user_id. The Reviewer
+      runtime therefore renders Create Request even though /new and
+      create_compliance_request correctly deny Reviewer.
+    security_effect: NO_DATABASE_WRITE_WIDENING_PROVEN
+  service_truth:
+    request_reads: REAL_SUPABASE_RLS_SCOPED
+    mutations: REAL_SUPABASE_RPC
+    in_app_notifications: DATABASE_RPC
+    external_notifications: EXISTING_INSERT_NOTIFICATION_PROVIDER_PATH
+    provider_failure_semantics: DOES_NOT_ROLL_BACK_PRIMARY_TRANSITION
+
+database_lifecycle_truth:
+  governed_tables: 8
+  statuses:
+    request: [draft, pending_review, returned, partially_approved, approved, rejected, cancelled]
+    component: [draft, pending_review, returned, approved, rejected, auto_rejected, published]
+  entity_kinds: [regulation, inspection_item, violation, penalty]
+  positive_controls:
+    - Submitted revisions cannot be edited or deleted.
+    - Submitted component content and dependency graphs are immutable.
+    - Decisions, entity versions and publications are append-only.
+    - Direct authenticated DML is revoked.
+    - Request rows are locked during transition RPCs.
+    - Maker-checker is enforced in review and publication RPCs.
+    - Parent rejection recursively auto-rejects descendants.
+    - Approved branches are ordered Regulation to Item to Violation to Penalty.
+    - Publication inserts version then switches head in one RPC transaction.
+    - Existing active head remains unchanged when the RPC fails.
+    - Audit events, correlation IDs and publication audit references are stored.
+  blocking_gaps:
+    - No typed schema or canonical field validation exists beyond JSON object and parent-key checks.
+    - No release/effective-date validation, Scheduled state or automatic activation exists.
+    - No package, template, section, evidence-rule or action-form entity is governed by this engine.
+    - Direct legacy Admin authoring is not prevented or routed exclusively through CCR.
+    - Draft updates have no optimistic concurrency token; concurrent edits are last-write-wins.
+    - Component-level Return is absent although the canonical journey requires it.
+    - Publication heads are not authoritative inputs to Compliance Library, Planning, Package or Field execution.
+    - Request status remains Approved or Partially Approved after publication and the UI can continue to expose Return, Reject or Publish actions without a certified post-publication lifecycle.
+  audit_and_evidence_custody:
+    generic_row_audit_triggers: PRESENT
+    correlated_business_audit: PRESENT_FOR_CORE_TRANSITIONS
+    immutable_decision_history: PRESENT
+    immutable_publication_history: PRESENT
+    source_file_or_attachment_custody: NOT_IMPLEMENTED_BY_CCR_ENGINE
+
+downstream_truth:
+  only_detected_application_consumer_of_ccr_versions:
+    route: /admin/items/:id/runtime-preview
+    behavior: Reads inspection-item CCR versions by target_legacy_id for read-only lineage.
+  planning_consumption:
+    authority_table: package_versions
+    ccr_head_consumed: false
+  field_consumption:
+    authority_table: package_versions
+    ccr_head_consumed: false
+  inspection_runtime_consumption:
+    authority_table: package_versions plus package snapshot tables
+    ccr_head_consumed: false
+  compliance_library_cutover:
+    compatibility_view_exists: true
+    application_consumer_found: false
+  conclusion: >-
+    CCR publication currently records governance history but does not make the
+    approved configuration operational. CR-458, CR-459 and CR-478 therefore
+    fail, and CR-449..CR-452 cannot receive end-to-end credit.
+
+browser_evidence:
+  method: REAL_IN_APP_BROWSER_READ_ONLY
+  server:
+    runtime_worktree: /Users/vikramindla/Developer/Inspection-codex-f0-shell
+    url_port: 3166
+    source_identity: REQUEST_FILES_BYTE_IDENTICAL_TO_PRODUCT_HEAD
+    target_project_confirmed_from_public_url: iiozvqntawxfwbgffzqu
+  admin_ar_light:
+    host: 127.0.0.1
+    route: /admin/compliance-requests
+    result: >-
+      Authorized Admin loaded a populated RLS-scoped register with real Draft,
+      Pending Review, Approved and Partially Approved rows and Create Request.
+    console_errors_or_warnings: 0
+  admin_ar_dark:
+    route: /admin/compliance-requests/0613c828-4582-4521-99dc-3919fa11705a
+    locale_direction_theme: ar_RTL_dark
+    result: >-
+      Theme changed to dark and the real Draft workspace rendered. The shell is
+      Arabic/RTL, but headings, fields, status, workflow and help remain English.
+    console_errors_or_warnings: 0
+  reviewer_en:
+    host: localhost
+    pending_request: CCR-2026-000006
+    result: >-
+      Reviewer loaded four Pending Review components, dependency tree, current
+      and proposed snapshots, per-component Approve/Reject, request Return and
+      Reject; no business action was submitted.
+    permission_gap: Create Request was incorrectly visible in the register.
+  immutable_history:
+    host: localhost
+    request: CCR-2026-000013
+    result:
+      status: Partially Approved
+      current_revision: 2
+      publication_audit_reference: 14050
+      published_version_ids:
+        - 93c5c19b-36d9-41e1-82df-9e157e143733
+        - 3a03e8f4-817e-4879-b56b-11a947f6335c
+      observed_history:
+        - R1 Return with retained comment
+        - R2 two Approve decisions
+        - R2 Reject plus dependent Auto Reject
+        - two immutable publication timestamps and version IDs
+  planner_denial:
+    host: 0.0.0.0
+    route: /admin/compliance-requests
+    result: Arabic unauthorized control-plane state; no configuration data loaded.
+  anonymous_denial:
+    host: saqeel.localhost
+    requested_route: /admin/compliance-requests
+    final_route: /login
+  responsive:
+    desktop_1280x900: MAIN_CONTENT_FITS
+    tablet_1024x768: MAIN_CONTENT_FITS
+    narrow_390x844: >-
+      Request decision buttons remain 44px high, but shared topbar controls
+      extend to 440px on a 390px viewport.
+    narrow_320x800: >-
+      Request preformatted snapshots do not overflow their containers, but
+      shared search/date/region controls extend to 440px and are clipped beyond
+      the 320px viewport.
+  loading_empty_error_degraded:
+    loading: SOURCE_ONLY
+    empty: SOURCE_ONLY
+    read_error: SOURCE_ONLY
+    detail_not_found_or_rls_hidden: SOURCE_ONLY
+    stale_or_concurrent_conflict: ABSENT
+    provider_unavailable: NOT_APPLICABLE_TO_PRIMARY_CCR_TRANSITION
+  accessibility:
+    positives:
+      - Skip link, semantic headings, labelled controls, table headers and alert/status roles are present.
+      - Reviewed decision buttons are 44px high at 390px.
+    unproven_or_failed:
+      - No current Axe or full keyboard/focus recovery certification exists for these routes.
+      - ActionForm renders errors as alerts but does not explicitly focus the error.
+      - Arabic business meaning and grammar are not localized or native-reviewed.
+      - Narrow shared controls extend beyond the viewport.
+  data_mutation: NONE
+
+test_truth:
+  focused_request_contract:
+    command: npx playwright test e2e/compliance-request-engine.spec.ts --config=playwright.static.config.ts
+    result: 8_PASSED_0_FAILED
+    limitation: SOURCE_AND_MIGRATION_TEXT_ONLY_NO_PAGE_GOTO
+  request_plus_approval_queue:
+    command: >-
+      npx playwright test e2e/compliance-request-engine.spec.ts
+      e2e/compliance-approval-queue.spec.ts
+      --config=playwright.static.config.ts
+    result: 13_PASSED_1_FAILED
+    failing_file: apps/web/e2e/compliance-approval-queue.spec.ts
+    failing_assertion: >-
+      Expected stale "Awaiting Approval unavailable"; current source truth is
+      "Approval Queue unavailable".
+    classification: STALE_PROTECTED_ASSERTION_NOT_PRODUCT_RUNTIME_FAILURE
+  web_admin_validator:
+    command: node scripts/validate_web_admin_phase1.mjs
+    result: PASS_478_REQUIREMENTS_EXACTLY_ONE_DISPOSITION
+    limitation: STRUCTURAL_TRACEABILITY_NOT_ACCEPTANCE_OR_RUNTIME_PROOF
+  database_probe:
+    file: supabase/tests/compliance_request_engine_probe.sql
+    current_execution: NOT_RUN_NO_AUTHORIZED_CONNECTOR_FOR_TARGET_PROJECT
+    source_scope: READ_ONLY_CATALOG_RLS_PRIVILEGE_PROBE
+  live_browser_automation:
+    route_focused_playwright_spec_present: false
+    current_status: MANUAL_READ_ONLY_BROWSER_EVIDENCE_ONLY
+  supabase_connector:
+    requested_target: iiozvqntawxfwbgffzqu
+    available_projects: [cyijbdeuehohvhnsywig]
+    target_available: false
+    unrelated_project_queried: false
+    consequence: >-
+      No connector-level schema, privilege, migration-history or audit query
+      was claimed. The real application/browser evidence is current, but direct
+      database recertification remains blocked.
+
+findings:
+  p0:
+    - id: CCR-P0-001
+      requirement_ids: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-459, CR-478, REQ-R0C-01803..01805, REQ-R0C-01879..01883]
+      finding: >-
+        CCR publication is not consumed by the operational Compliance Library,
+        Package, Planning or Field runtime; immutable heads are parallel history,
+        not operational authority.
+    - id: CCR-P0-002
+      requirement_ids: [REQ-R0C-01623, REQ-R0C-01666, REQ-R0C-01684, REQ-R0C-01709, REQ-R0C-01768, REQ-R0C-01903, REQ-R0C-01916]
+      finding: >-
+        Direct legacy create/update control paths remain available, so the
+        required exclusive CCR authoring boundary is not enforced.
+    - id: CCR-P0-003
+      requirement_ids: [CR-459, CR-460, REQ-R0C-01817..01838, REQ-R0C-01868..01881]
+      finding: >-
+        Arbitrary JSON objects can pass component entry; complete canonical
+        field/dependency/effective-date validation, Scheduled activation and
+        operational failure handling are absent.
+    - id: CCR-P0-004
+      requirement_ids: [WA-M6-AC-002, WA-M6-AC-005]
+      finding: >-
+        No current live automated maker/checker, RLS, concurrency, rollback and
+        downstream-consumer browser suite exists; the direct database probe
+        could not be recertified through the authorized connector.
+  p1:
+    - id: CCR-P1-001
+      requirement_ids: [WA-M6-AC-003, WA-M6-AC-006]
+      finding: >-
+        WA-DES-019 is registered with its hash but still marked
+        REQUIRES_PRODUCT_OWNER_APPROVAL; no exact screen-catalogue row or current
+        design comparison/evidence manifest exists.
+    - id: CCR-P1-002
+      requirement_ids: [WA-M6-AC-002]
+      finding: >-
+        Reviewer is falsely offered Create Request because user_roles is read
+        without current-user filtering. Nested route and RPC denial prevent the
+        actual write, but permission presentation is wrong.
+    - id: CCR-P1-003
+      requirement_ids: [WA-M6-AC-004]
+      finding: >-
+        Arabic/RTL renders all request business content in English and has no
+        qualified native-Arabic certification.
+    - id: CCR-P1-004
+      requirement_ids: [WA-M6-AC-004]
+      finding: >-
+        At 390px and 320px, shared topbar controls extend to 440px; complete
+        keyboard, focus recovery and accessibility certification is absent.
+    - id: CCR-P1-005
+      requirement_ids: [WA-M6-AC-002, REQ-R0C-01833, REQ-R0C-01843]
+      finding: >-
+        Draft writes have no revision/update token or explicit conflict state;
+        concurrent writers can silently last-write-win.
+    - id: CCR-P1-006
+      requirement_ids: [WA-M6-AC-005]
+      finding: >-
+        The adjacent protected approval-queue source contract is red on one
+        stale copy assertion, so the protected M6 set is not clean.
+
+prerequisites:
+  dependency_order:
+    - >-
+      Correct the canonical route mapping: keep CR-449..CR-478 as the M6 domain,
+      but map this route to the exact CCR atomic journey instead of claiming all
+      domain rows are owned or delivered here.
+    - >-
+      Obtain Product Owner acceptance of WA-DES-019 and register the missing
+      screen-catalogue identity before any design-to-code completion claim.
+    - >-
+      Lease a database lifecycle slice for typed snapshots, complete validation,
+      effective dates, Scheduled/Active transitions, post-publication status,
+      component Return and optimistic concurrency. Use additive migrations and
+      real maker-checker/RLS tests.
+    - >-
+      Lease a mutually exclusive cutover slice that makes CCR publication the
+      governed source for Compliance Library and package construction while
+      preserving historical package/inspection snapshots and safe rollback.
+    - >-
+      Close or explicitly route every direct legacy Create/Update path through
+      CCR; retain separately authorized direct Activate/Deactivate behavior
+      exactly where the canonical source permits it.
+    - >-
+      Lease the route permission/localization slice: current-user role scoping,
+      full English/Arabic keys, native-Arabic review, narrow layout and
+      focus/error recovery.
+    - >-
+      Add isolated, reversible database fixtures and live Admin/Reviewer/denied
+      tests for create, validate, submit, self-review denial, Return, revision,
+      partial approval, rollback, publish, refresh, audit and downstream
+      consumption. Correct the stale approval-queue assertion.
+    - >-
+      Re-run focused tests, database probe, full protected M6 regression,
+      478-row validator and real-browser desktop/tablet/narrow light/dark
+      English/Arabic evidence against the exact implementation commit.
+  external_or_human_dependencies:
+    - Product Owner design acceptance for WA-DES-019.
+    - Qualified native-Arabic review; automation cannot self-certify language quality.
+    - Authorized connector or database session for project iiozvqntawxfwbgffzqu.
+    - Exclusive non-production data lease for any lifecycle/publication replay.
+
+rollback_and_stop:
+  current_packet_rollback: Delete only this untracked orchestration YAML packet.
+  future_rollback:
+    - Keep existing legacy consumers available behind a server-evaluated cutover until parity and rollback are certified.
+    - Use additive, forward-only database migrations; never delete immutable decisions, versions, publications or audit rows.
+    - Revert route/test changes by their isolated lease commit; do not overwrite shared data.
+  stop_conditions:
+    - missing or unaccepted WA-DES-019 authority
+    - missing exact screen identity or canonical mapping
+    - legacy authoring remains a maker-checker bypass
+    - CCR heads are not consumed by Library, Package, Planning and Field
+    - untyped or incomplete publication validation
+    - permission widening or false role capability
+    - silent concurrency overwrite
+    - audit, revision or publication immutability failure
+    - non-isolated or non-reversible shared-data test
+    - Arabic, narrow, accessibility or protected-test P1 remains
+
+queued_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-P0-REMEDIATION-PREFLIGHT-032
+  mode: READ_ONLY
+  scope: >-
+    Prepare mutually exclusive exact future leases for database lifecycle and
+    concurrency; Compliance Library/package/Field cutover; legacy-authoring
+    enforcement; route permission/localization; isolated data; focused and
+    protected tests; and browser acceptance. Exclude Claude Design revision
+    authority, product writes, remote DDL and shared-data mutation.
+  safe_because: >-
+    It is a non-writing successor that partitions future ownership before any
+    implementation and does not overlap active design authority.
+
+validation:
+  yaml_parse: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  orchestration_unowned_files_preserved: PASS

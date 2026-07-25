@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .gs-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 0 0 60px; display:flex; flex-direction:column; }
+  .gs-seg { display:flex; gap:6px; padding:10px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); overflow-x:auto; }
+  .gs-seg button { padding:7px 14px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; cursor:pointer; white-space:nowrap; color:var(--text-secondary); }
+  .gs-seg button[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+  .gs-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .gs-row { display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-end:1px solid var(--border-subtle); background:var(--surface-primary); text-align:start; font:inherit; color:inherit; width:100%; cursor:pointer; }
+  .gs-row:hover { background:var(--surface-sunken); }
+  .gs-icn { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; flex:none; }
+  .gs-searchbar { display:flex; align-items:center; gap:10px; padding:12px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); }
+  .gs-input { flex:1; border:1px solid var(--border-subtle); border-radius:10px; padding:10px 14px; font:inherit; font-size:14px; background:var(--surface-sunken); color:var(--text-primary); }
+  .gs-input:focus { outline:2px solid var(--action-primary); outline-offset:1px; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
+    <button class="gs-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="gs-searchbar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px; color:var(--text-secondary); flex:none;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="gs-input" value="{{ query }}" onChange="{{ onQueryChange }}" placeholder="{{ t.placeholder }}" autofocus="true">
+  </div>
+
+  <div class="gs-seg">
+    <button aria-pressed="{{ filterAll }}" onClick="{{ setFilter }}" data-k="all">{{ t.all }}</button>
+    <button aria-pressed="{{ filterFactory }}" onClick="{{ setFilter }}" data-k="factory">{{ t.factory }}</button>
+    <button aria-pressed="{{ filterCr }}" onClick="{{ setFilter }}" data-k="cr">{{ t.cr }}</button>
+    <button aria-pressed="{{ filterLicense }}" onClick="{{ setFilter }}" data-k="license">{{ t.license }}</button>
+    <button aria-pressed="{{ filterVisit }}" onClick="{{ setFilter }}" data-k="visit">{{ t.visit }}</button>
+    <button aria-pressed="{{ filterInspection }}" onClick="{{ setFilter }}" data-k="inspection">{{ t.inspection }}</button>
+  </div>
+
+  <div class="gs-wrap">
+    <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ results }}" as="r" hint-placeholder-count="5">
+        <a href="{{ r.href }}" target="_top" class="gs-row">
+          <span class="gs-icn" style="background:{{ r.iconBg }}; color:{{ r.iconColor }};"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:19px;height:19px;"><path d="{{ r.iconPath }}"/></svg></span>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:8px;"><span style="font-weight:600; font-size:14px; flex:1;">{{ r.title }}</span><span class="badge" style="background:var(--surface-sunken); color:var(--text-secondary); height:18px;">{{ r.typeLabel }}</span></div>
+            <div class="t-caption" style="margin-block-start:3px;">{{ r.subtitle }}</div>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; color:var(--text-muted); flex:none;"><path d="{{ t.chevron }}"/></svg>
+        </a>
+      </sc-for>
+      <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:60px 20px; text-align:center; color:var(--text-secondary);">{{ t.noResults }}</div>
+      </sc-if>
+    </sc-if>
+    <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}"><span></span></sc-if>
+    <sc-if value="{{ showRecent }}" hint-placeholder-val="{{ true }}">
+      <div class="t-label" style="padding:16px 18px 8px;">{{ t.recent }}</div>
+      <sc-for list="{{ recentSearches }}" as="q" hint-placeholder-count="3">
+        <button class="gs-row" onClick="{{ q.apply }}">
+          <span class="gs-icn" style="background:var(--surface-sunken); color:var(--text-secondary); width:32px; height:32px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:15px;height:15px;"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></span>
+          <span style="flex:1; font-size:13.5px;">{{ q.text }}</span>
+        </button>
+      </sc-for>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", query: "", filter: "all" };
+
+  index() {
+    return [
+      { type:"factory", nameAr:"مصنع الرياض للبلاستيك", nameEn:"Riyadh Plastics Factory", sub:"CR 1010203040 · الرياض", subEn:"CR 1010203040 · Riyadh", id:"FAC-8821", href:"SAQEEL Factory 360.dc.html",
+        iconPath:"M4 21V9l8-6 8 6v12M9 21v-6h6v6", iconBg:"var(--accent-soft)", iconColor:"var(--accent-text)" },
+      { type:"factory", nameAr:"مصنع جدة للأغذية", nameEn:"Jeddah Foods Factory", sub:"CR 4030201050 · جدة", subEn:"CR 4030201050 · Jeddah", id:"FAC-6612", href:"SAQEEL Factory 360.dc.html",
+        iconPath:"M4 21V9l8-6 8 6v12M9 21v-6h6v6", iconBg:"var(--accent-soft)", iconColor:"var(--accent-text)" },
+      { type:"cr", nameAr:"سجل تجاري 1010203040", nameEn:"Commercial Registration 1010203040", sub:"مصنع الرياض للبلاستيك", subEn:"Riyadh Plastics Factory", id:"CR-1010203040", href:"SAQEEL Establishment File.dc.html",
+        iconPath:"M9 12h6M9 16h6M9 8h3M6 4h9l3 3v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z", iconBg:"var(--surface-sunken)", iconColor:"var(--text-secondary)" },
+      { type:"license", nameAr:"ترخيص صناعي رقم 220091", nameEn:"Industrial License No. 220091", sub:"ساري حتى 2027-03-14", subEn:"Valid until 2027-03-14", id:"LIC-220091", href:"SAQEEL Establishment File.dc.html",
+        iconPath:"M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z", iconBg:"var(--status-compliant-soft)", iconColor:"var(--status-compliant-text)" },
+      { type:"visit", nameAr:"زيارة تفتيشية VIS-3391", nameEn:"Inspection Visit VIS-3391", sub:"مصنع الدمام للكيماويات · 24 يوليو", subEn:"Dammam Chemicals Factory · Jul 24", id:"VIS-3391", href:"SAQEEL Visits.dc.html",
+        iconPath:"M8 2v4M16 2v4M3 9h18M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z", iconBg:"var(--accent-soft)", iconColor:"var(--accent-text)" },
+      { type:"inspection", nameAr:"تقرير تفتيش INS-77410", nameEn:"Inspection Report INS-77410", sub:"مصنع جدة للأغذية · بانتظار المراجعة", subEn:"Jeddah Foods Factory · Awaiting review", id:"INS-77410", href:"SAQEEL Field Inspection Form.dc.html",
+        iconPath:"M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11", iconBg:"var(--status-warning-soft)", iconColor:"var(--status-warning-text)" },
+      { type:"inspection", nameAr:"تقرير تفتيش INS-77398", nameEn:"Inspection Report INS-77398", sub:"مصنع الرياض للبلاستيك · مقبول", subEn:"Riyadh Plastics Factory · Approved", id:"INS-77398", href:"SAQEEL Field Inspection Form.dc.html",
+        iconPath:"M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11", iconBg:"var(--status-compliant-soft)", iconColor:"var(--status-compliant-text)" },
+    ];
+  }
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", theme:"الوضع", langBtnLabel:"EN", title:"البحث الشامل", placeholder:"ابحث برقم منشأة، سجل تجاري، ترخيص، زيارة أو تفتيش",
+        all:"الكل", factory:"مصنع", cr:"سجل تجاري", license:"ترخيص", visit:"زيارة", inspection:"تفتيش",
+        recent:"عمليات بحث سابقة", noResults:"لا توجد نتائج مطابقة.", backArrow:"M15 6l-6 6 6 6", chevron:"M9 6l6 6-6 6",
+        typeFactory:"مصنع", typeCr:"سجل تجاري", typeLicense:"ترخيص", typeVisit:"زيارة", typeInspection:"تفتيش" },
+      en: { back:"Back", theme:"Theme", langBtnLabel:"AR", title:"Global Search", placeholder:"Search by factory, CR, license, visit or inspection",
+        all:"All", factory:"Factory", cr:"CR", license:"License", visit:"Visit", inspection:"Inspection",
+        recent:"Recent searches", noResults:"No matching results.", backArrow:"M9 6l6 6-6 6", chevron:"m9 18 6-6-6-6",
+        typeFactory:"Factory", typeCr:"CR", typeLicense:"License", typeVisit:"Visit", typeInspection:"Inspection" },
+    };
+    const t = STR[lang];
+    const q = (this.state.query || "").trim().toLowerCase();
+    const filter = this.state.filter;
+    const typeLabelOf = ty => ({ factory:t.typeFactory, cr:t.typeCr, license:t.typeLicense, visit:t.typeVisit, inspection:t.typeInspection }[ty]);
+    let results = this.index()
+      .filter(r => filter === "all" || r.type === filter)
+      .filter(r => !q || r.nameAr.toLowerCase().includes(q) || r.nameEn.toLowerCase().includes(q) || r.id.toLowerCase().includes(q))
+      .map(r => ({
+        href: r.href, iconPath: r.iconPath, iconBg: r.iconBg, iconColor: r.iconColor,
+        title: ar ? r.nameAr : r.nameEn, subtitle: `${ar ? r.sub : r.subEn} · ${r.id}`, typeLabel: typeLabelOf(r.type),
+      }));
+    const setFilterFn = e => this.setState({ filter: e.target.closest("button").dataset.k });
+    const recentSearches = [
+      { text: ar ? "مصنع الرياض للبلاستيك" : "Riyadh Plastics Factory", apply: () => this.setState({ query: ar ? "الرياض" : "Riyadh" }) },
+      { text: "CR 1010203040", apply: () => this.setState({ query: "1010203040" }) },
+      { text: "VIS-3391", apply: () => this.setState({ query: "VIS-3391" }) },
+    ];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: ar ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      query: this.state.query, onQueryChange: e => this.setState({ query: e.target.value }),
+      hasQuery: q.length > 0, showRecent: q.length === 0,
+      filterAll: filter === "all", filterFactory: filter === "factory", filterCr: filter === "cr",
+      filterLicense: filter === "license", filterVisit: filter === "visit", filterInspection: filter === "inspection",
+      setFilter: setFilterFn, results, noResults: results.length === 0, recentSearches,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

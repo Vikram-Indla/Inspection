@@ -32,6 +32,7 @@ row or release status is changed by this consolidation. Exact inventory and
 promotion rules are recorded in
 `execution/TASK_REPOSITORY_CONSOLIDATION_20260725.yaml`.
 
+
 ## 2026-07-24 UPDATE 130 — Shared Web/Admin brand regressions corrected
 
 The Product Owner reported that the English Operations runtime displays the
@@ -70,6 +71,71 @@ or deployment changed. Codex then reloaded the real authenticated Planning
 route in Chrome at `127.0.0.1:3014/planning`: the graphite navigation, normal
 page layout and accessible `SAQEEL | صقيل` wordmark rendered together. Status:
 `TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF`.
+## 2026-07-24 UPDATE 131 — M3 Operations Live technical slice verified
+
+`WA-DES-034-C3` is now source- and focused-runtime-complete on the isolated
+`codex/m3-operations-reconciliation` worktree. Operations Live is a read-only,
+RLS-scoped observation surface derived from the canonical shell navigation
+contract. It renders fixed operational markers and an accessible synchronized
+list with the exact `Projected route — not live GPS` disclosure, last-observed
+truth, and the explicit unconfigured-staleness statement. Route lines, path
+animation, ETA, GPS claims and refresh cadence are absent. Read failure and
+basemap-provider failure withdraw the map; scoped-empty and no-active-position
+states retain the basemap with distinct overlays. The bounded wallboard route,
+loading state, reduced motion and route-local responsive/RTL/theme styling are
+present.
+
+Real-browser review also found and corrected two Operations Center regressions:
+the exact unavailable KPI value no longer overflows the five-card layout at the
+1024 acceptance width, and the visible developer-contract subtitle is replaced
+with sponsor-facing business copy. M3-local links use the approved
+non-underlined action treatment with preserved hover and focus affordance.
+
+Verification on the isolated production build: typecheck PASS; production
+build PASS (53/53 static pages, `/operations` and `/operations/live` compiled);
+focused M3 source/runtime suite PASS 17/17, including planner route parity,
+list selection, wallboard, provider withdrawal and 1024 KPI overflow. A first
+attempt reused the root orchestrator's older integration preview on port 3013
+and was discarded; after that preview stopped, the recorded run used the
+current worktree build on the isolated test server. Final sponsor visual
+capture and the complete 1200/1024/412/390/320 EN/RTL light/dark and automated
+accessibility/protected-regression matrices remain open. M3 is not promoted;
+no merge, deployment, remote DDL or shared-data mutation occurred.
+
+## 2026-07-24 UPDATE 130 — M3 Operations slice activated after rendered-design correction
+
+The Product Owner directed the module loop to continue, stated that all
+approvals were given, and explicitly replied `go`. The active slice is now
+`TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001` on the isolated
+`codex/m3-operations-reconciliation` worktree from canonical M1 baseline
+`330f6cba`.
+
+Claude Design produced rendered candidates `WA-DES-033-C3` and
+`WA-DES-034-C3`. Independent review returned the first pass for an Arabic
+wordmark in an EN/LTR frame and incorrect Operations Live navigation, then
+returned the second pass for omission of the distinct 390-pixel state. Claude
+Design corrected all three defects. Both pages now expose separate 412, 390 and
+320 states; Operations Live visibly reports `390×844 · Mobile · dark · EN/LTR`.
+The semantic and rendered revision is approved for sponsor consent in draft PR
+60; application implementation remains separately evidence-gated.
+
+The first implementation sublease corrects the existing mutating GET on
+`/operations` before any real-system browser capture. It is bounded to the
+Operations page and one focused route-safety test. `/operations/exceptions`,
+Field, PWA/iPad, shared shell, shared GeoMap, APIs, migrations and remote
+Supabase remain excluded.
+
+The Operations Center C3 composition is now source-complete on the isolated
+branch. It has five governed KPIs, Operations Map and National Performance
+views, neutral Mapbox/list synchronization, Inspector and Factory preview
+dialogs, national-to-region-to-factory drill, and the existing queues,
+monitoring, SLA, risk, immutable history, notifications and exports. Two
+independent-review returns prevented shortcuts: missing preview/responsive
+requirements and an attempted narrow role list were corrected before
+acceptance. Typecheck/build pass and the combined composition/runtime/route
+safety suite passes 11/11. Operations Live, final integrated Chrome evidence,
+RTL/theme/viewport, provider-failure, accessibility and protected regression
+remain open; M3 is not complete or promoted.
 
 ## 2026-07-24 UPDATE 129 — M1 Dashboard promoted to canonical main
 

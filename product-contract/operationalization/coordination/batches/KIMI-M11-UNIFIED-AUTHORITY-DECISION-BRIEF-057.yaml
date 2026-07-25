@@ -1,0 +1,157 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057
+status: READ_ONLY_DECISION_BRIEF_COMPLETE_AWAITING_CONTROL_PLANE_AUTHORITY
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Present the minimum exact decision needed to eliminate the proven overlap
+  between TASK-EXECUTION-MODULE-001 and the M11 virtual implementation/QA
+  chain without selecting an owner or changing shared controls.
+
+inputs:
+  reconciliation:
+    packet: KIMI-M11-CONTROL-PLANE-SCOPE-LEASE-RECONCILIATION-055
+    verdict: BLOCK_DUE_TO_OVERLAPPING_SCOPE_WITHOUT_EXACT_ACTIVE_LEASE
+    sha256: c0f27eb96e3771c5fe3fddf48b1e0666d1c82b79a8754b4400503972bf0e6676
+  crosswalk:
+    packet: KIMI-M11-EXECUTION-TASK-TO-M11-PATH-CROSSWALK-056
+    verdict: BLOCK_DUE_TO_PROVEN_SCOPE_OVERLAP_AND_ABSENT_EXACT_LEASE
+    sha256: 1d4bcc2755aa3feea20fec1d422c5f9d70f5b0d15d2d2e586fb896998b103392
+
+hard_boundary:
+  - "No owner selection, lease issuance, queue/slice edit or shared-control mutation."
+  - "No product, test, migration, SQL, data, design, branch or stash mutation."
+  - "No runtime certification or requirement credit."
+
+decision_required:
+  authority: SPONSOR_OR_AUTHORIZED_CONTROL_PLANE_WRITER
+  question: >-
+    Which single authority owns M11 Virtual implementation after all source,
+    security, fixture, provider and acceptance blockers are cleared?
+  options:
+    - id: EXECUTION_TASK_ABSORBS_M11
+      business_effect: >-
+        Kimi's Execution task becomes the sole Virtual implementation owner,
+        but must explicitly preserve and map the complete M11 contract before
+        receiving an exact lease.
+      required_records:
+        - "Accepted change-control record that TASK-EXECUTION-MODULE-001 absorbs/supersedes M11 implementation packets 010, 011, 013, 014, 015 and 017."
+        - "Mapping for CR-337..CR-356 and all WA-M11/MIGSEC acceptance."
+        - "Preservation of 361 test cases, 18 proof clusters, nine QA paths and all 12 blockers."
+        - "One exact implementation branch/worktree/path/object lease."
+        - "A later independent QA owner and exact QA lease."
+    - id: M11_CHAIN_OWNS_VIRTUAL
+      business_effect: >-
+        The M11 chain becomes the sole Virtual implementation authority and the
+        broad Execution task is narrowed to exclude all Virtual intersections.
+      required_records:
+        - "Accepted narrowing of TASK-EXECUTION-MODULE-001 excluding M11 Virtual paths, functions, migrations and tests."
+        - "Corrected M11 source packets accepted by review 025."
+        - "All provider, catalog, fixture, audit-consumer and quiesce blockers resolved or explicitly retained."
+        - "One exact sequential M11 implementation branch/worktree/path/object lease."
+        - "A later independent QA owner and exact QA lease."
+    - id: KEEP_BOTH_BLOCKED
+      business_effect: "No Virtual implementation or QA work proceeds until an accepted boundary exists."
+      required_records:
+        - "Retain present read-only authority."
+
+lease_fields_required_before_any_write:
+  - task_id
+  - named_owner
+  - repository
+  - worktree
+  - branch
+  - exact_application_paths
+  - exact_test_paths
+  - exact_database_objects
+  - migration_allocation_rule
+  - predecessor_commit
+  - baseline_hash
+  - start_time
+  - expiry_or_release_condition
+  - independent_reviewer
+  - prohibited_paths
+  - collision_stop_conditions
+
+preservation_floor:
+  requirements: "CR-337..CR-356 remain mandatory; no row is absorbed without explicit mapping."
+  acceptance:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+    - WA-M11-EV-001
+    - WA-M11-EV-002
+    - WA-M11-EV-005
+    - M11-MIGSEC-001..012
+  test_cases: 361
+  proof_clusters: 18
+  future_QA_paths: 9
+  blockers: 12
+  requirement_credit_until_certified: 0
+
+current_safe_authority:
+  Kimi:
+    mode: READ_ONLY_CHAT_ONLY
+    permitted:
+      - "Inspect canonical repository and product contract."
+      - "Return analysis or complete proposed payloads in chat after manual Mac unlock."
+    prohibited:
+      - "Product, test, SQL, migration, seed, data, branch, lease or shared-control writes."
+  Codex:
+    mode: CONTROL_WRITER_COORDINATION_ONLY
+    permitted:
+      - "Write currently leased coordination paths and independently review evidence."
+    prohibited:
+      - "M11 product, QA, database or design implementation."
+  implementation: BLOCKED
+  QA: BLOCKED
+  requirement_credit: 0
+
+stop_conditions:
+  - "More than one owner is proposed for an intersecting path or database object."
+  - "A queue owner label is treated as a lease."
+  - "A broad directory glob replaces exact path/object ownership."
+  - "Any M11 requirement, negative path, blocker or proof cluster is omitted."
+  - "Implementation and independent QA are assigned to the same active lease."
+  - "Any write begins before the active lease registry records the exact authority."
+
+recommended_control_plane_response_format:
+  selected_option: "EXECUTION_TASK_ABSORBS_M11 | M11_CHAIN_OWNS_VIRTUAL | KEEP_BOTH_BLOCKED"
+  change_control_id: REQUIRED_UNLESS_KEEP_BLOCKED
+  implementation_owner: REQUIRED_UNLESS_KEEP_BLOCKED
+  independent_QA_owner: REQUIRED_UNLESS_KEEP_BLOCKED
+  exact_lease_record: REQUIRED_BEFORE_WRITE
+  preserved_contract_ack: REQUIRED
+  unresolved_blockers: REQUIRED
+
+queued_next:
+  packet: KIMI-M11-AUTHORITY-DECISION-MONITOR-058
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Monitor only for an explicit decision and exact active lease; validate the
+    response against this brief and return ACK, RETURN or BLOCK.
+  prohibited:
+    - "No decision inference, owner selection, lease issuance, implementation, QA execution or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  decision_options: 3
+  lease_fields_required: 16
+  preserved_test_cases: 361
+  preserved_proof_clusters: 18
+  preserved_QA_paths: 9
+  preserved_blockers: 12
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

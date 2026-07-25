@@ -1,0 +1,288 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-SPONSOR-CONSENT-READINESS-045
+title: Independent sponsor-consent readiness review for GIS writer convergence
+status: RETURN_FOR_DECISION_PACKET_COMPLETION
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_CONSENT_READINESS_REVIEW
+
+reviewed_packet:
+  packet_id: M10-ADMIN-GIS-WRITER-CONVERGENCE-DECISION-PACKET-044
+  status: AWAITING_SPONSOR_POLICY_AND_AUTHORITY_CHOICES
+  review_scope:
+    - completeness
+    - business readability
+    - neutrality
+    - requirement preservation
+    - bounded sponsor choice
+    - dependency and consequence disclosure
+  mutation: NONE
+
+authority_checked:
+  governed_screen: SCR-ADM-070
+  exact_primary_478_requirements: []
+  contextual_478_requirements: PRESERVED_BY_REFERENCE_TO_PACKETS_040_THROUGH_043
+  transferred:
+    - MVP2-REQ-0072 / MVP2-AC-0072
+    - MVP2-REQ-0075 / MVP2-AC-0075
+    - MVP2-REQ-0233 / MVP2-AC-0233
+  phase1_acceptance:
+    - WA-M10-AC-001..006
+  special_component_acceptance:
+    - SPC-GIS-001..008
+  open_holds:
+    - DEC-002
+    - MVP3-HOLD-002
+    - MVP3-HOLD-006 where legal or retention policy applies
+    - WA-DES-006-C1
+
+readiness_summary:
+  complete_enough_to_explain_problem: true
+  complete_enough_for_final_sponsor_choice: false
+  business_readable: PARTIAL_PASS
+  non_leading: PARTIAL_FAIL
+  requirement_preserving: PASS_WITH_MISSING_EXPLICIT_FLOORS
+  bounded: PARTIAL_PASS
+  implementation_authority: false
+  lease_authority: false
+  completion_credit: 0
+
+strengths_ACK:
+  - The packet explains the three current writers and the business risks without selecting a technical implementation.
+  - It separates writer ownership, read/write personas, radius governance, conflict handling, audit, policy lineage, refresh and external holds.
+  - It explicitly forbids last-writer-wins behavior, false success and non-atomic audit.
+  - It preserves server authority for accepted transitions and requires removal of hard-coded policy-version claims.
+  - It separates Mapbox/offline/legal holds from the permission and concurrency defects.
+  - It includes a blank decision-capture template and keeps all implementation envelopes ungranted.
+  - Its migration order starts with decisions and characterization evidence rather than product changes.
+
+neutrality_review:
+  findings:
+    - id: GISCONSENT-N-01
+      severity: P1
+      location: decision_01_authoritative_writer / GIS-WRITER-A
+      issue: The phrase "Clearest ownership and audit story" favors option A.
+      required_correction: Use balanced language and state operational complexity, migration cost and governance consequence for every option in the same structure.
+    - id: GISCONSENT-N-02
+      severity: P1
+      location: decision_06_policy_version_lineage / GIS-OFFLINE-B
+      issue: Only the stricter continuity cost is highlighted; equivalent risk and operational tradeoffs are not stated for GIS-OFFLINE-A.
+      required_correction: State audit complexity, conflict handling and regulatory review implications for both offline choices.
+    - id: GISCONSENT-N-03
+      severity: P1
+      location: decision_04_conflict_protection
+      issue: Field-level merge is described as more complex, but stale-reject operational friction is not equally disclosed.
+      required_correction: Add balanced user and delivery consequences to both choices.
+  result: RETURN_FOR_NEUTRAL_WORDING
+
+business_readability_review:
+  strengths:
+    - Most option labels describe a business operating model rather than code.
+    - The packet tells the sponsor what users experience under each lineage and refresh option.
+    - Inadmissible current states are understandable.
+  gaps:
+    - id: GISCONSENT-BR-01
+      severity: P1
+      issue: The packet does not open with a one-screen statement of what the sponsor must decide now versus what remains blocked regardless of the answer.
+      required_correction: Add a short sponsor brief with the number of decisions, immediate business effect, and no-build boundary.
+    - id: GISCONSENT-BR-02
+      severity: P1
+      issue: '"CAS", "reduced projection", "correlation ID" and similar implementation terms appear without plain-language definitions.'
+      required_correction: Keep the technical term as a reference but define it as stale-change protection, minimum necessary data, or linked audit records.
+    - id: GISCONSENT-BR-03
+      severity: P1
+      issue: The sponsor is not told which choices can be deferred and which are required before any safe repair.
+      required_correction: Mark permission, single writer, conflict, atomic audit and lineage as immediate; spatial/provider/legal choices may remain explicitly held.
+  result: PARTIAL_PASS_RETURN_FOR_SPONSOR_SUMMARY
+
+completeness_findings_RETURN:
+  - id: GISCONSENT-C-01
+    severity: P0
+    missing_decision: Policy activation timing.
+    consequence: >
+      A shared GIS policy can currently become effective immediately. The
+      sponsor has no choice for immediate, scheduled effective-from, or
+      version-pinned activation, so migration and open-client behavior remain ambiguous.
+    required_addition:
+      - bounded activation options
+      - timezone and exact boundary rule
+      - future-effective behavior
+      - cancellation or replacement of a scheduled policy
+  - id: GISCONSENT-C-02
+    severity: P0
+    missing_decision: Complete shared GIS field ownership.
+    consequence: >
+      /admin/execution edits four values, while /admin/gis also displays route
+      deviation and retention and SCR-ADM-070 includes override policy. A writer
+      choice that names only four values leaves the remaining rules ownerless.
+    required_addition:
+      - field-by-field owner for accuracy, arrival, default fence, telemetry, route deviation, retention and override policy
+      - explicit non-editable or held state for every unresolved field
+  - id: GISCONSENT-C-03
+    severity: P0
+    missing_decision: Factory override precedence and reset behavior.
+    consequence: >
+      The packet does not ask whether a factory override always beats the
+      shared default, how it returns to inheritance, or what happens when the
+      shared default changes.
+    required_addition:
+      - precedence
+      - clear-to-inherit action
+      - effect of default changes on existing overrides
+      - audit and conflict behavior for reset
+  - id: GISCONSENT-C-04
+    severity: P0
+    missing_decision: Emergency policy correction.
+    consequence: >
+      Lineage choices mention an emergency process but do not define whether an
+      unsafe policy can be suspended, who may act, how active journeys are
+      handled, or what evidence is required.
+    required_addition:
+      - fail-closed suspend behavior
+      - authorized actor
+      - active-journey consequence
+      - notification and audit expectation
+  - id: GISCONSENT-C-05
+    severity: P0
+    missing_decision: Exact minimum data per consumer persona.
+    consequence: >
+      "Reduced settings" is not enough to authorize RLS changes. Field,
+      Planning, Operations, Reviewer, Factory 360 and Auditor need an explicit
+      allow-list for precise coordinates, derived radius, policy version,
+      telemetry and history.
+    required_addition:
+      - persona-by-data-purpose matrix
+      - precise versus masked coordinate behavior
+      - full-policy versus effective-value behavior
+  - id: GISCONSENT-C-06
+    severity: P0
+    missing_decision: Existing-data transition.
+    consequence: >
+      Current engine values, existing per-factory overrides, hard-coded client
+      versions, queued offline events and historical geo events require an
+      explicit preserve/migrate/display rule.
+    required_addition:
+      - no-rewrite rule for historical immutable events
+      - treatment of queued offline events
+      - treatment of current engine version and factory overrides
+      - evidence for any data correction
+  - id: GISCONSENT-C-07
+    severity: P1
+    missing_decision: Recovery and rollback of an accepted configuration.
+    consequence: >
+      Audit history is specified, but the sponsor is not asked whether recovery
+      creates a new version, restores a prior value as a new change, or is
+      unavailable.
+    required_addition:
+      - bounded rollback/recovery choices
+      - prohibition on editing history
+  - id: GISCONSENT-C-08
+    severity: P1
+    missing_decision: Audit visibility and business owner.
+    consequence: The packet defines event content but not who may view the GIS audit or who reviews exceptions.
+    required_addition:
+      - audit reader personas
+      - exception-review owner
+      - no exposure of precise location beyond approved need
+  - id: GISCONSENT-C-09
+    severity: P1
+    missing_decision: Technical Admin identity mapping.
+    consequence: SCR-ADM-070 names Technical Admin, but no canonical role key is recorded.
+    required_addition:
+      - map to an existing role/capability or explicitly leave the persona unresolved
+      - do not create a new role from the label
+  - id: GISCONSENT-C-10
+    severity: P1
+    missing_decision: Relationship between refresh choice and lineage choice.
+    consequence: GIS-REFRESH-C is valid only with GIS-LINEAGE-A, while other combinations may contradict each other.
+    required_addition:
+      - allowed and prohibited option combinations
+      - validation rules in the decision capture template
+
+requirement_preservation_review:
+  preserved:
+    - Official coordinates remain governed and historical geo evidence remains immutable.
+    - Geofence and accuracy decisions remain server-authoritative.
+    - Field offline evidence is not silently overwritten.
+    - Map/list and provider holds are not used to weaken workflow security.
+    - No new numeric policy value is chosen.
+  missing_explicit_floors:
+    - No approved consumer may lose required map, coordinate, route, geofence, override or audit behavior during convergence.
+    - A Phase 2 or transferred requirement status may not be used to weaken its active MVP1 parent behavior.
+    - Factory-specific radius correction may never rewrite historical check-in outcomes.
+    - An unresolved policy must fail closed without replacing required non-map operational evidence.
+    - Existing per-factory overrides and immutable event lineage require preservation evidence before migration.
+  result: PASS_ONLY_AFTER_FLOORS_ARE_ADDED
+
+inadmissible_selections:
+  - Any combination that leaves /admin/gis and /admin/execution independently writing the same field.
+  - Any role model where page, server action and database policy disagree.
+  - Any option that authorizes Planner, Technical Admin or another Admin role without mapping to an approved existing capability.
+  - Any conflict option that permits silent last-writer-wins or reports zero-row update as success.
+  - Any audit option where the business change commits but the required audit does not.
+  - Any lineage option that stores the hard-coded v1-accepted-2026-07-11 value as though it were resolved.
+  - Any offline choice that rewrites capture-time evidence or silently drops a server conflict.
+  - Any activation choice that applies a future policy early or uses an unstated timezone.
+  - Any rollback that edits or deletes historical policy or geo-event records.
+  - Any data-access choice that exposes precise coordinates or full settings to all authenticated users.
+  - Any provider choice that closes MVP3-HOLD-002 without controlled runtime, style, geography and offline evidence for the exact clause.
+
+dependency_review:
+  immediate_before_safe_repair:
+    - single writer and field ownership decision
+    - read and write persona/capability decision
+    - conflict protection
+    - atomic audit truth
+    - policy activation and lineage
+    - existing-data transition
+    - exact requirement-preservation floor
+  may_remain_held_without_blocking_permission_characterization:
+    - Spatial Canvas product scope
+    - Mapbox production/style/geographic certification
+    - offline map packs
+    - legal-evidence and retention status
+  still_required_before_UI_implementation:
+    - accepted WA-DES-006-C1
+    - full EN/AR content
+    - responsive, keyboard, screen-reader and reduced-motion acceptance
+  implementation_lease: NOT_GRANTED
+  future_ownership_envelopes: UNGRANTED
+
+bounded_consent_rule:
+  packet_044_may_be_presented_for_orientation: true
+  packet_044_may_capture_final_binding_consent: false
+  reason: >
+    It explains the core collision but omits activation timing, full field
+    ownership, override precedence/reset, emergency handling, consumer data
+    disclosure, existing-data transition and option compatibility.
+  correction_must_not:
+    - select an option
+    - invent a value, role or policy
+    - imply that provider or design holds are closed
+    - broaden the 478-row completion claim
+
+review_recommendation:
+  ACK:
+    - ACK the evidence basis, problem statement, core decision categories and no-lease boundary.
+  RETURN:
+    - RETURN packet 044 for a neutral, sponsor-readable addendum covering findings GISCONSENT-N-01..03, BR-01..03 and C-01..10.
+  BLOCK:
+    - BLOCK final sponsor consent, authority change, implementation and lease assignment until the corrected decision set is complete and answered.
+  current: RETURN_PACKET_BLOCK_CONSENT_AND_IMPLEMENTATION
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-DECISION-GAP-ADDENDUM-046
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Produce a neutral sponsor-facing addendum for packet 044 covering policy
+    activation, complete field ownership, factory override precedence/reset,
+    emergency correction, persona data disclosure, existing-data transition,
+    rollback, audit visibility, Technical Admin mapping, compatible option
+    combinations and explicit requirement-preservation floors.
+  non_overlap:
+    - no option selection
+    - no authority, implementation, design, data, test, evidence, branch or lease mutation

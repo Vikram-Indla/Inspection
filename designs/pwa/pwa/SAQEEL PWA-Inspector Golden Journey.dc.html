@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="saqeel/styles.css">
+<template id="__bundler_thumbnail" data-bg-color="#12161f"><svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="800" fill="#12161f"/><g stroke="#47b381" stroke-width="8" fill="none"><path d="M180 400h840"/></g><g fill="#47b381"><circle cx="180" cy="400" r="26"/><circle cx="460" cy="400" r="26"/><circle cx="740" cy="400" r="26"/><circle cx="1020" cy="400" r="26"/></g><text x="600" y="500" fill="#8aa0b8" font-family="sans-serif" font-size="34" text-anchor="middle">Inspector Golden Journey</text></svg></template>
+<style>
+  html, body { height:100%; margin:0; }
+  .gj-root { min-height:100dvh; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); }
+  .gj-bar { position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); }
+  .gj-btn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .gj-leg { display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--text-secondary); }
+  .gj-legi { display:flex; align-items:center; gap:6px; }
+  .gj-wrap { max-width:1000px; width:100%; margin:0 auto; padding:26px 26px 90px; }
+  .gj-h { font-family:var(--font-heading); font-size:24px; font-weight:600; margin:0 0 4px; }
+  .gj-sub { font-size:13px; color:var(--text-secondary); margin:0 0 22px; }
+  .gj-step { display:grid; grid-template-columns:52px 1fr; gap:16px; }
+  .gj-rail { display:flex; flex-direction:column; align-items:center; }
+  .gj-num { width:38px; height:38px; border-radius:50%; background:var(--action-primary); color:var(--text-on-action); display:grid; place-items:center; font-weight:700; font-size:15px; flex:none; box-shadow:var(--shadow-card); }
+  .gj-line { flex:1; width:2px; background:var(--border-strong); min-height:22px; }
+  .gj-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:15px 17px; margin-bottom:16px; display:flex; flex-direction:column; gap:9px; }
+  .gj-title { font-size:16px; font-weight:600; }
+  .gj-desc { font-size:13px; color:var(--text-secondary); line-height:1.55; }
+  .gj-alt { font-size:12px; color:var(--text-muted); line-height:1.5; }
+  .gj-status { display:flex; gap:8px; flex-wrap:wrap; margin-top:2px; }
+  .gj-chip { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:999px; border:1px solid var(--border-subtle); }
+  .gj-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .gj-brk { font-size:11.5px; color:var(--status-critical-text); background:var(--status-critical-soft); border:1px solid color-mix(in srgb,var(--status-critical) 30%,transparent); border-radius:8px; padding:6px 10px; }
+  .gj-req { align-self:flex-start; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }
+  .gj-end .gj-num { background:var(--status-compliant); }
+</style>
+</helmet>
+<div class="gj-root" dir="{{ dir }}" lang="{{ lang }}" data-theme="dark">
+  <div class="gj-bar">
+    <strong style="font-size:14px;">{{ t.title }}</strong>
+    <span style="flex:1;"></span>
+    <div class="gj-leg">{{ legend }}</div>
+    <button class="gj-btn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </div>
+  <div class="gj-wrap">
+    <h1 class="gj-h">{{ t.h }}</h1>
+    <p class="gj-sub">{{ t.sub }}</p>
+    {{ steps }}
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1000,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { lang:"en" };
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement;
+    const S=(en,arv)=>ar?arv:en;
+    const t = ar ? { title:"الرحلة الذهبية للمفتش", langBtnLabel:"EN", h:"من تسجيل الدخول حتى نهاية اليوم — رحلة واحدة", sub:"عرض الأعمال خطوة بخطوة، مع حالة التصميم والكود والتشغيل الفعلي والأعطال لكل خطوة." }
+                 : { title:"Inspector golden journey", langBtnLabel:"AR", h:"From sign-in to end-of-day — one journey", sub:"Business-view, step by step, with Design / Code / Live status and breakages per step." };
+    // status: done / part / none
+    const SC={ done:{c:"var(--status-compliant)",l:S("done","تم")}, part:{c:"var(--status-major)",l:S("partial","جزئي")}, none:{c:"var(--status-critical)",l:S("none","لا")} };
+    const legend = [["done",S("Complete","مكتمل")],["part",S("Partial","جزئي")],["none",S("Not yet","لم يبدأ")]].map((x,i)=>h("span",{key:i,className:"gj-legi"},h("span",{className:"gj-dot",style:{background:SC[x[0]].c}}),x[1]));
+    const chip=(label,st)=>h("span",{className:"gj-chip"}, h("span",{className:"gj-dot",style:{background:SC[st].c}}), label+" · "+SC[st].l);
+    const reqChip=(met)=>h("span",{className:"gj-req",style:{background: met==="done"?"var(--status-compliant-soft)":met==="part"?"var(--status-major-soft)":"var(--status-critical-soft)", color: met==="done"?"var(--status-compliant-text)":met==="part"?"var(--status-major-text)":"var(--status-critical-text)"}}, (met==="done"?"✓ ":met==="part"?"◑ ":"✗ ")+S("Requirement","المتطلب"));
+
+    // D=design, C=code/Claude Code wiring, L=live on platform, req=requirement met, brk=breakage
+    const STEPS = [
+      { t:S("Sign in (national SSO)","تسجيل الدخول (النفاذ الوطني)"), d:S("The inspector opens the installed PWA and signs in; forgot→OTP→reset is available. Lands on the launch splash, then the field home.","يفتح المفتش التطبيق ويسجّل الدخول؛ يتوفّر نسيان→OTP→إعادة."), alt:S("Alt: wrong credentials → error; no workspace → blocked launch.","بديل: بيانات خاطئة → خطأ؛ لا مساحة عمل → إطلاق محظور."), D:"done", C:"done", L:"part", req:"done" },
+      { t:S("Dashboard — see the day","لوحة اليوم"), d:S("He sees his day: assigned visits, today/remaining/pending counts, an AI daily brief, notifications, and quick actions. This is his home base.","يرى يومه: الزيارات المُسندة، عدّادات اليوم/المتبقي/المعلّق، ملخص ذكي، إشعارات، وإجراءات سريعة."), alt:S("From here: notifications, global search, drafts to resume, Factory 360.","من هنا: الإشعارات، البحث الشامل، المسودات، المصنع 360."), D:"done", C:"done", L:"part", req:"done" },
+      { t:S("Pick a visit — My Tasks","اختيار زيارة — مهامي"), d:S("He opens My Tasks, reviews the visit card, and starts preparation. He can also return or request reschedule.","يفتح مهامي، يراجع بطاقة الزيارة، ويبدأ التحضير. يمكنه الإرجاع أو طلب إعادة الجدولة."), alt:S("Alt: return assignment; reschedule request → planner decides.","بديل: إرجاع الإسناد؛ طلب إعادة جدولة → المخطّط يقرّر."), D:"done", C:"done", L:"part", req:"done" },
+      { t:S("Prepare — report type & package","التحضير — نوع التقرير والحزمة"), d:S("He confirms execution date + visit mode, resolves the published package (report type), configures optional forms, and Confirms Ready — which freezes an immutable package snapshot.","يؤكّد التاريخ والنمط، يحلّ الحزمة المنشورة (نوع التقرير)، ويؤكّد الجاهزية — فتُجمّد لقطة غير قابلة للتعديل."), alt:S("Immediate inspection entry + package-lock rule = still a business decision.","التفتيش الفوري وقاعدة القفل = قرار عمل معلّق."), D:"done", C:"done", L:"part", req:"part", brk:S("Immediate-inspection lock rule undecided (DEC-IMM-01).","قاعدة قفل التفتيش الفوري غير محسومة.") },
+      { t:S("Travel & arrive — geofence","التنقّل والوصول — النطاق الجغرافي"), d:S("He drives with live ETA/route; on arrival the geofence guard checks he is inside the fence with good GPS, then flips the visit to Executing. Outside the fence → a governed Operations approval request. Can't reach → Unable-to-access request.","يتنقّل مع زمن وصول حي؛ عند الوصول يتحقق النطاق ثم ينتقل للتنفيذ. خارج النطاق → طلب اعتماد. تعذّر → طلب تعذّر."), alt:S("Alt: outside-fence approval, corrected location, unable-to-access, crash→resume.","بديل: اعتماد خارج النطاق، تصحيح الموقع، تعذّر، تعافٍ بعد التعطّل."), D:"done", C:"done", L:"part", req:"done", brk:S("Map/route provider key + basemap pending (BRK-3 / DEC-008).","مفتاح مزوّد الخرائط/المسار معلّق.") },
+      { t:S("Execute — items, evidence, violations","التنفيذ — البنود والأدلة والمخالفات"), d:S("The generic engine renders the package items; he marks applicability + compliance, attaches evidence per rule, and violation candidates appear with corrective action + penalty. Records/محاضر are generated per outcome; samples & seizure captured.","يرسم المحرّك البنود؛ يحدّد الامتثال ويرفق الأدلة، وتظهر مرشّحات المخالفة. تُنشأ المحاضر حسب النتيجة."), alt:S("Alt: report-type record set (visit/chemical/customs/safety/challenge), samples/seizure.","بديل: مجموعة محاضر حسب نوع التقرير، العينات والحجز."), D:"done", C:"part", L:"none", req:"part", brk:S("Samples/seizure not wired to submit; incident-logging path thin (BRK-5).","العينات/الحجز غير موصولة بالإرسال.") },
+      { t:S("Complete — acknowledge & sign","الإنهاء — الإقرار والتوقيع"), d:S("He reviews the summary, the representative signs (or absence/refusal is captured), and he submits — creating an immutable version with an idempotency key; offline it queues and syncs later.","يراجع الملخص، يوقّع الممثل (أو يُسجّل الغياب)، ويُرسل — فتُنشأ نسخة نهائية غير قابلة للتعديل."), alt:S("Alt: offline queued submit; duplicate-protected; feedback QR gives the establishment the PDF.","بديل: إرسال مؤجّل؛ رمز التقييم يمنح المنشأة PDF."), D:"done", C:"part", L:"none", req:"part", brk:S("Feedback scan-service + PDF endpoint not built (BRK-1 / O-15).","خدمة مسح التقييم + PDF غير مبنية.") },
+      { t:S("Outcome — review, return, resubmit","النتيجة — مراجعة، إرجاع، إعادة إرسال"), d:S("The submission goes to Level-2 review. If returned, only the scoped sections are editable and resubmission creates the next version. Approved → final report; rejected → reason shown.","يذهب الإرسال لمراجعة المستوى الثاني. عند الإرجاع تُعدّل الأقسام المحدّدة فقط. اعتماد → تقرير نهائي؛ رفض → السبب."), alt:S("Alt: returned/approved/rejected; version compare + history.","بديل: إرجاع/اعتماد/رفض؛ مقارنة النسخ والسجل."), D:"done", C:"part", L:"none", req:"part", brk:S("Review-decision RPCs + receiving queue unproven end-to-end (BRK-7/8).","دوال قرار المراجعة والطابور المستقبِل غير مُثبتة.") },
+      { t:S("Reports, history & feedback","التقارير والسجل والتغذية الراجعة"), d:S("He accesses the final-report PDF, prior visits, and version history. The establishment scans his QR to rate the visit and receive the report.","يصل للتقرير النهائي والزيارات السابقة والسجل. تمسح المنشأة الرمز للتقييم واستلام التقرير."), alt:S("Alt: conflict resolution, drafts, notifications remain reachable.","بديل: حل التعارض، المسودات، الإشعارات."), D:"done", C:"none", L:"none", req:"part", brk:S("Final-report PDF endpoint + feedback analytics destination missing (BRK-1/6).","نقطة PDF ووجهة تحليلات التقييم مفقودتان.") },
+      { t:S("End of day — sign off","نهاية اليوم — تسجيل الخروج"), d:S("He confirms everything is synced (no pending outbox/conflicts), reviews tomorrow's assigned visits, and signs out. The device stays trusted for biometric unlock next time.","يتأكد من المزامنة (لا صادر/تعارض معلّق)، يراجع زيارات الغد، ويسجّل الخروج. يبقى الجهاز موثوقاً."), alt:S("Alt: pending sync blocks a clean sign-off until resolved.","بديل: مزامنة معلّقة تمنع خروجاً نظيفاً حتى الحل."), D:"done", C:"done", L:"part", req:"done", end:true },
+    ];
+
+    const steps = STEPS.map((s,i)=>h("div",{className:"gj-step"+(s.end?" gj-end":""),key:i},
+      h("div",{className:"gj-rail"}, h("div",{className:"gj-num"}, s.end?"✓":String(i+1)), i<STEPS.length-1?h("div",{className:"gj-line"}):null),
+      h("div",{className:"gj-card"},
+        h("div",{className:"gj-title"}, s.t),
+        h("div",{className:"gj-desc"}, s.d),
+        h("div",{className:"gj-alt"}, "↳ "+s.alt),
+        h("div",{className:"gj-status"}, chip(S("Design","تصميم"),s.D), chip(S("Code (wiring)","كود"),s.C), chip(S("Live","تشغيل"),s.L), reqChip(s.req)),
+        s.brk?h("div",{className:"gj-brk"}, "⚠ "+s.brk):null)));
+
+    return {
+      lang:this.state.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(x=>({lang:x.lang==="ar"?"en":"ar"})), t, legend,
+      steps: h("div",null, steps),
+    };
+  }
+}
+</script>
+</body>
+</html>

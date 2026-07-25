@@ -1,0 +1,503 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049
+status: READ_ONLY_FUTURE_PROVIDER_CALLBACK_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze future provider-callback authentication tests covering signature,
+  replay, timestamp/nonce, authority partition, session binding, secret
+  rotation, payload binding, idempotency, degraded outcomes, audit and
+  redaction. The provider contract is not configured, so positive callback
+  execution remains blocked.
+
+frozen_authority:
+  KIMI-M11-TEST-EVIDENCE-GAP-MAP-032: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 920d500d5f2bdfa55da2fb2acac32b28346e3d668d7ac40f3ab88e00150d24fa
+  KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 782eba637010837658bb185cddda47c804b92f991cb504faced92bbb82c39b6a
+  KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048: f54e977cd7f69182e4044a30884873f8eb67e7b5b723216287a9797874d190a0
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, provider, network, design, data, seed, branch or stash change."
+  - "No provider, signature algorithm, key format, secret, nonce, timestamp window, replay horizon, retry value or callback endpoint is invented."
+  - "No tenant model is asserted. Wrong-tenant cases remain authority-partition cases until the accepted contract defines tenancy."
+  - "No positive provider delivery or callback-completion claim while provider authority/configuration is absent."
+  - "All payloads, signatures, secrets, timestamps, nonces and identities are symbolic classes."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+callback_contract_unknowns:
+  authentication_mechanism: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  signature_algorithm_and_canonicalization: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  timestamp_acceptance_window: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  nonce_format_and_retention: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  replay_retention: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  secret_rotation_overlap: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  authority_partition_or_tenant_model: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  delivery_event_semantics: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+  callback_response_contract: BLOCKED_UNTIL_APPROVED_PROVIDER_CONTRACT
+
+security_invariants:
+  - "Authentication and payload integrity are verified before any resource lookup or mutation."
+  - "Missing, invalid, stale, replayed or wrong-scope authentication cannot become a resource-existence oracle."
+  - "The authenticated provider identity is bound to the exact approved provider/authority partition."
+  - "The authenticated payload is bound to the exact callback event, logical provider request, session and participant."
+  - "A callback cannot override canonical session/participant state or immutability."
+  - "One logical callback produces at most one authoritative state effect and one semantic event."
+  - "Rotation never creates a period where no secret or every secret is accepted."
+  - "Provider technical identity cannot read tables, audit, exports or application resources outside the exact machine contract."
+  - "Raw provider payload, signature material, secret, nonce and technical error are never exposed to application personas or evidence."
+
+technical_identity_fixtures:
+  - id: FX-CBK-APPROVED-PROVIDER
+    class: future_machine_identity
+    state: BLOCKED_NOT_CONFIGURED
+  - id: FX-CBK-WRONG-PROVIDER
+    class: untrusted_machine_identity
+  - id: FX-CBK-UNKNOWN-SENDER
+    class: unauthenticated_machine_identity
+  - id: FX-CBK-APPLICATION-PERSONA
+    class: ordinary_user_identity
+  - id: FX-CBK-SERVICE-ROLE
+    class: privileged_fixture_identity
+    rule: "Cannot certify callback authentication or application authorization."
+  - id: FX-CBK-FUNCTION-OWNER
+    class: privileged_execution_identity
+    rule: "Cannot certify caller authentication."
+
+symbolic_fixtures:
+  authentication:
+    - FX-CBK-AUTH-MISSING
+    - FX-CBK-AUTH-MALFORMED
+    - FX-CBK-AUTH-INVALID
+    - FX-CBK-AUTH-VALID-CURRENT
+    - FX-CBK-AUTH-VALID-PREVIOUS-DURING-APPROVED-OVERLAP
+    - FX-CBK-AUTH-EXPIRED-PREVIOUS
+  payload:
+    - FX-CBK-PAYLOAD-CANONICAL
+    - FX-CBK-PAYLOAD-TAMPERED-BODY
+    - FX-CBK-PAYLOAD-TAMPERED-IDENTIFIER
+    - FX-CBK-PAYLOAD-TAMPERED-OUTCOME
+    - FX-CBK-PAYLOAD-EXTRA-UNKNOWN-FIELD
+    - FX-CBK-PAYLOAD-MISSING-REQUIRED-FIELD
+    - FX-CBK-PAYLOAD-SECRET-SENTINEL
+  freshness_and_replay:
+    - FX-CBK-TIMESTAMP-CURRENT-CLASS
+    - FX-CBK-TIMESTAMP-STALE-CLASS
+    - FX-CBK-TIMESTAMP-FUTURE-INVALID-CLASS
+    - FX-CBK-TIMESTAMP-MALFORMED
+    - FX-CBK-NONCE-NEW
+    - FX-CBK-NONCE-REPLAY
+    - FX-CBK-NONCE-MISSING
+    - FX-CBK-NONCE-MALFORMED
+  binding:
+    - FX-CBK-AUTHORITY-PARTITION-CORRECT
+    - FX-CBK-AUTHORITY-PARTITION-WRONG
+    - FX-CBK-SESSION-CORRECT
+    - FX-CBK-SESSION-WRONG
+    - FX-CBK-SESSION-MISSING
+    - FX-CBK-SESSION-OUT-OF-SCOPE
+    - FX-CBK-PARTICIPANT-CORRECT
+    - FX-CBK-PARTICIPANT-WRONG
+    - FX-CBK-REQUEST-CORRELATION-CORRECT
+    - FX-CBK-REQUEST-CORRELATION-WRONG
+  provider_outcome:
+    - FX-CBK-OUTCOME-INDETERMINATE
+    - FX-CBK-OUTCOME-REJECTED
+    - FX-CBK-OUTCOME-ACCEPTED-NOT-DELIVERED
+    - FX-CBK-OUTCOME-DELIVERED
+  concurrency:
+    - FX-CBK-SAME-IDEMPOTENCY-KEY
+    - FX-CBK-DIFFERENT-IDEMPOTENCY-KEY
+    - FX-CBK-CONCURRENT-DUPLICATES
+    - FX-CBK-FORCED-ROLLBACK
+
+expected_result_vocabulary:
+  BLOCKED_NOT_RUN: "Positive callback case cannot execute until the provider contract is approved and configured."
+  AUTH_DENY_NEUTRAL: "Authentication denied before resource lookup; neutral public result."
+  REPLAY_DENY_NEUTRAL: "Replay denied without resource or prior-event disclosure."
+  BINDING_DENY_NEUTRAL: "Wrong authority/session/participant/request binding denied without existence disclosure."
+  IDEMPOTENT: "Repeated accepted logical callback has no additional state or event effect."
+  ONE_WINNER: "Exactly one concurrent callback commits the authoritative effect."
+  ZERO_SIDE_EFFECT: "No state, provider, audit or semantic event effect."
+  ROLLBACK_CLEAN: "No callback, state, audit or event residue remains."
+  ZERO_LEAK: "No secret, signature, nonce, payload, provider metadata or internal error exposed."
+  ONE_SAFE_EVENT: "Exactly one approved safe semantic callback fact for one committed effect."
+
+test_groups:
+  AUTHENTICATION_AND_SIGNATURE:
+    cases:
+      - id: M11-049-AUT-001
+        identities: [FX-CBK-UNKNOWN-SENDER, FX-CBK-APPLICATION-PERSONA]
+        fixtures: [FX-CBK-AUTH-MISSING, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Attempt callback without the approved authentication material."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [authentication_result, resource_lookup_count, state_before_after, audit_event_count]
+      - id: M11-049-AUT-002
+        identities: [FX-CBK-WRONG-PROVIDER]
+        fixtures: [FX-CBK-AUTH-MALFORMED, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Attempt malformed authentication."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_LEAK]
+        evidence: [authentication_result, normalized_response, forbidden_scan]
+      - id: M11-049-AUT-003
+        identities: [FX-CBK-WRONG-PROVIDER]
+        fixtures: [FX-CBK-AUTH-INVALID, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Attempt invalid signature/authentication class."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [authentication_result, resource_lookup_count, mutation_count]
+      - id: M11-049-AUT-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTH-VALID-CURRENT, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Exercise positive authentication."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_provider_contract, future_authentication_evidence]
+      - id: M11-049-AUT-005
+        identities: [FX-CBK-SERVICE-ROLE, FX-CBK-FUNCTION-OWNER]
+        fixtures: [FX-CBK-PAYLOAD-CANONICAL]
+        action: "Invoke callback under privileged technical context."
+        expected: "NOT_VALID_AUTHENTICATION_EVIDENCE."
+        evidence: [identity_classification, evidence_exclusion_attestation]
+
+  TIMESTAMP_AND_NONCE:
+    cases:
+      - id: M11-049-FRS-001
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-TIMESTAMP-STALE-CLASS, FX-CBK-NONCE-NEW]
+        action: "Attempt stale timestamp class."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [freshness_result, resource_lookup_count, state_before_after]
+      - id: M11-049-FRS-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-TIMESTAMP-FUTURE-INVALID-CLASS, FX-CBK-NONCE-NEW]
+        action: "Attempt invalid future timestamp class."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [freshness_result, normalized_response, mutation_count]
+      - id: M11-049-FRS-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-TIMESTAMP-MALFORMED, FX-CBK-NONCE-NEW]
+        action: "Attempt malformed timestamp."
+        expected: AUTH_DENY_NEUTRAL
+        evidence: [freshness_result, forbidden_scan]
+      - id: M11-049-FRS-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-TIMESTAMP-CURRENT-CLASS, FX-CBK-NONCE-MISSING]
+        action: "Attempt missing nonce when final contract requires one."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_nonce_contract, future_result]
+      - id: M11-049-FRS-005
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-TIMESTAMP-CURRENT-CLASS, FX-CBK-NONCE-MALFORMED]
+        action: "Attempt malformed nonce."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_nonce_contract, future_result]
+
+  REPLAY_AND_IDEMPOTENCY:
+    cases:
+      - id: M11-049-RPL-001
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-NONCE-REPLAY, FX-CBK-SAME-IDEMPOTENCY-KEY]
+        action: "Replay exact callback."
+        expected: REPLAY_DENY_NEUTRAL
+        evidence: [replay_result, state_before_after, semantic_event_count]
+      - id: M11-049-RPL-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-NONCE-NEW, FX-CBK-SAME-IDEMPOTENCY-KEY]
+        action: "Repeat same logical callback under a new valid freshness value."
+        expected: IDEMPOTENT
+        evidence: [logical_request_hash, state_effect_count, semantic_event_count]
+      - id: M11-049-RPL-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-CONCURRENT-DUPLICATES, FX-CBK-SAME-IDEMPOTENCY-KEY]
+        action: "Coordinate concurrent duplicate callbacks."
+        expected: ONE_WINNER
+        evidence: [transaction_timeline, callback_lock_manifest, final_state, semantic_event_count]
+      - id: M11-049-RPL-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-DIFFERENT-IDEMPOTENCY-KEY, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Submit logically duplicate outcome under a different key."
+        expected: "Final binding/state contract prevents duplicate authoritative effect."
+        evidence: [logical_outcome_correlation, state_effect_count, semantic_event_count]
+
+  AUTHORITY_PARTITION_AND_PROVIDER_BINDING:
+    cases:
+      - id: M11-049-SCP-001
+        identities: [FX-CBK-WRONG-PROVIDER]
+        fixtures: [FX-CBK-AUTHORITY-PARTITION-CORRECT, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Attempt callback signed/authenticated by the wrong provider identity."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [provider_identity_result, resource_lookup_count, mutation_count]
+      - id: M11-049-SCP-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTHORITY-PARTITION-WRONG, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Attempt callback for wrong authority partition/tenant class."
+        expected: BINDING_DENY_NEUTRAL
+        evidence: [partition_binding_result, state_before_after, event_before_after]
+      - id: M11-049-SCP-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTHORITY-PARTITION-CORRECT, FX-CBK-PAYLOAD-CANONICAL]
+        action: "Exercise correct provider/authority partition binding."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_authority_partition_contract, future_result]
+      - id: M11-049-SCP-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTHORITY-PARTITION-CORRECT]
+        action: "Attempt table, audit or export browse outside callback contract."
+        expected: "Denied; machine identity has no general application visibility."
+        evidence: [technical_identity_surface_matrix, returned_row_count, artifact_count]
+
+  SESSION_PARTICIPANT_REQUEST_BINDING:
+    cases:
+      - id: M11-049-BND-001
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SESSION-WRONG, FX-CBK-PARTICIPANT-CORRECT, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Attempt callback bound to wrong session."
+        expected: BINDING_DENY_NEUTRAL
+        evidence: [binding_result, state_before_after, event_before_after]
+      - id: M11-049-BND-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SESSION-CORRECT, FX-CBK-PARTICIPANT-WRONG, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Attempt callback bound to wrong participant."
+        expected: BINDING_DENY_NEUTRAL
+        evidence: [binding_result, state_before_after, event_before_after]
+      - id: M11-049-BND-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SESSION-CORRECT, FX-CBK-PARTICIPANT-CORRECT, FX-CBK-REQUEST-CORRELATION-WRONG]
+        action: "Attempt callback bound to wrong logical request."
+        expected: BINDING_DENY_NEUTRAL
+        evidence: [binding_result, provider_attempt_correlation, state_before_after]
+      - id: M11-049-BND-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SESSION-MISSING, FX-CBK-SESSION-OUT-OF-SCOPE]
+        action: "Compare missing and out-of-scope callback binding."
+        expected: "Neutral equivalent response, zero mutation and no provider/resource oracle."
+        evidence: [response_pair, resource_lookup_result_pair, state_before_after]
+      - id: M11-049-BND-005
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SESSION-CORRECT, FX-CBK-PARTICIPANT-CORRECT, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Exercise positive binding."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_binding_contract, future_result]
+
+  PAYLOAD_INTEGRITY_AND_SCHEMA:
+    cases:
+      - id: M11-049-PAY-001
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-TAMPERED-BODY]
+        action: "Modify authenticated payload body."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [integrity_result, state_before_after, event_before_after]
+      - id: M11-049-PAY-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-TAMPERED-IDENTIFIER]
+        action: "Modify session/participant/request identifier after authentication material is formed."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [integrity_result, binding_result, mutation_count]
+      - id: M11-049-PAY-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-TAMPERED-OUTCOME]
+        action: "Modify provider outcome class."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [integrity_result, event_before_after]
+      - id: M11-049-PAY-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-EXTRA-UNKNOWN-FIELD]
+        action: "Add unknown field."
+        expected: "Fail closed according to exact future schema; never persist/export unknown value."
+        evidence: [schema_validation_result, persistence_scan, export_scan]
+      - id: M11-049-PAY-005
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-MISSING-REQUIRED-FIELD]
+        action: "Omit required field."
+        expected: [AUTH_DENY_NEUTRAL, ZERO_SIDE_EFFECT]
+        evidence: [schema_validation_result, normalized_response, mutation_count]
+      - id: M11-049-PAY-006
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-SECRET-SENTINEL]
+        action: "Attempt secret/provider payload sentinel."
+        expected: ZERO_LEAK
+        evidence: [storage_scan, audit_scan, client_scan, export_scan, evidence_scan]
+
+  SECRET_ROTATION:
+    cases:
+      - id: M11-049-ROT-001
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTH-VALID-CURRENT]
+        action: "Authenticate with current secret class."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_rotation_contract, future_result]
+      - id: M11-049-ROT-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTH-VALID-PREVIOUS-DURING-APPROVED-OVERLAP]
+        action: "Authenticate with previous secret during approved overlap."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_rotation_overlap_contract, future_result]
+      - id: M11-049-ROT-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTH-EXPIRED-PREVIOUS]
+        action: "Authenticate with retired secret class."
+        expected: AUTH_DENY_NEUTRAL
+        evidence: [rotation_state, authentication_result, resource_lookup_count]
+      - id: M11-049-ROT-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-AUTH-VALID-CURRENT, FX-CBK-AUTH-VALID-PREVIOUS-DURING-APPROVED-OVERLAP]
+        action: "Exercise concurrent callbacks across rotation boundary."
+        expected: "Exactly the approved overlap classes accepted; idempotency prevents duplicate effects."
+        evidence: [rotation_phase, authentication_results, state_effect_count, event_count]
+      - id: M11-049-ROT-005
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-SECRET-SENTINEL]
+        action: "Scan logs, audit, errors and evidence during rotation."
+        expected: ZERO_LEAK
+        evidence: [log_scan, audit_scan, error_scan, evidence_scan]
+
+  DEGRADED_OUTCOME_AND_RECOVERY:
+    cases:
+      - id: M11-049-DEG-001
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-OUTCOME-INDETERMINATE, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Process indeterminate callback outcome."
+        expected: "No delivered claim; reconciliation remains idempotent."
+        evidence: [state, delivered_event_count, reconciliation_result]
+      - id: M11-049-DEG-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-OUTCOME-REJECTED, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Process rejected callback outcome."
+        expected: "No delivered claim and no raw provider error disclosure."
+        evidence: [state, event_type_manifest, forbidden_scan]
+      - id: M11-049-DEG-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-OUTCOME-ACCEPTED-NOT-DELIVERED, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Process accepted-not-delivered outcome."
+        expected: "Transport acceptance not promoted to delivered."
+        evidence: [state, delivered_event_count, audit_projection]
+      - id: M11-049-DEG-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-OUTCOME-DELIVERED, FX-CBK-REQUEST-CORRELATION-CORRECT]
+        action: "Process positive delivered outcome."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_delivery_evidence_contract, future_result]
+      - id: M11-049-DEG-005
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-FORCED-ROLLBACK, FX-CBK-OUTCOME-INDETERMINATE]
+        action: "Force rollback after candidate callback effect."
+        expected: ROLLBACK_CLEAN
+        evidence: [state_before_after, audit_before_after, event_before_after, reconciliation_result]
+
+  AUDIT_REDACTION_AND_NEUTRAL_RESPONSE:
+    cases:
+      - id: M11-049-AUD-001
+        identities: [FX-CBK-WRONG-PROVIDER, FX-CBK-UNKNOWN-SENDER]
+        fixtures: [FX-CBK-AUTH-INVALID, FX-CBK-AUTH-MISSING]
+        action: "Compare authentication failure responses."
+        expected: "Neutral equivalent public response and zero resource-specific event."
+        evidence: [status_pair, payload_hash_pair, timing_class_pair, event_count_pair]
+      - id: M11-049-AUD-002
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SESSION-MISSING, FX-CBK-SESSION-OUT-OF-SCOPE]
+        action: "Compare missing and out-of-scope binding failures."
+        expected: "Neutral equivalent response and audit behavior."
+        evidence: [response_pair, safe_audit_count_pair, semantic_event_count_pair]
+      - id: M11-049-AUD-003
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-PAYLOAD-SECRET-SENTINEL]
+        action: "Inspect safe audit, raw storage, logs, client response and evidence."
+        expected: ZERO_LEAK
+        evidence: [safe_audit_scan, storage_scan, log_scan, client_scan, evidence_scan]
+      - id: M11-049-AUD-004
+        identities: [FX-CBK-APPROVED-PROVIDER]
+        fixtures: [FX-CBK-SAME-IDEMPOTENCY-KEY, FX-CBK-CONCURRENT-DUPLICATES]
+        action: "Commit/replay one valid callback under future contract."
+        expected: ONE_SAFE_EVENT
+        evidence: [state_effect_count, semantic_event_count, correlation_manifest]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - approved_provider_contract_version
+    - code_commit
+    - migration_chain_hash
+    - symbolic_identity_class
+    - logical_callback_correlation_hash
+    - result
+    - independent_reviewer
+  required_outputs:
+    - authentication_freshness_and_binding_result
+    - resource_lookup_and_mutation_counts
+    - idempotency_and_replay_result
+    - state_before_after
+    - audit_and_semantic_event_cardinality
+    - normalized_response_and_timing_class
+    - secret_provider_payload_and_internal_error_scan
+    - rollback_or_teardown_result
+  redaction_rules:
+    - "No signature, secret, nonce, raw timestamp, provider payload, endpoint, credential or recipient data."
+    - "No value-derived secret hash, prefix, suffix or equality token."
+    - "Evidence uses symbolic classes, approved non-secret metadata and case correlation hashes only."
+    - "Any redaction, binding, checksum, teardown or reviewer failure quarantines the bundle."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-PROVIDER: apps/web/e2e/m11-provider-truth.spec.ts
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+  ownership_boundaries:
+    TEST-PROVIDER: "Callback authentication, freshness, binding, replay, rotation and degraded provider behavior."
+    TEST-013: "Callback-linked participant/OTP state, idempotency, locking and rollback."
+    TEST-015: "Safe audit, redaction, neutral response and event cardinality."
+    TEST-CATALOG: "Callback function owner/ACL/security/dependency and technical-identity privilege proof."
+    TEST-BROWSER: "No callback/provider technical detail leaks into application UI/API."
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "No implementation worker edits a leased QA path."
+    - "Stop on path, migration, signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  positive_callback_cases: BLOCKED_NOT_RUN
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Approved provider and callback authentication/freshness/binding/rotation contracts."
+    - "Exact callback function, owner/ACL, policy, audit, application and evidence manifests."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+
+queued_next:
+  packet: KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Function identity, owner/BYPASSRLS, search_path, dependency, EXECUTE ACL, overload and helper safety only."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  technical_identity_fixture_count: 6
+  test_group_count: 9
+  test_case_count: 43
+  unique_test_case_ids: PASS
+  referenced_technical_identities_defined: PASS
+  proposed_test_path_count: 5
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  positive_provider_claimed: false
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

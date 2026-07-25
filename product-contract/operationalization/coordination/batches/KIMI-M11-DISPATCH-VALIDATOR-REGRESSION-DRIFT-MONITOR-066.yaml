@@ -1,0 +1,184 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-DISPATCH-VALIDATOR-REGRESSION-DRIFT-MONITOR-066
+status: READ_ONLY_REGRESSION_REPLAY_COMPLETE_BLOCKED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Replay all 63 synthetic fail-closed dispatch mutations against the current
+  pinned-ref view and report a compact readiness delta without creating or
+  changing any real authority.
+
+authority:
+  mutation_matrix:
+    packet: KIMI-M11-DISPATCH-VALIDATOR-MUTATION-MATRIX-064
+    sha256: 97c3ec1f69abe7f2f4083b486aa865f4bb766f0afd648e807f6e2f6ef971d1c0
+  coverage_certificate:
+    packet: KIMI-M11-DISPATCH-VALIDATOR-COVERAGE-CERTIFICATE-065
+    sha256: 8ad05403ba6c8df242faaece031efe7dd4fe9e91c5abe0dba3f428fea2b497cf
+  example_pack:
+    packet: KIMI-M11-DISPATCH-MANIFEST-DRY-VALIDATOR-EXAMPLES-063
+    sha256: bce05857d4b2a5d076825238186f7b1274e1a3c205cb0cf7bb53299f8376d2e4
+  prior_ref_monitor: KIMI-M11-LIVE-CONTROL-REF-DRIFT-MONITOR-062
+
+hard_boundary:
+  - "Read-only local ref/blob and synthetic matrix replay plus this one owned packet."
+  - "No fetch, real manifest, option, identity, owner, worktree, branch or lease."
+  - "No checkout, merge, push, queue/slice/lease edit, shared-control mutation, implementation, QA, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+control_ref_recheck:
+  product:
+    ref: origin/main
+    prior_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    observed_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    commit_result: PASS_NO_DRIFT
+    work_queue:
+      prior_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      observed_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+      result: PASS_NO_DRIFT
+    current_slice:
+      prior_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      observed_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+      result: PASS_NO_DRIFT
+  coordination:
+    ref: origin/codex/orchestration-control-plane
+    prior_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+    observed_commit: 79ebbc8bf947635b6c01cd23135883c38463d96f
+    commit_result: REF_ADVANCED
+    observed_intermediate_commits:
+      - b19b3bb6
+      - b60cb44f
+      - 79ebbc8b
+    changed_content_classification: COORDINATION_PACKETS_ONLY
+    active_lease_registry:
+      prior_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      observed_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+      result: PASS_NO_AUTHORITY_BLOB_DRIFT
+    interpretation: >-
+      The coordination ref advanced to publish read-only coordination packets,
+      including 060-065, while the lease-registry blob remained byte-identical.
+      This is ref-pin drift but not lease-authority drift.
+
+synthetic_regression_replay:
+  manifest_field_mutations:
+    expected: 22
+    replayed: 22
+    deterministic_BLOCK: 22
+    result: PASS
+  lease_field_mutations:
+    expected: 16
+    replayed: 16
+    deterministic_BLOCK: 16
+    result: PASS
+  control_ref_cross_field_mutations:
+    expected: 6
+    replayed: 6
+    deterministic_BLOCK: 6
+    result: PASS
+  ownership_cross_field_mutations:
+    expected: 6
+    replayed: 6
+    deterministic_BLOCK: 6
+    result: PASS
+  preservation_cross_field_mutations:
+    expected: 10
+    replayed: 10
+    deterministic_BLOCK: 10
+    result: PASS
+  option_specific_mutations:
+    expected: 3
+    replayed: 3
+    deterministic_BLOCK: 3
+    result: PASS
+  total:
+    expected: 63
+    replayed: 63
+    unique_IDs: 63
+    deterministic_BLOCK: 63
+    non_BLOCK: 0
+    result: PASS_NO_REGRESSION
+
+dispatch_readiness_delta:
+  product_ref: UNCHANGED
+  product_queue_blob: UNCHANGED
+  product_current_slice_blob: UNCHANGED
+  coordination_ref: ADVANCED_DOCUMENTATION_ONLY
+  active_lease_registry_blob: UNCHANGED
+  M11_exact_write_lease:
+    before: ABSENT
+    after: ABSENT
+  M11_exact_QA_lease:
+    before: ABSENT
+    after: ABSENT
+  authorized_22_field_manifest:
+    before: ABSENT
+    after: ABSENT
+  synthetic_validator:
+    before: 63_OF_63_BLOCK
+    after: 63_OF_63_BLOCK
+  implementation_authority:
+    before: BLOCKED
+    after: BLOCKED
+  QA_authority:
+    before: BLOCKED
+    after: BLOCKED
+  requirement_credit:
+    before: 0
+    after: 0
+  net_readiness_change: NONE
+
+pin_handling:
+  current_result: RETURN_REFRESH_COORDINATION_COMMIT_PIN_BEFORE_ANY_FUTURE_DISPATCH
+  rule: >-
+    A future real dispatch must pin the then-current coordination commit and
+    revalidate the unchanged lease blob. It may not reuse bdbe2324 merely
+    because the lease hash is unchanged.
+  no_current_dispatch_effect: >-
+    No authorized dispatch manifest exists, so the ref advance invalidates no
+    active M11 lease and creates no new authority.
+
+verdict:
+  synthetic_regression: ACK_63_OF_63
+  control_authority_drift: ACK_NONE
+  coordination_ref_pin: RETURN_REFRESH_REQUIRED_FOR_FUTURE_DISPATCH
+  dispatch_readiness: BLOCK
+  exact_reason: BLOCK_NO_AUTHORIZED_MANIFEST_OR_EXACT_M11_LEASE
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+  leases_issued: 0
+
+queued_next:
+  packet: KIMI-M11-CONTROL-REF-ADVANCE-CLASSIFIER-067
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define deterministic rules distinguishing documentation-only ref movement
+    from queue, slice, lease or authority drift, then classify every commit
+    between bdbe2324 and the current coordination ref.
+  prohibited:
+    - "No fetch, real manifest, option, owner, branch, worktree, lease, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  mutation_rows_expected: 63
+  mutation_rows_replayed: 63
+  unique_IDs_replayed: 63
+  deterministic_BLOCKs: 63
+  control_refs_checked: 2
+  authority_blobs_checked: 3
+  authority_blob_drifts: 0
+  coordination_ref_advanced: true
+  dispatch_readiness_changed: false
+  real_manifests_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

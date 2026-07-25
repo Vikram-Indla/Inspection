@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
-import SaqeelBrandMark from "@/components/SaqeelBrandMark";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   isFieldOnlyPersona,
@@ -402,18 +401,15 @@ export default function ShellClient({
           <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
           <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
             <div className="ax-shell__brand">
-              <SaqeelBrandMark className="ax-shell__brand-mark" />
-              <span
-                className="ax-shell__brand-lockup"
-                aria-label={locale === "ar" ? "صقيل صناعي" : "SAQEEL Industrial"}
-              >
-                <span className="ax-shell__brand-wordmark" lang={locale === "ar" ? "ar" : "en"}>
-                  {locale === "ar" ? "صقيل" : "SAQEEL"}
-                </span>
-                <span className="ax-shell__brand-sub" lang={locale === "ar" ? "ar" : "en"}>
-                  {locale === "ar" ? "صناعي" : "Industrial"}
-                </span>
-              </span>
+              {/* WA-BRAND-r1 — canonical authenticated-shell identity. The design
+                  (SAQEEL Brand Identity Proof.dc.html) ships both marks in the
+                  markup and lets the shared rules decide which one shows:
+                  wordmark expanded, favicon collapsed, wordmark restored in the
+                  mobile drawer. Do not re-add the retired صقيل صناعي lockup. */}
+              <img className="ax-shell__brand-lockup" src="/saqeel-wordmark-dark-mode.svg"
+                alt="SAQEEL | صقيل" width={260} height={40} />
+              <img className="ax-shell__brand-mark" src="/saqeel-favicon.svg"
+                alt="SAQEEL" width={26} height={26} />
               <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
               </button>

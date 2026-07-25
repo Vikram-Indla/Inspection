@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .rp-wrap { max-width: 860px; width:100%; margin: 0 auto; padding: 20px 18px 120px; display:flex; flex-direction:column; gap:12px; }
+  .rp-acc { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); overflow:hidden; box-shadow:var(--shadow-card); }
+  .rp-head { display:flex; align-items:center; gap:12px; width:100%; padding:15px 17px; border:0; background:none; cursor:pointer; font:inherit; text-align:start; color:var(--text-primary); }
+  .rp-num { width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; font-size:13px; font-weight:600; flex:none; }
+  .rp-body { padding:6px 17px 20px; border-block-start:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:16px; }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .fld-row { grid-template-columns:1fr; } .rp-wrap { padding:14px 12px 120px; } }
+  .rp-opt { display:flex; align-items:center; gap:9px; flex:1 1 150px; padding:12px 14px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:50px; }
+  .rp-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .rp-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .rp-opt[aria-pressed="true"] .rp-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .rp-radios { display:flex; gap:10px; flex-wrap:wrap; max-inline-size:560px; }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); }
+  .rp-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.step }}</span>
+    <button class="rp-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <input id="sw-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+
+  <div class="rp-wrap">
+    <p class="t-caption" style="margin:0 0 4px;">{{ t.intro }}</p>
+
+    <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="9">
+      <div class="rp-acc">
+        <button class="rp-head" onClick="{{ sec.toggle }}" aria-expanded="{{ sec.open }}"><span class="rp-num">{{ sec.numDisp }}</span><span style="font-weight:600; font-size:15px; flex:1;">{{ sec.title }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="width:18px;height:18px;">{{ sec.chevron }}</svg></button>
+        <sc-if value="{{ sec.open }}" hint-placeholder-val="{{ false }}"><div class="rp-body">{{ sec.body }}</div></sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.pendingSync }}</span>
+    <span class="grow"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary">{{ t.submitReports }}</button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", open: 1, lang: "en" };
+  renderVals() {
+    const lang = this.state.lang;
+    const pickFile = () => { const el = document.getElementById("sw-filepick"); if (el) el.click(); };
+    const t = lang === "ar" ? {
+      back:"رجوع", headerTitle:"تقرير زيارة · المحاضر", headerSub:"شركة الأمل لتدريب العمال", step:"الخطوة 4 من 4", theme:"الوضع", langBtnLabel:"EN",
+      intro:"تُنشأ المحاضر المطلوبة حسب نتيجة التفتيش. كل محضر يرتبط بالزيارة المصدرية وببنود المخالفة. القرار النهائي بشري.",
+      pendingSync:"بانتظار المزامنة · 2", saveDraft:"حفظ كمسودة", submitReports:"إرسال المحاضر",
+      attendance:"حضور ممثل المنشأة", attended:"حضر", notAttended:"لم يحضر", signature:"التوقيع والاعتماد",
+      sigFromProfile:"تضمين التوقيع (قراءة من تعريف المستخدم)", sigManual:"إضافة توقيع", sigFile:"ملف التوقيع",
+      sigUploadHint:"ارفع صورة التوقيع بصيغة PNG أو JPG أو PDF.", sigAutoNote:"يسحب النظام توقيع المستخدم تلقائيًا ويضيفه للمحضر دون إدخال يدوي.",
+      sigManualNote:"يعني المستخدم يدخل التوقيع بنفسه داخل المحضر.", sigFileAttached:"توقيع فهد عبدالله.PDF",
+      confirmAttendSign:"تأكيد الحضور والتوقيع", repAbsent:"لم يتم حضور ممثل المنشأة أو أعترض على التوقيع.", repPresent:"تم حضور ممثل المنشأة وموافق على التوقيع",
+    } : {
+      back:"Back", headerTitle:"Visit Report · Records", headerSub:"Al-Amal Worker Training Co.", step:"Step 4 of 4", theme:"Theme", langBtnLabel:"AR",
+      intro:"Required records are created based on the inspection outcome. Each record links to the source visit and violation items. The final decision is human.",
+      pendingSync:"Pending sync · 2", saveDraft:"Save as draft", submitReports:"Submit records",
+      attendance:"Establishment representative attendance", attended:"Attended", notAttended:"Did not attend", signature:"Signature & Approval",
+      sigFromProfile:"Include signature (read from user profile)", sigManual:"Add signature", sigFile:"Signature file",
+      sigUploadHint:"Upload a signature image as PNG, JPG, or PDF.", sigAutoNote:"The system pulls the user's signature automatically and adds it to the record — no manual entry.",
+      sigManualNote:"The user enters the signature themselves within the record.", sigFileAttached:"Fahd_Abdullah_Signature.PDF",
+      confirmAttendSign:"Confirm attendance & signature", repAbsent:"The establishment representative did not attend or objected to the signature.", repPresent:"The establishment representative attended and approved the signature",
+    };
+    const down = React.createElement("path", { d: "m6 9 6 6 6-6" });
+    const up = React.createElement("path", { d: "m6 15 6-6 6 6" });
+    const attendanceBlock = (attendedVal) => React.createElement("div", null,
+      React.createElement("div", { style: { fontSize: "13px", color: "var(--text-secondary)", marginBlockEnd: "8px" } }, t.attendance),
+      React.createElement("div", { className: "rp-radios" },
+        React.createElement("button", { className: "rp-opt", "aria-pressed": attendedVal ? "true" : "false" },
+          React.createElement("span", { className: "rp-ind" }, attendedVal ? React.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "#fff", strokeWidth: 3, style: { width: 11, height: 11 } }, React.createElement("path", { d: "m5 12 5 5 9-10" })) : null),
+          t.attended),
+        React.createElement("button", { className: "rp-opt", "aria-pressed": !attendedVal ? "true" : "false" },
+          React.createElement("span", { className: "rp-ind" }, !attendedVal ? React.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "#fff", strokeWidth: 3, style: { width: 11, height: 11 } }, React.createElement("path", { d: "m5 12 5 5 9-10" })) : null),
+          t.notAttended)));
+    const signatureBlock = () => React.createElement("div", { className: "panel", style: { padding: "14px 15px", display: "flex", flexDirection: "column", gap: "12px" } },
+      React.createElement("div", { style: { fontWeight: 600, fontSize: "14px" } }, t.signature),
+      React.createElement("div", { className: "rp-radios" },
+        React.createElement("button", { className: "rp-opt", "aria-pressed": "true", style: { flexBasis: "100%" } },
+          React.createElement("span", { className: "rp-ind" }, React.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "#fff", strokeWidth: 3, style: { width: 11, height: 11 } }, React.createElement("path", { d: "m5 12 5 5 9-10" }))),
+          t.sigFromProfile)),
+      React.createElement("div", { className: "t-caption", style: { marginBlockStart: "-4px" } }, t.sigAutoNote),
+      React.createElement("div", { className: "rp-radios" },
+        React.createElement("button", { className: "rp-opt", "aria-pressed": "false", style: { flexBasis: "100%" } },
+          React.createElement("span", { className: "rp-ind" }, null), t.sigManual)),
+      React.createElement("div", { className: "t-caption", style: { marginBlockStart: "-4px" } }, t.sigManualNote),
+      React.createElement("label", { className: "fld" }, React.createElement("span", null, t.sigFile),
+        React.createElement("button", { className: "up-btn", onClick: pickFile },
+          React.createElement("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, style: { width: 15, height: 15 } }, React.createElement("path", { d: "M12 16V4M8 8l4-4 4 4M4 20h16" })),
+          t.sigFileAttached),
+        React.createElement("span", { className: "t-caption" }, t.sigUploadHint)),
+      React.createElement("div", { style: { borderBlockStart: "1px solid var(--border-subtle)", paddingBlockStart: "12px", display: "flex", flexDirection: "column", gap: "8px" } },
+        React.createElement("div", { style: { fontSize: "13px", fontWeight: 600 } }, t.confirmAttendSign),
+        React.createElement("label", { className: "rp-opt", style: { display: "flex" } }, React.createElement("input", { type: "radio", name: "attendSign", defaultChecked: true }), React.createElement("span", { style: { fontSize: "12.5px" } }, t.repPresent)),
+        React.createElement("label", { className: "rp-opt", style: { display: "flex" } }, React.createElement("input", { type: "radio", name: "attendSign" }), React.createElement("span", { style: { fontSize: "12.5px" } }, t.repAbsent))));
+
+    const SECTIONS_AR = [
+      { title:"مذكرة استدعاء", num:"١", body: React.createElement(React.Fragment, null,
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "موضوع الاستدعاء ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "استدعاء لاستكمال نواقص الترخيص" })),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ الاستدعاء"), React.createElement("input", { className: "input", type: "date" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "الإدارة"), React.createElement("select", { className: "select" }, React.createElement("option", null, "فرع الوزارة")))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "المنطقة"), React.createElement("select", { className: "select" }, React.createElement("option", null, "الرياض"))),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "نوع الوثيقة"), React.createElement("select", { className: "select" }, React.createElement("option", null, "الرخصة")))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "ملاحظات"), React.createElement("textarea", { className: "input", rows: 3, defaultValue: "تم تحديث بيانات الترخيص الصناعي مؤخراً. يرجى مراجعة بيانات المنشأة والتأكد من سريان الترخيص وصحة رقم الترخيص قبل تنفيذ الزيارة." })),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"محضر إثبات واقعة", num:"٢", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ المحضر"), React.createElement("input", { className: "input", type: "date" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "يوم المحضر"), React.createElement("input", { className: "input", defaultValue: "يُحدَّد تلقائيًا بعد اختيار التاريخ", disabled: true, style: { color: "var(--text-muted)" } }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "وقت المغادرة"), React.createElement("input", { className: "input", defaultValue: "11:00 صباحاً" })),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "ملاحظات ", React.createElement("span", { className: "req" }, "*")), React.createElement("textarea", { className: "input", rows: 3, defaultValue: "تم توثيق الواقعة عند الوصول. يرجى مراجعة بيانات المنشأة وإبلاغ الجهة المختصة قبل استكمال الإجراء." })),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"محضر ضبط مخالفة", num:"٣", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "panel", style: { padding: "12px 14px", background: "var(--status-warning-soft)", borderColor: "color-mix(in srgb,var(--status-warning) 26%,transparent)", boxShadow: "none" } }, React.createElement("span", { className: "t-compact", style: { color: "var(--status-warning-text)" } }, "يرتبط هذا المحضر ببنود المخالفة المرصودة في التفتيش وبالمادة النظامية. القرار النهائي بشري.")),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"محضر سحب عينة", num:"٤", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "اسم المختبر"), React.createElement("input", { className: "input", defaultValue: "مختبر هيئة المدن الصناعية" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "اسم الساحب"), React.createElement("input", { className: "input", defaultValue: "عبدالله بن صالح الشهري" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "الإدارة"), React.createElement("select", { className: "select" }, React.createElement("option", null, "فرع الوزارة"))),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "المنطقة"), React.createElement("select", { className: "select" }, React.createElement("option", null, "الرياض")))),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"محضر إتلاف منتجات مخالفة", num:"٥", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ الإتلاف"), React.createElement("input", { className: "input", type: "date" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم العينة"), React.createElement("input", { className: "input", defaultValue: "A-001245" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "الجهة المصدرة"), React.createElement("select", { className: "select" }, React.createElement("option", null, "وزارة الصناعة والثروة المعدنية"))),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم المحضر ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "النوع"), React.createElement("input", { className: "input", defaultValue: "مادة خام" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "الكمية"), React.createElement("input", { className: "input", defaultValue: "200" }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "المنتج"), React.createElement("input", { className: "input", defaultValue: "ألواح ألمنيوم" })),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "ملاحظات"), React.createElement("textarea", { className: "input", rows: 2, defaultValue: "إتلاف المواد المخالفة وفق المحضر." })),
+        attendanceBlock(true)) },
+      { title:"محضر حجز منتجات", num:"٦", body: React.createElement(React.Fragment, null,
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم المحضر ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"إشعار بتبليغ برفع الحجز عن المنتجات", num:"٧", body: React.createElement(React.Fragment, null,
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم المحضر ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+        React.createElement("div", { className: "stack", style: { gap: "8px" } },
+          React.createElement("label", { className: "check" }, "رفع الحجز عن كامل المنتجات المحجوزة"),
+          React.createElement("label", { className: "check" }, "رفع الحجز عن جزء من المنتجات"),
+          React.createElement("label", { className: "check" }, "إتلاف المنتجات المحجوزة")),
+        attendanceBlock(true)) },
+      { title:"محضر خط الإنتاج", num:"٨", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم المحضر ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ المحضر"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم الاستدعاء ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ الاستدعاء"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "اختر خطوط الإنتاج المراد إغلاقها ", React.createElement("span", { className: "req" }, "*")), React.createElement("select", { className: "select" }, React.createElement("option", null, "خط التعبئة والتغليف")))) },
+      { title:"محضر المنشأة", num:"٩", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم المحضر ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ المحضر"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "رقم الاستدعاء ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "تاريخ الاستدعاء"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "سبب عدم الحضور ", React.createElement("span", { className: "req" }, "*")), React.createElement("textarea", { className: "input", rows: 2, defaultValue: "تعذّر حضور ممثل المنشأة وقت الزيارة." }))) },
+    ];
+    const SECTIONS_EN = [
+      { title:"Summons Note", num:"1", body: React.createElement(React.Fragment, null,
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Summons subject ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "Summons to complete license deficiencies" })),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Summons date"), React.createElement("input", { className: "input", type: "date" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Department"), React.createElement("select", { className: "select" }, React.createElement("option", null, "Ministry branch")))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Region"), React.createElement("select", { className: "select" }, React.createElement("option", null, "Riyadh"))),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Document type"), React.createElement("select", { className: "select" }, React.createElement("option", null, "License")))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Notes"), React.createElement("textarea", { className: "input", rows: 3, defaultValue: "Industrial license data was recently updated. Please review the establishment data and confirm the license validity and number before executing the visit." })),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"Fact-Finding Record", num:"2", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record date"), React.createElement("input", { className: "input", type: "date" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record weekday"), React.createElement("input", { className: "input", defaultValue: "Auto-fills after the date is chosen", disabled: true, style: { color: "var(--text-muted)" } }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Departure time"), React.createElement("input", { className: "input", defaultValue: "11:00 AM" })),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Notes ", React.createElement("span", { className: "req" }, "*")), React.createElement("textarea", { className: "input", rows: 3, defaultValue: "The incident was documented upon arrival. Please review the establishment data and notify the competent authority before completing the action." })),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"Violation Record", num:"3", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "panel", style: { padding: "12px 14px", background: "var(--status-warning-soft)", borderColor: "color-mix(in srgb,var(--status-warning) 26%,transparent)", boxShadow: "none" } }, React.createElement("span", { className: "t-compact", style: { color: "var(--status-warning-text)" } }, "This record links to the violation items observed in the inspection and to the statutory article. The final decision is human.")),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"Sample Collection Record", num:"4", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Lab name"), React.createElement("input", { className: "input", defaultValue: "Industrial Cities Authority Lab" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Collector name"), React.createElement("input", { className: "input", defaultValue: "Abdullah bin Saleh Al-Shehri" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Department"), React.createElement("select", { className: "select" }, React.createElement("option", null, "Ministry branch"))),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Region"), React.createElement("select", { className: "select" }, React.createElement("option", null, "Riyadh")))),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"Violating Products Destruction Record", num:"5", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Destruction date"), React.createElement("input", { className: "input", type: "date" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Sample number"), React.createElement("input", { className: "input", defaultValue: "A-001245" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Issuing authority"), React.createElement("select", { className: "select" }, React.createElement("option", null, "Ministry of Industry and Mineral Resources"))),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Type"), React.createElement("input", { className: "input", defaultValue: "Raw material" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Quantity"), React.createElement("input", { className: "input", defaultValue: "200" }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Product"), React.createElement("input", { className: "input", defaultValue: "Aluminum sheets" })),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Notes"), React.createElement("textarea", { className: "input", rows: 2, defaultValue: "Destruction of violating materials per the record." })),
+        attendanceBlock(true)) },
+      { title:"Product Seizure Record", num:"6", body: React.createElement(React.Fragment, null,
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+        attendanceBlock(true), signatureBlock()) },
+      { title:"Seizure Release Notice", num:"7", body: React.createElement(React.Fragment, null,
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+        React.createElement("div", { className: "stack", style: { gap: "8px" } },
+          React.createElement("label", { className: "check" }, "Release all seized products"),
+          React.createElement("label", { className: "check" }, "Release part of the products"),
+          React.createElement("label", { className: "check" }, "Destroy the seized products")),
+        attendanceBlock(true)) },
+      { title:"Production Line Record", num:"8", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record date"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Summons number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Summons date"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Select production lines to close ", React.createElement("span", { className: "req" }, "*")), React.createElement("select", { className: "select" }, React.createElement("option", null, "Packaging line")))) },
+      { title:"Establishment Record", num:"9", body: React.createElement(React.Fragment, null,
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Record date"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("div", { className: "fld-row" },
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Summons number ", React.createElement("span", { className: "req" }, "*")), React.createElement("input", { className: "input", defaultValue: "47072332" })),
+          React.createElement("label", { className: "fld" }, React.createElement("span", null, "Summons date"), React.createElement("input", { className: "input", type: "date" }))),
+        React.createElement("label", { className: "fld" }, React.createElement("span", null, "Reason for absence ", React.createElement("span", { className: "req" }, "*")), React.createElement("textarea", { className: "input", rows: 2, defaultValue: "The establishment representative could not attend at the visit time." }))) },
+    ];
+    const SECTIONS = lang === "ar" ? SECTIONS_AR : SECTIONS_EN;
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      pickFile,
+      sections: SECTIONS.map((s, idx) => {
+        const i = idx + 1;
+        const open = this.state.open === i;
+        return { title: s.title, numDisp: s.num, open, chevron: open ? up : down, toggle: () => this.setState(st => ({ open: st.open === i ? null : i })), body: s.body };
+      }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

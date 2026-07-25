@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<script src="./image-slot.js"></script>
+<style>
+  html, body { height: 100%; margin: 0; }
+  .ef-wrap { max-width: 880px; width:100%; margin: 0 auto; padding: 20px 18px 120px; display:flex; flex-direction:column; gap:18px; }
+  @media (max-width:560px){ .ef-wrap { padding:14px 12px 120px; } }
+  .ef-card { background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:14px; box-shadow:var(--shadow-card); padding:18px 19px; }
+  .ef-h { font-size:15px; font-weight:600; margin:0 0 14px; padding-block-end:10px; border-block-end:1px solid var(--border-subtle); }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .fld-row { grid-template-columns:1fr; } }
+  .ef-chip { display:inline-flex; align-items:center; gap:7px; padding:9px 15px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:13.5px; cursor:pointer; white-space:nowrap; color:var(--text-secondary); }
+  .ef-chip[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+  .ef-chk { display:flex; align-items:center; gap:8px; font-size:12.5px; }
+  .ef-box { width:17px; height:17px; border-radius:5px; flex:none; display:grid; place-items:center; border:1.5px solid var(--border-strong); }
+  .ef-box.on { background:var(--action-primary); border-color:var(--action-primary); }
+  .ef-langbtn { display:inline-flex; align-items:center; gap:5px; padding:8px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}" style="text-decoration:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></a>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.f360Title }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-neutral">{{ t.f360Chip }}</span>
+    <button class="ef-langbtn" onClick="{{ toggleLang }}" aria-label="{{ t.langToggle }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+  <input id="ef-filepick" type="file" accept="image/*" style="display:none">
+
+  <div class="ef-wrap">
+    <!-- Location, media, virtual-visit setup — Figma "Establishment Details" frame (node 532:73092) -->
+    <div class="ef-card">
+      <div style="position:relative; height:234px; border-radius:16px; overflow:hidden; margin-block-end:16px;">
+        <image-slot id="est-visit-media" shape="rect" placeholder="{{ t.mediaPlaceholder }}"></image-slot>
+        <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.55), transparent 45%); pointer-events:none;"></div>
+        <div style="position:absolute; bottom:12px; inset-inline:12px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-icon" style="background:rgba(0,0,0,.55); color:#fff; border:none; width:44px; height:44px; border-radius:50%;" onClick="{{ pickFile }}" aria-label="{{ t.camera }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:19px;height:19px;"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/></svg></button>
+            <button class="btn btn-icon" style="background:rgba(0,0,0,.55); color:#fff; border:none; width:44px; height:44px; border-radius:50%;" onClick="{{ pickFile }}" aria-label="{{ t.mic }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:19px;height:19px;"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg></button>
+          </div>
+          <button class="btn btn-icon" style="background:rgba(0,0,0,.55); color:#fff; border:none; width:44px; height:44px; border-radius:50%;" onClick="{{ toggleExpand }}" aria-label="{{ t.expand }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:19px;height:19px;"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
+        </div>
+      </div>
+
+      <h2 class="ef-h">{{ t.estData }}</h2>
+      <div class="fld-row" style="margin-block-end:16px;">
+        <label class="fld"><span>{{ t.estNameLbl }}</span><input class="input" value="{{ t.estNameVal }}"></label>
+        <label class="fld"><span>{{ t.estStatusLbl }}</span><span class="badge badge-info" style="height:28px; width:fit-content;"><span class="dot"></span>{{ t.estStatusVal }}</span></label>
+      </div>
+
+      <h2 class="ef-h">{{ t.estLocations }}</h2>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-block-end:16px;">
+        <label class="fld"><span>{{ t.recordedVisitLink }}</span><a href="#" style="display:flex; align-items:center; gap:6px; color:var(--action-primary); font-size:13.5px; word-break:break-all;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px; flex:none;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>{{ t.recordedVisitUrl }}</a></label>
+        <label class="fld"><span>{{ t.actualVisitLink }}</span><a href="#" style="display:flex; align-items:center; gap:6px; color:var(--action-primary); font-size:13.5px; word-break:break-all;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:14px;height:14px; flex:none;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>{{ t.actualVisitUrl }}</a></label>
+        <label class="fld"><span>{{ t.platform }}</span><span style="display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:600;"><svg viewBox="0 0 24 24" width="16" height="16"><rect x="2" y="6" width="13" height="12" rx="2" fill="#00832d"/><path d="M15 9v6l6 4V5z" fill="#00ac47"/></svg>{{ t.googleMeet }}</span></label>
+        <label class="fld"><span>{{ t.password }}</span><input class="input id-code" dir="ltr" value="{{ t.passwordVal }}"></label>
+      </div>
+
+      <h2 class="ef-h">{{ t.visitSettings }}</h2>
+      <label class="fld" style="margin-block-end:16px;"><span>{{ t.visitType }}</span><select class="select"><option>{{ t.visitTypeVal }}</option></select></label>
+
+      <label class="ef-chk" style="margin-block-end:16px;"><span class="ef-box {{ unableCheckedCls }}" onClick="{{ toggleUnable }}"><sc-if value="{{ unableChecked }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ t.unableToExecute }}</label>
+
+      <h2 class="ef-h">{{ t.reportTypeH }}</h2>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-block-end:16px;">
+        <sc-for list="{{ reportTypeCards }}" as="rc" hint-placeholder-count="6">
+          <button class="es-card" aria-pressed="{{ rc.selected }}" onClick="{{ rc.pick }}" style="{{ rc.style }} text-align:center; padding:14px 10px;">{{ rc.label }}</button>
+        </sc-for>
+      </div>
+      <label class="fld" style="margin-block-end:16px;"><span>{{ t.reportNotes }}</span><textarea class="input" rows="2" placeholder="{{ t.reportNotesPh }}"></textarea></label>
+
+      <button class="btn btn-primary btn-block btn-lg">{{ t.startPlanPrep }}</button>
+    </div>
+
+    <!-- Challenge report + incident modal pair + محاضر attachments (Figma "Establishment Management - View details" node 1068:123721) -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.challengeH }}</h2>
+      <div class="fld-row" style="margin-block-end:12px;">
+        <label class="fld"><span>{{ t.exportsQ }}</span><input class="input" value="نعم" disabled></label>
+        <label class="fld"><span>{{ t.industrialFundQ }}</span><input class="input" value="نعم" disabled></label>
+      </div>
+      <div class="fld-row" style="margin-block-end:12px;">
+        <label class="fld"><span>{{ t.capitalQ }}</span><input class="input id-code" value="12000" disabled></label>
+        <label class="fld"><span>{{ t.expansionQ }}</span><input class="input" value="لا" disabled></label>
+      </div>
+      <label class="fld" style="margin-block-end:12px;"><span>{{ t.govContractsQ }}</span><input class="input" value="نعم" disabled></label>
+      <div class="fld-row" style="margin-block-end:12px;">
+        <label class="fld"><span>{{ t.challengeStatus }}</span><span class="badge badge-compliant" style="height:26px; width:fit-content;">لا</span></label>
+        <label class="fld"><span>{{ t.challengeDesc }}</span><input class="input" value="{{ t.challengeDescVal }}" disabled></label>
+      </div>
+      <label class="fld" style="margin-block-end:14px;"><span>{{ t.notes }}</span><textarea class="input" rows="2" disabled>{{ t.challengeNotesVal }}</textarea></label>
+
+      <div style="display:flex; align-items:center; gap:8px; margin-block-end:10px;"><span style="font-weight:600; font-size:14px; flex:1;">{{ t.minutesAttachments }} (6)</span><button class="btn btn-secondary btn-sm" onClick="{{ toggleIncidentModal }}">{{ t.viewIncidentDetails }}</button></div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ minutesFiles }}" as="mf" hint-placeholder-count="6">
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--surface-sunken); border-radius:8px; font-size:12.5px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.7" style="width:14px;height:14px; flex:none;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span>{{ mf.name }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ incidentModalOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ toggleIncidentModal }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:50; display:flex; align-items:center; justify-content:center; padding:20px;">
+        <div onClick="{{ stopProp }}" class="ef-card" style="max-width:480px; width:100%; max-height:80vh; overflow-y:auto;">
+          <div style="display:flex; align-items:center; gap:8px; margin-block-end:14px;"><span class="avatar" style="background:var(--accent-soft); color:var(--accent-text);">س</span><div style="flex:1;"><div style="font-weight:600; font-size:14.5px;">{{ t.incidentSubmitter }}</div><div class="t-caption id-code">22/01/2025</div></div><button class="btn btn-icon btn-ghost" onClick="{{ toggleIncidentModal }}" aria-label="{{ t.close }}">✕</button></div>
+          <h2 class="ef-h">{{ t.viewIncidentDetails }}</h2>
+          <div class="fld-row" style="margin-block-end:12px;">
+            <label class="fld"><span>{{ t.challengeStatus }}</span><span class="badge badge-compliant" style="height:26px; width:fit-content;">لا</span></label>
+            <label class="fld"><span>{{ t.challengeDesc }}</span><input class="input" value="{{ t.challengeDescVal }}" disabled></label>
+          </div>
+          <label class="fld" style="margin-block-end:14px;"><span>{{ t.notes }}</span><textarea class="input" rows="3" disabled>{{ t.challengeNotesVal }}</textarea></label>
+          <button class="btn btn-primary btn-block" onClick="{{ toggleIncidentModal }}">{{ t.editIncident }}</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- Factory 360 snapshot: health/risk scores, draft & sync counts, violation history -->
+    <div class="ef-card">
+      <h2 class="ef-h" style="display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:16px;height:16px;"><path d="M2 21h20"/><path d="M4 21V9l6 4V9l6 4V5l4 2v14"/></svg>{{ t.factory360 }}<span class="grow"></span><span class="badge badge-info" style="height:18px;">{{ t.factory360Advisory }}</span></h2>
+      <div style="display:flex; gap:10px; margin-block-end:14px;">
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 12px; text-align:center;"><div class="id-code" style="font-size:20px; font-weight:700; color:var(--status-compliant-text);">{{ f360.health }}</div><div class="t-caption">{{ t.healthScore }}</div></div>
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 12px; text-align:center;"><div class="id-code" style="font-size:20px; font-weight:700; color:var(--status-critical-text);">{{ f360.risk }}</div><div class="t-caption">{{ t.riskScore }}</div></div>
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 12px; text-align:center;"><div class="id-code" style="font-size:20px; font-weight:700;">{{ f360.drafts }}</div><div class="t-caption">{{ t.draftCount }}</div></div>
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 12px; text-align:center;"><div class="id-code" style="font-size:20px; font-weight:700; color:var(--status-warning-text);">{{ f360.pendingSync }}</div><div class="t-caption">{{ t.syncCount }}</div></div>
+      </div>
+      <div class="t-label" style="margin-block-end:8px;">{{ t.violationHistory }}</div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-block-end:14px;">
+        <sc-for list="{{ f360.violations }}" as="vi" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:10px;">
+            <span style="width:7px; height:7px; border-radius:50%; background:{{ vi.color }}; flex:none;"></span>
+            <span style="flex:1; min-width:0; font-size:13px;">{{ vi.title }}</span>
+            <span class="t-caption id-code">{{ vi.date }}</span>
+            <span class="badge" style="height:17px; background:var(--surface-sunken); color:var(--text-secondary);">{{ vi.status }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div class="t-label" style="margin-block-end:8px;">{{ t.licensesDocs }}</div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-block-end:14px;">
+        <sc-for list="{{ f360.licenses }}" as="li" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:10px;">
+            <span style="width:28px; height:28px; border-radius:8px; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px;height:14px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+            <span style="flex:1; min-width:0;"><span style="display:block; font-size:13px; font-weight:600;">{{ li.title }}</span><span class="t-caption id-code">{{ li.number }} · {{ t.expires }} {{ li.expiry }}</span></span>
+            <span class="badge {{ li.badge }}" style="height:17px;">{{ li.status }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div class="t-label" style="margin-block-end:8px;">{{ t.employees }}</div>
+      <div style="display:flex; gap:10px; margin-block-end:14px;">
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:9px 12px; text-align:center;"><div class="id-code" style="font-size:17px; font-weight:700;">{{ f360.employeesTotal }}</div><div class="t-caption">{{ t.employeesTotal }}</div></div>
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:9px 12px; text-align:center;"><div class="id-code" style="font-size:17px; font-weight:700;">{{ f360.employeesSaudi }}</div><div class="t-caption">{{ t.employeesSaudi }}</div></div>
+        <div style="flex:1; background:var(--surface-sunken); border:1px solid var(--border-subtle); border-radius:10px; padding:9px 12px; text-align:center;"><div class="id-code" style="font-size:17px; font-weight:700;">{{ f360.saudizationPct }}%</div><div class="t-caption">{{ t.saudization }}</div></div>
+      </div>
+
+      <div class="t-label" style="margin-block-end:8px;">{{ t.products }}</div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-block-end:14px;">
+        <sc-for list="{{ f360.products }}" as="p" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:10px;">
+            <span style="flex:1; min-width:0;"><span style="display:block; font-size:13px; font-weight:600;">{{ p.name }}</span><span class="t-caption id-code">{{ t.hsCode }} {{ p.hsCode }} · {{ p.capacity }} {{ p.unit }}/{{ t.year }}</span></span>
+            <sc-if value="{{ p.isPrimary }}" hint-placeholder-val="{{ false }}"><span class="badge badge-info" style="height:17px;">{{ t.primary }}</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div class="t-label" style="margin-block-end:8px;">{{ t.timeline }}</div>
+      <ol style="margin:0 0 14px; padding:0; list-style:none; display:flex; flex-direction:column; gap:0; border-inline-start:2px solid var(--border-subtle); padding-inline-start:14px;">
+        <sc-for list="{{ f360.timeline }}" as="tl" hint-placeholder-count="4">
+          <li style="position:relative; padding-block-end:14px;">
+            <span style="position:absolute; inset-inline-start:-19px; top:2px; width:9px; height:9px; border-radius:50%; background:{{ tl.color }};"></span>
+            <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;"><span style="font-size:13px; font-weight:600;">{{ tl.title }}</span><span class="t-caption id-code">{{ tl.date }}</span></div>
+            <div class="t-caption" style="margin-block-start:2px;">{{ tl.detail }}</div>
+          </li>
+        </sc-for>
+      </ol>
+
+      <div class="t-label" style="margin-block-end:8px;">{{ t.aiInsights }}</div>
+      <div class="panel" style="padding:11px 13px; background:var(--accent-soft); display:flex; gap:8px; align-items:flex-start;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" stroke-width="1.7" style="width:15px;height:15px; flex:none; margin-block-start:1px;"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z"/></svg>
+        <div><span style="font-size:12.5px; color:var(--text-primary); line-height:1.55;">{{ t.aiInsightsNote }}</span><div class="t-caption" style="margin-block-start:6px;">{{ t.aiInsightsRestriction }}</div></div>
+      </div>
+    </div>
+
+    <!-- establishment data -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.estData }}</h2>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <label class="fld"><span>{{ t.spatialAuth }} <span class="req">*</span></span><select class="select"><option>{{ t.spatialAuth1 }}</option><option>{{ t.other }}</option></select></label>
+        <label class="fld"><span>{{ t.energyType }} <span class="req">*</span></span><select class="select"><option>{{ t.naturalGas }}</option><option>{{ t.electricity }}</option></select></label>
+        <label class="fld"><span>{{ t.estStatus }} <span class="req">*</span></span><select class="select"><option>{{ t.production }}</option><option>{{ t.closed }}</option></select></label>
+        <label class="fld"><span>{{ t.prodStatus }} <span class="req">*</span></span><select class="select"><option>{{ t.continuous }}</option><option>{{ t.nonContinuous }}</option></select></label>
+        <div class="fld-row">
+          <label class="fld"><span>{{ t.closureJustification }}</span><input class="input" placeholder="{{ t.closureJustificationPh }}"></label>
+          <label class="fld"><span>{{ t.closingAuthority }}</span><select class="select"><option>{{ t.civilDefense }}</option><option>{{ t.municipality }}</option><option>{{ t.modon }}</option></select></label>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface-sunken); border-radius:12px;"><span style="flex:1; font-size:14px;">{{ t.exportsProducts }}</span><div style="display:flex; gap:8px;"><button class="ef-chip" aria-pressed="{{ exportsYes }}" onClick="{{ setExportsYes }}">{{ t.yes }}</button><button class="ef-chip" aria-pressed="{{ exportsNo }}" onClick="{{ setExportsNo }}">{{ t.no }}</button></div></div>
+      </div>
+    </div>
+
+    <!-- incident logging -->
+    <div class="ef-card">
+      <h2 class="ef-h" style="display:flex; align-items:center; gap:8px; margin-block-end:0; border:0; padding-block-end:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:16px;height:16px;"><path d="M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>{{ t.incidentTitle }}<span class="grow"></span><button class="btn btn-secondary btn-sm" onClick="{{ logIncident }}">{{ t.incidentBtn }}</button></h2>
+      <sc-if value="{{ incidentOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:12px; margin-block-start:14px;">
+          <p class="t-caption" style="margin:0;">{{ t.incidentDesc }}</p>
+          <label class="fld"><span>{{ t.incidentDescField }}</span><textarea class="input" rows="2"></textarea></label>
+          <div class="fld-row"><label class="fld"><span>{{ t.incidentImpact }}</span><input class="input"></label><label class="fld"><span>{{ t.incidentLocTime }}</span><input class="input"></label></div>
+          <button class="btn btn-secondary" style="align-self:flex-start;" onClick="{{ pickFile }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>{{ t.incidentEvidence }}</button>
+          <sc-if value="{{ incidentLogged }}" hint-placeholder-val="{{ false }}"><span class="badge badge-compliant" style="width:fit-content;"><span class="dot"></span>{{ t.incidentLoggedLabel }}</span></sc-if>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- contacts -->
+    <!-- establishment photo -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.estPhoto }}</h2>
+      <div onClick="{{ pickFile }}" style="border:1.5px dashed var(--border-strong); border-radius:12px; padding:22px; text-align:center; margin-block-end:12px; background:var(--surface-sunken); cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="width:26px;height:26px; margin:0 auto 8px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <div style="font-size:13.5px; font-weight:600;">{{ t.capturePhoto }}</div>
+        <div class="t-caption" style="margin-block-start:4px;">{{ t.photoHint }}</div>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+        <sc-for list="{{ estPhotos }}" as="ph" hint-placeholder-count="7">
+          <div style="aspect-ratio:1; border-radius:8px; background:{{ ph.bg }}; border:1px solid var(--border-subtle);"></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- audit trail -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.auditTrail }}</h2>
+      <div style="display:flex; flex-direction:column; gap:0;">
+        <sc-for list="{{ auditEntries }}" as="au" hint-placeholder-count="3">
+          <div style="display:flex; gap:12px; padding:12px 0; border-block-start:1px solid var(--border-subtle);">
+            <span class="avatar" style="background:var(--accent-soft); color:var(--accent-text); flex:none;">{{ au.initial }}</span>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span class="badge badge-compliant" style="height:18px;">{{ au.statusTag }}</span><span style="font-weight:600; font-size:13.5px;">{{ au.user }}</span><span class="t-caption id-code">{{ au.time }}</span></div>
+              <div class="t-caption" style="margin-block-start:4px;">{{ au.note }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.contacts }}</h2>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <sc-for list="{{ contacts }}" as="c" hint-placeholder-count="2">
+          <div style="border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px; background:var(--surface-sunken);">
+            <div style="display:flex; align-items:center; gap:8px; margin-block-end:10px;"><span class="avatar" style="background:var(--accent-soft); color:var(--accent-text); width:32px; height:32px; font-size:13px;">{{ c.n }}</span><span class="grow"></span><button class="btn btn-ghost btn-icon btn-sm" aria-label="{{ t.delete }}"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-critical-text)" stroke-width="1.7" style="width:16px;height:16px;"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></button></div>
+            <div class="fld-row"><label class="fld"><span>{{ t.name }}</span><input class="input" value="{{ c.name }}"></label><label class="fld"><span>{{ t.title }}</span><input class="input" value="{{ c.title }}"></label></div>
+            <div class="fld-row" style="margin-block-start:12px;"><label class="fld"><span>{{ t.idNumber }}</span><input class="input id-code" value="{{ c.id }}"></label><label class="fld"><span>{{ t.mobile }}</span><input class="input id-code" value="{{ c.mobile }}"></label></div>
+            <label class="fld" style="margin-block-start:12px;"><span>{{ t.email }}</span><input class="input" dir="ltr" value="{{ c.email }}"></label>
+            <label class="fld" style="margin-block-start:12px;"><span>{{ t.purpose }}</span><input class="input" value="{{ c.purpose }}"></label>
+          </div>
+        </sc-for>
+        <button class="btn btn-secondary btn-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px;"><path d="M12 5v14M5 12h14"/></svg>{{ t.addContact }}</button>
+      </div>
+    </div>
+
+    <!-- activities -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.activities }}</h2>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ activities }}" as="ac" hint-placeholder-count="1">
+          <div style="border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px; background:var(--surface-sunken);">
+            <div style="display:flex; align-items:center; gap:8px; margin-block-end:6px;"><span class="badge badge-compliant" style="height:19px;">{{ t.activityUpdated }}</span></div>
+            <div style="font-weight:600; font-size:14px;">{{ ac.name }}</div>
+            <div class="t-caption id-code" style="margin-block-start:2px;">{{ ac.code }}</div>
+            <div class="t-caption" style="margin-block-start:8px;">{{ t.primaryActivity }}: {{ ac.primary }}</div>
+            <div style="display:flex; gap:8px; margin-block-start:8px;"><span class="badge badge-neutral" style="height:18px;">{{ ac.tag1 }}</span><span class="badge badge-neutral" style="height:18px;">{{ ac.tag2 }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- inspection items -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.inspectionItems }}</h2>
+      <div style="display:flex; gap:9px; overflow-x:auto; padding-block-end:6px; margin-block-end:6px;">
+        <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="5">
+          <button class="ef-chip" aria-pressed="{{ ch.selected }}" onClick="{{ ch.pick }}">{{ ch.title }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isWorkers }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <sc-for list="{{ workers }}" as="w" hint-placeholder-count="4">
+            <div style="border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px;">
+              <div style="font-weight:600; font-size:14px; margin-block-end:12px;">{{ w.title }}</div>
+              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                <label class="fld"><span>{{ t.shift1 }}</span><input class="input id-code" value="200" style="text-align:center;"></label>
+                <label class="fld"><span>{{ t.shift2 }}</span><input class="input id-code" value="200" style="text-align:center;"></label>
+                <label class="fld"><span>{{ t.shift3 }}</span><input class="input id-code" value="200" style="text-align:center;"></label>
+              </div>
+              <div style="text-align:end; margin-block-start:10px; font-size:13px; color:var(--text-secondary);">{{ t.total }}: <span style="font-weight:700; color:var(--text-primary);">600</span> {{ t.worker }}</div>
+            </div>
+          </sc-for>
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:16px; background:var(--surface-sunken); border-radius:12px;">
+            <div><div class="t-caption">{{ t.totalRegistered }}</div><div style="font-size:18px; font-weight:700;">1000 {{ t.worker }}</div></div>
+            <div style="width:1px; height:32px; background:var(--border-subtle);"></div>
+            <div><div class="t-caption">{{ t.grandTotal }}</div><div style="font-size:18px; font-weight:700;">2400 {{ t.worker }}</div></div>
+            <span class="grow"></span>
+            <span class="exc-chip exc-warning"><span class="exc-mark"></span>{{ t.diffNote }}</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isItems }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <sc-for list="{{ items }}" as="it" hint-placeholder-count="4">
+            <div style="border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                <div style="min-width:0;"><div style="font-weight:600; font-size:14px;">{{ it.title }}</div><div class="t-caption" style="margin-block-start:2px;">{{ it.subtitle }}</div></div>
+                <sc-if value="{{ it.hasQty }}" hint-placeholder-val="{{ false }}"><span class="badge badge-neutral">{{ it.qty }}</span></sc-if>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:14px; margin-block-start:12px;">
+                <sc-for list="{{ it.checks }}" as="ck" hint-placeholder-count="3">
+                  <span class="ef-chk"><span class="ef-box {{ ck.cls }}"><sc-if value="{{ ck.on }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:10px;height:10px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ ck.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- notes -->
+    <div class="ef-card">
+      <h2 class="ef-h">{{ t.notes }}</h2>
+      <label class="fld"><span>{{ t.noteDetail }}</span><textarea class="input" rows="3" placeholder="{{ t.notePlaceholder }}"></textarea></label>
+    </div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);"><span class="t-caption">{{ t.f360RefNote }}</span><span class="grow"></span><a href="SAQEEL%20PWA-Field%20Travel.dc.html" target="_top" class="btn btn-primary" style="text-decoration:none;">{{ t.startVisit }}</a></div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", cat: "workers", lang: "en", exports: null, incidentOpen: false, unableChecked: false, reportTypeIdx: 2, incidentModalOpen: false, mediaExpanded: false, incidentLogged: false };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        back:"رجوع", headerTitle:"تقرير زيارة · ملف المنشأة", headerSub:"شركة الأمل لتدريب العمال", step:"الخطوة 2 من 4",
+        feedbackQr:"رمز التقييم", langToggle:"English", langBtnLabel:"EN", theme:"الوضع",
+        estData:"بيانات المنشأة", spatialAuth:"الإشراف المكاني للمنشأة", spatialAuth1:"هيئة مدن", other:"أخرى",
+        energyType:"نوع الطاقة المستخدمة", naturalGas:"الغاز الطبيعي", electricity:"الكهرباء",
+        estStatus:"حالة المنشأة", production:"الإنتاج", closed:"مغلق",
+        prodStatus:"الحالة الإنتاجية", continuous:"إنتاج مستمر", nonContinuous:"إنتاج غير مستمر",
+        contacts:"جهات التواصل", contact:"جهة", delete:"حذف", name:"الاسم", title:"الصفة",
+        idNumber:"رقم الهوية", mobile:"الجوال", email:"البريد الإلكتروني", addContact:"إضافة جهة اتصال",
+        inspectionItems:"بنود التفتيش", shift1:"الوردية الأولى", shift2:"الوردية الثانية", shift3:"الوردية الثالثة",
+        total:"المجموع", worker:"عامل", totalRegistered:"إجمالي المسجل", grandTotal:"المجموع الكلي",
+        diffNote:"فرق 1400 — يتطلب مراجعة", notes:"الملاحظات", noteDetail:"تفاصيل الملاحظة",
+        notePlaceholder:"تم تحديث بيانات الترخيص الصناعي مؤخراً. يرجى مراجعة بيانات المنشأة والتأكد من سريان الترخيص.",
+        pendingSync:"بانتظار المزامنة · 2", previous:"السابق", continueBtn:"متابعة إلى النتائج", virtualVisit:"زيارة افتراضية",
+        closureJustification:"مبرر حالة المنشأة", closureJustificationPh:"يظهر عند اختيار متوقف/مغلق/إصلاح/نقل",
+        closingAuthority:"الجهة الحكومية التي قامت بالإغلاق", civilDefense:"الدفاع المدني", municipality:"البلدية", modon:"هيئة المدن الصناعية",
+        exportsProducts:"هل يتم تصدير منتجات؟", yes:"نعم", no:"لا",
+        incidentTitle:"رصد حادث أثناء الزيارة", incidentBtn:"تسجيل حادث",
+        incidentDesc:"يتيح تعديل رصد حادث أثناء الزيارة، ليظهر ضمن مخرجات الزيارة — مستقل عن بنود المخالفة.",
+        incidentDescField:"وصف الحادث", incidentImpact:"الأثر", incidentLocTime:"الموقع / الوقت", incidentEvidence:"إرفاق أدلة", incidentLoggedLabel:"تم التسجيل",
+        factory360:"لمحة المنشأة 360", factory360Advisory:"استشاري", healthScore:"مؤشر السلامة", riskScore:"مؤشر الخطورة", draftCount:"مسودات", syncCount:"بانتظار المزامنة", violationHistory:"سجل المخالفات", licensesDocs:"التراخيص والمستندات", expires:"ينتهي",
+        employees:"العمالة", employeesTotal:"إجمالي العمالة", employeesSaudi:"سعوديون", saudization:"نسبة السعودة",
+        products:"المنتجات", hsCode:"رمز HS", year:"سنة", primary:"منتج رئيسي",
+        timeline:"الخط الزمني", aiInsights:"رؤى الذكاء الاصطناعي",
+        aiInsightsNote:"يرتفع مؤشر الخطورة بسبب مخالفة سلامة الحريق المفتوحة وتكرار مخالفات التخزين الكيميائي في آخر ثلاث زيارات.",
+        aiInsightsRestriction:"استشاري — مقتصر على الوقائع المحفوظة فقط ولا يُعدّ قراراً.",
+        estPhoto:"صورة المنشأة", capturePhoto:"التقاط أو رفع صورة المنشأة", photoHint:"حجم الملف الأقصى 2 ميجابايت — صيغ جي بي جي و بي إن جي",
+        auditTrail:"سجل التدقيق", purpose:"الغرض من التواصل", activities:"الأنشطة", activityUpdated:"تم تحديثه", primaryActivity:"النشاط الأساسي",
+        estNameLbl:"اسم المنشأة", estNameVal:"شركة الامل للتدريب العمال", estStatusLbl:"حالة المنشأة", estStatusVal:"تأسيس",
+        estLocations:"مواقع المنشأة", recordedVisitLink:"رابط الدخول للزيارة المسجّل", actualVisitLink:"رابط الدخول للزيارة الفعلي",
+        recordedVisitUrl:"https://www.google.com/maps/place/Establishment+Inspection+Visit/", actualVisitUrl:"https://www.google.com/maps/place/Establishment+Inspection+Visit/",
+        platform:"المنصة", googleMeet:"جوجل ميت - Google Meet", password:"كلمة السر", passwordVal:"829@#48Qff",
+        visitSettings:"إعدادات الزيارة", visitType:"نوع الزيارة", visitTypeVal:"رقابية مستهدفة",
+        unableToExecute:"تعذر تنفيذ الزيارة", reportTypeH:"نوع التقرير",
+        reportNotes:"ملاحظات", reportNotesPh:"تم تنفيذ الزيارة، وتم رصد عدد من الملاحظات وسيتم المتابعة خلال المدة المحددة.",
+        startPlanPrep:"ابدأ إعداد الخطة", camera:"الكاميرا", mic:"الميكروفون", expand:"تكبير", mediaPlaceholder:"إسقاط صورة أو مقطع الزيارة",
+        challengeH:"تقرير التحديات", exportsQ:"هل يتم تصدير منتجات؟", industrialFundQ:"هل لدى الشركة قرض من صندوق التنمية الصناعي؟",
+        capitalQ:"كم يبلغ رأس مال الشركة", expansionQ:"هل هناك خطة معتمدة للتوسع في السنة الحالية أو القادمة؟", govContractsQ:"هل فازت الشركة بعقود توريد حكومية؟",
+        challengeStatus:"حالة التحدي", challengeDesc:"وصف التحدي", challengeDescVal:"غياب طفايات حريق في الموقع", challengeNotesVal:"تم رصد عدم توفر طفايات حريق صالحة، وتم إشعار المنشأة لاتخاذ الإجراء التصحيحي وإرفاق ما يثبت ذلك.",
+        minutesAttachments:"مرفقات المحاضر", viewIncidentDetails:"تفاصيل رصد حادث", editIncident:"تعديل رصد حادث", incidentSubmitter:"سلمان بن عبدالله الحربي",
+        f360Title:"المنشأة 360 · ملف المنشأة", f360Chip:"مرجع", f360RefNote:"عرض مرجعي — ابدأ زيارة للتعديل", startVisit:"بدء الزيارة",
+      },
+      en: {
+        back:"Back", headerTitle:"Visit Report · Establishment File", headerSub:"Al Amal Worker Training Co.", step:"Step 2 of 4",
+        feedbackQr:"Feedback QR", langToggle:"العربية", langBtnLabel:"AR", theme:"Theme",
+        estData:"Establishment Data", spatialAuth:"Establishment spatial authority", spatialAuth1:"MODON", other:"Other",
+        energyType:"Energy type used", naturalGas:"Natural gas", electricity:"Electricity",
+        estStatus:"Establishment status", production:"In production", closed:"Closed",
+        prodStatus:"Production status", continuous:"Continuous production", nonContinuous:"Non-continuous production",
+        contacts:"Contacts", contact:"Contact", delete:"Delete", name:"Name", title:"Title",
+        idNumber:"ID number", mobile:"Mobile", email:"Email", addContact:"Add contact",
+        inspectionItems:"Inspection Items", shift1:"Shift 1", shift2:"Shift 2", shift3:"Shift 3",
+        total:"Total", worker:"workers", totalRegistered:"Total registered", grandTotal:"Grand total",
+        diffNote:"Diff 1400 — needs review", notes:"Notes", noteDetail:"Note detail",
+        notePlaceholder:"Industrial license data was recently updated. Please review establishment data and confirm license validity.",
+        pendingSync:"Pending sync · 2", previous:"Previous", continueBtn:"Continue to results", virtualVisit:"Virtual Visit",
+        closureJustification:"Establishment status justification", closureJustificationPh:"Shown when stopped/closed/repair/relocated is chosen",
+        closingAuthority:"Government body that closed it", civilDefense:"Civil Defense", municipality:"Municipality", modon:"MODON",
+        exportsProducts:"Does the establishment export products?", yes:"Yes", no:"No",
+        incidentTitle:"Log an incident during the visit", incidentBtn:"Log incident",
+        incidentDesc:"Lets the inspector log an incident observed during the visit, surfacing it in the visit's outputs — separate from violation items.",
+        incidentDescField:"Incident description", incidentImpact:"Impact", incidentLocTime:"Location / time", incidentEvidence:"Attach evidence", incidentLoggedLabel:"Logged",
+        factory360:"Factory 360 Snapshot", factory360Advisory:"Advisory", healthScore:"Health Score", riskScore:"Risk Score", draftCount:"Drafts", syncCount:"Pending Sync", violationHistory:"Violation History", licensesDocs:"Licenses & Documents", expires:"expires",
+        employees:"Employees", employeesTotal:"Total Employees", employeesSaudi:"Saudi Employees", saudization:"Saudization Rate",
+        products:"Products", hsCode:"HS", year:"yr", primary:"Primary",
+        timeline:"Timeline", aiInsights:"AI Insights",
+        aiInsightsNote:"Risk score is elevated due to the open fire-safety violation and recurring chemical-storage findings across the last three visits.",
+        aiInsightsRestriction:"Advisory — restricted to saved facts only, never a disposition.",
+        estPhoto:"Establishment Photo", capturePhoto:"Capture or upload establishment photo", photoHint:"Max file size 2MB — JPG or PNG only",
+        auditTrail:"Audit Trail",
+        purpose:"Contact purpose", activities:"Activities", activityUpdated:"Updated", primaryActivity:"Primary activity",
+        estNameLbl:"Establishment name", estNameVal:"Al Amal Worker Training Co.", estStatusLbl:"Establishment status", estStatusVal:"Founding",
+        estLocations:"Establishment locations", recordedVisitLink:"Recorded visit access link", actualVisitLink:"Actual visit access link",
+        recordedVisitUrl:"https://www.google.com/maps/place/Establishment+Inspection+Visit/", actualVisitUrl:"https://www.google.com/maps/place/Establishment+Inspection+Visit/",
+        platform:"Platform", googleMeet:"Google Meet - جوجل ميت", password:"Password", passwordVal:"829@#48Qff",
+        visitSettings:"Visit Settings", visitType:"Visit type", visitTypeVal:"Targeted regulatory",
+        unableToExecute:"Unable to execute visit", reportTypeH:"Report Type",
+        reportNotes:"Notes", reportNotesPh:"The visit was carried out; several findings were recorded and will be followed up within the specified period.",
+        startPlanPrep:"Start Plan Preparation", camera:"Camera", mic:"Microphone", expand:"Expand", mediaPlaceholder:"Drop the visit photo or clip",
+        challengeH:"Challenge Report", exportsQ:"Does the establishment export products?", industrialFundQ:"Does the company have an Industrial Development Fund loan?",
+        capitalQ:"What is the company's capital", expansionQ:"Is there an approved expansion plan for the current or next year?", govContractsQ:"Has the company won government supply contracts?",
+        challengeStatus:"Challenge status", challengeDesc:"Challenge description", challengeDescVal:"Absence of fire extinguishers on site", challengeNotesVal:"The absence of valid fire extinguishers was recorded; the establishment was notified to take corrective action and attach supporting evidence.",
+        minutesAttachments:"Minutes Attachments", viewIncidentDetails:"Incident Details", editIncident:"Edit Incident", incidentSubmitter:"Salman bin Abdullah Al-Harbi",
+        f360Title:"Factory 360 · Establishment File", f360Chip:"Reference", f360RefNote:"Read-only reference — start a visit to edit", startVisit:"Start visit",
+      },
+    };
+    const t = STR[lang];
+    const PHOTO_BGS = ["#8a7a5c","#6b7a5e","#9c8468","#5f6b74","#7d6b53","#8f7458","#6a7768"];
+    const estPhotos = PHOTO_BGS.map(bg => ({ bg }));
+    const auditEntries = lang === "ar" ? [
+      { initial:"س", statusTag:"تم تحديثه", user:"سعود بن محمد القحطاني", time:"20/01/2025، 10:30 صباحاً", note:"تم تحديث نشاط المصنع بناءً على بيانات الترخيص المعتمدة رسميًا." },
+      { initial:"ن", statusTag:"تم التحقق", user:"نايف الدوسري", time:"18/01/2025، 02:15 مساءً", note:"تم التحقق من صحة رقم الترخيص الصناعي مقابل قاعدة بيانات SENAI." },
+      { initial:"خ", statusTag:"تم الإنشاء", user:"خالد العتيبي", time:"05/01/2025، 09:00 صباحاً", note:"تم إنشاء ملف المنشأة عند أول زيارة تفتيشية." },
+    ] : [
+      { initial:"S", statusTag:"Updated", user:"Saud bin Mohammed Al-Qahtani", time:"2025/01/20, 10:30 AM", note:"Factory activity updated based on officially certified license data." },
+      { initial:"N", statusTag:"Verified", user:"Nayef Al-Dosari", time:"2025/01/18, 2:15 PM", note:"Industrial license number verified against the SENAI database." },
+      { initial:"K", statusTag:"Created", user:"Khaled Al-Otaibi", time:"2025/01/05, 9:00 AM", note:"Establishment file created on first inspection visit." },
+    ];
+    const CONTACTS = {
+      ar: [
+        { n:"١", name:"سعود بن فهد القحطاني", title:"مدير", id:"2258864381", mobile:"5946563702", email:"saud.alqahtani@company.com", purpose:"تنسيق الزيارات التفتيشية" },
+        { n:"٢", name:"ناصر بن علي الدوسري", title:"مسؤول سلامة", id:"1109923847", mobile:"5533221190", email:"nasser.aldosari@company.com", purpose:"متابعة ملاحظات السلامة" },
+      ],
+      en: [
+        { n:"1", name:"Saud bin Fahd Al-Qahtani", title:"Manager", id:"2258864381", mobile:"5946563702", email:"saud.alqahtani@company.com", purpose:"Coordinating inspection visits" },
+        { n:"2", name:"Nasser bin Ali Al-Dosari", title:"Safety Officer", id:"1109923847", mobile:"5533221190", email:"nasser.aldosari@company.com", purpose:"Following up on safety findings" },
+      ],
+    }[lang];
+    const ACTIVITIES = lang === "ar" ? [
+      { name:"تصنيع مكوّنات شاشات العرض", code:"1029384", primary:"تصنيع المكوّنات الإلكترونية", tag1:"150 عامل", tag2:"8 طن سنوياً" },
+    ] : [
+      { name:"Display component manufacturing", code:"1029384", primary:"Electronic component manufacturing", tag1:"150 workers", tag2:"8 tons/year" },
+    ];
+    const mkChecks = arr => arr.map(([label, on]) => ({ label, on, cls: on ? "on" : "" }));
+    const chkAr = ["مستفيد من الإعفاء","مستفيد من الفسح الكيميائي","موجودة في المنشأة"];
+    const chkAr2 = ["خاضع للائحة","موجودة في المنشأة","اختيار عينة"];
+    const chkEn = ["Exemption beneficiary","Chemical clearance beneficiary","Present at site"];
+    const chkEn2 = ["Subject to regulation","Present at site","Sample selection"];
+    const HS = "HS Code 390110";
+    const DATA = {
+      ar: {
+        RAW: [
+          ["حبيبات بولي إيثيلين (PE) خام", "200 طن", [[chkAr[0],true],[chkAr[1],true],[chkAr[2],true]]],
+          ["كربونات كالسيوم (CaCO₃) صناعية ناعمة", "200 طن", [[chkAr[0],true],[chkAr[1],true],[chkAr[2],false]]],
+          ["أحبار طباعة صناعية سائلة", "200 طن", [[chkAr[0],true],[chkAr[1],false],[chkAr[2],false]]],
+        ],
+        PROD: [
+          ["حبيبات بولي إيثيلين (PE) خام", "", [[chkAr2[0],true],[chkAr2[1],true],[chkAr2[2],true]]],
+          ["كربونات كالسيوم (CaCO₃) صناعية ناعمة", "", [[chkAr2[0],true],[chkAr2[1],true],[chkAr2[2],false]]],
+          ["أسلاك نحاس كهربائية معزولة", "", [[chkAr2[0],true],[chkAr2[1],true],[chkAr2[2],false]]],
+        ],
+        MACH: [
+          ["ماكينة لحام (MIG/TIG)", "120 قطعة/ساعة", [[chkAr[0],true],[chkAr[2],true]]],
+          ["ماكينة تقطيع وتغليف", "120 قطعة/ساعة", [[chkAr[0],true],[chkAr[2],false]]],
+          ["خلاط مواد خام", "120 قطعة/ساعة", [[chkAr[0],true],[chkAr[2],false]]],
+        ],
+        SPARE: [
+          ["سلك لحام MIG صناعي", "بكرة", [[chkAr[2],true]]],
+          ["إلكترود لحام معدني", "بكرة", [[chkAr[2],false]]],
+          ["فوهة شعلة TIG بديلة", "قطعة", [[chkAr[2],false]]],
+        ],
+        WORKERS: ["مهن إدارية ومكتبية عامة متعددة","مهن تخصصية ومهنية متقدمة متنوعة","مهن فنية ومساندة تشغيلية يومية","مهن أخرى متنوعة إضافية مختلفة"],
+        CATS: [["workers","العمالة"],["raw","مواد أولية"],["products","المنتجات"],["machines","الآلات"],["spare","قطع غيار"]],
+      },
+      en: {
+        RAW: [
+          ["Raw polyethylene (PE) pellets", "200 t", [[chkEn[0],true],[chkEn[1],true],[chkEn[2],true]]],
+          ["Fine industrial calcium carbonate (CaCO₃)", "200 t", [[chkEn[0],true],[chkEn[1],true],[chkEn[2],false]]],
+          ["Liquid industrial printing inks", "200 t", [[chkEn[0],true],[chkEn[1],false],[chkEn[2],false]]],
+        ],
+        PROD: [
+          ["Raw polyethylene (PE) pellets", "", [[chkEn2[0],true],[chkEn2[1],true],[chkEn2[2],true]]],
+          ["Fine industrial calcium carbonate (CaCO₃)", "", [[chkEn2[0],true],[chkEn2[1],true],[chkEn2[2],false]]],
+          ["Insulated copper electrical wires", "", [[chkEn2[0],true],[chkEn2[1],true],[chkEn2[2],false]]],
+        ],
+        MACH: [
+          ["Welding machine (MIG/TIG)", "120 units/hr", [[chkEn[0],true],[chkEn[2],true]]],
+          ["Cutting & packing machine", "120 units/hr", [[chkEn[0],true],[chkEn[2],false]]],
+          ["Raw material mixer", "120 units/hr", [[chkEn[0],true],[chkEn[2],false]]],
+        ],
+        SPARE: [
+          ["Industrial MIG welding wire", "Spool", [[chkEn[2],true]]],
+          ["Metal welding electrode", "Spool", [[chkEn[2],false]]],
+          ["Replacement TIG torch nozzle", "Piece", [[chkEn[2],false]]],
+        ],
+        WORKERS: ["Various general administrative & clerical occupations","Diverse advanced specialist & professional occupations","Daily technical & operational support occupations","Various additional miscellaneous occupations"],
+        CATS: [["workers","Workforce"],["raw","Raw materials"],["products","Products"],["machines","Machines"],["spare","Spare parts"]],
+      },
+    }[lang];
+    const VIOLATIONS = isAr => isAr ? [
+      { title:"مخالفة سلامة من الحريق — مخرج طوارئ مسدود", date:"2026/04/22", status:"مفتوحة", color:"var(--status-critical)" },
+      { title:"عدم توفر بطاقات السلامة لمواد كيميائية", date:"2026/02/10", status:"مغلقة", color:"var(--status-compliant-text)" },
+      { title:"تجاوز الحمولة المسموحة لمخزن المواد الخام", date:"2025/11/03", status:"مغلقة", color:"var(--status-compliant-text)" },
+    ] : [
+      { title:"Fire safety violation — blocked emergency exit", date:"2026/04/22", status:"Open", color:"var(--status-critical)" },
+      { title:"Missing chemical safety data sheets", date:"2026/02/10", status:"Closed", color:"var(--status-compliant-text)" },
+      { title:"Raw material storage overcapacity", date:"2025/11/03", status:"Closed", color:"var(--status-compliant-text)" },
+    ];
+    const LICENSES = isAr => isAr ? [
+      { title:"الترخيص الصناعي", number:"IND-2024-88321", expiry:"2027/03/15", status:"سارٍ", badge:"badge-compliant" },
+      { title:"رخصة الدفاع المدني", number:"CD-2025-04471", expiry:"2026/09/01", status:"سارٍ", badge:"badge-compliant" },
+      { title:"شهادة السلامة البيئية", number:"ENV-2023-19045", expiry:"2026/08/10", status:"ينتهي قريباً", badge:"badge-warning" },
+    ] : [
+      { title:"Industrial License", number:"IND-2024-88321", expiry:"2027/03/15", status:"Valid", badge:"badge-compliant" },
+      { title:"Civil Defense License", number:"CD-2025-04471", expiry:"2026/09/01", status:"Valid", badge:"badge-compliant" },
+      { title:"Environmental Safety Certificate", number:"ENV-2023-19045", expiry:"2026/08/10", status:"Expiring soon", badge:"badge-warning" },
+    ];
+    const PRODUCTS = isAr => isAr ? [
+      { name:"حبيبات بولي إيثيلين (PE)", hsCode:"3901.10", unit:"طن", capacity:"12,000", isPrimary:true },
+      { name:"أسلاك نحاس كهربائية معزولة", hsCode:"8544.49", unit:"طن", capacity:"3,400", isPrimary:false },
+    ] : [
+      { name:"Polyethylene (PE) pellets", hsCode:"3901.10", unit:"t", capacity:"12,000", isPrimary:true },
+      { name:"Insulated copper electrical wires", hsCode:"8544.49", unit:"t", capacity:"3,400", isPrimary:false },
+    ];
+    const TIMELINE = isAr => isAr ? [
+      { title:"زيارة روتينية منفذة", date:"2026/04/22", detail:"3 مخالفات مرصودة إجمالاً", color:"var(--status-warning)" },
+      { title:"إعادة حساب الخطورة", date:"2026/04/23", detail:"النتيجة: 82/100 — نموذج DEC-001", color:"var(--status-critical)" },
+      { title:"إشعار مخالفة", date:"2026/04/25", detail:"إشعار رقم PN-88213 — قيد المتابعة", color:"var(--status-critical)" },
+      { title:"زيارة متابعة", date:"2025/11/03", detail:"مطابق — لا توجد مخالفات جديدة", color:"var(--status-compliant-text)" },
+    ] : [
+      { title:"Routine visit executed", date:"2026/04/22", detail:"3 violations recorded", color:"var(--status-warning)" },
+      { title:"Risk score recalculated", date:"2026/04/23", detail:"Result: 82/100 — model DEC-001", color:"var(--status-critical)" },
+      { title:"Penalty notice issued", date:"2026/04/25", detail:"Notice PN-88213 — pending follow-up", color:"var(--status-critical)" },
+      { title:"Follow-up visit", date:"2025/11/03", detail:"Compliant — no new violations", color:"var(--status-compliant-text)" },
+    ];
+    const f360 = { health: 61, risk: 82, drafts: 2, pendingSync: 4, violations: VIOLATIONS(lang === "ar"), licenses: LICENSES(lang === "ar"), employeesTotal: 1000, employeesSaudi: 410, saudizationPct: 41, products: PRODUCTS(lang === "ar"), timeline: TIMELINE(lang === "ar") };
+    const cat = this.state.cat;
+    const src = { raw: DATA.RAW, products: DATA.PROD, machines: DATA.MACH, spare: DATA.SPARE }[cat] || [];
+    const buildItems = list => list.map(([title, qty, checks]) => ({ title, subtitle: HS, qty, hasQty: !!qty, checks: mkChecks(checks) }));
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })),
+      t,
+      exportsYes: this.state.exports === true, exportsNo: this.state.exports === false,
+      setExportsYes: () => this.setState({ exports: true }), setExportsNo: () => this.setState({ exports: false }),
+      incidentOpen: this.state.incidentOpen, toggleIncident: () => this.setState(s => ({ incidentOpen: !s.incidentOpen })),
+      incidentLogged: this.state.incidentLogged, logIncident: () => this.setState({ incidentOpen: true, incidentLogged: true }),
+      goBack: () => window.history.back(),
+      pickFile: () => { const el = document.getElementById("ef-filepick"); if (el) el.click(); },
+      toggleExpand: () => this.setState(s => ({ mediaExpanded: !s.mediaExpanded })),
+      contacts: CONTACTS, f360, estPhotos, auditEntries, activities: ACTIVITIES,
+      incidentModalOpen: this.state.incidentModalOpen, toggleIncidentModal: () => this.setState(s => ({ incidentModalOpen: !s.incidentModalOpen })),
+      stopProp: e => e.stopPropagation(),
+      minutesFiles: Array.from({ length: 6 }, () => ({ name: lang === "ar" ? "تفاصيل عن المنشأة .pdf" : "Establishment_Details.pdf" })),
+      unableChecked: this.state.unableChecked, unableCheckedCls: this.state.unableChecked ? "on" : "",
+      toggleUnable: () => this.setState(s => ({ unableChecked: !s.unableChecked })),
+      reportTypeCards: (lang === "ar" ? ["زيارة", "فسح كيميائي", "إعفاء جمركي", "سلامة", "أخرى", "متابعة"] : ["Visit", "Chemical Clearance", "Customs Exemption", "Safety", "Other", "Follow-up"]).map((label, i) => ({
+        label, selected: this.state.reportTypeIdx === i,
+        style: this.state.reportTypeIdx === i ? "border-color:var(--action-primary); background:var(--accent-soft); color:var(--action-primary); font-weight:600;" : "",
+        pick: () => this.setState({ reportTypeIdx: i }),
+      })),
+      chips: DATA.CATS.map(([id, title]) => ({ title, selected: cat === id, pick: () => this.setState({ cat: id }) })),
+      isWorkers: cat === "workers", isItems: cat !== "workers",
+      workers: DATA.WORKERS.map(title => ({ title })),
+      items: buildItems(src),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

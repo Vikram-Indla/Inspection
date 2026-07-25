@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .vr-wrap { max-width: 1040px; width:100%; margin: 0 auto; padding: 20px 18px 120px; display:flex; flex-direction:column; gap:18px; }
+  @media (max-width:560px){ .vr-wrap { padding:14px 12px 120px; } }
+  .vr-card { background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:14px; box-shadow:var(--shadow-card); padding:18px 19px; }
+  .vr-h { font-size:15px; font-weight:600; margin:0 0 14px; padding-block-end:10px; border-block-end:1px solid var(--border-subtle); }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .vr-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
+  @media (max-width:700px){ .vr-grid2 { grid-template-columns:1fr; } }
+  .vr-opt { display:flex; align-items:center; gap:9px; flex:1 1 120px; padding:12px 14px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:50px; }
+  .vr-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .vr-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .vr-opt[aria-pressed="true"] .vr-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .vr-radios { display:flex; gap:10px; flex-wrap:wrap; max-inline-size:560px; }
+  .vr-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Establishment%20File.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}" style="text-decoration:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></a>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.step }}</span>
+    <button class="vr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+  <div class="vr-wrap">
+    <div class="vr-card">
+      <h2 class="vr-h">{{ t.specDetails }}</h2>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.needSpecVisit }}</div><div class="vr-radios"><button class="vr-opt" aria-pressed="true"><span class="vr-ind"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></span>{{ t.yes }}</button><button class="vr-opt" aria-pressed="false"><span class="vr-ind"></span>{{ t.no }}</button></div></div>
+        <div class="vr-grid2">
+          <label class="fld"><span>{{ t.competentDept }} <span class="req">*</span></span><select class="select"><option>{{ t.customsExemption }}</option><option>{{ t.taxes }}</option><option>{{ t.commercialIndustry }}</option></select></label>
+          <label class="fld"><span>{{ t.notes }}</span><textarea class="input" rows="2"></textarea></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="vr-card">
+      <h2 class="vr-h">{{ t.sampleDetails }}</h2>
+      <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.samplesTaken }}</div><div class="vr-radios"><button class="vr-opt" aria-pressed="{{ samplesYes }}" onClick="{{ setSamplesYes }}"><span class="vr-ind"><sc-if value="{{ samplesYes }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ t.yes }}</button><button class="vr-opt" aria-pressed="{{ samplesNo }}" onClick="{{ setSamplesNo }}"><span class="vr-ind"><sc-if value="{{ samplesNo }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ t.no }}</button></div></div>
+      <sc-if value="{{ samplesYes }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-block-start:14px; border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px; background:var(--surface-sunken);">
+          <div style="display:flex; align-items:center; gap:8px; margin-block-end:12px;"><span class="badge badge-neutral">{{ t.sample }} 1</span><span class="grow"></span><button class="btn btn-ghost btn-icon btn-sm" aria-label="{{ t.delete }}"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-critical-text)" stroke-width="1.7" style="width:15px;height:15px;"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></button></div>
+          <div class="vr-grid2">
+            <div class="fld"><span>{{ t.sampleName }}</span><input class="input" placeholder="{{ t.sampleName }}"></div>
+            <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:6px;">{{ t.samplePhoto }}</div><button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>{{ t.takePhoto }}</button></div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-block" style="margin-block-start:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px;"><path d="M12 5v14M5 12h14"/></svg>{{ t.addSample }}</button>
+      </sc-if>
+    </div>
+
+    <div class="vr-card">
+      <h2 class="vr-h">{{ t.seizureDetails }}</h2>
+      <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:8px;">{{ t.productsSeized }}</div><div class="vr-radios"><button class="vr-opt" aria-pressed="{{ seizeYes }}" onClick="{{ setSeizeYes }}"><span class="vr-ind"><sc-if value="{{ seizeYes }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ t.yes }}</button><button class="vr-opt" aria-pressed="{{ seizeNo }}" onClick="{{ setSeizeNo }}"><span class="vr-ind"><sc-if value="{{ seizeNo }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ t.no }}</button></div></div>
+      <sc-if value="{{ seizeYes }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-block-start:14px; border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px; background:var(--surface-sunken);">
+          <div style="display:flex; align-items:center; gap:8px; margin-block-end:12px;"><span class="badge badge-neutral">{{ t.seizedProduct }} 1</span></div>
+          <div class="vr-grid2">
+            <div class="fld"><span>{{ t.productName }}</span><input class="input" placeholder="{{ t.seizedProductName }}"></div>
+            <div class="fld"><span>{{ t.quantity }}</span><input class="input" placeholder="{{ t.quantity }}"></div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-block" style="margin-block-start:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px;"><path d="M12 5v14M5 12h14"/></svg>{{ t.addSeized }}</button>
+      </sc-if>
+    </div>
+
+    <div class="vr-card">
+      <h2 class="vr-h">{{ t.docsToReview }}</h2>
+      <label class="fld"><span>{{ t.docType }} <span class="req">*</span></span><select class="select"><option>{{ t.productTest }}</option><option>{{ t.qualityCert }}</option><option>{{ t.labReport }}</option></select></label>
+    </div>
+
+    <div class="vr-card">
+      <h2 class="vr-h">{{ t.inspectorNotes }}</h2>
+      <textarea class="input" rows="4" placeholder="{{ t.enterNotes }}"></textarea>
+    </div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.pendingSync }}</span>
+    <span class="grow"></span>
+    <a href="SAQEEL%20PWA-Field%20Establishment%20File.dc.html" target="_top" class="btn btn-secondary" style="text-decoration:none;">{{ t.previous }}</a>
+    <button class="btn btn-primary" onClick="{{ doSubmit }}">{{ t.submitReview }}</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ showSuccess }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1; display:grid; place-items:center; padding:24px;">
+      <div class="vr-card" style="max-width:460px; width:100%; text-align:center; padding:44px 28px;">
+        <div style="width:64px; height:64px; margin:0 auto 20px; border-radius:50%; background:var(--status-compliant-soft); display:grid; place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-compliant-text)" stroke-width="2.2" style="width:34px;height:34px;"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
+        <h2 style="font-size:19px; font-weight:700; margin:0 0 10px;">{{ t.successTitle }}</h2>
+        <p class="t-caption" style="max-width:38ch; margin:0 auto 18px; font-size:14px;">{{ t.successDesc }}</p>
+        <div class="id-code" style="font-size:12px; color:var(--text-muted); margin-block-end:22px;">VS-40219 · {{ t.finalImmutable }}</div>
+        <button class="btn btn-primary btn-block" onClick="{{ reset }}">{{ t.backToTasks }}</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", samples: false, seize: false, done: false, lang: "en" };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        back:"رجوع", headerTitle:"تقرير زيارة · النتائج", headerSub:"شركة الأمل لتدريب العمال", step:"الخطوة 3 من 4", feedbackQr:"رمز التقييم", theme:"الوضع", langBtnLabel:"EN",
+        specDetails:"تفاصيل التخصص", needSpecVisit:"هل يوجد حاجة لزيارة تخصصية؟", competentDept:"الإدارة المختصة",
+        customsExemption:"إعفاء جمركي", taxes:"الضرائب", commercialIndustry:"الصناعة التجارية", notes:"ملاحظات", yes:"نعم", no:"لا",
+        sampleDetails:"تفاصيل العينات", samplesTaken:"هل تم سحب عينات من المنشأة؟", sample:"عينة", delete:"حذف",
+        sampleName:"اسم العينة", samplePhoto:"صورة العينة", takePhoto:"التقاط صورة", addSample:"إضافة عينة جديدة",
+        seizureDetails:"تفاصيل الحجز", productsSeized:"هل تم حجز منتجات؟", seizedProduct:"منتج محجوز",
+        productName:"اسم المنتج", seizedProductName:"اسم المنتج المحجوز", quantity:"الكمية", addSeized:"إضافة منتج محجوز",
+        docsToReview:"الوثائق القائمة للمراجعة", docType:"نوع الوثيقة", productTest:"اختبار المنتج", qualityCert:"شهادة الجودة", labReport:"تقرير المخبر",
+        inspectorNotes:"ملاحظات المفتش", enterNotes:"أدخل ملاحظاتك...",
+        pendingSync:"بانتظار المزامنة · 2", previous:"السابق", submitReview:"إرسال للمراجعة",
+        successTitle:"تم إرسال الطلب لغاية المراجعة والاعتماد", successDesc:"سيتم إرسال الطلب إلى الجهة المختصة لاستكمال المراجعة والاعتماد.",
+        finalImmutable:"النسخة النهائية غير قابلة للتعديل", backToTasks:"العودة إلى المهام",
+      },
+      en: {
+        back:"Back", headerTitle:"Visit Report · Results", headerSub:"Al-Amal Worker Training Co.", step:"Step 3 of 4", feedbackQr:"Feedback QR", theme:"Theme", langBtnLabel:"AR",
+        specDetails:"Specialty Details", needSpecVisit:"Is a specialty visit needed?", competentDept:"Competent department",
+        customsExemption:"Customs exemption", taxes:"Taxes", commercialIndustry:"Commercial industry", notes:"Notes", yes:"Yes", no:"No",
+        sampleDetails:"Sample Details", samplesTaken:"Were samples taken from the establishment?", sample:"Sample", delete:"Delete",
+        sampleName:"Sample name", samplePhoto:"Sample photo", takePhoto:"Take photo", addSample:"Add new sample",
+        seizureDetails:"Seizure Details", productsSeized:"Were products seized?", seizedProduct:"Seized product",
+        productName:"Product name", seizedProductName:"Seized product name", quantity:"Quantity", addSeized:"Add seized product",
+        docsToReview:"Documents Pending Review", docType:"Document type", productTest:"Product test", qualityCert:"Quality certificate", labReport:"Lab report",
+        inspectorNotes:"Inspector Notes", enterNotes:"Enter your notes...",
+        pendingSync:"Pending sync · 2", previous:"Previous", submitReview:"Submit for review",
+        successTitle:"Request submitted for review and approval", successDesc:"The request will be sent to the competent authority to complete review and approval.",
+        finalImmutable:"Final version — not editable", backToTasks:"Back to tasks",
+      },
+    };
+    const t = STR[lang];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      showForm: !this.state.done, showSuccess: this.state.done,
+      samplesYes: this.state.samples, samplesNo: !this.state.samples,
+      setSamplesYes: () => this.setState({ samples: true }), setSamplesNo: () => this.setState({ samples: false }),
+      seizeYes: this.state.seize, seizeNo: !this.state.seize,
+      setSeizeYes: () => this.setState({ seize: true }), setSeizeNo: () => this.setState({ seize: false }),
+      doSubmit: () => this.setState({ done: true }),
+      reset: () => this.setState({ done: false }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

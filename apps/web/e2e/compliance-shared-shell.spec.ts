@@ -25,11 +25,12 @@ test.describe("Prompt 01 shared shell source contract", () => {
     expect(business.filter(item => item.parentId === "inspection").map(item => item.labelEn)).toEqual(["Execution", "Review & Approval"]);
   });
 
-  test("seven primary Administration options are locked without permission and never navigate", () => {
+  test("ten primary Administration options are locked without permission and never navigate", () => {
     const items = buildShellNavigation(["reviewer"]).find(group => group.id === "administration")!.items;
     expect(items.map(item => item.labelEn)).toEqual([
-      "Users", "Roles", "Reference Lists", "Risk Settings", "Inspection Forms",
-      "Notification Settings", "System Connections",
+      "Users", "Roles", "Reference Lists", "Planning Lookups", "Planning Expiry Rules",
+      "Planning Status Rules", "Risk Settings", "Inspection Forms", "Notification Settings",
+      "System Connections",
     ]);
     expect(items.every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
     const shell = read("src/components/ShellClient.tsx");
@@ -48,7 +49,7 @@ test.describe("Prompt 01 shared shell source contract", () => {
     expect(shell).toContain("<ThemeToggle");
     expect(shell).toContain("<NotificationBell");
     expect(shell).toContain('href="/ai/suggestions"');
-    expect(shell).toContain("sq-shell-account__trigger");
+    expect(shell).toContain("ax-shell-account__trigger");
     expect(server).toContain("getShellRegions()");
     expect(persona).toContain('sb.from("factories").select("region")');
     expect(shell).not.toMatch(/\b(?:85%|92%|98%|1,250)\b/);
@@ -57,13 +58,18 @@ test.describe("Prompt 01 shared shell source contract", () => {
 
   test("global result search is authenticated and RLS-scoped with no bypass client", () => {
     const route = read("src/app/api/shell/search/route.ts");
+    const search = read("src/lib/shell-search.ts");
     expect(route).toContain("supabaseServer()");
     expect(route).toContain("getVerifiedUser(sb)");
-    expect(route).toContain('sb.from("factories")');
-    expect(route).toContain('sb.from("visits")');
-    expect(route).toContain('sb.from("inspections")');
-    expect(route).not.toMatch(/service[_-]?role/i);
-    expect(route).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(route).toContain("performShellSearch(sb, q)");
+    expect(search).toContain("callers pass their own RLS-scoped Supabase client, never elevated");
+    expect(search).toContain("SECURITY INVOKER");
+    expect(search).toContain('sb.rpc("shell_global_search"');
+    expect(search).toContain('sb.from("factories")');
+    expect(search).toContain('sb.from("visits")');
+    expect(search).toContain('sb.from("inspections")');
+    expect(`${route}\n${search}`).not.toMatch(/service[_-]?role/i);
+    expect(`${route}\n${search}`).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
   });
 
   test("existing route guards and unavailable states remain authoritative", () => {

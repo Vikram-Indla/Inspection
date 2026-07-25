@@ -49,7 +49,7 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(css).toContain("current .ax-state and SAQEEL component contracts remain");
   });
 
-  test("sponsor shell correction uses the canonical shield and locale-specific lockup", () => {
+  test("sponsor shell correction renders the WA-BRAND-r1 wordmark and favicon lockup", () => {
     const layout = read("src/app/layout.tsx");
     const shell = read("src/components/ShellClient.tsx");
     const css = read("src/app/astryx.css");
@@ -62,13 +62,19 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(layout).toContain('import "./astryx.css"');
     expect(shell).toContain("ax-shell");
     expect(css).toContain(".ax-shell {");
-    expect(shell).toContain('import SaqeelBrandMark from "@/components/SaqeelBrandMark"');
-    expect(shell).toContain('<SaqeelBrandMark className="ax-shell__brand-mark" />');
-    expect(shell).toContain('className="ax-shell__brand-sub"');
-    expect(css).toContain('.ax-shell__brand-mark { display: block;');
-    expect(shell).toContain('locale === "ar" ? "صقيل" : "SAQEEL"');
-    expect(shell).toContain('locale === "ar" ? "صناعي" : "Industrial"');
+    // WA-BRAND-r1 (O-26): the split صقيل / صناعي text lockup is retired. The rail
+    // renders the wordmark asset expanded and the favicon mark collapsed.
+    expect(shell).toContain('src="/saqeel-wordmark-dark-mode.svg"');
+    expect(shell).toContain('src="/saqeel-favicon.svg"');
+    expect(shell).toContain('alt="SAQEEL | \u0635\u0642\u064a\u0644"');
+    expect(shell).not.toContain('ax-shell__brand-sub');
+    expect(shell).not.toContain('\u0635\u0646\u0627\u0639\u064a');
+    // Sizes are the design authority's, not invented: saqeel/components.css
+    // ships a 22px-cap wordmark and a 26px favicon.
+    expect(css).toContain('.ax-shell__brand-lockup { display: block; block-size: 22px; inline-size: auto;');
+    expect(css).toContain('.ax-shell__brand-mark { display: none; inline-size: 26px; block-size: 26px;');
     expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
+    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-lockup { display: none; }');
     expect(css).toContain('.ax-shell.is-collapsed .ax-nav-item--child { display: none; }');
     expect(favicon).toContain('M12 3.4 5 6.05');
     for (const asset of [darkWordmark, lightWordmark]) {

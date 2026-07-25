@@ -1,0 +1,322 @@
+schema_version: "1.0"
+packet_id: M6-TRACEABILITY-SPLIT-011
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mapping_writes_performed: false
+design_writes_performed: false
+application_writes_performed: false
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 6741a84e929b761e51c9a593ea851f039a3ce229
+  task: M6-TRACEABILITY-SPLIT-011
+  requirements: ["CR-449..CR-478"]
+  acceptance: ["WA-M6-AC-001..006", "WA-M9-AC-001..006"]
+  prior_audits:
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010.yaml
+    - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014.yaml
+  do_not_touch:
+    - "Frozen REQUIREMENT_BASELINE.csv, DESIGN_ROUTE_MAP.csv, ROUTE_INVENTORY.csv and acceptance artifacts."
+    - "Claude Design files and accepted design revisions."
+    - "Application code, tests, migrations, seeds, Supabase data and providers."
+    - "main, setup/Inspection and every stash."
+
+business_decision:
+  recommendation: APPROVE_TRACEABILITY_CORRECTION_ONLY
+  reason: >-
+    CR-449..CR-478 describe Compliance Configuration. The current M6 bundle
+    mixes unrelated Committee, operational Enforcement and Risk products and
+    omits several true Compliance Configuration routes. Correct ownership
+    before design correction or implementation.
+  completion_effect: >-
+    This packet changes no completion score. It prevents unrelated screens from
+    being counted against the 30 requirement rows and identifies the missing
+    route/design evidence required for future acceptance.
+
+proposed_authoritative_matrix:
+  - requirement_ids: ["CR-449"]
+    capability: "Regulation Management"
+    primary_routes: ["/admin/regulations", "/admin/regulations/:id"]
+    screens: ["SCR-ADM-010", "SCR-ADM-011"]
+    components:
+      - apps/web/src/app/(app)/admin/regulations/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/[id]/page.tsx
+    primary_designs:
+      - logical_id: WA-DES-015
+        role: REGISTRY_NEAREST_MATCH
+        status: CONFIRMED_WITH_CORRECTION
+      - logical_id: WA-DES-002
+        role: DETAIL_NEAREST_MATCH
+        status: CONFIRMED_WITH_CORRECTION
+    permissions: "RBAC-001; Compliance Admin; maker-checker; published version immutable."
+    preserve:
+      - "Clause hierarchy, legal-source attachment, effective dates, version lineage and audit."
+      - "Draft-only edit, dependency guard, distinct approver and reasoned deactivation."
+  - requirement_ids: ["CR-450", "CR-453", "CR-467", "CR-468", "CR-471..CR-473"]
+    capability: "Inspection Item and Item-Level Rule Management"
+    primary_routes: ["/admin/items", "/admin/items/:id/runtime-preview"]
+    screens: ["SCR-ADM-020"]
+    components:
+      - apps/web/src/app/(app)/admin/items/page.tsx
+      - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+    primary_designs:
+      - logical_id: WA-DES-015
+        role: REGISTRY_NEAREST_MATCH
+        status: CONFIRMED_WITH_CORRECTION
+      - logical_id: WA-DES-002
+        role: DETAIL_AND_RUNTIME_PREVIEW_NEAREST_MATCH
+        status: CONFIRMED_WITH_CORRECTION
+    open_decision:
+      rows: ["CR-471", "CR-472"]
+      decisions: ["DEC-001", "DEC-028"]
+      rule: >-
+        Item scoring fields may be located on the item route, but no weight,
+        score, exclusion behavior or downstream calculation is design- or
+        implementation-authorized until both decisions close.
+    preserve:
+      - "Unique code, clause ownership, governed response/evidence presets and reuse."
+      - "Frozen package snapshot prerequisite, optimistic stale-write guard, usage and audit."
+  - requirement_ids: ["CR-451", "CR-452", "CR-474"]
+    capability: "Violation and Penalty Configuration"
+    primary_routes: ["/admin/violations", "/admin/violations?mode=penalty"]
+    screens: ["SCR-ADM-040", "SCR-ADM-041"]
+    components:
+      - apps/web/src/app/(app)/admin/violations/page.tsx
+      - apps/web/src/app/(app)/admin/violations/Controls.tsx
+    primary_designs:
+      - logical_id: WA-DES-015
+        role: VIOLATION_REGISTRY_NEAREST_MATCH
+        status: CONFIRMED_WITH_CORRECTION
+      - logical_id: NONE
+        role: PENALTY_MAPPING
+        status: NO_DESIGN_MATCH
+    route_decision: >-
+      SCR-ADM-041 names /admin/penalties. Current implementation deliberately
+      owns the logical mode /admin/violations?mode=penalty. Keep the current
+      route until sponsor-approved route change; design must use the recorded
+      current route.
+    preserve:
+      - "Configuration/runtime violation distinction and no inspector override."
+      - "Legal-clause anchor, one-to-one penalty mapping, governed presets, effective version, audit/usage and maker-checker."
+  - requirement_ids:
+      - "CR-454..CR-457"
+      - "CR-464..CR-470"
+      - "CR-473"
+      - "CR-475..CR-478"
+    capability: "Package, Form, Template and Runtime Contract Management"
+    primary_routes: ["/admin/packages", "/admin/packages/:id/designer"]
+    screens: ["SCR-ADM-030", "SCR-ADM-031"]
+    components:
+      - apps/web/src/app/(app)/admin/packages/page.tsx
+      - apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+      - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+      - apps/web/src/app/(app)/admin/packages/PublishControls.tsx
+      - apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+    primary_designs:
+      - logical_id: WA-DES-002
+        role: PACKAGE_LIBRARY_AND_VERSION_EDITOR_NEAREST_MATCH
+        status: CONFIRMED_WITH_CORRECTION
+      - logical_id: WA-DES-005
+        role: PACKAGE_DESIGNER_NEAREST_MATCH
+        status: NO_CODE_MATCH
+    code_gap: >-
+      No /admin/packages/:id/designer route exists. Some designer behavior is
+      implemented inline under /admin/packages, but the canonical route and
+      full screen contract are absent.
+    preserve:
+      - "Sections/order, required/optional/conditional, response mapping and response evidence."
+      - "Action forms, templates, preview, impact, complete dependency validation and cycle detection."
+      - "Frozen item/violation/template snapshots, maker-checker publication and runtime version pinning."
+  - requirement_ids: ["CR-458..CR-463"]
+    capability: "Cross-Cutting Configuration Lifecycle"
+    primary_routes:
+      - /admin/regulations
+      - "/admin/regulations/:id"
+      - /admin/items
+      - /admin/packages
+      - "/admin/packages/:id/designer"
+      - /admin/violations
+      - "/admin/violations?mode=penalty"
+    enabling_routes:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+      - /admin/compliance-approvals
+    primary_designs:
+      - logical_id: WA-DES-019
+        role: MAKER_CHECKER_REQUEST_ENVELOPE_ONLY
+        status: CONFIRMED_WITH_CORRECTION
+    ownership_rule: >-
+      Compliance Requests coordinates change approval and publication but does
+      not replace the domain screen that owns each configuration object.
+    preserve:
+      - "Versioning, draft/publish, dependency validation, impact, deactivation and immutable audit."
+      - "RPC/RLS/correlation and transactional claims only where independently proven."
+
+explicit_non_matches:
+  - product: "Committee and signatures"
+    design: WA-DES-018
+    route: /committee
+    code_match: CONFIRMED
+    CR_449_478_match: NO_REQUIREMENT_MATCH
+    correct_authority: "MVP2 M2-12 and MVP3 signature/provider contracts."
+    rule: "Retain the product, but count zero CR-449..CR-478 rows from it."
+  - product: "Operational Enforcement and correction lifecycle"
+    design: WA-DES-023
+    routes: ["/enforcement", "/admin/enforcement-recommendations"]
+    code_match: CONFIRMED_WITH_CORRECTION
+    CR_449_478_match: NO_REQUIREMENT_MATCH
+    correction: >-
+      Do not map WA-DES-023 to /admin/violations. Operational case decisions
+      and recommendations are not violation/penalty configuration.
+  - product: "Risk configuration"
+    design: WA-DES-040
+    routes: ["/admin/risk", "/admin/risk/models"]
+    code_match: CONFIRMED
+    CR_449_478_match: NO_REQUIREMENT_MATCH
+    correct_boundary: "RBAC-004, SCR-ADM-060, DEC-001 and DEC-028."
+    rule: >-
+      CR-471/472 locate item scoring on the item/package contract and remain
+      blocked. They do not authorize the general Risk module or any weights,
+      bands or immediate-effective save.
+  - product: "Compliance request governance"
+    design: WA-DES-019
+    code_match: CONFIRMED_WITH_CORRECTION
+    CR_449_478_match: ENABLING_NOT_SOLE_OWNER
+    rule: "May support CR-458..463; cannot inherit all 30 rows."
+
+incorrect_current_assignments_to_remove_after_approval:
+  - "WA-DES-018 → CR-449..CR-478"
+  - "WA-DES-023 → /admin/violations"
+  - "WA-DES-023 → CR-449..CR-478 for operational Enforcement"
+  - "WA-DES-040 → CR-449..CR-478"
+  - "WA-DES-019 as sole design authority for regulations/items/packages/violations/penalties"
+  - "WA-DES-002 Risk and Planning modes as Compliance Configuration authority"
+
+honest_gap_register:
+  - id: M6-SPLIT-GAP-001
+    route: "/admin/packages/:id/designer"
+    status: NO_CODE_MATCH
+    design: WA-DES-005
+    impact: "SCR-ADM-031 and its CR-454..478 subset cannot be certified."
+  - id: M6-SPLIT-GAP-002
+    route: "/admin/violations?mode=penalty"
+    status: NO_DESIGN_MATCH
+    code: apps/web/src/app/(app)/admin/violations/page.tsx
+    impact: "CR-452 penalty configuration lacks visual/interaction authority."
+  - id: M6-SPLIT-GAP-003
+    routes: ["/admin/regulations", "/admin/items", "/admin/violations"]
+    status: AMBIGUOUS_MAPPING
+    design: WA-DES-015
+    impact: "The design contains the modes but is registered only to /admin."
+  - id: M6-SPLIT-GAP-004
+    rows: ["CR-471", "CR-472"]
+    status: BLOCK_DUE_TO_OPEN_DECISION
+    decisions: ["DEC-001", "DEC-028"]
+    impact: "No design/code/sponsor completion until policy is approved."
+  - id: M6-SPLIT-GAP-005
+    scope: "All candidate designs"
+    status: INSUFFICIENT_EVIDENCE
+    impact: >-
+      Responsive, complete AR/RTL, accessibility, loading, empty, unauthorized,
+      degraded, stale/conflict, validation and provider failure frames are not
+      independently evidenced.
+
+preservation_contract:
+  - "No existing regulation, item, package, template, violation or penalty capability is removed by remapping."
+  - "Maker-checker, RLS/RBAC, audit, versioning, immutable published/runtime snapshots and stale-write guards remain binding."
+  - "No legal basis, provider, weight, score, threshold, SLA, grace period, penalty, severity or enforcement action is invented."
+  - "Current /admin/violations?mode=penalty route remains until approved route change."
+  - "Compliance Requests remains an enabling governance layer, not a substitute for domain screens."
+  - "Committee, Enforcement and Risk retain their own later-contract products and evidence."
+
+successor_design_queue:
+  - priority: 1
+    packet: M9-COMPLIANCE-DETAIL-SUCCESSOR-016
+    status: READY_AFTER_TRACEABILITY_APPROVAL
+    logical_id: WA-DES-002
+    reason: >-
+      It already maps to three real Compliance routes. Removing unrelated Risk
+      and Planning modes and unresolved policy values produces the fastest
+      genuinely matched correction without creating a new logical screen.
+    bounded_scope:
+      - "/admin/regulations/:id"
+      - /admin/packages
+      - "/admin/items/:id/runtime-preview"
+  - priority: 2
+    packet: M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015
+    status: READY_AFTER_ROUTE_MAPPING_APPROVAL
+    logical_id: WA-DES-015
+    bounded_scope: ["/admin/regulations", "/admin/items", "/admin/violations"]
+  - priority: 3
+    packet: M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+    status: BLOCKED_PENDING_NEW_LOGICAL_ID_AND_ROUTE_DECISION
+    bounded_scope: ["/admin/violations", "/admin/violations?mode=penalty"]
+  - priority: 4
+    packet: M9-PACKAGE-DESIGNER-SUCCESSOR-017
+    status: READY_FOR_DESIGN_ONLY_AFTER_TRACEABILITY_APPROVAL
+    logical_id: WA-DES-005
+    implementation_status: BLOCKED_NO_CODE_ROUTE
+    bounded_scope: ["/admin/packages/:id/designer"]
+  - priority: 5
+    packet: M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+    status: READY_AFTER_DOMAIN_DESIGN_OWNERSHIP
+    logical_id: WA-DES-019
+    bounded_scope:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+      - /admin/compliance-approvals
+
+status_board_implications:
+  Design:
+    state: RED
+    owner: Claude Design
+    date: "2026-07-25"
+    evidence: "M6-SPLIT-GAP-001..005"
+    next_action: M9-COMPLIANCE-DETAIL-SUCCESSOR-016
+  Frontend:
+    state: AMBER
+    owner: Claude Code
+    date: "2026-07-25"
+    evidence: "Real domain routes exist except /admin/packages/:id/designer"
+    next_action: "Preservation and missing-route plan after accepted design"
+  Service_Wiring:
+    state: AMBER
+    owner: Claude Code
+    date: "2026-07-25"
+    evidence: "Existing RPC/RLS/audit/version flows identified"
+    next_action: "Atomic publication and negative-path certification"
+  QA:
+    state: RED
+    owner: Codex reviewer
+    date: "2026-07-25"
+    evidence: "No corrected route/design matrix accepted; negative-state design evidence absent"
+    next_action: "Acceptance/evidence matrix after successor review"
+  Sponsor:
+    state: RED
+    owner: Sponsor
+    date: "2026-07-25"
+    evidence: "Traceability correction awaiting approval"
+    next_action: "Approve mapping correction only"
+
+approval_and_mutation_boundary:
+  approval_authorizes:
+    - "A reviewed update proposal for REQUIREMENT_BASELINE, DESIGN_ROUTE_MAP and ROUTE_INVENTORY."
+    - "Preparation of DRAFT_NON_CONSUMABLE successor designs under separate leases."
+  approval_does_not_authorize:
+    - "Frozen mapping edits by this packet."
+    - "Design overwrites, code changes, route creation, database/provider work, merge or deployment."
+    - "Any unresolved scoring, legal, provider or policy value."
+
+stop_conditions:
+  - "Any requirement has more than one primary semantic owner."
+  - "Committee, operational Enforcement or Risk is counted as CR-449..CR-478 completion."
+  - "Compliance Requests is treated as a substitute for domain configuration screens."
+  - "A NO DESIGN MATCH or NO CODE MATCH is silently upgraded."
+  - "Any P0/P1 or open decision remains hidden."

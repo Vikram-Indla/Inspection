@@ -1,0 +1,231 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CONTROL-REF-ADVANCE-CLASSIFIER-067
+status: READ_ONLY_CLASSIFIER_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Deterministically classify coordination-control ref movement as harmless
+  documentation advance, lease-authority change, stale dispatch pin or
+  blocking ownership drift, and define exact fail-closed revalidation without
+  changing any ref, manifest, owner or lease.
+
+authority:
+  regression_monitor: KIMI-M11-DISPATCH-VALIDATOR-REGRESSION-DRIFT-MONITOR-066
+  visibility_reconciliation: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+  mutation_matrix: KIMI-M11-DISPATCH-VALIDATOR-MUTATION-MATRIX-064
+  coverage_certificate: KIMI-M11-DISPATCH-VALIDATOR-COVERAGE-CERTIFICATE-065
+
+hard_boundary:
+  - "Read-only local ref/blob/history inspection and synthetic examples plus this one owned packet."
+  - "No fetch, checkout, branch/worktree creation, merge, push, real dispatch, owner, lease or shared-control mutation."
+  - "No implementation, QA, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+classification_precedence:
+  - order: 1
+    class: BLOCKING_OWNERSHIP_DRIFT
+    reason: "Actual overlap, ambiguity or unauthorized authority change dominates every other classification."
+  - order: 2
+    class: LEASE_AUTHORITY_CHANGE
+    reason: "A changed lease blob requires complete row-level revalidation before any dispatch."
+  - order: 3
+    class: STALE_DISPATCH_PIN
+    reason: "A manifest pinned to a non-current coordination commit cannot authorize a new dispatch."
+  - order: 4
+    class: HARMLESS_DOCUMENTATION_ADVANCE
+    reason: "Only when authority blobs and ownership semantics are byte-identical and no active manifest is invalidated."
+
+classes:
+  HARMLESS_DOCUMENTATION_ADVANCE:
+    required_conditions:
+      - "Old and new coordination refs resolve in the same canonical Git common directory."
+      - "ACTIVE_WORKTREE_LEASES.csv exists at both commits."
+      - "Old and new lease-registry SHA-256 values are identical."
+      - "No changed path is a lease registry, queue, current slice, task router, decision register, acceptance authority or product/test/SQL/data/design file."
+      - "Every changed file is a read-only coordination packet or non-authoritative status/evidence document."
+      - "No active dispatch manifest depends on the old commit as current authority."
+    verdict: ACK_DOCUMENTATION_ADVANCE
+    dispatch_effect:
+      current_active_dispatch: NONE_TO_PRESERVE
+      future_dispatch: REFRESH_COMMIT_PIN_AND_REVALIDATE
+  LEASE_AUTHORITY_CHANGE:
+    trigger_any:
+      - "Lease-registry blob hash changes."
+      - "A lease row is added, removed or changes actor, task, repository, worktree, branch, mode, paths, exclusions, status or release boundary."
+      - "The authoritative lease-registry path moves or becomes unreadable."
+    verdict: RETURN_FOR_FULL_LEASE_REVALIDATION
+    dispatch_effect: BLOCK_ALL_AFFECTED_DISPATCHES
+    required_followup:
+      - "Parse old/new rows and produce an exact row delta."
+      - "Re-run collision, owner separation, 22-field manifest and 16-field lease checks."
+      - "Require authorized change-control provenance for every authority-changing row."
+  STALE_DISPATCH_PIN:
+    trigger_any:
+      - "Manifest coordination commit differs from the current authoritative ref."
+      - "Manifest lease hash differs from the blob at its pinned commit."
+      - "Manifest ref resolves but its task/lease row no longer matches."
+    verdict: RETURN_REFRESH_PIN_OR_BLOCK_IF_WRITE_ATTEMPTED
+    dispatch_effect: BLOCK_NEW_OR_CONTINUING_WRITE_UNTIL_REPRODUCED
+    qualification: >-
+      A historical immutable manifest remains evidence of what was approved at
+      that time, but it cannot authorize new work after the active authority
+      view changes.
+  BLOCKING_OWNERSHIP_DRIFT:
+    trigger_any:
+      - "Two active rows overlap an application path, test path, database object, function signature or migration allocation."
+      - "Manifest actor differs from lease owner or task differs from lease task."
+      - "Implementation, QA and reviewer independence is violated."
+      - "A read-only or blocked row becomes writable without accepted change control."
+      - "A missing registry is interpreted as empty."
+      - "Any authority row points to a missing, dirty, wrong-repository or retired-path worktree."
+      - "Preservation falls below 20/361/18/9/12 or credit exceeds zero."
+    verdict: BLOCK_OWNERSHIP_DRIFT
+    dispatch_effect: STOP_ALL_AFFECTED_IMPLEMENTATION_AND_QA
+
+exact_revalidation_steps:
+  - order: 1
+    action: RESOLVE_REPOSITORY_IDENTITY
+    evidence: "Canonical repository and Git common directory."
+    stop_if: "Ref comes from another or retired repository."
+  - order: 2
+    action: RESOLVE_OLD_AND_NEW_COORDINATION_COMMITS
+    evidence: "Exact commit IDs; no branch checkout or fetch."
+    stop_if: "Either commit cannot resolve."
+  - order: 3
+    action: ENUMERATE_CHANGED_PATHS
+    evidence: "Name-status diff from old to new commit."
+    stop_if: "Any product, test, SQL, data, design or unclassified control path changed."
+  - order: 4
+    action: HASH_AUTHORITY_BLOBS_AT_BOTH_COMMITS
+    blobs:
+      - product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+    evidence: "Old/new SHA-256 and path presence."
+    stop_if: "Blob is missing or hashes differ without authorized lease-change review."
+  - order: 5
+    action: PARSE_AND_COMPARE_LEASE_ROWS
+    comparison_keys:
+      - actor
+      - packet
+      - repository
+      - worktree
+      - branch
+      - mode
+      - leased_paths
+      - shared_exclusions
+      - status
+    stop_if: "Any semantic row delta is unapproved, ambiguous or colliding."
+  - order: 6
+    action: RECHECK_PRODUCT_CONTROL_REF
+    evidence:
+      - origin/main commit
+      - WORK_QUEUE.yaml hash
+      - CURRENT_SLICE.yaml hash
+    stop_if: "Task or current-slice relationship changed without reconciliation."
+  - order: 7
+    action: REVALIDATE_DISPATCH_IF_PRESENT
+    evidence:
+      - "All 22 manifest fields."
+      - "All 16 lease fields."
+      - "Distinct implementation, QA and reviewer identities."
+      - "20/361/18/9/12 floor and zero credit."
+    stop_if: "Manifest is absent, stale, incomplete or colliding."
+  - order: 8
+    action: REPLAY_63_MUTATION_GUARDS
+    stop_if: "Any mutation no longer blocks."
+  - order: 9
+    action: ISSUE_CLASSIFICATION_ONLY
+    rule: "This classifier never refreshes a pin, changes a lease or authorizes work."
+
+synthetic_examples:
+  - example_id: EX-067-DOC-ADVANCE
+    old_commit: SYNTHETIC-COMMIT-A
+    new_commit: SYNTHETIC-COMMIT-B
+    changed_paths:
+      - product-contract/operationalization/coordination/batches/SYNTHETIC-READ-ONLY-PACKET.yaml
+    old_lease_sha256: SYNTHETIC-SAME-HASH
+    new_lease_sha256: SYNTHETIC-SAME-HASH
+    lease_row_delta: []
+    active_dispatch_manifest: false
+    expected_class: HARMLESS_DOCUMENTATION_ADVANCE
+    expected_verdict: ACK_DOCUMENTATION_ADVANCE
+    future_pin_action: REFRESH_BEFORE_FUTURE_DISPATCH
+  - example_id: EX-067-LEASE-CHANGE
+    old_commit: SYNTHETIC-COMMIT-A
+    new_commit: SYNTHETIC-COMMIT-C
+    changed_paths:
+      - product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+    old_lease_sha256: SYNTHETIC-OLD-HASH
+    new_lease_sha256: SYNTHETIC-NEW-HASH
+    lease_row_delta:
+      - "SYNTHETIC lease row added."
+    expected_class: LEASE_AUTHORITY_CHANGE
+    expected_verdict: RETURN_FOR_FULL_LEASE_REVALIDATION
+    dispatch_effect: BLOCK
+  - example_id: EX-067-STALE-PIN
+    authoritative_commit: SYNTHETIC-COMMIT-D
+    manifest_commit: SYNTHETIC-COMMIT-A
+    authoritative_lease_sha256: SYNTHETIC-SAME-HASH
+    manifest_lease_sha256: SYNTHETIC-SAME-HASH
+    write_attempted: false
+    expected_class: STALE_DISPATCH_PIN
+    expected_verdict: RETURN_REFRESH_PIN_OR_BLOCK_IF_WRITE_ATTEMPTED
+    dispatch_effect: BLOCK
+  - example_id: EX-067-OWNERSHIP-DRIFT
+    lease_rows:
+      - {actor: SYNTHETIC-OWNER-A, path: apps/web/src/app/(app)/virtual/actions.ts, status: ACTIVE}
+      - {actor: SYNTHETIC-OWNER-B, path: apps/web/src/app/(app)/virtual/actions.ts, status: ACTIVE}
+    preservation_floor: "20/361/18/9/12"
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+    dispatch_effect: BLOCK
+
+live_classification:
+  old_coordination_commit: bdbe23244a2f2d1547caf429449705d1026f9adf
+  new_coordination_commit: 79ebbc8bf947635b6c01cd23135883c38463d96f
+  changed_paths_class: READ_ONLY_COORDINATION_PACKETS
+  old_lease_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+  new_lease_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+  lease_row_delta: []
+  active_M11_dispatch_manifest: false
+  primary_class: HARMLESS_DOCUMENTATION_ADVANCE
+  secondary_condition: STALE_NON_ACTIVE_FUTURE_PIN
+  verdict: ACK_DOCUMENTATION_ADVANCE_REFRESH_FUTURE_PIN
+  authority_effect:
+    M11_write_lease: NONE
+    M11_QA_lease: NONE
+    implementation: BLOCKED
+    QA: BLOCKED
+    requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-CONTROL-REF-CLASSIFIER-SELF-TEST-068
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Mutate each classifier prerequisite and precedence branch to prove the four
+    classes are mutually deterministic and blocking ownership drift always
+    wins.
+  prohibited:
+    - "No fetch, real manifest, option, identity, owner, worktree, branch, lease, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  classes_defined: 4
+  precedence_entries: 4
+  revalidation_steps: 9
+  synthetic_examples: 4
+  live_lease_blob_drift: false
+  live_lease_row_deltas: 0
+  live_primary_class: HARMLESS_DOCUMENTATION_ADVANCE
+  real_dispatches_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

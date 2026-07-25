@@ -1,11 +1,10 @@
 "use client";
-// M08-003/M08-009/M08-010 — live visit monitoring with region/city filtering
-// and real auto-refresh. The filter round-trips through the URL so the server
-// refilters the map + SLA panels too; the interval refresh re-fetches ONLY the
-// monitoring rows through a server action (RLS-guarded), no full page reload.
-import { useEffect, useState, useTransition } from "react";
+// M08-003/M08-009/M08-010 — visit monitoring with region/city filtering.
+// The filter round-trips through the URL so the server re-filters the map and
+// SLA panels from one request-time snapshot. No refresh cadence is claimed
+// until the product contract configures one.
 import { useRouter } from "next/navigation";
-import { fetchMonitoringRows, type MonitorRow } from "./actions";
+import { type MonitorRow } from "./actions";
 import EmptyState from "@/components/EmptyState";
 import { IconSatellite } from "@/app/icons";
 
@@ -25,10 +24,6 @@ export type MonitoringStrings = {
   refreshing: string;
   autoNote: string;
 };
-
-// Poll cadence mirrors ENG-06 telemetry_interval_s (30s) — the freshest signal
-// the field app emits; anything faster is wasted load, anything slower is stale ops.
-const REFRESH_MS = 30_000;
 
 const GEOFENCE_TONE: Record<string, string> = {
   inside: "sq-lozenge--success",
@@ -74,32 +69,13 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
   enumLabels: Record<string, string>;
   strings: MonitoringStrings;
 }) {
-  const [rows, setRows] = useState(initialRows);
-  const [at, setAt] = useState(initialAt);
-  const [err, setErr] = useState(null as string | null);
-  const [pending, startTransition] = useTransition();
-
-  // Server navigation (filter change) re-seeds the table.
-  useEffect(() => { setRows(initialRows); setAt(initialAt); setErr(null); }, [initialRows, initialAt]);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      startTransition(async () => {
-        const res = await fetchMonitoringRows(region, city);
-        if (res.error) { setErr(res.error); return; }
-        setErr(null);
-        setRows(res.rows ?? []);
-        setAt(res.at ?? "");
-      });
-    }, REFRESH_MS);
-    return () => clearInterval(id);
-  }, [region, city]);
+  const rows = initialRows;
+  const at = initialAt;
 
   const label = (v: string) => enumLabels[v] ?? v.replace(/_/g, " ");
 
   return (
     <div className="stack" style={{ gap: "var(--space-3)" }}>
-      {err && <div className="sq-banner sq-banner--critical" role="alert"><div>{err}</div></div>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconSatellite size={28} />} title={s.emptyTitle} body={s.emptyDesc} bare />
       ) : (
@@ -121,8 +97,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
         </table></div>
       )}
       <p className="t-caption">
-        {pending ? s.refreshing : `${s.refreshedAt} `}
-        {!pending && at && <span className="numeric">{at.slice(11, 19)}</span>}
+        {s.refreshedAt} {at && <span className="numeric">{at.slice(11, 19)}</span>}
         {" · "}{s.autoNote}
       </p>
     </div>

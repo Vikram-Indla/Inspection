@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .ie-wrap { max-width:920px; margin:0 auto; padding:16px 18px 130px; display:flex; flex-direction:column; gap:14px; }
+  .ie-strip { display:flex; gap:8px; flex-wrap:wrap; }
+  .ie-stat { flex:1 1 120px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-primary); padding:10px 12px; box-shadow:var(--shadow-card); }
+  .ie-stat .n { font-size:20px; font-weight:700; }
+  .ie-stat .l { font-size:11.5px; color:var(--text-muted); }
+  .ie-item { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:14px 15px; display:flex; flex-direction:column; gap:11px; }
+  .ie-num { width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; font-size:13px; font-weight:600; flex:none; }
+  .ie-opt { display:flex; align-items:center; gap:9px; flex:1 1 110px; padding:10px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:44px; color:var(--text-primary); }
+  .ie-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .ie-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .ie-opt[aria-pressed="true"] .ie-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .ie-radios { display:flex; gap:8px; flex-wrap:wrap; }
+  .ie-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); }
+  .ie-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .switch { display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; white-space:nowrap; }
+  .switch > span { white-space:nowrap; }
+  .switch input { appearance:none; -webkit-appearance:none; box-sizing:border-box; width:34px; min-width:34px; height:20px; margin:0; border:0; border-radius:999px; background:var(--border-strong); position:relative; cursor:pointer; transition:background .15s; flex:none; }
+  .switch input:checked { background:var(--action-primary); }
+  .switch input::after { content:""; position:absolute; top:2px; inset-inline-start:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:inset-inline-start .15s; }
+  .switch input:checked::after { inset-inline-start:16px; }
+  .extract { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; background:var(--status-warning-soft); color:var(--status-warning-text); }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.batchTag }}</span>
+    <button class="ie-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="ie-wrap">
+    <div class="panel" style="padding:11px 14px; display:flex; align-items:flex-start; gap:10px; background:var(--status-info-soft); border-color:color-mix(in srgb,var(--status-info) 26%,transparent); box-shadow:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <span class="t-compact" style="color:var(--status-info-text);">{{ t.engineNote }}</span>
+    </div>
+
+    <div class="ie-strip">{{ strip }}</div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:2px;">
+      <h4 style="margin:0; font-size:15px;">{{ t.sectionName }}</h4>
+      <span class="badge badge-info">{{ t.weight }}</span>
+    </div>
+
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="3">
+      <div class="ie-item">{{ it.body }}</div>
+    </sc-for>
+
+    <div class="ie-item">{{ samplesBody }}</div>
+    <div class="ie-item">{{ seizureBody }}</div>
+    <div class="ie-item" style="border-color:{{ blockerBorder }};">{{ blockersBody }}</div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge {{ submitBadgeClass }}"><span class="dot"></span>{{ submitBadge }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary" aria-disabled="{{ submitDisabled }}" style="{{ submitStyle }}">{{ t.submit }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:920,&quot;height&quot;:1200}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar",
+    ans:{ i1:{applied:true,value:"expired",att:0}, i2:{applied:true,value:"no",att:1}, i3:{applied:true,value:"yes",att:0} },
+    samplesGate:"yes", seizureGate:"no", afOptional:false };
+
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? {
+      back:"رجوع", headerTitle:"تنفيذ البنود والتبعات", headerSub:"شركة الأمل لتدريب العمال", batchTag:"الدفعة 2",
+      theme:"الوضع", langBtnLabel:"EN", saveDraft:"حفظ كمسودة", submit:"إرسال",
+      engineNote:"يرسم محرّك التنفيذ العام كل بند من تعريفه: قابلية التطبيق ثم الحالة، دليل حسب قاعدة البند، ومرشّح مخالفة يُلغى تلقائياً عند تغيّر الإجابة إلى مطابق. لا تُبرمَج التبعات في الواجهة.",
+      sectionName:"القسم: السلامة المهنية والتراخيص", weight:"الوزن 20%",
+      applied:"يُطبَّق البند", state:"حالة البند", notes:"ملاحظات", evidence:"الدليل", attach:"إرفاق دليل", clause:"المرجع النظامي",
+      prelim:"الامتثال المبدئي", compliant:"مطابق", noncompliant:"غير مطابق", na:"لا ينطبق",
+      vioCand:"مرشّح مخالفة", severity:"الشدّة", corrective:"الإجراء التصحيحي", grace:"المهلة التصحيحية", penalty:"الجزاء المقترح", afTrig:"نموذج إجراء مُستدعى (إجباري)", afMand:"إجباري — لا يمكن إزالته",
+      vioInval:"أُلغي مرشّح المخالفة بعد تغيير الإجابة إلى «مطابق».",
+      evReq:"مطلوب دليل: صورة واحدة على الأقل عند «{v}».", evOk:"الدليل مُرفق.", evMissing:"الدليل ناقص.",
+      afSecTitle:"نماذج الإجراء", afOptAdd:"إضافة نموذج إجراء اختياري (طلب توصية إجراء إداري)", afIncomplete:"نموذج غير مكتمل — يمنع الإرسال.",
+      strip:["مُجاب","معلّق","مطابق","غير مطابق","مخالفات","أدلة"],
+      blockersTitle:"معوّقات الإرسال", noBlockers:"لا معوّقات — جاهز للإرسال.", bUnanswered:"بنود غير مُجابة", bEvidence:"دليل ناقص", bForms:"نماذج غير مكتملة",
+      submitReady:"جاهز للإرسال", submitBlocked:"إرسال محظور",
+      samplesTitle:"تفاصيل العينات", samplesGate:"هل تم سحب عينات من المنشأة؟", yes:"نعم", no:"لا",
+      addSample:"إضافة عينة جديدة", samplePhoto:"إضافة صورة العينة", samplePhotoHelp:"للحصول على أفضل نتيجة ارفع صورة بعرض 550 بكسل × 340 بكسل، بصيغة jpg، بحجم أقصى 2 ميجابايت.",
+      seizureTitle:"تفاصيل الحجز", seizureGate:"هل تم حجز منتجات؟", addالسeized:"إضافة منتجات جديدة", productN:"المنتج ({n})",
+      itemFieldsExtract:"حقول تفاصيل العنصر بانتظار استخراج من فيغما (VR-043/044/046 قيم بيانات لا تسميات).",
+      seizureLink:"يعكس هذا القسم بيانات «محضر حجز منتجات».", attMax:"الحد الأقصى للمرفق العام 5 ميجابايت (NF004).",
+    } : {
+      back:"Back", headerTitle:"Item execution & consequences", headerSub:"Al-Amal Worker Training Co.", batchTag:"Batch 2",
+      theme:"Theme", langBtnLabel:"AR", saveDraft:"Save as draft", submit:"Submit",
+      engineNote:"The generic engine renders each item from its definition: applicability then state, evidence per the item's rule, and a violation candidate that auto-invalidates when the answer changes to compliant. Consequences are never hardcoded in the UI.",
+      sectionName:"Section: Occupational safety & permits", weight:"Weight 20%",
+      applied:"Item applied", state:"Item state", notes:"Notes", evidence:"Evidence", attach:"Attach evidence", clause:"Legal reference",
+      prelim:"Preliminary compliance", compliant:"Compliant", noncompliant:"Non-compliant", na:"Not applicable",
+      vioCand:"Violation candidate", severity:"Severity", corrective:"Corrective action", grace:"Corrective period", penalty:"Proposed penalty", afTrig:"Action form triggered (mandatory)", afMand:"Mandatory — cannot be removed",
+      vioInval:"Violation candidate invalidated after the answer changed to “compliant”.",
+      evReq:"Evidence required: at least one photo on “{v}”.", evOk:"Evidence attached.", evMissing:"Evidence missing.",
+      afSecTitle:"Action forms", afOptAdd:"Add optional action form (admin-action recommendation)", afIncomplete:"Form incomplete — blocks submission.",
+      strip:["Answered","Pending","Compliant","Non-compliant","Violations","Evidence"],
+      blockersTitle:"Submit blockers", noBlockers:"No blockers — ready to submit.", bUnanswered:"Unanswered items", bEvidence:"Missing evidence", bForms:"Incomplete forms",
+      submitReady:"Ready to submit", submitBlocked:"Submit blocked",
+      samplesTitle:"Sample details", samplesGate:"Were samples collected from the establishment?", yes:"Yes", no:"No",
+      addSample:"Add new sample", samplePhoto:"Add sample photo", samplePhotoHelp:"For best results upload an image 550 px wide × 340 px high, jpg format, max size 2 MB.",
+      seizureTitle:"Seizure details", seizureGate:"Were products seized?", addالسeized:"Add new products", productN:"Product ({n})",
+      itemFieldsExtract:"Item detail fields pending live-Figma extraction (VR-043/044/046 are sample data, not labels).",
+      seizureLink:"This section reflects the “Product Seizure Report” record.", attMax:"General attachment cap 5 MB (NF004).",
+    };
+    const ck=h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const set=(id,patch)=>this.setState(s=>({ans:{...s.ans,[id]:{...s.ans[id],...patch}}}));
+
+    // Item definitions — the generic engine model (runtime.ts): responses + mapping{result,violation,action_form} + evidence_rule + clause
+    const ITEMS = [
+      { id:"i1", n:1, cat: ar?"التراخيص والتصاريح":"Licenses & permits",
+        title: ar?"عدم وجود تصريح سلامة ساري":"No valid safety permit", type:"validity",
+        clause: ar?"نظام الدفاع المدني · م.121":"Civil Defense Code · Art.121",
+        map:{ valid:{result:"compliant"}, expired:{result:"non_compliant", violation:{sev:ar?"جسمية":"Major", corr:ar?"الحصول على تصريح سلامة من الدفاع المدني.":"Obtain a Civil Defense safety permit.", grace:ar?"15 يوماً":"15 days", pen:ar?"إيقاف النشاط.":"Suspend activity."}, action_form:{mandatory:true}}, notAvailable:{result:"non_compliant", violation:{sev:ar?"جسمية":"Major", corr:ar?"استخراج تصريح السلامة.":"Issue the safety permit.", grace:ar?"15 يوماً":"15 days", pen:ar?"إيقاف النشاط.":"Suspend activity."}, action_form:{mandatory:true}} },
+        evidence:{ on:["expired","notAvailable"], min:1, type:"photo", mandatory:true } },
+      { id:"i2", n:2, cat: ar?"التراخيص والتصاريح":"Licenses & permits",
+        title: ar?"عدم وجود لوحة خارجية باسم المصنع ورقم الترخيص":"No external signboard with factory name & license no.", type:"yesNo",
+        clause: ar?"نظام الصناعة · م.39":"Industry Code · Art.39",
+        map:{ yes:{result:"compliant"}, no:{result:"non_compliant", violation:{sev:ar?"جسيمة":"Major", corr:ar?"تركيب لوحة خارجية تحمل اسم المصنع ورقم الترخيص.":"Install a signboard with factory name & license no.", grace:ar?"15 يوماً":"15 days", pen:ar?"إنذار.":"Warning."}} },
+        evidence:{ on:["no"], min:1, type:"photo", mandatory:true } },
+      { id:"i3", n:3, cat: ar?"السلامة المهنية":"Occupational safety",
+        title: ar?"مطابقة بطاقات السلامة الكيميائية (SDS) وشروط التخزين":"SDS chemical safety sheets & storage compliance", type:"yesNo",
+        clause: ar?"لائحة السلامة · بند 4.2":"Safety Regulation · 4.2",
+        map:{ yes:{result:"compliant"}, no:{result:"non_compliant", violation:{sev:ar?"متوسطة":"Moderate", corr:ar?"توفير بطاقات السلامة وتصحيح شروط التخزين.":"Provide SDS sheets & correct storage.", grace:ar?"30 يوماً":"30 days", pen:ar?"إنذار.":"Warning."}} },
+        evidence:{ on:["no"], min:1, type:"photo", mandatory:false } },
+    ];
+    const optsFor = (type)=> type==="validity"
+      ? (ar?[["valid","ساري"],["expired","منتهي"],["notAvailable","لا يوجد"]]:[["valid","Valid"],["expired","Expired"],["notAvailable","Not available"]])
+      : (ar?[["yes","ينطبق"],["no","لا ينطبق"]]:[["yes","Applies"],["no","Does not apply"]]);
+    const sevClass=(sev)=> /أمن|Security/.test(sev)?"badge-critical":/جسيم|جسم|Major/.test(sev)?"badge-major":"badge-warning";
+
+    const resultOf=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return "na"; const v=a.value; return it.map[v]?.result ?? null; };
+    const vioOf=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return null; return it.map[a.value]?.violation ?? null; };
+    const evMiss=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return false; const r=it.evidence; if(!r||!r.mandatory) return false; return r.on.includes(a.value) && (a.att||0)<r.min; };
+    const afMiss=(it)=>{ const a=st.ans[it.id]; if(!a.applied) return false; const af=it.map[a.value]?.action_form; return !!(af&&af.mandatory); }; // mandatory form present but treated incomplete in this demo
+
+    // live summary (summarize())
+    let answered=0,pending=0,comp=0,non=0,vio=0,ev=0;
+    ITEMS.forEach(it=>{ const a=st.ans[it.id]; if(!a.applied){return;} if(!a.value){pending++;return;} answered++; const r=resultOf(it); if(r==="compliant")comp++; if(r==="non_compliant")non++; if(vioOf(it))vio++; ev+=(a.att||0); });
+    const stripVals=[answered,pending,comp,non,vio,ev];
+    const strip = t.strip.map((l,i)=>h("div",{key:i,className:"ie-stat"}, h("div",{className:"n"},String(stripVals[i])), h("div",{className:"l"},l)));
+
+    const chip=(cls,txt)=>h("span",{className:"badge "+cls},txt);
+    const compChip=(r)=> r==="compliant"?chip("badge-compliant",t.compliant): r==="non_compliant"?chip("badge-critical",t.noncompliant): chip("badge-outline",t.na);
+
+    const itemBody=(it)=>{ const a=st.ans[it.id]; const r=resultOf(it); const vio=vioOf(it);
+      return h(React.Fragment,null,
+        h("div",{style:{display:"flex",alignItems:"flex-start",gap:"10px"}},
+          h("span",{className:"ie-num"},String(it.n)),
+          h("div",{style:{flex:1,minWidth:0}},
+            h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"3px"}}, chip("tag",it.cat), chip("tag",it.clause)),
+            h("div",{style:{fontSize:"13.5px",fontWeight:600,lineHeight:1.5}},it.title)),
+          h("label",{className:"switch",style:{flex:"none"}}, h("input",{type:"checkbox",checked:a.applied,onChange:e=>set(it.id,{applied:e.target.checked})}), h("span",null,t.applied))),
+        a.applied ? h(React.Fragment,null,
+          h("div",null, h("div",{className:"ie-k",style:{marginBottom:"6px"}},t.state),
+            h("div",{className:"ie-radios"}, optsFor(it.type).map(([v,l])=>{ const on=a.value===v;
+              return h("button",{key:v,className:"ie-opt","aria-pressed":on,onClick:()=>set(it.id,{value:v})}, h("span",{className:"ie-ind"},on?ck:null), l); }))),
+          h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}, h("span",{className:"ie-k"},t.prelim), compChip(r)),
+          h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}},t.notes), h("textarea",{className:"input",rows:2})),
+          // evidence leg
+          h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}},
+            h("button",{className:"up-btn",onClick:()=>set(it.id,{att:(a.att||0)+1})}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), t.attach+(a.att?` · ${a.att}`:"")),
+            it.evidence && it.evidence.on.includes(a.value) ? h("span",{className:"t-caption",style:{color: evMiss(it)?"var(--status-critical-text)":"var(--status-compliant-text)"}}, evMiss(it)? t.evMissing : (a.att?t.evOk:t.evReq.replace("{v}", optsFor(it.type).find(o=>o[0]===a.value)[1]))) : null),
+          // violation candidate / invalidation
+          vio ? h("div",{style:{border:"1px solid color-mix(in srgb,var(--status-critical) 30%,transparent)",background:"var(--status-critical-soft)",borderRadius:"8px",padding:"11px 13px",display:"flex",flexDirection:"column",gap:"7px"}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}, chip("badge "+sevClass(vio.sev),vio.sev), h("span",{style:{fontSize:"13px",fontWeight:600,color:"var(--status-critical-text)"}},t.vioCand)),
+            h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 16px",fontSize:"12px"}},
+              h("div",null,h("span",{className:"ie-k"},t.corrective),h("div",{style:{fontWeight:600}},vio.corr)),
+              h("div",null,h("span",{className:"ie-k"},t.penalty),h("div",{style:{fontWeight:600}},vio.pen)),
+              h("div",null,h("span",{className:"ie-k"},t.grace),h("div",{style:{fontWeight:600}},vio.grace))),
+            it.map[a.value]?.action_form ? h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",borderBlockStart:"1px solid color-mix(in srgb,var(--status-critical) 20%,transparent)",paddingBlockStart:"7px"}}, chip("badge-major",t.afTrig), h("span",{className:"t-caption"},t.afMand)) : null)
+          : (r==="compliant" ? h("div",{className:"t-caption",style:{color:"var(--status-compliant-text)"}}, "✓ "+t.vioInval) : null)
+        ) : null);
+    };
+    const items = ITEMS.map(it=>({body:itemBody(it)}));
+
+    // Samples / Seizure (gated repeater — captured scaffold; per-item detail EXTRACT)
+    const gate=(val,setKey,label)=>h("div",null, h("div",{style:{fontSize:"13px",color:"var(--text-secondary)",marginBottom:"7px"}},label),
+      h("div",{className:"ie-radios"}, [["yes",t.yes],["no",t.no]].map(([v,l])=>{ const on=val===v;
+        return h("button",{key:v,className:"ie-opt",style:{flex:"0 0 auto"},"aria-pressed":on,onClick:()=>this.setState({[setKey]:v})}, h("span",{className:"ie-ind"},on?ck:null), l); })));
+    const extractRow=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginTop:"6px"}},h("span",{className:"extract"},"EXTRACT"),h("span",{className:"t-caption"},t.itemFieldsExtract));
+    const samplesBody=h(React.Fragment,null,
+      h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px",flexWrap:"wrap"}}, h("h4",{style:{margin:0,fontSize:"14.5px"}},t.samplesTitle)),
+      gate(st.samplesGate,"samplesGate",t.samplesGate),
+      st.samplesGate==="yes"?h("div",{style:{border:"1px dashed var(--border-strong)",borderRadius:"8px",padding:"11px 12px",display:"flex",flexDirection:"column",gap:"8px",marginTop:"2px"}},
+        h("strong",{style:{fontSize:"13px"}}, (ar?"عينة (1)":"Sample (1)")),
+        h("button",{className:"up-btn"}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), t.samplePhoto),
+        h("span",{className:"t-caption"},t.samplePhotoHelp),
+        extractRow,
+        h("button",{className:"up-btn",style:{borderStyle:"solid",borderColor:"var(--action-primary)",color:"var(--action-primary)"}}, "+ "+t.addSample)):null);
+    const seizureBody=h(React.Fragment,null,
+      h("h4",{style:{margin:0,fontSize:"14.5px"}},t.seizureTitle),
+      gate(st.seizureGate,"seizureGate",t.seizureGate),
+      st.seizureGate==="yes"?h("div",{style:{border:"1px dashed var(--border-strong)",borderRadius:"8px",padding:"11px 12px",display:"flex",flexDirection:"column",gap:"8px",marginTop:"2px"}},
+        h("strong",{style:{fontSize:"13px"}}, t.productN.replace("{n}","1")),
+        extractRow,
+        h("button",{className:"up-btn",style:{borderStyle:"solid",borderColor:"var(--action-primary)",color:"var(--action-primary)"}}, "+ "+t["addالسeized"])):null,
+      h("div",{className:"t-caption",style:{marginTop:"2px"}}, t.seizureLink+" · "+t.attMax));
+
+    // Grouped submit blockers (computeBlockers)
+    const un=ITEMS.filter(it=>st.ans[it.id].applied && !st.ans[it.id].value);
+    const evb=ITEMS.filter(evMiss);
+    const fmb=ITEMS.filter(afMiss);
+    const anyBlock=un.length||evb.length||fmb.length;
+    const bLine=(label,arr)=> arr.length?h("div",{style:{fontSize:"12.5px"}}, h("span",{className:"ie-k"},label+": "), arr.map((it,i)=>((i?"، ":"")+it.title)).join("")):null;
+    const blockersBody=h(React.Fragment,null,
+      h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}}, h("h4",{style:{margin:0,fontSize:"14.5px"}},t.blockersTitle), anyBlock?chip("badge-critical",String(un.length+evb.length+fmb.length)):chip("badge-compliant","✓")),
+      anyBlock?h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}}, bLine(t.bUnanswered,un), bLine(t.bEvidence,evb), bLine(t.bForms,fmb)) : h("div",{className:"t-caption",style:{color:"var(--status-compliant-text)"}}, t.noBlockers));
+
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      strip, items, samplesBody, seizureBody, blockersBody,
+      blockerBorder: anyBlock?"color-mix(in srgb,var(--status-critical) 30%,transparent)":"var(--border-subtle)",
+      submitBadge: anyBlock?t.submitBlocked:t.submitReady, submitBadgeClass: anyBlock?"badge-critical":"badge-completed",
+      submitDisabled: anyBlock?"true":"false", submitStyle: anyBlock?"opacity:.5; pointer-events:none;":"",
+    };
+  }
+}
+</script>
+</body>
+</html>

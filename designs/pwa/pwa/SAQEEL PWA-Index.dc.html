@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pwix-card { display:flex; flex-direction:column; gap:6px; padding:12px 14px; border-radius:var(--radius-md); border:1px solid #dcdfe3; background:#ffffff; text-decoration:none; transition: transform 140ms ease, border-color 140ms ease; }
+  .pwix-card:hover { transform:translateY(-2px); border-color:var(--nav-indicator); }
+  .pwix-card.misc { background:#f4f2ec; border-style:dashed; }
+  .pwix-name { color:#14181d; }
+  .pwix-desc { color:#5b6470; }
+  .pwix-route { font-family:ui-monospace, "SF Mono", Menlo, monospace; font-size:10.5px; padding:2px 6px; border-radius:4px; width:fit-content; }
+  .pwix-route.ok { background:#e6f4ef; color:#1c6b52; }
+  .pwix-route.na { background:#fbeee0; color:#9a5b12; }
+  .pwix-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; }
+  .pwix-step { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--nav-indicator); color:#0b1013; font-size:11.5px; font-weight:700; flex:none; }
+</style>
+</helmet>
+<div dir="ltr" style="min-height:100dvh; background:var(--nav-bg); color:var(--nav-text-active); font-family:var(--font-body); padding:32px 40px 60px;">
+  <div style="display:flex; align-items:center; gap:12px; margin-block-end:6px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.7" style="width:30px;height:30px;"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    <h1 style="font-size:26px; font-weight:700; margin:0;">SAQEEL PWA — Screen Index</h1>
+  </div>
+  <p class="t-caption" style="color:var(--nav-text); margin:0 0 6px;">All {{ total }} installable field-app screens. Ordered by the inspector's actual journey; support tools and reference material are called out separately below. Route badge = code path in <span class="id-code">web/src/app/**</span>; amber = not yet wired in the repo.</p>
+  <p class="t-caption" style="color:var(--nav-text); margin:0 0 28px;"><a href="../SAQEEL Web-Index.dc.html" style="color:var(--nav-indicator);">→ Web console / admin index</a></p>
+
+  <sc-for list="{{ journey }}" as="g" hint-placeholder-count="7">
+    <div style="margin-block-end:30px;">
+      <h2 style="font-size:14px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--nav-indicator); margin:0 0 12px; padding-block-end:8px; border-bottom:1px solid color-mix(in srgb, var(--nav-text) 20%, transparent); display:flex; align-items:center; gap:9px;">
+        <span class="pwix-step">{{ g.step }}</span>{{ g.label }}
+      </h2>
+      <div class="pwix-grid">
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+          <a class="pwix-card" href="{{ it.file }}">
+            <span class="pwix-name" style="font-weight:600; font-size:14.5px;">{{ it.name }}</span>
+            <span class="pwix-desc t-caption">{{ it.desc }}</span>
+            <span class="pwix-route {{ it.routeOk }}">{{ it.route }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+
+  <div style="margin-block-end:30px;">
+    <h2 style="font-size:14px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--nav-indicator); margin:0 0 4px; padding-block-end:8px; border-bottom:1px solid color-mix(in srgb, var(--nav-text) 20%, transparent);">Anytime / support — not sequence-bound</h2>
+    <p class="t-caption" style="color:var(--nav-text); margin:0 0 12px;">Reachable from any point in the journey via the shell nav, not a step in it.</p>
+    <div class="pwix-grid">
+      <sc-for list="{{ support }}" as="it" hint-placeholder-count="4">
+        <a class="pwix-card" href="{{ it.file }}">
+          <span class="pwix-name" style="font-weight:600; font-size:14.5px;">{{ it.name }}</span>
+          <span class="pwix-desc t-caption">{{ it.desc }}</span>
+          <span class="pwix-route {{ it.routeOk }}">{{ it.route }}</span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+
+  <div>
+    <h2 style="font-size:14px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c99a4a; margin:0 0 4px; padding-block-end:8px; border-bottom:1px dashed #c99a4a;">⊘ Miscellaneous — reference &amp; non-product files</h2>
+    <p class="t-caption" style="color:var(--nav-text); margin:0 0 12px;">Not runtime screens — architecture references, mindmaps, and one unconfirmed tool. Kept apart so they never get mistaken for a real screen in the app.</p>
+    <div class="pwix-grid">
+      <sc-for list="{{ misc }}" as="it" hint-placeholder-count="4">
+        <a class="pwix-card misc" href="{{ it.file }}">
+          <span class="pwix-name" style="font-weight:600; font-size:14.5px;">{{ it.name }}</span>
+          <span class="pwix-desc t-caption">{{ it.desc }}</span>
+          <span class="pwix-route {{ it.routeOk }}">{{ it.route }}</span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() {
+    const OK = "ok", NA = "na";
+    const journey = [
+      { step:1, label:"Sign in & start", items:[
+        { name:"Login", desc:"Trusted-device + OTP sign-in", file:"SAQEEL PWA-Field Login.dc.html", route:"web/src/app/login/field", routeOk:OK },
+        { name:"App (AR)", desc:"Shell entry, Arabic", file:"SAQEEL PWA-Field App.dc.html", route:"web/src/app/(app)/field", routeOk:OK },
+        { name:"App (EN)", desc:"Shell entry, English", file:"SAQEEL PWA-Field App EN.dc.html", route:"web/src/app/(app)/field", routeOk:OK },
+      ]},
+      { step:2, label:"Task & visit intake", items:[
+        { name:"My Tasks", desc:"Assigned visit queue", file:"SAQEEL PWA-Field My Tasks.dc.html", route:"web/src/app/(app)/tasks", routeOk:OK },
+        { name:"Visits", desc:"Visit list", file:"SAQEEL PWA-Field Visits.dc.html", route:"web/src/app/(app)/visits", routeOk:OK },
+      ]},
+      { step:3, label:"Prepare & travel", items:[
+        { name:"Preparation", desc:"Pre-visit package review", file:"SAQEEL PWA-Field Preparation.dc.html", route:"…/field/[visitId] (PreExecution.tsx)", routeOk:OK },
+        { name:"Journey", desc:"Departure + arrival continuity", file:"SAQEEL PWA-Field Journey.dc.html", route:"…/field/[visitId] (Startup.tsx)", routeOk:OK },
+        { name:"Travel", desc:"Geofenced arrival, live route", file:"SAQEEL PWA-Field Travel.dc.html", route:"…/field/[visitId] (Startup.tsx)", routeOk:OK },
+      ]},
+      { step:4, label:"Arrive at establishment", items:[
+        { name:"Establishments", desc:"List + unregistered entry", file:"SAQEEL PWA-Field Establishments.dc.html", route:"web/src/app/(app)/factories", routeOk:OK },
+        { name:"Establishment File", desc:"Establishment record", file:"SAQEEL PWA-Field Establishment File.dc.html", route:"…/factories/[id]", routeOk:OK },
+      ]},
+      { step:5, label:"Execute the visit", items:[
+        { name:"Execution Shell", desc:"Persistent stage-nav shell", file:"SAQEEL PWA-Field Execution Shell.dc.html", route:"…/field/[visitId]", routeOk:OK },
+        { name:"Immediate & Incident", desc:"On-site start + mid-visit incident", file:"SAQEEL PWA-Field Immediate and Incident.dc.html", route:"…/planning/immediate, …/incident-reports", routeOk:OK },
+        { name:"Inspection", desc:"Item execution", file:"SAQEEL PWA-Field Inspection.dc.html", route:"…/field/inspection/[id]", routeOk:OK },
+        { name:"Inspection Form", desc:"Stepped checklist", file:"SAQEEL PWA-Field Inspection Form.dc.html", route:"…/field/inspection/[id] (Workspace.tsx)", routeOk:OK },
+        { name:"Virtual Visit", desc:"Physical/virtual mode selector", file:"SAQEEL PWA-Field Virtual Visit.dc.html", route:"web/src/app/(app)/virtual", routeOk:OK },
+        { name:"Virtual Session", desc:"OTP-gated virtual session", file:"SAQEEL PWA-Field Virtual Session.dc.html", route:"…/virtual/[id]", routeOk:OK },
+        { name:"OCR Capture", desc:"Evidence OCR capture", file:"SAQEEL PWA-Field OCR Capture.dc.html", route:"web/src/app/(app)/evidence-ocr", routeOk:OK },
+      ]},
+      { step:6, label:"Report & close out", items:[
+        { name:"Reports Library", desc:"Report type picker", file:"SAQEEL PWA-Field Reports Library.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+        { name:"Reports", desc:"Signature & approval", file:"SAQEEL PWA-Field Reports.dc.html", route:"web/src/app/reports/inspection/[id]", routeOk:OK },
+        { name:"Challenge Report", desc:"Challenge report type", file:"SAQEEL PWA-Field Challenge Report.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+        { name:"Visit Statement", desc:"Visit statement report type", file:"SAQEEL PWA-Field Visit Statement.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+        { name:"Seizure Records", desc:"Seizure record type", file:"SAQEEL PWA-Field Seizure Records.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+        { name:"Reopening Notices", desc:"Reopening notice type", file:"SAQEEL PWA-Field Reopening Notices.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+        { name:"Completion", desc:"Signature + feedback QR", file:"SAQEEL PWA-Field Completion.dc.html", route:"…/field/inspection/[id] (submit step)", routeOk:OK },
+        { name:"Visit Results", desc:"Outcome summary", file:"SAQEEL PWA-Field Visit Results.dc.html", route:"web/src/app/(app)/visits/[id]", routeOk:OK },
+      ]},
+      { step:7, label:"Back to base", items:[
+        { name:"Dashboard", desc:"Home / mission rail", file:"SAQEEL PWA-Field Dashboard.dc.html", route:"web/src/app/(app)/field", routeOk:OK },
+        { name:"Factory 360", desc:"Establishment 360 view", file:"SAQEEL PWA-Field Factory 360.dc.html", route:"…/field/factory-360/[id]", routeOk:OK },
+      ]},
+    ];
+    const support = [
+      { name:"Account", desc:"Inspector profile", file:"SAQEEL PWA-Field Account.dc.html", route:"web/src/app/(app)/profile", routeOk:OK },
+      { name:"Settings", desc:"App preferences", file:"SAQEEL PWA-Field Settings.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+      { name:"Biometric", desc:"Face ID / passkey enrollment", file:"SAQEEL PWA-Field Biometric.dc.html", route:"⊘ not yet in repo (WebAuthn)", routeOk:NA },
+      { name:"Trusted Devices", desc:"Device management", file:"SAQEEL PWA-Field Trusted Devices.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+      { name:"Notifications", desc:"List + detail", file:"SAQEEL PWA-Field Notifications.dc.html", route:"web/src/app/push (opt-in only, no list page)", routeOk:NA },
+      { name:"Global Search", desc:"App-wide search", file:"SAQEEL PWA-Field Global Search.dc.html", route:"web/src/app/api/shell/search (API only)", routeOk:NA },
+      { name:"Drafts", desc:"Findable drafts list", file:"SAQEEL PWA-Field Drafts.dc.html", route:"⊘ not yet in repo", routeOk:NA },
+      { name:"Conflict Resolution", desc:"Offline sync conflicts", file:"SAQEEL PWA-Field Conflict Resolution.dc.html", route:"lib/offline.ts (client store, no page)", routeOk:NA },
+    ];
+    const misc = [
+      { name:"Ops Console", desc:"Field ops monitoring — unconfirmed", file:"SAQEEL PWA-Field Ops Console.dc.html", route:"⊘ unconfirmed — check vs. web /operations", routeOk:NA },
+      { name:"Golden Journey", desc:"Reference end-to-end flow", file:"SAQEEL PWA-Inspector Golden Journey.dc.html", route:"reference only", routeOk:NA },
+      { name:"Journey Mindmap", desc:"Reference — all 20 journeys", file:"SAQEEL PWA-Inspector Journey Mindmap.dc.html", route:"reference only", routeOk:NA },
+      { name:"PWA Architecture", desc:"14-stage + API surface map", file:"SAQEEL PWA-Inspector Architecture.dc.html", route:"reference only", routeOk:NA },
+      { name:"iPad", desc:"iPad dashboard reference", file:"SAQEEL PWA-Inspector iPad.dc.html", route:"reference only", routeOk:NA },
+      { name:"iPad Field", desc:"Consolidated iPad reference", file:"SAQEEL PWA-Inspector iPad Field.dc.html", route:"reference only", routeOk:NA },
+    ];
+    const total = journey.reduce((n,g)=>n+g.items.length,0) + support.length + misc.length;
+    return { journey, support, misc, total };
+  }
+}
+</script>
+</body>
+</html>

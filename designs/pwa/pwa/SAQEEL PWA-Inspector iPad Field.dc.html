@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; background: #11141a; }
+  .fld { font-variant-numeric: tabular-nums; }
+  .fld-tap { min-height: 52px; }
+  .fld-seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .fld-state { transition: background 140ms, color 140ms, border-color 140ms; }
+  .fld-scroll { overflow-y: auto; }
+  .fld-scroll::-webkit-scrollbar { width: 8px; }
+  .fld-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border-strong); display: grid; place-items: center; flex: none; }
+  .fld-check.on { background: var(--action-primary); border-color: var(--action-primary); color: #fff; }
+</style>
+</helmet>
+<div data-theme="dark" data-density="field" style="min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:14px; padding:18px; background:#11141a; font-family:var(--font-body);">
+
+  <!-- PROTOTYPE STATE PICKER -->
+  <div class="fld-seg" style="width:min(1120px,96vw); align-items:center; padding:10px 12px; background:#1a1e26; border:1px solid #2a2f39; border-radius:12px;">
+    <span style="font:600 11px var(--font-mono); color:#7d8590; letter-spacing:.06em;">FIELD STATE MACHINE · SCR-IPAD</span>
+    <span style="flex:1;"></span>
+    <sc-for list="{{ stages }}" as="st" hint-placeholder-count="9">
+      <button onClick="{{ st.pick }}" class="fld-state" style="padding:6px 11px; border-radius:8px; border:1px solid {{ st.border }}; background:{{ st.bg }}; color:{{ st.color }}; cursor:pointer; font:600 11.5px var(--font-body);">{{ st.n }} · {{ st.label }}</button>
+    </sc-for>
+  </div>
+
+  <!-- iPAD FRAME (landscape) -->
+  <div style="width:min(1120px,96vw); aspect-ratio:1194/834; max-height:82vh; background:#000; border-radius:28px; padding:12px; box-shadow:0 30px 80px -20px rgba(0,0,0,.7);">
+    <div data-theme="{{ theme }}" style="width:100%; height:100%; border-radius:18px; overflow:hidden; background:var(--surface-canvas); color:var(--text-primary); display:flex; flex-direction:column;">
+
+      <!-- FIELD TOP BAR -->
+      <header style="display:flex; align-items:center; gap:12px; padding:11px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); flex:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="width:26px; height:26px; flex:none;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+        <div style="line-height:1.2; min-width:0;"><div style="font-weight:600; font-size:14px;">{{ head.title }}</div><div class="t-caption" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ head.sub }}</div></div>
+        <span style="flex:1;"></span>
+        <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}"><span class="badge badge-warning"><span class="dot"></span>Offline — 3 queued</span></sc-if>
+        <sc-if value="{{ online }}" hint-placeholder-val="{{ true }}"><span class="badge badge-info"><span class="dot"></span>Synced 13:41</span></sc-if>
+        <span class="avatar avatar-lg">KA</span>
+      </header>
+
+      <!-- STAGE BODY -->
+      <div class="fld-scroll fld" style="flex:1; min-height:0; padding:18px;">
+
+        <!-- 1 · DASHBOARD -->
+        <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-block-end:14px;">
+            <div style="font-size:18px; font-weight:600;">3 visits remaining · next is high-risk</div>
+            <span style="flex:1;"></span>
+            <span class="exc-chip exc-warning"><span class="exc-mark"></span>1 returned</span>
+            <span class="exc-chip exc-pending"><span class="exc-mark"></span>1 draft</span>
+            <span class="exc-chip exc-critical"><span class="exc-mark"></span>1 sync failed</span>
+          </div>
+          <div class="kpi-grid" style="margin-block-end:16px;">
+            <div class="kpi"><div class="kpi-label">Today's visits</div><div class="kpi-value">5</div><div class="kpi-delta">assigned</div></div>
+            <div class="kpi"><div class="kpi-label">Remaining</div><div class="kpi-value">3</div><div class="kpi-delta">assigned − submitted</div></div>
+            <div class="kpi"><div class="kpi-label">Pending attention</div><div class="kpi-value" style="color:var(--status-warning);">2</div><div class="kpi-delta">returned + draft + sync</div></div>
+            <div class="kpi"><div class="kpi-label">Daily progress</div><div class="kpi-value">40<span class="unit">%</span></div><div class="kpi-delta">2 of 5 submitted · not approval</div></div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div style="display:flex; align-items:center; gap:10px; padding:11px 16px; border-block-end:1px solid var(--border-subtle);">
+              <div class="seg"><button class="seg-opt" aria-pressed="true">List</button><button class="seg-opt">Map</button><button class="seg-opt">Calendar</button></div>
+              <span style="flex:1;"></span><span class="id-code" style="font-size:11px; color:var(--text-muted);">assigned · window today</span>
+            </div>
+            <sc-for list="{{ visits }}" as="v" hint-placeholder-count="4">
+              <button onClick="{{ v.open }}" class="fld-tap" style="display:flex; align-items:center; gap:12px; width:100%; text-align:start; padding:12px 16px; border:0; border-block-end:1px solid var(--border-subtle); background:{{ v.bg }}; cursor:pointer; font:inherit;">
+                <span class="id-code" style="width:54px; font-size:13px; color:var(--text-secondary);">{{ v.time }}</span>
+                <span style="flex:1; min-width:0;"><span style="display:block; font-weight:600; font-size:14.5px;">{{ v.factory }}</span><span class="t-caption"><span class="id-code">{{ v.ref }}</span> · {{ v.type }} · {{ v.mode }}</span></span>
+                <span class="exc-chip {{ v.excClass }}"><span class="exc-mark"></span>{{ v.risk }}</span>
+                <span class="badge {{ v.stBadge }}">{{ v.st }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- 2 · PREPARATION / READINESS -->
+        <sc-if value="{{ isPrep }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="t-label" style="margin-block-end:10px;">Start-readiness</div>
+            <div class="stack" style="gap:10px;">
+              <div style="display:flex; gap:10px; align-items:center;"><span class="fld-check on">✓</span><span style="flex:1; font-size:13.5px;">Window 09:00–12:00 · today</span></div>
+              <div style="display:flex; gap:10px; align-items:center;"><span class="fld-check on">✓</span><span style="flex:1; font-size:13.5px;">Package cached for offline — Fire Safety <span class="id-code">v3 (locked)</span> · integrity ✓</span></div>
+              <div style="display:flex; gap:10px; align-items:center;"><span class="fld-check on">✓</span><span style="flex:1; font-size:13.5px;">Factory 360 snapshot cached</span></div>
+              <div style="display:flex; gap:10px; align-items:center;"><span class="fld-check">○</span><span style="flex:1; font-size:13.5px;">Journey session not started</span></div>
+              <div style="display:flex; gap:10px; align-items:center;"><span class="fld-check">○</span><span style="flex:1; font-size:13.5px;">I have reviewed repeat findings <span class="id-code" style="color:var(--status-critical-text);">required</span></span></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:14px 16px; margin-block-end:14px; border-inline-start:3px solid var(--accent-strong, var(--action-primary)); background:var(--accent-soft);">
+            <div class="row" style="gap:8px; margin-block-end:6px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--action-primary)" stroke-width="1.7"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg><span style="font-size:13px; font-weight:600;">AI preparation assistant</span><span class="badge badge-info" style="height:18px;">advisory</span></div>
+            <p class="t-caption" style="margin:0;">2 open fire-safety findings from the last approved inspection; blocked emergency exit failed 2× in 12 months. Advisory only — evidence AC-0107. Human decides.</p>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div style="padding:11px 16px; border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; gap:8px;"><span class="t-label">Geofence · dispatch</span><span class="badge badge-info" style="height:18px;">SB20</span><span style="flex:1;"></span><span class="id-code" style="font-size:11px; color:var(--text-muted);">official ≠ observed</span></div>
+            <div class="ip-graticule" style="height:150px; background:var(--surface-sunken); position:relative;">
+              <div style="position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:16px;"><div class="t-caption" style="max-width:44ch;">Mapbox geofence card — governed dispatch point + fence ring (150 m). Observed position plots on check-in.</div></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- 3 · JOURNEY -->
+        <sc-if value="{{ isJourney }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="row" style="justify-content:space-between; align-items:center; margin-block-end:12px;"><div class="t-label">Journey · on the way</div><span class="badge badge-info"><span class="dot"></span>live · ±6.2m</span></div>
+            <div style="display:flex; gap:6px; align-items:baseline; margin-block-end:4px;"><span class="t-caption">Progress</span><span style="flex:1;"></span><span class="id-code" style="font-weight:600;">68%</span></div>
+            <div class="progress" style="margin-block-end:14px;"><i style="width:68%;"></i></div>
+            <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+              <div class="kpi"><div class="kpi-label">ETA</div><div class="kpi-value" style="font-size:24px;">7<span class="unit">min</span></div><div class="kpi-delta">mapbox_directions · 13:41</div></div>
+              <div class="kpi"><div class="kpi-label">Remaining</div><div class="kpi-value" style="font-size:24px;">4.2<span class="unit">km</span></div><div class="kpi-delta">to dispatch</div></div>
+              <div class="kpi"><div class="kpi-label">Telemetry</div><div class="kpi-value" style="font-size:24px;">12</div><div class="kpi-delta">posts · 30s cadence</div></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:14px 16px;">
+            <div class="t-label" style="margin-block-end:8px;">Journey timeline</div>
+            <ul class="timeline">
+              <li><span class="tl-dot is-accent"></span><div class="tl-title">Journey started · device 13:34</div><div class="tl-meta">on_the_way · device + app version captured</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">Live tracking</div><div class="tl-meta">watchPosition · lat/lng/alt/speed/heading</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">Arrival auto-detect at 200 m</div><div class="tl-meta">not yet reached</div></li>
+            </ul>
+            <p class="t-caption" style="margin-block-start:8px; color:var(--text-muted);">Deviation heuristic: &gt;500 m past closest approach, sustained 120 s → one immutable deviation event.</p>
+          </div>
+        </sc-if>
+
+        <!-- 4 · OUTSIDE GEOFENCE / GPS OVERRIDE -->
+        <sc-if value="{{ isOverride }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:16px; margin-block-end:14px; border:1px solid var(--status-critical);">
+            <div class="row" style="justify-content:space-between; align-items:center;"><div style="font-weight:600; font-size:15px;">Outside geofence — arrival blocked</div><span class="badge badge-critical"><span class="dot"></span>218 m &gt; 150 m</span></div>
+            <p class="t-caption" style="margin:8px 0 0;">Observed 24.71361, 46.67528 · GPS ±8m. Arrival cannot unlock inside-fence. Submit a governed override request — Operations decides; the iPad has no approval authority.</p>
+          </div>
+          <div class="panel" style="padding:16px;">
+            <div class="t-label" style="margin-block-end:10px;">Governed GPS override request</div>
+            <label class="t-label" style="display:block; margin-block-end:6px;">Reason code</label>
+            <select class="select" style="width:100%; margin-block-end:12px;"><option>Factory relocated — source coordinates stale</option><option>Access road / gate offset</option><option>GPS multipath at site</option><option>Safety / security exception</option></select>
+            <label class="t-label" style="display:block; margin-block-end:6px;">Explanation</label>
+            <textarea class="input" rows="2" style="width:100%; margin-block-end:12px;" placeholder="Required — what you observe on the ground"></textarea>
+            <label class="t-label" style="display:block; margin-block-end:6px;">Evidence photo <span class="id-code" style="color:var(--status-critical-text);">required unless safety exception</span></label>
+            <input class="input" type="file" style="width:100%; margin-block-end:12px;">
+            <label class="check" style="margin-block-end:14px;"><input type="checkbox">Safety / security exception — photo not possible</label>
+            <div style="display:flex; gap:8px; justify-content:flex-end;"><button class="btn btn-ghost">Cancel</button><button class="btn btn-danger fld-tap">Send override request</button></div>
+            <p class="t-caption" style="margin:10px 0 0; color:var(--text-muted);">Offline: request + photo are queued in order (photo custody first) and sent on reconnect → status becomes pending.</p>
+          </div>
+        </sc-if>
+
+        <!-- 5 · ARRIVAL + PRE-START -->
+        <sc-if value="{{ isArrival }}" hint-placeholder-val="{{ false }}">
+          <div class="ax-banner-like panel" style="padding:12px 16px; margin-block-end:14px; background:var(--status-compliant-soft); border-color:transparent;"><span style="font-size:13.5px; color:var(--status-compliant-text); font-weight:600;">✓ Arrived · inside fence · 13:52 · immutable arrival event recorded</span></div>
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="t-label" style="margin-block-end:10px;">Arrival evidence</div>
+            <input class="input" type="file" style="width:100%; margin-block-end:10px;">
+            <textarea class="input" rows="2" style="width:100%; margin-block-end:10px;" placeholder="Arrival note (optional if photo attached)"></textarea>
+            <button class="btn btn-secondary fld-tap">Save arrival evidence</button>
+            <p class="t-caption" style="margin:8px 0 0;">Required before start when the GIS policy sets arrival_evidence_required.</p>
+          </div>
+          <div class="panel" style="padding:16px;">
+            <div class="t-label" style="margin-block-end:10px;">Pre-start confirmations <span class="id-code" style="color:var(--text-muted);">both required</span></div>
+            <label class="check fld-tap" style="margin-block-end:8px;"><input type="checkbox">Factory representative is present</label>
+            <label class="check fld-tap"><input type="checkbox">On-site location confirmed against dispatch</label>
+          </div>
+        </sc-if>
+
+        <!-- 6 · EXECUTION -->
+        <sc-if value="{{ isExec }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-template-columns:210px 1fr; gap:14px; height:100%; min-height:0;">
+            <div class="panel fld-scroll" style="padding:12px; min-height:0;">
+              <div class="row" style="justify-content:space-between; margin-block-end:6px;"><span class="t-label">Sections</span><span class="badge badge-info" style="height:18px;">v3 locked</span></div>
+              <div class="progress" style="margin-block-end:12px;"><i style="width:55%;"></i></div>
+              <div class="stack" style="gap:4px;">
+                <div class="fld-tap" style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:8px; background:var(--accent-soft);"><span class="tl-dot is-accent" style="position:static;"></span><span style="flex:1; font-size:13px; font-weight:600;">Fire safety</span><span class="id-code" style="font-size:11px;">6/8</span></div>
+                <div class="fld-tap" style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:8px;"><span class="tl-dot" style="position:static;"></span><span style="flex:1; font-size:13px;">Electrical</span><span class="id-code" style="font-size:11px;">3/7</span></div>
+                <div class="fld-tap" style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:8px;"><span class="tl-dot" style="position:static;"></span><span style="flex:1; font-size:13px;">Mechanical</span><span class="id-code" style="font-size:11px;">0/9</span></div>
+              </div>
+              <div style="margin-block-start:14px; padding-block-start:12px; border-block-start:1px solid var(--border-subtle);">
+                <div class="row" style="gap:8px;"><span class="exc-mark exc-critical"></span><span style="flex:1; font-size:12px;">Health Score</span><span class="badge badge-warning" style="height:18px;">62</span></div>
+                <div class="row" style="gap:8px; margin-block-start:6px;"><span class="exc-mark exc-warning"></span><span style="flex:1; font-size:12px;">Risk Score</span><span class="badge badge-critical" style="height:18px;">High</span></div>
+                <div class="t-caption" style="margin-block-start:6px; color:var(--text-muted);">Distinct governed concepts</div>
+              </div>
+            </div>
+            <div class="fld-scroll" style="min-height:0; display:flex; flex-direction:column; gap:12px;">
+              <div class="panel" style="padding:16px;">
+                <div class="row" style="justify-content:space-between; align-items:flex-start;"><span class="id-code" style="font-size:11px; color:var(--text-muted);">FS-014 · item 6 of 8</span><span class="badge badge-warning" style="height:18px;">conditional shown</span></div>
+                <div style="font-weight:600; font-size:15px; margin-block:8px 4px;">Is the emergency exit clear and unobstructed?</div>
+                <div class="t-caption" style="margin-block-end:12px;">Compares to observed value from last inspection · source vs observed.</div>
+                <div class="fld-seg" style="margin-block-end:14px;"><button class="btn btn-secondary fld-tap" style="flex:1;">Yes</button><button class="btn btn-danger fld-tap" style="flex:1;" aria-pressed="true">No</button><button class="btn btn-ghost fld-tap" style="flex:1;">N/A</button></div>
+                <div class="panel" style="padding:12px; background:var(--status-critical-soft); border-color:transparent; margin-block-end:12px;"><div style="font-size:12.5px; font-weight:600; color:var(--status-critical-text);">Auto-violation raised · FS-014 Blocked emergency exit</div><div class="t-caption" style="margin-block-start:4px;">Blocking action form required before submit · corrective action + grace period.</div></div>
+                <label class="t-label" style="display:block; margin-block-end:6px;">Evidence photo <span class="id-code" style="color:var(--status-critical-text);">mandatory</span></label>
+                <input class="input" type="file" style="width:100%;">
+              </div>
+              <div class="panel" style="padding:12px 16px; display:flex; align-items:center; gap:10px;"><span class="badge badge-warning"><span class="dot"></span>Offline outbox: 3 items queued</span><span class="t-caption">autosave on · nothing lost</span><span style="flex:1;"></span><button class="btn btn-ghost btn-sm">Retry sync</button></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- 7 · SIGN-OFF -->
+        <sc-if value="{{ isSignoff }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="t-label" style="margin-block-end:10px;">Submission summary</div>
+            <dl class="desc" style="grid-template-columns:auto 1fr; gap:6px 14px; font-size:13.5px;">
+              <dt>Items answered</dt><dd>24 / 24 · <span class="id-code">no unanswered</span></dd>
+              <dt>Non-compliant</dt><dd>3 · 2 violations auto-raised</dd>
+              <dt>Action forms</dt><dd><span class="badge badge-compliant" style="height:18px;">complete</span></dd>
+              <dt>Evidence</dt><dd>11 items · SHA-256 sealed</dd>
+              <dt>Health Score</dt><dd><span class="badge badge-warning" style="height:18px;">62</span>distinct from Risk</dd>
+            </dl>
+          </div>
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="t-label" style="margin-block-end:8px;">Inspector attestation</div>
+            <label class="check fld-tap" style="margin-block-end:12px;"><input type="checkbox">I attest this inspection is accurate and complete.</label>
+            <div style="height:90px; border:1px dashed var(--border-strong); border-radius:10px; display:grid; place-items:center; color:var(--text-muted); font-size:13px;">Signature pad — sign to submit</div>
+          </div>
+          <div class="panel" style="padding:12px 16px; margin-block-end:14px; background:var(--surface-sunken);"><span class="t-caption">On submit, the version becomes <strong>immutable</strong> and enters Review (maker ≠ checker). Blocked until attestation + all mandatory evidence + action forms are complete.</span></div>
+          <div style="display:flex; gap:10px;"><button class="btn btn-secondary grow fld-tap">Save draft</button><button class="btn btn-primary grow fld-tap">Submit inspection</button></div>
+        </sc-if>
+
+        <!-- 8 · RETURN / RESUME -->
+        <sc-if value="{{ isReturn }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:12px 16px; margin-block-end:14px; background:var(--status-warning-soft); border-color:transparent;"><span style="font-size:13.5px; color:var(--status-warning-text); font-weight:600;">Returned by reviewer · 2 sections reopened for correction</span></div>
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="t-label" style="margin-block-end:10px;">Reviewer comments <span class="id-code" style="color:var(--text-muted);">immutable</span></div>
+            <div class="stack" style="gap:10px;">
+              <div class="row" style="gap:10px;"><span class="exc-mark exc-warning"></span><div style="flex:1;"><div style="font-size:13px; font-weight:600;">Fire safety · item 6</div><div class="t-caption">Evidence photo blurred — re-capture the blocked exit.</div></div></div>
+              <div class="row" style="gap:10px;"><span class="exc-mark exc-warning"></span><div style="flex:1;"><div style="font-size:13px; font-weight:600;">Electrical · item 3</div><div class="t-caption">Add corrective action owner + due date.</div></div></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:14px 16px; margin-block-end:14px;"><div class="t-label" style="margin-block-end:8px;">Unlocked correction scope</div><p class="t-caption" style="margin:0;">Only returned sections are editable; approved sections stay locked. Version compare shows v2 → v3 changes. Resubmit re-enters Review.</p></div>
+          <div style="display:flex; gap:10px;"><button class="btn btn-ghost grow">Version compare</button><button class="btn btn-primary grow fld-tap">Resume correction</button></div>
+        </sc-if>
+
+        <!-- 9 · VIRTUAL -->
+        <sc-if value="{{ isVirtual }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="row" style="justify-content:space-between; align-items:center;"><div style="font-weight:600; font-size:15px;">Virtual inspection · scheduled 14:30</div><span class="badge badge-info"><span class="dot"></span>waiting room</span></div>
+            <p class="t-caption" style="margin:8px 0 0;">Representative presence and identity are verified before the session unlocks into the common inspection workspace.</p>
+          </div>
+          <div class="panel" style="padding:16px; margin-block-end:14px;">
+            <div class="t-label" style="margin-block-end:10px;">Representative identity · OTP</div>
+            <div class="row" style="gap:8px; margin-block-end:10px;"><span class="fld-check on">✓</span><span style="flex:1; font-size:13.5px;">Representative joined · Eng. Sara Al-Otaibi</span></div>
+            <div class="fld-seg" style="margin-block-end:10px;">
+              <input class="input" style="flex:1;" placeholder="6-digit OTP" value="••• •••">
+              <button class="btn btn-secondary fld-tap">Verify</button>
+            </div>
+            <div class="row" style="gap:10px; align-items:center;"><span class="badge badge-warning" style="height:18px;">Attempt 1 of 3</span><button class="btn btn-ghost btn-sm">Resend OTP</button><span class="t-caption">expires in 04:52</span></div>
+          </div>
+          <div class="panel" style="padding:14px 16px;"><div class="t-label" style="margin-block-end:6px;">Session status</div><p class="t-caption" style="margin:0;">Identity evidence captured · on verify → transition into the same locked-package execution workspace as a physical visit. Cancellation is audited.</p></div>
+        </sc-if>
+      </div>
+
+      <!-- ACTION BAR -->
+      <div style="display:flex; align-items:center; gap:12px; padding:11px 18px; background:var(--surface-primary); border-block-start:1px solid var(--border-subtle); flex:none;">
+        <span class="id-code" style="font-size:12px; color:var(--text-muted);">{{ foot.note }}</span>
+        <span style="flex:1;"></span>
+        <sc-if value="{{ foot.showBack }}" hint-placeholder-val="{{ false }}"><button onClick="{{ back }}" class="btn btn-secondary fld-tap">Back</button></sc-if>
+        <button onClick="{{ next }}" class="btn btn-primary btn-lg fld-tap">{{ foot.cta }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM TAB BAR (field nav, no desktop sidebar) -->
+  <nav style="width:min(1120px,96vw); display:flex; background:var(--nav-bg); color:var(--nav-text); border-radius:12px; overflow:hidden;">
+    <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5">
+      <button onClick="{{ tb.pick }}" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:9px 0; min-height:54px; border:0; background:none; color:{{ tb.color }}; cursor:pointer; font:inherit;">
+        <span style="font-size:11px; font-weight:600;">{{ tb.label }}</span>
+        <span class="id-code" style="font-size:9px; opacity:.7;">{{ tb.hint }}</span>
+      </button>
+    </sc-for>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:980}}">
+class Component extends DCLogic {
+  state = { stage: 0, offline: false };
+
+  renderVals() {
+    const STAGES = [
+      ["01", "Dashboard"], ["02", "Prepare"], ["03", "Journey"], ["04", "Override"],
+      ["05", "Arrival"], ["06", "Execute"], ["07", "Sign-off"], ["08", "Return"], ["09", "Virtual"],
+    ];
+    const s = this.state.stage;
+    const set = (i) => () => this.setState({ stage: i, offline: i === 3 || i === 5 });
+    const stages = STAGES.map((m, i) => ({
+      n: m[0], label: m[1],
+      bg: i === s ? "var(--action-primary)" : "transparent",
+      color: i === s ? "#fff" : "#9aa2ad",
+      border: i === s ? "var(--action-primary)" : "#2a2f39",
+      pick: set(i),
+    }));
+
+    const HEADS = [
+      ["Today · Wed 22 Jul 2026", "Riyadh Region · 5 assigned visits"],
+      ["Al Rasheed Steel Works", "VS-40219 · Bulk · Fire Safety v3"],
+      ["Al Rasheed Steel Works", "VS-40219 · on the way · 4.2 km"],
+      ["Al Rasheed Steel Works", "VS-40219 · outside geofence"],
+      ["Al Rasheed Steel Works", "VS-40219 · arrived · pre-start"],
+      ["Al Rasheed Steel Works", "VS-40219 · executing · v3 locked"],
+      ["Al Rasheed Steel Works", "VS-40219 · sign-off"],
+      ["Gulf Textiles Ltd.", "VS-40088 · returned · correction"],
+      ["Najd Dairy Factory", "VS-40160 · virtual · 14:30"],
+    ];
+    const FEET = [
+      { note: "Tap a visit to prepare", cta: "Open next visit", showBack: false },
+      { note: "Repeat-findings review required to check in", cta: "Start journey", showBack: true },
+      { note: "Arrival auto-detects at 200 m", cta: "Simulate outside arrival", showBack: true },
+      { note: "Operations decides · iPad has no approval", cta: "Simulate approved", showBack: true },
+      { note: "Both pre-start confirmations required", cta: "Start inspection", showBack: true },
+      { note: "Autosave on · offline outbox durable", cta: "Go to sign-off", showBack: true },
+      { note: "Submit locks an immutable version", cta: "Submit → Review", showBack: true },
+      { note: "Only returned sections editable", cta: "Resume correction", showBack: true },
+      { note: "Verify identity to unlock workspace", cta: "Back to dashboard", showBack: true },
+    ];
+
+    const VISITS = [
+      ["09:00", "Al Rasheed Steel Works", "VS-40219", "Bulk", "Physical", "High", "exc-critical", "assigned", "badge-info"],
+      ["11:00", "Gulf Textiles Ltd.", "VS-40088", "Single", "Physical", "High", "exc-critical", "returned", "badge-warning"],
+      ["13:30", "Najd Dairy Factory", "VS-40160", "Immediate", "Virtual", "Medium", "exc-warning", "scheduled", "badge-info"],
+      ["15:30", "Riyadh Cement Co.", "VS-40233", "Bulk", "Physical", "Low", "exc-compliant", "draft", "badge-pending"],
+    ];
+
+    const TABS = [
+      ["Today", "dash", 0], ["Visit", "prep", 1], ["Journey", "geo", 2], ["Inspect", "exec", 5], ["Sync", "outbox", 3],
+    ];
+    const tabs = TABS.map(([label, hint, i]) => ({
+      label, hint, color: i === s ? "var(--nav-text-active)" : "var(--nav-text)", pick: set(i),
+    }));
+
+    return {
+      theme: "dark",
+      stages, isDash: s === 0, isPrep: s === 1, isJourney: s === 2, isOverride: s === 3,
+      isArrival: s === 4, isExec: s === 5, isSignoff: s === 6, isReturn: s === 7, isVirtual: s === 8,
+      head: { title: HEADS[s][0], sub: HEADS[s][1] },
+      foot: FEET[s],
+      offline: this.state.offline, online: !this.state.offline,
+      visits: VISITS.map(([time, factory, ref, type, mode, risk, excClass, st, stBadge], i) => ({
+        time, factory, ref, type, mode, risk, excClass, st, stBadge,
+        bg: "transparent", open: set(1),
+      })),
+      tabs,
+      next: () => this.setState({ stage: (s + 1) % STAGES.length, offline: (s + 1) === 3 || (s + 1) === 5 }),
+      back: () => this.setState({ stage: Math.max(0, s - 1), offline: (s - 1) === 3 || (s - 1) === 5 }),
+    };
+  }
+}
+</script>
+</body>
+</html>

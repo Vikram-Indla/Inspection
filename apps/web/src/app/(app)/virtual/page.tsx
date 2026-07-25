@@ -50,6 +50,10 @@ export default async function VirtualList() {
   return (
     <Shell current="/virtual" title={t("virtual.list.title", "Virtual inspections")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("virtual.list.context", "SCR-VIR-700 · confirmed sessions only")}</span>}>
+      <div className="sq-banner sq-banner--warning" role="status">
+        <div><strong>{t("virtual.list.transportUnavailable", "Video transport not configured.")}</strong>{" "}
+          {t("virtual.list.transportUnavailableBody", "Sessions can be scheduled and governed, but they are not joinable until a real provider adapter is selected and configured. Teams, Zoom and Twilio Video are not present.")}</div>
+      </div>
       {error && <div className="sq-banner sq-banner--critical"><div>{t("virtual.list.loadError", "Couldn’t load sessions. Try again or contact support.")}</div></div>}
       {!error && rows.length === 0 && (
         <EmptyState icon={<IconVideo size={28} />} title={t("virtual.list.empty", "No virtual sessions in scope")} />

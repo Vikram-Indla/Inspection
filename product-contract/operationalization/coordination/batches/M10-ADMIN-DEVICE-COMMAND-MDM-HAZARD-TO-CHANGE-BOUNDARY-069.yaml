@@ -1,0 +1,385 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-HAZARD-TO-CHANGE-BOUNDARY-069
+title: Trusted Devices hazard-to-change boundary map
+status: BOUNDARIES_DEFINED_NO_CHANGE_AUTHORIZED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_CHANGE_BOUNDARY_PLANNING
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  hazards_remediated: 0
+  leases_granted: 0
+  reason: >-
+    This packet partitions future work only. It does not approve policy,
+    design, provider or implementation, grant a lease, alter a file, or prove
+    acceptance.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-HAZARD-TO-CHANGE-BOUNDARY-069
+  predecessor: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  hazards_in_scope: 26
+  acceptance_cases_affected: 60
+  do_not_touch:
+    - design, application, database, provider, data, test or evidence files
+    - governance, RBAC, transition, provider-hold, decision, acceptance or status registers
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only partitioning; no current or future lease is created.
+
+boundary_rules:
+  - Every hazard has exactly one primary future change boundary.
+  - A hazard may list dependencies but dependencies do not gain edit authority over the primary boundary.
+  - Each future lease must name exact files; directory patterns here are planning scopes, not authorization.
+  - Shared schema, generated types, i18n, shell and common action files require one integration owner and cannot appear in parallel leases.
+  - Database change is additive and forward-only; migration ordering is fixed before parallel application work.
+  - Provider contract/credentials remain separate from provider adapter code.
+  - Test owners do not modify implementation; evidence owners index immutable outputs rather than manufacture results.
+  - Independent Review remains read-only toward every leased boundary.
+
+change_boundaries:
+  - boundary_id: DEV-CHG-GOV-01
+    name: Device policy and canonical authority
+    class: GOVERNANCE
+    primary_hazards: [DEV-HAZ-010]
+    secondary_dependencies: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-003, DEV-HAZ-004, DEV-HAZ-005, DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-008, DEV-HAZ-009, DEV-HAZ-017, DEV-HAZ-018, DEV-HAZ-019, DEV-HAZ-020, DEV-HAZ-024]
+    future_owner: GOVERNANCE
+    prerequisite: Sponsor answers DEV-CMD-DEC-01..09 pass checklist 067.
+    smallest_change:
+      - canonical role-to-capability mapping
+      - command/source-state and terminal transition contract
+      - approval, evidence, sync ownership and provider hold/authority records
+    planned_file_scope:
+      - product-contract governance/RBAC/transition/provider-hold records named by future change control
+    excluded:
+      - application, database, provider adapter, design, tests and evidence
+    exit_artifact: Versioned approved governance record resolving the MDM hold contradiction.
+
+  - boundary_id: DEV-CHG-DES-01
+    name: Route-specific Devices design authority
+    class: DESIGN
+    primary_hazards: [DEV-HAZ-020, DEV-HAZ-022, DEV-HAZ-023]
+    secondary_dependencies: [DEV-HAZ-011, DEV-HAZ-012, DEV-HAZ-013, DEV-HAZ-014, DEV-HAZ-015, DEV-HAZ-016, DEV-HAZ-017, DEV-HAZ-021]
+    future_owner: CLAUDE_DESIGN
+    prerequisite:
+      - DEV-CHG-GOV-01 accepted
+      - provider lifecycle/hold facts from DEV-CHG-PRV-01 are stable
+    smallest_change:
+      - stable WA-DES-015/CD-056 route lineage and fingerprint
+      - approved role, transition, approval, provider, offline and evidence states
+      - EN/LTR, AR/RTL, light/dark, 1200/1024/412-or-390/320, zoom, keyboard and accessibility intent
+    planned_file_scope:
+      - one governed Claude Design package and its design acceptance mapping
+    excluded:
+      - application code, database, provider, seed, tests and runtime evidence
+    collision_rule: Preserve unrelated WA-DES-015 selector states if option D10-A is selected.
+    exit_artifact: Sponsor-accepted route-specific revision with stable fingerprints.
+
+  - boundary_id: DEV-CHG-DB-01
+    name: Device command lifecycle and audit authority
+    class: DATABASE
+    primary_hazards: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-004, DEV-HAZ-008, DEV-HAZ-009, DEV-HAZ-024]
+    secondary_dependencies: [DEV-HAZ-003, DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-010]
+    future_owner: IMPLEMENTATION_DB
+    prerequisite:
+      - DEV-CHG-GOV-01 accepted
+      - lifecycle receipt interface from DEV-CHG-PRV-01 approved
+    smallest_change:
+      - additive versioned command/lifecycle schema
+      - revoke and allowed-transition guards
+      - expected-version conflict and terminal-state protection
+      - idempotency/correlation and maker-checker if approved
+      - atomic immutable audit with before/after, actor, reason, version and time
+    planned_file_scope:
+      - one ordered additive Supabase migration
+      - database lifecycle/RLS tests under a separately named QA lease
+    excluded:
+      - provider transport, Admin/Field UI, design, seed and evidence index
+    collision_rule: Sole owner of command/trust tables and lifecycle RPC definitions for its lease.
+    exit_artifact: Migration review plus transactional positive/negative/concurrency receipts.
+
+  - boundary_id: DEV-CHG-DB-02
+    name: Trust and package enforcement boundary
+    class: DATABASE
+    primary_hazards: [DEV-HAZ-003, DEV-HAZ-005, DEV-HAZ-019]
+    secondary_dependencies: [DEV-HAZ-001, DEV-HAZ-004, DEV-HAZ-006, DEV-HAZ-018]
+    future_owner: IMPLEMENTATION_DB
+    prerequisite:
+      - DEV-CHG-GOV-01 accepted
+      - trust/attestation and package invalidation contract approved
+      - migration order follows DEV-CHG-DB-01 or is combined under one DB lease
+    smallest_change:
+      - authoritative trust evidence/version/freshness representation
+      - exact platform/assignment/app-policy enforcement
+      - package invalidation scope and server-side download/open/sync/submit guards
+    planned_file_scope:
+      - additive migration sequenced with DEV-CHG-DB-01
+      - package/trust database tests under QA authority
+    excluded:
+      - provider receipt ingestion, cached-device effect, UI and design
+    collision_rule: DB-01 and DB-02 cannot run under separate concurrent leases on the same tables/RPCs; combine or serialize.
+    exit_artifact: Server fail-closed enforcement and immutable package/access-event evidence.
+
+  - boundary_id: DEV-CHG-PRV-01
+    name: MDM authority and provider contract
+    class: PROVIDER_GOVERNANCE
+    primary_hazards: [DEV-HAZ-006]
+    secondary_dependencies: [DEV-HAZ-003, DEV-HAZ-007, DEV-HAZ-008, DEV-HAZ-025]
+    future_owner: PROVIDER_SECURITY
+    prerequisite: Sponsor decision DEV-CMD-DEC-09 passes checklist 067.
+    smallest_change:
+      - formal fail-closed hold, named-provider contract, or provider-neutral contract
+      - credential/environment owner and authenticated request/receipt semantics where approved
+      - rejection, timeout, duplicate, late, mismatched and unverifiable receipt outcomes
+    planned_file_scope:
+      - provider governance and credential-boundary records only
+    excluded:
+      - adapter code, migrations, UI, seed, tests and design
+    exit_artifact: Approved contract with genuine non-production authority, or explicit canonical hold.
+
+  - boundary_id: DEV-CHG-SVC-01
+    name: Provider dispatch and receipt service
+    class: SERVICE
+    primary_hazards: [DEV-HAZ-007]
+    secondary_dependencies: [DEV-HAZ-006, DEV-HAZ-008, DEV-HAZ-025]
+    future_owner: IMPLEMENTATION_PROVIDER
+    prerequisite:
+      - DEV-CHG-PRV-01 approves provider execution rather than hold
+      - DB-01 exposes approved lifecycle/correlation interface
+    smallest_change:
+      - dispatch adapter
+      - authenticated callback/poll receipt ingestion
+      - correlation, deduplication, quarantine and safe retry
+    planned_file_scope:
+      - provider adapter/service files explicitly named later
+      - environment declarations without credential values
+    excluded:
+      - provider governance, database transition internals, UI, seeds and evidence
+    collision_rule: Does not edit DB migration or common Admin server action owned elsewhere.
+    exit_artifact: Contract tests plus genuine pre-production provider receipts.
+
+  - boundary_id: DEV-CHG-SVC-02
+    name: Admin command server-action boundary
+    class: SERVICE
+    primary_hazards: [DEV-HAZ-016, DEV-HAZ-025]
+    secondary_dependencies: [DEV-HAZ-001, DEV-HAZ-008, DEV-HAZ-010, DEV-HAZ-012, DEV-HAZ-015]
+    future_owner: IMPLEMENTATION_ADMIN_UI
+    prerequisite:
+      - DB-01 interface stable
+      - PRV-01 hold/provider behavior stable
+      - DES-01 interaction/error semantics accepted
+    smallest_change:
+      - canonical input and expected-version validation
+      - neutral localized errors
+      - correlation-safe pending/timeout/retry result
+    planned_file_scope:
+      - Devices-specific server action module
+    excluded:
+      - shared mvp3 action module unless assigned to the sole integration owner
+      - database, provider adapter, Field/offline and design
+    collision_rule: If the shared mvp3-actions file must change, remove it from every other lease and assign one integration owner.
+    exit_artifact: Server-contract test receipt with zero-side-effect failures.
+
+  - boundary_id: DEV-CHG-UI-01
+    name: Admin Devices lifecycle and evidence interface
+    class: ADMIN_UI
+    primary_hazards: [DEV-HAZ-011, DEV-HAZ-012, DEV-HAZ-013, DEV-HAZ-014, DEV-HAZ-015, DEV-HAZ-021]
+    secondary_dependencies: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-009, DEV-HAZ-010, DEV-HAZ-016, DEV-HAZ-017, DEV-HAZ-020, DEV-HAZ-022, DEV-HAZ-023]
+    future_owner: IMPLEMENTATION_ADMIN_UI
+    prerequisite:
+      - DES-01 accepted
+      - DB-01/DB-02 and SVC-01/SVC-02 interfaces stable or truthfully held
+    smallest_change:
+      - per-role/per-state eligible commands and disabled reasons
+      - destructive confirmation/approval context
+      - complete paginated command/audit/receipt history
+      - correct loading, empty, source-error, stale, conflict and provider-held states
+      - removal of fabricated 14-row badge and illustrative runtime values
+    planned_file_scope:
+      - /admin/devices route-local page, components and styles explicitly named later
+    excluded:
+      - shared Shell/global CSS/i18n unless separately integration-owned
+      - database, provider, Field/offline, seed, test and design
+    collision_rule: Route-local files only in the UI lease; shared presentation files are a later serialized integration boundary.
+    exit_artifact: Source-backed route behavior at accepted design states.
+
+  - boundary_id: DEV-CHG-FLD-01
+    name: Field package trust enforcement
+    class: FIELD_OFFLINE
+    primary_hazards: [DEV-HAZ-018]
+    secondary_dependencies: [DEV-HAZ-003, DEV-HAZ-004, DEV-HAZ-005, DEV-HAZ-017, DEV-HAZ-019]
+    future_owner: IMPLEMENTATION_FIELD_OFFLINE
+    prerequisite:
+      - DB-02 trust/package interface stable
+      - terminal and invalidation policy accepted
+    smallest_change:
+      - download, open, cached-open, sync and submit checks at current device/package version
+      - fail-closed behavior for unregistered, unassigned, non-compliant and all non-trusted states
+    planned_file_scope:
+      - Field package boundary files explicitly named later
+    excluded:
+      - Admin UI, provider adapter, DB migration, shared shell and design
+    collision_rule: Does not edit the offline replay engine if that file is assigned to FLD-02.
+    exit_artifact: Field browser and server traces for allowed and denied trust/package paths.
+
+  - boundary_id: DEV-CHG-FLD-02
+    name: Sync health, cached invalidation and offline replay
+    class: FIELD_OFFLINE
+    primary_hazards: [DEV-HAZ-017]
+    secondary_dependencies: [DEV-HAZ-005, DEV-HAZ-018, DEV-HAZ-025]
+    future_owner: IMPLEMENTATION_FIELD_OFFLINE
+    prerequisite:
+      - sync-health ownership and source contract accepted
+      - DB-02 invalidation interface stable
+    smallest_change:
+      - canonical outbox/conflict/error/replay/last-confirmed source
+      - cached invalidation observation and replay denial after trust change
+      - governed rescue actions without invented health thresholds
+    planned_file_scope:
+      - offline/sync engine and source projection files explicitly named later
+    excluded:
+      - Admin presentation, provider adapter, DB migration, seed and design
+    collision_rule: FLD-01 and FLD-02 serialize any shared offline-store or replay file.
+    exit_artifact: Offline drill with no false success, silent loss or stale overwrite.
+
+  - boundary_id: DEV-CHG-TST-01
+    name: Sixty-case acceptance harness
+    class: TEST
+    primary_hazards: [DEV-HAZ-026]
+    secondary_dependencies:
+      - DEV-HAZ-001..025
+    future_owner: QA
+    prerequisite:
+      - approved contracts exist for expected outcomes
+      - deterministic fixtures exist
+      - implementation revisions and provider/hold state are declared
+    smallest_change:
+      - database/RLS/lifecycle/concurrency specs
+      - server and provider contract specs
+      - Admin/Field persona browser specs
+      - EN/AR, responsive, accessibility, visual and protected regression specs
+    planned_file_scope:
+      - new focused test files named in crosswalk 065
+    excluded:
+      - implementation, design, provider contract, migrations and seed definitions
+    collision_rule: QA cannot edit implementation; failing behavior returns to the owning boundary.
+    exit_artifact: 60-case pass/fail/blocked ledger with run receipts.
+
+  - boundary_id: DEV-CHG-EVD-01
+    name: Acceptance evidence and certification index
+    class: EVIDENCE
+    primary_hazards: []
+    secondary_dependencies: [DEV-HAZ-006, DEV-HAZ-007, DEV-HAZ-013, DEV-HAZ-014, DEV-HAZ-020, DEV-HAZ-022, DEV-HAZ-023, DEV-HAZ-024, DEV-HAZ-026]
+    future_owner: QA_EVIDENCE_CURATOR
+    prerequisite:
+      - TST-01 run receipts and producer evidence are immutable
+      - independent review is complete
+    smallest_change:
+      - evidence manifest binding requirement/design/route/revision/persona/state/test/provider IDs
+      - external screenshot/video/binary pointers under approved documentation storage
+      - truthful blocked-case and provider-hold entries
+    planned_file_scope:
+      - one new evidence certificate/index and external manifest pointers
+    excluded:
+      - tests, product, database, provider, design, seed and canonical decisions
+    collision_rule: References producer evidence; never overwrites or recreates it.
+    exit_artifact: Independent-review-ready evidence index for sponsor acceptance.
+
+primary_hazard_partition:
+  DEV-CHG-GOV-01: [DEV-HAZ-010]
+  DEV-CHG-DES-01: [DEV-HAZ-020, DEV-HAZ-022, DEV-HAZ-023]
+  DEV-CHG-DB-01: [DEV-HAZ-001, DEV-HAZ-002, DEV-HAZ-004, DEV-HAZ-008, DEV-HAZ-009, DEV-HAZ-024]
+  DEV-CHG-DB-02: [DEV-HAZ-003, DEV-HAZ-005, DEV-HAZ-019]
+  DEV-CHG-PRV-01: [DEV-HAZ-006]
+  DEV-CHG-SVC-01: [DEV-HAZ-007]
+  DEV-CHG-SVC-02: [DEV-HAZ-016, DEV-HAZ-025]
+  DEV-CHG-UI-01: [DEV-HAZ-011, DEV-HAZ-012, DEV-HAZ-013, DEV-HAZ-014, DEV-HAZ-015, DEV-HAZ-021]
+  DEV-CHG-FLD-01: [DEV-HAZ-018]
+  DEV-CHG-FLD-02: [DEV-HAZ-017]
+  DEV-CHG-TST-01: [DEV-HAZ-026]
+  DEV-CHG-EVD-01: []
+
+dependency_order:
+  stage_0_sponsor_answers:
+    owner: SPONSOR
+    output: Ten complete compatible answers passing checklist 067.
+  stage_1_authority:
+    parallel:
+      - DEV-CHG-GOV-01
+      - DEV-CHG-PRV-01
+    output: Approved policy/role/state/provider authority or truthful hold.
+  stage_2_design_and_interfaces:
+    parallel:
+      - DEV-CHG-DES-01
+      - DB/provider interface design for DEV-CHG-DB-01, DEV-CHG-DB-02 and DEV-CHG-SVC-01 without implementation
+    output: Accepted design plus frozen interface/migration order.
+  stage_3_implementation:
+    ordered_database: [DEV-CHG-DB-01, DEV-CHG-DB-02]
+    parallel_after_interfaces:
+      - DEV-CHG-SVC-01 if provider execution approved
+      - DEV-CHG-SVC-02
+      - DEV-CHG-UI-01
+      - DEV-CHG-FLD-01
+      - DEV-CHG-FLD-02
+    condition: Separate collision-checked leases and declared shared-file owners exist.
+  stage_4_test:
+    boundary: DEV-CHG-TST-01
+    condition: Integrated revisions, deterministic fixtures and provider/hold state are fixed.
+  stage_5_evidence_and_review:
+    sequence:
+      - DEV-CHG-EVD-01
+      - INDEPENDENT_REVIEW
+      - SPONSOR_ACCEPTANCE
+
+shared_collision_register:
+  - shared_asset: supabase device/command/package tables and RPCs
+    risk: DB-01 and DB-02 concurrent migration edits
+    control: One DB lease or serialized migrations with one integration owner.
+  - shared_asset: apps/web/src/app/(app)/admin/mvp3-actions.ts
+    risk: Devices changes collide with other MVP3 Admin routes.
+    control: Prefer a route-local action; otherwise serialize through one shared-action owner.
+  - shared_asset: apps/web/src/lib/i18n.ts
+    risk: Design/UI/other modules edit the same translation map.
+    control: One localized integration lease after route-local behavior stabilizes.
+  - shared_asset: Shell, global CSS and shared action form
+    risk: Visual fixes regress other Admin modules.
+    control: Exclude from route lease; apply through separately tested shared-foundation lease.
+  - shared_asset: offline store and replay engine
+    risk: Field trust and sync-rescue changes alter the same state machine.
+    control: Serialize FLD-01/FLD-02 shared files or combine under one owner.
+  - shared_asset: live test fixtures and provider sandbox
+    risk: Seeder/QA/provider runs interfere or manufacture evidence.
+    control: Namespaced deterministic fixtures, isolated cleanup and immutable genuine receipt capture.
+  - shared_asset: evidence index
+    risk: Producers overwrite or relabel another lane's result.
+    control: Producer-owned artifacts; EVD-01 only references immutable IDs and hashes.
+
+review:
+  disposition: BLOCK
+  code: BLOCK_NO_CHANGE_UNTIL_POLICY_PROVIDER_DESIGN_AND_LEASE_GATES
+  validation_summary:
+    source_hazards: 26
+    primary_mapped: 26
+    primary_unique: 26
+    missing: 0
+    duplicated: 0
+    boundaries: 12
+    leases_granted: 0
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-NO-WAIT-PREFLIGHT-BACKLOG-070
+    mode: READ_ONLY
+    objective: >-
+      Derive bounded no-wait preflight tasks from the twelve change boundaries
+      that can proceed without sponsor answers or implementation authority,
+      each with an evidence-only output, collision check and stop condition.

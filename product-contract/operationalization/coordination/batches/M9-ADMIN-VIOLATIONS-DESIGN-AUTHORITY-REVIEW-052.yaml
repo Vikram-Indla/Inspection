@@ -1,0 +1,465 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052
+title: Independent Admin Violation Catalogue and Penalty Mapping design authority review
+status: RETURN_FOR_SECURITY_GOVERNANCE_MAPPING_AND_LOCALIZATION_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    Both logical screens and substantial governed lifecycle code exist, but the
+    write boundary remains bypassable, the current publication RPC accepts a
+    null maker, the UI and translations describe an obsolete one-row mapping
+    model, action-form requirements are absent, and neither screen has exact
+    accepted design authority.
+
+task_contract:
+  task_id: M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052
+  gate: M9 Admin Violations design authority
+  routes:
+    - /admin/violations
+    - "/admin/violations?mode=penalty"
+  catalogue_route_conflict: /admin/penalties
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_ids: [M6, M9]
+  screen_ids: [SCR-ADM-040, SCR-ADM-041]
+  screen_names:
+    - Violation Catalogue
+    - Penalty Mapping
+  engines: [ENG-07, ENG-08, ENG-09, ENG-10, ENG-12]
+  source_requirement_ids:
+    primary: [CR-451, CR-452, CR-456, CR-457, CR-474, CR-475]
+    lifecycle: [CR-458, CR-459, CR-460, CR-461, CR-462, CR-463]
+  acceptance_ids:
+    - WA-AC-0451
+    - WA-AC-0452
+    - WA-AC-0456
+    - WA-AC-0457
+    - WA-AC-0458
+    - WA-AC-0459
+    - WA-AC-0460
+    - WA-AC-0461
+    - WA-AC-0462
+    - WA-AC-0463
+    - WA-AC-0474
+    - WA-AC-0475
+    - DSG-003
+    - DSG-004
+    - DSG-005
+    - DSG-006
+    - DSG-007
+    - DSG-008
+    - DSG-A11Y-001
+  dependencies:
+    - accepted violation-catalogue successor design
+    - approved logical design ID and route for penalty mapping
+    - non-bypassable publication boundary
+    - complete maker identity
+    - action-form trigger and mandatory-completion contract
+    - truthful versioned-mapping content and errors
+    - bilingual governed record content decision
+    - complete partial-provider and concurrency evidence
+  do_not_touch:
+    - live Claude Design or any accepted/draft design
+    - product application code, tests, evidence or providers
+    - Supabase, migrations, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No product, design, database, test,
+    evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_screen_validation:
+  catalogue:
+    route: /admin/violations
+    page: apps/web/src/app/(app)/admin/violations/page.tsx
+    controls: apps/web/src/app/(app)/admin/violations/Controls.tsx
+    actions: apps/web/src/app/(app)/admin/violations/actions.ts
+    layout: apps/web/src/app/(app)/admin/violations/layout.tsx
+    screen_id: SCR-ADM-040
+    validation: CONFIRMED
+  penalty_mapping:
+    implemented_route: "/admin/violations?mode=penalty"
+    catalogue_route: /admin/penalties
+    dedicated_route_exists: false
+    screen_id: SCR-ADM-041
+    validation: CONFIRMED_WITH_CORRECTION
+    correction: >-
+      The query mode is the tested implementation, but governance has not
+      corrected the frozen route catalogue or assigned exact design authority.
+  operational_enforcement_exclusion:
+    route: /enforcement
+    design: WA-DES-023
+    validation: NOT_A_CONFIGURATION_MATCH
+    reason: >-
+      Runtime cases, notices, objections and decisions do not author violation
+      definitions or penalty mappings.
+
+current_capability:
+  violation_catalogue:
+    - source-clause-bound violation draft creation
+    - level, corrective action, optional grace, category and applicability
+    - manually supplied configuration version and effective-from date
+    - derived active, future and deactivated presentation
+    - trigger trace read from inspection-item response mappings
+    - intended maker-checker publication and successor replacement
+    - reasoned deactivation
+    - usage, version history and object-scoped audit
+  penalty_mapping:
+    - versioned draft creation against a violation
+    - legal basis, penalty type, optional amount and timing
+    - governed range and repeat-rule presets
+    - optional published or locked configuration-template reference
+    - intended maker-checker publication and successor replacement
+    - effective-period, mapping audit and runtime snapshot consumption
+  hard_states_present:
+    - loading
+    - route-level error
+    - empty catalogue
+    - read-only reviewer
+    - clause-source unavailable
+    - usage unavailable
+    - audit unavailable
+    - duplicate and validation errors
+    - stale-read disclosure
+
+requirement_mapping_review:
+  confirmed:
+    - requirement_ids: [CR-451]
+      capability: >-
+        Violation definitions include source clause, level, corrective action,
+        optional grace and applicability; trigger traces are visible.
+    - requirement_ids: [CR-452]
+      capability: >-
+        Penalty definitions include type, optional amount, timing, legal basis,
+        template reference and versioned effective periods.
+    - requirement_ids: [CR-458, CR-459, CR-462, CR-463]
+      capability: >-
+        Draft, intended publish, immutable governed history, reasoned violation
+        deactivation and object audit exist on the intended application path.
+    - requirement_ids: [CR-474]
+      capability: >-
+        The catalogue displays item response-to-violation trigger traces, while
+        authoring remains owned by inspection-item configuration.
+  absent_or_incomplete:
+    - requirement_ids: [CR-456]
+      gap: >-
+        The mapping accepts an optional template, but provider failure is
+        silently rendered as no choices and no active-template dependency is
+        validated at publish.
+    - requirement_ids: [CR-457, CR-475]
+      gap: >-
+        No action-form trigger rule, optional/mandatory flag, or runtime
+        completion-block dependency is configured or evidenced here.
+    - requirement_ids: [CR-460]
+      gap: >-
+        Violation publication checks only active-from and corrective action;
+        penalty publication checks only effective-from. Legal basis, template
+        readiness, action form and full dependency validity are not enforced at
+        publication.
+    - requirement_ids: [CR-461]
+      gap: >-
+        Usage is limited to item/runtime counts. Package, active-visit, future
+        execution and template impact are not shown before publication.
+  validation: CONFIRMED_WITH_MATERIAL_DEPENDENCY_AND_IMPACT_GAPS
+
+permissions_and_access:
+  table_read: any authenticated user
+  table_write:
+    - compliance_admin
+    - form_admin
+  server_writer_guard:
+    - compliance_admin
+    - form_admin
+  route_and_shell:
+    - compliance_admin
+    - reviewer
+  findings:
+    - "form_admin is authorized by RLS and server actions but denied by the route boundary."
+    - "Reviewer is admitted to the route but cannot read writer-scoped usage or audit RPCs."
+    - "Other authenticated roles can query both configuration tables despite route denial."
+    - "The screen catalogue names Compliance Admin and Approver, while the real checker is any distinct compliance_admin or form_admin writer."
+  validation: FAIL_ROLE_CONSISTENCY_AND_DISCLOSURE_REVIEW
+
+publication_and_security:
+  intended_violation_path:
+    RPC: publish_violation_code
+    locking:
+      - selected draft row
+      - current active row
+    behavior:
+      - active-from and corrective-action validation
+      - prior active deactivation
+      - successor lineage
+      - approver and publication timestamp
+    validation: PARTIAL_ATOMIC_INTENDED_PATH
+  intended_penalty_path:
+    RPC: publish_penalty_mapping
+    locking:
+      - selected draft row
+      - current active mapping
+    behavior:
+      - effective-from validation
+      - prior active deactivation
+      - successor lineage
+      - approver and publication timestamp
+    validation: PARTIAL_ATOMIC_INTENDED_PATH
+  null_maker_regression:
+    earlier_penalty_RPC: >-
+      20260715200000_cd006_011_backend_completion.sql rejects created_by null.
+    effective_later_RPC: >-
+      20260715220000_m09_authoritative_contract_completion.sql replaces the
+      function and rejects only created_by = auth.uid().
+    violation_RPC: rejects only created_by = auth.uid()
+    database_constraints: allow created_by null and approved_by with null maker
+    implication: >-
+      A legacy or malformed draft with no maker identity can be published by a
+      writer without proving separation of duties.
+    validation: FAIL
+  direct_table_bypass:
+    policy: >-
+      violation_codes_admin and penalty_mappings_admin are broad FOR ALL
+      policies for compliance_admin and form_admin.
+    database_guard_limit: >-
+      Published rows are protected after publication, but no trigger forces a
+      draft-to-published transition through the governed RPC.
+    bypass_effect:
+      - supply approved_by directly
+      - bypass current-user checker provenance
+      - bypass dependency checks
+      - bypass predecessor closing and supersedes lineage
+      - publish without the RPC row-lock transaction
+    validation: FAIL_NON_BYPASSABLE_GOVERNANCE
+
+version_and_cardinality_truth:
+  database_model:
+    violation_codes:
+      uniqueness: code plus configuration_version
+      active_cardinality: one open governed version per code
+    penalty_mappings:
+      legacy_one_row_constraint: dropped
+      active_cardinality: one published or locked mapping per violation
+      draft_cardinality: one draft mapping per violation
+      history: multiple deactivated versions permitted
+  current_UI_claims:
+    - "A second mapping is rejected by the database unique constraint."
+    - "One violation = one penalty — the database rejects a second mapping."
+    - "This violation already has a penalty mapping."
+  actual_UI_behavior:
+    - allows a new draft when an active mapping exists
+    - selects draft before active for display
+    - collapses every unique-index conflict into the obsolete duplicate-mapping error
+  implication: >-
+    The English and Arabic UI, source comments and tests misdescribe the
+    current versioned one-active-plus-one-draft contract. A draft also hides
+    the active mapping instead of enabling comparison and impact review.
+  validation: FAIL_TRUTHFUL_CONTENT_AND_VERSION_COMPARISON
+
+concurrency_and_immutability:
+  strong:
+    - publication RPCs lock selected and prior active rows
+    - unique partial indexes limit active and draft cardinality
+    - published and deactivated semantic rows are guarded against mutation or delete
+    - runtime penalties snapshot the exact governed mapping
+    - violation deactivation uses active_to and status predicates as a bounded state guard
+  gaps:
+    - direct draft-to-published update bypasses the RPC transaction
+    - manually entered configuration_version and mapping_version have no generated next-version contract
+    - no active-versus-draft comparison is presented
+    - no stale version token is carried through authoring
+    - no dedicated penalty deactivation action is exposed
+    - direct publication and concurrent successor negative paths are not exercised
+  validation: PARTIAL_NOT_CERTIFIABLE
+
+provider_and_content_truth:
+  template_provider:
+    failure_handling: ignored
+    visible_result: empty template list
+    risk: unavailable is falsely presented as none
+  trigger_trace_provider:
+    failure_handling: ignored
+    visible_result: zero matching traces
+    risk: unavailable is falsely presented as zero
+  governed_content_language:
+    single_language_fields:
+      - violation title
+      - corrective action
+      - category
+      - applicability
+      - legal basis
+      - penalty type
+    template_label: title_en only
+    implication: >-
+      Translated shell chrome does not make the governed configuration
+      bilingual. Arabic users receive untranslated record content.
+  wordmark:
+    known_predecessor_issue: >-
+      Existing WA-DES-015/WA-DES-002 English states can show Arabic branding;
+      immutable accepted designs require a successor, not silent editing.
+  validation: FAIL_PARTIAL_PROVIDER_AND_BILINGUAL_TRUTH
+
+design_authority_validation:
+  violation_catalogue:
+    nearest_registered_design: WA-DES-015
+    proposed_successor: WA-DES-015-C1
+    current_state: PACKET_ONLY_NOT_ACCEPTED
+    nearest_match_quality: PARTIAL_ADMIN_OVERVIEW_ANCESTOR
+    validation: NO_EXACT_ACCEPTED_DESIGN_MATCH
+  penalty_mapping:
+    exact_design_id: UNASSIGNED
+    predecessor: NONE
+    current_state: NO_DESIGN_MATCH
+    validation: NO_DESIGN_MATCH
+  rejected_substitutions:
+    - design: WA-DES-023
+      reason: operational Enforcement, not configuration
+    - design: WA-DES-015
+      reason: Admin overview ancestor, not exact penalty-mapping authority
+  immutable_revision_rule: >-
+    Do not edit an accepted design. Create only an approved successor revision
+    with stable logical ID, exact route binding and explicit lineage.
+
+test_and_evidence_review:
+  reviewed:
+    - apps/web/e2e/cd-010-011-violations.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  strengths:
+    - populated catalogue and penalty states
+    - reviewer read-only state
+    - writer affordance
+    - EN and AR shell direction
+    - 1440 and 1024 overflow checks
+    - loading, error and focus-safe form assertions
+    - code-layer lifecycle, audit and immutability assertions
+  insufficiencies:
+    - tests preserve the obsolete second-mapping claim
+    - no exact accepted-design comparison
+    - no narrow/mobile breakpoint or dense long-content proof
+    - no null-maker rejection
+    - no direct-table publication-bypass negative
+    - no concurrent successor or stale authoring negative
+    - no template/trigger partial-provider runtime state
+    - no bilingual governed record proof
+    - no action-form trigger and mandatory submission proof
+    - no active-versus-draft comparison
+  validation: INSUFFICIENT_FOR_DESIGN_AND_GOVERNANCE_CERTIFICATION
+
+priority_findings:
+  - id: VIO-P0-01
+    severity: P0
+    finding: Broad table update permits publication outside the governed RPC.
+    action: CORRECT
+  - id: VIO-P0-02
+    severity: P0
+    finding: Effective violation and penalty RPCs do not reject a null maker.
+    action: CORRECT
+  - id: VIO-P0-03
+    severity: P0
+    finding: Action-form trigger and mandatory-completion contract is absent.
+    action: BLOCK
+  - id: VIO-P0-04
+    severity: P0
+    finding: Penalty Mapping has no approved stable design identity or route decision.
+    action: CHANGE_DESIGN
+  - id: VIO-P1-01
+    severity: P1
+    finding: English, Arabic and tests assert obsolete one-row uniqueness.
+    action: UPDATE
+  - id: VIO-P1-02
+    severity: P1
+    finding: form_admin write authority conflicts with the route boundary.
+    action: CORRECT
+  - id: VIO-P1-03
+    severity: P1
+    finding: Template and trigger-provider errors are collapsed into empty or zero.
+    action: CORRECT
+  - id: VIO-P1-04
+    severity: P1
+    finding: Active mapping is hidden when a successor draft exists.
+    action: UPDATE
+  - id: VIO-P1-05
+    severity: P1
+    finding: Governed record content is not bilingual.
+    action: BLOCK
+
+reviewer_recommendation:
+  classification: RETURN_FOR_SECURITY_GOVERNANCE_MAPPING_AND_LOCALIZATION_CORRECTION
+  sponsor_decision: DO_NOT_CERTIFY_OR_COUNT_COMPLETE
+  bounded_next_actions:
+    - "Assign one database/security lease to make publication non-bypassable and reject null makers."
+    - "Resolve form_admin route authority and authenticated table disclosure."
+    - "Restore truthful one-active-plus-one-draft language, error semantics and active/draft comparison in EN and AR."
+    - "Define and implement the missing action-form trigger and mandatory-completion dependency before claiming CR-457/CR-475."
+    - "Expose template and trigger-trace unavailable states without false empty or zero."
+    - "Approve the query-mode route decision and assign a stable logical design ID for Penalty Mapping."
+    - "Create and accept exact immutable successor designs before implementation parity certification."
+    - "Add runtime negatives for bypass, null maker, concurrency, partial providers and bilingual governed content."
+
+ownership_boundary:
+  claude_design:
+    - exact violation-catalogue successor
+    - new penalty-mapping identity after governance assignment
+    - version comparison, dependency, partial-provider and bilingual states
+  claude_code:
+    - bounded application and database remediation only after lease
+    - no design identity invention
+  kimi:
+    - independent security, concurrency and negative-path verification
+    - no overlap with leased implementation files
+  codex:
+    - final requirement, design, runtime and evidence certification
+    - no implementation write while reviewer
+
+evidence:
+  application:
+    - apps/web/src/app/(app)/admin/violations/page.tsx
+    - apps/web/src/app/(app)/admin/violations/Controls.tsx
+    - apps/web/src/app/(app)/admin/violations/actions.ts
+    - apps/web/src/app/(app)/admin/violations/layout.tsx
+    - apps/web/src/app/(app)/admin/violations/loading.tsx
+    - apps/web/src/app/(app)/admin/violations/error.tsx
+  database:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+    - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+    - supabase/migrations/20260715102000_cd010_cd011_ar_strings.sql
+  contract:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/domain/rbac_matrix.csv
+  prior_authority:
+    - product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010.yaml
+    - product-contract/operationalization/coordination/batches/M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018.yaml
+  tests:
+    - apps/web/e2e/cd-010-011-violations.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+
+next_queue:
+  task_id: M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+  scope: >-
+    Independently review the real Admin Dashboard Configuration route,
+    requirements, nearest stable Claude Design lineage, widget/catalogue
+    governance, publication and permissions, data-source truth, audit,
+    concurrency, EN/AR RTL/LTR, responsive and accessibility states.
+  mode: READ_ONLY
+  completion_credit: 0
