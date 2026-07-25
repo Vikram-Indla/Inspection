@@ -550,7 +550,10 @@ export default async function Field() {
         </div>
       </div>
 
-      <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
+      {/* No local nav spacer: FieldNav is position:fixed and renders its own
+          .field-nav-spacer (56px / 60px ≥834px, + safe-area). The design's
+          static 58px div here is now a duplicate that stacked a second gap
+          under the content. */}
       {nav}
     </>
   );

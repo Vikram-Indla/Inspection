@@ -43,8 +43,12 @@
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0; }
 
 .chiprow { display: flex; gap: 8px; overflow-x: auto; padding-block-end: 8px; margin-block-end: 14px; }
+/* Settled field-channel geometry: touch/option controls are never below 50px.
+   The design's 8px/14px padding alone yields ~33px — fine with a mouse, not
+   with a gloved thumb on the regulatory-section selector. */
 .chip {
-  flex: none; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
+  flex: none; display: inline-flex; align-items: center; min-block-size: 50px;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
   background: var(--surface-sunken); font: inherit; font-size: 13px; cursor: pointer;
   white-space: nowrap; color: var(--text-secondary); text-decoration: none;
 }
@@ -60,8 +64,12 @@
 /* real map fills the whole card; the governed fallback keeps the centering */
 .map :global([data-map-provider]) { position: absolute; inset: 0; }
 
+/* Sticks to the bottom of the .detail scrollport, which now ends exactly at the
+   top of the fixed FieldNav (z-index 60). Stays on the sticky layer so it can
+   never paint over the tab bar. Settled field-channel bottom-bar padding. */
 .actionbar {
-  position: sticky; bottom: 0; display: flex; gap: 12px; padding: 14px 20px;
-  padding-block-end: max(14px, env(safe-area-inset-bottom));
+  position: sticky; inset-block-end: 0; z-index: var(--z-sticky);
+  display: flex; gap: 12px; padding: 14px 20px;
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
   background: var(--surface-primary); border-block-start: 1px solid var(--border-subtle);
 }

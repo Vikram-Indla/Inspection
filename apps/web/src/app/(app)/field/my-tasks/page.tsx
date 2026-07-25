@@ -455,7 +455,9 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
           )}
         </div>
       </div>
-      <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
+      {/* No local nav spacer: FieldNav is position:fixed and renders its own
+          .field-nav-spacer. Keeping the design's static 58px div here shrank
+          the master/detail grid and floated the action bar above the tab bar. */}
       {nav}
     </>
   );
