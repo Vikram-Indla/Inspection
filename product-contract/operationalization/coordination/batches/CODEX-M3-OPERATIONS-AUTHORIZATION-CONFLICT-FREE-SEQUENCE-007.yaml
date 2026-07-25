@@ -1,0 +1,599 @@
+packet:
+  id: CODEX-M3-OPERATIONS-AUTHORIZATION-CONFLICT-FREE-SEQUENCE-007
+  title: Conflict-free sequence for rejected M3 map provenance and Operations authorization
+  status: PROPOSAL_ONLY_NOT_AUTHORIZED
+  created_by: Codex orchestration
+  purpose: >-
+    Define a dependency-safe execution and integration sequence for the rejected
+    M3 map-provenance correction and five Operations authorization work packages.
+    This packet grants no implementation lease and creates no branch, migration,
+    capability, test, design, data, or product change.
+
+authority:
+  authoritative_repository: /Users/vikramindla/Developer/Inspection
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  evidence_head: 70b9caf506f2e5a995bd6d59295277f9858588b7
+  source_packets:
+    - CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002.yaml
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-DECISION-BOUNDARY-003.yaml
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-NEGATIVE-ACCEPTANCE-MATRIX-004.csv
+    - CODEX-M3-OPERATIONS-REDUCED-PROJECTION-SPEC-005.yaml
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-IMPLEMENTATION-DEPENDENCY-MAP-006.yaml
+  prohibited_by_this_packet:
+    - creating or changing product code
+    - creating or changing tests
+    - creating or changing data or seeds
+    - creating or changing design
+    - creating or changing migrations, RLS, RPCs, schema, or capabilities
+    - creating branches or worktrees
+    - granting implementation leases
+    - committing, pushing, opening, merging, or closing pull requests
+    - changing main, setup/Inspection, existing stashes, or dirty worktrees
+
+immutable_rules:
+  - At most one active writer owns any path.
+  - A downstream branch starts only from an accepted immutable upstream commit.
+  - No downstream work branches from uncommitted or rejected changes.
+  - Existing migrations are immutable; approved database corrections use new additive migrations.
+  - Database authorization is implemented and negatively tested before UI consumers claim authority.
+  - UI hiding never substitutes for route, server-action, RPC, or RLS enforcement.
+  - A failed gate returns the same branch to its owner; it does not leak fixes into another lease.
+  - Shared regression tests are changed by one designated owner only; other lanes add lane-specific tests.
+  - No branch is rebased across another active writer's unpublished work.
+
+anchor_model:
+  A0_canonical_source:
+    value: c48f71cc46ce027927224109f7b070ca489f2b15
+    meaning: Base already assigned to the rejected map-provenance correction.
+  A1_map_provenance_accepted:
+    value: PENDING
+    produced_by: S0_MAP_PROVENANCE_CORRECTION
+    rule: Exact accepted commit SHA, never branch name or working-tree state.
+  A2_contract_approved:
+    value: PENDING
+    produced_by: G1_CONTRACT_APPROVAL
+    rule: Versioned approval record for scope, projection, write-capability, and national-grant decisions.
+  A3_authorization_database_accepted:
+    value: PENDING
+    produced_by: S1_AUTHORIZATION_DATABASE_FOUNDATION
+    rule: Accepted commit containing only approved new migrations and database contract tests.
+  A4_f0_navigation_accepted:
+    value: PENDING
+    produced_outside_this_sequence: codex/f0-shell-authority-correction
+    rule: Exact accepted navigation commit or explicit written supersession.
+  A5_projection_consumer_accepted:
+    value: PENDING
+    produced_by: S2_LOCATION_PROJECTION_CONSUMER
+  A6_route_consumer_accepted:
+    value: PENDING
+    produced_by: S3_ROUTE_AND_VIEW_CONSUMER
+  A7_write_consumer_accepted:
+    value: PENDING
+    produced_by: S4_WRITE_CAPABILITY_CONSUMER
+  A8_admin_consumer_accepted:
+    value: PENDING
+    produced_by: S5_NATIONAL_GRANT_ADMIN_CONSUMER
+  A9_integrated_candidate:
+    value: PENDING
+    produced_by: S6_CONTROLLED_INTEGRATION
+
+conflict_free_dependency_graph:
+  critical_path:
+    - S0_MAP_PROVENANCE_CORRECTION
+    - G0_MAP_PROVENANCE_ACCEPTANCE
+    - G1_CONTRACT_APPROVAL
+    - S1_AUTHORIZATION_DATABASE_FOUNDATION
+    - G2_DATABASE_AUTHORIZATION_ACCEPTANCE
+    - S2_LOCATION_PROJECTION_CONSUMER
+    - S3_ROUTE_AND_VIEW_CONSUMER
+    - S4_WRITE_CAPABILITY_CONSUMER
+    - S5_NATIONAL_GRANT_ADMIN_CONSUMER
+    - S6_CONTROLLED_INTEGRATION
+    - G6_RUNTIME_AND_REGRESSION_ACCEPTANCE
+  permitted_parallelism:
+    - >-
+      Contract decision drafting may continue while S0 is corrected, but no
+      implementation lane may start until both G0 and G1 pass.
+    - >-
+      After G2, S4 write consumer and S5 admin consumer may run in parallel only
+      if S4 does not touch operations/page.tsx and S5 remains inside admin/access
+      and its dedicated test.
+    - >-
+      S2 and S3 are deliberately sequential because both require Operations route
+      files or shared map-provenance consumers.
+  forbidden_parallelism:
+    - S0 with any writer touching its eight leased files
+    - S2 with any writer touching Operations map or live files
+    - S3 with F0 navigation until A4 exists
+    - S3 with S4 if either requires operations/page.tsx
+    - any database lane with another unpublished migration touching the same policies, RPCs, or capability rows
+
+stages:
+  - id: S0_MAP_PROVENANCE_CORRECTION
+    business_scope: Correct the rejected first pass without broadening it.
+    owner: Claude Code
+    current_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-map-provenance
+    current_branch: codex/m3-map-provenance-correction
+    required_base:
+      anchor: A0_canonical_source
+      sha: c48f71cc46ce027927224109f7b070ca489f2b15
+    dispatch_packet: CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+    dispatch_state: READY_TO_DISPATCH_AFTER_MANUAL_MAC_UNLOCK
+    exact_file_ownership:
+      - apps/web/e2e/web-admin-m3-operations.spec.ts
+      - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+      - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+      - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/types.ts
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/live/loading.tsx
+    database_ownership: NONE
+    acceptance:
+      required:
+        - All M3-MAP-R01 through M3-MAP-R10 outcomes pass.
+        - Focused tests pass with negative assertions for false provenance.
+        - No ninth file is changed.
+        - No migration, RPC, RLS, seed, capability, shell, or design file changes.
+        - Independent Codex re-review returns APPROVE_FOR_SPONSOR_CONSENT or equivalent accepted status.
+      produced_anchor: A1_map_provenance_accepted
+    rejection_boundary:
+      - Do not commit, push, or open a pull request while any correction remains failed.
+      - Return defects to Claude in the same branch and exact lease.
+      - Do not transfer partial edits to an authorization branch.
+    rollback_boundary:
+      before_commit: Preserve working tree for correction; no destructive reset or stash operation.
+      after_commit_before_integration: Withhold the commit; do not cherry-pick or merge it.
+      after_integration: Revert the isolated map-provenance commit; do not rewrite shared history.
+
+  - id: G0_MAP_PROVENANCE_ACCEPTANCE
+    type: INDEPENDENT_REVIEW_GATE
+    requires:
+      - S0_MAP_PROVENANCE_CORRECTION
+    pass_evidence:
+      - exact changed-file manifest
+      - focused test results
+      - English and Arabic runtime evidence or an explicit localization dependency block
+      - 1024, 412 or 390, and 320 width evidence
+      - map and accessible-list negative states
+      - accepted immutable commit SHA
+    fail_action: RETURN_TO_S0_WITHOUT_DOWNSTREAM_DISPATCH
+
+  - id: G1_CONTRACT_APPROVAL
+    type: SPONSOR_AND_CONTRACT_GATE
+    requires:
+      - G0_MAP_PROVENANCE_ACCEPTANCE
+    required_decisions:
+      - exact canonical region, branch, and organization identifiers and hierarchy
+      - user-to-scope cardinality and temporary cross-scope access
+      - row-to-scope linkage for factories, visits, people, cases, and risk exceptions
+      - precise location and identity capability semantics
+      - reduced projection, masking, aggregation, freshness, and invalid-coordinate semantics
+      - action-to-capability and record-scope matrix
+      - national-scope grantors, grantees, reason, expiry, review, revocation, and active-session behavior
+      - denied-route behavior
+    pass_evidence:
+      - versioned decision IDs
+      - approved acceptance rows
+      - no unresolved P0 or P1 contract field
+    fail_action: BLOCK_ALL_AUTHORIZATION_IMPLEMENTATION
+    produced_anchor: A2_contract_approved
+
+  - id: S1_AUTHORIZATION_DATABASE_FOUNDATION
+    business_scope: Implement approved WP-04, WP-05 database authority, WP-03 RPC/policy alignment, and WP-02 projection authority.
+    owner: ONE_DATABASE_IMPLEMENTER_TO_BE_ASSIGNED
+    proposed_branch: codex/m3-operations-authorization-db
+    proposed_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations-authorization-db
+    required_base:
+      anchor: A1_map_provenance_accepted
+      additional_contract_anchor: A2_contract_approved
+    proposed_new_migration_paths_not_reserved:
+      - path: supabase/migrations/20260725130000_operations_scope_authorization.sql
+        owns:
+          - canonical user-to-region, branch, and organization scope relations if approved
+          - scoped read functions, views, or RLS predicates for Operations sources
+          - supporting indexes
+          - scope-change audit
+      - path: supabase/migrations/20260725131000_operations_national_scope_grants.sql
+        owns:
+          - operations.view_all_regions capability if approved
+          - governed grant semantics, expiry, revocation, and audit if approved
+      - path: supabase/migrations/20260725132000_operations_write_capability_alignment.sql
+        owns:
+          - approved capability boundary for geo override, action resolution, notification handling, and cancellation
+          - RPC and RLS alignment
+          - mutation audit
+      - path: supabase/migrations/20260725133000_operations_location_projection_authorization.sql
+        owns:
+          - operations.view_precise_location_identity capability if approved
+          - governed precise and reduced read projections
+          - approved location_visibility_matrix integration or supersession
+    note_on_paths: >-
+      These are exact proposed ownership paths only. They are not created or
+      reserved by this packet and must be collision-checked immediately before
+      an approved lease is issued.
+    existing_migrations_read_only:
+      - supabase/migrations/0001_foundation.sql
+      - supabase/migrations/0002_rbac_audit.sql
+      - supabase/migrations/0008_visibility_widen.sql
+      - supabase/migrations/0012_admin_dossier_visibility.sql
+      - supabase/migrations/0015_w1_field_home.sql
+      - supabase/migrations/20260716161605_m04_device_eta_override.sql
+      - supabase/migrations/20260717170000_mvp2_m2_04_risk_workbench.sql
+      - supabase/migrations/20260717190000_mvp2_m2_10_case_spine.sql
+      - supabase/migrations/20260717220000_mvp2_m2_06_spatial_gis.sql
+      - supabase/migrations/20260721030000_planning_capabilities.sql
+      - supabase/migrations/20260721093000_execution_canonical_contracts.sql
+      - supabase/migrations/20260721110000_execution_access_grants.sql
+      - supabase/migrations/20260721140000_execution_journey_cancellation.sql
+    exact_rls_and_rpc_ownership:
+      reads:
+        - factories
+        - visits
+        - assignments
+        - geo_events
+        - profiles
+        - cases
+        - risk_exceptions
+        - location_visibility_matrix
+      writes:
+        - action_forms
+        - notifications
+        - geo_override_requests
+        - cancellation_requests
+      functions_and_capabilities:
+        - has_capability extension only if the approved grant model requires it
+        - decide_geo_override alignment
+        - decide_active_cancellation verification or alignment
+        - approved scoped Operations read projections
+        - operations.view_all_regions if approved
+        - operations.view_precise_location_identity if approved
+    proposed_test_ownership:
+      create:
+        - apps/web/e2e/web-admin-m3-operations-scope-rls.spec.ts
+        - apps/web/e2e/web-admin-m3-operations-projection-rls.spec.ts
+        - apps/web/e2e/web-admin-m3-operations-write-rls.spec.ts
+        - apps/web/e2e/web-admin-m3-operations-national-grants.spec.ts
+      modify:
+        - apps/web/e2e/execution-canonical-contract.spec.ts
+        - apps/web/e2e/execution-access-contract.spec.ts
+      read_only_regression:
+        - apps/web/e2e/execution-journey-contract.spec.ts
+        - apps/web/e2e/m04-device-eta-override.spec.ts
+        - apps/web/e2e/mvp2-m2-09-exceptions.spec.ts
+    excluded_files:
+      - apps/web/src/app/(app)/operations/**
+      - apps/web/src/app/(app)/admin/access/**
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/src/lib/execution/capabilities.ts
+    acceptance:
+      - Every matrix row for database scope, projection, mutation, and grants has positive and negative proof.
+      - Unauthorized rows are not returned, not merely hidden after query.
+      - Unauthorized writes fail in RPC/RLS and emit no success audit.
+      - Authorized writes emit required immutable audit.
+      - Existing migrations remain unchanged.
+      - Migration applies cleanly from the accepted base and from a fresh database.
+      - Roll-forward repair is documented for every additive database change.
+    produced_anchor: A3_authorization_database_accepted
+    rollback_boundary:
+      before_integration: Withhold branch; do not apply to shared Supabase environments.
+      after_nonproduction_apply: Use an approved forward remediation migration; never edit or delete an applied migration.
+      capability_exposure: Keep new capabilities ungranted or consumer-inactive until downstream gates pass.
+
+  - id: G2_DATABASE_AUTHORIZATION_ACCEPTANCE
+    type: SECURITY_AND_DATA_GATE
+    requires:
+      - S1_AUTHORIZATION_DATABASE_FOUNDATION
+    independent_reviewer: Codex or assigned reviewer who did not implement S1
+    pass_evidence:
+      - migration collision check
+      - fresh-database apply
+      - existing-data compatibility
+      - 45-row negative-matrix database subset
+      - RLS cross-role and cross-region evidence
+      - RPC mutation denial and audit evidence
+      - immutable accepted commit SHA
+    fail_action: RETURN_TO_S1_AND_BLOCK_ALL_CONSUMERS
+    produced_anchor: A3_authorization_database_accepted
+
+  - id: S2_LOCATION_PROJECTION_CONSUMER
+    work_package: WP-02
+    business_scope: Consume approved full and reduced location projections after database acceptance.
+    owner: ONE_UI_IMPLEMENTER_TO_BE_ASSIGNED
+    proposed_branch: codex/m3-operations-location-projection
+    proposed_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations-location-projection
+    required_base:
+      anchors:
+        - A1_map_provenance_accepted
+        - A3_authorization_database_accepted
+      rule: Branch from the integration commit containing both immutable anchors.
+    exact_file_ownership:
+      - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+      - apps/web/src/app/(app)/operations/OpsMap.tsx
+      - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+      - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/types.ts
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/lib/operations/location-projection.ts
+      - apps/web/e2e/web-admin-m3-operations-location-projection.spec.ts
+    note_on_new_helper: Proposed exact path; not created or reserved by this packet.
+    database_ownership: READ_ONLY_CONSUMER
+    excluded:
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/src/app/(app)/operations/actions.ts
+      - apps/web/src/app/(app)/admin/access/**
+      - supabase/**
+      - apps/web/e2e/web-admin-m3-operations.spec.ts
+    acceptance:
+      - Precise identity and coordinates render only under approved capability and scope.
+      - Reduced projection contains no direct identity, exact coordinates, visit ID, or accuracy.
+      - Read-error, zero-row, invalid-coordinate, and no-mappable-position states remain distinct.
+      - English, Arabic, RTL, 1024, 412 or 390, and 320 evidence passes.
+      - No regression to accepted M3 provenance.
+    produced_anchor: A5_projection_consumer_accepted
+    rollback_boundary:
+      - Revert only the isolated consumer commit.
+      - Database authority remains safe and must not be weakened to restore UI behavior.
+      - If projection fails closed, retain denial and restore the last accepted non-sensitive UI.
+
+  - id: S3_ROUTE_AND_VIEW_CONSUMER
+    work_package: WP-01
+    business_scope: Enforce operations.view in navigation and direct routes.
+    owner: ONE_ROUTE_IMPLEMENTER_TO_BE_ASSIGNED
+    proposed_branch: codex/m3-operations-route-authorization
+    proposed_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations-route-authorization
+    required_base:
+      anchors:
+        - A3_authorization_database_accepted
+        - A4_f0_navigation_accepted
+        - A5_projection_consumer_accepted
+      rule: Start only from one integration commit containing all three anchors.
+    exact_file_ownership:
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/exceptions/page.tsx
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/e2e/shell-navigation.spec.ts
+      - apps/web/e2e/web-admin-m3-operations-route-authorization.spec.ts
+    database_ownership: READ_ONLY_CONSUMER
+    excluded:
+      - apps/web/src/app/(app)/operations/actions.ts
+      - apps/web/src/app/(app)/admin/access/**
+      - supabase/**
+    acceptance:
+      - Navigation and direct-route access agree.
+      - Denial happens before protected reads.
+      - operations.view grants match the approved role contract.
+      - Denied-route behavior matches G1.
+      - No shell or map regression.
+    produced_anchor: A6_route_consumer_accepted
+    rollback_boundary:
+      - Revert the isolated route consumer commit.
+      - Never restore access by broadening database RLS.
+      - If navigation fails, preserve direct-route denial while repairing discoverability.
+
+  - id: S4_WRITE_CAPABILITY_CONSUMER
+    work_package: WP-03
+    business_scope: Bind Operations controls and server actions to approved write capabilities and record scope.
+    owner: ONE_ACTION_IMPLEMENTER_TO_BE_ASSIGNED
+    proposed_branch: codex/m3-operations-write-authorization
+    proposed_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations-write-authorization
+    required_base:
+      anchors:
+        - A3_authorization_database_accepted
+        - A6_route_consumer_accepted
+    exact_file_ownership:
+      - apps/web/src/app/(app)/operations/actions.ts
+      - apps/web/src/app/(app)/operations/Controls.tsx
+      - apps/web/src/app/(app)/operations/OverrideQueue.tsx
+      - apps/web/src/app/(app)/operations/CancellationQueue.tsx
+      - apps/web/e2e/web-admin-m3-operations-write-authorization.spec.ts
+    conditional_file:
+      path: apps/web/src/app/(app)/operations/page.tsx
+      rule: >-
+        May be leased only after S3 is integrated and only if approved control
+        visibility cannot be composed without changing the page. Otherwise it
+        remains excluded.
+    database_ownership: READ_ONLY_CONSUMER
+    excluded:
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/src/app/(app)/admin/access/**
+      - supabase/**
+    acceptance:
+      - Each control has the approved capability and record-scope predicate.
+      - Server action independently verifies authorization before mutation.
+      - Database denial remains authoritative against forged requests.
+      - Success and denial audit behavior matches contract.
+      - Planner and leadership cannot acquire mutation authority through UI state.
+    produced_anchor: A7_write_consumer_accepted
+    rollback_boundary:
+      - Revert isolated action/UI consumer commit.
+      - Keep database write denial in place.
+      - Disable or hide a broken control; never bypass its RPC/RLS contract.
+
+  - id: S5_NATIONAL_GRANT_ADMIN_CONSUMER
+    work_package: WP-05
+    business_scope: Administer approved exceptional national-scope grants.
+    owner: ONE_ACCESS_ADMIN_IMPLEMENTER_TO_BE_ASSIGNED
+    proposed_branch: codex/m3-operations-national-grant-admin
+    proposed_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations-national-grant-admin
+    required_base:
+      anchor: A3_authorization_database_accepted
+    exact_file_ownership:
+      - apps/web/src/app/(app)/admin/access/page.tsx
+      - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+      - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+      - apps/web/src/app/(app)/admin/access/actions.ts
+      - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+      - apps/web/src/lib/execution/capabilities.ts
+      - apps/web/e2e/web-admin-m3-operations-national-grant-admin.spec.ts
+    database_ownership: READ_ONLY_CONSUMER
+    excluded:
+      - apps/web/src/app/(app)/operations/**
+      - apps/web/src/lib/shell-navigation.ts
+      - supabase/**
+    acceptance:
+      - Only approved administrators may grant or revoke.
+      - Reason, expiry, review state, and audit are mandatory when contracted.
+      - Role-derived access is not falsely presented as directly revocable.
+      - Expired or revoked grants cease to authorize according to approved session semantics.
+      - No grant can broaden unrelated capabilities.
+    produced_anchor: A8_admin_consumer_accepted
+    rollback_boundary:
+      - Revert isolated admin consumer commit.
+      - Keep database grant enforcement and audit intact.
+      - Do not delete grant history to hide an erroneous administration attempt.
+
+  - id: S6_CONTROLLED_INTEGRATION
+    owner: ONE_INTEGRATOR_NOT_ANY_ACTIVE_IMPLEMENTER
+    proposed_branch: codex/m3-operations-authorization-integration
+    proposed_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations-authorization-integration
+    required_anchors:
+      - A1_map_provenance_accepted
+      - A3_authorization_database_accepted
+      - A4_f0_navigation_accepted
+      - A5_projection_consumer_accepted
+      - A6_route_consumer_accepted
+      - A7_write_consumer_accepted
+      - A8_admin_consumer_accepted
+    integration_order:
+      - A1_map_provenance_accepted
+      - A4_f0_navigation_accepted
+      - A3_authorization_database_accepted
+      - A5_projection_consumer_accepted
+      - A6_route_consumer_accepted
+      - A7_write_consumer_accepted
+      - A8_admin_consumer_accepted
+    conflict_policy:
+      - Stop on any textual or semantic conflict.
+      - Return conflict to the later owning lane; integrator does not redesign or rewrite leased behavior.
+      - Never resolve by dropping an accepted test, requirement ID, capability check, projection field, or audit event.
+      - Record exact source and target SHAs for every integrated commit.
+    produced_anchor: A9_integrated_candidate
+    rollback_boundary:
+      - Each lane must remain a separately revertible commit set.
+      - Revert consumers before database forward remediation.
+      - Never rewrite shared branch history after review begins.
+
+integration_gates:
+  - id: G3_PROJECTION_CONSUMER_ACCEPTANCE
+    after: S2_LOCATION_PROJECTION_CONSUMER
+    required:
+      - reduced and precise projection negative tests
+      - accepted map-provenance regression
+      - browser evidence at required locales and widths
+      - immutable accepted commit SHA
+  - id: G4_ROUTE_AND_WRITE_ACCEPTANCE
+    after:
+      - S3_ROUTE_AND_VIEW_CONSUMER
+      - S4_WRITE_CAPABILITY_CONSUMER
+    required:
+      - direct-route denial before read
+      - navigation parity
+      - forged-action denial
+      - audit evidence
+      - immutable accepted SHAs
+  - id: G5_ADMIN_GRANT_ACCEPTANCE
+    after: S5_NATIONAL_GRANT_ADMIN_CONSUMER
+    required:
+      - unauthorized grant and revoke denial
+      - expiry and audit evidence
+      - role-derived versus direct-grant truth
+      - immutable accepted commit SHA
+  - id: G6_RUNTIME_AND_REGRESSION_ACCEPTANCE
+    after: S6_CONTROLLED_INTEGRATION
+    required:
+      - complete 45-row authorization negative matrix
+      - web-admin M3 Operations suite
+      - shell navigation suite
+      - execution canonical, access, journey, and admin contract suites
+      - mapbox live and provider suites
+      - exceptions suites
+      - dashboard regression suites
+      - English and Arabic browser evidence
+      - desktop, 1024, 412 or 390, and 320 responsive evidence
+      - keyboard, focus, and accessibility evidence
+      - database audit verification
+      - clean worktree and exact changed-file manifest
+    fail_action:
+      - Identify the owning lane.
+      - Reopen only that lane from its accepted predecessor anchor.
+      - Do not patch the integration branch directly.
+
+test_ownership_register:
+  S0_MAP_PROVENANCE_CORRECTION:
+    modify:
+      - apps/web/e2e/web-admin-m3-operations.spec.ts
+  S1_AUTHORIZATION_DATABASE_FOUNDATION:
+    create:
+      - apps/web/e2e/web-admin-m3-operations-scope-rls.spec.ts
+      - apps/web/e2e/web-admin-m3-operations-projection-rls.spec.ts
+      - apps/web/e2e/web-admin-m3-operations-write-rls.spec.ts
+      - apps/web/e2e/web-admin-m3-operations-national-grants.spec.ts
+    modify:
+      - apps/web/e2e/execution-canonical-contract.spec.ts
+      - apps/web/e2e/execution-access-contract.spec.ts
+  S2_LOCATION_PROJECTION_CONSUMER:
+    create:
+      - apps/web/e2e/web-admin-m3-operations-location-projection.spec.ts
+  S3_ROUTE_AND_VIEW_CONSUMER:
+    create:
+      - apps/web/e2e/web-admin-m3-operations-route-authorization.spec.ts
+    modify:
+      - apps/web/e2e/shell-navigation.spec.ts
+  S4_WRITE_CAPABILITY_CONSUMER:
+    create:
+      - apps/web/e2e/web-admin-m3-operations-write-authorization.spec.ts
+  S5_NATIONAL_GRANT_ADMIN_CONSUMER:
+    create:
+      - apps/web/e2e/web-admin-m3-operations-national-grant-admin.spec.ts
+  S6_CONTROLLED_INTEGRATION:
+    modify: []
+    run_only: ALL_RELEVANT_SUITES
+
+collision_preflight_before_every_future_lease:
+  required_checks:
+    - authoritative repository and Git common directory
+    - exact base SHA
+    - branch and worktree do not already exist unexpectedly
+    - clean worktree or explicitly registered pre-existing dirt
+    - active lease registry has no path overlap
+    - every proposed new migration and test path is unused
+    - no open pull request owns the same semantic contract
+    - no dirty preview or abandoned worktree owns overlapping files
+    - current product-contract gate and current slice still authorize the work
+  known_current_collisions:
+    claude_eight_file_lease: ACTIVE_PENDING_DISPATCH
+    old_preview_live_map_overlap: DIRTY_DO_NOT_TOUCH
+    f0_shell_navigation_overlap: MUST_PRODUCE_A4_OR_BE_EXPLICITLY_SUPERSEDED
+    pr_60_m3_operations: REVIEW_ONLY
+    pr_61_shared_brand: REVIEW_ONLY
+
+rollback_order_if_integrated_candidate_fails:
+  consumer_first:
+    - S5_NATIONAL_GRANT_ADMIN_CONSUMER
+    - S4_WRITE_CAPABILITY_CONSUMER
+    - S3_ROUTE_AND_VIEW_CONSUMER
+    - S2_LOCATION_PROJECTION_CONSUMER
+  database_second:
+    method: approved forward remediation migration
+    prohibitions:
+      - editing an applied migration
+      - deleting audit history
+      - weakening RLS to restore UI
+      - silently dropping capabilities or grants
+  provenance_last:
+    rule: >-
+      Revert accepted map provenance only if its own evidence is invalid; an
+      authorization failure is not a reason to restore fabricated map behavior.
+
+immediate_next_action:
+  condition: MANUAL_MAC_UNLOCK
+  action: Dispatch CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001 unchanged to the existing Claude Code session.
+  verification:
+    - Claude acknowledges the same worktree, branch, base, and eight-file lease.
+    - Claude reports active correction work, not idle or review-ready.
+    - No authorization stage is dispatched before G0 and G1.

@@ -1,0 +1,426 @@
+packet:
+  id: M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+  title: Admin design mapping closeout
+  prepared_by: Codex independent design mapping reviewer
+  prepared_on: 2026-07-25
+  status: READY_FOR_SPONSOR_DECISION
+  mode: READ_ONLY_DESIGN_MAPPING_REVIEW
+  implementation_authority: false
+
+session:
+  repository: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_repository: /Users/vikramindla/Developer/Inspection
+  branch: codex/orchestration-control-plane
+  head_at_start: 70b9caf506f2e5a995bd6d59295277f9858588b7
+  worktree_at_start: clean
+
+scope:
+  objective: >-
+    Consolidate the reviewed Admin route, component, and Claude Design outcomes
+    into one sponsor-ready correction list without changing frozen mappings,
+    product code, tests, data, or live designs.
+  do_not_touch:
+    - application product code
+    - tests and test evidence
+    - database or seeded data
+    - live Claude Design files
+    - frozen design mapping artefacts
+    - main
+    - setup/Inspection
+    - existing stashes
+
+authority_packets:
+  - M10-ADMIN-EXECUTION-DESIGN-READINESS-014
+  - M10-ADMIN-GIS-DESIGN-READINESS-015
+  - M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+  - M10-INTEGRATION-HUB-DESIGN-READINESS-017
+  - M10-ADMIN-OPERATIONS-DESIGN-READINESS-018
+  - M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019
+  - M10-SPATIAL-CANVAS-DESIGN-AUTHORITY-020
+  - M10-SENAEI-NO-CODE-MATCH-021
+  - M10-VIRTUAL-NO-CODE-MATCH-022
+
+executive_summary:
+  real_admin_routes_reviewed: 7
+  registered_m10_designs_reviewed: 7
+  adjacent_existing_design_authorities_reviewed: 1
+  confirmed_existing_authority: 1
+  confirmed_with_correction: 4
+  incorrect_mappings: 1
+  no_code_matches: 2
+  no_design_matches: 2
+  orphaned_designs: 1
+  new_design_id_allocations_required: 2
+  route_claims_recommended_for_retirement: 3
+  sponsor_summary: >-
+    The Admin implementation has seven real routes in this review boundary.
+    Five have usable existing design authority, but four of those require
+    bounded corrections. Two real routes have no exact design. Two registered
+    designs claim routes that do not exist. WA-DES-020 is not an Operations
+    design and is orphaned unless the sponsor deliberately creates a new
+    catalogue capability.
+  completion_guard: >-
+    These counts describe mapping readiness only. They do not establish that
+    any module, requirement, frontend, service, integration, test, or evidence
+    obligation is complete.
+
+route_mapping_review:
+  - route: /admin
+    component:
+      - apps/web/src/app/(app)/admin/page.tsx
+    business_capability: Configuration Evidence Spine
+    design_page_id: WA-DES-015
+    design_page_name: SAQEEL Admin
+    validation: CONFIRMED
+    mapping_classification: existing_exact_authority
+    correction: >-
+      Preserve WA-DES-015 as the sole /admin authority. Do not add WA-DES-020
+      as a second authority.
+    next_action: PRESERVE
+
+  - route: /admin/execution
+    component:
+      - apps/web/src/app/admin/execution/page.tsx
+      - apps/web/src/app/admin/execution/actions.ts
+    business_capability: Execution policy administration
+    design_page_id: WA-DES-003
+    design_page_name: Admin Execution
+    validation: CONFIRMED_WITH_CORRECTION
+    mapping_classification: nearest_existing_design
+    successor_revision: WA-DES-003-C1
+    corrections:
+      - Replace the CR-001-through-CR-478 claim with approved contextual requirement expressions.
+      - Replace inspector-persona language with the actual capability boundary.
+      - Add the real forms, actions, validation, unset-policy, audit, and capability-hiding states.
+      - Remove invented fixed policy values.
+      - Record the screen-catalogue gap without inventing a screen identifier.
+    next_action: CORRECT
+
+  - route: /admin/gis
+    component:
+      - apps/web/src/app/(app)/admin/gis/page.tsx
+      - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+      - apps/web/src/app/(app)/admin/gis/actions.ts
+      - apps/web/src/components/GeoMap.tsx
+    business_capability: GIS policy and configuration studio
+    design_page_id: WA-DES-006
+    design_page_name: Admin GIS
+    validation: CONFIRMED_WITH_CORRECTION
+    mapping_classification: nearest_existing_design
+    successor_revision: WA-DES-006-C1
+    corrections:
+      - Show unresolved provider and numeric-policy states rather than fixed values.
+      - Reconcile planner versus gis_admin action and row-level authority.
+      - Preserve validation, audit, feature gating, and unavailable states.
+      - Do not accept the code fallback value of 150 as product policy.
+    blockers:
+      - MVP3-HOLD-002
+      - DEC-002
+    next_action: CORRECT
+
+  - route: /admin/integrations/factory-data
+    component:
+      - apps/web/src/app/(app)/admin/integrations/factory-data/page.tsx
+      - apps/web/src/app/(app)/admin/integrations/factory-data/actions.ts
+      - apps/web/src/app/(app)/admin/integrations/factory-data/CsvImportForm.tsx
+      - apps/web/src/app/(app)/admin/integrations/factory-data/MasterDataForms.tsx
+    business_capability: Factory master-data intake and staging
+    design_page_id: WA-DES-007
+    design_page_name: Factory Data Integration
+    validation: CONFIRMED_WITH_CORRECTION
+    mapping_classification: nearest_existing_design
+    successor_revision: WA-DES-007-C1
+    corrections:
+      - Replace the fictional Technical Admin persona with actual capability and RLS boundaries.
+      - State that Senaei is unconfigured and unverified and that no remote call is evidenced.
+      - State that CSV is staging only; import and reconciliation apply are not evidenced.
+      - Replace the all-478 claim with the approved CR-410-through-CR-429 context.
+      - Preserve failure, validation, provenance, and audit states.
+    blockers:
+      - SENAEI_API_CONTRACT_NOT_SUPPLIED
+    next_action: CORRECT
+
+  - route: /admin/integrations
+    component:
+      - apps/web/src/app/(app)/admin/integrations/page.tsx
+    business_capability: Integration registry, events, and exports
+    design_page_id: WA-DES-008
+    design_page_name: Integration Hub
+    validation: CONFIRMED_WITH_CORRECTION
+    mapping_classification: nearest_existing_design
+    successor_revision: WA-DES-008-C1
+    exact_requirement_rows:
+      - MVP2-REQ-0073
+      - MVP2-REQ-0078
+      - MVP2-REQ-0188
+      - MVP2-REQ-0189
+      - MVP2-REQ-0190
+      - MVP2-REQ-0191
+      - MVP2-REQ-0192
+      - MVP2-REQ-0224
+      - MVP2-REQ-0226
+      - MVP2-REQ-0227
+      - MVP2-REQ-0238
+      - MVP2-REQ-0239
+      - MVP2-REQ-0241
+      - MVP2-REQ-0256
+    corrections:
+      - Replace fictional provider cards, health states, and counts with the real generic registry/events/exports model.
+      - Replace the fictional Technical Admin persona with actual capability and table-specific RLS boundaries.
+      - Add per-source unavailable and error isolation states.
+      - Preserve the exact 14 transferred M3 requirement rows.
+    next_action: CORRECT
+
+  - route: /admin/operations
+    component:
+      - apps/web/src/app/(app)/admin/operations/page.tsx
+    business_capability: Platform operations and resilience
+    design_page_id: WA-DES-020
+    design_page_name: Control Panel
+    validation: INCORRECT_MAPPING
+    mapping_classification: no_design_match
+    correction: >-
+      Remove WA-DES-020. The route manages retry requests, feature-flag
+      publication, and configured endpoint counts; it is not the Control Panel.
+    required_new_design:
+      title: SAQEEL Platform Operations and Resilience
+      filename_pattern: SAQEEL Platform Operations and Resilience - <APPROVED-ID>-C1.dc.html
+      id_rule: Allocate only after governance collision checking; this packet does not invent an ID.
+    blockers:
+      - CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002
+      - provider_contracts_not_supplied
+      - retention_policy_not_supplied
+      - backup_policy_not_supplied
+    next_action: CHANGE_DESIGN
+
+  - route: /admin/gis/spatial
+    component:
+      - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+      - apps/web/src/app/(app)/admin/gis/spatial/CreateLayer.tsx
+      - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+    business_capability: Spatial canvas and layer administration
+    design_page_id: null
+    design_page_name: null
+    validation: NO_DESIGN_MATCH
+    mapping_classification: missing_design_authority
+    correction: >-
+      Keep this route distinct from WA-DES-006. Allocate a new collision-checked
+      identity, unless governance explicitly approves it as a WA-DES-006
+      companion.
+    required_new_design:
+      title: SAQEEL Spatial Canvas
+      filename_pattern: SAQEEL Spatial Canvas - <APPROVED-ID>-C1.dc.html
+      id_rule: Allocate only after governance collision checking; this packet does not invent an ID.
+    code_delta_to_reflect:
+      - FEATURE_SPATIAL_CANVAS defaults off.
+      - factory_locations are read but not rendered.
+      - No map renderer is present.
+      - Persisted refresh evidence after layer creation is absent.
+      - Errors are collapsed rather than isolated.
+      - Layer lifecycle, offline, and privacy contracts are not complete.
+    blockers:
+      - MVP3-HOLD-002
+      - DEC-002
+    next_action: CHANGE_DESIGN
+
+nonexistent_route_claims:
+  - proposed_route: /admin/integrations/senaei
+    component: null
+    design_page_id: WA-DES-012
+    design_page_name: Senaei Integration
+    validation: NO_CODE_MATCH
+    disposition: RETIRE_ROUTE_CLAIM_AS_NON_CONSUMABLE
+    evidence_summary: >-
+      No route, component, or screen exists. Real concerns are split across
+      WA-DES-008, WA-DES-007, Factory 360 downstream behavior, and server-only
+      typed adapters.
+    design_fabrications_to_remove:
+      - MODON and provider endpoints
+      - provider health and counts
+      - mapping and synchronization results
+    blocker: SENAEI_API_CONTRACT_NOT_SUPPLIED
+    next_action: BLOCK
+
+  - proposed_route: /admin/virtual
+    component: null
+    design_page_id: WA-DES-013
+    design_page_name: Virtual Inspection Admin
+    validation: NO_CODE_MATCH
+    disposition: RETIRE_ROUTE_CLAIM_AS_NON_CONSUMABLE
+    evidence_summary: >-
+      No Admin route exists. The real /virtual and /virtual/:id journey is
+      WA-DES-044 and CR-337-through-CR-356, not WA-DES-013.
+    design_fabrications_to_remove:
+      - Twilio Video as an implemented provider
+      - provider administration states unsupported by the repository
+    blockers:
+      - WAP1-DEC-003
+      - DEC-005
+      - DEC-006
+      - DEC-007
+      - M11-PERM-001-through-M11-PERM-008
+      - M11-remediation-013-through-M11-remediation-015
+    next_action: BLOCK
+
+orphaned_designs:
+  - design_page_id: WA-DES-020
+    design_page_name: Control Panel
+    current_claim: /admin/operations
+    validation: INCORRECT_MAPPING
+    nearest_route_considered: /admin
+    nearest_route_result: >-
+      Not usable. /admin already has the stronger and exact WA-DES-015
+      Configuration Evidence Spine authority.
+    preferred_disposition: RETIRE_WA_DES_020_AS_NON_CONSUMABLE_REFERENCE
+    alternate_disposition: >-
+      A new catalogue route or an explicitly governed WA-DES-015 companion
+      requires sponsor-approved change control. Silent reassignment is prohibited.
+
+mandatory_mapping_corrections:
+  - Keep WA-DES-015 as the sole /admin design authority.
+  - Map each real route to one exact design authority rather than the seven-design M10 bundle.
+  - Correct WA-DES-003, WA-DES-006, WA-DES-007, and WA-DES-008 through their existing C1 successor identities.
+  - Remove WA-DES-020 from /admin/operations.
+  - Record /admin/operations and /admin/gis/spatial as NO_DESIGN_MATCH.
+  - Record WA-DES-012 and WA-DES-013 as NO_CODE_MATCH and retire their Admin route claims.
+  - Record WA-DES-020 as orphaned pending sponsor retirement or explicit route change control.
+  - Replace CR-001-through-CR-478 screen claims with exact or approved contextual requirement expressions.
+  - Replace fictional persona labels with actual capability, RLS, RPC, and feature-flag boundaries.
+  - Keep provider-held, contract-held, and policy-held behavior unavailable and visibly unresolved.
+  - Allocate any new design identity only through governance collision checking.
+
+provider_and_policy_blockers:
+  - area: GIS and Spatial Canvas
+    blockers:
+      - MVP3-HOLD-002
+      - DEC-002
+    required_behavior: No invented provider, token, style, geography, offline-pack, geofence, or accuracy value.
+  - area: Senaei and Factory Data
+    blockers:
+      - EXTERNAL_SOURCE_CONTRACT_REGISTER.csv
+      - SENAEI_API_CONTRACT_NOT_SUPPLIED
+    required_behavior: No invented remote provider success, health, mapping, or synchronization.
+  - area: Platform Operations
+    blockers:
+      - provider_contracts_not_supplied
+      - retention_policy_not_supplied
+      - backup_policy_not_supplied
+    required_behavior: Show held and unavailable states; do not convert endpoint configuration counts into health.
+  - area: Virtual Inspection
+    blockers:
+      - WAP1-DEC-003
+      - DEC-005
+      - DEC-006
+      - DEC-007
+    required_behavior: Keep video provider default-off and simulated behavior explicitly labelled; do not claim Twilio Video.
+
+sponsor_decisions:
+  - id: SD-023-01
+    question: Approve the listed mapping corrections and route-claim retirements?
+    recommendation: APPROVE
+    effect: Authorizes a separate controlled update to frozen mapping artefacts; no product code change.
+  - id: SD-023-02
+    question: Allocate two new collision-checked design identities for Platform Operations and Spatial Canvas?
+    recommendation: APPROVE
+    effect: Enables design readiness work without inventing identifiers.
+  - id: SD-023-03
+    question: Approve correction leases for WA-DES-003-C1, WA-DES-006-C1, WA-DES-007-C1, and WA-DES-008-C1?
+    recommendation: APPROVE
+    effect: Enables bounded Claude Design correction work; no application implementation lease is granted.
+  - id: SD-023-04
+    question: Retire WA-DES-020 as a non-consumable reference?
+    recommendation: APPROVE
+    effect: Removes a misleading Operations mapping without replacing WA-DES-015.
+  - id: SD-023-05
+    question: Keep contract-held and policy-held behavior unavailable until its authority is supplied?
+    recommendation: APPROVE
+    effect: Prevents fabricated provider, policy, health, and integration claims.
+
+status_board:
+  - item: /admin and WA-DES-015
+    mapping: GREEN
+    design: EXISTING_AUTHORITY
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: WA-DES-003-C1
+    mapping: GREEN_WITH_CORRECTION
+    design: AMBER_CORRECTION_REQUIRED
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: WA-DES-006-C1
+    mapping: GREEN_WITH_CORRECTION
+    design: AMBER_POLICY_AND_PROVIDER_BLOCKED
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: WA-DES-007-C1
+    mapping: GREEN_WITH_CORRECTION
+    design: AMBER_EXTERNAL_CONTRACT_BLOCKED
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: WA-DES-008-C1
+    mapping: GREEN_WITH_CORRECTION
+    design: AMBER_CORRECTION_REQUIRED
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: /admin/operations
+    mapping: RED_NO_DESIGN_MATCH
+    design: RED_NEW_ID_REQUIRED
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: /admin/gis/spatial
+    mapping: RED_NO_DESIGN_MATCH
+    design: RED_NEW_ID_REQUIRED
+    implementation: NOT_EVALUATED_BY_THIS_PACKET
+  - item: WA-DES-012 and WA-DES-013 Admin route claims
+    mapping: GREY_NO_CODE_MATCH
+    design: RETIRE_AS_NON_CONSUMABLE
+    implementation: DO_NOT_BUILD_FROM_THESE_DESIGNS
+  - item: WA-DES-020
+    mapping: RED_ORPHANED
+    design: RETIREMENT_DECISION_REQUIRED
+    implementation: DO_NOT_BUILD_FROM_THIS_MAPPING
+
+next_module_queue:
+  - priority: 1
+    task: M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024
+    lane: Claude Design reviewer
+    mode: read_only
+    outcome: Prepare the exact consent and correction lease boundary for WA-DES-003-C1.
+    conflicts: none_with_active_M3_or_M11_engineering_lanes
+  - priority: 2
+    task: M10-NEW-DESIGN-ID-ALLOCATION-025
+    lane: governance
+    mode: collision_check_only
+    outcome: Allocate two identities for Platform Operations and Spatial Canvas.
+    dependency: sponsor_approval_SD-023-02
+  - priority: 3
+    task: M10-WA-DES-006-C1-DESIGN-LEASE-026
+    lane: Claude Design
+    mode: design_only
+    dependency: sponsor_approval_SD-023-03
+  - priority: 4
+    task: M10-WA-DES-007-C1-DESIGN-LEASE-027
+    lane: Claude Design
+    mode: design_only
+    dependency: sponsor_approval_SD-023-03
+  - priority: 5
+    task: M10-WA-DES-008-C1-DESIGN-LEASE-028
+    lane: Claude Design
+    mode: design_only
+    dependency: sponsor_approval_SD-023-03
+  - priority: 6
+    task: M10-ADMIN-MAPPING-CHANGE-CONTROL-029
+    lane: governance
+    mode: frozen_mapping_update
+    dependency: sponsor_approval_SD-023-01
+
+implementation_ownership_boundary:
+  before_design_acceptance:
+    claude_design: Owns only approved design correction leases and design evidence.
+    codex_reviewer: Owns independent mapping, semantic-delta, and sponsor-consent validation.
+    engineering_lanes: Must not implement from rejected, orphaned, no-code-match, or no-design-match authority.
+  after_design_acceptance:
+    rule: One implementation lease per file set; all other agents remain read-only reviewers.
+    prerequisite: Ownership, requirements, acceptance IDs, dependencies, and do-not-touch files must be recorded before work.
+
+closeout:
+  reviewer_recommendation: APPROVE_FOR_SPONSOR_CONSENT_WITH_LISTED_CORRECTIONS
+  product_code_changed: false
+  live_design_changed: false
+  frozen_mapping_changed: false
+  tests_run: not_applicable_read_only_mapping_review
+  safe_successor: M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024
