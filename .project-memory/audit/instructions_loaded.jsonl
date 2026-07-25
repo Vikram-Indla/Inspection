@@ -1085,3 +1085,8 @@
 {"time": "2026-07-25T21:22:57.155163+00:00", "session_id": "814a0454-76c2-40c8-a2f7-bc7c6c72e0fd", "file_path": "/Users/jahanarakhan/.claude/CLAUDE.md", "memory_type": "User", "load_reason": "session_start"}
 {"time": "2026-07-25T21:22:57.167330+00:00", "session_id": "814a0454-76c2-40c8-a2f7-bc7c6c72e0fd", "file_path": "/Users/jahanarakhan/.claude/RTK.md", "memory_type": "User", "load_reason": "include"}
 {"time": "2026-07-25T21:23:50.335444+00:00", "session_id": "b9f6cfd7-2369-4dd4-a737-90cf88efe721", "file_path": "/Users/jahanarakhan/inspection latest/.claude/rules/web.md", "memory_type": "Project", "load_reason": "path_glob_match"}
+{"time": "2026-07-25T23:18:39.450808+00:00", "session_id": "3d4e4da3-fd76-45fc-9bd6-c8220bf0caec", "file_path": "/Users/vikramindla/Developer/Inspection/.claude/rules/governance.md", "memory_type": "Project", "load_reason": "compact"}
+{"time": "2026-07-25T23:18:39.450888+00:00", "session_id": "3d4e4da3-fd76-45fc-9bd6-c8220bf0caec", "file_path": "/Users/vikramindla/.claude/CLAUDE.md", "memory_type": "User", "load_reason": "compact"}
+{"time": "2026-07-25T23:18:39.450808+00:00", "session_id": "3d4e4da3-fd76-45fc-9bd6-c8220bf0caec", "file_path": "/Users/vikramindla/.claude/RTK.md", "memory_type": "User", "load_reason": "include"}
+{"time": "2026-07-25T23:18:39.450808+00:00", "session_id": "3d4e4da3-fd76-45fc-9bd6-c8220bf0caec", "file_path": "/Users/vikramindla/Developer/Inspection/.claude/rules/documentation-storage.md", "memory_type": "Project", "load_reason": "compact"}
+{"time": "2026-07-25T23:18:39.450912+00:00", "session_id": "3d4e4da3-fd76-45fc-9bd6-c8220bf0caec", "file_path": "/Users/vikramindla/Developer/Inspection/CLAUDE.md", "memory_type": "Project", "load_reason": "compact"}

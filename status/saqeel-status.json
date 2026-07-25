@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r17",
-  "updated": "2026-07-26T00:45:00+03:00",
+  "revision": "SB-r18",
+  "updated": "2026-07-26T02:20:31+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -42,6 +42,11 @@
       "id": "exec",
       "channel": "web",
       "label": "Executive & insight"
+    },
+    {
+      "id": "webpublic",
+      "channel": "web",
+      "label": "Public / pre-auth"
     },
     {
       "id": "webref",
@@ -714,6 +719,99 @@
       "dependsOn": [
         "pwa-completion",
         "reports"
+      ]
+    },
+    {
+      "id": "web-login",
+      "channel": "web",
+      "group": "webpublic",
+      "name": "Sign-in (SCR-PUB-010)",
+      "design": 90,
+      "code": 90,
+      "wiring": 70,
+      "designPage": "SAQEEL Login v2.dc.html",
+      "route": "web/src/app/login/page.tsx · field/FieldLoginClient.tsx · StoryPanel.tsx · SaudiIndustrialAtlas.tsx · login.css + field/field-login.css",
+      "pwa": {
+        "state": "shared",
+        "note": "The credential card IS the field card (FieldLoginClient) — page.tsx composes it beside the atlas. A change to the card changes /login/field and the PWA login. The atlas is web-only."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "No pixel diff against the shipped route at any declared width in EN/LTR and AR/RTL — no automated diff exists (BS-1). Card is 90, not 100, for that reason alone."
+        },
+        {
+          "lane": "design",
+          "text": "Design is AHEAD of repo on four accepted decisions: scene 05 (Zones) is the default view, the separate zone-readout card is replaced by type embedded in the geography, 'Click to lock this terrain view' is dropped, and one layer shows per scene (all layers only on scene 05). Repo must adopt or the design reverts."
+        },
+        {
+          "lane": "design",
+          "text": "Repo tokens --shadow-base and --focus-ring-shadow do not exist in saqeel/tokens/colors.css. Design substitutes literal black shade and var(--focus-ring). Reconcile the token names before either side is called authority."
+        },
+        {
+          "lane": "code",
+          "text": "Zone lift: repo ships the full SaudiIndustrialAtlas renderer (clip-path slabs, dossier lock, geofence pulses); the design reproduces it in CSS/SVG. Confirm the repo renderer is the build target — do not author a third variant."
+        },
+        {
+          "lane": "wiring",
+          "text": "BLOCKED — National ID / staff-number sign-in cannot resolve an account: the MIM directory contract has not been supplied. The route states this honestly and requires a work email instead."
+        },
+        {
+          "lane": "wiring",
+          "text": "Face ID unlock requires all three of persisted session + backend-approved device in the real register + local biometric opt-in; never verified on a real enrolled device."
+        },
+        {
+          "lane": "wiring",
+          "text": "page.tsx flags to PO that reusing the field card verbatim means its flow (national-ID/staff → work email → /field) now governs /login; role-routed console entry is not offered on this surface."
+        }
+      ],
+      "phase": 1,
+      "complexity": "L",
+      "dependsOn": [
+        "brand"
+      ]
+    },
+    {
+      "id": "web-reset",
+      "channel": "web",
+      "group": "webpublic",
+      "name": "Password reset (SCR-PUB-010, reset leg)",
+      "design": 90,
+      "code": 92,
+      "wiring": 65,
+      "designPage": "SAQEEL Reset.dc.html",
+      "route": "web/src/app/reset/page.tsx · ResetClient.tsx (shares web/src/app/login/login.css)",
+      "pwa": {
+        "state": "ok",
+        "note": "Flat page, no atlas and no shell; the field channel links to the same route."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Four stages (checking / form / invalid / done) and the four safe error classes are designed but not diffed against the shipped route in EN/AR (BS-1)."
+        },
+        {
+          "lane": "code",
+          "text": "DEFECT — the reset topbar still renders the retired split صقيل | صناعي lockup instead of WA-BRAND-r1 (same root cause as O-26)."
+        },
+        {
+          "lane": "code",
+          "text": "brandSub ('Industrial Inspection Platform') is passed in ResetStrings but never rendered by ResetClient — dead string, drop it or render it."
+        },
+        {
+          "lane": "wiring",
+          "text": "BLOCKED — recovery OTP transport is Unifonic at release (DEC-007); the /login → verifyOtp → same-tab RECOVERY_OTP_USER_KEY → /reset chain has never been exercised end to end."
+        },
+        {
+          "lane": "wiring",
+          "text": "password_reset_completed audit event (FND-003) fires inside the recovery session on a best-effort basis; not verified that actor = auth.uid() is captured."
+        }
+      ],
+      "phase": 1,
+      "complexity": "S",
+      "dependsOn": [
+        "brand",
+        "web-login"
       ]
     },
     {
@@ -1854,5 +1952,20 @@
     "L": 3,
     "XL": 5
   },
-  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first."
+  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first.",
+  "reconciliations": [
+    {
+      "at": "2026-07-26T02:20:31+03:00",
+      "by": "claude-code",
+      "base": "repo SB-r17",
+      "merged": "claude-design project copy SB-r4 (etag 1785020526322141)",
+      "carried": [
+        "group webpublic inserted before webref",
+        "card web-login added — Sign-in (SCR-PUB-010) (90/90/70, 7 pending)",
+        "card web-reset added — Password reset (SCR-PUB-010, reset leg) (90/92/65, 5 pending)"
+      ],
+      "notCarried": "26 design-only pending items and 20 pwa-note differences, all on PWA cards where the repo entry is later and more specific.",
+      "flagged": "pwa-login.pwa.note still reads 'Correctly separate from the console login'; commits 53ddf4de and 07e8aa21 made the field card shared with /login. Stale — for the PWA owner to correct."
+    }
+  ]
 }
