@@ -1,0 +1,658 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-CONSUMER-TEST-INVENTORY-042
+title: Admin GIS downstream consumer and test evidence inventory
+status: BLOCK_CONSUMER_LINEAGE_AND_TEST_EVIDENCE_INCOMPLETE
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_EVIDENCE_INVENTORY
+
+authority:
+  routes:
+    - /admin/gis
+    - /admin/gis/spatial
+  screen_ids:
+    governed: [SCR-ADM-070]
+    missing: [SPATIAL_CANVAS_SCREEN_ID_REQUIRED]
+  exact_primary_478_requirements: []
+  contextual_478_requirements:
+    - { requirement_id: CR-037, acceptance_id: WA-AC-0037 }
+    - { requirement_id: CR-038, acceptance_id: WA-AC-0038 }
+    - { requirement_id: CR-046, acceptance_id: WA-AC-0046 }
+    - { requirement_id: CR-091, acceptance_id: WA-AC-0091 }
+    - { requirement_id: CR-101, acceptance_id: WA-AC-0101 }
+    - { requirement_id: CR-117, acceptance_id: WA-AC-0117 }
+    - { requirement_id: CR-123, acceptance_id: WA-AC-0123 }
+    - { requirement_id: CR-124, acceptance_id: WA-AC-0124 }
+    - { requirement_id: CR-129, acceptance_id: WA-AC-0129 }
+    - { requirement_id: CR-130, acceptance_id: WA-AC-0130 }
+    - { requirement_id: CR-135, acceptance_id: WA-AC-0135 }
+    - { requirement_id: CR-136, acceptance_id: WA-AC-0136 }
+    - { requirement_id: CR-137, acceptance_id: WA-AC-0137 }
+    - { requirement_id: CR-138, acceptance_id: WA-AC-0138 }
+    - { requirement_id: CR-140, acceptance_id: WA-AC-0140 }
+    - { requirement_id: CR-144, acceptance_id: WA-AC-0144 }
+    - { requirement_id: CR-145, acceptance_id: WA-AC-0145 }
+    - { requirement_id: CR-150, acceptance_id: WA-AC-0150 }
+    - { requirement_id: CR-151, acceptance_id: WA-AC-0151 }
+    - { requirement_id: CR-152, acceptance_id: WA-AC-0152 }
+    - { requirement_id: CR-153, acceptance_id: WA-AC-0153 }
+    - { requirement_id: CR-154, acceptance_id: WA-AC-0154 }
+    - { requirement_id: CR-155, acceptance_id: WA-AC-0155 }
+    - { requirement_id: CR-156, acceptance_id: WA-AC-0156 }
+    - { requirement_id: CR-157, acceptance_id: WA-AC-0157 }
+    - { requirement_id: CR-158, acceptance_id: WA-AC-0158 }
+    - { requirement_id: CR-159, acceptance_id: WA-AC-0159 }
+    - { requirement_id: CR-160, acceptance_id: WA-AC-0160 }
+    - { requirement_id: CR-161, acceptance_id: WA-AC-0161 }
+    - { requirement_id: CR-162, acceptance_id: WA-AC-0162 }
+    - { requirement_id: CR-173, acceptance_id: WA-AC-0173 }
+    - { requirement_id: CR-174, acceptance_id: WA-AC-0174 }
+    - { requirement_id: CR-414, acceptance_id: WA-AC-0414 }
+    - { requirement_id: CR-431, acceptance_id: WA-AC-0431 }
+    - { requirement_id: CR-442, acceptance_id: WA-AC-0442 }
+    - { requirement_id: CR-443, acceptance_id: WA-AC-0443 }
+  transferred:
+    - { requirement_id: MVP2-REQ-0072, acceptance_id: MVP2-AC-0072 }
+    - { requirement_id: MVP2-REQ-0075, acceptance_id: MVP2-AC-0075 }
+    - { requirement_id: MVP2-REQ-0233, acceptance_id: MVP2-AC-0233 }
+  package_acceptance:
+    - WA-M10-AC-001
+    - WA-M10-AC-002
+    - WA-M10-AC-003
+    - WA-M10-AC-004
+    - WA-M10-AC-005
+    - WA-M10-AC-006
+  map_acceptance:
+    - SPC-GIS-001
+    - SPC-GIS-002
+    - SPC-GIS-003
+    - SPC-GIS-004
+    - SPC-GIS-005
+    - SPC-GIS-006
+    - SPC-GIS-007
+    - SPC-GIS-008
+
+reconciliation:
+  runtime_mapping:
+    packet_id: M10-ADMIN-GIS-RUNTIME-PERMISSION-MAPPING-040
+    status: BLOCK_P0_ROUTE_ENTITLEMENT_RADIUS_AUTHORITY_CONCURRENCY_AND_POLICY
+  remediation_preflight:
+    packet_id: M10-ADMIN-GIS-REMEDIATION-PREFLIGHT-041
+    status: PREFLIGHT_DEFINED_IMPLEMENTATION_BLOCKED
+    future_ownership_envelopes: UNGRANTED
+  design_review:
+    packet_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+    status: BLOCK_DUE_TO_ROUTE_ENTITLEMENT_POLICY_HOLD_AND_UNSAFE_RADIUS_MUTATION
+    role: Design dependency only.
+  holds:
+    DEC-002: OPEN
+    MVP3-HOLD-002: OPEN
+    MVP3-HOLD-006: OPEN_WHERE_LEGAL_OR_RETENTION_STATUS_IS_REQUIRED
+
+configuration_writers:
+  - writer_id: GIS_WRITER_RADIUS
+    route: /admin/gis
+    sources:
+      - apps/web/src/app/(app)/admin/gis/actions.ts
+      - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    target: factories.geofence_radius_m
+    authorization:
+      action: authenticated user only
+      database: gis_admin or planner
+    concurrency: No expected value, version, or CAS.
+    audit: Generic factories trigger; no reason or GIS policy version.
+    verdict: UNSAFE_P0
+  - writer_id: GIS_WRITER_SHARED_ENGINE
+    route: /admin/execution
+    sources:
+      - apps/web/src/app/admin/execution/page.tsx
+      - apps/web/src/app/admin/execution/GisRulesForm.tsx
+      - apps/web/src/app/admin/execution/actions.ts
+    target: engine_settings row where engine equals gis
+    governed_keys:
+      - arrival_detection_radius_m
+      - geofence_default_radius_m
+      - gps_accuracy_checkin_max_m
+      - telemetry_interval_s
+    authorization:
+      capability: admin.execution_workflow
+      default_roles:
+        - compliance_admin
+        - form_admin
+        - workflow_admin
+        - risk_owner
+        - gis_admin
+        - security_admin
+      database: engine_write also permits multiple Admin roles.
+    concurrency: Read-modify-write has no expected updated_at or version_label filter.
+    audit:
+      generic_trigger: present
+      explicit_insert: present
+      defect: Explicit audit failure is logged but the action still returns success.
+      requirement_refs: EXE-ADMIN only, not the exact GIS requirements.
+    cache_refresh: Revalidates /admin/execution only; /admin/gis and consumers are not invalidated.
+    verdict: P0_DUPLICATE_GIS_AUTHORITY_AND_STALE_WRITE_PATH
+  - writer_id: GIS_WRITER_SPATIAL_LAYER
+    route: /admin/gis/spatial
+    sources:
+      - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+    target: gis_layers
+    authorization:
+      action: authenticated user plus feature flag
+      database:
+        - gis_admin
+        - security_admin
+        - compliance_admin
+    concurrency: Unique layer_key only; no governed version or update CAS.
+    audit: No table trigger found.
+    verdict: HELD_AND_UNAUDITED
+
+policy_consumers:
+  - consumer_id: ADMIN_GIS_DISPLAY
+    route: /admin/gis
+    source: apps/web/src/app/(app)/admin/gis/page.tsx
+    reads:
+      - full engine_settings.gis settings
+      - version_label
+    uses:
+      - all six displayed GIS settings
+      - geofence default in radius editor
+    fallback: Literal 150 metres in GisStudio when default is absent.
+    issue: Missing policy and approved policy are not reliably distinguishable.
+  - consumer_id: ADMIN_EXECUTION_EDITOR
+    route: /admin/execution
+    source: apps/web/src/app/admin/execution/page.tsx
+    reads:
+      - full engine_settings.gis settings
+      - version_label
+      - updated_at
+    uses:
+      - four editable GIS rule fields
+      - full raw JSON display for users with any execution Admin capability
+    issue: A second configuration authority exists outside SCR-ADM-070 and DEC-002 remains open.
+  - consumer_id: FIELD_STARTUP
+    route: /field/[visitId]
+    sources:
+      - apps/web/src/app/(app)/field/[visitId]/page.tsx
+      - apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+    reads:
+      - gps_accuracy_checkin_max_m
+      - geofence_default_radius_m
+      - telemetry_interval_s
+      - route_deviation
+      - factory geofence override
+    fallback_values:
+      gps_accuracy_checkin_max_m: 25
+      geofence_default_radius_m: 150
+      telemetry_interval_s: 30
+      route_deviation_off_route_m: 500
+      route_deviation_sustain_s: 120
+    issue: Client legacy and telemetry writes stamp a hard-coded gis_version rather than the loaded engine version.
+    risk: P0
+  - consumer_id: FIELD_TRAVEL
+    route: /field/[visitId]/travel
+    sources:
+      - apps/web/src/app/(app)/field/[visitId]/travel/page.tsx
+      - apps/web/src/app/(app)/field/[visitId]/travel/TravelClient.tsx
+    reads:
+      - geofence_default_radius_m
+      - factory geofence override
+    fallback: Literal 150 metres.
+    map: Shared GeoMap plus Mapbox Directions API.
+    risk: P0
+  - consumer_id: OPERATIONS_CENTER
+    route: /operations
+    sources:
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/OpsMap.tsx
+    reads:
+      - geofence_default_radius_m
+      - factory overrides and coordinates
+      - geo_event geofence results
+    fallback: No radius ring when neither override nor engine default is numeric.
+    map: Shared GeoMap, factory/visit pins, region posture.
+    risk: P0
+  - consumer_id: DATABASE_CONFIRM_ARRIVAL
+    source: supabase/migrations/20260721140000_execution_journey_cancellation.sql
+    reads:
+      - gps_accuracy_checkin_max_m
+      - engine version_label
+      - factory radius then engine default
+    behavior:
+      - Server-side accuracy and geofence enforcement.
+      - Stamps resolved GIS version on canonical inside arrival.
+    strength: Most authoritative current consumer.
+    issue: Coexists with client legacy writes and hard-coded versions.
+    risk: PROTECTED_P0_BEHAVIOR
+  - consumer_id: PURE_SPATIAL_LIBRARY
+    source: apps/web/src/lib/gis/spatial.ts
+    reads: Policy is passed as an argument.
+    production_callers: 0
+    test_callers:
+      - apps/web/e2e/mvp2-m2-06-spatial.spec.ts
+    issue: Pure checks and visibility helper do not govern production routes.
+  - consumer_id: PLANNING_FACTORY_RESOLVER
+    source: apps/web/src/lib/planning/factory-resolver.ts
+    reads:
+      - official coordinates
+      - per-factory radius
+    policy_default: Not read here.
+    purpose: Carries GIS facts into Planning candidate resolution.
+  - consumer_id: FACTORY_360
+    route: /factories/[id]
+    sources:
+      - apps/web/src/app/(app)/factories/[id]/page.tsx
+      - apps/web/src/app/(app)/factories/[id]/FactorySpatialMap.tsx
+    reads:
+      - official coordinates
+      - per-factory radius
+      - location events and GIS version
+    issue: Null radius is described as engine default but the route does not load or display the actual current default value.
+  - consumer_id: VISIT_DETAIL_AUDIT
+    route: /visits/[id]
+    source: apps/web/src/app/(app)/visits/[id]/page.tsx
+    reads:
+      - geo result
+      - accuracy
+      - GIS version
+    strength: Exposes event lineage.
+    issue: Hard-coded client versions can be displayed as though they were resolved policy lineage.
+
+coordinate_and_radius_consumers:
+  planning:
+    routes:
+      - /planning/single
+      - /planning/immediate
+      - /planning/bulk
+      - /visits/map
+    sources:
+      - apps/web/src/app/(app)/planning/single/page.tsx
+      - apps/web/src/app/(app)/planning/single/IdentityDossier.tsx
+      - apps/web/src/app/(app)/planning/immediate/ImmediateForm.tsx
+      - apps/web/src/app/(app)/visits/map/page.tsx
+      - apps/web/src/app/(app)/visits/map/VisitMap.tsx
+    behavior: Official or planner coordinates feed selection and maps; single planning displays factory radius.
+  field:
+    routes:
+      - /field
+      - /field/map
+      - /field/my-tasks
+      - /field/[visitId]
+      - /field/[visitId]/travel
+      - /field/factory-360/[id]
+    sources:
+      - apps/web/src/components/field/FieldHome.tsx
+      - apps/web/src/components/field/FieldFullMap.tsx
+      - apps/web/src/components/field/FieldLocationMap.tsx
+      - apps/web/src/app/(app)/field/map/page.tsx
+      - apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+      - apps/web/src/app/(app)/field/[visitId]/travel/page.tsx
+      - apps/web/src/app/(app)/field/[visitId]/travel/TravelClient.tsx
+      - apps/web/src/app/(app)/field/factory-360/[id]/page.tsx
+    behavior: Assigned-visit and factory coordinates feed map context, travel, geofence, and check-in.
+  operations:
+    routes:
+      - /operations
+      - /operations/live
+    sources:
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/OpsMap.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+    behavior: Factory coordinates, active visit state, and inspector positions feed monitoring maps.
+  dashboard:
+    route: /dashboard
+    sources:
+      - apps/web/src/app/(app)/dashboard/DecisionCanvas.tsx
+      - apps/web/src/app/(app)/dashboard/DashboardView.tsx
+    behavior: Shared GeoMap is used by the dashboard decision canvas.
+    issue: DecisionCanvas production mounting and configuration lineage require separate verification.
+  factory_and_visit:
+    routes:
+      - /factories/[id]
+      - /visits/[id]
+    behavior: Map dossier and immutable geo-event history.
+  API:
+    route: /api/field/factory-360/snapshot
+    behavior: Official coordinates are part of the field snapshot boundary.
+
+map_renderer_consumers:
+  shared_GeoMap:
+    source: apps/web/src/components/GeoMap.tsx
+    consumers:
+      - /admin/gis
+      - /dashboard DecisionCanvas
+      - /factories/[id]
+      - /field home and full map
+      - /field/[visitId] startup
+      - /field/[visitId]/travel
+      - /field location cards
+      - /operations
+      - /planning/immediate
+      - /planning/single
+      - /visits/map
+    cross_route_change_risk: CRITICAL
+    shared_defects:
+      - generic English default aria label
+      - marker circle layer has no keyboard-equivalent DOM controls
+      - flyTo ignores reduced-motion preference
+      - only selected error strings trigger provider-failed state
+      - popup is provider-default and carries only flat label text
+  separate_authenticated_renderer:
+    source: apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+    route: /operations/live
+    issue: Must receive separate provider, locale, accessibility, and failure regression.
+  public_exception:
+    source: apps/web/src/app/login/StoryMapInner.tsx
+    renderer: Leaflet public storytelling atlas
+    boundary: Not an authenticated operational GIS consumer.
+
+map_provider_and_routing_consumers:
+  directions_API:
+    route: /api/routing/eta
+    source: apps/web/src/app/api/routing/eta/route.ts
+    consumers:
+      - apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+      - apps/web/src/app/(app)/field/[visitId]/travel/TravelClient.tsx
+    authentication: Any authenticated user.
+    validation: Coordinate shape and world bounds only.
+    cache: no-store
+    outcomes:
+      - ok
+      - unauthorized
+      - invalid_request
+      - provider_unavailable
+      - no_route
+    issues:
+      - No explicit assigned-visit or route capability is required.
+      - Arbitrary valid origin/destination pairs may be submitted by any authenticated identity.
+      - No rate, quota, or audit contract was found.
+  provider_adapter:
+    source: apps/web/src/lib/providers/map.ts
+    production_callers: 0
+    test_callers:
+      - apps/web/e2e/cycle2-wave2-providers.spec.ts
+    behavior: FEATURE_MAP_PROVIDER can select stub, off, or a nominal real Mapbox client.
+    issue: It is a parallel orphan provider seam, not the shared renderer or live ETA route.
+  browser_renderer:
+    token: NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+    source: apps/web/src/components/GeoMap.tsx
+    hold: MVP3-HOLD-002 remains open.
+
+spatial_table_consumers:
+  gis_layers:
+    production_readers:
+      - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    production_writers:
+      - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+    other_consumers: 0
+  factory_locations:
+    production_readers:
+      - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    production_writers: 0
+    note: Working locations do not currently feed Admin GIS, Field, Planning, Operations, or Factory 360.
+  location_visibility_matrix:
+    production_readers: 0
+    helper_only: apps/web/src/lib/gis/spatial.ts
+    test_only: apps/web/e2e/mvp2-m2-06-spatial.spec.ts
+    implication: Precise-coordinate privacy governance is not wired.
+  map_packs:
+    production_readers: 0
+    production_writers: 0
+    implication: Offline map packs remain schema-only and held.
+  route_snapshots:
+    production_readers: 0
+    production_writers: 0
+    implication: Governed route snapshots and map evidence remain schema-only.
+
+GIS_version_lineage:
+  authoritative_server:
+    source: supabase/migrations/20260721140000_execution_journey_cancellation.sql
+    behavior: confirm_arrival reads engine_settings.gis version_label and stamps it.
+  client_legacy_and_telemetry:
+    source: apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+    value: v1-accepted-2026-07-11
+    occurrences: Multiple telemetry, deviation, check-in, arrival, exception, and offline records.
+    defect: Does not use the version_label loaded from engine_settings.
+  offline_replay:
+    source: apps/web/src/lib/offline.ts
+    behavior: Replays whatever hard-coded or caller-provided GIS version was queued.
+  display:
+    source: apps/web/src/app/(app)/visits/[id]/page.tsx
+    behavior: Displays stored GIS version as lineage.
+  verdict: P0_MIXED_DYNAMIC_AND_HARDCODED_LINEAGE
+
+existing_test_inventory:
+  - test: apps/web/e2e/mapbox-provider.spec.ts
+    kind: SOURCE_TEXT
+    proves:
+      - shared Mapbox imports
+      - Mapbox Directions source
+      - no committed token pattern
+    missing:
+      - runtime Admin map
+      - permission
+      - fallback interaction
+      - approved style and geography
+  - test: apps/web/e2e/mvp2-mapbox-live.spec.ts
+    kind: LIMITED_RUNTIME
+    proves:
+      - one authenticated Directions call returned a real route
+      - /operations/live avoided token-unavailable state
+    missing:
+      - /admin/gis tile and style rendering
+      - token scope and production certification
+      - provider degradation
+      - offline behavior
+  - test: apps/web/e2e/ipad-gps-policy.spec.ts
+    kind: SOURCE_TEXT
+    proves:
+      - seeded values and client fallbacks exist
+      - override source boundaries exist
+    defect: Describes seeded values as sponsor-approved while canonical DEC-002 remains open.
+  - test: apps/web/e2e/mvp2-m2-06-spatial.spec.ts
+    kind: PURE_UNIT
+    proves:
+      - distance
+      - accuracy threshold helper
+      - geofence helper
+      - visibility helper
+    missing: Production callers for all helpers.
+  - test: apps/web/e2e/mvp2-modules-live.spec.ts
+    kind: LIVE_BROWSER
+    proves: Admin fixture can create a spatial GIS layer when enabled.
+    defects:
+      - timestamp-created shared row
+      - no cleanup proof
+      - no audit assertion
+      - no screen identity
+  - test: apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+    kind: LIVE_BROWSER_NEGATIVE
+    proves: Inspector layer insert is blocked by RLS.
+    missing: Direct-route and precise-read denial.
+  - test: apps/web/e2e/execution-admin-contract.spec.ts
+    kind: SOURCE_TEXT
+    proves:
+      - second GIS rules editor exists
+      - capability check, governed key merge, version label, and audit source exist
+    missing:
+      - live authorization
+      - CAS
+      - audit success
+      - DEC-002 authority
+      - consumer invalidation
+  - test: apps/web/e2e/execution-journey-contract.spec.ts
+    kind: SOURCE_TEXT
+    proves: Server arrival SQL contains GIS threshold and radius resolution.
+    missing: Runtime boundary and policy-version convergence with client events.
+  - test: apps/web/e2e/m04-device-eta-override.spec.ts
+    kind: RUNTIME_JOURNEY
+    proves: Device, ETA, geofence, override, and Operations workflow portions.
+    missing: Admin configuration writer, CAS, and exact version-lineage change.
+  - test: supabase/tests/0033_m04_device_eta_override_contract.sql
+    kind: SQL_CONTRACT
+    proves: Geo event and override columns/behavior for its fixture.
+    missing: Admin writer permissions and policy-version convergence.
+  - test: apps/web/e2e/remaining-requirements-backend.spec.ts
+    kind: SOURCE_AND_BROWSER
+    proves: ETA API source and selected renderer availability.
+    missing: GIS governance and provider hold closure.
+  - test: apps/web/e2e/platform-design-system-contract.spec.ts
+    kind: SOURCE_TEXT
+    proves: Shared map palette imports.
+    missing: Light/dark popup contrast and actual visual parity.
+  - test: apps/web/e2e/golden-journey.spec.ts
+    kind: LEGACY_BROWSER
+    issue: Contains a stale comment about a prior Leaflet Startup crash and is not current GIS certification evidence.
+
+missing_negative_paths:
+  authorization:
+    - unauthorized direct GET to /admin/gis
+    - unauthorized direct GET to /admin/gis/spatial
+    - unauthorized direct GET to /admin/execution GIS section
+    - Planner radius mutation when Planner authority is not approved
+    - unrelated Admin saveGisRules mutation
+    - full engine settings and precise factory coordinate disclosure
+  configuration:
+    - missing engine_settings.gis row
+    - missing individual DEC-002 keys
+    - malformed, nonnumeric, zero, negative, or extreme stored values
+    - stale concurrent update on factory radius
+    - stale concurrent update on engine_settings.gis
+    - explicit audit insert failure after engine update
+    - route refresh and open-consumer behavior after config change
+  lineage:
+    - active version changes while Field has a queued offline geo event
+    - hard-coded client GIS version differs from server-resolved version
+    - visit audit displays the incorrect policy version
+  map_and_provider:
+    - missing browser token
+    - invalid or expired token
+    - unauthorized style
+    - tile/network timeout
+    - partial tile failure
+    - retry and recovery
+    - provider failure while list and radius form stay usable
+    - Directions 401, 403, 429, timeout, malformed payload, and no route
+    - unauthorized persona calling arbitrary ETA coordinates
+  spatial:
+    - unauthorized precise visibility
+    - duplicate layer key conflict
+    - spatial audit absence
+    - missing feature flag with direct action invocation
+    - unowned factory_locations mutation
+  accessibility_and_locale:
+    - keyboard selection parity between marker and list
+    - screen-reader selection announcement
+    - reduced-motion map focus
+    - popup contrast in light and dark
+    - AR labels and RTL at every map/list state
+    - 320, 390 or 412 width without overflow
+
+browser_acceptance_dependencies:
+  WA_M10_AC_001_functional:
+    blocked_by:
+      - duplicate GIS configuration writers
+      - no exact configuration authority
+      - unwired spatial tables
+      - mixed GIS version lineage
+  WA_M10_AC_002_negative_security:
+    blocked_by:
+      - direct-route entitlement
+      - overbroad reads
+      - Planner radius write
+      - missing CAS
+      - missing provider and degraded negatives
+  WA_M10_AC_003_visual:
+    blocked_by:
+      - WA-DES-006-C1 not accepted
+      - provider/style hold
+      - popup theme defect
+  WA_M10_AC_004_RTL_responsive_a11y:
+    blocked_by:
+      - missing Arabic parity
+      - click-only list rows
+      - no reduced motion
+      - small-width overflow risk
+  WA_M10_AC_005_regression:
+    blocked_by:
+      - shared GeoMap has many cross-channel consumers
+      - engine_settings.gis has server and client consumers
+      - Field offline and override paths can regress
+  WA_M10_AC_006_evidence:
+    blocked_by:
+      - no isolated fixture manifest
+      - no Admin GIS browser pack
+      - no accepted design successor
+      - provider and decision holds
+  SPC_GIS:
+    blocked:
+      - SPC-GIS-001 keyboard-accessible synchronized selection
+      - SPC-GIS-002 official versus observed and freshness truth across consumers
+      - SPC-GIS-003 override reason/evidence/permission/audit end to end
+      - SPC-GIS-004 deterministic provider failure and recovery
+      - SPC-GIS-005 governed offline map state
+      - SPC-GIS-006 privacy, tracking, freshness, and retention visibility
+      - SPC-GIS-007 non-color equivalence and reduced motion
+      - SPC-GIS-008 legal-boundary truth
+
+exact_blockers:
+  - id: GISINV-P0-01
+    blocker: Two separate Admin routes govern GIS values under different persona/capability models.
+  - id: GISINV-P0-02
+    blocker: Both shared-engine and factory-radius writers lack CAS; last writer wins.
+  - id: GISINV-P0-03
+    blocker: Field client writes a hard-coded GIS version while the server resolves the current version dynamically.
+  - id: GISINV-P0-04
+    blocker: DEC-002 is open but both Admin and Field paths carry literal numeric fallbacks.
+  - id: GISINV-P0-05
+    blocker: Precise-coordinate visibility matrix and pure spatial helpers have no production consumers.
+  - id: GISINV-P0-06
+    blocker: Direct-route and table-read disclosure are broader than SCR-ADM-070 authority.
+  - id: GISINV-P0-07
+    blocker: Spatial layer/location tables lack complete runtime wiring and audit.
+  - id: GISINV-P0-08
+    blocker: Shared GeoMap changes can affect Admin, Dashboard, Factory 360, Field, Operations, Planning, and Visits.
+  - id: GISINV-P0-09
+    blocker: MVP3-HOLD-002 and relevant MVP3-HOLD-006 clauses remain open.
+  - id: GISINV-P1-01
+    blocker: Existing tests are predominantly source assertions and do not certify Admin GIS runtime behavior.
+  - id: GISINV-P1-02
+    blocker: Current live spatial test creates shared timestamp data without evidence of cleanup.
+  - id: GISINV-P1-03
+    blocker: The orphan map provider adapter can be confused with the actual renderer and ETA route.
+
+verdict:
+  recommendation: BLOCK
+  reason: >
+    The inventory exposes a material configuration-authority collision, mixed
+    dynamic versus hard-coded GIS version lineage, unwired privacy/spatial
+    foundations, broad shared-renderer blast radius, and insufficient negative
+    and browser evidence. None can be certified or leased from this packet.
+  ACK:
+    - Real GIS consumers, Mapbox renderers, server arrival enforcement, and selected workflow tests exist.
+    - The synchronized list and provider-unavailable state provide a useful base.
+  RETURN:
+    - Return test claims that call DEC-002 values approved or equate source imports with runtime certification.
+    - Return any design or implementation plan that ignores /admin/execution as a second GIS writer.
+  BLOCK:
+    - Block implementation until the authority, writer, CAS, version-lineage, privacy, provider, and design decisions are resolved.
+  requirement_rows_completed: 0
+  screens_certified: 0
+  future_ownership_envelopes: UNGRANTED
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-CONFIG-WRITER-COLLISION-AUDIT-043
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Reconcile /admin/gis per-factory radius mutation with /admin/execution
+    shared GIS rule mutation, engine_settings RLS/capability mappings, version
+    stamps, audit duplication/failure, cache invalidation, Field offline
+    lineage, server confirm_arrival, and sponsor decision authority; produce a
+    single no-code convergence recommendation and policy-decision packet.
+  constraints:
+    - Keep all future ownership envelopes ungranted.
+    - Preserve DEC-002 and MVP3-HOLD-002 as unresolved.
+    - Do not create code, tests, fixtures, data, design, leases, branches, or stashes.
+    - Do not alter either writer or any downstream consumer.
