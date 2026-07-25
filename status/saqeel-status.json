@@ -1690,23 +1690,23 @@
       "channel": "pwa",
       "group": "pwagap",
       "name": "Completion & visit statement",
-      "design": 65,
-      "code": 40,
-      "wiring": 40,
+      "design": 72,
+      "code": 78,
+      "wiring": 74,
       "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html · Visit Statement · Visit Results",
-      "route": "partially covered by field/inspection/[id] submit path",
+      "route": "field/inspection/[id] post-submit completion state · field/inspection/[id]/statement report route · visits/[id] results route",
       "pwa": {
         "state": "gap",
         "note": "No dedicated completion or statement route; the design implies distinct post-submit screens."
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "Confirm whether Completion and Visit Statement are routes or post-submit states of Workspace."
+          "lane": "design",
+          "text": "Capture declared-width EN/LTR and AR/RTL browser comparisons before claiming pixel parity."
         },
         {
           "lane": "wiring",
-          "text": "Immutable submit — a statement view must never allow edit."
+          "text": "Statement actions and attachments remain Not configured because no governed source is wired; DEC-032 still blocks new real submissions platform-wide."
         }
       ],
       "phase": 5,

@@ -240,6 +240,49 @@
   font-size: var(--type-caption-size);
 }
 .sectionTabActive .sectionTabCopy span { color: inherit; }
+
+.completionPage { min-block-size: calc(100dvh - var(--space-8)); }
+.completionBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--status-compliant-soft);
+  border-color: var(--status-compliant);
+}
+.completionBanner h2,
+.completionBanner p,
+.completionHeading { margin: 0; }
+.completionBanner p { margin-block-start: var(--space-1); color: var(--status-compliant-text); }
+.completionMark {
+  inline-size: 44px;
+  block-size: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--status-compliant);
+  color: var(--text-on-action);
+  font-size: var(--type-title-size);
+  font-weight: 700;
+}
+.completionPage > section:not(.completionBanner) { padding: var(--space-4); }
+.completionHeading { font-size: var(--type-compact-size); padding-block-end: var(--space-3); border-block-end: var(--border-w) solid var(--border-subtle); }
+.completionMetrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); margin-block-start: var(--space-3); }
+.completionMetrics > div { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-3); border-radius: var(--radius-md); background: var(--surface-sunken); }
+.completionMetrics strong { font-size: var(--type-title-size); }
+.completionMetrics span { color: var(--text-muted); font-size: var(--type-caption-size); }
+.completionLinks,
+.completionFooter { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.completionLinks { margin-block-start: var(--space-3); }
+.completionFooter { position: sticky; inset-block-end: 0; padding: 12px 16px; background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
+.statementPage > section { padding: var(--space-4); }
+.statementHead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-block-end: var(--space-3); border-block-end: var(--border-w) solid var(--border-subtle); }
+.statementHead h2 { margin: 0; font-size: var(--type-compact-size); }
+.statementGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: var(--space-4) 0 0; }
+.statementGrid > div { padding: var(--space-3); border-radius: var(--radius-md); background: var(--surface-sunken); }
+.statementGrid dt { color: var(--text-muted); font-size: var(--type-caption-size); }
+.statementGrid dd { margin: var(--space-1) 0 0; color: var(--text-primary); }
 .sectionFooter {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -257,4 +300,6 @@
   .toolbar { align-items: stretch; }
   .actionbar { flex-wrap: wrap; }
   .actionbar > :first-child { flex: 1 1 100%; }
+  .completionMetrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .statementGrid { grid-template-columns: 1fr; }
 }
