@@ -181,7 +181,10 @@ export default function FieldLoginClient({
       const bootstrap = await bootstrapFieldSession(sb, navigator.onLine);
       if (cancelled) return;
       if (bootstrap.status === "ready") {
-        window.location.replace(safeReturnTo);
+        // Same rule as the credential path: an explicit returnTo means a field
+        // page asked for this user back; without one, let /launch route by the
+        // live role grants rather than assuming the field channel.
+        window.location.replace(returnTo ? safeReturnTo : "/launch");
         return;
       }
       if (bootstrap.status === "offline_known") {
@@ -284,12 +287,27 @@ export default function FieldLoginClient({
         setMessage(s.authInvalid);
         return;
       }
-      if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
-        await supabaseBrowser().auth.signOut();
-        setMessage(s.unauthorizedInspector);
+      // Where sign-in lands depends on whether a field page asked for the user
+      // back. With an explicit returnTo the user was bounced out of /field, so
+      // the inspector grant is the thing to check and the intended page is the
+      // destination. Without one this is a plain sign-in on the single /login
+      // surface, and role routing is the SERVER's job: /launch reads the live
+      // grants and fails closed to /launch/no-workspace on an unmatched role.
+      // Deciding "everyone is an inspector, send them to /field" here left every
+      // non-field persona — ops, leadership, planner, reviewer — with no way in.
+      if (returnTo) {
+        if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
+          await supabaseBrowser().auth.signOut();
+          setMessage(s.unauthorizedInspector);
+          return;
+        }
+        window.location.assign(safeReturnTo);
         return;
       }
-      window.location.assign(safeReturnTo);
+      // No rememberInspector here: this path has NOT verified an inspector
+      // grant, and marking the device "known inspector" would be a claim the
+      // check never made. Supabase already persists the session itself.
+      window.location.assign("/launch");
     },
     [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked, s.unauthorizedInspector],
   );
