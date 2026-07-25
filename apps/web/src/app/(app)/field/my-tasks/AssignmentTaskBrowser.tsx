@@ -2,35 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import {
+  assignmentCounts,
+  connectivityPresentation,
+  filterAssignmentTasks,
+  hasAssignmentAlert,
+  type AssignmentFilter,
+  type AssignmentSort,
+  type AssignmentTask,
+} from "./assignment-task-model";
 import styles from "./my-tasks.module.css";
 
-export type AssignmentTask = {
-  id: string;
-  assignmentStatus: string | null;
-  returnReason: string | null;
-  planningStatus: string;
-  operationalState: string;
-  windowStart: string;
-  windowEnd: string | null;
-  visitType: string;
-  executionMode: string;
-  priority: string | null;
-  packageVersionId: string | null;
-  inspectionId: string | null;
-  inspectionStatus: string | null;
-  factory: {
-    name: string;
-    code: string | null;
-    region: string | null;
-    city: string | null;
-  };
-};
+export type { AssignmentTask } from "./assignment-task-model";
 
 type Copy = {
   search: string;
   all: string;
   today: string;
+  active: string;
   upcoming: string;
+  alerts: string;
   returned: string;
   expired: string;
   earliest: string;
@@ -40,19 +31,16 @@ type Copy = {
   offline: string;
   online: string;
   open: string;
+  prepare: string;
+  continueAction: string;
   returnAction: string;
   viewOnly: string;
   packageLinked: string;
   packageMissing: string;
   priority: string;
+  statusLabels: Record<string, string>;
+  priorityLabels: Record<string, string>;
 };
-
-type Filter = "all" | "today" | "upcoming" | "returned" | "expired";
-type Sort = "asc" | "desc";
-
-function riyadhDay(value: string | number | Date): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(new Date(value));
-}
 
 function tone(task: AssignmentTask): string {
   if (task.planningStatus === "expired") return "badge-warning";
@@ -74,8 +62,8 @@ export default function AssignmentTaskBrowser({
   labels: Copy;
 }) {
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useState<Sort>("asc");
+  const [filter, setFilter] = useState<AssignmentFilter>("all");
+  const [sort, setSort] = useState<AssignmentSort>("asc");
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
@@ -89,52 +77,36 @@ export default function AssignmentTaskBrowser({
     };
   }, []);
 
-  const today = riyadhDay(Date.now());
-  const counts = useMemo(() => ({
-    all: tasks.length,
-    today: tasks.filter((task) => riyadhDay(task.windowStart) === today && task.planningStatus !== "expired").length,
-    upcoming: tasks.filter((task) => riyadhDay(task.windowStart) > today && task.planningStatus !== "expired").length,
-    returned: tasks.filter((task) => task.assignmentStatus === "returned").length,
-    expired: tasks.filter((task) => task.planningStatus === "expired").length,
-  }), [tasks, today]);
+  const counts = useMemo(() => assignmentCounts(tasks, Date.now()), [tasks]);
+  const visible = useMemo(() => filterAssignmentTasks(tasks, {
+    filter, query, sort, locale, now: Date.now(),
+  }), [filter, locale, query, sort, tasks]);
+  const connectivity = connectivityPresentation(online, labels);
 
-  const visible = useMemo(() => {
-    const needle = query.trim().toLocaleLowerCase(locale === "ar" ? "ar" : "en");
-    return tasks
-      .filter((task) => {
-        if (filter === "today") return riyadhDay(task.windowStart) === today && task.planningStatus !== "expired";
-        if (filter === "upcoming") return riyadhDay(task.windowStart) > today && task.planningStatus !== "expired";
-        if (filter === "returned") return task.assignmentStatus === "returned";
-        if (filter === "expired") return task.planningStatus === "expired";
-        return true;
-      })
-      .filter((task) => {
-        if (!needle) return true;
-        return [
-          task.id, task.factory.name, task.factory.code, task.factory.region,
-          task.factory.city, task.visitType, task.executionMode,
-        ].some((value) => value?.toLocaleLowerCase(locale === "ar" ? "ar" : "en").includes(needle));
-      })
-      .sort((a, b) => sort === "asc"
-        ? a.windowStart.localeCompare(b.windowStart)
-        : b.windowStart.localeCompare(a.windowStart));
-  }, [filter, locale, query, sort, tasks, today]);
-
-  const filterButtons: { key: Filter; label: string }[] = [
+  const filterButtons: { key: AssignmentFilter; label: string }[] = [
     { key: "all", label: labels.all },
     { key: "today", label: labels.today },
+    { key: "active", label: labels.active },
     { key: "upcoming", label: labels.upcoming },
+    { key: "alerts", label: labels.alerts },
     { key: "returned", label: labels.returned },
     { key: "expired", label: labels.expired },
   ];
 
   return (
     <>
-      <div className={`${styles.connectivity} ${online ? styles.connectivityOnline : styles.connectivityOffline}`}
+      <div className={`${styles.connectivity} ${connectivity.tone === "online" ? styles.connectivityOnline : styles.connectivityOffline}`}
         role="status" aria-live="polite">
         <span className={styles.connectivityDot} aria-hidden="true" />
-        {online ? labels.online : labels.offline}
+        {connectivity.message}
       </div>
+
+      {counts.alerts > 0 ? (
+        <button type="button" className={styles.alertSummary} onClick={() => setFilter("alerts")} role="alert">
+          <span aria-hidden="true">!</span>
+          {labels.alerts}: <span className="id-code">{counts.alerts}</span>
+        </button>
+      ) : null}
 
       <div className={styles.taskTools}>
         <label className={styles.search}>
@@ -142,7 +114,7 @@ export default function AssignmentTaskBrowser({
           <input value={query} onChange={(event) => setQuery(event.target.value)}
             placeholder={labels.search} type="search" />
         </label>
-        <select className={styles.sort} value={sort} onChange={(event) => setSort(event.target.value as Sort)}
+        <select className={styles.sort} value={sort} onChange={(event) => setSort(event.target.value as AssignmentSort)}
           aria-label={sort === "asc" ? labels.earliest : labels.latest}>
           <option value="asc">{labels.earliest}</option>
           <option value="desc">{labels.latest}</option>
@@ -166,9 +138,13 @@ export default function AssignmentTaskBrowser({
         ) : visible.map((task) => {
           const expired = task.planningStatus === "expired";
           const returned = task.assignmentStatus === "returned";
-          const status = expired ? labels.expired : returned ? labels.returned : task.operationalState.replaceAll("_", " ");
+          const status = expired ? labels.expired : returned ? labels.returned
+            : labels.statusLabels[task.operationalState] ?? task.operationalState.replaceAll("_", " ");
+          const active = ["prepared", "on_the_way", "arrived", "executing"].includes(task.operationalState);
+          const actionable = !expired && !returned;
+          const actionLabel = active ? labels.continueAction : labels.prepare;
           return (
-            <article key={task.id}
+            <article key={task.id} data-alert={hasAssignmentAlert(task) ? "true" : undefined}
               className={`${styles.taskCard} ${selectedId === task.id ? styles.itemActive : ""}`}>
               <Link href={`/field/my-tasks?task=${task.id}`} prefetch={false} className={styles.taskMain}
                 aria-current={selectedId === task.id ? "true" : undefined}>
@@ -184,15 +160,17 @@ export default function AssignmentTaskBrowser({
                   {task.factory.city ? ` · ${task.factory.city}` : ""}
                 </span>
                 <span className={styles.taskSignals}>
-                  {task.priority ? <span className="badge badge-critical">{labels.priority}: {task.priority}</span> : null}
+                  {task.priority ? <span className="badge badge-critical">
+                    {labels.priority}: {labels.priorityLabels[task.priority] ?? task.priority}
+                  </span> : null}
                   <span className={`badge ${task.packageVersionId ? "badge-info" : "badge-outline"}`}>
                     {task.packageVersionId ? labels.packageLinked : labels.packageMissing}
                   </span>
                 </span>
               </Link>
               <div className={styles.taskActions}>
-                <Link className="btn btn-secondary" href={`/field/${task.id}`} prefetch={false}>
-                  {expired ? labels.viewOnly : labels.open}
+                <Link className="btn btn-secondary" href={actionable ? `/field/${task.id}#preparation` : `/field/${task.id}`} prefetch={false}>
+                  {expired ? labels.viewOnly : returned ? labels.open : actionLabel}
                 </Link>
                 {!expired && !returned ? (
                   <Link className="btn btn-ghost" href={`/field/${task.id}#return-assignment`} prefetch={false}>

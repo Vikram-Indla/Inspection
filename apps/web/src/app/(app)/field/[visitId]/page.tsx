@@ -721,6 +721,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           </div>
         )}
         {showPreparation && (
+          <div id="preparation" className="sq-anchor-target">
           <PreExecution
             visitId={v.id}
             ready={visitReady}
@@ -743,6 +744,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             draft={preparationDraft}
             strings={prepStrings}
           />
+          </div>
         )}
         {factoryUnverifiedManual && (
           <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
