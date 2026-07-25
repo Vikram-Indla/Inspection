@@ -1,0 +1,507 @@
+schema_version: "1.0"
+packet_id: M10-WA-DES-006-C1-DESIGN-LEASE-READINESS-025
+title: WA-DES-006-C1 Admin GIS design-write lease readiness
+status: DRAFT_NON_CONSUMABLE_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_write_authorized: false
+implementation_authorized: false
+
+task_contract:
+  task_id: M10-WA-DES-006-C1-DESIGN-LEASE-READINESS-025
+  gate: M10 Admin GIS design correction consent
+  process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06A", "G2-P12"]
+  requirement_basis: CONTEXTUAL_CROSS_ROUTE_TRACEABILITY_ONLY
+  acceptance_ids:
+    phase_1: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-003, WA-M10-AC-004, WA-M10-AC-005, WA-M10-AC-006]
+    special_component: [SPC-GIS-001, SPC-GIS-002, SPC-GIS-003, SPC-GIS-004, SPC-GIS-005, SPC-GIS-006, SPC-GIS-007, SPC-GIS-008]
+    transferred_gis: [MVP2-AC-0072, MVP2-AC-0075, MVP2-AC-0233]
+  screen_id: SCR-ADM-070
+  route: /admin/gis
+  engine_ids: [ENG-06, ENG-08, ENG-11, ENG-12]
+  dependencies:
+    - M10-ADMIN-GIS-DESIGN-READINESS-015
+    - M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+    - DEC-002
+    - MVP3-HOLD-002
+    - sponsor_consent_for_SD-023-03
+    - one_named_collision_free_Claude_Design_write_lease
+  do_not_touch:
+    - live Claude Design before sponsor consent and named lease
+    - frozen design or requirement mappings
+    - GIS, Spatial Canvas, Field, Planning, Operations, or Factory 360 product code
+    - tests, evidence, providers, environment, Supabase, migrations, seeds, or shared data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 34ad28b2795ecf196093720590040a5379f38d1f
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-SPONSOR-DECISION-AND-DISPATCH-GATES-008.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-SECURITY-RETURN-DISPATCH-CHECKLIST-021.yaml
+    - product-contract/operationalization/coordination/batches/M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    Documentation-only design readiness does not start another application
+    batch or change the active Planning/Visits approval slice.
+
+authority:
+  design_workspace:
+    - design/claude-design-mvp1/00_START_HERE.md
+    - design/claude-design-mvp1/prompts/00_MASTER_DESIGN_CONSTITUTION.md
+    - design/claude-design-mvp1/prompts/systems/GIS_GEOFENCE_AND_ROUTE_DESIGN.md
+    - design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+  mapping: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  decisions: product-contract/governance/decision_register.csv
+  provider_holds: product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  application_sources:
+    - apps/web/src/app/(app)/admin/gis/page.tsx
+    - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    - apps/web/src/app/(app)/admin/gis/actions.ts
+    - apps/web/src/components/GeoMap.tsx
+  adjacent_held_route:
+    route: /admin/gis/spatial
+    rule: Separate design authority; do not absorb its layer or offline-pack features into WA-DES-006-C1.
+
+stable_identity:
+  logical_design_id: WA-DES-006
+  correction_revision: WA-DES-006-C1
+  title: SAQEEL GIS Studio — Geofencing
+  filename: SAQEEL Admin Geofence - WA-DES-006-C1.dc.html
+  route: /admin/gis
+  screen_id: SCR-ADM-070
+  lineage_kind: CORRECTIVE_SUCCESSOR
+  predecessor:
+    filename: SAQEEL Admin Geofence.dc.html
+    bytes: 10141
+    sha256: 39c768e8e3dbe588cc8424306d7eab1c387fd51392bb76d6a78afd8e3bdaf956
+    reference_viewport: 1200x840
+    fingerprint_reverified_on: "2026-07-25"
+  identity_rule: >-
+    WA-DES-006-C1 is a correction revision, not a new page. It remains
+    non-consumable until exported, fingerprinted, independently reviewed,
+    sponsor-approved, and recorded through mapping change control.
+
+collision_check:
+  checked_scope:
+    - repository design and product-contract files
+    - design route map
+    - operational coordination packets
+  exact_successor_identity_matches_outside_predecessor_and_queue_packets: 0
+  filename_collision_found: false
+  route_collision:
+    route: /admin/gis
+    result: UNIQUE_REAL_ROUTE_FOR_WA-DES-006-C1
+  excluded_nearby_authorities:
+    - identity: WA-DES-015
+      reason: Sole authority for /admin.
+    - identity: WA-DES-020
+      reason: Orphaned Control Panel; not GIS.
+    - route: /admin/gis/spatial
+      reason: Distinct feature-held Spatial Canvas requiring separate authority.
+  conclusion: IDENTITY_CAN_BE_RESERVED_ONLY_AFTER_SPONSOR_CONSENT
+
+independent_return_basis:
+  previous_recommendation: RETURN_FOR_MAPPING_CORRECTION
+  corrected_classification: CONFIRMED_WITH_CORRECTION
+  nearest_design: WA-DES-006
+  literal_predecessor_implementation_allowed: false
+  confirmed_real_behavior:
+    - Search, region-filter, and risk-band-filter RLS-scoped factory records.
+    - Select a located factory through linked map and registry views.
+    - Display official coordinates read-only.
+    - Preview and save one positive integer factories.geofence_radius_m value.
+    - Display engine GIS settings and version only when returned.
+    - Keep factories without coordinates visible in the registry.
+    - Preserve list and coordinate evidence when Mapbox is unavailable.
+  prohibited_predecessor_behavior:
+    - Editing official latitude or longitude.
+    - Mandatory coordinate-change reason.
+    - Revert to source.
+    - Save and publish or maker-checker lifecycle.
+    - Source-versus-current comparison.
+    - Invented observed-arrival pin, provider record, editor, timestamp, or history.
+
+radius_only_write_contract:
+  action: updateGeofenceRadius
+  table: factories
+  writable_field: geofence_radius_m
+  authentication: getVerifiedUser
+  authorization_truth:
+    design_persona: GIS_ADMIN
+    database_policy_observed: gis_admin_or_planner
+    explicit_action_capability_check: absent
+    rule: >-
+      Do not resolve this discrepancy in design. Include denied-persona and
+      direct-action denial states and label exact actor authority as a P0
+      runtime/security gap.
+  validation:
+    - factory_id must be supplied.
+    - radius must be finite and greater than zero.
+    - stored value is rounded to an integer.
+  audit_truth:
+    expected: Existing factories row-audit trigger.
+    action_level_audit: none
+    evidence_status: NOT_RUNTIME_PROVEN_FOR_THIS_ROUTE
+    rule: Do not claim audited completion until actor, object, before/after, and timestamp evidence exists.
+  immutable_read_only_fields:
+    - official_lat
+    - official_lng
+    - factory identity and source attributes
+
+provider_and_policy_boundaries:
+  - id: DEC-002
+    status: OPEN
+    governs:
+      - GPS accuracy for check-in
+      - arrival detection radius
+      - default geofence radius
+      - telemetry frequency
+    design_rule: >-
+      Display record-supplied values only. Missing values are "Policy not
+      configured" and may not be represented by 150, another fallback, a range,
+      or a design recommendation.
+  - id: MVP3-HOLD-002
+    status: OPEN
+    governs:
+      - Mapbox runtime token
+      - approved map style
+      - geographic authority
+      - offline-pack policy
+    design_rule: >-
+      The provider-unavailable state preserves registry, filters, coordinates,
+      selected factory context, and permitted radius editing. Never simulate a
+      basemap or claim provider readiness.
+code_truth_gap:
+  finding: GisStudio currently falls back to 150 metres when the default is absent.
+  treatment: Show missing policy as unresolved and mark the runtime fallback for a separate engineering lease.
+
+information_architecture:
+  shell:
+    brand: Approved SAQEEL | صقيل identity
+    forbidden: ["صقيل صناعي in English shell", "Industrial sub-brand"]
+    title: GIS Studio — Geofencing
+    context: SCR-ADM-070 and record-supplied GIS version only
+  regions:
+    - Search, region, and risk-band filters with result/completeness summary.
+    - Map with geodesic radius rings and required compact provider attribution.
+    - Bounded selected-factory panel.
+    - Synchronized keyboard-accessible factory registry.
+    - Read-only GIS engine-settings table.
+  selected_factory:
+    read_only:
+      - factory name and code
+      - region and city
+      - record-supplied risk band
+      - official latitude and longitude
+    editable:
+      - geofence radius in metres
+    note: Field observation never overwrites the official pin.
+
+pagination_and_completeness_contract:
+  code_observation: >-
+    The page orders the factories query by name but supplies no explicit
+    pagination, range, limit, total count, or completeness marker.
+  risk: >-
+    A provider/default row limit can make a national registry appear complete
+    when it is only a prefix, producing false counts, missing factories, and
+    unsafe geofence administration.
+  design_requirements:
+    - Never label returned rows "all factories" without a proven total and complete fetch.
+    - Display loaded count and total only when both are source-backed.
+    - Show "Results may be incomplete" when completeness is unknown.
+    - Include accessible previous/next or load-more behavior as an implementation-gap annotation, not a functioning claim.
+    - Keep filters and selected record stable across pagination only when runtime proof exists.
+    - Ensure unlocated and risk-band counts declare whether they represent loaded rows or the full result set.
+  implementation_status: GAP_REQUIRING_SEPARATE_ENGINEERING_LEASE
+
+required_state_matrix:
+  route_and_data:
+    - loading
+    - populated_complete
+    - populated_completeness_unknown
+    - empty_registry
+    - no_filter_results
+    - partial_source_failure
+    - engine_settings_missing
+    - policy_unresolved
+    - map_provider_unavailable
+    - denied_persona
+  selected_factory:
+    - none_selected
+    - located_selected
+    - missing_coordinates
+    - radius_inherited_from_configured_default
+    - radius_missing_and_default_unresolved
+    - invalid_radius
+    - saving
+    - saved_after_server_success
+    - RLS_denied
+    - write_failure_with_input_preserved
+    - stale_or_conflict
+  map:
+    - loading
+    - ready_with_attribution
+    - missing_token
+    - provider_failure
+    - keyboard_list_equivalent
+    - reduced_motion
+  truth_rule: >-
+    Conflict prevention, completeness, actor authorization, and audit are
+    design-required but runtime-unproven. Label each as an implementation gap;
+    never depict it as delivered behavior.
+
+denied_persona_contract:
+  personas_to_prove:
+    - anonymous_or_expired_session
+    - authenticated_without_GIS_authority
+    - planner
+    - gis_admin
+  required_design_truth:
+    - No unauthorized route may expose factory coordinates, policy values, or radius controls.
+    - Direct action denial remains neutral and leaves the row unchanged.
+    - Planner is not labelled allowed or denied until route and database authority are reconciled.
+    - Menu visibility is never presented as authorization.
+
+map_list_equivalence:
+  requirements:
+    - Map selection and registry selection identify the same factory.
+    - Every located marker has a meaningful label and a corresponding registry control.
+    - Every unlocated factory remains discoverable in the registry.
+    - Pointer map interaction has a keyboard and nonvisual registry equivalent.
+    - Risk and selection use text, shape, and color.
+    - Provider failure does not remove registry operations.
+    - Popup labels may not be empty.
+    - Required provider attribution remains visible and operable.
+
+responsive_matrix:
+  required_viewports:
+    - viewport: 1440x900
+      expectation: Persistent shell, toolbar, map, bounded detail, and registry without page overflow.
+    - viewport: 1200x840
+      expectation: Exact predecessor comparison viewport plus corrected state truth.
+    - viewport: 1024x768
+      expectation: Compact shell; map, detail, and registry stack without clipped controls.
+    - viewport: 768x1024
+      expectation: Registry and selected-factory context remain usable without pointer map dependence.
+    - viewport: 412x915
+      expectation: Registry-first single column; map is progressive content; no peeking submenu icons.
+    - viewport: 390x844
+      expectation: Full filter, selection, radius, error, and provider-unavailable parity.
+    - viewport: 320x568
+      expectation: No task loss, overlap, clipping, or two-dimensional page scroll.
+  table_rule: Reflow to labelled records or a named horizontal scroll region with preserved row-control semantics.
+
+language_bidi_theme:
+  locales:
+    - locale: en
+      direction: ltr
+    - locale: ar
+      direction: rtl
+  bidi_rules:
+    - Use logical layout properties and mirror directional structure.
+    - Isolate coordinates, factory codes, units, versions, and technical identifiers as LTR.
+    - Localize filters, counts, states, actions, validation, denials, provider messages, and recovery.
+    - Require qualified native-Arabic review before acceptance.
+  themes: [light, dark]
+  theme_evidence:
+    - shell, toolbar, table, panel, map controls, popup, attribution, and radius ring
+    - body, heading, caption, placeholder, disabled, focus, error, and unavailable contrast
+    - risk and selection legibility without color-only meaning
+    - day/night basemap only when the approved provider is actually available
+
+accessibility_and_motion:
+  structure:
+    - One h1 and ordered section headings.
+    - Programmatic labels, hints, errors, and result associations for filters and radius.
+    - Real button or link semantics for selectable registry records.
+    - Unique accessible names for markers, map controls, pagination controls, and actions.
+  keyboard:
+    - Logical LTR and RTL tab order.
+    - Visible single focus treatment in both themes.
+    - Forty-four-pixel minimum targets.
+    - Search, filters, registry selection, save, retry, and pagination operable without pointer.
+    - Validation focuses summary or radius field without losing input.
+  announcements:
+    - result count and completeness
+    - selection change
+    - radius preview and saved result
+    - provider unavailable and partial-source state
+  reduced_motion:
+    - Replace flyTo and animated fit transitions with immediate movement.
+    - Do not use pulsing markers or motion as the sole selection cue.
+  zoom_reflow:
+    - Prove 200 percent zoom.
+    - Prove 400 percent or 320 CSS-pixel equivalent reflow.
+
+action_feedback:
+  dirty: Distinguish unsaved radius preview from stored radius.
+  saving: Disable only the selected factory save action and announce progress.
+  saved: Confirm exact factory and returned/stored radius only after server success.
+  invalid: Preserve entry and show field error plus summary.
+  denied: Neutral message; no database or provider internals.
+  failure: Preserve entry, retain old stored radius as authority, and offer bounded retry.
+  conflict: Block silent overwrite in design and disclose missing runtime proof.
+
+acceptance_evidence_plan:
+  design_return:
+    - Corrected editable design export under the stable filename.
+    - New export SHA-256, byte size, viewport inventory, and lineage record.
+    - Predecessor-versus-successor comparison identifying removed fabricated behavior.
+    - Component/state annotations for route, GisStudio, radius action, GeoMap, registry, and settings.
+    - Full responsive, language, theme, accessibility, reduced-motion, provider, completeness, denial, conflict, and failure matrices.
+    - Explicit implementation-gap register for authorization, pagination, audit, conflict, and 150 fallback.
+  later_runtime_not_authorized_here:
+    - GIS Admin map and keyboard-list selection parity.
+    - Radius save, refresh persistence, invalid-input no-change, and RLS-denial no-change.
+    - Planner and denied-persona route plus direct-action authorization reconciliation.
+    - Audit actor, object, before/after, and timestamp.
+    - Missing token/provider failure with preserved registry.
+    - Missing policy without numeric fallback.
+    - Empty, unlocated, zero-filter, partial-source, pagination, and completeness behavior.
+    - Concurrent-editor no-silent-overwrite proof.
+    - EN/AR RTL, light/dark, all viewports, keyboard, zoom, focus, target size, and reduced motion.
+
+acceptance_mapping:
+  - id: WA-M10-AC-001
+    priority: P0
+    design_evidence: Radius-only action, source-backed records, map/list parity, and truth-labelled implementation gaps.
+  - id: WA-M10-AC-002
+    priority: P0
+    design_evidence: Denial, RLS, invalid radius, policy missing, provider unavailable, partial source, and conflict states.
+  - id: WA-M10-AC-003
+    priority: P1
+    design_evidence: Corrected fixed-viewport export with zero unapproved difference.
+  - id: WA-M10-AC-004
+    priority: P1
+    design_evidence: EN/AR RTL, light/dark, desktop/tablet/mobile/minimum reflow, keyboard, accessibility, and motion proof.
+  - id: WA-M10-AC-005
+    priority: P0
+    design_evidence: RLS/RBAC, official-coordinate immutability, audit, provider hold, downstream arrival, and Spatial Canvas separation annotations.
+  - id: WA-M10-AC-006
+    priority: P1
+    design_evidence: Stable IDs, contextual requirements, fingerprint, evidence index, limitations, and change record.
+  - id: SPC-GIS-001
+    priority: P0
+    design_evidence: Synchronized accessible registry, legend, attribution, and keyboard-equivalent selection.
+  - id: SPC-GIS-004
+    priority: P1
+    design_evidence: Provider failure retains operational registry data and recovery.
+  - id: SPC-GIS-007
+    priority: P1
+    design_evidence: Text/shape/color semantics, keyboard map alternative, and reduced-motion state.
+
+p0_return_gates:
+  - id: P0-IDENTITY
+    return_if: Route, design ID, revision, filename, screen, or predecessor lineage differs.
+  - id: P0-RADIUS-ONLY
+    return_if: Any field other than factories.geofence_radius_m is editable.
+  - id: P0-OFFICIAL-PIN
+    return_if: Official coordinates can be edited, reverted, reconciled, or overwritten.
+  - id: P0-PUBLICATION
+    return_if: Save-and-publish, maker-checker, source-revert, coordinate reason, or unsupported history is shown.
+  - id: P0-POLICY
+    return_if: A numeric GIS policy, 150 fallback, range, provider, risk, source, editor, observed point, or timestamp is invented.
+  - id: P0-AUTHORIZATION
+    return_if: GIS Admin, planner, or denied-persona authority is asserted beyond proven route/RLS truth.
+  - id: P0-CONFIDENTIALITY
+    return_if: Denied users can see coordinates, settings, selection detail, or radius controls.
+  - id: P0-CONFLICT
+    return_if: Silent overwrite is permitted or stale-write prevention is falsely marked implemented.
+  - id: P0-COMPLETENESS
+    return_if: The design claims a complete national factory list or full counts without total/pagination proof.
+  - id: P0-AUDIT
+    return_if: Audited completion is claimed without actor, object, before/after, and timestamp evidence.
+  - id: P0-PROVIDER
+    return_if: Mapbox, approved style, geographic authority, or offline packs are shown operational while MVP3-HOLD-002 is open.
+  - id: P0-SCOPE
+    return_if: Spatial Canvas, Field override, privacy, offline pack, Planning, Operations, or Factory 360 actions are absorbed into this page.
+  - id: P0-TRACEABILITY
+    return_if: The page claims all 478 requirements or steals downstream route ownership.
+
+p1_return_gates:
+  - id: P1-MAP-LIST
+    return_if: Pointer map selection lacks equivalent semantic registry selection or unlocated factories disappear.
+  - id: P1-RESPONSIVE
+    return_if: Any required viewport clips, overlaps, hides actions, scrolls the page horizontally, or shows peeking navigation.
+  - id: P1-RTL
+    return_if: Arabic is untranslated, directionally broken, or reverses coordinates/codes/units.
+  - id: P1-THEME
+    return_if: Light/dark shell, map controls, popup, attribution, table, focus, status, or disabled text lacks contrast.
+  - id: P1-A11Y
+    return_if: Labels, errors, headings, row-control semantics, focus, target size, names, or announcements are missing.
+  - id: P1-MOTION
+    return_if: Reduced motion still uses flyTo, animated fit, pulsing markers, or motion-only selection.
+  - id: P1-FEEDBACK
+    return_if: Unsaved preview is confused with stored radius or failure loses entered data.
+  - id: P1-EVIDENCE
+    return_if: Export fingerprint, visual matrix, annotations, gap register, limitations, or predecessor comparison is missing.
+
+design_write_lease:
+  current_state: NOT_ISSUED
+  owner: null
+  permitted_artifact:
+    identity: WA-DES-006-C1
+    filename: SAQEEL Admin Geofence - WA-DES-006-C1.dc.html
+  permitted_work:
+    - Correct the existing design within the radius-only and provider/policy boundaries.
+    - Produce every design and evidence state named in this packet.
+    - Export and fingerprint the successor for independent review.
+  issue_preconditions:
+    - Sponsor explicitly approves the WA-DES-006-C1 correction.
+    - One named Claude Design writer is recorded.
+    - No concurrent writer owns WA-DES-006, WA-DES-006-C1, or /admin/gis design files.
+    - Writer acknowledges all P0/P1 return gates.
+  expiry: End of one corrected export and evidence return.
+
+review_sequence:
+  - "Sponsor: approve or decline this bounded design correction."
+  - "Orchestrator: assign one named writer and recheck collisions."
+  - "Claude Design writer: return corrected export and evidence only."
+  - "Codex reviewer: apply every P0/P1 return gate without editing the design."
+  - "Sponsor: accept, return, or reject."
+  - "Governance: fingerprint and update frozen mapping only through approved change control."
+  - "Implementation owner: receive a separate non-overlapping lease only after accepted design authority."
+
+readiness_decision:
+  identity_ready: true
+  predecessor_fingerprint_verified: true
+  radius_only_contract_ready: true
+  responsive_theme_bidi_accessibility_contract_ready: true
+  acceptance_evidence_plan_ready: true
+  sponsor_consent_present: false
+  named_design_writer_present: false
+  live_design_write_allowed: false
+  implementation_allowed: false
+  consumable_status: NON_CONSUMABLE
+  recommendation: APPROVE_BOUNDED_DESIGN_LEASE_FOR_SPONSOR_CONSENT
+  block_reason: >-
+    Sponsor consent and one named collision-free design writer are absent.
+    DEC-002, MVP3-HOLD-002, planner-versus-GIS-Admin authority, pagination
+    completeness, audit proof, conflict prevention, and the 150 fallback remain
+    unresolved implementation or governance boundaries.
+
+rollback:
+  action: Delete only this draft packet if rejected.
+  product_or_design_rollback_required: false
+  unrelated_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-WA-DES-007-C1-DESIGN-LEASE-READINESS-026
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  route: /admin/integrations/factory-data
+  design_identity: WA-DES-007-C1
+  scope: >-
+    Prepare the Factory Data Integration correction lease and P0/P1 return
+    gates, preserving CSV staging truth, external-contract holds, RLS roles,
+    provenance, responsive, bilingual, accessibility, and failure states
+    without live design, mapping, code, test, provider, data, or branch changes.
+  collision_check_required_before_dispatch: true
