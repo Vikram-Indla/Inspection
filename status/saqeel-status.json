@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r8",
-  "updated": "2026-07-25T23:29:00+03:00",
+  "revision": "SB-r10",
+  "updated": "2026-07-25T23:22:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1644,13 +1644,21 @@
       "designPage": "pwa/SAQEEL PWA-Field Ops Console.dc.html",
       "route": "none",
       "pwa": {
-        "state": "break",
-        "note": "Supervisor-in-the-field surface with no repo route. Overlaps the console Operations Center — may be redundant."
+        "state": "retired",
+        "note": "RETIRED by Product Owner ruling 2026-07-25. Supervisor/Operations is a WEB persona: screen_route_catalogue SCR-WEB-500 /operations is the only supervisor Operations surface, and no supervisor persona row targets /field/**. CR-430..448 are PHASE1_WEB on /operations/**. No field-only need: fleet aggregation requires connectivity, so it cannot serve as an offline supervisory console."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Decide: build it, or retire the design as covered by the web Operations Center."
+          "text": "RETIRED — not built. Building under /field would have invented an uncontracted persona and route and duplicated the Web Operations ownership boundary."
+        },
+        {
+          "lane": "wiring",
+          "text": "HANDOFF TO WEB/ADMIN — four control-plane functions in this design are genuinely uncovered today and are NOT duplication: central outbox/queue monitoring per inspector+device (exists only per-device, FieldHeaderSync.tsx:19-57); central sync-conflict comparison and resolution (only per-device, FieldSyncChips.tsx:19-45); offline-package fleet inventory, freshness and push-update; trusted-device inventory/approve/revoke/re-enrol. Raise as Web/Admin requirements with backend authority."
+        },
+        {
+          "lane": "wiring",
+          "text": "Related web gap found: Operations reads the immutable geo_events ledger (operations/page.tsx:182-189) but the shipped live national map projects inspector positions from visit WINDOWS, so a true last-known device map is not wired anywhere."
         }
       ],
       "phase": 5,
@@ -1666,7 +1674,7 @@
       "name": "Completion & visit statement",
       "design": 65,
       "code": 70,
-      "wiring": 70,
+      "wiring": 80,
       "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html · Visit Statement · Visit Results",
       "route": "partially covered by field/inspection/[id] submit path",
       "pwa": {
@@ -1675,12 +1683,16 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "RESOLVED — Completion is the post-submit STATE of /field/inspection/[id], not a separate route. Evidence: canonical capture matrix maps SCR-IPAD-660 to that same url (PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv:4424); submit is async via the outbox so a route push at submit would land on a completion URL for an inspection the server may still reject."
+          "lane": "wiring",
+          "text": "RESOLVED by Product Owner ruling 2026-07-25: SCR-IPAD-670 /ipad/returned/:id is STALE. Returned correction is a MODE of /field/inspection/[id], not a separate route. Already working: returned-scope section locking (Workspace.tsx:799-802,848-853,1042-1045), DB byte-equality guard EXE-SUBMIT-SCOPE-VIOLATION (migration 20260721160000 SQL:230-268), and atomic version N+1 with relock (SQL:274-279). The assigned-work UI already routes returned inspections into that workspace. Catalogue row to be retired by the maintainer."
         },
         {
           "lane": "design",
-          "text": "Missing presentation still to build, all inside this state: return severity badge, explicit 'Open correction mode' action, 'Resubmit — version N+1' labelling, v1 vs v2 comparison, and the version-history timeline."
+          "text": "Still to build inside that mode: return severity badge, explicit 'Open correction mode' action, 'Resubmit — version N+1' labelling, v1-vs-v2 comparison, version-history timeline. Present in SAQEEL PWA-Field Completion.dc.html, absent from the repo."
+        },
+        {
+          "lane": "code",
+          "text": "RESOLVED — Completion is the post-submit STATE of /field/inspection/[id], not a separate route. Evidence: canonical capture matrix maps SCR-IPAD-660 to that same url (PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv:4424); submit is async via the outbox so a route push at submit would land on a completion URL for an inspection the server may still reject."
         },
         {
           "lane": "design",
