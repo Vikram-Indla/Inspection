@@ -11,6 +11,7 @@ export type LiveOpsStrings = {
   enRoute: string;
   executing: string;
   completed: string;
+  totalsLabel: string;
   inspector: string;
   projected: string;
   freshnessPolicy: string;
@@ -66,7 +67,8 @@ export default function LiveOps({
   const executing = inspectors.filter(inspector => inspector.state === "executing" || inspector.state === "arrived").length;
   const selectedInspector = inspectors.find(inspector => inspector.id === selectedId) ?? null;
   const noScopeRows = factories.length === 0 && inspectors.length === 0;
-  const hasNoPositions = factories.length > 0 && inspectors.length === 0;
+  const hasNoPositions = factories.length > 0
+    && !inspectors.some(inspector => inspector.lat != null && inspector.lng != null);
   const formattedObservedAt = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
     dateStyle: "medium",
     timeStyle: "medium",
@@ -91,7 +93,7 @@ export default function LiveOps({
         {wallboard ? <a className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</a> : null}
       </header>
 
-      <div className={styles.counters} aria-label="Live operations totals">
+      <div className={styles.counters} aria-label={s.totalsLabel}>
         <article className={styles.counter}><strong>{enRoute}</strong><span>{s.enRoute}</span></article>
         <article className={styles.counter}><strong>{executing}</strong><span>{s.executing}</span></article>
         <article className={styles.counter}><strong>{factories.length}</strong><span>{s.completed}</span></article>

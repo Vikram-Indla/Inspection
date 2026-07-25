@@ -28,6 +28,14 @@ type VisitRow = {
     source: string; is_temporary: boolean; factory_code: string | null } | null;
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
+type GeoPositionRow = {
+  id: string;
+  visit_id: string;
+  observed_lat: number;
+  observed_lng: number;
+  occurred_at: string;
+  integration_mode: string | null;
+};
 
 function isVerificationRecord(factory: VisitRow["factories"], notes: string | null): boolean {
   return factory?.source === "verification_fixture"
@@ -48,14 +56,6 @@ function localizedRegionName(sourceName: string, locale: string): string {
   const region = regionId ? KSA_REGION_NAMES.get(regionId) : null;
   if (!region) return sourceName;
   return locale === "ar" ? region.name_ar : region.name_en;
-}
-
-// Deterministic 0..1 from a string — a stable phase/direction per inspector so
-// the projected routes fan out instead of marching in lockstep.
-function hash01(s: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return ((h >>> 0) % 10000) / 10000;
 }
 
 export default async function LiveOperations({ searchParams }: {
@@ -112,7 +112,6 @@ export default async function LiveOperations({ searchParams }: {
   const factoryRows = (factoriesRes.data ?? []) as unknown as FactoryRow[];
   const visitRows = (visitsRes.data ?? []) as unknown as VisitRow[];
 
-  const hasReadError = Boolean(factoriesRes.error || visitsRes.error);
   const activeVisitRows = visitRows.filter(visit => {
     if (isVerificationRecord(visit.factories, visit.notes)) return false;
     const startsAt = visit.window_start ? Date.parse(visit.window_start) : NaN;
@@ -120,6 +119,26 @@ export default async function LiveOperations({ searchParams }: {
     // Reject future-dated rows instead of presenting impossible "Since" values.
     return Number.isNaN(startsAt) || startsAt <= observedAt.getTime();
   });
+  const activeVisitIds = activeVisitRows.map(visit => visit.id);
+  const geoPositionsRes = activeVisitIds.length > 0
+    ? await collectPostgrestPages<GeoPositionRow>((from, to) => sb.from("geo_events")
+      .select("id, visit_id, observed_lat, observed_lng, occurred_at, integration_mode")
+      .in("visit_id", activeVisitIds)
+      .or("integration_mode.is.null,integration_mode.eq.production")
+      .order("occurred_at", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoPositionRow>>)
+    : { data: [] as GeoPositionRow[], error: null };
+  if (geoPositionsRes.error) {
+    console.error(`[operations live] geo position read failed: ${geoPositionsRes.error.message}`);
+  }
+  const hasReadError = Boolean(factoriesRes.error || visitsRes.error || geoPositionsRes.error);
+  const latestPositionByVisit = new Map<string, GeoPositionRow>();
+  for (const position of (geoPositionsRes.data ?? []) as GeoPositionRow[]) {
+    if (!latestPositionByVisit.has(position.visit_id)) {
+      latestPositionByVisit.set(position.visit_id, position);
+    }
+  }
   const activeFactoryIds = new Set(activeVisitRows.map(visit => visit.factory_id).filter(Boolean));
   const factories: LiveFactory[] = factoryRows
     .filter(factory => activeFactoryIds.has(factory.id))
@@ -147,22 +166,9 @@ export default async function LiveOperations({ searchParams }: {
   const inspectors: LiveInspector[] = [];
   for (const v of activeVisitRows) {
     const f = v.factories;
+    const position = latestPositionByVisit.get(v.id);
     const name = v.assignments?.[0]?.profiles?.full_name;
     if (!f || f.official_lat == null || f.official_lng == null) continue;
-    const destLat = Number(f.official_lat);
-    const destLng = Number(f.official_lng);
-    const h = hash01(v.id);
-    const ang = h * Math.PI * 2;
-    const dist = 1.1 + hash01(v.id + "d") * 0.5;
-    const originLat = destLat + Math.sin(ang) * dist;
-    const originLng = destLng + Math.cos(ang) * dist;
-    let fraction = 0.15 + h * 0.5;
-    const ws = v.window_start ? Date.parse(v.window_start) : NaN;
-    const we = v.window_end ? Date.parse(v.window_end) : NaN;
-    if (!Number.isNaN(ws) && !Number.isNaN(we) && we > ws) {
-      fraction = Math.min(0.9, Math.max(0.08, (observedAt.getTime() - ws) / (we - ws)));
-    }
-    if (v.operational_state !== "on_the_way") fraction = 1;
     inspectors.push({
       id: `i:${v.id}`,
       visitId: v.id,
@@ -176,8 +182,8 @@ export default async function LiveOperations({ searchParams }: {
         : f.city ?? t("ops.live.regionUnknown", local("Region not recorded", "المنطقة غير مسجّلة")),
       state: v.operational_state as LiveInspector["state"],
       stateLabel: enumLabel(v.operational_state),
-      lat: originLat + (destLat - originLat) * fraction,
-      lng: originLng + (destLng - originLng) * fraction,
+      lat: position ? Number(position.observed_lat) : null,
+      lng: position ? Number(position.observed_lng) : null,
       sinceAt: v.window_start,
       sinceLabel: v.window_start
         ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
@@ -192,8 +198,9 @@ export default async function LiveOperations({ searchParams }: {
     enRoute: t("ops.live.enRoute", local("Inspectors en route", "مفتشون في الطريق")),
     executing: t("ops.live.executing", local("On site now", "في الموقع الآن")),
     completed: t("ops.live.factories", local("Factories monitored", "مصانع قيد المتابعة")),
-    inspector: t("ops.live.inspectorLegend", local("Operational position marker", "مؤشر موقع تشغيلي")),
-    projected: t("ops.live.projectedNote", local("Projected route — not live GPS", "مسار متوقّع — ليس تتبعاً مباشراً عبر GPS")),
+    totalsLabel: t("ops.live.totalsLabel", local("Live operations totals", "إجماليات العمليات المباشرة")),
+    inspector: t("ops.live.inspectorLegend", local("Recorded inspector position marker", "مؤشر موقع مسجّل للمفتش")),
+    projected: t("ops.live.projectedNote", local("Recorded positions — not live GPS", "مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS")),
     freshnessPolicy: t("ops.live.freshnessPolicy", local(
       "Staleness cadence not yet configured — showing last-observed time only.",
       "لم يُضبط معيار حداثة البيانات بعد — يُعرض وقت آخر رصد فقط.",

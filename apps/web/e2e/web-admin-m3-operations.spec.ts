@@ -110,7 +110,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
   });
 
   test("renders bounded markers and states without route, ETA, GPS or refresh invention", () => {
-    expect(livePageSource).toContain('"Projected route — not live GPS"');
+    expect(livePageSource).toContain('"Recorded positions — not live GPS"');
     expect(livePageSource).toContain('"Staleness cadence not yet configured — showing last-observed time only."');
     expect(livePageSource).toContain('"Live map could not load"');
     expect(livePageSource).toContain('"No active visits in your scope right now"');
@@ -125,6 +125,11 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).toContain("startsAt <= observedAt.getTime()");
     expect(livePageSource).toContain("sourceInspectorName(");
     expect(livePageSource).toContain("activeFactoryIds.has(factory.id)");
+    expect(livePageSource).toContain('"Recorded inspector position marker"');
+    expect(livePageSource).not.toContain("function hash01");
+    expect(livePageSource).not.toContain("originLat");
+    expect(livePageSource).toContain("latestPositionByVisit.get(v.id)");
+    expect(livePageSource).toContain("integration_mode.eq.production");
     expect(liveShellSource).toContain('<bdi dir="auto">{inspector.inspector}</bdi>');
     expect(liveShellSource).toContain('data-live-since dateTime={inspector.sinceAt}');
   });
@@ -140,7 +145,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(liveShellSource).toContain("noScopeRows ? s.noScope : s.noPositions");
     expect(liveShellSource).not.toContain('noScopeRows ? (\\n            <EmptyState');
     expect(liveShellSource).toContain("wallboard ? styles.wallboard");
-    expect(liveLoadingSource).toContain("Projected route — not live GPS");
+    expect(liveLoadingSource).toContain("Recorded positions — not live GPS");
     expect(liveCssSource).toContain("@media (max-width: 1024px)");
     expect(liveCssSource).toContain("@media (max-width: 430px)");
     expect(liveCssSource).toContain("@media (max-width: 340px)");
@@ -176,6 +181,18 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations");
     await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
     await expect(page.getByTestId("operations-kpi-grid")).toBeVisible();
+    await context.close();
+  });
+
+  test("an authenticated admin-only persona is denied both Operations routes before data content", async ({ browser }) => {
+    const context = await browser.newContext({ storageState: storageStatePath("admin") });
+    const page = await context.newPage();
+    for (const route of ["/operations", "/operations/live"]) {
+      await page.goto(route);
+      await expect(page.getByRole("heading", { name: "Operations access required", exact: true })).toBeVisible();
+      await expect(page.getByTestId("operations-kpi-grid")).toHaveCount(0);
+      await expect(page.getByTestId("operations-live")).toHaveCount(0);
+    }
     await context.close();
   });
 
@@ -219,7 +236,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
 
   test("Operations Live exposes the bounded disclaimer, freshness and accessible list", async ({ page }) => {
     await page.goto("/operations/live");
-    await expect(page.getByText("Projected route — not live GPS", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("Recorded positions — not live GPS", { exact: true })).toHaveCount(2);
     await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
     await expect(page.getByText("Last observed:", { exact: false })).toBeVisible();
@@ -250,14 +267,14 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     const page = await context.newPage();
     await page.goto("/operations/live");
     await expect(page.getByTestId("operations-live")).toBeVisible();
-    await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Recorded positions — not live GPS", { exact: true }).first()).toBeVisible();
     await context.close();
   });
 
   test("wallboard is a real route state and keeps the non-GPS disclosure", async ({ page }) => {
     await page.goto("/operations/live?wallboard=1");
     await expect(page.getByRole("link", { name: "Exit wallboard", exact: true })).toBeVisible();
-    await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Recorded positions — not live GPS", { exact: true }).first()).toBeVisible();
   });
 
   test("Arabic Live Operations is complete, RTL and uses localized operational labels", async ({ page }) => {
@@ -266,11 +283,24 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { name: "العمليات المباشرة — المملكة العربية السعودية", exact: true })).toBeVisible();
-    await expect(page.getByText("مسار متوقّع — ليس تتبعاً مباشراً عبر GPS", { exact: true })).toHaveCount(2);
+    await expect(page.getByText("مواقع مسجّلة — ليست تتبعاً مباشراً عبر GPS", { exact: true })).toHaveCount(2);
     await expect(page.getByRole("heading", { name: "المفتشون النشطون", exact: true })).toBeVisible();
     await expect(page.getByText("مفتشون في الطريق", { exact: true })).toBeVisible();
     await expect(page.getByText("مصانع قيد المتابعة", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("إجماليات العمليات المباشرة")).toBeVisible();
     await expect(page.getByText("آخر رصد:", { exact: false })).toBeVisible();
+  });
+
+  test("Arabic Operations Center localizes the primary views and governed KPI frame", async ({ page }) => {
+    await page.goto("/locale?set=ar");
+    await page.goto("/operations");
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByRole("link", { name: "خريطة العمليات", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "الأداء الوطني", exact: true })).toBeVisible();
+    await expect(page.getByText("الزيارات النشطة", { exact: true })).toBeVisible();
+    await expect(page.getByText("التنبيهات النشطة", { exact: true })).toBeVisible();
+    await expect(page.getByText("غير متاح — يتطلب قراراً", { exact: true })).toHaveCount(2);
   });
 
   test("basemap provider failure withdraws only the map and keeps operational context", async ({ page }) => {
@@ -278,6 +308,6 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await page.goto("/operations/live");
     await expect(page.getByText("Live map unavailable — basemap provider failed.", { exact: true })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
-    await expect(page.getByText("Projected route — not live GPS", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Recorded positions — not live GPS", { exact: true }).first()).toBeVisible();
   });
 });

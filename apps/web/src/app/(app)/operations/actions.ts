@@ -2,7 +2,6 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import { decideActiveCancellation as decideActiveCancellationRpc } from "@/lib/execution";
 
 export type OpsResult = { error?: string; ok?: boolean };
@@ -34,10 +33,8 @@ export async function updateActionFormStatus(_: OpsResult, formData: FormData): 
   return { ok: true };
 }
 
-// M08-003 auto-refresh — re-fetch ONLY the live monitoring rows. Called on an
-// interval from Monitoring.tsx so the table stays live without reloading the
-// whole route. Reads run under the caller's session: RLS on visits/geo_events
-// (0001, 0008) is the authority on what each role can monitor.
+// M08-003 request-time monitoring shape. The Operations page supplies one
+// RLS-scoped snapshot; no refresh cadence is configured or claimed.
 export type MonitorRow = {
   id: string;
   factory_id: string | null;
@@ -46,66 +43,6 @@ export type MonitorRow = {
   geofence: string | null;
   inspector: string | null;
 };
-export type MonitorFetch = { error?: string; rows?: MonitorRow[]; at?: string };
-
-type MonitorVisitRow = {
-  id: string;
-  planning_status: string;
-  operational_state: string;
-  factory_id: string | null;
-  factories: { id: string; name: string; region: string | null; city: string | null } | null;
-  assignments: { profiles: { full_name: string } | null }[] | null;
-};
-
-export async function fetchMonitoringRows(region: string, city: string): Promise<MonitorFetch> {
-  const sb = await supabaseServer();
-  const { data: { user } } = await getVerifiedUser(sb);
-  if (!user) return { error: "Session expired — sign in again." };
-
-  const { data, error } = await collectPostgrestPages<MonitorVisitRow>((from, to) => sb.from("visits")
-    .select("id, planning_status, operational_state, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
-    .order("window_start", { ascending: true })
-    .order("id", { ascending: true })
-    .range(from, to) as unknown as PromiseLike<PostgrestPage<MonitorVisitRow>>);
-  if (error) { console.error("[operations monitoring visits]", error); return { error: "Live monitoring is temporarily unavailable. Try again." }; }
-
-  const visits = ((data ?? []) as unknown as MonitorVisitRow[]).filter(v =>
-    // Planning status and operational state are separate domains: a visit
-    // remains monitorable after its planning window expires once execution
-    // has begun. Keep the refresh leg aligned with the page's initial read.
-    (v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)) &&
-    (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
-
-  // Latest geofence verdict per visit (append-only geo_events, newest first).
-  const ids = visits.map(v => v.id);
-  let latest = new Map<string, string>();
-  if (ids.length > 0) {
-    const { data: geo, error: gErr } = await sb
-      .from("geo_events")
-      .select("visit_id, geofence_result, occurred_at")
-      .in("visit_id", ids)
-      .not("geofence_result", "is", null)
-      .order("occurred_at", { ascending: false })
-      .limit(300);
-    if (gErr) { console.error("[operations monitoring geofence]", gErr); return { error: "Live geofence data is temporarily unavailable. Try again." }; }
-    latest = new Map();
-    for (const g of (geo ?? []) as { visit_id: string; geofence_result: string | null }[]) {
-      if (g.geofence_result && !latest.has(g.visit_id)) latest.set(g.visit_id, g.geofence_result);
-    }
-  }
-
-  return {
-    at: new Date().toISOString(),
-    rows: visits.map(v => ({
-      id: v.id,
-      factory_id: v.factories?.id ?? v.factory_id,
-      factory_name: v.factories?.name ?? null,
-      operational_state: v.operational_state,
-      geofence: latest.get(v.id) ?? null,
-      inspector: v.assignments?.[0]?.profiles?.full_name ?? null,
-    })),
-  };
-}
 
 // ENG-11 — mark a notification handled. SELECT remains recipient/ops scoped by
 // `notif_own` (0002); UPDATE is independently recipient/ops scoped by

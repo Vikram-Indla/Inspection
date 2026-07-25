@@ -1,5 +1,5 @@
 // WA-DES-034-C3 shapes (server page → client map). The page only carries
-// read-only, RLS-visible operational facts and a single bounded projection.
+// read-only, RLS-visible operational facts and source-backed coordinates only.
 // Retained for the separate Operations Center posture helper; Live does not
 // render these bands as policy.
 export type RagBand = "high" | "medium" | "low";
@@ -30,8 +30,8 @@ export type LiveInspector = {
   region: string;
   state: "on_the_way" | "arrived" | "executing";
   stateLabel: string;
-  lat: number;
-  lng: number;
+  lat: number | null;
+  lng: number | null;
   sinceAt: string | null;
   sinceLabel: string;
 };

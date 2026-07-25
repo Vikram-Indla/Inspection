@@ -52,7 +52,9 @@ function updateSources(
   };
   const inspectorData: GeoJSON.FeatureCollection<GeoJSON.Point> = {
     type: "FeatureCollection",
-    features: inspectors.map(inspector => ({
+    features: inspectors
+      .filter(inspector => inspector.lat != null && inspector.lng != null)
+      .map(inspector => ({
       type: "Feature",
       properties: {
         id: inspector.id,
@@ -61,7 +63,7 @@ function updateSources(
         factory: inspector.factoryName,
         selected: inspector.id === selectedId,
       },
-      geometry: { type: "Point", coordinates: [inspector.lng, inspector.lat] },
+      geometry: { type: "Point", coordinates: [inspector.lng!, inspector.lat!] },
     })),
   };
   const regionLabels: GeoJSON.FeatureCollection<GeoJSON.Point> = {

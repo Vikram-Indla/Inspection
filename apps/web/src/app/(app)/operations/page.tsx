@@ -1,5 +1,4 @@
 import Shell, { preloadShell } from "@/components/Shell";
-import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDate, formatDateTime } from "@/lib/dates";
@@ -21,6 +20,7 @@ import { computeResubmissionFlags, type ResubmissionSource } from "./sla";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
 import { buildShellNavigation } from "@/lib/shell-navigation";
+import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import OperationsMapWorkspace, {
   type OperationsMapEntry,
   type OperationsMapWorkspaceStrings,
@@ -31,9 +31,12 @@ import styles from "./operations.module.css";
 // SCR-WEB-500 — Operations Center (SB12, M08). Read legs + write legs
 // (acknowledge/close corrective actions; mark notifications handled) +
 // KSA map (M08-002), high-risk board (M08-006), region/city filter (M08-010),
-// SLA watch (ENG-09) and auto-refreshing live monitoring (M08-003).
+// SLA watch (ENG-09) and request-time visit monitoring (M08-003).
 
-type FactoryEmbed = { id: string; name: string; region: string | null; city: string | null } | null;
+type FactoryEmbed = {
+  id: string; name: string; region: string | null; city: string | null;
+  factory_code: string | null; source: string;
+} | null;
 type VisitRow = {
   id: string;
   operational_state: string;
@@ -61,7 +64,7 @@ type FactoryRow = {
   id: string; name: string; region: string | null; city: string | null;
   official_lat: number | null; official_lng: number | null;
   geofence_radius_m: number | null; risk_score: number | null; risk_band: string | null;
-  activity_class: string | null;
+  activity_class: string | null; factory_code: string | null; source: string;
 };
 type EngineRow = { engine: string; settings: Record<string, unknown> };
 type OverrideRow = {
@@ -210,7 +213,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
     collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
-      .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
+      .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city, factory_code, source), assignments(profiles(full_name))")
       .order("window_start", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
@@ -236,7 +239,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .limit(20),
     // Factory master for the KSA map + region/city options (M08-002/010)
     collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
-      .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class")
+      .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class, factory_code, source")
       .order("name", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
@@ -245,7 +248,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "sla", "field"]),
     // M08-006 — high-risk factory board (ENG-04 output, top scores)
     sb.from("factories")
-      .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class")
+      .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class, factory_code, source")
       .not("risk_score", "is", null)
       .order("risk_score", { ascending: false })
       .limit(8),
@@ -281,13 +284,18 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   if (overrideRes.error) console.error(`[operations] override queue read failed: ${overrideRes.error.message}`);
   if (overrideEvidenceRes.error) console.error(`[operations] override evidence read failed: ${overrideEvidenceRes.error.message}`);
 
-  const visits = (visitsRes.data ?? []) as unknown as VisitRow[];
+  const isVerificationFactory = (factory: FactoryEmbed | FactoryRow | null) =>
+    factory?.source === "verification_fixture" || isTestFixtureEstablishment(factory);
+  const visits = ((visitsRes.data ?? []) as unknown as VisitRow[])
+    .filter(visit => !isVerificationFactory(visit.factories));
   const geo = (geoRes.data ?? []) as unknown as GeoRow[];
   const actions = (actionsRes.data ?? []) as unknown as ActionRow[];
   const notifs = (notifsRes.data ?? []) as unknown as NotifRow[];
-  const factories = (factoriesRes.data ?? []) as unknown as FactoryRow[];
+  const factories = ((factoriesRes.data ?? []) as unknown as FactoryRow[])
+    .filter(factory => !isVerificationFactory(factory));
   const engines = (engineRes.data ?? []) as unknown as EngineRow[];
-  const highRisk = (riskRes.data ?? []) as unknown as FactoryRow[];
+  const highRisk = ((riskRes.data ?? []) as unknown as FactoryRow[])
+    .filter(factory => !isVerificationFactory(factory));
   const overrides = (overrideRes.data ?? []) as unknown as OverrideRow[];
   const evidenceByRequest = new Map<string, number>();
   const evidenceUrls = new Map<string, string>();
@@ -472,7 +480,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     .filter(f => !region || f.region === region)
     .map(f => f.city).filter((c): c is string => !!c))].sort();
 
-  // ---------- M08-003 monitoring rows (client table seeds; auto-refresh re-fetches) ----------
+  // ---------- M08-003 monitoring rows (one request-time RLS snapshot) ----------
   const monitorRows: MonitorRow[] = monitored.map(v => ({
     id: v.id,
     factory_id: v.factories?.id ?? v.factory_id,
@@ -763,22 +771,22 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
       <div className={styles.page}>
         <nav className={styles.viewSwitch} aria-label={t("ops.views.label", local("Operations Center views", "عروض مركز العمليات"))}>
-          <Link
+          <a
             className={`${styles.viewLink} ${view === "map" ? styles.viewLinkActive : ""}`}
             href={mapViewHref}
             data-next-spa="true"
             aria-current={view === "map" ? "page" : undefined}
           >
             {t("ops.views.map", local("Operations Map", "خريطة العمليات"))}
-          </Link>
-          <Link
+          </a>
+          <a
             className={`${styles.viewLink} ${view === "performance" ? styles.viewLinkActive : ""}`}
             href={performanceViewHref}
             data-next-spa="true"
             aria-current={view === "performance" ? "page" : undefined}
           >
             {t("ops.views.performance", local("National Performance", "الأداء الوطني"))}
-          </Link>
+          </a>
         </nav>
 
         <section aria-labelledby="operations-kpi-heading">
@@ -976,7 +984,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
             <div className="sq-grid-2">
         <div className="sq-stack">
-          {/* Live monitoring — M08-003 (auto-refresh via server action) */}
+          {/* Visit monitoring — M08-003 request-time snapshot */}
           <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
             <MonitoringTable initialRows={monitorRows} initialAt={nowIso} region={region} city={city}
