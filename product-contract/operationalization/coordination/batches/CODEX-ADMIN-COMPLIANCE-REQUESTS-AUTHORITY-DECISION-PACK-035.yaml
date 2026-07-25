@@ -1,0 +1,846 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+title: Compliance Request remediation neutral authority decision pack
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: ACK_DECISION_PACK_READY_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  packet_quality_gate: PASS
+  implementation_gate: BLOCKED
+  selection_state: ALL_OPTIONS_UNSELECTED
+  lease_authority_granted: false
+  migration_authority_granted: false
+  remote_ddl_authority_granted: false
+  shared_data_authority_granted: false
+  provider_authority_granted: false
+  design_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The remaining blockers are business and database authority choices, not
+    safe engineering defaults. This packet presents source-compatible options
+    for four decision groups, records consequences and prohibited
+    combinations, and preserves the non-negotiable customer outcomes. It does
+    not rank or select an option. Implementation remains blocked until an
+    authorized decision receipt resolves every required axis and the serial
+    A-C lease gates from packet 034 are rechecked.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-BOUNDARY-CORRECTION-034
+    source_sha256: 614052142c24f04f0bfdf59845db8d6e4f1ffcf5c65d8d5c57df32ccce21f779
+    source_status: ACK_BOUNDARY_CORRECTION_COMPLETE_IMPLEMENTATION_BLOCKED
+  business_question: >-
+    Which governed representation and operating policies should connect
+    approved Compliance Configuration Requests to the Compliance Library and
+    immutable Package versions while preserving future-effective activation,
+    historical truth, attachment custody, maker-checker and runtime locking?
+  decision_owner_required: >-
+    Sponsor or an explicitly recorded product/database authority. Codex,
+    implementation owners, test authors and design workers may not select.
+  design_dependency:
+    design_id: WA-DES-019
+    status: SEPARATE_UNCHANGED
+    design_decision_required_here: false
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: 38d1eb2433d5d8d173c827e0fd6fde8bf2d343a4
+  concurrent_orchestration_files_preserved:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-BOUNDARY-CORRECTION-034.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-RECEIPT-READINESS-054I.yaml
+  concurrent_orchestration_files_observed_during_validation:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-LEASE-MANIFEST-DRY-RUN-080.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-BUNDLE-SCHEMA-078.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-GAP-REGISTER-054J.yaml
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+gate_check:
+  result: BLOCKED
+  permitted_result_for_this_task: ACK_DECISION_PACK_ONLY
+  permitted_next_action: >-
+    Present the neutral choices to the recorded authority and later capture an
+    exact decision receipt without implementing or granting a lease.
+  implementation_blockers:
+    - No typed snapshot representation or per-kind field manifest is approved.
+    - No activation mechanism, effective-time basis or backfill policy is approved.
+    - No legacy lifecycle-action or attachment-custody exception policy is approved.
+    - No CCR-to-Package storage or Scheduled-component eligibility policy is approved.
+    - A-C owners, generated migration paths and independent reviewers remain unassigned.
+  browser_readiness: NOT_READY_DECISION_ONLY
+
+exact_requirement_scope:
+  customer_rows:
+    - [CR-449, WA-AC-0449, Regulation Management]
+    - [CR-450, WA-AC-0450, Inspection Item Management]
+    - [CR-451, WA-AC-0451, Violation Management]
+    - [CR-452, WA-AC-0452, Penalty Management]
+    - [CR-458, WA-AC-0458, Configuration Versioning]
+    - [CR-459, WA-AC-0459, Draft and Publish Lifecycle]
+    - [CR-460, WA-AC-0460, Dependency Validation]
+    - [CR-463, WA-AC-0463, Audit Trail]
+    - [CR-478, WA-AC-0478, Runtime Locking]
+  normalized_requirements:
+    ccr_only:
+      - REQ-R0C-01623
+      - REQ-R0C-01666
+      - REQ-R0C-01684
+      - REQ-R0C-01709
+      - REQ-R0C-01768
+      - REQ-R0C-01903
+      - REQ-R0C-01916
+      - REQ-R0C-02041
+      - REQ-R0C-02131
+      - REQ-R0C-02208
+    lifecycle_and_history:
+      - REQ-R0C-01627
+      - REQ-R0C-01638
+      - REQ-R0C-01655
+      - REQ-R0C-01672..01673
+      - REQ-R0C-01691
+      - REQ-R0C-01694
+      - REQ-R0C-01724..01726
+      - REQ-R0C-01783..01785
+      - REQ-R0C-01804..01805
+      - REQ-R0C-01815
+      - REQ-R0C-01879..01883
+      - REQ-R0C-01900
+      - REQ-R0C-01906
+      - REQ-R0C-01915
+      - REQ-R0C-01919
+      - REQ-R0C-01923
+      - REQ-R0C-02209..02210
+      - REQ-R0C-02234
+    hierarchy_and_transaction:
+      - REQ-R0C-01803
+      - REQ-R0C-01868..01878
+      - REQ-R0C-01894..01896
+    package_and_enforcement:
+      - REQ-R0C-01885..01886
+      - REQ-R0C-01888..01889
+    quality:
+      - WA-M6-AC-001
+      - WA-M6-AC-002
+      - WA-M6-AC-005
+      - WA-M6-AC-006
+
+source_truth_summary:
+  canonical_outcomes:
+    - All Regulation, Item, Violation and Penalty create/modify operations use a CCR.
+    - A configuration is unavailable operationally before approval and its effective date.
+    - Approved components are Scheduled and become Active automatically on the Effective Date.
+    - The current approved version remains operational until the approved successor becomes effective.
+    - Rejected components never become Scheduled or published.
+    - Approved complete branches publish transactionally; invalid branches do not partially publish.
+    - Partial request approval creates versions only for independently valid approved branches.
+    - Historical inspections and enforcement retain the exact configuration used.
+    - Package publication validates Regulation, Item, response, evidence, Violation, Penalty and Template dependencies.
+    - Execution uses the locked published Package version; later changes affect future work only.
+    - Penalty is informational to the Inspector and is issued only after Inspection Approval and Enforcement.
+    - Every configuration change is immutable and auditable.
+  current_implementation_facts:
+    - Existing CCR component and entity snapshots are unconstrained JSON objects.
+    - Existing CCR heads activate immediately at publication and do not represent Scheduled-to-Active behavior.
+    - Legacy Compliance routes and authenticated legacy RPCs still provide direct mutation paths.
+    - Regulation attachments use direct metadata and regulation-documents bucket writes.
+    - Current Package publication validates live legacy catalogues in application code before freezing snapshots.
+    - Current Package snapshots lack exact CCR request/revision/component/version/publication provenance.
+
+decision_rules:
+  neutrality:
+    - Options are listed in identifier order, not preference order.
+    - No option is recommended, defaulted, preselected or scored.
+    - Consequences describe delivery and operational effects without implying approval.
+  selection_format:
+    - Select exactly one option in each mutually exclusive choice set.
+    - Resolve every required parameter attached to the selected option.
+    - Record the authority, date, rationale and affected requirement IDs.
+    - A conditional or partial answer remains BLOCKED.
+  authority_floor:
+    - No chat implication or implementation convenience substitutes for a recorded selection.
+    - A selected option authorizes decision recording only, not implementation, DDL, data, merge or release.
+
+preservation_floor:
+  status: NON_NEGOTIABLE_ALL_OPTIONS
+  business:
+    - CCR-only create and modify for Regulation, Inspection Item, Violation and Penalty.
+    - Complete regulatory hierarchy and valid parent-child relationships.
+    - Maker-checker separation for request and Package publication.
+    - Current approved truth remains until an approved successor becomes effective.
+    - Future-effective content is unavailable before its configured effective boundary.
+    - Explicit deactivation is distinct from successor replacement.
+    - Rejected or invalid components never enter operational truth.
+    - Partial approval publishes only complete valid approved branches.
+    - One Violation retains one governed Penalty relationship.
+    - Penalty remains informational during Inspection until downstream approval/enforcement.
+  history_and_custody:
+    - Stable identity, independent version identity and immutable lineage.
+    - Historical Inspection, Enforcement and Package references are never repointed.
+    - Source documents retain content hash, request/version linkage, access control and audit.
+    - Append-only decisions, publications, provenance and audit are never deleted or reset.
+  security_and_runtime:
+    - RLS, least privilege and database enforcement remain authoritative.
+    - Direct Data API or legacy RPC bypass cannot coexist with a CCR-only claim.
+    - Package publication is transactional and concurrency-safe.
+    - Field and offline execution resolve only the pinned immutable Package version.
+    - No service-role client, provider assumption or client-trusted authorization.
+
+decision_groups:
+  - decision_id: CCR-AUTH-035-D1
+    title: Typed snapshot representation
+    question: >-
+      How should approved Regulation, Inspection Item, Violation and Penalty
+      versions be represented so malformed or incomplete content is rejected
+      before publication and downstream consumers have stable contracts?
+    requirement_refs:
+      - CR-449..CR-452
+      - CR-458
+      - CR-460
+      - CR-463
+      - REQ-R0C-01803
+      - REQ-R0C-01868..01872
+      - REQ-R0C-01894..01896
+    mutually_exclusive_choice_set: D1-REPRESENTATION
+    options:
+      - option_id: D1-O1
+        label: Fully relational version records
+        business_definition: >-
+          Each entity kind has explicit version tables and typed columns for its
+          approved business fields and relationships. Package publication reads
+          those rows directly.
+        consequences:
+          - Strong database constraints, queryability and field-level audit.
+          - More schema objects and migrations when governed fields evolve.
+          - Cross-kind publication requires coordinated relational transactions.
+          - Reporting can use typed fields without document extraction.
+        required_parameters:
+          - Exact table-per-kind or shared-table inheritance model.
+          - Required, optional and nullable fields for every kind.
+          - Stable identity and version-number uniqueness rules.
+          - Relationship and deletion behavior for clauses, attachments and dependencies.
+      - option_id: D1-O2
+        label: Versioned schema-validated documents
+        business_definition: >-
+          Each entity version remains an immutable document, but every kind
+          references an approved versioned schema that the database validates
+          before approval and publication.
+        consequences:
+          - Governed fields can evolve without a column migration for each change.
+          - Schema-registry versioning and compatibility rules become critical.
+          - Search, reporting and package mapping require stable validated projections.
+          - Database tests must prove unknown, missing and wrong-type fields fail.
+        required_parameters:
+          - Exact schema format and schema-version authority.
+          - Required, optional, nullable and additional-property rules per kind.
+          - Compatibility policy for old schema versions.
+          - Governed query projections required by Library, Packages and audit.
+      - option_id: D1-O3
+        label: Typed core with schema-validated body
+        business_definition: >-
+          Stable identity, lifecycle, dates, relationships and provenance use
+          typed columns; kind-specific business content uses an immutable,
+          versioned and schema-validated document.
+        consequences:
+          - Core lifecycle and joins remain strongly constrained.
+          - Kind-specific evolution remains flexible.
+          - Duplicate facts between core and document require one declared authority.
+          - Both relational and schema-registry compatibility tests are required.
+        required_parameters:
+          - Exact core-field list common to all kinds.
+          - Exact per-kind document schemas and versions.
+          - Precedence rule prohibiting duplicate conflicting fields.
+          - Projection contract consumed by Library and Package publication.
+    field_manifest_to_approve_for_any_option:
+      note: >-
+        These source-backed field families are not a required/optional decision
+        here. The authority must issue the exact field, type, nullability and
+        validation manifest before D1 is resolved.
+      Regulation:
+        - stable identity and code
+        - version label and predecessor
+        - title and issuing authority
+        - release/effective and deactivation facts
+        - clauses, applicability and legal source
+        - source attachments and hashes
+      Inspection_Item:
+        - stable identity and code
+        - version and predecessor
+        - exact Regulation and clause version reference
+        - question/title and bilingual guidance
+        - response model and compliance mapping
+        - evidence rule and scoring/exclusion configuration
+        - active/effective and deactivation facts
+      Violation:
+        - stable identity and code
+        - version and predecessor
+        - exact Item response trigger and legal parent reference
+        - level/severity, corrective action and grace configuration
+        - applicability and active/effective window
+      Penalty:
+        - stable identity and version
+        - exact Violation version reference
+        - type and amount when applicable
+        - grace, due, repeat and legal-basis configuration
+        - linked Template version
+        - effective window and predecessor
+    prohibited_combinations:
+      - Any option plus unvalidated arbitrary JSON.
+      - A relational core and document body both claiming authority for the same field without precedence.
+      - Schema evolution without immutable schema-version retention.
+      - Reusing one generic shape that drops kind-specific required facts.
+      - Package or Field interpreting fields not declared in the approved manifest.
+    post_decision_gates:
+      - Product/database authority signs the complete per-kind field manifest.
+      - Data architecture validates identity, relationship and version cardinality.
+      - Security review confirms exposed objects, RLS and grants.
+      - A lease preflight maps the selected representation to exact generated migration and probe scope.
+
+  - decision_id: CCR-AUTH-035-D2
+    title: Lifecycle, effective date and legacy backfill
+    question: >-
+      How should a fully approved future-effective version become Active
+      automatically, what time boundary governs it, and how should existing
+      active and historical legacy records enter the new lineage?
+    requirement_refs:
+      - CR-458
+      - CR-459
+      - CR-463
+      - CR-478
+      - REQ-R0C-01627
+      - REQ-R0C-01638
+      - REQ-R0C-01655
+      - REQ-R0C-01672..01673
+      - REQ-R0C-01691
+      - REQ-R0C-01694
+      - REQ-R0C-01724..01726
+      - REQ-R0C-01783..01785
+      - REQ-R0C-01804..01805
+      - REQ-R0C-01879..01882
+      - REQ-R0C-01900
+      - REQ-R0C-01906
+      - REQ-R0C-01915
+      - REQ-R0C-01919
+      - REQ-R0C-01923
+      - REQ-R0C-02209..02210
+      - REQ-R0C-02234
+    choice_sets:
+      - choice_set_id: D2-ACTIVATION
+        instruction: Select exactly one.
+        options:
+          - option_id: D2-A1
+            label: Derived effective state
+            business_definition: >-
+              The approved version remains stored as Scheduled; every governed
+              read derives Active from the effective boundary and selects the
+              correct immutable head without a background transition job.
+            consequences:
+              - No scheduler or external worker dependency.
+              - All consumers must use one canonical projection; direct status reads are unsafe.
+              - The authority must decide whether derived activation is itself an auditable event or a deterministic interpretation of published facts.
+              - Clock and effective-boundary consistency become critical.
+          - option_id: D2-A2
+            label: Database-scheduled persisted transition
+            business_definition: >-
+              A database-owned scheduled process records the Scheduled-to-Active
+              transition, moves the governed head and appends lifecycle audit.
+            consequences:
+              - Explicit transition and audit time are persisted.
+              - Requires separately approved database scheduling capability, monitoring and retry.
+              - Scheduler failure must leave the prior Active version intact and surface degradation.
+              - Duplicate execution must be idempotent and concurrency-safe.
+          - option_id: D2-A3
+            label: Managed application or queue transition
+            business_definition: >-
+              A governed worker records the Scheduled-to-Active transition,
+              updates the head transactionally and appends lifecycle audit.
+            consequences:
+              - Operational monitoring and retry can live with application services.
+              - Requires an approved runtime, queue/scheduler contract and deployment ownership.
+              - Worker delay must not expose a future version early or remove the prior Active version.
+              - Provider/runtime unavailability becomes a declared degraded state.
+      - choice_set_id: D2-TIME-BASIS
+        instruction: Select exactly one and record its exact boundary semantics.
+        options:
+          - option_id: D2-T1
+            label: Date-only business boundary
+            business_definition: >-
+              Release and effective values are business dates; activation occurs
+              at the start of the named authoritative business timezone.
+            consequences:
+              - Matches the source term Release Date.
+              - Requires one explicitly approved timezone and inclusive date rules.
+              - Daylight or regional rule changes require governed handling.
+          - option_id: D2-T2
+            label: Exact effective instant
+            business_definition: >-
+              Release and effective values are timestamped instants with an
+              explicit offset; activation occurs at that instant.
+            consequences:
+              - Supports sub-day scheduling and unambiguous ordering.
+              - Changes the business input contract beyond a date and therefore requires explicit authority.
+              - UI, export and audit must display both local meaning and stored instant consistently.
+      - choice_set_id: D2-BACKFILL
+        instruction: Select exactly one.
+        options:
+          - option_id: D2-B1
+            label: Full reconstructible lineage
+            business_definition: >-
+              Create an immutable new-engine version for every legacy version
+              whose content and historical validity can be proven; ambiguous
+              records block the affected entity from cutover.
+            consequences:
+              - Maximizes uniform historical reporting in the new engine.
+              - Requires deeper reconciliation and may delay cutover for ambiguous records.
+              - No missing value may be inferred.
+          - option_id: D2-B2
+            label: Active-head bootstrap with legacy historical anchors
+            business_definition: >-
+              Bootstrap the current valid legacy version into the new engine;
+              older Inspection and Enforcement records retain immutable direct
+              references to their original legacy versions through a governed
+              compatibility anchor.
+            consequences:
+              - Smaller conversion scope while preserving historical truth.
+              - Historical reporting spans new versions and legacy anchors.
+              - Compatibility reads and custody must remain supported indefinitely or until separately migrated.
+          - option_id: D2-B3
+            label: Staged full lineage by entity kind
+            business_definition: >-
+              Reconcile and certify complete lineage for one entity kind at a
+              time, but do not cut over any cross-kind operational branch until
+              every required parent and child kind is certified.
+            consequences:
+              - Allows bounded reconciliation and evidence.
+              - Lengthens the dual-read preparation period.
+              - Requires strict cross-kind cutover gates to prevent partial hierarchy truth.
+    prohibited_combinations:
+      - More than one authoritative activation mechanism for the same entity kind.
+      - Date-only activation without an approved timezone and inclusive-boundary rule.
+      - Exact-instant activation while retaining a date-only UI that hides the instant.
+      - Approval date substituted for a future Release or Effective Date.
+      - A new successor becoming available before approval or its effective boundary.
+      - Removing the prior Active version before the successor is effectively Active, except an explicitly approved standalone deactivation.
+      - Automatic activation without idempotency, retry and stale-head protection.
+      - Backfill that fabricates missing values, collapses versions or repoints historical records.
+      - Entity-kind staged cutover that permits a child without its exact valid parent.
+    post_decision_gates:
+      - Record exact status vocabulary and transition table.
+      - Record exact date/time type, timezone, inclusivity and clock authority.
+      - Record standalone deactivation semantics separately from successor replacement.
+      - Produce a read-only legacy lineage and ambiguity report.
+      - Prove the selected activation mechanism has failure, retry, concurrency and audit behavior.
+      - A implementation remains blocked until all three D2 choice sets are resolved.
+
+  - decision_id: CCR-AUTH-035-D3
+    title: Legacy actions and Regulation attachment custody
+    question: >-
+      Which approved lifecycle actions, if any, may remain outside the CCR
+      content workflow, and how should Regulation source documents enter and
+      remain linked to immutable approved versions?
+    requirement_refs:
+      - CR-449
+      - CR-458
+      - CR-459
+      - CR-463
+      - REQ-R0C-01623
+      - REQ-R0C-01666
+      - REQ-R0C-01684
+      - REQ-R0C-01709
+      - REQ-R0C-01768
+      - REQ-R0C-01815
+      - REQ-R0C-01903
+      - REQ-R0C-01916
+      - REQ-R0C-02041
+      - REQ-R0C-02131
+      - REQ-R0C-02208
+    choice_sets:
+      - choice_set_id: D3-ACTION-BOUNDARY
+        instruction: Select exactly one.
+        options:
+          - option_id: D3-A1
+            label: Every governed action through CCR
+            business_definition: >-
+              Create, modify, clause changes, source-document changes,
+              activation and deactivation are all requested, reviewed and
+              published through a CCR.
+            consequences:
+              - One uniform maker-checker and audit workflow.
+              - Operational deactivation requires a CCR even when urgent.
+              - Existing direct lifecycle controls and RPCs are retired or fail closed.
+          - option_id: D3-A2
+            label: CCR content with direct lifecycle-only exception
+            business_definition: >-
+              Create, modify, clause and source-document content use CCR.
+              Activation and deactivation of already approved immutable versions
+              remain narrow, authorized and audited lifecycle actions.
+            consequences:
+              - Supports direct availability control without reopening content editing.
+              - Requires an exact field allow-list and separate role/justification policy.
+              - Manual activation may not precede the approved effective boundary.
+              - The exception needs independent database bypass tests.
+      - choice_set_id: D3-ATTACHMENT-STORAGE
+        instruction: Select exactly one.
+        options:
+          - option_id: D3-S1
+            label: Immutable copy per approved Regulation version
+            business_definition: >-
+              Each approved Regulation version owns immutable source-document
+              objects and metadata, even when content matches another version.
+            consequences:
+              - Simple custody and version reconstruction.
+              - Higher storage usage and repeated files.
+              - Every copy requires hash, access and audit evidence.
+          - option_id: D3-S2
+            label: Content-addressed immutable object with version manifests
+            business_definition: >-
+              Identical document bytes are stored once by content hash; each
+              approved Regulation version owns an immutable manifest reference
+              with its own metadata and audit.
+            consequences:
+              - Reduces duplicate storage while preserving per-version custody.
+              - Reference counting, access revocation and retention are more complex.
+              - Object replacement at the same hash/path is prohibited.
+      - choice_set_id: D3-ATTACHMENT-INTAKE
+        instruction: Select exactly one.
+        options:
+          - option_id: D3-I1
+            label: Upload only inside an existing CCR revision
+            business_definition: >-
+              A file can enter governed storage only when already linked to a
+              specific request, revision and Regulation component.
+            consequences:
+              - No unassociated intake records.
+              - Users must create the CCR before uploading source material.
+          - option_id: D3-I2
+            label: Quarantined intake then CCR adoption
+            business_definition: >-
+              Authorized users may upload to a non-operational quarantine with
+              hash and custody metadata; publication requires adoption by one
+              exact CCR revision and approved Regulation version.
+            consequences:
+              - Supports document intake before request composition.
+              - Requires expiry/retention, orphan handling and access policy decisions.
+              - Quarantined files are never visible as active Library content.
+    mandatory_action_matrix_after_selection:
+      actions:
+        - create entity
+        - modify business content
+        - add or modify Regulation clause
+        - attach source document
+        - remove or supersede source document
+        - publish approved branch
+        - activate approved version
+        - deactivate approved version
+      required_columns:
+        - entity kinds
+        - route and database entry point
+        - allowed roles
+        - maker-checker requirement
+        - required reason or evidence
+        - allowed fields
+        - audit event
+        - rollback semantics
+    prohibited_combinations:
+      - Direct legacy draft creation or content update while claiming CCR-only authoring.
+      - Both legacy publish RPC and CCR publication remaining independent authoritative paths.
+      - A lifecycle-only exception that can change title, legal content, relationships, rules or attachments.
+      - Manual activation before the configured effective boundary.
+      - Attachment metadata added directly to an Active version.
+      - File replacement, deletion or path reuse that breaks a historical hash or version manifest.
+      - Quarantined intake treated as approved or operational content.
+      - Attachment custody without request, revision, version, actor, timestamp, hash and access evidence.
+    post_decision_gates:
+      - Authority signs the complete action matrix.
+      - Storage/security owner signs bucket, object, manifest, access and orphan policy.
+      - B preflight maps each allowed action to table privilege, RLS, trigger and RPC enforcement.
+      - B SQL probe proves all non-selected direct paths fail at the database.
+      - Historical object and metadata reads remain available to authorized users.
+
+  - decision_id: CCR-AUTH-035-D4
+    title: CCR-to-Package mapping authority
+    question: >-
+      How should a Package version bind complete approved Compliance component
+      versions, and may a future Package reference Scheduled components before
+      they become Active?
+    requirement_refs:
+      - CR-450..CR-452
+      - CR-458..CR-460
+      - CR-463
+      - CR-478
+      - REQ-R0C-01805
+      - REQ-R0C-01868..01878
+      - REQ-R0C-01879..01883
+      - REQ-R0C-01885..01886
+      - REQ-R0C-01888..01889
+      - REQ-R0C-01894..01896
+    choice_sets:
+      - choice_set_id: D4-SNAPSHOT-STORAGE
+        instruction: Select exactly one.
+        options:
+          - option_id: D4-S1
+            label: Full Package-local embedded snapshots
+            business_definition: >-
+              Package publication copies every selected component and execution
+              dependency into immutable Package-owned snapshots with source IDs
+              and hashes.
+            consequences:
+              - Runtime reads one Package-local execution contract.
+              - Storage duplicates content across Package versions.
+              - Publication must atomically copy and verify the complete hierarchy.
+          - option_id: D4-S2
+            label: Immutable component references and hashes
+            business_definition: >-
+              The Package stores an immutable manifest of exact component
+              version IDs and hashes; runtime resolves only those immutable
+              version rows, never an active head or latest value.
+            consequences:
+              - Less content duplication.
+              - Runtime and offline packaging depend on permanent component-version availability.
+              - Referential custody, export and offline materialization require stronger evidence.
+          - option_id: D4-S3
+            label: Manifest plus embedded execution projection
+            business_definition: >-
+              The Package stores exact component IDs and hashes as provenance
+              and also embeds a complete immutable execution projection derived
+              from those versions in the publication transaction.
+            consequences:
+              - Provides direct runtime data and explicit source lineage.
+              - Duplicates facts and therefore requires hash/equivalence checks.
+              - Publication and verification are more complex than either single representation.
+      - choice_set_id: D4-SCHEDULED-ELIGIBILITY
+        instruction: Select exactly one.
+        options:
+          - option_id: D4-E1
+            label: Active components only
+            business_definition: >-
+              A Package can publish only from components already Active at the
+              Package publication time.
+            consequences:
+              - Simplest availability and dependency rule.
+              - Prevents preparing future Packages before component activation.
+              - Package release planning may wait until the component effective boundary.
+          - option_id: D4-E2
+            label: Scheduled components allowed for future Package
+            business_definition: >-
+              A Package may bind approved Scheduled components when its own
+              effective boundary is not earlier than every dependency boundary.
+            consequences:
+              - Supports advance Package preparation.
+              - Requires cross-component and Package date validation at publish, planning and selection.
+              - The Package cannot become selectable or executable before all bound dependencies are Active.
+          - option_id: D4-E3
+            label: Publish Package as Scheduled until dependencies activate
+            business_definition: >-
+              A Package may bind approved Scheduled components and remains
+              Scheduled; it becomes Active only when its own date and every
+              dependency date are satisfied.
+            consequences:
+              - Preserves advance configuration with an explicit Package state.
+              - Couples Package activation to the selected D2 activation mechanism.
+              - Failure or delay in one dependency blocks the entire Package and must surface clearly.
+    mandatory_mapping_manifest_after_selection:
+      source_identities:
+        - CCR request ID and revision
+        - approved request component ID
+        - Compliance entity stable ID and version ID
+        - publication ID and correlation ID
+        - schema/version identity from D1
+        - content hash
+      execution_content:
+        - Regulation and clause/legal-source facts
+        - configured and eligible additional Inspection Items
+        - response and conditional visibility rules
+        - evidence requirements and scoring/exclusion configuration
+        - Violation and exact Penalty mapping
+        - Action Form and other Template versions
+        - Package ordering, section and report-placement facts
+      validation:
+        - complete approved parent-child branch
+        - one governed Penalty per Violation
+        - no rejected, returned, invalid, stale or unavailable dependency
+        - Package maker-checker and optimistic concurrency
+        - transactional zero-partial-row failure
+    prohibited_combinations:
+      - Any snapshot option plus a floating current, active or latest lookup after Package publication.
+      - Reference-only storage without permanent immutable version availability and offline materialization proof.
+      - Embedded storage without exact source version IDs and hashes.
+      - Scheduled component eligibility without cross-date validation.
+      - Package becoming selectable or executable before all required components are effective.
+      - Client-supplied snapshot JSON treated as authoritative without database re-read and validation.
+      - Field resolving legacy live catalogue values when a Package snapshot is missing.
+      - One invalid branch partially committed into a Package version.
+      - Package maker self-publication or historical Package rewrite.
+    post_decision_gates:
+      - Authority signs the exact CCR-to-Package mapping manifest.
+      - D1 representation and D2 lifecycle decisions are already recorded and compatible.
+      - C preflight maps the selected storage and eligibility options to exact Package objects and SQL probes.
+      - C SQL proof covers atomicity, provenance, immutability, concurrency and prior publish-function bypass.
+      - D remains blocked until the selected Package representation proves complete online/offline runtime materialization.
+
+cross_decision_compatibility:
+  allowed_with_extra_gate:
+    - combination: D1-O1 with any D4 snapshot-storage option
+      gate: Mapping must identify the exact relational version rows and hashes.
+    - combination: D1-O2 with D4-S2
+      gate: Immutable schema registry and permanent document-version availability are mandatory.
+    - combination: D1-O3 with D4-S3
+      gate: Core/body/projection hash equivalence and precedence tests are mandatory.
+    - combination: D2-A1 with D4-E2 or D4-E3
+      gate: Package and component effective-state projection must share one clock and boundary rule.
+    - combination: D2-A2 or D2-A3 with D4-E3
+      gate: Package activation and component activation must be idempotent, ordered and transactionally guarded.
+    - combination: D3-I2 with either attachment-storage option
+      gate: Quarantine retention, orphan resolution and adoption audit must be approved before upload.
+  prohibited:
+    - D2-A1 combined with a second persisted activation authority for the same kind.
+    - D2-T1 and D2-T2 both authoritative for the same field.
+    - D3-A2 without a signed lifecycle field allow-list and reason/audit contract.
+    - D3-I2 without an approved orphan and retention policy.
+    - D4-E1 combined with Package publication that reads Scheduled components.
+    - D4-E2 or D4-E3 combined with an activation mechanism that cannot prove dependency readiness.
+    - Any D1 option combined with an incomplete field manifest.
+    - Any combination that weakens the preservation floor.
+
+decision_receipt_template:
+  receipt_status: UNSELECTED
+  authority_name: REQUIRED
+  authority_basis: REQUIRED
+  decided_on: REQUIRED
+  selections:
+    D1_REPRESENTATION: UNSELECTED
+    D2_ACTIVATION: UNSELECTED
+    D2_TIME_BASIS: UNSELECTED
+    D2_BACKFILL: UNSELECTED
+    D3_ACTION_BOUNDARY: UNSELECTED
+    D3_ATTACHMENT_STORAGE: UNSELECTED
+    D3_ATTACHMENT_INTAKE: UNSELECTED
+    D4_SNAPSHOT_STORAGE: UNSELECTED
+    D4_SCHEDULED_ELIGIBILITY: UNSELECTED
+  required_attached_artifacts:
+    - D1 per-kind field/type/nullability/validation manifest
+    - D2 status, time-boundary, standalone-deactivation and backfill policy
+    - D3 complete action matrix and attachment custody policy
+    - D4 exact mapping and Package eligibility manifest
+  rule: >-
+    The receipt is valid only when every selection and attached artifact is
+    complete, internally compatible and signed by recorded authority.
+
+post_decision_gate_sequence:
+  - gate_id: PDG-1-RECEIPT
+    result_required: PASS
+    requirement: Independent read-only validation of the signed decision receipt.
+  - gate_id: PDG-2-CONTRACT
+    result_required: PASS
+    requirement: >-
+      Update the governed decision/change-control artifacts under separate
+      authority; verify no canonical requirement was lost.
+  - gate_id: PDG-3-A-PREFLIGHT
+    result_required: PASS
+    requirement: >-
+      Recheck A ownership, exact base, local database, generated migration slot
+      and probe envelope. This step still does not grant A.
+  - gate_id: PDG-4-A-IMPLEMENT-QA
+    result_required: PASS_WITH_ZERO_P0_P1
+    requirement: Separate future A implementation lease and independent QA.
+  - gate_id: PDG-5-B-PREFLIGHT
+    result_required: PASS
+    requirement: >-
+      Recheck B actions, attachments, current-user permission, database bypass
+      prevention, ownership and exact generated migration slot.
+  - gate_id: PDG-6-B-IMPLEMENT-QA
+    result_required: PASS_WITH_ZERO_P0_P1
+    requirement: Separate future B implementation lease and independent QA.
+  - gate_id: PDG-7-C-PREFLIGHT
+    result_required: PASS
+    requirement: >-
+      Recheck C mapping, Package ownership, generated migration slot and
+      dedicated SQL probe.
+  - gate_id: PDG-8-C-IMPLEMENT-QA
+    result_required: PASS_WITH_ZERO_P0_P1
+    requirement: Separate future C implementation lease and independent QA.
+  - gate_id: PDG-9-D-E
+    result_required: PASS_WITH_ZERO_P0_P1
+    requirement: >-
+      Reconcile Field, then run separately leased independent data, browser and
+      protected regression certification. D and E remain blocked until reached.
+  - gate_id: PDG-10-SPONSOR
+    result_required: SEPARATE_EXPLICIT_DECISION
+    requirement: Merge, remote DDL, deployment and release are never implied.
+
+rollback:
+  this_packet: Remove only this untracked orchestration packet if returned; no product or data state exists.
+  future_decision_change: >-
+    A recorded authority may supersede an unimplemented choice through change
+    control. After implementation or publication, change is forward-only and
+    may not delete or rewrite immutable versions, Packages, attachments, audit,
+    Inspection or Enforcement history.
+
+stop_conditions:
+  - Any option is presented as recommended, default or already selected.
+  - A partial receipt is treated as authority.
+  - An option violates or omits the preservation floor.
+  - Required fields, timezone, lifecycle exceptions, retention or mapping values are inferred.
+  - A decision is treated as a migration, data, implementation, merge or release lease.
+  - Implementation begins before serial post-decision gates.
+  - Direct legacy authoring, attachment or Package bypass remains unclassified.
+  - Historical references, audit, maker-checker, RLS, concurrency or immutable custody are weakened.
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-RECEIPT-036
+  mode: READ_ONLY_CONTROL_PLANE
+  start_condition: >-
+    Start only after the recorded sponsor/product/database authority provides
+    explicit selections and the required manifests.
+  scope: >-
+    Record the supplied selections without reinterpretation, validate
+    compatibility against packet 035 and the canonical requirements, identify
+    any incomplete or prohibited combination, and return ACK/RETURN/BLOCK. Do
+    not grant A-C, generate migrations, implement, modify data or infer missing
+    answers.
+  safe_because: >-
+    It validates authority before any owner, database path or application file
+    can be leased.
+
+validation:
+  yaml_parse: PASS
+  recommendation_enum: PASS
+  all_options_unselected: PASS
+  four_decision_groups_present: PASS
+  consequences_present: PASS
+  prohibited_combinations_present: PASS
+  preservation_floor_present: PASS
+  post_decision_gates_present: PASS
+  no_lease_or_implementation_authority: PASS
+  exact_requirement_scope_present: PASS
+  safe_successor_present: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS
