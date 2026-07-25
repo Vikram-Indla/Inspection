@@ -1,32 +1,108 @@
-/* SAQEEL Field Incident Reports — route-scoped layout for the mid-visit
-   incident logging form + history. DS tokens only (linked by field/layout). */
+/* SAQEEL Field — "Immediate inspection & incident" surface (design:
+   designs/pwa/SAQEEL PWA-Field Immediate and Incident.dc.html).
+
+   The design is ONE screen with a two-segment switch: the Immediate path
+   (create a visit with no prior assignment) and the mid-visit Incident path
+   (log an incident inside an active visit). Both segments share this chrome.
+
+   Geometry follows the established PWA idiom in this channel, not the DS
+   console radii: 14px outer card, 12px nested row, 600px field breakpoint,
+   50px minimum touch height on segment/option controls. Tokens only. */
 
 .page { flex: 1; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
 
+/* --- Kind switch (design .ii-seg) ------------------------------------ */
+.segment {
+  align-self: flex-start;
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-md);
+}
+
+.segOpt {
+  min-height: 50px;
+  padding: 9px 16px;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  border-inline-end: 1px solid var(--border-input);
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.segOpt:last-child { border-inline-end: 0; }
+
+.segOpt[aria-current="page"] {
+  background: var(--action-primary);
+  color: var(--text-on-action);
+  font-weight: 600;
+}
+
+/* --- Cards ----------------------------------------------------------- */
 .card {
   background: var(--surface-primary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
   padding: var(--space-4);
 }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
 
-.actions {
-  display: flex; gap: var(--space-3); align-items: center;
-  flex-wrap: wrap; margin-block-start: var(--space-4);
+/* Design marks the incident description with a required asterisk. */
+.req { color: var(--status-critical-text); }
+
+/* --- Action bar (design's footer row) --------------------------------
+   Deliberately NOT position:sticky — the field channel already renders a
+   fixed bottom <FieldNav> (z-index 60), so a sticky bar at bottom:0 would be
+   covered by it. Kept safe-area aware per the channel convention. */
+.actionbar {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-block-start: var(--space-4);
+  padding-block-start: var(--space-3);
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
+  border-block-start: 1px solid var(--border-subtle);
 }
 
+.grow { flex: 1; }
+
+/* --- Immediate path -------------------------------------------------- */
+.immList {
+  margin: 0;
+  padding-inline-start: 1.15em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.immCta {
+  min-height: 50px;
+  margin-block-start: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- History --------------------------------------------------------- */
 .history { display: flex; flex-direction: column; gap: var(--space-2); }
 
 .rowcard {
   background: var(--surface-primary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
 }
 .rowcard > summary {
-  list-style: none; cursor: pointer; min-block-size: 44px;
+  list-style: none; cursor: pointer; min-block-size: 50px;
   padding: var(--space-3) var(--space-4);
   display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;
 }
@@ -36,7 +112,7 @@
   display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);
   margin: 0; padding: 0 var(--space-4) var(--space-4);
 }
-@media (max-width: 640px) { .grid2dl { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .grid2dl { grid-template-columns: 1fr; } }
 .grid2dl dd { margin: 0; }
 
 .empty {
