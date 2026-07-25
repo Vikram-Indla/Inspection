@@ -1,7 +1,7 @@
 {
-  "revision": "SB-r7",
+  "revision": "SB-r8",
   "updated": "2026-07-25",
-  "updatedBy": "claude-code",
+  "updatedBy": "codex",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
@@ -1680,23 +1680,23 @@
       "channel": "pwa",
       "group": "pwagap",
       "name": "Completion & visit statement",
-      "design": 65,
-      "code": 40,
-      "wiring": 40,
+      "design": 72,
+      "code": 78,
+      "wiring": 74,
       "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html · Visit Statement · Visit Results",
-      "route": "partially covered by field/inspection/[id] submit path",
+      "route": "field/inspection/[id] post-submit completion state · field/inspection/[id]/statement report route · visits/[id] results route",
       "pwa": {
-        "state": "gap",
-        "note": "No dedicated completion or statement route; the design implies distinct post-submit screens."
+        "state": "partial",
+        "note": "Completion is a post-submit Workspace lifecycle state; Visit Statement is a dedicated immutable report route; Visit Results remains owned by visits/[id]."
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "Confirm whether Completion and Visit Statement are routes or post-submit states of Workspace."
+          "lane": "design",
+          "text": "Capture declared-width EN/LTR and AR/RTL browser comparisons before claiming pixel parity."
         },
         {
           "lane": "wiring",
-          "text": "Immutable submit — a statement view must never allow edit."
+          "text": "Statement actions and attachments remain Not configured because no governed source is wired; DEC-032 still blocks new real submissions platform-wide."
         }
       ],
       "phase": 5,

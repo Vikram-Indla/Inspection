@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
@@ -68,6 +69,10 @@ export type WorkspaceStrings = {
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
   submittedTitle: string; submittedBody: string;
+  completionReview: string; completionAnswered: string; completionViolations: string;
+  completionEvidence: string; completionForms: string; completionVersion: string;
+  completionLocked: string; completionReports: string; completionStatement: string;
+  completionTasks: string; completionSyncPending: string; completionQueuedLock: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -921,8 +926,57 @@ export default function Workspace({ inspection, items, library, serverResponses,
   }
 
   const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
+  const latestVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(version => version.version_number));
+  if (submitted) {
+    const serverSubmitted = inspection.status === "submitted";
+    return (
+      <main className={`${styles.page} ${styles.completionPage} ${a11y.scope}`}>
+        <LiveRegion message={msg} />
+        <div className={styles.toolbar}>
+          <span className={`badge ${tone}`}><span className="dot" />{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
+          <span className="t-caption id-code">{inspectionNo ?? inspection.id.slice(0, 8)}</span>
+        </div>
+        {msg && <div className="alert alert-info"><div>{msg}</div></div>}
+        <section className={`${styles.card} ${styles.completionBanner}`} aria-labelledby="completion-title">
+          <div className={styles.completionMark} aria-hidden="true">✓</div>
+          <div>
+            <h2 id="completion-title">{serverSubmitted ? strings.submittedTitle : strings.queuedOffline}</h2>
+            <p>{serverSubmitted ? strings.completionLocked : strings.completionQueuedLock}</p>
+          </div>
+        </section>
+        <section className={styles.card}>
+          <h3 className={styles.completionHeading}>{strings.completionReview}</h3>
+          <div className={styles.completionMetrics}>
+            <div><strong>{totals.a}</strong><span>{strings.completionAnswered}</span></div>
+            <div><strong>{summary.violations}</strong><span>{strings.completionViolations}</span></div>
+            <div><strong>{summary.evidence}</strong><span>{strings.completionEvidence}</span></div>
+            <div><strong>{serverForms.length}</strong><span>{strings.completionForms}</span></div>
+          </div>
+        </section>
+        <section className={styles.card}>
+          <h3 className={styles.completionHeading}>{strings.completionReports}</h3>
+          <div className={styles.completionLinks}>
+            <span className="badge badge-compliant">
+              {strings.completionVersion} v{latestVersion || 1}
+            </span>
+            {serverSubmitted && (
+              <Link className="btn btn-secondary" href={`/field/inspection/${inspection.id}/statement`}>
+                {strings.completionStatement}
+              </Link>
+            )}
+          </div>
+        </section>
+        <div className={styles.completionFooter}>
+          <span className={`badge ${serverSubmitted ? "badge-compliant" : "badge-warning"}`}>
+            <span className="dot" />{serverSubmitted ? strings.completionSyncPending : strings.sync.pending}
+          </span>
+          <Link className="btn btn-primary" href="/field/my-tasks">{strings.completionTasks}</Link>
+        </div>
+      </main>
+    );
+  }
   return (
-    <div className={`stack ${a11y.scope}`} style={{ gap: "var(--space-4)" }}>
+    <div className={`${styles.page} ${a11y.scope}`}>
       {/* A11y — polite screen-reader mirror of the transient status message. */}
       <LiveRegion message={msg} />
       <div className={styles.toolbar}>
