@@ -1,5 +1,5 @@
 {
-  "revision": "SB-r4",
+  "revision": "SB-r5",
   "updated": "2026-07-25",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
@@ -850,24 +850,28 @@
       "channel": "admin",
       "group": "admindata",
       "name": "SENAI data, integrations, lookups",
-      "design": 55,
-      "code": 90,
-      "wiring": 65,
+      "design": 65,
+      "code": 92,
+      "wiring": 78,
       "designPage": "SAQEEL Admin SENAI Data.dc.html · Admin Integrations · Admin Integrations Data · Admin Lookups",
       "route": "web/src/app/(app)/admin/integrations · admin/items · admin/localization · lib/integrations/senaei",
       "pwa": null,
       "pending": [
         {
           "lane": "design",
-          "text": "Duplicate design file 'SAQEEL Admin Lookups copy.dc.html' must be reconciled or deleted."
+          "text": "SENAI Data route /admin/integrations/senai-data is built to the .dc.html structure (4 tabs, source banner, tables, KPI grid) but is not pixel-verified — no browser run, no AR/RTL pass, no width sweep."
+        },
+        {
+          "lane": "design",
+          "text": "Admin Integrations hub and Admin Lookups are not yet converted to their .dc.html layouts (provider card grid; lookup sidebar + bilingual code table)."
         },
         {
           "lane": "wiring",
-          "text": "Senaei contract endpoints exist in lib/integrations/senaei — live-call verification not recorded."
+          "text": "Live-call verification is now recorded and surfaced per endpoint from senaei_sync_calls, but 0/10 contract endpoints carry a recorded call — no SENAI environment has been called. Console reports this as 'not verified', never as health."
         },
         {
           "lane": "wiring",
-          "text": "FND-007: no Senaei write-back. Establishment-data form stays pending-integration scaffolding."
+          "text": "No governed field-mapping registry exists in the applied schema; the Field mapping tab renders 'Not configured' rather than inventing SENAI-to-internal mappings."
         }
       ],
       "phase": 2,
