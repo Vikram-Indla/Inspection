@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldHeader from "@/components/field/FieldHeader";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -49,6 +48,11 @@ export default async function FieldConflictsPage() {
     emptySub: tr("field.conflicts.emptySub", "All changes reconciled — no conflicts.", "تمت تسوية جميع التغييرات — لا توجد تعارضات."),
     resolving: tr("field.conflicts.resolving", "Resolving…", "جارٍ الحل…"),
     resolveFailed: tr("field.conflicts.resolveFailed", "Could not resolve — try again.", "تعذّر الحل — حاول مرة أخرى."),
+    policyNote: tr(
+      "field.conflicts.policy",
+      "Resolution policy: the inspector is asked every time — no side wins automatically. Your choice (keep server value or resubmit your response) is applied immediately and logged in the decision record.",
+      "سياسة الحل: يُسأل المفتش في كل مرة — لا يوجد فوز تلقائي لأي طرف. اختيارك (إبقاء قيمة الخادم أو إعادة إرسال إجابتك) يُنفَّذ فوراً ويُسجَّل ضمن سجل القرار.",
+    ),
     groundingNote: tr(
       "field.conflicts.grounding",
       "Backed by the real offline conflicts store. “Keep mine” re-queues your local response through the existing outbox so it wins on next sync; “Keep server” discards your local copy. Neither mutates server state directly.",
@@ -56,15 +60,19 @@ export default async function FieldConflictsPage() {
     ),
   };
 
+  // The header is rendered by the client component so the design's pending-count
+  // badge can carry the REAL conflict count, which only the client (IndexedDB)
+  // knows. Its chrome — back control, title, language toggle — is still decided
+  // here on the server and passed down.
   return (
-    <>
-      <FieldHeader
-        leading={backBtn}
-        title={tr("field.conflicts.title", "Sync Conflict Resolution", "حل تعارضات المزامنة")}
-        langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
-        langLabel={locale === "ar" ? "EN" : "AR"}
-      />
-      <ConflictResolutionClient locale={locale} userId={user.id} strings={strings} />
-    </>
+    <ConflictResolutionClient
+      locale={locale}
+      userId={user.id}
+      strings={strings}
+      leading={backBtn}
+      title={tr("field.conflicts.title", "Sync Conflict Resolution", "حل تعارضات المزامنة")}
+      langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
+      langLabel={locale === "ar" ? "EN" : "AR"}
+    />
   );
 }
