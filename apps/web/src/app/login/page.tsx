@@ -119,7 +119,8 @@ export default async function Login() {
 
   return (
     <div className="lg-page lg-page--split" dir={ar ? "rtl" : "ltr"} lang={locale}>
-      <FieldLoginClient s={fieldStrings} dir={ar ? "rtl" : "ltr"} lang={locale} />
+      <FieldLoginClient s={fieldStrings} dir={ar ? "rtl" : "ltr"} lang={locale}
+        localeHref={ar ? "/locale?set=en" : "/locale?set=ar"} />
       <StoryPanel strings={story} locale={locale} />
     </div>
   );

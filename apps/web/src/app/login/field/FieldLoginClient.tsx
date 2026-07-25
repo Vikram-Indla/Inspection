@@ -115,10 +115,16 @@ export default function FieldLoginClient({
   s,
   dir,
   lang,
+  localeHref: localeHrefProp,
 }: {
   s: FieldLoginStrings;
   dir: "rtl" | "ltr";
   lang: "ar" | "en";
+  // Optional override for the language-toggle target. Defaults to the
+  // standalone field route so /login/field is unchanged; the unified /login
+  // passes its cookie-based /locale route so switching language stays on /login
+  // (and keeps the atlas) instead of navigating here.
+  localeHref?: string;
 }) {
   const [showPw, setShowPw] = useState(false);
   const [identifier, setIdentifier] = useState("");
@@ -238,7 +244,10 @@ export default function FieldLoginClient({
   const netLabel = online ? s.netOnline : s.netOffline;
   const showLockScreen = lockScreen !== null && !showPasswordFallback;
 
-  const localeHref = useMemo(() => `/login/field?lang=${lang === "ar" ? "en" : "ar"}`, [lang]);
+  const localeHref = useMemo(
+    () => localeHrefProp ?? `/login/field?lang=${lang === "ar" ? "en" : "ar"}`,
+    [localeHrefProp, lang],
+  );
 
   return (
     <div className="fl-root" dir={dir} lang={lang}>
