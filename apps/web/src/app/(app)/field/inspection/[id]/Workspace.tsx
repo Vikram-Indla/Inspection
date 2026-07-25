@@ -10,6 +10,8 @@ import {
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
+import EvidenceReview, { type EvidenceReviewStrings, type EvidenceReviewRow } from "./EvidenceReview";
+import { evidenceRowStatus, evidenceSyncWarning, evidenceReviewCounts } from "./evidence-review-status";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import LiveRegion from "@/components/field/LiveRegion";
 import { focusAndScrollTo, firstBlocker } from "@/components/field/a11y";
@@ -112,6 +114,8 @@ export type WorkspaceStrings = {
   evSyncedAlt: string; evArchived: string; evReplace: string; evDelete: string;
   evDeletedMsg: string; evDeleteQueuedOffline: string; evArchiveQueued: string; saveFailed: string;
   evDeleteTitle: string; evDeleteReason: string; evDeleteReasonPh: string;
+  // — Pre-submission Evidence Review panel (additive) —
+  evReview: EvidenceReviewStrings;
   evDeleteConfirm: string; evDeleteCancel: string; evDeleteNeedsReason: string;
   annot: AnnotatorStrings;
 };
@@ -153,6 +157,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [deleting, setDeleting] = useState(null as { ev: SEv; reason: string } | null);
   const [conflicts, setConflicts] = useState([] as Conflict[]);
   const [msg, setMsg] = useState(null as string | null);
+  const [retrying, setRetrying] = useState(false);
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
   // A11y — when submit is refused, move focus to the grouped-blocker summary so
   // keyboard/screen-reader users land on what needs fixing (not left on submit).
@@ -715,6 +720,64 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
   const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
   const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
+
+  // --- Evidence Review panel (additive, read-only) ------------------------
+  // Derives its display entirely from the SAME live state the capture flow and
+  // submit gate already use; it changes no write/replay/guard behavior.
+  const evItemCode = useMemo(() => {
+    const m: Record<string, string> = {};
+    for (const it of Object.values(allMap)) m[it.id] = it.code;
+    return m;
+  }, [allMap]);
+  const evLinkLabel = useCallback((linkedType: string, linkedId: string) =>
+    linkedType === "item" ? (evItemCode[linkedId] ?? strings.evReview.linkInspection)
+      : linkedType === "finding" ? strings.evReview.linkFinding
+      : linkedType === "action" ? strings.evReview.linkAction
+      : strings.evReview.linkInspection, [evItemCode, strings.evReview]);
+  const evTypeOf = (mime: string) => mime.startsWith("image") ? "photo" : mime.startsWith("video") ? "video" : "document";
+  const evidenceReviewRows = useMemo<EvidenceReviewRow[]>(() => {
+    // A queued row is "pending" from its OWN outbox membership — never
+    // "failed" derived from the workspace-global sync state (that global
+    // failure may be a different op ahead in the FIFO queue).
+    const pending: EvidenceReviewRow[] = queuedEv.map((q, i) => ({
+      key: `q:${q.queued_at}:${i}`,
+      linkLabel: evLinkLabel(q.linked_type, q.linked_id),
+      type: q.evidence_type ?? evTypeOf(q.mime),
+      status: evidenceRowStatus(true),
+      previewB64: q.mime.startsWith("image") ? `data:${q.mime};base64,${q.data_b64}` : undefined,
+    }));
+    const synced: EvidenceReviewRow[] = activeEvidence.map(e => ({
+      key: `s:${e.id}`,
+      linkLabel: evLinkLabel(e.linked_type, e.linked_id),
+      type: e.evidence_type,
+      status: evidenceRowStatus(false),
+      previewUrl: e.evidence_type === "photo" ? evidenceUrls[e.id] : undefined,
+    }));
+    return [...pending, ...synced];   // pending first — it needs the inspector's attention
+  }, [queuedEv, activeEvidence, evidenceUrls, evLinkLabel]);
+  const evidenceCounts = useMemo(() => evidenceReviewCounts(activeEvidence.length, queuedEv.length), [activeEvidence.length, queuedEv.length]);
+  // Separate workspace-level sync warning (failed/offline) — surfaced once, not
+  // painted onto every pending row.
+  const evidenceWarning = useMemo(() => evidenceSyncWarning(sync, queuedEv.length), [sync, queuedEv.length]);
+  // Mandatory-evidence summary — same authority as the submit gate: total is the
+  // count of in-scope, visible items whose current answer triggers a mandatory
+  // evidence leg; gaps are exactly the submit blockers' evidence codes.
+  const evidenceMandatory = useMemo(() => {
+    const scope = (itemStates ? effectiveSections(sections, allMap, itemStates) : sections)
+      .flatMap(s => (s.items ?? []).map(c => allMap[c]))
+      .filter((it): it is Item => !!it && isVisible(it, runtimeCtx));
+    let total = 0;
+    for (const it of scope) {
+      const leg = evidenceLeg(it, answers[it.id]?.value);
+      if (leg?.applies && leg.mandatory) total++;
+    }
+    const gaps = liveBlockers.flatMap(g => g.evidence);
+    return { total, met: Math.max(0, total - gaps.length), gaps };
+  }, [sections, allMap, itemStates, runtimeCtx, answers, liveBlockers]);
+  const retryUploads = useCallback(() => {
+    setRetrying(true);
+    Promise.resolve(processOutbox(userId, onState)).finally(() => { refreshQueued(); setRetrying(false); });
+  }, [userId, onState, refreshQueued]);
   // §15 — actively deselected items stay visible in a collapsed audit list
   // with their reason; restore is available before submit.
   const deselectedItems = useMemo(() => Object.entries(itemStates)
@@ -1361,6 +1424,20 @@ export default function Workspace({ inspection, items, library, serverResponses,
             </div>
           ))}
         </div>
+      )}
+
+      {/* Pre-submission Evidence Review (additive, read-only) — aggregates all
+          captured evidence with sync status + the mandatory-evidence gate. */}
+      {!submitted && (
+        <EvidenceReview
+          rows={evidenceReviewRows}
+          mandatory={evidenceMandatory}
+          counts={evidenceCounts}
+          warning={evidenceWarning}
+          retrying={retrying}
+          onRetry={retryUploads}
+          strings={strings.evReview}
+        />
       )}
 
       {/* Grouped validation results by section (M04-200/201-lite) */}
