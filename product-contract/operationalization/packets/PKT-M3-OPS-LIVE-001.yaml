@@ -1,0 +1,164 @@
+schema_version: "1.0"
+packet_id: "PKT-M3-OPS-LIVE-001"
+authored_by: "ChatGPT"
+planning_lane: "gpt-w1"
+status: "ACTIVE_READY_FOR_CODEX_SAFETY_REVIEW"
+queue_position: 1
+module: "M3 Operations Center and Live Operations"
+vertical_slice: "Authorized Operations user opens Live Operations and receives source-backed, permission-scoped current positions with explicit freshness and safe degraded states."
+
+contract_anchor:
+  repository: "Vikram-Indla/Inspection"
+  branch: "codex/saqeel-v3-contract-reset"
+  baseline_commit: "8ec751ad21f64d0764cd048f486879fc213f677c"
+  operating_system: "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"
+  requirement_ids: ["CR-431", "CR-433", "CR-439", "CR-447", "CR-448"]
+  screen_ids: ["SCR-WEB-500", "WA-DES-034"]
+  engine_ids: ["G2-P12", "MOD-16", "WA-MIG-049"]
+  acceptance_ids:
+    - "WA-AC-0431"
+    - "WA-AC-0433"
+    - "WA-AC-0439"
+    - "WA-AC-0447"
+    - "WA-AC-0448"
+    - "WA-M3-AC-001"
+    - "WA-M3-AC-002"
+    - "WA-M3-AC-003"
+    - "WA-M3-AC-004"
+    - "WA-M3-AC-005"
+    - "WA-M3-AC-006"
+    - "WA-SHELL-AC-008"
+    - "WA-SHELL-AC-009"
+    - "WA-SHELL-AC-017"
+  evidence_ids: ["WA-EV-0431", "WA-EV-0433", "WA-EV-0439", "WA-EV-0447", "WA-EV-0448", "WA-M3-EV-001..006"]
+  route: "/operations/live"
+  design_authority: "SAQEEL Operations Live.dc.html"
+  reference_viewport: "1200x800"
+
+business_scope:
+  persona: "Operations user"
+  outcome: >
+    Display factories, visits and inspectors only within the authenticated user's
+    authorized geography; distinguish factory coordinates from live inspector or
+    journey telemetry; expose the source timestamp and a truthful freshness state;
+    never manufacture a current position from a factory coordinate, fixture or
+    future-dated record.
+  required_interactions:
+    - "Open /operations/live from the Operations Center."
+    - "Pan, zoom and filter the map by authorized region, branch or city."
+    - "Open a pin and identify entity type, source and observation timestamp."
+    - "Open the permitted visit handoff without gaining action authority."
+    - "Retry a failed source without losing healthy widgets."
+  required_states:
+    - "loading"
+    - "populated"
+    - "empty"
+    - "unauthorized"
+    - "partial-source error"
+    - "provider unavailable"
+    - "stale telemetry"
+    - "future-dated or implausible telemetry rejected"
+    - "fixture-labelled data"
+  delivery_matrix:
+    locales: ["EN/LTR", "AR/RTL"]
+    themes: ["light", "dark"]
+    viewports: ["1200x800", "1024x768", "412x915", "390x844", "320x800 reflow"]
+    accessibility: "Keyboard map alternatives, visible focus, semantic labels, non-colour status cues and applicable WCAG checks."
+
+wiring_contract:
+  real_services:
+    - "Supabase server reads for factories, visits and existing telemetry sources established by repository contracts."
+    - "Existing authenticated user verification and region/branch permission scope."
+    - "Existing Mapbox/provider boundary; fail closed when provider configuration is unavailable."
+  rls_rbac:
+    - "Positive Operations role within authorized geography."
+    - "Negative role and out-of-scope region/branch/entity tests."
+    - "Inspector location is visible only during the contract-authorized active journey/execution window."
+  audit:
+    - "No write action is introduced by this monitoring slice."
+    - "Any existing audited drilldown or export boundary remains unchanged and is regression tested."
+  truth_rules:
+    - "Source and observation time must be visible or programmatically available for each live-position claim."
+    - "Freshness derives from existing source facts/configuration; no interval or threshold may be invented."
+    - "Future-dated, fixture and missing-timestamp records cannot be represented as live."
+    - "A failed telemetry/provider source degrades only its bounded widget and never breaks the route."
+
+write_lease:
+  requested_owner: "cc-w1"
+  module: "M3"
+  lease_state: "REQUESTED_NOT_GRANTED"
+  rule: "Codex alone may grant the lease. One write lease maximum for M3; the queued successor holds none."
+  allowed_paths:
+    - "apps/web/src/app/(app)/operations/live/page.tsx"
+    - "apps/web/src/app/(app)/operations/live/loading.tsx"
+    - "apps/web/src/lib/operations/live.ts"
+    - "apps/web/e2e/web-admin-m3-operations.spec.ts"
+    - "product-contract/evidence/PKT-M3-OPS-LIVE-001.md"
+  prohibited_paths:
+    - "apps/web/src/app/(app)/operations/page.tsx"
+    - "apps/web/src/app/(app)/operations/exceptions/**"
+    - "apps/web/src/app/(app)/layout.tsx"
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/app/astryx.css"
+    - "apps/web/src/app/globals.css"
+    - "apps/web/public/**"
+    - "apps/web/src/app/api/**"
+    - "supabase/**"
+    - "**/migrations/**"
+    - "apps/web/src/lib/providers/**"
+    - "/field/**"
+    - "PWA, iPad, offline, service-worker and manifest paths"
+    - "main and all unrelated worker branches"
+
+dependencies:
+  required:
+    - "F0 shared shell remains the accepted inherited foundation."
+    - "Existing M3 branch codex/m3-operations-reconciliation at recorded HEAD b38930d4 is reconciled by Codex before lease grant; its dirty Live Operations and focused-test paths must not be overwritten."
+    - "Repository-authenticated Operations persona and deterministic, clearly labelled test data."
+  open_decisions:
+    - id: "DEC-002"
+      impact: "Blocks invented GIS accuracy/geofence/freshness policy; implement only source-backed truth and fail-closed unavailable states."
+    - id: "DEC-004"
+      impact: "Requires complete Arabic/RTL delivery; no untranslated route copy may be accepted."
+    - id: "DEC-010"
+      impact: "Blocks invented NFR thresholds; capture measured results without creating a pass threshold."
+  non_blocking_assignment:
+    - "kimi-a-r1 performs read-only service, RLS/RBAC and audit mapping while cc-w1 holds the single M3 write lease."
+    - "kimi-b-r1 performs read-only negative-path and evidence review."
+    - "cd-r1 performs read-only design drift, Arabic, responsive and accessibility review; cd-w1 receives no M3 lease."
+
+evidence_required:
+  - "Commit-pinned test report covering positive, empty, unauthorized, out-of-scope, stale, future-dated, fixture, provider-unavailable and partial-source states."
+  - "Browser evidence for EN/AR, LTR/RTL, light/dark and every named viewport, with persona, route, commit, console and network result."
+  - "Source-to-position proof showing entity ID, source type and observation timestamp without exposing personal data."
+  - "RLS/RBAC negative evidence for unauthorized role and unauthorized geography."
+  - "Accessibility evidence including keyboard path and non-map equivalent."
+  - "No-regression evidence for /operations and protected M3 contracts."
+  - "Evidence index at product-contract/evidence/PKT-M3-OPS-LIVE-001.md; external binary evidence remains under INSPECTION_DOCS_ROOT."
+
+stop_conditions:
+  - "STOP THE LINE for suspected auth/RLS bypass, unauthorized inspector location, secret/PII exposure, data corruption or silent requirement loss."
+  - "Stop before implementation if Codex cannot reconcile the recorded dirty M3 paths or cannot grant the single M3 lease without overlap."
+  - "Stop and return if an exact source timestamp, permission boundary or existing freshness policy cannot be proven; do not infer one."
+  - "Stop completion claims if any required state, locale, viewport or evidence leg is absent or stale."
+  - "Stop completion claims while any P0/P1 defect remains."
+  - "Do not accept work, set severity, break leases, merge, deploy, run DDL, change providers or write outside allowed paths."
+
+definition_of_done:
+  - "The smallest real Operations journey is implementation-first and browser-demonstrable on /operations/live."
+  - "All listed requirement, screen, engine, acceptance and evidence IDs trace to current code, tests and evidence."
+  - "Real service, RLS/RBAC and existing audit boundaries pass positive and negative verification with no permanent mock."
+  - "EN/AR, responsive, accessibility, loading, populated, empty, unauthorized, stale, future-date, fixture, provider-unavailable and partial-error behavior pass."
+  - "Typecheck, production build, focused M3 suite, protected regression and git diff check pass on the implementation commit."
+  - "Codex completes real-browser review and issues ACK only when zero P0/P1 remains; sponsor acceptance is recorded separately where required."
+
+estimated_size:
+  points: 5
+  class: "M"
+  target_elapsed: "one bounded implementation cycle plus independent review"
+  rationale: "One route and focused service adapter/test surface; no DDL, provider change, shared shell or adjacent Operations screen."
+
+queued_successor:
+  packet_id: "PKT-M3-OPS-CENTER-002"
+  path: "product-contract/operationalization/packets/PKT-M3-OPS-CENTER-002.yaml"
+  state: "QUEUED_NO_LEASE"
