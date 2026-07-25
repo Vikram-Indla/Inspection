@@ -20,7 +20,10 @@ import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
 import styles from "./workspace.module.css";
 
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
+type AcknowledgementConfig = { required?: boolean; mode?: "signature" | "declaration"; label?: string };
+type SubmissionReceipt = { submission_version_id: string; version_number: number; reused: boolean; submitted_at?: string | null };
+type SubmissionPhase = "idle" | "review" | "acknowledgement" | "queued" | "submitting" | "failed" | "success";
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; acknowledgement?: AcknowledgementConfig; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { id?: string; version_number: number; submitted_at?: string | null }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
@@ -65,6 +68,13 @@ export type WorkspaceStrings = {
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
   submittedTitle: string; submittedBody: string;
+  reviewTitle: string; reviewHint: string; reviewAnswers: string; reviewEvidence: string;
+  reviewViolations: string; reviewActions: string; reviewBlockers: string; reviewBack: string;
+  reviewContinue: string; jumpToSection: string; declarationRequired: string;
+  queuedTitle: string; queuedBody: string; submittingTitle: string; submittingBody: string;
+  submitFailedTitle: string; submitFailedBody: string; submitRetry: string;
+  successTitle: string; successBody: string; receiptReference: string; receiptVersion: string;
+  receiptSubmission: string; receiptTime: string; receiptReport: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -157,6 +167,17 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
   const [signing, setSigning] = useState(false);
   const [submitted, setSubmitted] = useState(inspection.status === "submitted");
+  const latestServerReceipt = useMemo(() => {
+    const latest = [...(inspection.submission_versions ?? [])].sort((a, b) => b.version_number - a.version_number)[0];
+    return latest?.id ? {
+      submission_version_id: latest.id, version_number: latest.version_number,
+      reused: false, submitted_at: latest.submitted_at ?? null,
+    } satisfies SubmissionReceipt : null;
+  }, [inspection.submission_versions]);
+  const [submissionPhase, setSubmissionPhase] = useState<SubmissionPhase>(inspection.status === "submitted" ? "success" : "idle");
+  const submissionPhaseRef = useRef(submissionPhase); submissionPhaseRef.current = submissionPhase;
+  const [receipt, setReceipt] = useState<SubmissionReceipt | null>(latestServerReceipt);
+  const [declarationAccepted, setDeclarationAccepted] = useState(false);
   // Phase 4B / D-016 — active-session cancellation is NON-BLOCKING until
   // Operations decides: a pending request shows a banner while the inspector
   // keeps working; only an approval locks the workspace read-only (terminal).
@@ -229,6 +250,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const sections = inspection.package_versions.definition.sections.filter(s => { return !!s.items?.length; });
   const itemRules = inspection.package_versions.definition.item_rules ?? {};
   const formDefs = useMemo(() => inspection.package_versions.definition.action_forms ?? [], [inspection]);
+  const acknowledgement = inspection.package_versions.definition.acknowledgement;
+  const acknowledgementRequired = acknowledgement?.required === true;
   // §15/§20 — effective scope: snapshot MINUS actively deselected PLUS added
   // (added land in the synthetic "Added items" section; no item→section
   // metadata exists outside the frozen section code lists).
@@ -311,6 +334,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const effective = !navigator.onLine && s !== "offline" ? "offline" : s;
     setSync(effective);
     setDetail(effective === "offline" ? undefined : d);
+    if (effective === "failed" && ["queued", "submitting"].includes(submissionPhaseRef.current)) setSubmissionPhase("failed");
     local.conflicts().then(setConflicts);
   }, [local]);
   const refreshQueued = useCallback(async () => {
@@ -813,15 +837,29 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
     if (blockers.length) {
       setValidation(blockers);
+      setSubmissionPhase("review");
       const missing = blockers.flatMap(b => b.unanswered);
       setMsg(missing.length ? fmt(strings.blockers, { items: missing.join(", ") }) : fmt(strings.notReady, { n: blockers.reduce((n, g) => n + g.evidence.length + g.forms.length, 0) }));
       return;
     }
     setValidation(null);
-    setSigning(true);   // DEC-009: acknowledgement signature captured at submit; enqueue happens in finalizeSubmit
+    setSubmissionPhase("review");
   }
 
-  async function finalizeSubmit(ack: SignatureAck) {
+  function continueFromReview() {
+    if (acknowledgementRequired && acknowledgement?.mode === "signature") {
+      setSubmissionPhase("acknowledgement");
+      setSigning(true);
+      return;
+    }
+    if (acknowledgementRequired && acknowledgement?.mode === "declaration" && !declarationAccepted) return;
+    void finalizeSubmit(acknowledgementRequired ? {
+      kind: "declaration", accepted: true, accepted_at: new Date().toISOString(),
+      label: acknowledgement?.label ?? null,
+    } : null);
+  }
+
+  async function finalizeSubmit(ack: SignatureAck | Record<string, unknown> | null) {
     setSigning(false);
     const key = crypto.randomUUID();
     // Phase 6 (D-020): version_number is SERVER-authoritative on the RPC path
@@ -902,13 +940,31 @@ export default function Workspace({ inspection, items, library, serverResponses,
       evidence_required,
       submitted_offline: !navigator.onLine,
     };
-    await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: legacyVersion, snapshot, idempotency_key: key, acknowledgement: { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }, queued_at: new Date().toISOString() });
-    setSubmitted(true);
+    const acknowledgementPayload = ack && "signature_data_url" in ack
+      ? { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }
+      : ack;
+    await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: legacyVersion, snapshot, idempotency_key: key, acknowledgement: acknowledgementPayload, queued_at: new Date().toISOString() });
+    setSubmissionPhase(navigator.onLine ? "submitting" : "queued");
     setMsg(navigator.onLine ? fmt(strings.submitting, { v: legacyVersion }) : strings.queuedOffline);
     // After a successful RPC submit, local state follows the SERVER-assigned
     // version number (D-020); the legacy fallback never reports one back.
     processOutbox(userId, onState, (inspectionId, info) => {
-      if (inspectionId === inspection.id) setMsg(fmt(strings.submitting, { v: info.version_number }));
+      if (inspectionId !== inspection.id) return;
+      setReceipt({ ...info, submitted_at: new Date().toISOString() });
+      setSubmitted(true);
+      setSubmissionPhase("success");
+      setMsg(null);
+    });
+  }
+
+  function retrySubmission() {
+    setSubmissionPhase("submitting");
+    processOutbox(userId, onState, (inspectionId, info) => {
+      if (inspectionId !== inspection.id) return;
+      setReceipt({ ...info, submitted_at: new Date().toISOString() });
+      setSubmitted(true);
+      setSubmissionPhase("success");
+      setMsg(null);
     });
   }
 
@@ -987,7 +1043,31 @@ export default function Workspace({ inspection, items, library, serverResponses,
         const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
         return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
       })()}
+      {(submissionPhase === "queued" || submissionPhase === "submitting") && (
+        <div className="alert alert-info" role="status"><div>
+          <strong>{submissionPhase === "queued" ? strings.queuedTitle : strings.submittingTitle}</strong>{" "}
+          {submissionPhase === "queued" ? strings.queuedBody : strings.submittingBody}
+        </div></div>
+      )}
+      {submissionPhase === "failed" && (
+        <div className="alert alert-critical" role="alert"><div>
+          <strong>{strings.submitFailedTitle}</strong> {strings.submitFailedBody}
+          <div style={{ marginBlockStart: "var(--space-2)" }}><button type="button" className="btn btn-secondary" onClick={retrySubmission}>{strings.submitRetry}</button></div>
+        </div></div>
+      )}
       {submitted && <div className="alert alert-immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
+      {submitted && receipt && (
+        <section className={styles.card} aria-labelledby="submission-receipt-title" style={{ padding: "var(--space-4)", display: "grid", gap: "var(--space-3)" }}>
+          <div><h3 id="submission-receipt-title">{strings.successTitle}</h3><p className="t-caption">{strings.successBody}</p></div>
+          <dl className={styles.grid2}>
+            <div><dt className="t-caption">{strings.receiptReference}</dt><dd className="id-code">{inspectionNo ?? inspection.id}</dd></div>
+            <div><dt className="t-caption">{strings.receiptVersion}</dt><dd className="id-code">v{receipt.version_number}</dd></div>
+            <div><dt className="t-caption">{strings.receiptSubmission}</dt><dd className="id-code">{receipt.submission_version_id}</dd></div>
+            <div><dt className="t-caption">{strings.receiptTime}</dt><dd>{receipt.submitted_at ? new Date(receipt.submitted_at).toLocaleString(locale) : "—"}</dd></div>
+          </dl>
+          <div><a className="btn btn-secondary" href={`/reports/inspection/${inspection.id}`}>{strings.receiptReport}</a></div>
+        </section>
+      )}
       {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
           pending: non-blocking banner, the inspector keeps working (§12). */}
       {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
@@ -1011,7 +1091,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           editing region stays visible but inert (read-only lock): a disabled
           fieldset disables every descendant control without touching the
           engine's rendering. */}
-      <fieldset disabled={cancelApproved} style={{ display: "contents" }}>
+      <fieldset disabled={cancelApproved || ["queued", "submitting", "failed", "success"].includes(submissionPhase)} style={{ display: "contents" }}>
       {/* SCR-IPAD-630 / M04-062..094 — section-driven iPad workspace. The
           checklist remains one autosaved runtime, but only the selected section
           occupies the question panel so inspectors can move deliberately
@@ -1437,7 +1517,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <ul>
             {validation.map(g => (
               <li key={g.key}>
-                <strong>{g.title}</strong>
+                <strong>{g.title}</strong>{" "}
+                <a className="btn btn-ghost btn-sm" href={`#ax-section-${g.key}`} onClick={() => setSubmissionPhase("idle")}>{strings.jumpToSection}</a>
                 {g.unanswered.length > 0 && <div className="t-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
                 {g.evidence.length > 0 && <div className="t-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
                 {g.forms.length > 0 && <div className="t-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
@@ -1455,8 +1536,37 @@ export default function Workspace({ inspection, items, library, serverResponses,
         </div>
       )}
       </fieldset>
+      {!submitted && submissionPhase === "review" && (
+        <section className={styles.card} aria-labelledby="final-review-title" style={{ padding: "var(--space-4)", display: "grid", gap: "var(--space-3)", scrollMarginBlockStart: "var(--space-8)" }}>
+          <div><h3 id="final-review-title">{strings.reviewTitle}</h3><p className="t-caption">{strings.reviewHint}</p></div>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+            <span className="badge">{strings.reviewAnswers} <span className="id-code">{summary.answered}/{summary.answered + summary.pending}</span></span>
+            <span className="badge">{strings.reviewEvidence} <span className="id-code">{summary.evidence}</span></span>
+            <span className={`badge ${summary.violations ? "badge-critical" : ""}`}>{strings.reviewViolations} <span className="id-code">{summary.violations}</span></span>
+            <span className={`badge ${Object.keys(forms).length ? "badge-info" : ""}`}>{strings.reviewActions} <span className="id-code">{Object.keys(forms).length}</span></span>
+            <span className={`badge ${blockCount ? "badge-critical" : "badge-compliant"}`}>{strings.reviewBlockers} <span className="id-code">{blockCount}</span></span>
+          </div>
+          {liveBlockers.map(group => (
+            <div key={`review-${group.key}`} className="alert alert-warning">
+              <div><strong>{group.title}</strong> · {[...group.unanswered, ...group.evidence, ...group.forms].join(", ")}
+                <div><a className="btn btn-ghost btn-sm" href={`#ax-section-${group.key}`} onClick={() => setSubmissionPhase("idle")}>{strings.jumpToSection}</a></div>
+              </div>
+            </div>
+          ))}
+          {acknowledgementRequired && acknowledgement?.mode === "declaration" && (
+            <label className="row" style={{ gap: "var(--space-2)", alignItems: "flex-start" }}>
+              <input type="checkbox" checked={declarationAccepted} onChange={event => setDeclarationAccepted(event.target.checked)} />
+              <span>{acknowledgement.label ?? strings.declarationRequired}</span>
+            </label>
+          )}
+          <div className="row" style={{ justifyContent: "flex-end", gap: "var(--space-2)", flexWrap: "wrap" }}>
+            <button type="button" className="btn btn-secondary" onClick={() => setSubmissionPhase("idle")}>{strings.reviewBack}</button>
+            <button type="button" className="btn btn-primary" disabled={blockCount > 0 || (acknowledgementRequired && acknowledgement?.mode === "declaration" && !declarationAccepted)} onClick={continueFromReview}>{strings.reviewContinue}</button>
+          </div>
+        </section>
+      )}
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}
-      {signing && !submitted && (
+      {signing && !submitted && submissionPhase === "acknowledgement" && (
         <SignaturePad strings={strings.sig} onCancel={() => setSigning(false)} onConfirm={finalizeSubmit} />
       )}
       {/* M04-109/124/147/160 — annotation overlay before enqueue: the flattened image
