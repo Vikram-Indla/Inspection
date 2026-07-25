@@ -140,4 +140,7 @@ estimated_size:
   target_elapsed: "one bounded implementation cycle plus independent review"
   rationale: "One route with existing service and handoff contracts; no DDL, provider change, shared shell or Live Operations edit."
 
-queued_successor: null
+queued_successor:
+  packet_id: "PKT-M3-OPS-EXCEPTIONS-003"
+  path: "product-contract/operationalization/packets/PKT-M3-OPS-EXCEPTIONS-003.yaml"
+  state: "SUCCESSOR_QUEUED_NO_LEASE"
