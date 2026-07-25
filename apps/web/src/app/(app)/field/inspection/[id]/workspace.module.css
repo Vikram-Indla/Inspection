@@ -7,12 +7,26 @@
    --status-*, --border-*, --radius-*, --space-*, --type-*, --font-*) linked by
    (app)/field/layout.tsx. No bare colors. */
 
+/* PWA card geometry. The canonical field design pages override the generic
+   --radius-md (4px) with a 14px card radius — it is the PWA card idiom, used by
+   12 .dc.html pages (Inspection Form, Preparation, Dashboard, Drafts, My Tasks,
+   Conflict Resolution, Account, Settings, Establishment File, Factory 360, App).
+   Declared once here rather than repeated per rule. */
 .page {
+  --pwa-card-radius: 14px;
+
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
-  padding-block-end: 48px;
+  /* .if-wrap caps the form at 880px and centres it: on iPad landscape an
+     uncapped column stretches the checklist to an unreadable measure. */
+  max-inline-size: 880px;
+  margin-inline: auto;
+  inline-size: 100%;
+  /* Clearance for the sticky action bar so the last question is never trapped
+     behind it (.if-wrap reserves 130px). */
+  padding-block-end: 130px;
 }
 
 /* Surface card (was ax-surface). Padding stays inline at call sites so the
@@ -20,17 +34,19 @@
 .card {
   background: var(--surface-primary);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--pwa-card-radius);
+  box-shadow: var(--shadow-card);
 }
-/* Nested panel (was ax-panel). */
+/* Nested panel (was ax-panel). Nested surfaces keep the tighter 12px radius the
+   design uses for rows inside a card (.plrow), not the outer 14px. */
 .panel {
   background: var(--surface-secondary);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
 }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
 
 /* Field label wrapper (was ax-field / ax-field__label). */
 .fld { display: flex; flex-direction: column; gap: var(--space-1); min-inline-size: 0; }
@@ -46,10 +62,11 @@
 }
 [dir="rtl"] .overline { letter-spacing: 0; }
 
-/* Checklist item card (was .ipad-q). */
+/* Checklist item card (was .ipad-q). Nested inside a section card, so it takes
+   the design's 12px row radius rather than the 14px outer-card radius. */
 .question {
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   padding: var(--space-4);
   display: flex; flex-direction: column; gap: var(--space-2);
   scroll-margin-block-start: var(--space-8);
@@ -89,7 +106,7 @@
 }
 .conflictHead { font-weight: 600; color: var(--status-warning-text); }
 .conflictGrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-@media (max-width: 640px) { .conflictGrid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .conflictGrid { grid-template-columns: 1fr; } }
 .conflictSide h5 { margin: 0 0 4px; font-size: var(--type-label-size); color: var(--text-muted); }
 .conflictSide p {
   margin: 0; font-family: var(--font-mono); font-size: var(--type-mono-size);
@@ -116,6 +133,10 @@
   background: var(--surface-primary);
   border-block-start: var(--border-w) solid var(--border-subtle);
   padding: var(--space-3);
+  /* Safe-area aware, matching the design's action bar. Without this the submit
+     control sits under the iPad home indicator and is hard to hit — the design
+     specifies padding-block-end: max(12px, env(safe-area-inset-bottom)). */
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
   display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3);
 }
 
