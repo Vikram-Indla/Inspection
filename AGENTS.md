@@ -24,6 +24,33 @@ Read these files in order at every session start:
 - Browser work does not relax this rule. Runtime inspection, evidence capture, source reads, skills, scripts, and output creation must all be attributable to the canonical repository.
 - Never claim the retired checkout was excluded unless no tool, skill, source, working directory, or artifact from it was accessed during the session.
 
+### Authorized worktrees — standing authorization
+Any Git worktree whose common directory resolves to `/Users/vikramindla/Developer/Inspection/.git`
+is a **specifically authorized worktree** for the purposes of the rule above, and is a valid
+working directory for a delivery session. Verify with:
+
+```
+git rev-parse --git-common-dir   # must resolve inside /Users/vikramindla/Developer/Inspection/.git
+git rev-parse --show-toplevel    # your worktree root
+```
+
+If the common directory resolves to the canonical repository, you are correctly rooted — do not
+stop, and do not demand relaunch in the canonical checkout. If it resolves anywhere else, or to
+the retired `/Users/vikramindla/Documents/GitHub/Inspection`, stop as the rule above requires.
+
+The canonical checkout is a **shared** working tree: several actors read it concurrently, and a
+`git checkout` there changes the branch under every one of them. A session holding a write lease
+must therefore work in its own worktree, created from the canonical repository, rather than
+switching branches in the shared checkout:
+
+```
+git -C /Users/vikramindla/Developer/Inspection worktree add -b <branch> <path> main
+cd <path>
+```
+
+Worktrees are cheap, and they are what makes concurrent card delivery safe. Sharing one checkout
+between two write-leased sessions is the failure this authorization exists to prevent.
+
 ## Hard rules
 - Broad implementation is blocked until G8 is PASS.
 - The 478 source requirements remain mandatory MVP1.
