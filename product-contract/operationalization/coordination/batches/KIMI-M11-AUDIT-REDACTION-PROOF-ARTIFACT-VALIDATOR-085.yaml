@@ -1,0 +1,394 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-VALIDATOR-085
+status: READ_ONLY_VALIDATOR_CONTRACT_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Define deterministic ACK, RETURN and BLOCK validation for future instances
+  of the seventeen blank proof schemas in packet 084. All examples are
+  synthetic and grant no authority, closure, lease or requirement credit.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: fb82a12c459b477ca195fe6c7be9b2b5502e4940
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+  route_authority_packet: KIMI-M11-AUDIT-REDACTION-NEXT-PROOF-ROUTER-083
+  schema_packet: KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-SCHEMAS-084
+
+hard_boundary:
+  - "Read-only validator specification plus this one uniquely owned packet."
+  - "Synthetic examples are fictional state vectors, not populated proof."
+  - "ACK means structurally admissible for independent review only; it never means accepted, approved, closed or credited."
+  - "No real proof collection, answer selection, identity, owner, lease, dispatch, implementation, SQL, database, data, seed, test execution, evidence capture, design change, branch, stash, commit, push or shared-control mutation."
+
+outcomes:
+  ACK:
+    meaning: READY_FOR_INDEPENDENT_REVIEW_ONLY
+    closes_route: false
+    grants_authority: false
+    grants_requirement_credit: false
+  RETURN:
+    meaning: CORRECTABLE_STRUCTURE_OR_COMPLETENESS_DEFECT
+    closes_route: false
+    grants_authority: false
+    grants_requirement_credit: false
+  BLOCK:
+    meaning: UNSAFE_UNAUTHORIZED_CONFLICTED_EXPIRED_OR_FAILED_PROOF
+    closes_route: false
+    grants_authority: false
+    grants_requirement_credit: false
+
+deterministic_precedence:
+  - order: 1
+    outcome: BLOCK
+    when: "Any BLOCK check triggers."
+  - order: 2
+    outcome: RETURN
+    when: "No BLOCK check triggers and one or more RETURN checks trigger."
+  - order: 3
+    outcome: ACK
+    when: "Every required common and route-specific check passes."
+  - order: 4
+    outcome: RETURN
+    when: "The validator cannot deterministically evaluate an input."
+
+common_checks:
+  - check_id: V085-SRC-01
+    category: SOURCE_IDENTITY
+    failure_outcome: BLOCK
+    test: "schema_id, route_id and route_kind exactly match one schema in packet 084."
+  - check_id: V085-SRC-02
+    category: SOURCE_IDENTITY
+    failure_outcome: RETURN
+    test: "Every route-applicable source identity field is present and non-placeholder."
+  - check_id: V085-SRC-03
+    category: SOURCE_IDENTITY
+    failure_outcome: RETURN
+    test: "Pinned refs are still current at validation time or an explicit immutable historical scope is supplied."
+  - check_id: V085-AUTH-01
+    category: AUTHORITY
+    failure_outcome: RETURN
+    test: "Authority identity, type, provenance, acceptance identity and time are complete where required."
+  - check_id: V085-AUTH-02
+    category: AUTHORITY
+    failure_outcome: BLOCK
+    test: "Human-only decisions originate from a human sponsor or documented human delegate, never agent inference."
+  - check_id: V085-AUTH-03
+    category: AUTHORITY
+    failure_outcome: BLOCK
+    test: "Implementation, QA, data and final-review identities satisfy every required separation rule."
+  - check_id: V085-HASH-01
+    category: HASHES
+    failure_outcome: RETURN
+    test: "Every applicable hash is a complete lowercase SHA-256 value."
+  - check_id: V085-HASH-02
+    category: HASHES
+    failure_outcome: BLOCK
+    test: "Independent recomputation matches every supplied payload, source, artifact, evidence and preservation hash."
+  - check_id: V085-EVID-01
+    category: EVIDENCE
+    failure_outcome: RETURN
+    test: "All route-required artifacts, personas, fixtures, positive, negative, regression and trace fields are present."
+  - check_id: V085-EVID-02
+    category: EVIDENCE
+    failure_outcome: BLOCK
+    test: "Every required P0 result passes and no claimed result conflicts with the attached trace."
+  - check_id: V085-SECRET-01
+    category: EVIDENCE
+    failure_outcome: BLOCK
+    test: "Recursive artifact and payload scan finds no forbidden key or forbidden value."
+  - check_id: V085-PRES-01
+    category: PRESERVATION
+    failure_outcome: RETURN
+    test: "Immutable copy, chain of custody, preservation authority, retention rule and cleanup disposition are complete when applicable."
+  - check_id: V085-PRES-02
+    category: PRESERVATION
+    failure_outcome: BLOCK
+    test: "Preservation hash matches, mutation_detected is false and the evidence has not been overwritten."
+  - check_id: V085-EXP-01
+    category: EXPIRY
+    failure_outcome: RETURN
+    test: "Issue time, expiry time, freshness rule and refs-rechecked time are complete."
+  - check_id: V085-EXP-02
+    category: EXPIRY
+    failure_outcome: BLOCK
+    test: "Validation time is before expiry and no invalidation event has occurred."
+  - check_id: V085-NC-01
+    category: NON_CLOSURE
+    failure_outcome: BLOCK
+    test: "closure_claimed and blocker_closed are false and requirement_credit is exactly zero."
+  - check_id: V085-NC-02
+    category: NON_CLOSURE
+    failure_outcome: BLOCK
+    test: "Validator identity is independent where required and does not author or repair the evaluated proof."
+  - check_id: V085-NC-03
+    category: NON_CLOSURE
+    failure_outcome: RETURN
+    test: "Validation status, missing fields, conflicts, expiry result, reason, validator and time are recorded."
+
+synthetic_clean_profile: &synthetic_clean_profile
+  synthetic_only: true
+  real_proof: false
+  route_matches_schema: true
+  source_identity_complete: true
+  refs_current: true
+  authority_complete: true
+  authority_valid: true
+  identities_separated: true
+  hashes_complete: true
+  hashes_recompute_match: true
+  evidence_complete: true
+  required_results_pass: true
+  forbidden_secret_found: false
+  preservation_complete: true
+  preservation_hash_matches: true
+  mutation_detected: false
+  expiry_complete: true
+  expired_or_invalidated: false
+  closure_claimed: false
+  blocker_closed: false
+  requirement_credit: 0
+  validator_independent: true
+  validator_record_complete: true
+
+route_profiles:
+  - route_id: BF-082-01
+    schema_id: PROOF-SCHEMA-BF-082-01
+    route_check: "Receipt has all 17 fields, five valid choice IDs, canonical payload hash, human provenance and eight preservation acknowledgements."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {authority_valid: false}
+      triggers: [V085-AUTH-02]
+      expected: BLOCK
+
+  - route_id: BF-082-02
+    schema_id: PROOF-SCHEMA-BF-082-02
+    route_check: "Stable design page/revision, six required states, bounded paging and sponsor acceptance are present."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {source_identity_complete: false}
+      triggers: [V085-SRC-02]
+      expected: RETURN
+
+  - route_id: BF-082-03
+    schema_id: PROOF-SCHEMA-BF-082-03
+    route_check: "Implementation lease contains exact identity, repository, worktree, branch, paths, objects, exclusions and release condition."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {hashes_recompute_match: false}
+      triggers: [V085-HASH-02]
+      expected: BLOCK
+
+  - route_id: BF-082-04
+    schema_id: PROOF-SCHEMA-BF-082-04
+    route_check: "QA identity differs from implementation and only allocated test/certification paths are writable."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {identities_separated: false}
+      triggers: [V085-AUTH-03]
+      expected: BLOCK
+
+  - route_id: BF-082-05
+    schema_id: PROOF-SCHEMA-BF-082-05
+    route_check: "Non-production identity, data operator, bounded fixture manifest, generated rows and cleanup disposition are complete."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {preservation_complete: false}
+      triggers: [V085-PRES-01]
+      expected: RETURN
+
+  - route_id: BF-082-06
+    schema_id: PROOF-SCHEMA-BF-082-06
+    route_check: "Final reviewer is distinct, read-only and supplies one evidence-linked verdict."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {validator_independent: false}
+      triggers: [V085-NC-02]
+      expected: BLOCK
+
+  - route_id: BF-082-07
+    schema_id: PROOF-SCHEMA-BF-082-07
+    route_check: "External secret query is denied while safe participant fields and OTP RPC positive/negative behavior remain intact."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {required_results_pass: false}
+      triggers: [V085-EVID-02]
+      expected: BLOCK
+
+  - route_id: BF-082-08
+    schema_id: PROOF-SCHEMA-BF-082-08
+    route_check: "Audit seam is allowlisted, recursively secret-free, stably ordered, bounded and unauthorized-safe for current and historical rows."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {forbidden_secret_found: true}
+      triggers: [V085-SECRET-01]
+      expected: BLOCK
+
+  - route_id: BF-082-09
+    schema_id: PROOF-SCHEMA-BF-082-09
+    route_check: "Admin M11 projection is server-redacted in DOM, serialization and network, with non-M11 regression proof."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {evidence_complete: false}
+      triggers: [V085-EVID-01]
+      expected: RETURN
+
+  - route_id: BF-082-10
+    schema_id: PROOF-SCHEMA-BF-082-10
+    route_check: "Virtual UI consumes only the accepted projection and passes live browser states, responsive behavior and bounded paging."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {expired_or_invalidated: true}
+      triggers: [V085-EXP-02]
+      expected: BLOCK
+
+  - route_id: BF-082-11
+    schema_id: PROOF-SCHEMA-BF-082-11
+    route_check: "All 35 cases and seven evidence rows are complete with zero secret, mutation, exclusion, unauthorized or QA-repair findings."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {evidence_complete: false}
+      triggers: [V085-EVID-01]
+      expected: RETURN
+
+  - route_id: BF-082-12
+    schema_id: PROOF-SCHEMA-BF-082-12
+    route_check: "Human-approved provider/callback contract, lifecycle schema, idempotency/order/authorization and real approved-environment evidence are complete."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {authority_complete: false}
+      triggers: [V085-AUTH-01]
+      expected: RETURN
+
+  - route_id: SECRET-082-01
+    schema_id: PROOF-SCHEMA-SECRET-082-01
+    route_check: "Direct verification_record query denial and preservation of safe fields/RPCs are both evidenced."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {closure_claimed: true}
+      triggers: [V085-NC-01]
+      expected: BLOCK
+
+  - route_id: SECRET-082-02
+    schema_id: PROOF-SCHEMA-SECRET-082-02
+    route_check: "Allowlisted audit output and recursive current/historical secret scan are evidenced."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {preservation_hash_matches: false, mutation_detected: true}
+      triggers: [V085-PRES-02]
+      expected: BLOCK
+
+  - route_id: SECRET-082-03
+    schema_id: PROOF-SCHEMA-SECRET-082-03
+    route_check: "Server-redacted Admin M11 payload, DOM/network scan and non-M11 regression are evidenced."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {hashes_complete: false}
+      triggers: [V085-HASH-01]
+      expected: RETURN
+
+  - route_id: SECRET-082-04
+    schema_id: PROOF-SCHEMA-SECRET-082-04
+    route_check: "Accepted design plus live source, data and browser immutable-timeline evidence are present."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {expiry_complete: false}
+      triggers: [V085-EXP-01]
+      expected: RETURN
+
+  - route_id: SECRET-082-05
+    schema_id: PROOF-SCHEMA-SECRET-082-05
+    route_check: "Approved provider callback contract plus authentic events and consumer evidence are present."
+    synthetic_pass:
+      input: *synthetic_clean_profile
+      expected: ACK
+    synthetic_fail:
+      override: {blocker_closed: true, requirement_credit: 1}
+      triggers: [V085-NC-01]
+      expected: BLOCK
+
+synthetic_interpretation:
+  pass_examples: 17
+  fail_examples: 17
+  ack_examples: 17
+  return_examples: 7
+  block_examples: 10
+  real_proof_examples: 0
+  routes_closed: 0
+  requirement_credit: 0
+  note: >-
+    A synthetic ACK proves only that the algorithm can reach ACK from a clean
+    fictional vector. It is not evidence that any real route is ready.
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-PROOF-INSTANCE-INTAKE-086
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define a read-only intake manifest and quarantine protocol for future proof
+    instances, including duplicate detection, secret-safe rejection, validator
+    receipt and immutable storage handoff, without collecting real proof.
+  prohibited:
+    - "No real proof, answer selection, identity, owner, lease, dispatch, implementation, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  common_checks: 18
+  blocker_family_profiles: 12
+  exposure_provider_profiles: 5
+  total_route_profiles: 17
+  synthetic_pass_examples: 17
+  synthetic_fail_examples: 17
+  synthetic_ack_examples: 17
+  synthetic_return_examples: 7
+  synthetic_block_examples: 10
+  real_proof_examples: 0
+  routes_closed: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  commits_created: 0
+  pushes_created: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS
