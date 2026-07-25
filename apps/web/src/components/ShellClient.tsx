@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import FieldNav, { type FieldNavKey } from "@/components/field/FieldNav";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
@@ -54,6 +55,7 @@ export type ShellClientStrings = {
   themeDark: string;
   skipToContent: string;
   loadingDestination: string;
+  tabbar: { home: string; myTasks: string; establishments: string; notifications: string; account: string };
 };
 
 function Icon({ name }: { name: ShellIcon }) {
@@ -118,6 +120,14 @@ export default function ShellClient({
   const router = useRouter();
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
+  // Same precedence as the design's activeKey(): the more specific field
+  // sections win, and anything else falls back to Home.
+  const tabbarActive: FieldNavKey =
+    current.startsWith("/field/my-tasks") ? "myTasks"
+    : current.startsWith("/field/establishments") || current.startsWith("/field/factory-360") ? "establishments"
+    : current.startsWith("/field/notifications") ? "notifications"
+    : current.startsWith("/field/account") || current.startsWith("/field/settings") ? "account"
+    : "home";
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -498,11 +508,12 @@ export default function ShellClient({
             </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
-              {/* Notifications and Account are already destinations in the
-                  field bottom tab bar (FieldTabs) — showing them again here
-                  duplicated the exact same two destinations for a field-only
-                  inspector. Desktop/console personas still need them here;
-                  the sidebar/hamburger are already hidden the same way. */}
+              {/* Notifications and Account are destinations in the bottom tab
+                  bar, so for a field-only inspector showing them here is the
+                  same destination twice — hence the persona guard.
+                  A console persona has NO tab bar (CC-SHELL-TABLET-001 option
+                  B), at any width, so the bell is their only route to
+                  notifications and must stay at every size. */}
               {!fieldOnly && <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />}
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="ai" />
@@ -537,6 +548,24 @@ export default function ShellClient({
         </header>
         {children}
       </main>
+
+      {/* Persistent tab bar — WA-PWA-TAB-r1 (designs/pwa/pwa/pwa-tabbar.js).
+          The five tabs, their labels and their icons are the design's, not ours:
+          Home / My Tasks / Establishments / Notifications / Account.
+
+          Product-Owner decision (2026-07-26), CC-SHELL-TABLET-001 option B: the
+          bar is FIELD navigation, so it is shown only to a field persona. An
+          Operations or Leadership user on an iPad keeps the hamburger alone —
+          they would otherwise be handed five tabs into routes their role cannot
+          open. The access gate already routes a field persona to /field, where
+          the field layout renders the bar, so in practice this branch is the
+          narrow case of a field persona landing on a console route.
+
+          Field routes are excluded here because field/layout.tsx renders the
+          bar for the whole channel; rendering it again would double it. */}
+      {!current.startsWith("/field") && fieldOnly && (
+        <FieldNav consoleChannel active={tabbarActive} labels={strings.tabbar} />
+      )}
     </div>
   );
 }

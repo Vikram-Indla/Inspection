@@ -24,50 +24,6 @@
 .item:hover { background: var(--surface-secondary); }
 .itemActive { background: var(--accent-soft); }
 
-.connectivity {
-  display: flex; align-items: center; gap: 8px; padding: 9px 16px;
-  border-block-end: 1px solid var(--border-subtle); font-size: 12px;
-}
-.connectivityOnline { color: var(--status-compliant-text); background: var(--status-compliant-soft); }
-.connectivityOffline { color: var(--status-warning-text); background: var(--status-warning-soft); }
-.connectivityDot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: currentColor; flex: none; }
-.alertSummary {
-  inline-size: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 16px;
-  border: 0; border-block-end: 1px solid var(--status-warning); cursor: pointer;
-  background: var(--status-warning-soft); color: var(--status-warning-text); font: inherit; text-align: start;
-}
-.alertSummary > span:first-child {
-  display: grid; place-items: center; inline-size: 20px; block-size: 20px; border-radius: 50%;
-  background: var(--status-warning); color: var(--text-on-action); font-weight: 700;
-}
-.alertUnavailable {
-  padding: 10px 16px; border-block-end: 1px solid var(--border-subtle);
-  background: var(--status-warning-soft); color: var(--status-warning-text); font-size: 12px;
-}
-.taskTools { padding: 12px; border-block-end: 1px solid var(--border-subtle); display: grid; gap: 10px; }
-.search input, .sort {
-  inline-size: 100%; min-block-size: 44px; border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md); background: var(--surface-primary); color: var(--text-primary);
-  padding-inline: 12px; font: inherit;
-}
-.filters { display: flex; gap: 7px; overflow-x: auto; padding-block-end: 2px; }
-.filter {
-  flex: none; min-block-size: 40px; border-radius: 999px; padding-inline: 12px;
-  border: 1px solid var(--border-subtle); background: var(--surface-sunken);
-  color: var(--text-secondary); font: inherit; cursor: pointer;
-}
-.filterActive { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
-.taskResults { display: flex; flex-direction: column; }
-.empty { padding: 24px 18px; color: var(--text-secondary); }
-.taskCard { border-block-end: 1px solid var(--border-subtle); }
-.taskCard[data-alert="true"] { border-inline-start: 3px solid var(--status-warning); }
-.taskMain { display: flex; flex-direction: column; gap: 7px; padding: 14px 16px 10px; color: inherit; text-decoration: none; }
-.taskMain:hover { background: var(--surface-secondary); }
-.taskTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.taskSignals { display: flex; flex-wrap: wrap; gap: 6px; }
-.taskActions { display: flex; gap: 8px; padding: 0 16px 12px; }
-.taskActions :global(.btn) { min-block-size: 40px; flex: 1; }
-
 .kv { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .kv dt, .kv .k { font-size: 11.5px; color: var(--text-muted); }
 .kv dd, .kv .v { margin: 0; font-size: 13.5px; font-weight: 500; }
@@ -87,8 +43,12 @@
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0; }
 
 .chiprow { display: flex; gap: 8px; overflow-x: auto; padding-block-end: 8px; margin-block-end: 14px; }
+/* Settled field-channel geometry: touch/option controls are never below 50px.
+   The design's 8px/14px padding alone yields ~33px — fine with a mouse, not
+   with a gloved thumb on the regulatory-section selector. */
 .chip {
-  flex: none; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
+  flex: none; display: inline-flex; align-items: center; min-block-size: 50px;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border-subtle);
   background: var(--surface-sunken); font: inherit; font-size: 13px; cursor: pointer;
   white-space: nowrap; color: var(--text-secondary); text-decoration: none;
 }
@@ -104,8 +64,12 @@
 /* real map fills the whole card; the governed fallback keeps the centering */
 .map :global([data-map-provider]) { position: absolute; inset: 0; }
 
+/* Sticks to the bottom of the .detail scrollport, which now ends exactly at the
+   top of the fixed FieldNav (z-index 60). Stays on the sticky layer so it can
+   never paint over the tab bar. Settled field-channel bottom-bar padding. */
 .actionbar {
-  position: sticky; bottom: 0; display: flex; gap: 12px; padding: 14px 20px;
-  padding-block-end: max(14px, env(safe-area-inset-bottom));
+  position: sticky; inset-block-end: 0; z-index: var(--z-sticky);
+  display: flex; gap: 12px; padding: 14px 20px;
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
   background: var(--surface-primary); border-block-start: 1px solid var(--border-subtle);
 }

@@ -12,8 +12,10 @@
 // the winner on next sync (never a direct server write from here). It never
 // touches the Factory-360 cache and never fabricates conflicts or values.
 
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { localForUser, promptLegacyOfflineRestore, type Conflict, type OutboxOp } from "@/lib/offline";
+import FieldHeader from "@/components/field/FieldHeader";
+import { localForUser, processOutbox, promptLegacyOfflineRestore, type Conflict, type OutboxOp } from "@/lib/offline";
 import styles from "./conflicts.module.css";
 
 export type ConflictStrings = {
@@ -38,19 +40,35 @@ export type ConflictStrings = {
   emptySub: string;
   resolving: string;
   resolveFailed: string;
+  policyNote: string;
   groundingNote: string;
 };
 
 type Field = { label: string; value: string };
 
+// Ordered first so the two compare columns read in the checklist's own order;
+// any further response keys follow, sorted, so both sides stay aligned.
+const PRIMARY_KEYS = ["applicable", "compliant", "notes"];
+
+const asPlainObject = (payload: unknown): Record<string, unknown> | null =>
+  payload && typeof payload === "object" && !Array.isArray(payload) ? (payload as Record<string, unknown>) : null;
+
 export default function ConflictResolutionClient({
   locale,
   userId,
   strings,
+  title,
+  leading,
+  langHref,
+  langLabel,
 }: {
   locale: "en" | "ar";
   userId: string;
   strings: ConflictStrings;
+  title: ReactNode;
+  leading: ReactNode;
+  langHref: string;
+  langLabel: string;
 }) {
   const local = useMemo(() => localForUser(userId), [userId]);
   // null = store not yet read on the client (SSR-safe: render nothing about
@@ -104,6 +122,33 @@ export default function ConflictResolutionClient({
     [labelFor, fmtScalar],
   );
 
+  // A side-by-side compare is only readable if both columns carry the SAME rows
+  // in the SAME order. Rendering each payload's own keys let a key present on
+  // one side only (e.g. local added `notes`) shift every row below it, so the
+  // columns no longer lined up and the compare read wrong. Both sides are now
+  // projected over the union of their keys; a key absent on one side renders
+  // through the same fmtScalar null path as an explicit null — no value is
+  // invented, and nothing about detection or resolution changes.
+  const toComparedFields = useCallback(
+    (localPayload: unknown, serverPayload: unknown): { local: Field[]; server: Field[] } => {
+      const localObject = asPlainObject(localPayload);
+      const serverObject = asPlainObject(serverPayload);
+      if (!localObject || !serverObject) {
+        return { local: toFields(localPayload), server: toFields(serverPayload) };
+      }
+      const all = new Set([...Object.keys(localObject), ...Object.keys(serverObject)]);
+      const keys = [
+        ...PRIMARY_KEYS.filter(k => all.has(k)),
+        ...[...all].filter(k => !PRIMARY_KEYS.includes(k)).sort(),
+      ];
+      return {
+        local: keys.map(k => ({ label: labelFor(k), value: fmtScalar(localObject[k]) })),
+        server: keys.map(k => ({ label: labelFor(k), value: fmtScalar(serverObject[k]) })),
+      };
+    },
+    [toFields, labelFor, fmtScalar],
+  );
+
   // "Keep server": discard the local response — the server value already stands.
   const keepServer = useCallback(
     async (c: Conflict) => {
@@ -148,6 +193,17 @@ export default function ConflictResolutionClient({
         };
         await local.enqueue(op);
         await local.resolveConflict(c.key);
+        // The enqueue alone left the resolution sitting in the outbox: this
+        // route mounts no reconnect/sync runner (FieldHeaderSync is only on
+        // /field), so the op flushed only whenever the inspector next happened
+        // to open a surface that runs one. Flush it here instead. processOutbox
+        // returns immediately when navigator.onLine is false, so this is a safe
+        // no-op offline. A replay failure is not a resolution failure — the
+        // enqueue and the conflict clear are already committed and the op stays
+        // queued for the field sync engine — so it never sets the failed state.
+        try {
+          await processOutbox(userId, () => { /* no sync banner on this route; queue state is retried by the field sync engine */ });
+        } catch { /* op remains queued; nothing is lost */ }
         await refresh();
       } catch {
         setFailed(c.key);
@@ -155,15 +211,40 @@ export default function ConflictResolutionClient({
         setBusy(null);
       }
     },
-    [local, refresh],
+    [local, refresh, userId],
+  );
+
+  // The header renders unconditionally so the screen never paints chrome-less
+  // while IndexedDB is read; only the pending-count badge waits for the real
+  // count (design: badge-critical "{n} pending"). Zero-assumption — no count is
+  // shown until one is actually known.
+  const header = (
+    <FieldHeader
+      leading={leading}
+      title={title}
+      langHref={langHref}
+      langLabel={langLabel}
+      right={conflicts && conflicts.length > 0
+        ? <span className="badge badge-critical" style={{ height: 19, flex: "none" }}>{conflicts.length} {strings.pending}</span>
+        : null}
+    />
   );
 
   // SSR-safe: nothing about conflict state until the store has been read.
-  if (conflicts === null) return null;
+  if (conflicts === null) return header;
 
   return (
-    <div className={styles.wrap}>
+    <>
+      {header}
+      <div className={styles.wrap}>
       <p className="t-caption" style={{ margin: 0 }}>{strings.intro}</p>
+
+      <div className={`panel ${styles.policy}`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" strokeWidth="1.7" style={{ width: 14, height: 14, flex: "none", marginBlockStart: 1 }} aria-hidden="true">
+          <path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z" />
+        </svg>
+        <span>{strings.policyNote}</span>
+      </div>
 
       {conflicts.length === 0 ? (
         <div className={`${styles.card} ${styles.empty}`}>
@@ -177,8 +258,7 @@ export default function ConflictResolutionClient({
         </div>
       ) : (
         conflicts.map((c) => {
-          const localFields = toFields(c.local);
-          const serverFields = toFields(c.server);
+          const { local: localFields, server: serverFields } = toComparedFields(c.local, c.server);
           const rowBusy = busy === c.key;
           return (
             <div className={styles.card} key={c.key}>
@@ -240,6 +320,7 @@ export default function ConflictResolutionClient({
         </svg>
         <span>{strings.groundingNote}</span>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

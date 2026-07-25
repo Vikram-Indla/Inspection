@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -23,6 +22,16 @@ import styles from "./establishments.module.css";
 
 const PAGE_SIZE = 50;
 const RISK_BANDS = ["low", "medium", "high"] as const;
+// Partner-workstation PWA data boundary: only the 24 curated factories in
+// CURRENT_LIVE_TEST_DATA_GUIDE may appear. This is intentionally an explicit
+// allowlist so legacy and bulk-clutter rows fail closed.
+const CLEAN_FACTORY_CODES = [
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204",
+  "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+] as const;
 
 type SearchParams = { q?: string; status?: string; risk?: string; region?: string; city?: string; page?: string; filter?: string };
 type LicenseLink = {
@@ -84,7 +93,10 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
 
   // Real, RLS-scoped facet values for the region/city filters — derived from the
   // Factory rows this inspector can actually see, never invented.
-  const { data: facetData } = await sb.from("factories").select("region, city").order("region").limit(1000);
+  const { data: facetData } = await sb.from("factories")
+    .select("region, city")
+    .in("factory_code", [...CLEAN_FACTORY_CODES])
+    .order("region");
   const regions = Array.from(new Set((facetData ?? []).map(r => r.region).filter((v): v is string => Boolean(v)))).sort();
   const cities = Array.from(new Set((facetData ?? []).map(r => r.city).filter((v): v is string => Boolean(v)))).sort();
   const region = regions.includes(params.region ?? "") ? (params.region as string) : "";
@@ -108,6 +120,7 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
 
   let listQuery = sb.from("factories")
     .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, activity_class, source, source_synced_at, is_temporary, industrial_licenses(id, commercial_registration_id, license_number, plant_number)", { count: "exact" })
+    .in("factory_code", [...CLEAN_FACTORY_CODES])
     .eq("is_temporary", status === "unlicensed")
     .order("name")
     .range(first, first + PAGE_SIZE - 1);
@@ -117,14 +130,18 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
   if (city) listQuery = listQuery.eq("city", city);
   listQuery = excludeFixtures(listQuery);
 
-  let licensedQuery = sb.from("factories").select("id", { count: "exact", head: true }).eq("is_temporary", false);
+  let licensedQuery = sb.from("factories").select("id", { count: "exact", head: true })
+    .in("factory_code", [...CLEAN_FACTORY_CODES])
+    .eq("is_temporary", false);
   if (q) licensedQuery = licensedQuery.or(searchOr);
   if (risk) licensedQuery = licensedQuery.eq("risk_band", risk);
   if (region) licensedQuery = licensedQuery.eq("region", region);
   if (city) licensedQuery = licensedQuery.eq("city", city);
   licensedQuery = excludeFixtures(licensedQuery);
 
-  let unlicensedQuery = sb.from("factories").select("id", { count: "exact", head: true }).eq("is_temporary", true);
+  let unlicensedQuery = sb.from("factories").select("id", { count: "exact", head: true })
+    .in("factory_code", [...CLEAN_FACTORY_CODES])
+    .eq("is_temporary", true);
   if (q) unlicensedQuery = unlicensedQuery.or(searchOr);
   if (risk) unlicensedQuery = unlicensedQuery.eq("risk_band", risk);
   if (region) unlicensedQuery = unlicensedQuery.eq("region", region);
@@ -154,15 +171,6 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const nav = (
-    <FieldNav active="establishments" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
 
   const riskLabel = (band: string) => band === "high"
     ? tr("field.establishments.riskHigh", "High", "عالية")
@@ -384,7 +392,6 @@ export default async function FieldEstablishments({ searchParams }: { searchPara
       )}
 
       <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      {nav}
     </>
   );
 }

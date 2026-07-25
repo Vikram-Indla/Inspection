@@ -90,22 +90,27 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       title={strings.title}
       closeLabel={strings.cancel}
       footer={<>
-        <button type="button" className="btn btn-ghost" onClick={clear}>{strings.clear}</button>
         <button type="button" className="btn btn-secondary" onClick={onCancel}>{strings.cancel}</button>
         <button type="button" className="btn btn-primary" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
       </>}
     >
-      <p className="t-caption">{strings.hint}</p>
-      <label className="field">
-        <span className={styles.fieldLabel}>{strings.nameLabel}<span className="req">*</span></span>
-        <input className="input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
-      </label>
-      <canvas
-        ref={canvasRef}
-        className={styles.signatureCanvas}
-        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-      />
-      {err && <p className="field-error">{err}</p>}
+      <div className={styles.signatureBlock}>
+        <p className="t-caption">{strings.hint}</p>
+        <label className={styles.signatureField}>
+          <span className={styles.fieldLabel}>{strings.nameLabel}<span className="req">*</span></span>
+          <input className="input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
+        </label>
+        <div className={styles.signatureCapture}>
+          <canvas
+            ref={canvasRef}
+            className={styles.signatureCanvas}
+            aria-label={strings.title}
+            onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
+          />
+          <button type="button" className="btn btn-secondary" onClick={clear}>{strings.clear}</button>
+        </div>
+        {err && <p className="field-error">{err}</p>}
+      </div>
     </Modal>
   );
 }

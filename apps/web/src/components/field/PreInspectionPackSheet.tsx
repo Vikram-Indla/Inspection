@@ -92,9 +92,9 @@ export type PackStrings = {
 
 function Section({ title, open, children }: { title: string; open?: boolean; children: React.ReactNode }) {
   return (
-    <details open={open} style={{ borderBlockEnd: "1px solid var(--border-subtle)" }}>
-      <summary style={{ padding: "var(--space-4) var(--space-6)", cursor: "pointer", font: "var(--type-body-strong)" }}>{title}</summary>
-      <div style={{ padding: "0 var(--space-6) var(--space-5)", font: "var(--type-caption-font)", color: "var(--text-secondary)" }}>{children}</div>
+    <details open={open} style={{ border: "1px solid var(--border-subtle)", borderRadius: 14, background: "var(--surface-primary)", boxShadow: "var(--shadow-card)" }}>
+      <summary style={{ padding: "12px 18px", cursor: "pointer", font: "var(--type-body-strong)" }}>{title}</summary>
+      <div style={{ padding: "0 18px 16px", font: "var(--type-caption-font)", color: "var(--text-secondary)" }}>{children}</div>
     </details>
   );
 }
@@ -201,8 +201,8 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
       {open && (
         <>
           <div onClick={() => setOpen(false)} aria-hidden className="sq-modal-backdrop" />
-          <aside className="sq-drawer" role="dialog" aria-modal="true" aria-label={strings.title} style={{ inlineSize: "min(560px, 94vw)" }}>
-            <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "var(--space-5) var(--space-6)", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+          <aside className="sq-drawer" role="dialog" aria-modal="true" aria-label={strings.title} style={{ inlineSize: "min(560px, 94vw)", background: "var(--surface-canvas)" }}>
+            <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "14px 18px", borderBlockEnd: "1px solid var(--border-subtle)", background: "var(--surface-primary)" }}>
               <div>
                 <div style={{ font: "var(--type-heading-lg)" }}>{strings.title}</div>
                 <div className="sq-caption">
@@ -231,35 +231,35 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
               )}
             </div>
 
-            <div className="sq-drawer__body" style={{ flex: 1, overflowY: "auto" }}>
+            <div className="sq-drawer__body" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 14, padding: "14px 18px 100px" }}>
               <Section title={strings.sectionFactory} open>
                 <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "var(--space-2) var(--space-4)", margin: 0 }}>
-                  <dt>{strings.crNumber}</dt><dd style={{ margin: 0 }} className="sq-numeric">{data.crNumber ?? "—"}</dd>
-                  <dt>{strings.licence}</dt><dd style={{ margin: 0 }}>{data.licence.value ?? <em>{data.licence.unavailable}</em>}</dd>
-                  <dt>{strings.officialLocation}</dt><dd style={{ margin: 0 }} className="sq-numeric">{data.officialLocation ?? "—"}</dd>
+                  {data.crNumber && <><dt>{strings.crNumber}</dt><dd style={{ margin: 0 }} className="sq-numeric">{data.crNumber}</dd></>}
+                  {(data.licence.value || data.licence.unavailable) && <><dt>{strings.licence}</dt><dd style={{ margin: 0 }}>{data.licence.value ?? <em>{data.licence.unavailable}</em>}</dd></>}
+                  {data.officialLocation && <><dt>{strings.officialLocation}</dt><dd style={{ margin: 0 }} className="sq-numeric">{data.officialLocation}</dd></>}
                   <dt>{strings.provenance}</dt><dd style={{ margin: 0 }}>{strings.provenanceValue}</dd>
                 </dl>
               </Section>
 
-              <Section title={strings.sectionPackage}>
-                {data.packageLabel
-                  ? <>
-                      <div>{strings.packageVersion}: <span className="sq-numeric">{data.packageLabel}</span>{data.packageStatus ? ` · ${data.packageStatus}` : ""}</div>
-                      <div>{strings.packageHash}: <span className="sq-numeric">{data.packageChecksum ? data.packageChecksum.slice(0, 16) : "—"}</span></div>
-                    </>
-                  : <em>—</em>}
-              </Section>
+              {/* Keeps the authority-integrity readout (version + checksum) while
+                  following the zero-assumption rule: the section is omitted when
+                  there is no package, and the hash line is omitted when there is
+                  no checksum, rather than rendering a "—" that reads as a value. */}
+              {data.packageLabel && <Section title={strings.sectionPackage}>
+                <div>{strings.packageVersion}: <span className="sq-numeric">{data.packageLabel}</span>{data.packageStatus ? ` · ${data.packageStatus}` : ""}</div>
+                {data.packageChecksum && <div>{strings.packageHash}: <span className="sq-numeric">{data.packageChecksum.slice(0, 16)}</span></div>}
+              </Section>}
 
-              <Section title={strings.sectionPrevious}>
-                {data.previousApproved ?? strings.noPrevious}
+              {(data.previousApproved || data.returnedContext) && <Section title={strings.sectionPrevious}>
+                {data.previousApproved}
                 {data.returnedContext && <div style={{ marginBlockStart: "var(--space-2)" }}>{data.returnedContext}</div>}
-              </Section>
+              </Section>}
 
               <Section title={strings.sectionRepeat} open>
                 {data.repeatFindings.value ?? <em>{data.repeatFindings.unavailable}</em>}
               </Section>
 
-              <Section title={strings.sectionHealthRisk}>
+              {(data.health.value || data.health.unavailable || data.riskBand || data.riskScore != null || (data.riskDrivers && data.riskDrivers.length > 0)) && <Section title={strings.sectionHealthRisk}>
                 <div className="sq-row" style={{ gap: "var(--space-6)" }}>
                   <div>
                     <div className="sq-caption">{strings.healthScore}</div>
@@ -267,9 +267,9 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
                   </div>
                   <div>
                     <div className="sq-caption">{strings.riskScore}</div>
-                    <div style={{ font: "var(--type-body-strong)", color: "var(--status-critical-text)" }}>
-                      {data.riskBand ?? "—"}{data.riskScore != null ? ` · ${data.riskScore}` : ""}
-                    </div>
+                    {(data.riskBand || data.riskScore != null) && <div style={{ font: "var(--type-body-strong)", color: "var(--status-critical-text)" }}>
+                      {data.riskBand}{data.riskScore != null ? `${data.riskBand ? " · " : ""}${data.riskScore}` : ""}
+                    </div>}
                   </div>
                 </div>
                 <div style={{ marginBlockStart: "var(--space-2)" }}>{strings.distinctConcepts}</div>
@@ -278,15 +278,13 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
                     {data.riskDrivers.map((d, i) => <li key={i}>{d}</li>)}
                   </ul>
                 )}
-              </Section>
+              </Section>}
 
               <Section title={strings.sectionDocuments}>{strings.documentsNote}</Section>
 
-              {data.compliance && (
+              {data.compliance?.rate != null && (
                 <Section title={strings.compliance.split(" ")[0]} open>
-                  {data.compliance.rate != null
-                    ? strings.compliance.replace("{rate}", String(data.compliance.rate)).replace("{c}", String(data.compliance.compliant)).replace("{e}", String(data.compliance.eligible))
-                    : "—"}
+                  {strings.compliance.replace("{rate}", String(data.compliance.rate)).replace("{c}", String(data.compliance.compliant)).replace("{e}", String(data.compliance.eligible))}
                 </Section>
               )}
 

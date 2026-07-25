@@ -121,3 +121,14 @@ Before completion:
 
 ## Gate position
 G0-G9 PASS (G1 conditional; G8 sponsor-authorized 2026-07-11; G9 build completion 2026-07-12). G10 verification is in progress with the Playwright headless suite as the exit criterion. G11 hardening and G12 release are open. Broad implementation is authorized. `product-contract/GATE_STATUS.md` is the authoritative gate record.
+
+## PWA lane exception (maintainer-approved)
+The PWA / field channel is an independent slice. Any agent editing ONLY
+apps/web/src/app/(app)/field/**, apps/web/src/components/field/**,
+apps/web/src/lib/providers/ocr-gemini.ts, status/saqeel-status.json, and
+designs/** does NOT require a global lease and is
+NOT bound by the CURRENT_SLICE / lease / single-slice gate. Retired paths remain
+prohibited; no push or merge to main. Owner: khan.jahanara@ (partner laptop).
+Approved-by: Vikram Indla <vikramataol@gmail.com>
+
+Test-harness extension (2026-07-26): the same lane also covers `apps/web/e2e/**`, and `apps/web/playwright.config.ts` plus `apps/web/package.json` for test-script entries ONLY. This exists so the channel can be MEASURED rather than asserted: it closes BS-1 (no automated pixel diff, so design scores are judgement not measurement) and BS-7 (spec pass/fail never surfaced, so wired is not verified). It grants no new application-source access: apps/web/src/** outside the field paths above remains out of scope, and no other rule is relaxed.

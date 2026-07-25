@@ -106,8 +106,15 @@ const PAGE = 1000; // PostgREST caps a single response at 1000 rows (db max-rows
 export async function getDict(locale: Locale): Promise<Dict> {
   if (locale === "en") return {};
   if (cache && Date.now() - cache.at < TTL_MS) return cache.dict;
+  // Supabase env may be absent (fresh checkout with no .env.local, or a
+  // partial-service environment). English is always a valid fallback and tr()
+  // resolves every key to its English source string, so degrade gracefully to
+  // the reviewed fallback rather than crashing the whole page render.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) return MVP3_AR_FALLBACK;
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
-  const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+  const sb = createClient(supabaseUrl, supabaseAnonKey);
   // Page through ALL rows. A single unbounded select is capped at 1000 by
   // PostgREST, which once the table grew past 1000 translated rows silently
   // dropped every later key back to its English fallback (whole-app Arabic

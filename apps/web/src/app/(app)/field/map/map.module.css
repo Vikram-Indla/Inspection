@@ -1,0 +1,117 @@
+/* SAQEEL Field — full-screen task map ("View full map"). Geometry ported from
+   the Dashboard design's operations-map card
+   (designs/pwa/SAQEEL PWA-Field Dashboard.dc.html): the map canvas, the
+   numbered route-sequence strip and the risk legend beneath it.
+
+   The design draws that card as a labelled schematic ("Route schematic · not
+   to scale"). The schematic is deliberately NOT reproduced — the canvas is the
+   real Mapbox basemap with the real KSA region layer and real establishment
+   pins. The sequence strip below carries the ordering information the
+   schematic's numbered nodes were standing in for.
+
+   DS tokens only; no bare colors. 14px card radius is the literal PWA value
+   used across the field channel (see field-home.module.css). */
+
+.panel {
+  flex: none;
+  background: var(--surface-primary);
+  border-block-start: 1px solid var(--border-subtle);
+}
+
+/* Numbered stops, ordered by the governed visit window. Scrolls horizontally
+   on narrow widths rather than wrapping into a tall block that eats the map. */
+.sequence {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.stop {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  font-size: 11px;
+  color: var(--text-secondary);
+  max-inline-size: 260px;
+}
+
+/* Sequence badge — only rendered for a visit that has a governed window. */
+.stopIndex {
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: var(--radius-full);
+  color: var(--text-on-action);
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+/* Marker-tone parity with GeoMap: risk band drives the pin colour, so it must
+   drive the sequence badge too. */
+.toneHigh { background: var(--status-critical); }
+.toneMedium { background: var(--status-warning); }
+.toneLow { background: var(--status-compliant); }
+.toneNeutral { background: var(--status-disabled); }
+
+/* A visit with no governed window gets a plain dot, never an invented number. */
+.stopDot {
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: var(--radius-full);
+  flex: none;
+}
+
+.stopName {
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stopTime { flex: none; }
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-block-start: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.legendDot {
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: var(--radius-full);
+  flex: none;
+}
+
+.legendNote { margin-inline-start: auto; }
+
+@media (max-width: 600px) {
+  .legendNote { margin-inline-start: 0; }
+}
+
+/* No geocoded assigned visit → the map has nothing honest to show. */
+.empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 18px;
+}

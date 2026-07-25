@@ -6,7 +6,9 @@
 
 .searchbar { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: var(--surface-primary); border-block-end: 1px solid var(--border-subtle); }
 .searchIcon { width: 18px; height: 18px; color: var(--text-secondary); flex: none; }
-.input { flex: 1; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 14px; font: inherit; font-size: 14px; background: var(--surface-sunken); color: var(--text-primary); min-width: 0; }
+/* Settled field-channel geometry: touch targets are never below 50px. The
+   design's input computes to ~42px; the field floor wins on a gloved iPad. */
+.input { flex: 1; min-height: 50px; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 14px; font: inherit; font-size: 14px; background: var(--surface-sunken); color: var(--text-primary); min-width: 0; }
 .input:focus { outline: 2px solid var(--action-primary); outline-offset: 1px; }
 .srSubmit { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
@@ -16,7 +18,11 @@
 .chipActive { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
 .chipActive:hover { color: var(--text-on-action); }
 
-.wrap { max-width: 720px; margin: 0 auto; width: 100%; padding: 0 0 24px; display: flex; flex-direction: column; }
+.wrap { max-width: 720px; margin: 0 auto; width: 100%; padding: 0 0 60px; display: flex; flex-direction: column; }
+
+/* Result group header. Reuses the design's own in-screen section-label idiom
+   (the "Recent searches" .t-label at 16px 18px 8px) — not a new treatment. */
+.groupLabel { padding: 16px 18px 8px; }
 
 .row { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-block-end: 1px solid var(--border-subtle); background: var(--surface-primary); text-align: start; font: inherit; color: inherit; width: 100%; text-decoration: none; }
 .row:hover { background: var(--surface-sunken); }
@@ -25,3 +31,15 @@
 
 .state { padding: 60px 20px; text-align: center; color: var(--text-secondary); }
 .notice { margin: 12px 18px; }
+/* .alert is display:flex row; the error state stacks message over recovery. */
+.errorAlert { margin: 12px 18px; flex-direction: column; align-items: flex-start; }
+
+/* Recovery affordance on the ERROR and filter-EMPTY states. */
+.retry {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 50px; margin-block-start: 10px; padding-inline: 16px;
+  border-radius: 10px; border: 1px solid var(--border-subtle);
+  background: var(--surface-primary); color: var(--action-primary);
+  font-weight: 600; font-size: 13.5px; text-decoration: none;
+}
+.retry:hover { background: var(--surface-sunken); }

@@ -50,7 +50,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
   const { data: ins } = await sb.from("inspections")
-    .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)")
+    .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(id, version_number, snapshot, submitted_at), reviews(submission_version_id, status, decision, returned_sections, decision_reason, decided_at)")
     .eq("id", id).single();
   if (!ins) {
     return (
@@ -502,6 +502,22 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     keepServer: t("field.ws.keepServer", "Keep server"),
     returnedScope: t("field.ws.returnedScope", "Returned — correction scope: {sections}."),
     returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next final submitted version (STM-COR-001/002)."),
+    returnedBadge: t("field.ws.returnedBadge", "Returned"),
+    openCorrection: t("field.ws.openCorrection", "Open correction mode"),
+    correctionOpen: t("field.ws.correctionOpen", "Correction mode open — only returned sections are editable."),
+    resubmitBtn: t("field.ws.resubmitBtn", "Resubmit — version {v}"),
+    compareVersions: t("field.ws.compareVersions", "Compare versions"),
+    compareHeading: t("field.ws.compareHeading", "Compare v{before} → v{after}"),
+    compareBefore: t("field.ws.compareBefore", "Before (v{v})"),
+    compareAfter: t("field.ws.compareAfter", "After (v{v})"),
+    compareAnswer: t("field.ws.compareAnswer", "Answer"),
+    compareNote: t("field.ws.compareNote", "Note"),
+    compareDate: t("field.ws.compareDate", "Date"),
+    versionHistory: t("field.ws.versionHistory", "Version history"),
+    historySubmitted: t("field.ws.historySubmitted", "v{v} submitted"),
+    historyReturned: t("field.ws.historyReturned", "Returned — scope: {sections}"),
+    historyApproved: t("field.ws.historyApproved", "Approved"),
+    historyRejected: t("field.ws.historyRejected", "Rejected"),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
     submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
     completionReview: tr("field.ws.completion.review", "Review summary", "ملخّص المراجعة"),
@@ -516,6 +532,19 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     completionTasks: tr("field.ws.completion.tasks", "Back to tasks", "العودة إلى المهام"),
     completionSyncPending: tr("field.ws.completion.syncPending", "Submitted (locked)", "مُرسَل (مقفل)"),
     completionQueuedLock: tr("field.ws.completion.queuedLock", "The final snapshot is locked on this device while the existing FIFO outbox retries. It is not reported as submitted until the server accepts it.", "اللقطة النهائية مقفلة على هذا الجهاز بينما تعيد قائمة المزامنة الحالية المحاولة. ولا يُبلّغ عنها كمُرسلة حتى يقبلها الخادم."),
+    // SCR-IPAD-660 completion state (CR-320/324/327/335/336). The version number
+    // and id are SERVER-assigned and only known once the outbox op syncs, so
+    // every one of these renders nothing until the server has confirmed.
+    completionVersionLabel: t("field.ws.completionVersionLabel", "Submission version"),
+    completionCreatedTitle: t("field.ws.completionCreatedTitle", "What this submission created"),
+    completionCreatedVersion: t("field.ws.completionCreatedVersion", "An immutable submitted version — content can no longer be edited here."),
+    completionCreatedAudit: t("field.ws.completionCreatedAudit", "A submission audit event recording the version and section count."),
+    completionCreatedReview: t("field.ws.completionCreatedReview", "A review task for the reviewer — approve, return for correction, or reject."),
+    completionIdempotency: t("field.ws.completionIdempotency", "Protected by an idempotency key — a retry can never create a second version."),
+    completionReused: t("field.ws.completionReused", "Already submitted — the server returned the existing version rather than creating a new one."),
+    completionPendingSync: t("field.ws.completionPendingSync", "Not submitted yet — this is queued on the device and will submit exactly once when the connection returns. No version exists until the server assigns one."),
+    completionFailedTitle: t("field.ws.completionFailedTitle", "Submission did not complete."),
+    completionFailedBody: t("field.ws.completionFailedBody", "The server rejected this submission, so no submitted version was created. Your answers are safe on this device. Retry, or contact your supervisor if it keeps failing."),
     lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only (M06-043); DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
     submitBtn: t("field.ws.submitBtn", "Review & submit — final version"),

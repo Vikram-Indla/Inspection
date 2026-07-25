@@ -11,6 +11,7 @@
 export type OcrResult = { ok: boolean; text?: string; reason?: string };
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+const OCR_TIMEOUT_MS = 20_000;
 
 export class GeminiOcrProvider {
   constructor(private readonly apiKey: string, private readonly model = "gemini-flash-latest") {}
@@ -18,11 +19,16 @@ export class GeminiOcrProvider {
   /** imageBase64 is the raw image bytes, base64-encoded (no data: prefix). */
   async extractText(imageBase64: string, mimeType: string): Promise<OcrResult> {
     if (!imageBase64) return { ok: false, reason: "no_image" };
+    if (!this.apiKey) return { ok: false, reason: "provider_unavailable" };
+    if (!mimeType.startsWith("image/")) return { ok: false, reason: "unsupported_media" };
     const prompt = "Transcribe ALL visible text in this image EXACTLY as written, preserving line breaks. If no text is visible, respond with exactly: NO_TEXT_FOUND. Do not describe the image, do not add commentary, do not translate — verbatim transcription only.";
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
     try {
       const res = await fetch(`${GEMINI_BASE}/${this.model}:generateContent`, {
         method: "POST",
         headers: { "x-goog-api-key": this.apiKey, "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: imageBase64 } }] }],
           generationConfig: { maxOutputTokens: 2048, temperature: 0 },
@@ -34,8 +40,11 @@ export class GeminiOcrProvider {
       if (!text) return { ok: false, reason: "empty_response" };
       if (text === "NO_TEXT_FOUND") return { ok: true, text: "" };
       return { ok: true, text };
-    } catch {
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return { ok: false, reason: "gemini_timeout" };
       return { ok: false, reason: "gemini_network_error" };
+    } finally {
+      clearTimeout(timeout);
     }
   }
 }

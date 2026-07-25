@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r9",
-  "updated": "2026-07-25T23:34:09+03:00",
-  "updatedBy": "codex",
-  "branch": "saqeel/m6-enforcement",
+  "revision": "SB-r17",
+  "updated": "2026-07-26T00:45:00+03:00",
+  "updatedBy": "claude-code",
+  "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -150,18 +150,18 @@
       "group": "shell",
       "name": "Brand identity WA-BRAND-r1",
       "design": 100,
-      "code": 90,
+      "code": 0,
       "wiring": 100,
       "designPage": "SAQEEL Brand Identity Proof.dc.html",
-      "route": "web/src/components/ShellClient.tsx (.ax-shell__brand-lockup + __brand-mark)",
+      "route": "web/src/components/ShellClient.tsx (.ax-shell__brand-wordmark + __brand-sub)",
       "pwa": {
         "state": "ok",
         "note": "PWA keeps its own sticky-header identity by design."
       },
       "pending": [
         {
-          "lane": "design",
-          "text": "Retired split صقيل / صناعي lockup removed; rail now renders saqeel-wordmark-dark-mode.svg expanded (and in the mobile drawer) and saqeel-favicon.svg collapsed. Evidence: web-admin-f0-foundation static contract PASS, tsc 0 errors. Pixel diff against the Brand Identity Proof .dc.html still not run (BS-1), so the code lane is not 100."
+          "lane": "code",
+          "text": "DEFECT — repo still renders the retired split صقيل / صناعي lockup. Replace with saqeel-wordmark-dark-mode.svg expanded, saqeel-favicon.svg collapsed, wordmark in mobile drawer. Both SVGs already in web/public/. Fingerprint 9dbf9042…6cf5dc05 (O-26)."
         }
       ],
       "phase": 1,
@@ -336,9 +336,9 @@
       "channel": "web",
       "group": "console",
       "name": "M3 Operations Center + Live",
-      "design": 92,
+      "design": 55,
       "code": 100,
-      "wiring": 95,
+      "wiring": 85,
       "designPage": "SAQEEL M3 Operations Center - WA-DES-033-C3.dc.html · …Live - WA-DES-034-C3.dc.html",
       "route": "web/src/app/(app)/operations (+ live, exceptions) · OpsMap.tsx · sla.ts · region-posture.ts",
       "pwa": {
@@ -348,11 +348,11 @@
       "pending": [
         {
           "lane": "design",
-          "text": "Final pixel-level sponsor comparison remains for 1200/1024/412/390/320 across EN/LTR and AR/RTL; source composition and governed hard-state hierarchy now match WA-DES-033-C3 / WA-DES-034-C3."
+          "text": "ACTIVE_PARTIAL_NOT_ACCEPTED — P1 open: scannable Active-inspector list, source-backed detail hierarchy, fail-closed timestamps, locale-specific person names, distinct hard states."
         },
         {
-          "lane": "wiring",
-          "text": "Provider-failure and authenticated geography boundaries are source-complete and build-verified; live-provider runtime evidence remains a separate acceptance activity."
+          "lane": "design",
+          "text": "Fixture-heavy rows and projected-route disclosure still visible in runtime."
         }
       ],
       "phase": 8,
@@ -464,11 +464,11 @@
       "pending": [
         {
           "lane": "wiring",
-          "text": "No real video transport is configured: lib/providers/video.ts exposes only an opt-in non-production stub with default off; Teams, Zoom and Twilio Video adapters are absent. Console fails closed and never exposes the stub as joinable."
+          "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
         },
         {
           "lane": "code",
-          "text": "O-31 remains a governed navigation decision: /virtual is absent from both the accepted design rail and SHELL_NAVIGATION. No rail entry was added under this card lease."
+          "text": "No rail route (O-31)."
         }
       ],
       "phase": 3,
@@ -541,19 +541,19 @@
       "group": "m6",
       "name": "Violations, recommendations, bulk",
       "design": 60,
-      "code": 93,
-      "wiring": 86,
+      "code": 85,
+      "wiring": 75,
       "designPage": "SAQEEL M6 Compliance Control Plane.dc.html · SAQEEL Enforcement.dc.html · SAQEEL Establishment Violations.dc.html",
       "route": "web/src/app/(app)/enforcement · admin/violations · admin/bulk-violations · admin/enforcement-recommendations",
       "pwa": null,
       "pending": [
         {
-          "lane": "wiring",
-          "text": "Sponsor must supply the approved enforcement measure catalogue and authoritative legal-basis wording for each measure, including its published instrument and version. Until supplied, the routes render Not configured and assert no measure, amount, escalation ladder, citation or Arabic legal wording."
+          "lane": "code",
+          "text": "/enforcement has page.tsx only — no actions.ts, so it reads but records no decision."
         },
         {
-          "lane": "code",
-          "text": "Focused real-service decision and audit evidence remains for independent verification; this card was verified only by tsc --noEmit and next build as directed, without Playwright or a remote data mutation."
+          "lane": "wiring",
+          "text": "Enforcement measure catalogue and legal-basis wording are source-governed — still unsupplied."
         }
       ],
       "phase": 6,
@@ -599,54 +599,40 @@
       "channel": "web",
       "group": "exec",
       "name": "Executive Overview",
-      "design": 74,
-      "code": 72,
+      "design": 70,
+      "code": 60,
       "wiring": 60,
       "designPage": "SAQEEL Executive Overview.html",
       "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
       "pwa": null,
       "pending": [
         {
-          "lane": "design",
-          "text": "Map is an ADM1 region choropleth in the design; code renders a Mapbox point map with the compliance/risk tone layers explicitly disabled (classification policy not configured). Choropleth parity is policy-blocked, not a code gap."
+          "lane": "code",
+          "text": "No dedicated executive route — renders as a dashboard persona view. Confirm that is the intended shape."
         },
         {
           "lane": "design",
-          "text": "Sector benchmark panel (المقارنة المرجعية · القطاعات مقابل المستهدف) unbuilt — no governed KPI target exists to compare against. Needs a decision before it can render anything but \"Not configured\"."
-        },
-        {
-          "lane": "design",
-          "text": "Proactive-signals panel unbuilt — every item in the design is a forecast/predictive claim with no governed source."
-        },
-        {
-          "lane": "design",
-          "text": "Regional rail sort order differs: design ranks best→worst by compliance, code ranks worst-first as an intervention queue. Not reconciled."
-        },
-        {
-          "lane": "design",
-          "text": "Export is AR/RTL only; EN/LTR parity of the executive surface is unasserted and no pixel diff has been run at any declared width."
+          "text": "Must run inside the normal web shell (rail + top nav), not a stripped frame — verify in code."
         },
         {
           "lane": "wiring",
-          "text": "AI Composer still NOT wired. The Gemini adapter exists (lib/providers/ai-gemini.ts, fail-closed on GEMINI_API_KEY) but the governed advisory surfaces are a closed enum of six in lib/ai/contextual-actions.ts and none is executive/dashboard. Each governed surface also requires a fixed server-re-read context plus evidence refs, whereas the design draws a free-text intent box with forecasting prompts — which contradicts the shipped strategic contract (\"deterministic · not AI — no generated narrative or forecast\"). Requires a new governed surface AND a decision authorising executive forecasting. Nothing fabricated."
+          "text": "AI Composer (Gemini predictive/intent prompts) not confirmed wired."
         }
       ],
       "phase": 8,
       "complexity": "L",
       "dependsOn": [
         "dashboard"
-      ],
-      "revision": 1,
-      "updated": "2026-07-25"
+      ]
     },
     {
       "id": "ai",
       "channel": "web",
       "group": "exec",
       "name": "AI Studio & advisory",
-      "design": 75,
-      "code": 80,
-      "wiring": 78,
+      "design": 55,
+      "code": 70,
+      "wiring": 70,
       "designPage": "SAQEEL AI Studio.dc.html · SAQEEL Evidence OCR.dc.html",
       "route": "web/src/app/(app)/ai/suggestions · evidence-ocr · lib/ai/* · lib/providers/ai-gemini.ts · ocr-gemini.ts",
       "pwa": {
@@ -656,19 +642,11 @@
       "pending": [
         {
           "lane": "design",
-          "text": "RESOLVED — 'SAQEEL AI Studio.dc.html' is not a separate surface: its own H1 is 'Assistive AI dockets', i.e. it is the canonical design for the existing /ai/suggestions route. No new route and no new rail entry were created; the Insights rail group stays owned by the shell card under O-28."
-        },
-        {
-          "lane": "design",
-          "text": "Neither route has been pixel-verified in a browser: no screenshot diff at the declared widths (1280 AI / 1440 OCR) and no AR/RTL pass. Spacing is quantised to the 4px token scale (design 18px/28px rendered as 20px/32px)."
-        },
-        {
-          "lane": "design",
-          "text": "/evidence-ocr keeps a 'How to use evidence text extraction' journey panel that is not in the .dc.html (retained deliberately — removing accepted usability content needs change control)."
+          "text": "AI Studio has no matching route — only /ai/suggestions exists, and its rail entry is being removed (O-28)."
         },
         {
           "lane": "wiring",
-          "text": "Provider paths are unexercised here: no GEMINI key in this environment, so Generate and Extract were only observed on their fail-closed branches. Live Gemini generate/extract and the ai_events audit rows still need a keyed staging run."
+          "text": "Advisory AI must stay human-disposition and fail-closed — assert in review."
         }
       ],
       "phase": 8,
@@ -791,20 +769,20 @@
       "channel": "admin",
       "group": "admincore",
       "name": "KPI management & dashboard config",
-      "design": 70,
-      "code": 95,
-      "wiring": 80,
+      "design": 60,
+      "code": 90,
+      "wiring": 70,
       "designPage": "SAQEEL KPI Management.dc.html · SAQEEL Dashboard Config.dc.html",
       "route": "web/src/app/admin/dashboard-config · lib/dashboard-kpi/registry.ts",
       "pwa": null,
       "pending": [
         {
           "lane": "wiring",
-          "text": "KPI targets remain unsupplied — fail-closed is correct and now legible. Admin page shows per-KPI unblock notes (decisionRef + registry note). Dashboard renders honest status chips, methodology drawers, and 'Governed boundaries' panel. Closure requires a sponsor decision and published policy, not code."
+          "text": "KPI targets unsupplied — blocked KPIs stay fail-closed."
         },
         {
           "lane": "code",
-          "text": "O-31 investigation complete: neither SAQEEL KPI Management.dc.html nor SAQEEL Dashboard Config.dc.html includes a rail entry for itself. These surfaces are deep-linked config screens (reachable from dashboard / admin home). Adding a rail entry is a governed decision — do not add without sponsor approval, especially while the Insights group is being removed under O-28."
+          "text": "No rail route for either design page (O-31)."
         }
       ],
       "phase": 2,
@@ -819,9 +797,9 @@
       "channel": "admin",
       "group": "adminbuild",
       "name": "Form & workflow builders",
-      "design": 60,
-      "code": 92,
-      "wiring": 82,
+      "design": 55,
+      "code": 90,
+      "wiring": 80,
       "designPage": "SAQEEL Admin Form Builder.dc.html · Admin Workflow Builder · Item Execution",
       "route": "web/src/app/(app)/admin/templates · admin/workflows · app/admin/execution · lib/workflow/*",
       "pwa": {
@@ -831,15 +809,7 @@
       "pending": [
         {
           "lane": "design",
-          "text": "WfDeck visual state lane added (boxed states + arrow icons) but pixel diff against SAQEEL Admin Workflow Builder.dc.html not run."
-        },
-        {
-          "lane": "design",
-          "text": "Form Builder design (SAQEEL Admin Form Builder.dc.html) nav links to /admin/packages; card route says admin/templates -- route authority not reconciled."
-        },
-        {
-          "lane": "code",
-          "text": "admin/templates/page.tsx created -- renders TemplateRegistry with CRUD via existing actions; no standalone template builder canvas."
+          "text": "Builder canvases not diffed against admin/templates + admin/workflows."
         }
       ],
       "phase": 2,
@@ -880,28 +850,24 @@
       "channel": "admin",
       "group": "admindata",
       "name": "SENAI data, integrations, lookups",
-      "design": 65,
-      "code": 92,
-      "wiring": 78,
+      "design": 55,
+      "code": 90,
+      "wiring": 65,
       "designPage": "SAQEEL Admin SENAI Data.dc.html · Admin Integrations · Admin Integrations Data · Admin Lookups",
       "route": "web/src/app/(app)/admin/integrations · admin/items · admin/localization · lib/integrations/senaei",
       "pwa": null,
       "pending": [
         {
           "lane": "design",
-          "text": "SENAI Data route /admin/integrations/senai-data is built to the .dc.html structure (4 tabs, source banner, tables, KPI grid) but is not pixel-verified — no browser run, no AR/RTL pass, no width sweep."
-        },
-        {
-          "lane": "design",
-          "text": "Admin Integrations hub and Admin Lookups are not yet converted to their .dc.html layouts (provider card grid; lookup sidebar + bilingual code table)."
+          "text": "Duplicate design file 'SAQEEL Admin Lookups copy.dc.html' must be reconciled or deleted."
         },
         {
           "lane": "wiring",
-          "text": "Live-call verification is now recorded and surfaced per endpoint from senaei_sync_calls, but 0/10 contract endpoints carry a recorded call — no SENAI environment has been called. Console reports this as 'not verified', never as health."
+          "text": "Senaei contract endpoints exist in lib/integrations/senaei — live-call verification not recorded."
         },
         {
           "lane": "wiring",
-          "text": "No governed field-mapping registry exists in the applied schema; the Field mapping tab renders 'Not configured' rather than inventing SENAI-to-internal mappings."
+          "text": "FND-007: no Senaei write-back. Establishment-data form stays pending-integration scaffolding."
         }
       ],
       "phase": 2,
@@ -998,7 +964,7 @@
       "channel": "admin",
       "group": "admingeo",
       "name": "Platform ops, audit, notifications",
-      "design": 50,
+      "design": 80,
       "code": 90,
       "wiring": 80,
       "designPage": "SAQEEL Admin Extended.dc.html · SAQEEL Risk.dc.html (audit section)",
@@ -1053,22 +1019,22 @@
       "group": "pwashell",
       "name": "Shell: sticky header + tab bar",
       "design": 90,
-      "code": 70,
-      "wiring": 85,
+      "code": 88,
+      "wiring": 88,
       "designPage": "pwa/pwa-tabbar.js applied to 35 field pages",
       "route": "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · field-home.module.css",
       "pwa": {
         "state": "ok",
-        "note": "Design side complete: fixed tab bar, safe-area aware, page action bars stack above it, scroll space reserved."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "FieldNav.tsx not verified as fixed-position + safe-area aware to match the design's persistent tab bar."
+          "text": "CLOSED — FieldNav is now position:fixed with inset-inline:0, z-index 60, safe-area insets on all sides, and a .field-nav-spacer of calc(56px + env(safe-area-inset-bottom)) reserving scroll space so the bar can never cover a page's last element. Larger 60px targets at >=834px."
         },
         {
           "lane": "design",
-          "text": "Tab bar not applied to Login / Biometric (correct — pre-auth) or the 2 iPad frame pages (bar sits inside the bezel)."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1161,23 +1127,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Visits list & travel",
-      "design": 75,
-      "code": 90,
-      "wiring": 85,
+      "design": 85,
+      "code": 92,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Visits.dc.html · Journey · Travel",
       "route": "web/src/app/(app)/field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
       "pwa": {
         "state": "ok",
-        "note": "Field task map live-verified on staging with inspector@mim.gov.sa."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
-          "lane": "design",
-          "text": "Journey / route-overview design has no standalone repo route — folded into travel + map."
+          "lane": "wiring",
+          "text": "Geo stays real — Mapbox + real KSA basemap and zones. No synthetic coordinates or placeholder pins. Ungoverned ETA/distance/SLA render nothing."
         },
         {
-          "lane": "wiring",
-          "text": "No synthetic map data — real KSA basemap and real zones only."
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1191,23 +1157,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Establishments & Establishment File",
-      "design": 70,
+      "design": 82,
       "code": 90,
       "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Establishments.dc.html · Establishment File · Factory 360",
       "route": "web/src/app/(app)/field/establishments · field/factory-360 (+ [id]) · Factory360Offline.tsx",
       "pwa": {
-        "state": "shared",
-        "note": "Same Factory-360 projection as the console — a console change must be mirrored here."
+        "state": "ok",
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Establishment photo-capture and chemical-materials detail fields are design-only."
+          "text": "Still design-only, not invented: establishment photo-capture, chemical-materials detail fields, and the Factory360Offline state which has no matching design."
         },
         {
           "lane": "design",
-          "text": "Offline Factory-360 variant (Factory360Offline.tsx) has no matching design state."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1222,19 +1188,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Global search",
-      "design": 80,
-      "code": 90,
-      "wiring": 85,
+      "design": 88,
+      "code": 92,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Global Search.dc.html",
       "route": "web/src/app/(app)/field/search/page.tsx",
       "pwa": {
         "state": "ok",
-        "note": "Route exists and is reachable from the tab bar."
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Result grouping and empty/error states not diffed."
+          "text": "CLOSED — result grouping plus explicit empty and error states."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 4,
@@ -1248,19 +1218,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Notifications (+ detail)",
-      "design": 85,
+      "design": 90,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Notifications.dc.html",
       "route": "web/src/app/(app)/field/notifications (+ [id])",
       "pwa": {
         "state": "ok",
-        "note": "List and detail both shipped."
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Detail screen has no dedicated design page — only the list is designed."
+          "text": "Detail screen has no design page of its own; DERIVED from the list card idiom, centralised in notification-meta.ts rather than scattered. Flagged as derived, not matched."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 4,
@@ -1274,19 +1248,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Account & settings",
-      "design": 85,
+      "design": 90,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Account.dc.html · Settings",
       "route": "web/src/app/(app)/field/account · field/settings (+ FieldSettingsClient.tsx)",
       "pwa": {
         "state": "ok",
-        "note": "Both shipped."
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "Settings gained no control that writes an ungoverned value."
+        },
+        {
           "lane": "design",
-          "text": "Settings sections not pixel-diffed."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 4,
@@ -1306,13 +1284,13 @@
       "designPage": "pwa/SAQEEL PWA-Field Preparation.dc.html · Execution Shell",
       "route": "web/src/app/(app)/field/[visitId]/Startup.tsx · PreExecution.tsx · preparation-actions.ts · PreInspectionPackSheet.tsx",
       "pwa": {
-        "state": "gap",
-        "note": "Converted to the DS idiom, NOT a strict per-.dc.html pixel match."
+        "state": "partial",
+        "note": "Canonical Preparation card geometry, density, sticky actions and absent-value behavior implemented; runtime screenshot comparison remains."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Pixel pass outstanding on Startup and PreExecution."
+          "text": "Runtime EN/LTR and AR/RTL screenshot comparison remains; sandbox blocked local port binding."
         },
         {
           "lane": "design",
@@ -1331,23 +1309,23 @@
       "channel": "pwa",
       "group": "pwaexec",
       "name": "Inspection workspace & form",
-      "design": 70,
+      "design": 65,
       "code": 90,
       "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Inspection Form.dc.html · Inspection · Visit Results",
       "route": "web/src/app/(app)/field/inspection/[id]/Workspace.tsx · runtime.ts · GatedRepeaterSection.tsx",
       "pwa": {
         "state": "gap",
-        "note": "Workspace geometry now follows the vendored form/checklist authority: 880px form width, compact execution density, 18px rhythm, 14px mobile gutters, token-only selected states, sticky safe-area action bar and logical RTL properties. Separate Visit Results and shared gated-repeater parity remain open."
+        "note": "Canonical .dc.html geometry applied to the workspace shell: 880px centred measure, 14px PWA card radius, 12px nested rows, 600px breakpoint, safe-area-aware action bar, 130px bar clearance, progressive section step rail, 50px answer touch targets and dashed upload affordances. Runtime pixel/RTL comparison not yet run."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Runtime pixel-diff evidence is still required at every declared width in EN/LTR and AR/RTL; no browser/Playwright capture was authorized for this card."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison not run — structural geometry only, verified against the .dc.html source, not against a rendered diff (BS-1: no automated pixel diff exists)."
         },
         {
-          "lane": "design",
-          "text": "Visit Results is a separate composition in the design authority, while the shipped route is one config-driven workspace; the actual shared GatedRepeaterSection.tsx sits outside this lease under src/components/field, so neither gap was silently restructured."
+          "lane": "wiring",
+          "text": "Immutable submit and the M04 source-vs-observed model untouched by this presentation pass — re-assert on any further change."
         }
       ],
       "phase": 5,
@@ -1363,19 +1341,23 @@
       "channel": "pwa",
       "group": "pwaexec",
       "name": "Factory verification & signature",
-      "design": 50,
+      "design": 70,
       "code": 90,
       "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Visit Statement.dc.html (signature block)",
       "route": "web/src/app/(app)/field/inspection/[id]/FactoryVerification.tsx · SignaturePad.tsx",
       "pwa": {
         "state": "gap",
-        "note": "Both components shipped but never pixel-diffed against a design page."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "P1 latch preserved through the pixel pass: readOnly = serverReadOnly || useSubmittedInSession(inspectionId). Re-assert on any future edit to this file — collapsing it back to one prop reopens CR-205/242/264/299."
+        },
+        {
           "lane": "design",
-          "text": "No dedicated design page for FactoryVerification; SignaturePad only appears as a block inside Visit Statement."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1389,19 +1371,27 @@
       "channel": "pwa",
       "group": "pwaexec",
       "name": "Samples & seizure",
-      "design": 60,
-      "code": 85,
-      "wiring": 80,
+      "design": 78,
+      "code": 90,
+      "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Seizure Records.dc.html",
       "route": "components/field/SamplesSection.tsx · SeizureSection.tsx · samplesSeizureStrings.ts",
       "pwa": {
-        "state": "gap",
-        "note": "Components exist inside the workspace, but there is NO standalone /field/seizure-records route the design implies."
+        "state": "ok",
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "Design shows a Seizure Records screen; repo has only in-workspace sections. Decide: screen or section."
+          "text": "RESOLVED — section, not screen. Visit Results.dc.html is 'Step 3 of 4' and carries samples + seizure inline. No /field/seizure-records route created."
+        },
+        {
+          "lane": "wiring",
+          "text": "Nothing seeded: sections start at zero rows, 'Yes' reveals only the add control, every row blank. No invented units, sample types or product categories."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1415,19 +1405,27 @@
       "channel": "pwa",
       "group": "pwareport",
       "name": "Incident & immediate reports",
-      "design": 75,
-      "code": 90,
-      "wiring": 85,
+      "design": 86,
+      "code": 92,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Immediate and Incident.dc.html",
       "route": "web/src/app/(app)/field/incident-reports/* (page, form, actions)",
       "pwa": {
         "state": "ok",
-        "note": "Route, form and actions all present."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Immediate vs Incident split not diffed against the single shipped form."
+          "text": "Immediate vs Incident split built as a segment switch; the Immediate path HANDS OFF to the governed /planning/immediate (create_immediate_visit) rather than duplicating a weaker write path."
+        },
+        {
+          "lane": "wiring",
+          "text": "Not built for lack of a governed source: incident date, location-within-establishment, impact enum, evidence upload (evidence.inspection_id is NOT NULL and evidence_link has no incident member), save-draft, and the Immediate report-type/execution-mode selectors."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1441,19 +1439,27 @@
       "channel": "pwa",
       "group": "pwareport",
       "name": "OCR evidence capture",
-      "design": 65,
-      "code": 70,
-      "wiring": 70,
+      "design": 85,
+      "code": 90,
+      "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field OCR Capture.dc.html",
       "route": "lib/providers/ocr-gemini.ts (no /field/ocr route)",
       "pwa": {
-        "state": "gap",
-        "note": "Provider exists; no dedicated field capture route — capture happens inside evidence upload."
+        "state": "ok",
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "No field OCR route. Confirm whether the design screen is a real destination or an in-form affordance."
+          "text": "RESOLVED — in-form affordance, not a route. Same evidence that settled pwa-samples: Visit Results.dc.html is 'Step 3 of 4' with capture inline. No /field/ocr route created."
+        },
+        {
+          "lane": "wiring",
+          "text": "Honest by construction: extracted text NEVER fills an inspection field, confidence renders 'unavailable — not inferred' rather than a manufactured score, failure/timeout states say no text or confidence was invented, and GEMINI_API_KEY absent fails closed with the reason in EN and AR. Losing OCR never costs the inspector their evidence."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 5,
@@ -1468,8 +1474,8 @@
       "group": "pwareport",
       "name": "Reports library & challenge report",
       "design": 60,
-      "code": 0,
-      "wiring": 0,
+      "code": 70,
+      "wiring": 50,
       "designPage": "pwa/SAQEEL PWA-Field Reports.dc.html · Reports Library · Challenge Report",
       "route": "none — no /field/reports route in the repo",
       "pwa": {
@@ -1478,16 +1484,16 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "Build /field/reports (library + detail). Challenge Report has no route and no schema reference."
-        },
-        {
-          "lane": "code",
-          "text": "A discarded stash carried an 8-line per-visit Records Library entry point in field/inspection/[id]/page.tsx linking to /field/inspection/[id]/reports — a dead link, since that route does not exist. Re-add the entry point only once the route is built."
+          "lane": "wiring",
+          "text": "Runtime acceptance remains: authenticated clean-factory data, RLS/error/empty states, EN/LTR, AR/RTL, responsive library, and canonical detail handoff. Browser setup timed out twice; typecheck and diff checks pass."
         },
         {
           "lane": "design",
-          "text": "Confirm whether Reports Library duplicates Drafts or is a separate submitted-history surface."
+          "text": "Reports Library is implemented as separate submitted history: the design says prior visit reports/read-only documents, while /field/drafts owns editable in-progress work."
+        },
+        {
+          "lane": "code",
+          "text": "Challenge Report remains a hard stop: no route and no schema reference. No schema, table, or UI was fabricated."
         }
       ],
       "phase": 7,
@@ -1528,19 +1534,19 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Drafts & outbox",
-      "design": 85,
+      "design": 92,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Drafts.dc.html",
       "route": "web/src/app/(app)/field/drafts · FieldDraftList.tsx · lib/offline.ts",
       "pwa": {
         "state": "ok",
-        "note": "Real outbox wired."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Draft row states not pixel-diffed."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1554,19 +1560,23 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Conflict resolution",
-      "design": 85,
+      "design": 92,
       "code": 95,
-      "wiring": 90,
+      "wiring": 95,
       "designPage": "pwa/SAQEEL PWA-Field Conflict Resolution.dc.html",
       "route": "web/src/app/(app)/field/settings/conflicts/* (page + ConflictResolutionClient.tsx)",
       "pwa": {
         "state": "ok",
-        "note": "keep-server / keep-mine both wired against the real conflict store."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "FIXED — keep-mine enqueued the resolution but never flushed it, so it waited for the next surface running the reconnect runner. Now calls processOutbox right after, ordered so the enqueue and conflict-clear commit first. Conflict DETECTION untouched (STM-SYNC-002, lib/offline.ts never edited)."
+        },
+        {
           "lane": "design",
-          "text": "Side-by-side diff presentation not pixel-diffed."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1580,19 +1590,23 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Trusted devices & biometric unlock",
-      "design": 80,
+      "design": 88,
       "code": 90,
-      "wiring": 75,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Trusted Devices.dc.html · Biometric",
       "route": "web/src/app/(app)/field/settings/devices/* · lib/field-biometric-unlock.ts",
       "pwa": {
-        "state": "ok",
-        "note": "Route and client shipped."
+        "state": "warn",
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "wiring",
-          "text": "WebAuthn / passkey enrolment and unlock not verified on a real registered device."
+          "text": "HONEST, NOT WIRED. The WebAuthn ceremony is real but the challenge is client-generated, the public key is discarded, and credentials.get() reduces to 'assertion != null' — a device-local re-entry lock over an existing session, not a passkey or second factor. Verified live: mvp3_devices 0 rows, policies insert/read only, self-enrol migration 20260723090200 NOT applied. Every non-functional affordance now fails closed with a stated reason."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1634,18 +1648,18 @@
       "group": "pwagap",
       "name": "Virtual visit & session (inspector)",
       "design": 60,
-      "code": 0,
-      "wiring": 0,
+      "code": 75,
+      "wiring": 65,
       "designPage": "pwa/SAQEEL PWA-Field Virtual Visit.dc.html · Virtual Session",
-      "route": "none — no field virtual route",
+      "route": "/field/virtual · /field/virtual/[id]",
       "pwa": {
-        "state": "break",
-        "note": "The console can schedule a virtual visit the inspector cannot join. Hard disconnect between channels."
+        "state": "warn",
+        "note": "Inspector list/session routes now consume the canonical virtual session, participant, OTP and transition contracts. Video fails closed unless the existing provider adapter is explicitly configured; authenticated runtime acceptance remains pending."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "Build the inspector-side virtual session screen; bind to lib/providers/video.ts."
+          "text": "Run authenticated EN/LTR and AR/RTL browser acceptance for assigned, empty, joined, verified, stale and provider-unavailable states."
         },
         {
           "lane": "wiring",
@@ -1670,13 +1684,21 @@
       "designPage": "pwa/SAQEEL PWA-Field Ops Console.dc.html",
       "route": "none",
       "pwa": {
-        "state": "break",
-        "note": "Supervisor-in-the-field surface with no repo route. Overlaps the console Operations Center — may be redundant."
+        "state": "retired",
+        "note": "RETIRED by Product Owner ruling 2026-07-25. Supervisor/Operations is a WEB persona: screen_route_catalogue SCR-WEB-500 /operations is the only supervisor Operations surface, and no supervisor persona row targets /field/**. CR-430..448 are PHASE1_WEB on /operations/**. No field-only need: fleet aggregation requires connectivity, so it cannot serve as an offline supervisory console."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Decide: build it, or retire the design as covered by the web Operations Center."
+          "text": "RETIRED — not built. Building under /field would have invented an uncontracted persona and route and duplicated the Web Operations ownership boundary."
+        },
+        {
+          "lane": "wiring",
+          "text": "HANDOFF TO WEB/ADMIN — four control-plane functions in this design are genuinely uncovered today and are NOT duplication: central outbox/queue monitoring per inspector+device (exists only per-device, FieldHeaderSync.tsx:19-57); central sync-conflict comparison and resolution (only per-device, FieldSyncChips.tsx:19-45); offline-package fleet inventory, freshness and push-update; trusted-device inventory/approve/revoke/re-enrol. Raise as Web/Admin requirements with backend authority."
+        },
+        {
+          "lane": "wiring",
+          "text": "Related web gap found: Operations reads the immutable geo_events ledger (operations/page.tsx:182-189) but the shipped live national map projects inspector positions from visit WINDOWS, so a true last-known device map is not wired anywhere."
         }
       ],
       "phase": 5,
@@ -1690,23 +1712,39 @@
       "channel": "pwa",
       "group": "pwagap",
       "name": "Completion & visit statement",
-      "design": 72,
-      "code": 78,
-      "wiring": 74,
+      "design": 65,
+      "code": 70,
+      "wiring": 80,
       "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html · Visit Statement · Visit Results",
-      "route": "field/inspection/[id] post-submit completion state · field/inspection/[id]/statement report route · visits/[id] results route",
+      "route": "partially covered by field/inspection/[id] submit path",
       "pwa": {
         "state": "gap",
-        "note": "No dedicated completion or statement route; the design implies distinct post-submit screens."
+        "note": "SCR-IPAD-660 completion state built as the post-submit state of Workspace (NOT a route): server-assigned version + submission_version_id captured, what-submission-created, idempotency note, and honest queued / failed states. Runtime pixel + AR/RTL comparison not yet run."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "RESOLVED by Product Owner ruling 2026-07-25: SCR-IPAD-670 /ipad/returned/:id is STALE. Returned correction is a MODE of /field/inspection/[id], not a separate route. Already working: returned-scope section locking (Workspace.tsx:799-802,848-853,1042-1045), DB byte-equality guard EXE-SUBMIT-SCOPE-VIOLATION (migration 20260721160000 SQL:230-268), and atomic version N+1 with relock (SQL:274-279). The assigned-work UI already routes returned inspections into that workspace. Catalogue row to be retired by the maintainer."
+        },
+        {
           "lane": "design",
-          "text": "Capture declared-width EN/LTR and AR/RTL browser comparisons before claiming pixel parity."
+          "text": "IMPLEMENTED in /field/inspection/[id] returned mode: real workflow-state Return badge (no fabricated 'Major' severity because no governed severity field exists), explicit 'Open correction mode' gate, 'Resubmit — version N+1' labelling, real submission_versions snapshot comparison only when two versions and actual changed values exist, and a real submission/review version-history timeline. npm run typecheck and scoped git diff --check PASS 2026-07-25; scores unchanged pending runtime EN/LTR + AR/RTL evidence."
+        },
+        {
+          "lane": "code",
+          "text": "RESOLVED — Completion is the post-submit STATE of /field/inspection/[id], not a separate route. Evidence: canonical capture matrix maps SCR-IPAD-660 to that same url (PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv:4424); submit is async via the outbox so a route push at submit would land on a completion URL for an inspection the server may still reject."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison against SAQEEL PWA-Field Completion.dc.html not run (BS-1: no automated pixel diff exists)."
         },
         {
           "lane": "wiring",
-          "text": "Statement actions and attachments remain Not configured because no governed source is wired; DEC-032 still blocks new real submissions platform-wide."
+          "text": "Feedback QR NOT built and must not be — the design embeds a live token URL but there is no inspector_qr_token schema (see the feedback card). Building it would mean inventing token issuance."
+        },
+        {
+          "lane": "wiring",
+          "text": "Visit Statement is a separate lean report TYPE (only the 5.2.9 fields, skips the item list), not a completion screen — it does not belong to this card."
         }
       ],
       "phase": 5,
@@ -1753,7 +1791,7 @@
     },
     {
       "id": "BS-4",
-      "text": "RESOLVED 2026-07-25. The field-channel work IS committed and on main (0d95313f, 77 files, plus 74f391c6). The original feature/ipad-field-channel-delivery branch was deleted after the work merged — not lost. This board now lives at status/saqeel-status.json in the repo, so card state is version-controlled too. Standing rule remains: commit each card's slice as it lands."
+      "text": "Nothing is committed on feature/ipad-field-channel-delivery (~60 files). Any percentage here can vanish on a branch reset."
     },
     {
       "id": "BS-5",

@@ -39,10 +39,12 @@ function GovernedRow({ label, note }: { label: string; note: string }) {
   );
 }
 
-// The Light/Dark segmented control was removed here: the field channel is fixed
-// dark (see ThemeScript), so the control had nothing to switch and writing
-// "saqeel-theme" from a field screen would only have changed the WEB console's
-// theme — a confusing side effect on a surface that never changes appearance.
+// The design's Light/Dark segmented control is not offered: ThemeScript pins
+// every /field route to dark, so the control would have nothing to switch, and
+// writing "saqeel-theme" from a field screen would only have changed the WEB
+// console's theme — a confusing side effect on a surface that never changes
+// appearance. The row itself is kept, stating that reason, so the section still
+// reads in the design's order.
 
 export default function FieldSettingsClient({
   locale,
@@ -99,11 +101,15 @@ export default function FieldSettingsClient({
 
   return (
     <div className={styles.wrap}>
-      {/* General — language is a REAL persisted control; text size is governed.
-          Appearance is not offered: the field channel is fixed dark
-          (see ThemeScript), so there would be nothing to switch. */}
+      {/* General — design row order is Appearance, Language, Text size. Language
+          is a REAL persisted control; the other two are governed elsewhere and
+          say so rather than offering a control that would do nothing. */}
       <SectionLabel>{copy(locale, "General", "عام")}</SectionLabel>
       <div className={styles.card}>
+        <GovernedRow
+          label={copy(locale, "Appearance", "المظهر")}
+          note={copy(locale, "Always dark in the field", "داكن دائمًا في الميدان")}
+        />
         <div className={styles.row}>
           <span className={styles.rowLabel}>{copy(locale, "Language", "اللغة")}</span>
           <div className="seg">
@@ -188,23 +194,9 @@ export default function FieldSettingsClient({
         </div>
       </div>
 
-      {/* Data & Storage — this screen holds no device-storage API and no fake
-          size or clear action; the real measured readout lives on the linked
-          Device readiness screen (navigator.storage estimate, offline shell,
-          update state). SCR-IPAD-610 / SPC-OFF-002 / MVP2-REQ-0181. */}
+      {/* Data & Storage — no device-storage API here; no fake size or clear action */}
       <SectionLabel>{copy(locale, "Data & Storage", "البيانات والتخزين")}</SectionLabel>
       <div className={styles.card}>
-        <Link href="/field/settings/readiness" prefetch={false} className={styles.link}>
-          <span className={styles.rowLabel}>
-            {copy(locale, "Device readiness", "جاهزية الجهاز")}
-            <span className="t-caption" style={{ display: "block" }}>
-              {copy(locale, "Storage headroom, offline shell, installed mode and app updates.", "المساحة المتاحة، والهيكل دون اتصال، ووضع التثبيت، وتحديثات التطبيق.")}
-            </span>
-          </span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
-            <path d={chevron} />
-          </svg>
-        </Link>
         <GovernedRow label={copy(locale, "Storage used", "المساحة المستخدمة")} note={copy(locale, "Reported in device settings", "تُعرض في إعدادات الجهاز")} />
         <GovernedRow label={copy(locale, "Clear cache", "مسح الذاكرة المؤقتة")} note={notAvailable} />
       </div>
@@ -220,7 +212,7 @@ export default function FieldSettingsClient({
         <GovernedRow label={copy(locale, "Privacy Policy", "سياسة الخصوصية")} note={notAvailable} />
       </div>
 
-      <a href="/login/field/logout" className="btn btn-danger btn-block">
+      <a href="/signout" className="btn btn-danger btn-block">
         {copy(locale, "Sign out", "تسجيل الخروج")}
       </a>
 

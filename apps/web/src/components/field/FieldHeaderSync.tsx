@@ -28,7 +28,8 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
       const ops = await local.peekAll();
       if (aliveRef.current) setQueued(ops.length);
     } catch {
-      if (aliveRef.current) setQueued(0);
+      // Unknown is safer than claiming an empty, fully-synced outbox.
+      if (aliveRef.current) setQueued(null);
     }
   }, [local]);
 
@@ -56,26 +57,41 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
     }
   }, [online, syncing, userId, refresh]);
 
+  // A non-empty outbox must never be labelled Online: connectivity is
+  // available, but the user's changes are still pending replay.
+  const statusLabel = syncing
+    ? strings.syncing
+    : !online
+      ? strings.offline
+      : queued != null && queued > 0
+        ? `${strings.syncNow} · ${queued}`
+        : queued === 0
+          ? strings.online
+          : null;
+
   return (
     <>
-      <span
-        className="fd-pill"
-        data-online={online ? "true" : "false"}
-        role="status"
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 13px",
-          borderRadius: "var(--radius-full)", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap",
-          border: "1px solid " + (online ? "var(--status-compliant-text)" : "var(--border-subtle)"),
-          background: online ? "var(--status-compliant-soft)" : "var(--surface-sunken)",
-          color: online ? "var(--status-compliant-text)" : "var(--text-secondary)",
-        }}
-      >
-        <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor" }} />
-        {online ? strings.online : strings.offline}
-        {queued != null && queued > 0 && (
-          <span className="id-code" style={{ fontWeight: 700 }}>· {queued}</span>
-        )}
-      </span>
+      {statusLabel && (
+        <span
+          className="fd-pill"
+          data-online={online && queued === 0 ? "true" : "false"}
+          data-sync-state={syncing ? "syncing" : !online ? "offline" : queued && queued > 0 ? "pending" : "online"}
+          role="status"
+          aria-live="polite"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            minHeight: 32, paddingBlock: 7, paddingInline: 13,
+            borderRadius: "var(--radius-full)", fontSize: 12, fontWeight: 600,
+            lineHeight: 1.3, whiteSpace: "nowrap",
+            border: `1px solid ${online && queued === 0 ? "var(--status-compliant-text)" : syncing || (queued != null && queued > 0) ? "var(--status-warning-text)" : "var(--border-subtle)"}`,
+            background: online && queued === 0 ? "var(--status-compliant-soft)" : syncing || (queued != null && queued > 0) ? "var(--status-warning-soft)" : "var(--surface-sunken)",
+            color: online && queued === 0 ? "var(--status-compliant-text)" : syncing || (queued != null && queued > 0) ? "var(--status-warning-text)" : "var(--text-secondary)",
+          }}
+        >
+          <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "var(--radius-full)", background: "currentColor", flex: "none" }} />
+          {statusLabel}
+        </span>
+      )}
 
       <button
         type="button"
@@ -84,9 +100,10 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
         disabled={syncing || !online}
         aria-label={syncing ? strings.syncing : strings.syncNow}
         title={syncing ? strings.syncing : strings.syncNow}
-        style={{ position: "relative" }}
+        style={{ position: "relative", minWidth: 50, minHeight: 50 }}
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+        <svg className={syncing ? "fd-sync-icon--spinning" : undefined}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
           style={syncing ? { animation: "fd-spin 0.9s linear infinite" } : undefined}>
           <path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
           <path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
@@ -99,7 +116,7 @@ export default function FieldHeaderSync({ strings, userId }: { strings: FieldHea
           }}>{queued}</span>
         )}
       </button>
-      <style>{"@keyframes fd-spin{to{transform:rotate(360deg)}}"}</style>
+      <style>{"@keyframes fd-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.fd-sync-icon--spinning{animation:none!important}}@media (max-width:600px){.fd-pill{padding-inline:var(--space-3)!important}}"}</style>
     </>
   );
 }

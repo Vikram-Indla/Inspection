@@ -1,5 +1,4 @@
 import Link from "next/link";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
@@ -34,8 +33,26 @@ type IncidentRow = {
 // classes and tokens. The mid-visit context banner, the real incident_reports
 // insert/read (via IncidentReportForm's server action) and every governed field
 // label are unchanged.
-export default async function FieldIncidentReportsPage({ searchParams }: { searchParams: Promise<{ visit?: string; factory?: string; inspection?: string }> }) {
-  const { visit: visitId, factory: factoryId, inspection: inspectionId } = await searchParams;
+//
+// SAQEEL card pwa-incident — the canonical design
+// (designs/pwa/SAQEEL PWA-Field Immediate and Incident.dc.html) is ONE screen
+// carrying TWO inspector paths behind a segment switch, where this route used
+// to ship only one form:
+//   • "Immediate inspection" — start an on-site visit with NO prior assignment.
+//     That is a visit-creation write, not an incident write: it runs through the
+//     governed create_immediate_visit RPC (0027_cd023_immediate_visit_atomic),
+//     which is already implemented at /planning/immediate and is the documented
+//     M01-043 channel exception an inspector persona is allowed to reach
+//     ((app)/layout.tsx). This segment therefore hands off to that surface
+//     instead of standing up a second, weaker immediate-visit write path.
+//   • "Mid-visit incident" — the incident_reports write this route already had.
+// The segment is a server-rendered ?kind= switch so it survives a reload and
+// keeps the visit/factory/inspection anchors.
+type ReportKind = "immediate" | "incident";
+
+export default async function FieldIncidentReportsPage({ searchParams }: { searchParams: Promise<{ visit?: string; factory?: string; inspection?: string; kind?: string }> }) {
+  const { visit: visitId, factory: factoryId, inspection: inspectionId, kind: kindParam } = await searchParams;
+  const kind: ReportKind = kindParam === "immediate" ? "immediate" : "incident";
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -58,22 +75,48 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
     resultingDamage: tr("figma.establishmentmanagement.em054", "Resulting Damage", "الأضرار الناتجة"),
     incidentType: tr("figma.establishmentmanagement.em057", "Incident Type", "نوع الحادث"),
     preliminaryIncidentDescription: tr("figma.establishmentmanagement.em059", "Preliminary Incident Description", "الوصف الأولي للحادث"),
-    submit: tr("incident.report.submit", "Submit incident report", "إرسال بلاغ الحادث"),
+    // Design primary for the incident segment ("Log incident" / "تسجيل الحادث").
+    submit: tr("field.incidents.logIncident", "Log incident", "تسجيل الحادث"),
     submitting: tr("common.submitting", "Submitting…", "جارٍ الإرسال…"),
     created: tr("incident.report.created", "Incident report submitted.", "تم إرسال بلاغ الحادث."),
   };
 
+  // Canonical design copy (EN/AR taken from the design's own string table).
+  const seg = {
+    immediate: tr("field.incidents.kindImmediate", "Immediate inspection", "تفتيش فوري"),
+    incident: tr("field.incidents.kindIncident", "Mid-visit incident", "رصد حادث أثناء الزيارة"),
+  };
+  const immediateNote = tr(
+    "field.incidents.immediateNote",
+    "The inspector starts an on-site visit with no prior assignment. The visit is created via create_immediate_visit with attempt-audit + assignment-overlap guard, and the package locks like any visit.",
+    "يبدأ المفتش زيارة فورية في الموقع دون إسناد مسبق. تُنشأ الزيارة عبر create_immediate_visit مع تدقيق المحاولة وحارس تداخل الإسناد، وتُقفل الحزمة كأي زيارة.",
+  );
+  const lockNote = tr(
+    "field.incidents.immediateLock",
+    "On start the package locks (immutable snapshot) — Immediate Inspection does NOT bypass package locking.",
+    "عند البدء تُقفل الحزمة (لقطة غير قابلة للتعديل) — لا يتجاوز التفتيش الفوري قفل الحزمة.",
+  );
+  const incidentNote = tr(
+    "field.incidents.incidentNote",
+    "Log an incident during an active visit — a capability distinct from a violation. It is documented and surfaces in the visit outputs.",
+    "رصد حادث أثناء زيارة نشطة — قدرة مستقلة عن المخالفة. يُوثّق ويظهر ضمن مخرجات الزيارة.",
+  );
+
+  // Segment links keep whatever real context the route was reached with.
+  const kindHref = (target: ReportKind) => {
+    const params = new URLSearchParams();
+    if (visitId) params.set("visit", visitId);
+    if (factoryId) params.set("factory", factoryId);
+    if (inspectionId) params.set("inspection", inspectionId);
+    params.set("kind", target);
+    return `/field/incident-reports?${params.toString()}`;
+  };
+  // Handoff to the governed immediate-visit creation surface. The factory anchor
+  // is forwarded only when the route actually carries one — never invented.
+  const immediateHref = factoryId ? `/planning/immediate?factory=${encodeURIComponent(factoryId)}` : "/planning/immediate";
+
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const nav = (
-    <FieldNav active="home" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
   const back = (
     <Link href="/field" prefetch={false} className="btn btn-icon btn-ghost"
       aria-label={tr("common.back", "Back", "رجوع")}>
@@ -85,25 +128,55 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
   return (
     <>
       <FieldHeader leading={back}
-        title={tr("field.incidents.title", "Field incident reports", "بلاغات الحوادث الميدانية")}
-        subtitle="FNS-033 · J-12"
+        title={tr("field.incidents.title", "Immediate inspection & incident", "التفتيش الفوري ورصد الحادث")}
+        subtitle={`${tr("field.incidents.subtitle", "Inspector alternate paths", "مسارات إضافية للمفتش")} · FNS-033 · J-12`}
         langHref={langHref} langLabel={langLabel} />
       <div className={styles.page}>
-        <div className="alert alert-info">
-          <div>
-            <div className="alert-title">{tr("field.incidents.capture", "Capture an incident observation", "تسجيل ملاحظة حادث")}</div>
-            {tr(
-              "field.incidents.help",
-              "This writes the existing incident-report record. Report Source, Incident Type, Report Time and Number of Cases remain text because their governed domains or formats are not defined.",
-              "يكتب هذا النموذج في سجل بلاغات الحوادث القائم. تبقى حقول مصدر البلاغ ونوع الحادث ووقت البلاغ وعدد الحالات نصية لأن نطاقاتها أو صيغها المعتمدة غير محددة.",
-            )}
-          </div>
-        </div>
-        {visitId && <div className="alert alert-warning" role="status"><div>{tr("field.incidents.midVisit", "Logging for the active visit — this report will be linked to it, distinct from any violation.", "تسجيل ضمن الزيارة الحالية — سيُربط هذا البلاغ بها، وهو منفصل عن أي مخالفة.")}</div></div>}
+        <nav className={styles.segment} aria-label={tr("field.incidents.kindSwitch", "Report kind", "نوع المسار")}>
+          <Link href={kindHref("immediate")} prefetch={false} className={styles.segOpt}
+            aria-current={kind === "immediate" ? "page" : undefined}>{seg.immediate}</Link>
+          <Link href={kindHref("incident")} prefetch={false} className={styles.segOpt}
+            aria-current={kind === "incident" ? "page" : undefined}>{seg.incident}</Link>
+        </nav>
 
-        <FieldIncidentReportForm locale={locale} strings={labels}
-          context={{ factoryId: factoryId || undefined, visitId: visitId || undefined, inspectionId: inspectionId || undefined }} />
+        {kind === "immediate" ? (
+          <>
+            <div className="alert alert-info"><div>{immediateNote}</div></div>
+            <div className={styles.card}>
+              <div className="alert-title">{seg.immediate}</div>
+              <ul className={styles.immList}>
+                <li>{tr("field.incidents.immediateStepIdentity", "Registered establishment, or unlicensed manual entry where your role and the visit type allow it.", "منشأة مسجّلة، أو إدخال يدوي لمنشأة غير مرخّصة عندما يسمح دورك ونوع الزيارة بذلك.")}</li>
+                <li>{tr("field.incidents.immediateStepReason", "A governed urgency reason and the inspection package for the visit.", "سبب استعجال معتمد وحزمة التفتيش الخاصة بالزيارة.")}</li>
+                <li>{tr("field.incidents.immediateStepLocation", "A confirmed visit location before the visit can be created.", "تأكيد موقع الزيارة قبل إمكانية إنشائها.")}</li>
+              </ul>
+              <div className="alert alert-warning" role="note" style={{ marginBlockStart: "var(--space-3)" }}><div>{lockNote}</div></div>
+              <Link href={immediateHref} prefetch={false} className={`btn btn-primary ${styles.immCta}`}>
+                {tr("field.incidents.startImmediate", "Start immediate inspection", "بدء التفتيش الفوري")}
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="alert alert-info">
+              <div>
+                <div className="alert-title">{tr("field.incidents.capture", "Capture an incident observation", "تسجيل ملاحظة حادث")}</div>
+                {incidentNote}{" "}
+                {tr(
+                  "field.incidents.help",
+                  "This writes the existing incident-report record. Report Source, Incident Type, Report Time and Number of Cases remain text because their governed domains or formats are not defined.",
+                  "يكتب هذا النموذج في سجل بلاغات الحوادث القائم. تبقى حقول مصدر البلاغ ونوع الحادث ووقت البلاغ وعدد الحالات نصية لأن نطاقاتها أو صيغها المعتمدة غير محددة.",
+                )}
+              </div>
+            </div>
+            {visitId && <div className="alert alert-warning" role="status"><div>{tr("field.incidents.midVisit", "Logging for the active visit — this report will be linked to it, distinct from any violation.", "تسجيل ضمن الزيارة الحالية — سيُربط هذا البلاغ بها، وهو منفصل عن أي مخالفة.")}</div></div>}
 
+            <FieldIncidentReportForm locale={locale} strings={labels}
+              context={{ factoryId: factoryId || undefined, visitId: visitId || undefined, inspectionId: inspectionId || undefined }}
+              contextBadge={visitId ? tr("field.incidents.duringVisit", "During visit", "أثناء الزيارة") : undefined} />
+          </>
+        )}
+
+        {kind === "incident" && (
         <section aria-labelledby="field-incident-history" className={styles.history}>
           <h2 id="field-incident-history" style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{tr("field.incidents.history", "Reports in your access scope", "البلاغات ضمن نطاق صلاحياتك")}</h2>
           {error && <div className="alert alert-critical" role="alert"><div>{tr("field.incidents.loadError", "Incident reports are temporarily unavailable. Nothing was changed.", "بلاغات الحوادث غير متاحة مؤقتًا. لم يتم تغيير أي شيء.")}</div></div>}
@@ -137,9 +210,9 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
             </details>
           ))}
         </section>
+        )}
       </div>
       <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      {nav}
     </>
   );
 }

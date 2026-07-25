@@ -591,23 +591,50 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-shell em, .ax-content em { font-style: normal; }
 .ax-shell__backdrop { display: none; }
 
-@media (max-width: 899px) {
+/* Drawer breakpoint. Product-Owner decision 2026-07-26: at iPad size — real
+   device or responsive window — the console shows the hamburger AND the tab
+   bar. Previously this began at 899px, so an iPad sat above it and got a
+   narrow icon rail instead of a hamburger. The pointer term catches an iPad
+   Pro in landscape, which is wider than 1024 but still an iPad. */
+@media (max-width: 1024px), (pointer: coarse) {
   .ax-shell, .ax-shell.is-collapsed { grid-template-columns: minmax(0, 1fr); }
   .ax-shell__nav, .ax-shell.is-collapsed .ax-shell__nav { position: fixed; z-index: var(--ax-z-drawer); inset-block: 0; inset-inline-start: 0; inline-size: min(var(--ax-shell-nav-width), 88vw); block-size: 100dvh; padding: var(--ax-space-200); transform: translateX(-105%); transition: transform var(--ax-motion-standard); box-shadow: var(--ax-shadow-overlay); overflow: hidden; }
   [dir="rtl"] .ax-shell__nav, [dir="rtl"] .ax-shell.is-collapsed .ax-shell__nav { transform: translateX(105%); }
   .ax-shell.is-drawer-open .ax-shell__nav { transform: translateX(0); }
   [dir="rtl"] .ax-shell.is-drawer-open .ax-shell__nav,
   [dir="rtl"] .ax-shell.is-collapsed.is-drawer-open .ax-shell__nav { transform: translateX(0); }
-  .ax-shell.is-collapsed .ax-shell__brand { justify-content: flex-start; padding: var(--ax-space-050) var(--ax-space-100) var(--ax-space-200); }
+  /* The collapsed rail packs brand into a 28px/28px grid. The drawer is a full
+     -width panel, so undo that entirely — otherwise the wordmark is squeezed
+     into a 28px column and disappears, leaving only the close button. */
+  .ax-shell.is-collapsed .ax-shell__brand {
+    display: flex; align-items: center; grid-template-columns: none;
+    justify-content: flex-start; gap: var(--ax-space-100);
+    padding: var(--ax-space-050) var(--ax-space-100) var(--ax-space-200);
+  }
   .ax-shell.is-collapsed .ax-shell__brand-mark { display: none; }
   .ax-shell.is-collapsed .ax-shell__brand-lockup { display: block; }
   .ax-shell.is-collapsed .ax-nav-label { display: initial; }
   .ax-shell.is-collapsed .ax-nav-group__trigger { display: flex; justify-content: space-between; padding: var(--ax-space-100) var(--ax-space-150) var(--ax-space-050); }
   .ax-shell.is-collapsed .ax-nav-item { justify-content: flex-start; padding-inline: var(--ax-space-150); }
   .ax-shell.is-collapsed .ax-nav-subgroup__label { display: flex; }
+  /* ...and its contents. Restoring only the container left the subgroup
+     rendering as an unlabelled icon between two labelled groups. */
+  .ax-shell.is-collapsed .ax-nav-subgroup__label .ax-nav-label { display: initial; }
+  .ax-shell.is-collapsed .ax-nav-subgroup__chevron { display: block; }
+  .ax-shell.is-collapsed .ax-nav-item--child { display: flex; }
+  .ax-shell.is-collapsed .ax-nav-lock { display: grid; }
   .ax-shell.is-collapsed .ax-nav-item--child { margin-inline-start: var(--ax-space-300); inline-size: calc(100% - var(--ax-space-300)); }
   .ax-shell.is-collapsed .ax-nav-lock { display: grid; }
-  .ax-shell__close { display: grid; place-items: center; flex: 0 0 auto; }
+  .ax-shell__close {
+    display: grid; place-items: center; flex: 0 0 auto;
+    background: transparent; border-color: transparent;
+    font-size: 0; color: var(--nav-text);
+  }
+  .ax-shell__close:hover { background: var(--nav-bg-hover); border-color: var(--nav-border); color: var(--nav-text-active); }
+  .ax-shell__close svg { inline-size: 20px; block-size: 20px; }
+  /* The wordmark is the drawer's heading: give it the design's 22px cap height
+     and let the close control take the leftover space, not the other way round. */
+  .ax-shell.is-drawer-open .ax-shell__brand-lockup { block-size: 22px; inline-size: auto; }
   /* The drawer header is brand + close on one row. Without a max the 260px
      wordmark asset pushed under the close button and clipped. */
   .ax-shell.is-drawer-open .ax-shell__brand { gap: var(--ax-space-100); }
@@ -1377,9 +1404,37 @@ button.ax-shell-scope { cursor: pointer; }
     flex: 0 0 auto;
     transition: inline-size var(--ax-motion-standard);
   }
+  /* Collapsed, this is an icon control sitting beside theme/bell/AI/account —
+     so it wears their treatment, not an input's filled pill. */
+  .ax-shell-search input {
+    background: transparent; border-color: transparent;
+    border-radius: var(--ax-radius-standard);
+  }
+  .ax-shell-search:hover input { background: var(--ax-color-neutral-tint); border-color: var(--ax-color-border); }
+  .ax-shell-search:focus-within input { background: var(--ax-color-surface-sunken); border-color: var(--ax-color-border); }
   .ax-shell-search input { padding-inline-end: var(--ax-space-100); color: transparent; }
   .ax-shell-search input::placeholder { color: transparent; }
   .ax-shell-search:focus-within { inline-size: min(420px, 62vw); }
   .ax-shell-search:focus-within input { color: var(--ax-color-text); }
   .ax-shell-search:focus-within input::placeholder { color: var(--ax-color-text-subtlest); }
+}
+
+
+/* ---- persistent tab bar (WA-PWA-TAB-r1) ------------------------------------
+   The bar is components/field/FieldNav.tsx, which ports pwa-tabbar.js verbatim
+   — five tabs, the design's labels, icons, 56/60px heights, active indicator
+   and its own scroll spacer. Nothing here restyles it.
+
+   Field channel: always present, as the DC ships it.
+   Console channel: an iPad-and-below affordance per the Product-Owner decision
+   of 2026-07-26, so it is revealed by width/pointer rather than by different
+   markup. The hamburger stays either way.
+
+   Both channels reserve the bar's height so a page's last row is reachable and
+   never sits underneath it — the same job the design's reserve() does. */
+.field-nav--console { display: none !important; }
+
+@media (max-width: 1024px), (pointer: coarse) {
+  .field-nav--console { display: flex !important; }
+  /* the bar ships its own .field-nav-spacer, so no extra main padding here */
 }

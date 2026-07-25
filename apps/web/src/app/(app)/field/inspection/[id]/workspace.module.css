@@ -7,15 +7,26 @@
    --status-*, --border-*, --radius-*, --space-*, --type-*, --font-*) linked by
    (app)/field/layout.tsx. No bare colors. */
 
+/* PWA card geometry. The canonical field design pages override the generic
+   --radius-md (4px) with a 14px card radius — it is the PWA card idiom, used by
+   12 .dc.html pages (Inspection Form, Preparation, Dashboard, Drafts, My Tasks,
+   Conflict Resolution, Account, Settings, Establishment File, Factory 360, App).
+   Declared once here rather than repeated per rule. */
 .page {
-  inline-size: 100%;
-  max-inline-size: 880px;
-  min-inline-size: 0;
-  margin-inline: auto;
+  --pwa-card-radius: 14px;
+
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 18px 18px 130px;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  /* .if-wrap caps the form at 880px and centres it: on iPad landscape an
+     uncapped column stretches the checklist to an unreadable measure. */
+  max-inline-size: 880px;
+  margin-inline: auto;
+  inline-size: 100%;
+  /* Clearance for the sticky action bar so the last question is never trapped
+     behind it (.if-wrap reserves 130px). */
+  padding-block-end: 130px;
 }
 
 /* Surface card (was ax-surface). Padding stays inline at call sites so the
@@ -23,19 +34,19 @@
 .card {
   background: var(--surface-primary);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: 14px;
+  border-radius: var(--pwa-card-radius);
   box-shadow: var(--shadow-card);
 }
-/* Nested panel (was ax-panel). */
+/* Nested panel (was ax-panel). Nested surfaces keep the tighter 12px radius the
+   design uses for rows inside a card (.plrow), not the outer 14px. */
 .panel {
   background: var(--surface-secondary);
   border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-shadow: none;
+  border-radius: 12px;
 }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
 
 /* Field label wrapper (was ax-field / ax-field__label). */
 .fld { display: flex; flex-direction: column; gap: var(--space-1); min-inline-size: 0; }
@@ -51,30 +62,18 @@
 }
 [dir="rtl"] .overline { letter-spacing: 0; }
 
-/* Checklist item card (was .ipad-q). */
+/* Checklist item card (was .ipad-q). Nested inside a section card, so it takes
+   the design's 12px row radius rather than the 14px outer-card radius. */
 .question {
-  border: 1.5px solid var(--border-input);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  min-block-size: 54px;
-  background: var(--surface-primary);
-  display: flex; flex-direction: column; gap: var(--space-3);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
   scroll-margin-block-start: var(--space-8);
 }
-.questionAnswered {
-  border-color: var(--action-primary);
-  border-inline-start-width: 4px;
-  background: var(--accent-soft);
-}
+.questionAnswered { border-inline-start: 4px solid var(--status-compliant); }
 
-.title {
-  flex: 1;
-  min-inline-size: 0;
-  font-size: var(--type-compact-size);
-  font-weight: 600;
-  line-height: 1.45;
-  margin: 0;
-}
+.title { font-size: var(--type-compact-size); font-weight: 600; margin: 0; }
 
 /* Evidence grid (was ax-evidence-grid / ax-evidence). */
 .evidenceGrid { display: flex; flex-wrap: wrap; gap: var(--space-2); }
@@ -107,7 +106,7 @@
 }
 .conflictHead { font-weight: 600; color: var(--status-warning-text); }
 .conflictGrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-@media (max-width: 640px) { .conflictGrid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .conflictGrid { grid-template-columns: 1fr; } }
 .conflictSide h5 { margin: 0 0 4px; font-size: var(--type-label-size); color: var(--text-muted); }
 .conflictSide p {
   margin: 0; font-family: var(--font-mono); font-size: var(--type-mono-size);
@@ -127,25 +126,16 @@
   margin: var(--space-2) 0 0; padding-inline-start: var(--space-4);
   display: flex; flex-direction: column; gap: var(--space-2);
 }
-/* Blocker → section jump: a text button that reads as the section heading but is
-   keyboard-focusable and navigable. */
-.valJump {
-  appearance: none; background: none; border: 0; padding: 0; margin: 0;
-  color: inherit; font: inherit; text-align: start; cursor: pointer;
-  text-decoration: underline; text-underline-offset: 2px;
-}
 
 /* Sticky immutable-submit action bar (factory-360 .actionBar idiom). */
 .actionbar {
   position: sticky; inset-block-end: 0; z-index: 10;
   background: var(--surface-primary);
-  border: var(--border-w) solid var(--border-subtle);
   border-block-start: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  padding: 12px 16px;
-  /* Safe-area: keep the sticky submit bar clear of the iPad home indicator in
-     both orientations. */
+  padding: var(--space-3);
+  /* Safe-area aware, matching the design's action bar. Without this the submit
+     control sits under the iPad home indicator and is hard to hit — the design
+     specifies padding-block-end: max(12px, env(safe-area-inset-bottom)). */
   padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
   display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3);
 }
@@ -155,151 +145,217 @@
   position: sticky; inset-block-start: 0; z-index: 10;
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--space-2); flex-wrap: wrap;
-  background: var(--surface-primary);
-  border: var(--border-w) solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
-  padding: 12px 14px;
+  background: var(--surface-canvas);
+  padding-block: var(--space-2);
 }
 
-/* Per-section progress track (was inline blockSize/background). */
-.track { block-size: 4px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
-.trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }
-
-.sectionNavigator {
-  padding: 12px 18px;
+/* Inspection-form step rail. It remains anchor navigation over the existing
+   config-driven sections; these rules add no wizard or submission state. */
+.stepRail {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow: hidden;
-}
-.sectionNavigatorHead {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-.sectionNavigatorHead h4,
-.sectionNavigatorHead p { margin: 0; }
-.sectionTabs {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(180px, 1fr);
   gap: 6px;
   overflow-x: auto;
-  padding-block-end: var(--space-1);
-  scroll-snap-type: inline proximity;
+  padding: 12px 18px;
+  background: var(--surface-primary);
+  border-block-end: var(--border-w) solid var(--border-subtle);
 }
-.sectionTab {
-  min-block-size: 38px;
+.step {
+  flex: none;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 7px;
   padding: 7px 13px;
-  color: var(--text-muted);
-  text-align: start;
-  background: var(--surface-sunken);
-  border: 0;
   border-radius: var(--radius-full);
-  cursor: pointer;
-  scroll-snap-align: start;
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  font-size: 12.5px;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.sectionTabActive {
+.stepCurrent {
   color: var(--text-on-action);
   background: var(--action-primary);
+  font-weight: 600;
 }
-.sectionNumber {
+.stepDone {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+.stepNumber {
   inline-size: 18px;
   block-size: 18px;
   flex: 0 0 18px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-size: 11px;
+}
+
+/* Canonical PWA answer and evidence affordances: 50px touch targets, with the
+   selected/danger palette still supplied by the existing button classes. */
+.optionControl {
+  min-block-size: 50px;
+  padding: 12px 14px;
+  border-width: 1.5px;
+  border-color: var(--border-input);
+}
+.uploadControl {
+  min-block-size: 50px;
+  padding: 11px 15px;
+  border: 1.5px dashed var(--border-strong);
   background: var(--surface-sunken);
-  font-family: var(--font-mono);
-  font-size: var(--type-caption-size);
-  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
-.sectionTabActive .sectionNumber {
-  color: var(--text-on-action);
+
+/* pwa-ocr — in-form advisory OCR review after image annotation and before the
+   unchanged evidence enqueue/custody path. Geometry follows OCR Capture.dc.html. */
+.ocrOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  overflow-y: auto;
+  padding: var(--space-4);
+  background: var(--surface-overlay);
 }
-.sectionTabCopy {
-  min-inline-size: 0;
+.ocrSheet {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-4);
+  inline-size: min(100%, 720px);
+  margin-inline: auto;
+  padding: var(--space-4);
+  color: var(--text-primary);
+  background: var(--surface-canvas);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
 }
-.sectionTabCopy strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: var(--type-compact-size);
-}
-.sectionTabCopy span {
-  color: var(--text-muted);
-  font-size: var(--type-caption-size);
-}
-.sectionTabActive .sectionTabCopy span { color: inherit; }
-
-.completionPage { min-block-size: calc(100dvh - var(--space-8)); }
-.completionBanner {
+.ocrHeader,
+.ocrSectionHead,
+.ocrActions {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.ocrHeader h2 { margin: 0; font-size: var(--type-section-size); }
+.ocrAdvisory,
+.ocrPanel {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--status-compliant-soft);
-  border-color: var(--status-compliant);
+  background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 14px;
 }
-.completionBanner h2,
-.completionBanner p,
-.completionHeading { margin: 0; }
-.completionBanner p { margin-block-start: var(--space-1); color: var(--status-compliant-text); }
-.completionMark {
-  inline-size: 44px;
-  block-size: 44px;
-  flex: 0 0 44px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-full);
-  background: var(--status-compliant);
-  color: var(--text-on-action);
-  font-size: var(--type-title-size);
-  font-weight: 700;
+.ocrAdvisory { border-inline-start: 3px solid var(--action-primary); }
+.ocrAdvisory p,
+.ocrPanel p { margin: 0; }
+.ocrPreview {
+  inline-size: 100%;
+  max-block-size: 360px;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: var(--surface-sunken);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 12px;
 }
-.completionPage > section:not(.completionBanner) { padding: var(--space-4); }
-.completionHeading { font-size: var(--type-compact-size); padding-block-end: var(--space-3); border-block-end: var(--border-w) solid var(--border-subtle); }
-.completionMetrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); margin-block-start: var(--space-3); }
-.completionMetrics > div { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-3); border-radius: var(--radius-md); background: var(--surface-sunken); }
-.completionMetrics strong { font-size: var(--type-title-size); }
-.completionMetrics span { color: var(--text-muted); font-size: var(--type-caption-size); }
-.completionLinks,
-.completionFooter { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
-.completionLinks { margin-block-start: var(--space-3); }
-.completionFooter { position: sticky; inset-block-end: 0; padding: 12px 16px; background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-card); }
-.statementPage > section { padding: var(--space-4); }
-.statementHead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-block-end: var(--space-3); border-block-end: var(--border-w) solid var(--border-subtle); }
-.statementHead h2 { margin: 0; font-size: var(--type-compact-size); }
-.statementGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: var(--space-4) 0 0; }
-.statementGrid > div { padding: var(--space-3); border-radius: var(--radius-md); background: var(--surface-sunken); }
-.statementGrid dt { color: var(--text-muted); font-size: var(--type-caption-size); }
-.statementGrid dd { margin: var(--space-1) 0 0; color: var(--text-primary); }
-.sectionFooter {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+.ocrDisabled,
+.ocrError,
+.ocrNotice {
+  padding: var(--space-3);
+  border-radius: 12px;
+}
+.ocrDisabled { color: var(--status-disabled-text); background: var(--status-disabled-soft); }
+.ocrError { color: var(--status-critical-text); background: var(--status-critical-soft); }
+.ocrNotice { color: var(--status-info-text); background: var(--status-info-soft); }
+.ocrField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.ocrField > span { color: var(--text-secondary); font-weight: 600; }
+.ocrField textarea {
+  min-block-size: 150px;
+  padding: var(--space-3);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-input);
+  border-radius: 12px;
+  font: inherit;
+  line-height: 1.8;
+  resize: vertical;
+}
+.ocrField small { color: var(--text-muted); }
+.ocrCheck {
+  display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding-block-start: var(--space-2);
+  gap: var(--space-2);
+  min-block-size: 50px;
+  padding: var(--space-3);
+  background: var(--surface-sunken);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 12px;
+}
+.ocrCheck input { inline-size: 20px; block-size: 20px; }
+.ocrActions {
+  position: sticky;
+  inset-block-end: 0;
+  padding-block-start: var(--space-3);
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
+  background: var(--surface-canvas);
   border-block-start: var(--border-w) solid var(--border-subtle);
 }
-.sectionFooter > :last-child { justify-self: end; }
+.ocrActions button,
+.ocrPanel button { min-block-size: 50px; }
 
-@media (max-width: 640px) {
-  .page { padding: 14px 12px 130px; }
-  .sectionNavigatorHead { flex-direction: column; }
-  .sectionTabs { grid-auto-columns: minmax(168px, 85%); }
-  .toolbar { align-items: stretch; }
-  .actionbar { flex-wrap: wrap; }
-  .actionbar > :first-child { flex: 1 1 100%; }
-  .completionMetrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .statementGrid { grid-template-columns: 1fr; }
+@media (max-width: 600px) {
+  .ocrOverlay { padding: 0; }
+  .ocrSheet { min-block-size: 100dvh; border-radius: 0; }
+  .ocrHeader,
+  .ocrSectionHead { align-items: flex-start; flex-direction: column; }
+  .ocrActions > button { flex: 1; }
+}
+
+/* Per-section progress track (was inline blockSize/background). */
+.track { block-size: 4px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
+.trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }
+
+.versionDiff { display: grid; gap: var(--space-2); margin-block-start: var(--space-3); }
+.versionDiffRow {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.versionTimeline { display: flex; flex-direction: column; margin-block-start: var(--space-3); }
+.versionTimelineRow { position: relative; display: flex; gap: var(--space-3); padding-block: var(--space-2); }
+.versionTimelineRow:not(:last-child)::after {
+  position: absolute;
+  inset-block-start: calc(var(--space-2) + 10px);
+  inset-block-end: -10px;
+  inset-inline-start: 4px;
+  border-inline-start: 2px solid var(--border-subtle);
+  content: "";
+}
+.versionTimelineDot {
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  margin-block-start: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.compliant { background: var(--status-compliant); }
+.warning { background: var(--status-warning); }
+.critical { background: var(--status-critical); }
+
+@media (max-width: 600px) {
+  .versionDiffRow { grid-template-columns: 1fr; }
 }

@@ -2,7 +2,8 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
+import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp, type SubmitSynced } from "@/lib/offline";
+import { markSubmitted } from "./submissionLock";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
@@ -20,11 +21,30 @@ import a11y from "@/components/field/field-a11y.module.css";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
+import OcrEvidenceCapture from "@/components/field/OcrEvidenceCapture";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
 import styles from "./workspace.module.css";
 
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
+type SubmissionVersion = {
+  id: string;
+  version_number: number;
+  snapshot: {
+    answers?: Record<string, string>;
+    notes?: Record<string, string>;
+    dates?: Record<string, string>;
+  } | null;
+  submitted_at: string;
+};
+type Review = {
+  submission_version_id: string;
+  status: string;
+  decision: string | null;
+  returned_sections: string[] | null;
+  decision_reason: string | null;
+  decided_at: string | null;
+};
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: SubmissionVersion[]; reviews?: Review[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
@@ -68,11 +88,19 @@ export type WorkspaceStrings = {
   answered: string;
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
+  returnedBadge: string; openCorrection: string; correctionOpen: string; resubmitBtn: string;
+  compareVersions: string; compareHeading: string; compareBefore: string; compareAfter: string;
+  compareAnswer: string; compareNote: string; compareDate: string;
+  versionHistory: string; historySubmitted: string; historyReturned: string; historyApproved: string; historyRejected: string;
   submittedTitle: string; submittedBody: string;
   completionReview: string; completionAnswered: string; completionViolations: string;
   completionEvidence: string; completionForms: string; completionVersion: string;
   completionLocked: string; completionReports: string; completionStatement: string;
   completionTasks: string; completionSyncPending: string; completionQueuedLock: string;
+  completionVersionLabel: string; completionCreatedTitle: string;
+  completionCreatedVersion: string; completionCreatedAudit: string; completionCreatedReview: string;
+  completionIdempotency: string; completionReused: string; completionPendingSync: string;
+  completionFailedTitle: string; completionFailedBody: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -157,6 +185,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [commentDrafts, setCommentDrafts] = useState({} as Record<string, string>);
   // F2 — captured photos awaiting the annotation overlay (pre-enqueue, offline-safe)
   const [pendingShots, setPendingShots] = useState([] as { item: Item; b64: string; mime: string; fname: string; replaceId?: string }[]);
+  const [ocrShot, setOcrShot] = useState(null as { item: Item; b64: string; mime: string; fname: string; replaceId?: string } | null);
   // F2 — local overlay for archive/delete applied before the server round-trip lands
   const [evState, setEvState] = useState({} as Record<string, { archived?: boolean; deleted?: boolean }>);
   const [deleting, setDeleting] = useState(null as { ev: SEv; reason: string } | null);
@@ -170,6 +199,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
   useEffect(() => { if (validation && validation.length) validationRef.current?.focus(); }, [validation]);
   const [signing, setSigning] = useState(false);
   const [submitted, setSubmitted] = useState(inspection.status === "submitted");
+  const [correctionMode, setCorrectionMode] = useState(false);
+  const [showVersionComparison, setShowVersionComparison] = useState(false);
+  // SCR-IPAD-660. Server-confirmed submission (submission_version_id,
+  // version_number, reused). Null until the outbox op actually syncs — submit
+  // is asynchronous, so `submitted` alone does NOT mean the server accepted it.
+  const [submission, setSubmission] = useState<SubmitSynced | null>(null);
   // Phase 4B / D-016 — active-session cancellation is NON-BLOCKING until
   // Operations decides: a pending request shows a banner while the inspector
   // keeps working; only an approval locks the workspace read-only (terminal).
@@ -687,7 +722,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
   async function confirmShot(b64: string, mime: string) {
     const s = pendingShots[0]; if (!s) return;
     setPendingShots(q => q.slice(1));
-    await enqueueEvidence(s.item, b64, mime, s.fname, s.replaceId, "photo");
+    setOcrShot({ ...s, b64, mime });
+  }
+  async function attachOcrShot() {
+    if (!ocrShot) return;
+    const current = ocrShot;
+    setOcrShot(null);
+    await enqueueEvidence(current.item, current.b64, current.mime, current.fname, current.replaceId, "photo");
   }
 
   // --- Derived runtime views ---
@@ -917,13 +958,57 @@ export default function Workspace({ inspection, items, library, serverResponses,
     };
     await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: legacyVersion, snapshot, idempotency_key: key, acknowledgement: { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }, queued_at: new Date().toISOString() });
     setSubmitted(true);
+    // CR-205/242/264/299 — latch the sibling FactoryVerification read-only too.
+    // Its lock is server-computed and submit triggers no server render, so
+    // without this it stayed editable for the rest of the session.
+    markSubmitted(inspection.id);
     setMsg(navigator.onLine ? fmt(strings.submitting, { v: legacyVersion }) : strings.queuedOffline);
     // After a successful RPC submit, local state follows the SERVER-assigned
     // version number (D-020); the legacy fallback never reports one back.
     processOutbox(userId, onState, (inspectionId, info) => {
-      if (inspectionId === inspection.id) setMsg(fmt(strings.submitting, { v: info.version_number }));
+      if (inspectionId !== inspection.id) return;
+      setMsg(fmt(strings.submitting, { v: info.version_number }));
+      // D-020: the completion state reports the SERVER-assigned version, never
+      // the optimistic legacyVersion above. Until this fires there is no
+      // confirmed submission, so the panel renders the queued state instead of
+      // claiming a version that may never exist.
+      setSubmission(info);
     });
   }
+
+  const orderedVersions = [...(inspection.submission_versions ?? [])].sort((a, b) => a.version_number - b.version_number);
+  const nextVersion = Math.max(0, ...orderedVersions.map(v => v.version_number)) + 1;
+  const lastReturn = (inspection.reviews ?? [])
+    .filter(r => !!r.decided_at && r.decision === "return" && !!r.returned_sections)
+    .sort((a, b) => String(a.decided_at).localeCompare(String(b.decided_at)))
+    .slice(-1)[0];
+  const comparedVersions = orderedVersions.length >= 2 ? orderedVersions.slice(-2) : null;
+  const versionChanges = (() => {
+    if (!comparedVersions) return [];
+    const [before, after] = comparedVersions;
+    const fields = [["answers", strings.compareAnswer], ["notes", strings.compareNote], ["dates", strings.compareDate]] as const;
+    return fields.flatMap(([field, label]) => {
+      const left = before.snapshot?.[field] ?? {};
+      const right = after.snapshot?.[field] ?? {};
+      return [...new Set([...Object.keys(left), ...Object.keys(right)])].sort()
+        .filter(key => left[key] !== right[key])
+        .map(key => ({ key, label, before: left[key] ?? "—", after: right[key] ?? "—" }));
+    });
+  })();
+  const historyEvents = [
+    ...orderedVersions.map(v => ({ at: v.submitted_at, tone: "compliant", label: fmt(strings.historySubmitted, { v: v.version_number }) })),
+    ...(inspection.reviews ?? []).flatMap(r => {
+      if (!r.decided_at || !r.decision) return [];
+      const label = r.decision === "return" && r.returned_sections?.length
+        ? fmt(strings.historyReturned, { sections: r.returned_sections.join(", ") })
+        : r.decision === "approve" ? strings.historyApproved
+          : r.decision === "reject" ? strings.historyRejected : null;
+      return label ? [{ at: r.decided_at, tone: r.decision === "approve" ? "compliant" : r.decision === "reject" ? "critical" : "warning", label }] : [];
+    }),
+  ].sort((a, b) => a.at.localeCompare(b.at));
+  const formatEventTime = (value: string) => new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", {
+    dateStyle: "medium", timeStyle: "short",
+  }).format(new Date(value));
 
   const tone = sync === "synced" ? "badge-compliant" : sync === "offline" ? "badge-warning" : sync === "syncing" ? "badge-info" : sync === "conflict" ? "badge-critical" : sync === "failed" ? "badge-critical" : "badge-pending";
   const latestVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(version => version.version_number));
@@ -998,10 +1083,23 @@ export default function Workspace({ inspection, items, library, serverResponses,
           config-driven engine: pure anchor navigation over the unchanged section list
           below, no new state, no altered validation/submit/RLS/offline behaviour. */}
       {!submitted && sections.length > 1 && (
-        <nav className="tabs" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
-          {sections.map(s => (
-            <a key={s.key} className="tab" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap" }}>{s.title}</a>
-          ))}
+        <nav className={styles.stepRail} aria-label={strings.panelTitle}>
+          {sections.map((s, index) => {
+            const sectionProgress = progress.find(p => p.key === s.key);
+            const isDone = sectionProgress?.pct === 100;
+            const isCurrent = !isDone && progress.find(p => p.pct < 100)?.key === s.key;
+            return (
+              <a
+                key={s.key}
+                className={`${styles.step} ${isDone ? styles.stepDone : ""} ${isCurrent ? styles.stepCurrent : ""}`}
+                href={`#ax-section-${s.key}`}
+                aria-current={isCurrent ? "step" : undefined}
+              >
+                <span className={styles.stepNumber} aria-hidden="true">{index + 1}</span>
+                {s.title}
+              </a>
+            );
+          })}
         </nav>
       )}
 
@@ -1047,11 +1145,103 @@ export default function Workspace({ inspection, items, library, serverResponses,
           </div>
         </div>
       ))}
-      {inspection.status === "returned" && (() => {
-        const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
-        return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
-      })()}
-      {submitted && <div className="alert alert-immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
+      {inspection.status === "returned" && lastReturn && (
+        <div className="alert alert-warning">
+          <div className="stack" style={{ gap: "var(--space-2)" }}>
+            <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
+              <span className="badge badge-warning">{strings.returnedBadge}</span>
+              <strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong>
+            </div>
+            {lastReturn.decision_reason ? <div>{lastReturn.decision_reason}</div> : null}
+            <div className="t-caption">{strings.returnedNote}</div>
+            {correctionMode
+              ? <div className="t-caption">{strings.correctionOpen}</div>
+              : <button type="button" className="btn btn-secondary" style={{ alignSelf: "flex-start" }} onClick={() => setCorrectionMode(true)}>{strings.openCorrection}</button>}
+          </div>
+        </div>
+      )}
+      {comparedVersions && versionChanges.length > 0 && (
+        <div className={styles.card} style={{ padding: "var(--space-4)" }}>
+          <div className="row" style={{ justifyContent: "space-between", gap: "var(--space-2)", flexWrap: "wrap" }}>
+            <h4>{fmt(strings.compareHeading, { before: comparedVersions[0].version_number, after: comparedVersions[1].version_number })}</h4>
+            <button type="button" className="btn btn-secondary btn-sm" aria-expanded={showVersionComparison} onClick={() => setShowVersionComparison(v => !v)}>{strings.compareVersions}</button>
+          </div>
+          {showVersionComparison && (
+            <div className={styles.versionDiff}>
+              {versionChanges.map(change => (
+                <div key={`${change.label}-${change.key}`} className={styles.versionDiffRow}>
+                  <strong>{change.key} · {change.label}</strong>
+                  <div><span className={styles.overline}>{fmt(strings.compareBefore, { v: comparedVersions[0].version_number })}</span><div>{change.before}</div></div>
+                  <div><span className={styles.overline}>{fmt(strings.compareAfter, { v: comparedVersions[1].version_number })}</span><div>{change.after}</div></div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {historyEvents.length > 0 && (
+        <div className={styles.card} style={{ padding: "var(--space-4)" }}>
+          <h4>{strings.versionHistory}</h4>
+          <div className={styles.versionTimeline}>
+            {historyEvents.map((event, index) => (
+              <div key={`${event.at}-${index}`} className={styles.versionTimelineRow}>
+                <span className={`${styles.versionTimelineDot} ${styles[event.tone]}`} aria-hidden="true" />
+                <div><strong>{event.label}</strong><div className="t-caption">{formatEventTime(event.at)}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* SCR-IPAD-660 completion state (CR-320/321/324/327/333/335/336).
+          Deliberately NOT a separate route: submit is asynchronous through the
+          outbox, so at setSubmitted(true) the server has not confirmed anything
+          yet and a route push would land on a completion URL for an inspection
+          that may still fail. Three honest states below, driven by real signals
+          only — never a claim the server has not made. */}
+      {submitted && sync === "failed" && (
+        <div className="alert alert-critical" role="alert">
+          <div>
+            <strong>{strings.completionFailedTitle}</strong> {strings.completionFailedBody}
+            {detail ? <div className="t-caption id-code" style={{ marginBlockStart: "var(--space-1)" }}>{detail}</div> : null}
+          </div>
+        </div>
+      )}
+      {submitted && sync !== "failed" && (
+        <div className="alert alert-immutable" role="status">
+          <div className="stack" style={{ gap: "var(--space-2)" }}>
+            <div>
+              <strong>{strings.submittedTitle}</strong> {strings.submittedBody}
+            </div>
+            {/* CR-324: version is server-authoritative. Rendered only once the
+                server has assigned one — zero-assumption, no optimistic number. */}
+            {submission ? (
+              <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
+                <span className="badge badge-compliant">
+                  {strings.completionVersionLabel} v{submission.version_number}
+                </span>
+                <span className="t-caption id-code">{submission.submission_version_id}</span>
+              </div>
+            ) : (
+              <div className="t-caption">{strings.completionPendingSync}</div>
+            )}
+            {submission?.reused ? <div className="t-caption">{strings.completionReused}</div> : null}
+            {submission ? (
+              <>
+                {/* CR-335 — what the submission created, stated plainly. */}
+                <div>
+                  <strong className={styles.overline}>{strings.completionCreatedTitle}</strong>
+                  <ul style={{ margin: "var(--space-1) 0 0", paddingInlineStart: "var(--space-4)" }}>
+                    <li>{strings.completionCreatedVersion}</li>
+                    <li>{strings.completionCreatedAudit}</li>
+                    <li>{strings.completionCreatedReview}</li>
+                  </ul>
+                </div>
+                <div className="t-caption">{strings.completionIdempotency}</div>
+              </>
+            ) : null}
+          </div>
+        </div>
+      )}
       {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
           pending: non-blocking banner, the inspector keeps working (§12). */}
       {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
@@ -1139,8 +1329,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {!submitted && displaySections.filter(s => s.key === activeSection?.key).map(s => {
         if (inspection.status === "returned") {
-          const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
-          if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
+          if (inspection.status === "returned" && (!correctionMode || !lastReturn?.returned_sections?.includes(s.key))) {
             return <div key={s.key} className={styles.card} style={{ padding: "var(--space-4)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="t-caption">{strings.lockedSection}</p></div>;
           }
         }
@@ -1211,11 +1400,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
                       <input className="input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
                     </label>
                   ) : (it.response_model.responses ?? []).map(r => (
-                    <button key={r} className={val?.value === r ? (r === "non_compliant" ? "btn btn-lg btn-danger" : "btn btn-lg btn-primary") : "btn btn-lg btn-secondary"}
+                    <button key={r} type="button" aria-pressed={val?.value === r} className={`${styles.optionControl} ${val?.value === r ? (r === "non_compliant" ? "btn btn-lg btn-danger" : "btn btn-lg btn-primary") : "btn btn-lg btn-secondary"}`}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
                   {leg?.applies && leg.type !== "comment" && (
-                    <label className="btn btn-lg btn-secondary" style={{ cursor: "pointer" }}>
+                    <label className={`${styles.uploadControl} btn btn-lg btn-secondary`}>
                       {val?.value === "non_compliant" && leg.mandatory ? strings.mandatoryPhoto : (leg.type === "document" ? strings.evAddDoc : strings.evAdd)}
                       <input type="file" accept={acceptFor(leg.type)} multiple hidden onChange={e => { if (e.target.files?.length) { attachFiles(it, e.target.files); e.target.value = ""; } }} />
                     </label>
@@ -1529,7 +1718,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <div className={styles.actionbar}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
           <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
-          <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
+          <button className="btn btn-primary btn-lg" aria-disabled={blockCount > 0 || (inspection.status === "returned" && !correctionMode)}
+            onClick={() => { if (inspection.status !== "returned" || correctionMode) void submit(); }}>
+            {inspection.status === "returned" ? fmt(strings.resubmitBtn, { v: nextVersion }) : strings.submitBtn}
+          </button>
         </div>
       )}
       </fieldset>
@@ -1542,6 +1734,15 @@ export default function Workspace({ inspection, items, library, serverResponses,
       {shot && !submitted && (
         <ImageAnnotator srcB64={shot.b64} mime={shot.mime} strings={strings.annot}
           onCancel={() => setPendingShots(q => q.slice(1))} onConfirm={confirmShot} />
+      )}
+      {ocrShot && !submitted && (
+        <OcrEvidenceCapture
+          capture={ocrShot}
+          locale={locale}
+          classNames={styles}
+          onBack={() => setOcrShot(null)}
+          onAttach={attachOcrShot}
+        />
       )}
       {/* J-13 exit/draft: every answer already autosaves to the durable IndexedDB draft
           store the instant it's entered (FND-005) — there is no separate "unsaved buffer"

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { performShellSearch, type GlobalSearchType } from "@/lib/shell-search";
+import { performShellSearch, type GlobalSearchResult, type GlobalSearchType, type ShellSearchOutcome } from "@/lib/shell-search";
 import { shellGlobalSearchHref } from "@/lib/shell-navigation";
 import { useT } from "@/lib/i18n";
 import styles from "./search.module.css";
@@ -65,9 +65,65 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
     </Link>
   );
 
-  const outcome = query.length >= 2 ? await performShellSearch(sb, query) : { results: [], degraded: false };
+  // performShellSearch folds per-source failures into `degraded`, but it can
+  // still throw (transport/RPC failure). Catch it so the screen can state that
+  // search is UNAVAILABLE instead of rendering a bare shell. The query itself
+  // is untouched — same call, same ranking, same RLS-scoped client.
+  let outcome: ShellSearchOutcome = { results: [], degraded: false };
+  let searchThrew = false;
+  if (query.length >= 2) {
+    try {
+      outcome = await performShellSearch(sb, query);
+    } catch (err) {
+      searchThrew = true;
+      console.error("[field search]", err instanceof Error ? err.message : String(err));
+    }
+  }
   // Server-side type filter over the single performShellSearch outcome — no second query.
   const visibleResults = activeType ? outcome.results.filter(r => r.type === activeType) : outcome.results;
+
+  // ERROR vs EMPTY. A degraded outcome that returned nothing means every source
+  // failed — that is not an empty scope, and reporting "no results" there would
+  // tell an inspector something false about the register. Degraded WITH results
+  // stays a partial-results warning.
+  const searchUnavailable = searchThrew || (outcome.degraded && outcome.results.length === 0);
+  const partiallyDegraded = outcome.degraded && outcome.results.length > 0;
+  // A type filter emptied a non-empty result set — distinct from "nothing matched".
+  const emptyByFilter = !searchUnavailable && visibleResults.length === 0 && outcome.results.length > 0;
+  const emptyOverall = !searchUnavailable && query.length >= 2 && outcome.results.length === 0;
+
+  // Result grouping. The design's result list is flat, but it does carry a
+  // section-header idiom on this same screen (the "Recent searches" t-label), so
+  // grouped results reuse that exact treatment rather than a new one. Grouping is
+  // presentation only — the source order from performShellSearch is preserved
+  // inside each group, and a single-type result set stays flat.
+  const groups = ORDERED_TYPES
+    .map(type => ({ type, rows: visibleResults.filter(r => r.type === type) }))
+    .filter(group => group.rows.length > 0);
+  const grouped = !activeType && groups.length > 1;
+
+  const resultRow = (result: GlobalSearchResult) => {
+    const meta = TYPE_META[result.type];
+    return (
+      <Link key={`${result.type}-${result.id}`} href={shellGlobalSearchHref(result, true)} prefetch={false} className={styles.row}>
+        <span className={styles.icn} style={{ background: meta.iconBg, color: meta.iconColor }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 19, height: 19 }} aria-hidden="true">
+            <path d={meta.iconPath} />
+          </svg>
+        </span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}><bdi>{result.label ?? result.id.slice(0, 8)}</bdi></span>
+            <span className={`badge ${styles.typeBadge}`}>{typeLabel(result.type)}</span>
+          </div>
+          {result.detail && <div className="t-caption" style={{ marginBlockStart: 3 }}><bdi>{result.detail}</bdi></div>}
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
+          <path d={chevron} />
+        </svg>
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -104,7 +160,9 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
       </div>
 
       <div className={styles.wrap}>
-        {outcome.degraded && (
+        {/* Partial degradation — some sources answered, so results render under
+            a warning. Never shown together with the unavailable state below. */}
+        {partiallyDegraded && (
           <div className={`badge badge-warning ${styles.notice}`} role="alert">
             {tr("field.search.degraded", "Some sources are temporarily unavailable — results may be incomplete.", "بعض المصادر غير متاحة مؤقتًا — قد تكون النتائج غير مكتملة.")}
           </div>
@@ -120,32 +178,44 @@ export default async function FieldSearchPage({ searchParams }: { searchParams: 
           <div className={styles.state} role="status">{tr("field.search.tooShort", "Type at least 2 characters.", "أدخل حرفين على الأقل.")}</div>
         )}
 
-        {query.length >= 2 && visibleResults.length === 0 && !outcome.degraded && (
+        {/* ERROR — search could not run. Deliberately does NOT claim an empty
+            scope, and offers the same query again rather than a dead end. */}
+        {searchUnavailable && (
+          <div className={`alert alert-critical ${styles.errorAlert}`} role="alert">
+            <div>{tr("field.search.unavailable", "Search is temporarily unavailable, so no result can be shown for this query.", "البحث غير متاح مؤقتًا، ولا يمكن عرض أي نتيجة لهذا الاستعلام.")}</div>
+            <Link href={chipHref(activeType)} prefetch={false} className={styles.retry}>
+              {tr("field.search.retry", "Try again", "حاول مرة أخرى")}
+            </Link>
+          </div>
+        )}
+
+        {/* EMPTY — the query ran and genuinely matched nothing in scope. */}
+        {emptyOverall && (
           <div className={styles.state} role="status">{tr("field.search.empty", "No matching results in your scope.", "لا توجد نتائج مطابقة ضمن صلاحياتك.")}</div>
         )}
 
-        {visibleResults.map(result => {
-          const meta = TYPE_META[result.type];
-          return (
-            <Link key={`${result.type}-${result.id}`} href={shellGlobalSearchHref(result, true)} prefetch={false} className={styles.row}>
-              <span className={styles.icn} style={{ background: meta.iconBg, color: meta.iconColor }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 19, height: 19 }} aria-hidden="true">
-                  <path d={meta.iconPath} />
-                </svg>
-              </span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}><bdi>{result.label ?? result.id.slice(0, 8)}</bdi></span>
-                  <span className={`badge ${styles.typeBadge}`}>{typeLabel(result.type)}</span>
-                </div>
-                {result.detail && <div className="t-caption" style={{ marginBlockStart: 3 }}><bdi>{result.detail}</bdi></div>}
-              </div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
-                <path d={chevron} />
-              </svg>
+        {/* EMPTY BY FILTER — matches exist, this type chip has none of them. */}
+        {emptyByFilter && activeType && (
+          <div className={styles.state} role="status">
+            <div>{tr("field.search.emptyForType", "No results of this type.", "لا توجد نتائج من هذا النوع.")}</div>
+            <Link href={chipHref(null)} prefetch={false} className={styles.retry}>
+              {locale === "ar"
+                ? `عرض كل النتائج (${outcome.results.length})`
+                : t("field.search.showAll", `Show all results (${outcome.results.length})`)}
             </Link>
-          );
-        })}
+          </div>
+        )}
+
+        {grouped
+          ? groups.map(group => (
+              <div key={group.type}>
+                <div className={`t-label ${styles.groupLabel}`}>
+                  {typeLabel(group.type)} ({group.rows.length})
+                </div>
+                {group.rows.map(resultRow)}
+              </div>
+            ))
+          : visibleResults.map(resultRow)}
       </div>
     </>
   );

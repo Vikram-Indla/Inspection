@@ -39,6 +39,13 @@
   margin-block-end: 12px;
 }
 
+/* Settled field-channel breakpoint (600px, not 640px). At phone widths two
+   label/value columns compress until neither side is readable, so the compare
+   stacks — local above server, same row order, same content. */
+@media (max-width: 599px) {
+  .sides { flex-direction: column; }
+}
+
 .side {
   flex: 1;
   min-width: 0;
@@ -80,7 +87,19 @@
   flex-direction: column;
   gap: 1px;
   height: auto;
+  /* Settled field-channel geometry: touch controls are never below 50px. */
+  min-height: 50px;
   padding-block: 8px;
+}
+
+/* Resolution-policy callout (design: .panel on --accent-soft). */
+.policy {
+  padding: 11px 13px;
+  background: var(--accent-soft);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
 }
 
 .btnHint {

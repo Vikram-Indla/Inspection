@@ -77,6 +77,12 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     notFoundBody: tr("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).", "هذه الزيارة غير موجودة أو خارج نطاق مؤسستك (M02-001)."),
     youLabel: tr("field.travel.youLabel", "You", "أنت"),
     mapAria: tr("field.travel.mapAria", "Live route map to the establishment", "خريطة المسار المباشر إلى المنشأة"),
+    // Fence-map verdict chip — wording follows the canonical Journey design
+    // ("Within fence · {d}m" / "Outside fence · {d}m").
+    fenceWithin: tr("field.travel.fenceWithin", "Within fence · {d} m", "ضمن النطاق · {d}م"),
+    fenceOutside: tr("field.travel.fenceOutside", "Outside fence · {d} m", "خارج النطاق · {d}م"),
+    fenceLocating: tr("field.travel.fenceLocating", "Locating…", "جارٍ تحديد الموقع…"),
+    fenceMapAria: tr("field.travel.fenceMapAria", "Geofence verification map at establishment scale", "خريطة التحقق الجغرافي بمقياس المنشأة"),
     continueCheckin: tr("field.travel.continueCheckin", "Continue to check-in", "المتابعة إلى تسجيل الوصول"),
     checkinCaption: tr("field.travel.checkinCaption", "Arrival is confirmed on the governed geofence check-in (M04-004). This screen only shows your route — it does not record arrival.", "يتم تأكيد الوصول عبر تسجيل الدخول الجغرافي المحكوم (M04-004). تعرض هذه الشاشة مسارك فقط ولا تسجّل الوصول."),
     connectivityOffline: tr("field.travel.connectivityOffline", "Offline — the live route ETA can't refresh. Your GPS position and geofence range below stay live.", "غير متصل — لا يمكن تحديث الوقت المتوقع للمسار. يبقى موقعك عبر GPS ونطاق التسييج أدناه محدّثين مباشرةً."),

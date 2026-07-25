@@ -174,15 +174,6 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     ],
   },
   {
-    id: "insights",
-    labelKey: "shell.group.insights",
-    labelEn: "Insights",
-    labelAr: "الرؤى",
-    items: [
-      { id: "ai-insights", labelKey: "shell.nav.aiInsights", labelEn: "AI Insights", labelAr: "رؤى الذكاء الاصطناعي", href: "/ai/suggestions", icon: "ai", roles: businessRoles, businessTab: "AI Insights", visibility: "business" },
-    ],
-  },
-  {
     id: "administration",
     labelKey: "shell.group.administration",
     labelEn: "Administration",
