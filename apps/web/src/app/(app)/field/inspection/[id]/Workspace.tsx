@@ -9,6 +9,7 @@ import {
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
+import { detectServerAdvance, sectionKeyForItem, type RecoveryState } from "./recovery-runtime";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
@@ -57,7 +58,11 @@ export type WorkspaceStrings = {
   // outcome, not network quality).
   connectivityOffline: string; connectivityWeak: string;
   answered: string;
-  conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
+  conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string; conflictReview: string;
+  // SCR-IPAD stale submitted-version recovery
+  recoveryAdvancedTitle: string; recoveryAdvancedBody: string;
+  recoveryReturnedTitle: string; recoveryReturnedBody: string;
+  recoveryReload: string; recoveryBlockSubmit: string;
   returnedScope: string; returnedNote: string;
   submittedTitle: string; submittedBody: string;
   lockedSection: string;
@@ -135,6 +140,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [evState, setEvState] = useState({} as Record<string, { archived?: boolean; deleted?: boolean }>);
   const [deleting, setDeleting] = useState(null as { ev: SEv; reason: string } | null);
   const [conflicts, setConflicts] = useState([] as Conflict[]);
+  // SCR-IPAD Offline Conflict & Recovery — the highest submission version this
+  // device loaded, and whether the SERVER copy has since advanced past it
+  // (submitted/returned/newer version). Recovery is fail-closed: it never
+  // overwrites the server, it warns and offers a reload.
+  const loadedVersion = useMemo(() => Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)), [inspection.submission_versions]);
+  const [recovery, setRecovery] = useState<RecoveryState>("none");
   const [msg, setMsg] = useState(null as string | null);
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
   const [signing, setSigning] = useState(false);
@@ -290,6 +301,32 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const iv = setInterval(tick, 8000);
     return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
   }, [onState, refreshQueued, userId]);
+
+  // Reconnect stale-version guard: re-read the server inspection's status +
+  // latest submission version and compare to what this device loaded. Runs on
+  // mount and on every reconnect (not a poll). RLS authorizes the assigned
+  // inspector's own inspection read; a failed read leaves recovery untouched
+  // (never a false alarm). This is DETECTION only — it changes no server state.
+  useEffect(() => {
+    if (submitted) return;   // already-terminal at load → the normal read-only lock owns this
+    let cancelled = false;
+    const check = async () => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) return;
+      const { data } = await supabaseBrowser()
+        .from("inspections").select("status, submission_versions(version_number)")
+        .eq("id", inspection.id).maybeSingle();
+      if (cancelled || !data) return;
+      const serverVersion = Math.max(0, ...(((data.submission_versions ?? []) as { version_number: number }[]).map(s => s.version_number)));
+      setRecovery(detectServerAdvance(
+        { status: inspection.status, version: loadedVersion },
+        { status: data.status as string, version: serverVersion },
+      ));
+    };
+    void check();
+    const onOnline = () => void check();
+    window.addEventListener("online", onOnline);
+    return () => { cancelled = true; window.removeEventListener("online", onOnline); };
+  }, [inspection.id, inspection.status, loadedVersion, submitted]);
 
   // --- Persistence beyond the outbox (context · action forms · runtime violations) ---
   // The offline engine is untouched: these use direct writes when online plus a
@@ -628,6 +665,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
     .map(code => ({ code, config: vioConfig[code] ?? null })), [invalidatedVios, vioConfig]);
 
   async function submit() {
+    // Stale submitted-version protection: refuse to submit over a server copy
+    // that has advanced (submitted/returned/newer version) since this device
+    // loaded — the immutable submitted version is never overwritten from a stale
+    // session. The inspector reloads the latest via the recovery banner.
+    if (recovery !== "none") { setMsg(strings.recoveryBlockSubmit); return; }
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
     const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
@@ -783,19 +825,40 @@ export default function Workspace({ inspection, items, library, serverResponses,
         {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
         {prev && <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
       </details>
-      {conflicts.map(c => (
-        <div key={c.key} className={styles.conflict}>
-          <div className={styles.conflictHead}>{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
+      {/* SCR-IPAD stale submitted-version recovery — fail-closed: the server copy
+          advanced past this device, so submission is blocked and the inspector is
+          offered a reload of the current server state. No silent overwrite. */}
+      {recovery !== "none" && (
+        <div className={styles.recovery} role="alert" data-testid="recovery-banner" data-recovery={recovery}>
+          <div className={styles.recoveryText}>
+            <strong>{recovery === "returned" ? strings.recoveryReturnedTitle : strings.recoveryAdvancedTitle}</strong>
+            <p className="t-caption" style={{ margin: 0 }}>{recovery === "returned" ? strings.recoveryReturnedBody : strings.recoveryAdvancedBody}</p>
+          </div>
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => router.refresh()} data-testid="recovery-reload">{strings.recoveryReload}</button>
+        </div>
+      )}
+      {conflicts.map(c => {
+        const code = items.find(i => i.id === c.item_id)?.code ?? "";
+        const sectionKey = code ? sectionKeyForItem(displaySections, code) : null;
+        return (
+        <div key={c.key} className={styles.conflict} data-testid="conflict-card">
+          <div className={styles.conflictHead}>{fmt(strings.conflictHead, { code })}</div>
           <div className={styles.conflictGrid}>
             <div className={styles.conflictSide}><h5>{strings.thisDevice}</h5><p>{JSON.stringify(c.local)}</p></div>
             <div className={styles.conflictSide}><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
           </div>
           <div className={styles.conflictFoot}>
+            {sectionKey && (
+              <button type="button" className="btn btn-ghost" data-testid="conflict-review"
+                onClick={() => document.getElementById(`ax-section-${sectionKey}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+                {strings.conflictReview}
+              </button>
+            )}
             <button className="btn btn-secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
             <button className="btn btn-primary" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
           </div>
         </div>
-      ))}
+      );})}
       {inspection.status === "returned" && (() => {
         const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
         return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
