@@ -1,0 +1,244 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-EXPIRY-RUNTIME-REMEDIATION-PREFLIGHT-027
+title: Collision-safe Planning Expiry governance remediation preflight
+status: PREFLIGHT_READY_POLICY_DESIGN_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-PLANNING-EXPIRY-RUNTIME-PERMISSION-MAPPING-026
+  design_dependency: M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048
+  route: /admin/planning/expiry
+  package: M9
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  requirements:
+    - [MVP1-M02-016, CR-068, WA-AC-0068]
+    - [MVP1-M02-046, CR-098, WA-AC-0098]
+    - [MVP1-M02-015, CR-067, WA-AC-0067]
+    - REQ-R0C-00204
+    - REQ-R0C-00205
+    - REQ-R0C-00206
+    - REQ-R0C-00207
+    - REQ-R0C-00263
+    - STM-VIS-003
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+policy_decisions:
+  - id: EX-DEC-001
+    question: Must every rule family always have exactly one active version, or may a family intentionally have none?
+    required_output: Explicit invariant, authorized exception and safe scheduler behavior.
+  - id: EX-DEC-002
+    question: Does expiry activation require maker-checker with a distinct approver?
+    recommended_answer: YES
+    rationale: Activation changes system-driven final-state transitions within 15 minutes.
+  - id: EX-DEC-003
+    question: What is the real business basis for no_execution_date?
+    permitted_options:
+      - Remove or hold the rule until a canonical nullable execution-date field exists.
+      - Approve a new execution-date authority and bounded migration without weakening window_start.
+  - id: EX-DEC-004
+    question: Which admin personas may view, propose, approve and activate expiry policy?
+  - id: EX-DEC-005
+    question: Are already-published visits bound to the rule version at publish time or evaluated against the effective version at sweep time?
+    current_behavior: Effective version at sweep time.
+  - id: EX-DEC-006
+    question: Are notification flags part of the atomic expiry consequence or may delivery use a durable outbox?
+
+target_contract:
+  states:
+    draft: Mutable by authorized proposer; never consumed by scheduler.
+    pending_approval: Immutable proposal awaiting a distinct approver.
+    approved_future: Immutable and activates only at approved effective_from.
+    active: Immutable and scheduler-consumed.
+    retired: Immutable with effective_to and retained provenance.
+    rejected: Immutable decision record with reason.
+  invariants:
+    - At most one active/effective version per rule family at any instant.
+    - If EX-DEC-001 requires continuous coverage, exactly one version must be active.
+    - Rule ID and rule_type are resolved together inside the database.
+    - Activation, predecessor retirement, effective-window update and decision audit commit atomically.
+    - Active and retired versions cannot be edited or deleted.
+    - A visit stores the exact rule/version provenance that expired it.
+    - The scheduler ignores drafts, rejected and future versions.
+    - Expired remains final and view-only.
+  concurrency:
+    - Family-scoped database lock during version allocation and activation.
+    - Expected-version/CAS protection for draft updates.
+    - Stable failure codes for stale edit, stale activation and approval conflict.
+
+proposed_lease_sequence:
+  - lease_id: EX-LEASE-CONTRACT-001
+    order: 1
+    owner: ONE_EXPIRY_POLICY_OWNER
+    purpose: Decide EX-DEC-001..006 and freeze rule semantics, personas, effective-time and consequence matrix.
+    artifacts_only:
+      - policy decision record
+      - rule basis and scope matrix
+      - state/transition matrix
+      - actor/capability matrix
+      - current-to-target data migration plan
+    do_not_touch: [product code, database, tests, data, design]
+  - lease_id: EX-LEASE-DB-001
+    order: 2
+    owner: ONE_DATABASE_EXPIRY_ENGINEER
+    purpose: Add forward-only rule lifecycle, atomic activation and non-bypassable constraints.
+    proposed_paths:
+      - one new forward-only Supabase migration
+      - one new isolated database probe
+    entry_criteria:
+      - EX-DEC-001..006 approved.
+      - Migration name and rollback-forward owner recorded.
+      - Planning Status authority lease confirms no overlap with expiry engine.
+    exit_criteria:
+      - Database prevents multiple active versions and forbidden zero-active state if selected.
+      - Draft allocation and activation serialize per rule family.
+      - Active/retired rows are immutable.
+      - Actor/type/target mismatch fails before mutation.
+      - Failure at any activation step leaves the prior active version intact.
+      - Existing valid expiry engine outcomes and provenance are preserved.
+  - lease_id: EX-LEASE-SCHEDULER-001
+    order: 3
+    owner: ONE_SCHEDULER_INTEGRATION_ENGINEER
+    purpose: Reconcile effective-version selection, binding policy and dormant-rule decision.
+    proposed_scope:
+      - _expire_lapsed_visits_core compatible forward replacement
+      - scheduled and user-scoped entry points
+      - cron health/readiness observability
+    forbidden:
+      - inventing threshold values
+      - making window_start nullable solely to make a UI option fire
+      - weakening Expired final-state guards
+    exit_criteria:
+      - Every accepted rule family has a reachable, source-authorized predicate.
+      - Effective instant and selected version are deterministic.
+      - Consequences remain transactional or use an approved durable outbox.
+      - Replays cannot duplicate final-state transitions or notifications.
+  - lease_id: EX-LEASE-UI-001
+    order: 4
+    owner: ONE_M9_WEB_ENGINEER
+    purpose: Implement accepted Design 048 over the frozen governed RPC contract.
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/planning/expiry/page.tsx
+      - apps/web/src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx
+      - apps/web/src/app/(app)/admin/planning/expiry/actions.ts
+      - route-local types and translations
+    entry_criteria:
+      - Stable accepted Design 048 revision.
+      - Database RPC and failure-code contract frozen.
+      - EX-DEC-004 permission matrix approved.
+    exit_criteria:
+      - Route is inaccessible to unauthorized personas, not merely read-only.
+      - Draft, pending, future, active, retired, rejected and unavailable states are honest.
+      - Active rows have no edit control.
+      - Activation is one governed action with confirmation and decision reason.
+      - Impossible/dormant rules are not offered as functioning.
+      - No client-supplied type can target a different rule family.
+  - lease_id: EX-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    purpose: Certify database, scheduler, permission and browser behavior.
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-planning-expiry-runtime.spec.ts
+      - new supabase/tests/m9_planning_expiry_governance_probe.sql
+      - evidence under approved INSPECTION_DOCS_ROOT
+
+seeder_and_fixture_plan:
+  owner: DEDICATED_SEEDER_LANE
+  isolation:
+    - unique seed_batch_id
+    - unique factory, plan, visit, assignment and rule identifiers
+    - time windows far from unrelated fixtures until the controlled sweep
+    - complete cleanup manifest for mutable fixtures
+    - immutable audit evidence retained only under an approved evidence policy
+  personas:
+    - authorized proposer
+    - distinct authorized approver
+    - configure-capable but non-approver admin
+    - planner
+    - inspector
+    - unauthorized authenticated user
+    - anonymous
+  records:
+    - one candidate per accepted expiry family
+    - one nonmatching scope control per family
+    - one already-started inspection control
+    - one inspector-created immediate visit control
+    - one future-effective version
+    - one retired version
+    - one stale draft
+    - one concurrent activation pair
+    - one forced consequence failure
+  data_safety: Never run a broad sweep over uncontrolled shared staging fixtures.
+
+focused_test_matrix:
+  p0:
+    - id: EX-TST-001
+      proof: Two concurrent activations yield one active version and one deterministic conflict.
+    - id: EX-TST-002
+      proof: Forced activation failure rolls back predecessor retirement, new activation and audit.
+    - id: EX-TST-003
+      proof: Mismatched rule_id/rule_type is rejected with zero mutation.
+    - id: EX-TST-004
+      proof: Active and retired versions reject direct REST and RPC edits.
+    - id: EX-TST-005
+      proof: Maker cannot approve own proposal and unauthorized personas cannot read or write restricted policy.
+    - id: EX-TST-006
+      proof: Effective-from/to boundary selects exactly one approved version at the boundary instant.
+    - id: EX-TST-007
+      proof: Every accepted rule family expires only matching published, not-started candidates.
+    - id: EX-TST-008
+      proof: Status, expired_by_rule_id, lifecycle event, audit and required notification consequence cannot partially commit.
+    - id: EX-TST-009
+      proof: Expired rejects edit, republish and cancel through every permitted direct and application path.
+    - id: EX-TST-010
+      proof: Dormant no_execution_date is removed/held or backed by an approved reachable field contract.
+  p1:
+    - id: EX-TST-011
+      proof: Stale draft edit and concurrent version allocation preserve work and return stable conflict states.
+    - id: EX-TST-012
+      proof: Scope values equal canonical Planning lookup/enum authority.
+    - id: EX-TST-013
+      proof: pg_cron is installed, scheduled, recently successful and failure-alerted in the target environment.
+    - id: EX-TST-014
+      proof: EN/AR, LTR/RTL, light/dark, responsive, keyboard and screen-reader evidence passes.
+    - id: EX-TST-015
+      proof: Repeated scheduler execution is idempotent for status, events and notifications.
+
+protected_regression:
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - apps/web/e2e/pln-browser-certification.spec.ts
+  - apps/web/e2e/cd-027-visit-detail.spec.ts
+  - apps/web/e2e/cd-026-visit-management.spec.ts
+  - supabase/tests/0027_cd023_immediate_visit_atomic.sql
+  - Planning Status authority and transition remediation
+  - Visit Management final-state and notification contracts
+  - Inspector immediate-visit expiry exclusion
+  - Operations and dashboard expiry consumers
+
+collision_register:
+  hotspots:
+    - planning_expiry_rules schema, policies and audit trigger
+    - _expire_lapsed_visits_core and both entry points
+    - visits final-state transition guards
+    - visit_lifecycle_events, audit_events and notification outbox
+    - Planning lookup scope authority
+    - /admin/planning/expiry route, components and actions
+    - shared shell/navigation
+  active_peer_packets:
+    - M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048
+    - M9-ADMIN-PLANNING-STATUS-RUNTIME-REMEDIATION-PREFLIGHT-025
+    - KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+  touched_by_this_lane: false
+  rule: Recheck every path immediately before lease; one owner per file, migration and shared database object.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the expiry policy decisions first. Then lease database governance,
+    scheduler convergence, accepted Design 048 UI and independent certification
+    separately. Do not authorize a page-only fix or count the current control
+    plane as a completed requirement.
