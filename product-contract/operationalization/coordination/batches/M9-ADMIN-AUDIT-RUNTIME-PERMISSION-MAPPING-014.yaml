@@ -1,0 +1,268 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+title: Independent /admin/audit runtime, RLS and evidence mapping
+status: BLOCKED_MISSING_SCREEN_IDENTITY_POLICY_CONTRACT_AND_COMPLETE_RUNTIME_EVIDENCE
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority_correction:
+  originally_queued_as: M8-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+  corrected_to: M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+  reason: >-
+    ROUTE_INVENTORY and PACKAGE_MANIFEST place /admin/audit in Web/Admin package
+    M9. M8 and CD-050 are adjacent access producers, not route authority.
+  governed_screen_id: NONE
+  historical_label: ADM-AUDIT
+  rule: Do not invent a SCR-ADM identity or promote ADM-AUDIT, ENG-12, M2-05, CD-031 or CD-054 into one.
+
+task_contract:
+  route: /admin/audit
+  package: M9
+  module: M3-04
+  module_design_id: CD-054
+  predecessor_module: M2-05
+  predecessor_design_id: CD-031
+  engines: [ENG-12, AUDIT, VERSION, IMMUTABLE]
+  direct_module_requirements:
+    - [MVP2-REQ-0230, MVP2-AC-0230, MVP2-EV-0230]
+    - [MVP2-REQ-0237, MVP2-AC-0237, MVP2-EV-0237]
+    - [MVP2-REQ-0254, MVP2-AC-0254, MVP2-EV-0254]
+  ontology_range:
+    requirements: MVP2-REQ-0137_THROUGH_MVP2-REQ-0172
+    acceptance: MVP2-AC-0137_THROUGH_MVP2-AC-0172
+    evidence: MVP2-EV-0137_THROUGH_MVP2-EV-0172
+    rows: 36
+  web_admin_acceptance:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-003
+    - WA-M9-AC-004
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+  baseline_478_role: PRESERVATION_AND_NON_REGRESSION_ONLY
+  exact_atomic_478_completion_claim: false
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  mode: READ_ONLY
+  product_test_data_design_lease_branch_stash_mutation: false
+
+runtime_mapping:
+  route_exists: true
+  route_specific_admission_guard: false
+  authenticated_route_group_only: true
+  files:
+    page:
+      path: apps/web/src/app/(app)/admin/audit/page.tsx
+      sha256: 7e53469641a5004c9347906306b37e054b85661dfaa0b3a3c1ab8cee60dbc5b9
+    workspace:
+      path: apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+      sha256: 5f2a8f44e8529d9697791be74386107db0069b4fcdfadb7f32b604b0969f8959
+    replay_library:
+      path: apps/web/src/lib/audit-replay.ts
+      sha256: 601f84a2f93db77cb0b92c17cb26e0647083691711a310f79e2ab7a5b673525a
+  modes: [recorder, reconstruct, compare, ledger, custody, print]
+  generic_read:
+    source: audit_events
+    order: occurred_at_desc_then_id_desc
+    limit: 250
+    pagination: NONE
+  semantic_portfolio_read:
+    source: audit_semantic_events
+    limit: 250
+    pagination: NONE
+  semantic_case_read:
+    rpc: audit_replay_case
+    page_size: 250
+    maximum_pages: 20
+    maximum_rows: 5000
+  ontology_reads:
+    - audit_event_ontology_versions
+    - audit_event_ontology_entries
+    - audit_event_registry
+    - audit_event_order_constraints
+  search:
+    case: Exact generic object UUID plus semantic case_ref.
+    q: Client-side filtering of the already bounded loaded rows.
+    defect: The interface can appear globally searchable while q never searches beyond the loaded slice.
+  export:
+    implemented: false
+    print_safe: true
+    held: [export, reveal, redaction, retention, watermark, purge, legal_evidence]
+
+authorization_and_disclosure:
+  application_roles:
+    - auditor
+    - ops
+    - security_admin
+    - leadership
+    - reviewer
+    - planner
+    - compliance_admin
+  explicit_denied_role: inspector
+  generic_rls:
+    unrestricted_read_roles:
+      - auditor
+      - ops
+      - security_admin
+      - leadership
+      - reviewer
+      - planner
+      - compliance_admin
+    implication: >-
+      Generic before_state and after_state are broadly visible to every listed
+      role; no object-scope or field-redaction rule is applied at this layer.
+  semantic_rls:
+    unrestricted_roles: [auditor, ops, security_admin]
+    object_scoped_roles: [leadership, reviewer, planner, compliance_admin]
+    function: can_read_semantic_audit_object
+  mismatch:
+    priority: P0
+    finding: >-
+      Generic audit rows are globally role-readable while semantic events use
+      object scope for four roles. The UI merges both sources, so semantic
+      object scoping does not prevent broad disclosure through generic
+      before/after state.
+  query_before_denial:
+    finding: Both audit sources are queried before the unauthorized workspace renders.
+    boundary: RLS is therefore the only zero-disclosure authority.
+  partial_scope_label:
+    current_roles: [planner, reviewer, leadership]
+    omitted_role: compliance_admin
+    defect: compliance_admin receives object-scoped semantic results without the partial-scope disclosure.
+
+immutability_and_provenance:
+  generic:
+    update_delete_trigger: trg_audit_immutable
+    direct_update_delete_revoked: true
+    status: SOURCE_CONTRACT_PRESENT
+  semantic:
+    update_delete_trigger: trg_semantic_audit_immutable
+    authenticated_direct_writes_revoked: true
+    append_idempotency: unique(source_system, idempotency_key)
+    status: SOURCE_CONTRACT_PRESENT
+  coexistence:
+    generic_label: GENERIC_ONLY
+    semantic_label: RECORDED_SEMANTIC
+    duplicate_business_fact_risk: true
+    missing_contract: Correlation and deduplication between the two stores.
+  live_database_certification_in_this_review: NOT_PERFORMED
+
+requirement_wiring_truth:
+  implemented_or_local_rows: 28
+  partial_or_dependency_blocked_rows:
+    - [MVP2-REQ-0144, MVP2-AC-0144, partial_local, signature verification is unverified]
+    - [MVP2-REQ-0155, MVP2-AC-0155, dependency_blocked, accepted assignment transition absent]
+    - [MVP2-REQ-0156, MVP2-AC-0156, partial_local, package publication mapping partial]
+    - [MVP2-REQ-0164, MVP2-AC-0164, dependency_blocked, signature-refusal store absent]
+    - [MVP2-REQ-0168, MVP2-AC-0168, dependency_blocked, committee dossier store absent]
+    - [MVP2-REQ-0169, MVP2-AC-0169, dependency_blocked, correction source absent]
+    - [MVP2-REQ-0170, MVP2-AC-0170, dependency_blocked, objection source absent]
+    - [MVP2-REQ-0172, MVP2-AC-0172, partial_local, rejected admin-attempt append absent]
+  completion_implication: The 36-row ontology cannot receive complete runtime credit.
+
+test_review:
+  browser:
+    path: apps/web/e2e/mvp2-m2-05-audit-replay.spec.ts
+    sha256: 4eb63e8910b8de8cb124d43eacd9a2cbf62613b479df366b9f5c43c101597ebf
+    proves:
+      - Admin renders non-degraded flight recorder.
+      - Six modes are exposed.
+      - Arabic RTL at 412px has no page overflow.
+      - Inspector sees a zero-event unauthorized state.
+    missing:
+      - every authorized persona and its exact object scope
+      - compliance_admin partial-scope disclosure
+      - generic-row sensitive-field disclosure
+      - live update/delete immutability denial
+      - bounded 250 and 5000 history behavior
+      - source and ontology failures
+      - duplicate generic/semantic business facts
+      - keyboard dialog cycle beyond forced Close focus
+      - light/dark and all required desktop/tablet/mobile viewports
+      - policy-backed export, redaction, retention and legal evidence
+  source_contract:
+    path: apps/web/e2e/mvp2-m2-05-contract.spec.ts
+    sha256: 38213b342f0ccd3b7abe5298a95455f9fa09999e588fc3a5367ac03df5bb6585
+    strength: Strong static ontology, immutability, idempotency, least-privilege and replay assertions.
+    limitation: Static source proof does not certify current remote RLS, data scope or migration state.
+  execution_status: NOT_RUN_READ_ONLY_REVIEW
+
+browser_and_evidence_readiness:
+  ready: false
+  required_states:
+    - loading
+    - verified_empty
+    - full_scope
+    - partial_scope
+    - unauthorized_zero_disclosure
+    - generic_only_degraded
+    - semantic_source_unavailable
+    - generic_source_unavailable
+    - ontology_unavailable
+    - bounded_portfolio
+    - truncated_case_history
+    - reconstruct_no_event
+    - compare_changed_and_unchanged
+    - conflict
+    - completeness_unavailable_and_certifiable
+    - custody_not_assessed_and_integrity_mismatch
+    - policy_held
+    - EN_LTR_and_AR_RTL
+    - light_and_dark
+    - desktop_tablet_and_mobile
+  evidence_required:
+    - RLS/API payload by persona
+    - immutable mutation-denial response
+    - replay and completeness runtime
+    - privacy/redaction decision
+    - screenshot or video
+    - automated test result
+    - exact requirement/design/route/evidence manifest
+
+design_dependency_boundary:
+  primary: CD-054
+  status: LOGICAL_AUTHORITY_NOT_RETRIEVABLE_AS_FINGERPRINTED_ROUTE_FRAME
+  nearest_registered_ancestor: WA-DES-015
+  ancestor_limitation: Not exact route authority and shows unsupported Export scoped control.
+  screen_identity: UNRESOLVED
+  design_work_authorized: false
+  design_mutation: false
+
+validated_verdict:
+  route_exists: true
+  business_capability_match: CONFIRMED_WITH_CORRECTION
+  package_mapping: M9
+  screen_identity: INSUFFICIENT_EVIDENCE
+  append_only_source_contract: CONFIRMED_NOT_LIVE_RECERTIFIED
+  RLS_and_privacy: FAIL_RECONCILIATION_REQUIRED
+  ontology_completion: PARTIAL
+  tests: INSUFFICIENT_FOR_CERTIFICATION
+  browser_evidence: NOT_READY
+  recommended_action: BLOCK
+  sponsor_recommendation: >-
+    Do not grant screen or requirement completion credit. First allocate a
+    governed screen identity, reconcile generic and semantic disclosure,
+    resolve policy-held export/redaction/retention/legal boundaries, and close
+    the eight partial or dependency-blocked ontology rows.
+
+next_queued_task:
+  packet_id: M9-ADMIN-AUDIT-RUNTIME-REMEDIATION-PREFLIGHT-015
+  status: QUEUED_READY_READ_ONLY
+  owner_lane: CLAUDE_CODE_RUNTIME_REVIEW
+  objective: >-
+    Define non-mutating remediation work packages for RLS/object scope,
+    redaction, bounded search and paging, store correlation, ontology gaps,
+    negative tests and browser evidence, without revising design.
+  completion_credit: 0
+
+validation:
+  product_mutation: false
+  database_or_data_mutation: false
+  test_or_evidence_mutation: false
+  design_mutation: false
+  lease_branch_or_stash_mutation: false

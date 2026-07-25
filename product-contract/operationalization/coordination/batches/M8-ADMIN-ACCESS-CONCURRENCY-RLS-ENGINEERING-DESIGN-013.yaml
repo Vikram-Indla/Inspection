@@ -1,0 +1,303 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-ACCESS-CONCURRENCY-RLS-ENGINEERING-DESIGN-013
+title: Read-only engineering alternatives for Admin Access authorization and concurrency
+status: OPTIONS_READY_SPONSOR_AND_GOVERNANCE_SELECTION_REQUIRED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor:
+    - M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011
+    - M8-ADMIN-ACCESS-RUNTIME-REMEDIATION-PREFLIGHT-012
+  screen_id: SCR-ADM-090
+  rbac_id: RBAC-006
+  acceptance_ids:
+    - WA-M8-AC-001
+    - WA-M8-AC-002
+    - WA-M8-AC-003
+    - WA-M8-AC-004
+    - WA-M8-AC-005
+    - WA-M8-AC-006
+  family_ids:
+    - [MVP2-REQ-0192, MVP2-AC-0192, MVP2-EV-0192]
+    - [MVP2-REQ-0227, MVP2-AC-0227, MVP2-EV-0227]
+    - [MVP2-REQ-0241, MVP2-AC-0241, MVP2-EV-0241]
+    - [MVP2-REQ-0256, MVP2-AC-0256, MVP2-EV-0256]
+  design_dependencies_only:
+    - WA-DES-043
+    - WA-DES-011
+    - CD-050 R2
+  implementation_authorized: false
+  mutation_performed: false
+
+problem_statement:
+  - Direct role_permissions writes can bypass application-only admin.access.manage and own-authority guards.
+  - Existing grant RPCs use check-then-write without serialization-safe replay.
+  - The sole-security-admin count and revoke are not serialized.
+  - No revision or stale-change boundary exists.
+  - Semantic RPC audit and generic row audit are not correlated.
+  - D-006 single-authority and transferred maker-checker requirements are unresolved.
+
+common_non_negotiable_database_contract:
+  write_surface:
+    - Revoke authenticated INSERT, UPDATE and DELETE privileges on role_permissions.
+    - Remove the direct f360_role_permissions_admin mutation path.
+    - Expose all access changes through SECURITY DEFINER RPCs with empty search_path.
+    - Re-check verified actor, authority, target, own-authority and segregation rules inside each RPC.
+  locking:
+    - Acquire a transaction advisory lock on a constant access-governance namespace.
+    - Lock affected grant rows before deciding change or replay.
+    - Serialize every security_admin membership change against the same namespace.
+  idempotency:
+    - Require a non-empty client-generated UUID request_id for every mutation.
+    - Persist request_id with actor, operation, target, requested payload and final result.
+    - Reuse with identical semantics returns the recorded result.
+    - Reuse with different semantics fails closed with a stable conflict token.
+  audit:
+    - Emit one correlated semantic event per accepted mutation.
+    - Emit a separate stable event for denied, conflicted and replay attempts only if governance approves attempt logging.
+    - Include request_id, actor, target, operation, before, after, governing revision and exact requirement references.
+    - Document generic trigger events as row facts and correlate them to the semantic event.
+  stale_boundary:
+    - Every mutation supplies expected_revision.
+    - Mismatch returns a stable stale token before any grant or audit-of-change write.
+  response:
+    - RPC returns structured status, changed flag, request_id, revision and neutral error token.
+    - Application never infers success from an empty database response.
+  recovery:
+    - A verified recovery Security Admin is excluded from fixtures and destructive test targets.
+    - Final-admin safety is enforced under the serialized transaction, not by UI count.
+
+plan_a:
+  name: HARDENED_SINGLE_AUTHORITY
+  policy_basis: Retain D-006.
+  sponsor_effect: One Security Admin can apply an access change immediately.
+  compatible_with:
+    - Current AccessManager interaction model.
+    - Current grant-only direct capability override semantics.
+  conflict_to_record:
+    - Maker-checker portions of MVP2-REQ-0227 and MVP2-REQ-0241 are not satisfied by this route.
+    - SCR-ADM-090 Create role, Compare and Publish remain unresolved unless separately implemented or changed.
+  proposed_schema:
+    request_table: access_mutation_requests
+    required_fields:
+      - request_id uuid primary key
+      - actor uuid
+      - operation text
+      - target_user uuid nullable
+      - target_role text nullable
+      - target_permission text nullable
+      - expected_revision bigint
+      - semantic_fingerprint text
+      - result_status text
+      - result_revision bigint
+      - created_at timestamptz
+    revision_table: access_governance_head
+    revision_semantics: One monotonically increasing revision for accepted access mutations.
+  proposed_rpcs:
+    - admin_apply_role_change(request_id, target_user, role_key, grant, expected_revision)
+    - admin_apply_capability_change(request_id, target_user, capability_key, grant, expected_revision)
+    - admin_apply_role_permission_change(request_id, role_key, permission_key, grant, expected_revision)
+  states:
+    - accepted_changed
+    - accepted_noop
+    - replayed
+    - stale
+    - denied
+    - conflict
+  audit_actions:
+    - access_role_granted
+    - access_role_revoked
+    - access_capability_granted
+    - access_capability_revoked
+    - access_role_permission_granted
+    - access_role_permission_revoked
+    - access_mutation_replayed
+    - access_mutation_denied
+  future_migration_lease:
+    - supabase/migrations/20260725140000_admin_access_runtime_hardening.sql
+  decision_gate:
+    - Sponsor explicitly retains immediate single-authority changes.
+    - Governance records the maker-checker requirement disposition.
+
+plan_b:
+  name: VERSIONED_MAKER_CHECKER
+  policy_basis: Adopt maker-checker for sensitive access changes.
+  sponsor_effect: A maker submits an immutable access proposal; a different authorized checker approves and publishes it.
+  compatible_patterns_reviewed:
+    - dashboard_config_drafts and dashboard_config_versions
+    - compliance_configuration_requests and immutable revisions
+    - package maker-checker and published-version guards
+  required_boundary:
+    - A request may contain one or more role, capability and role-permission changes.
+    - Submission freezes an immutable revision and semantic diff.
+    - Maker cannot review, approve or publish own request.
+    - Checker authority is evaluated at approval and publication time.
+    - Publication revalidates target existence, own-authority, segregation, last-admin and expected-head constraints.
+    - All accepted changes land atomically with the new immutable published matrix version.
+    - In-flight inspections retain their governing snapshot unless an approved contract explicitly says otherwise.
+  proposed_schema:
+    - access_change_requests
+    - access_change_revisions
+    - access_change_items
+    - access_change_decisions
+    - access_matrix_versions
+    - access_matrix_heads
+  lifecycle:
+    - draft
+    - submitted
+    - returned
+    - rejected
+    - approved
+    - published
+  proposed_rpcs:
+    - admin_create_access_request(request_id, reason, base_version)
+    - admin_save_access_revision(request_id, expected_revision, items)
+    - admin_submit_access_request(request_id, expected_revision)
+    - admin_return_access_request(request_id, expected_revision, comment)
+    - admin_reject_access_request(request_id, expected_revision, comment)
+    - admin_publish_access_request(request_id, expected_revision)
+  mandatory_guards:
+    - distinct maker and checker
+    - no self-target change
+    - no grant beyond checker authority
+    - no segregation conflict
+    - no removal of final Security Admin
+    - no publication from stale base version
+    - immutable submitted revision
+    - immutable published version and head history
+  future_migration_lease:
+    - supabase/migrations/20260725141000_admin_access_maker_checker.sql
+  decision_gate:
+    - Sponsor authorizes dual control.
+    - Governance defines maker and checker roles and whether every change or only sensitive changes require approval.
+    - Governance defines mandatory reason, return and rejection comment rules.
+
+shared_future_application_lease:
+  existing:
+    - apps/web/src/app/(app)/admin/access/page.tsx
+    - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+    - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+    - apps/web/src/app/(app)/admin/access/actions.ts
+    - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+  conditional_new_for_plan_b:
+    - apps/web/src/app/(app)/admin/access/requests/page.tsx
+    - apps/web/src/app/(app)/admin/access/requests/[id]/page.tsx
+  rule: Exact lease is issued only after one plan is selected.
+
+isolated_data_contract:
+  seed_owner: RESERVED_M8_ACCESS_FIXTURE_FAMILY
+  identities:
+    - m8_access_admin_a
+    - m8_access_admin_b
+    - m8_access_target
+    - m8_access_non_admin
+  fixed_objects:
+    - one non-admin reversible role grant
+    - one reversible direct capability grant
+    - one reversible role-permission grant
+    - stable request UUIDs per test case
+  exclusions:
+    - sponsor accounts
+    - operational personas used by other suites
+    - final recovery Security Admin
+    - production-like shared records
+  cleanup:
+    - Transaction rollback for database probes.
+    - Explicit inverse RPCs for browser tests.
+    - Post-run reconciliation of grants, request rows, revisions and semantic audits.
+
+negative_test_contract:
+  shared:
+    - anonymous and expired session denied
+    - authenticated non-admin direct route or management data denied per selected route contract
+    - direct role_permissions REST mutation denied
+    - self-target grant and revoke denied
+    - unknown user, role, capability and permission denied
+    - actor cannot grant authority the actor lacks
+    - segregation conflict denied
+    - stale expected_revision denied without grant change
+    - identical request replay returns one result and one change audit
+    - changed-payload request_id reuse denied
+    - two-session duplicate grant is deterministic
+    - two-session final-admin revocation preserves at least one administrator
+    - forced source/gate failure renders unavailable without authority
+    - cleanup restores expected fixture state
+  plan_b_only:
+    - maker cannot approve or publish own request
+    - second checker cannot publish stale base version
+    - submitted revision cannot be edited
+    - published version and head history cannot be updated or deleted
+    - partial database failure rolls back all requested items
+    - rejected or returned request cannot mutate live access
+  future_test_lease:
+    - supabase/tests/m8_admin_access_runtime_probe.sql
+    - apps/web/e2e/web-admin-m8-admin-access-runtime.spec.ts
+
+browser_gate:
+  states:
+    - populated
+    - loading
+    - empty
+    - validation
+    - unauthorized
+    - read_only
+    - stale
+    - degraded
+    - recovery
+  matrices:
+    locale_direction: [EN_LTR, AR_RTL]
+    theme: [light, dark]
+    viewport: [design_fixed, 1024x768, 412x915, 390x844, 320x800]
+  interaction:
+    - complete keyboard operation
+    - visible focus
+    - focus restoration after confirmation
+    - screen-reader names for matrix controls
+    - no color-only status
+  evidence_required:
+    - before and after database state
+    - RPC request and response
+    - correlated semantic audit
+    - screenshot or video
+    - automated test result
+    - cleanup reconciliation
+
+selection_recommendation:
+  recommended_plan: PLAN_B_IF_MVP2_REQUIREMENTS_REMAIN_IN_SCOPE
+  basis: >-
+    Plan B is the only option that directly satisfies the transferred
+    maker-checker and sensitive-action approval obligations and the screen's
+    compare/publish semantics. Plan A is smaller and compatible with D-006, but
+    requires explicit governance acceptance that those obligations are not
+    satisfied by this route.
+  no_implicit_choice: true
+
+stop_conditions:
+  - No sponsor and governance selection between Plan A and Plan B.
+  - Exact atomic 478-row mapping remains absent.
+  - Capabilities and permissions authority domains remain undefined.
+  - Route visibility contract remains undefined.
+  - Proposed migration path collides with another lease.
+  - Live schema or migration inventory differs from reviewed assumptions.
+  - Fixture or recovery administrator boundary is not approved.
+  - Any direct write path remains outside the selected guarded RPC boundary.
+
+following_task:
+  packet_id: M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+  status: QUEUED_NON_OVERLAPPING
+  route: /admin/audit
+  boundary: Read-only runtime, RLS, append-only, export, test and evidence mapping.
+  design_authority: DEPENDENCY_ONLY
+  authority_correction: /admin/audit is package M9; no governed screen identity exists.
+
+validation:
+  options_complete: true
+  implementation_ready_without_decision: false
+  product_mutation: false
+  database_mutation: false
+  data_or_seed_mutation: false
+  test_or_evidence_mutation: false
+  design_mutation: false
+  lease_branch_or_stash_mutation: false

@@ -1,0 +1,213 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-RLS-PRIVACY-ENGINEERING-DESIGN-016
+title: Read-only engineering alternatives for audit RLS, redaction and reveal
+status: OPTIONS_READY_POLICY_SELECTION_REQUIRED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessors:
+    - M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+    - M9-ADMIN-AUDIT-RUNTIME-REMEDIATION-PREFLIGHT-015
+  requirements:
+    - MVP2-REQ-0230
+    - MVP2-REQ-0237
+    - MVP2-REQ-0254
+    - MVP2-REQ-0137 through MVP2-REQ-0172
+  acceptance:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+  open_policy:
+    decision_id: DEC-006
+    subject: Evidence retention, redaction and related controls
+    status: Open
+    hard_rule: No field, role, retention or legal value may be invented.
+  design_authority: DEPENDENCY_ONLY
+  implementation_authorized: false
+  mutation_performed: false
+
+shared_contract:
+  - Raw audit tables remain append-only.
+  - Raw generic and semantic table reads cannot exceed the approved object scope.
+  - Denied reads return zero rows or a neutral denial without disclosing existence.
+  - Redaction is applied in the database boundary, never only in React.
+  - Reveal requires explicit approved authority, purpose and correlated audit.
+  - Generic and semantic events carry a stable correlation relationship or remain explicitly separate.
+  - Pagination is keyset-bounded and reports partial history honestly.
+  - No export, retention, purge, watermark or legal-evidence claim is enabled without policy.
+
+option_a:
+  name: SECURITY_INVOKER_PROJECTIONS
+  shape:
+    - Tighten audit_events RLS to the same object-scope predicate used by semantic events.
+    - Create a security-invoker read view for normalized generic and semantic projections.
+    - Remove raw JSON fields from the default projection.
+    - Expose only an approved allow-list of typed audit fields.
+    - Keep reveal unavailable until an approved separate boundary exists.
+  strengths:
+    - Simple, read-only and close to existing RLS.
+    - Database caller identity remains visible through security-invoker semantics.
+    - No SECURITY DEFINER data-return path.
+  weaknesses:
+    - RLS predicate must understand every generic object type or fail closed.
+    - Typed allow-list changes require migration governance.
+    - Cannot support conditional reveal without another guarded interface.
+    - Existing direct raw-table consumers must be inventoried and migrated.
+  fail_closed_default: Unknown object type or unapproved field is not returned.
+
+option_b:
+  name: GUARDED_AUDIT_REPLAY_RPC
+  shape:
+    - Revoke authenticated direct SELECT on raw generic and semantic audit tables.
+    - Expose one SECURITY DEFINER replay/search RPC with empty search_path.
+    - RPC verifies role, object scope, case scope, page cursor and requested projection.
+    - RPC returns redacted typed fields by default.
+    - Optional reveal mode remains disabled until approved policy rows exist.
+    - Every approved reveal records actor, purpose, object, field set, request ID and timestamp.
+  strengths:
+    - One non-bypassable read and redaction boundary.
+    - Stable keyset pagination, filtering and source correlation can be transactional.
+    - Supports future purpose-bound reveal without exposing raw tables.
+    - Easier to test all personas through one contract.
+  weaknesses:
+    - SECURITY DEFINER implementation requires strict hardening and exhaustive negative tests.
+    - All legitimate raw-table consumers must migrate before direct SELECT is revoked.
+    - Policy table design must avoid turning unapproved defaults into access.
+  fail_closed_default:
+    - Unknown object, field, role, scope, purpose or policy returns no sensitive value.
+    - Reveal remains disabled when the policy catalogue is empty or unavailable.
+
+recommendation:
+  preferred: GUARDED_AUDIT_REPLAY_RPC
+  reason: >-
+    The current page merges two stores with different RLS scope and needs
+    server-backed search, paging, correlation and redaction. A single guarded
+    RPC provides one testable boundary and avoids treating raw JSON RLS as field
+    authorization. Selection still requires governance approval.
+  fallback: SECURITY_INVOKER_PROJECTIONS if reveal is explicitly out of scope.
+  no_implicit_policy: true
+
+proposed_option_b_contract:
+  rpc: admin_audit_replay
+  inputs:
+    - case_ref text nullable
+    - query text nullable
+    - source_kind text nullable
+    - before_occurred_at timestamptz nullable
+    - before_id text nullable
+    - limit integer
+    - reveal boolean default false
+    - purpose_code text nullable
+    - request_id uuid
+  result_fields:
+    - source_kind
+    - event_id
+    - event_type
+    - occurred_at
+    - actor_display
+    - aggregate_type
+    - aggregate_id
+    - correlation_id
+    - provenance
+    - integrity_status
+    - chain_status
+    - redacted_before
+    - redacted_after
+    - redacted_payload
+    - redaction_applied
+    - has_more
+    - next_cursor
+  guards:
+    - authenticated verified actor
+    - approved audit-read role
+    - can_read_semantic_audit_object or approved generic equivalent
+    - bounded limit 1 through 250
+    - cursor bound to the same filter fingerprint
+    - reveal false unless explicit policy permits actor, object, field and purpose
+    - reveal request_id idempotency and semantic audit correlation
+  raw_table_rule: No authenticated direct SELECT after all consumers are migrated.
+
+policy_catalogue_boundary:
+  proposed_table: audit_field_disclosure_policies
+  initial_state: EMPTY_AND_FAIL_CLOSED
+  no_seeded_values_without_approval: true
+  governed_dimensions:
+    - persona or capability
+    - aggregate type
+    - field path
+    - action view or reveal or export
+    - purpose code
+    - effective version
+  publication: Requires the governance model selected for sensitive security policy.
+  prohibited:
+    - wildcard allow seeded by engineering
+    - default reveal for security_admin
+    - retention duration invented in code
+    - legal-evidence flag inferred from print-safe output
+
+consumer_inventory_gate:
+  required_before_raw_select_revocation:
+    - /admin/audit page and replay workspace
+    - /admin and route-specific audit summaries
+    - visit and inspection timelines
+    - planning, review and compliance runtime tests
+    - operational scripts and evidence probes
+  proof: Repository search plus runtime role matrix; no consumer is silently broken.
+
+negative_test_matrix:
+  - inspector denied with zero disclosure
+  - scoped planner cannot read unrelated object
+  - scoped reviewer cannot read unrelated object
+  - scoped leadership cannot read unrelated object
+  - scoped compliance_admin cannot read unrelated object and sees partial-scope UI
+  - auditor, ops and security_admin behavior matches approved full-scope contract
+  - unknown generic object type fails closed
+  - unknown field path is redacted
+  - empty policy catalogue disables reveal
+  - invalid or absent purpose denies reveal
+  - request cursor cannot be replayed with a changed filter
+  - limit over 250 is clamped or denied consistently
+  - raw generic and semantic table SELECT is denied after consumer migration
+  - repeated reveal request ID is idempotent
+  - changed reveal payload with reused request ID is denied
+  - reveal produces one correlated semantic access audit
+  - source failure never widens scope or removes redaction
+  - malformed query and cursor return neutral errors
+
+future_lease_proposal:
+  migration:
+    - supabase/migrations/20260725150000_admin_audit_scope_projection.sql
+  application:
+    - apps/web/src/app/(app)/admin/audit/page.tsx
+    - apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+    - apps/web/src/lib/audit-replay.ts
+  tests:
+    - supabase/tests/m9_admin_audit_runtime_probe.sql
+    - apps/web/e2e/web-admin-m9-admin-audit-runtime.spec.ts
+  status: PROPOSED_NOT_LEASED
+
+stop_conditions:
+  - DEC-006 redaction policy remains open for the selected implementation behavior.
+  - Screen identity and route authority remain unresolved.
+  - Any raw-table consumer is unidentified.
+  - Object-scope predicate cannot fail closed for a generic event type.
+  - Reveal is requested without approved persona, field and purpose rules.
+  - Migration path overlaps another active lease.
+  - Runtime migration inventory does not match reviewed source.
+  - Negative role, raw-table denial and source-failure tests are unavailable.
+
+next_queued_task:
+  packet_id: M9-ADMIN-AUDIT-CONSUMER-AND-DISCLOSURE-INVENTORY-017
+  status: QUEUED_READY_READ_ONLY
+  objective: >-
+    Inventory every direct audit_events and audit_semantic_events reader, its
+    persona and object scope, fields consumed and migration impact before any
+    raw-table read can be revoked.
+  completion_credit: 0
+
+validation:
+  policy_invented: false
+  product_database_test_data_design_lease_branch_stash_mutation: false

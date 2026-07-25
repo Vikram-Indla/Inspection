@@ -1,0 +1,360 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-USERS-ROLES-DESIGN-AUTHORITY-REVIEW-043
+title: Independent Users and Roles design authority, lineage and runtime-delta review
+status: RETURN_FOR_MAPPING_CORRECTION_BLOCK_DUE_TO_MISSING_CONTRACT
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The nearest design is identified, but its route boundary, complete states,
+    bilingual identity, permission-engine semantics and evidence are incomplete.
+    The CD-050 R2 package/frame fingerprint is unavailable and runtime audit 011
+    reports unresolved authorization, concurrency, versioning and audit defects.
+
+task_contract:
+  task_id: M8-ADMIN-USERS-ROLES-DESIGN-AUTHORITY-REVIEW-043
+  gate: M8 Admin Identity Roles and Security design authority
+  route: /admin/access
+  channel: ADMIN
+  process_ids: [G2-P00]
+  screen_id: SCR-ADM-090
+  screen_name: Roles & Permissions
+  package_id: M8
+  family_module_id: M3-00
+  family_design_id: CD-050
+  direct_contract_ids: [RBAC-006, EXE-ACCESS, PLN-REQ-004, PLN-CON-013]
+  family_requirement_ids:
+    - MVP2-REQ-0192
+    - MVP2-REQ-0227
+    - MVP2-REQ-0241
+    - MVP2-REQ-0256
+  acceptance_ids:
+    family:
+      - MVP2-AC-0192
+      - MVP2-AC-0227
+      - MVP2-AC-0241
+      - MVP2-AC-0256
+    web_admin:
+      - WA-M8-AC-001
+      - WA-M8-AC-002
+      - WA-M8-AC-003
+      - WA-M8-AC-004
+      - WA-M8-AC-005
+      - WA-M8-AC-006
+  engines:
+    - authenticated route and navigation
+    - Supabase RLS
+    - security-admin role RPCs
+    - capabilities and role_capabilities
+    - direct user_capability_grants
+    - permissions and role_permissions
+    - planning capability gate
+    - semantic and row-trigger audit
+    - configuration versioning
+  dependencies:
+    - exact atomic 478-row route mapping
+    - CD-050 R2 package, exact frame manifest and stable fingerprint
+    - sponsor decision on D-006 single authority versus dual control
+    - capabilities versus permissions product vocabulary
+    - database-enforced segregation and own-authority boundary
+    - concurrency, idempotency, audit-correlation and publish/version contract
+  do_not_touch:
+    - live Claude Design or any exported design
+    - product application code or tests
+    - Supabase, migrations, RPCs, seeds, credentials or shared data
+    - frozen mappings, requirements, acceptance or evidence
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 1a2ab6ab
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  unrelated_dirty_paths_preserved:
+    - product-contract/operationalization/coordination/batches/M2-VS-002-WA-DES-045-DESIGN-CORRECTION-DISPATCH-042.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011.yaml
+  collision_assessment: >-
+    This packet is a read-only review record. It does not modify an application,
+    test, design, database, route, requirement mapping, branch, lease or stash.
+
+authority_read:
+  canonical:
+    - AGENTS.md
+    - product-contract/00_START_HERE.md
+    - product-contract/CURRENT_STATE.md
+    - product-contract/GATE_STATUS.md
+    - product-contract/execution/CURRENT_SLICE.yaml
+    - product-contract/execution/TASK_ROUTER.yaml
+    - product-contract/governance/OPEN_DECISIONS.yaml
+    - design/claude-design-mvp1/00_START_HERE.md
+    - design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+  predecessor_design_review:
+    path: product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-DESIGN-AUTHORITY-REVIEW-034.yaml
+    disposition: RECONCILED_AND_REVALIDATED
+  independent_runtime_dependency:
+    path: product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011.yaml
+    disposition: READ_ONLY_DELTA_INPUT_NOT_RUNTIME_CERTIFICATION
+
+registered_design_evidence:
+  primary:
+    design_id: WA-DES-043
+    filename: SAQEEL Users Roles.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Users Roles.dc.html
+    bytes: 16534
+    lines: 190
+    sha256: 9d4e9879d7f2d4fd39a47895c9f746d99cbb3b3030aa033009889c7ada82a6b6
+    fingerprint_recomputed: true
+  conditional_secondary:
+    design_id: WA-DES-011
+    filename: SAQEEL Admin Role Override.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Role Override.dc.html
+    bytes: 10979
+    lines: 110
+    sha256: 98827572052bf6157e8fe4710cd6de7d49bc49459dd82aa324d14d159b4f58bd
+    fingerprint_recomputed: true
+  family:
+    design_id: CD-050
+    revision: R2
+    registered_reference: CD-050_M3-00_R2_FINAL with renders 01 through 06
+    package_bytes_available: false
+    package_sha256_available: false
+    exact_frame_manifest_available: false
+    validation_status: INSUFFICIENT_EVIDENCE
+
+business_capability_validation:
+  catalogue_truth:
+    route: /admin/access
+    persona: Security Admin
+    capability: Manage role permissions and data scope
+    inputs: Role matrix; channel; object; action; scope; segregation rules
+    actions: Create role; assign permission; compare; publish
+    exceptions: Privilege conflict; segregation violation
+  route_exists: true
+  component_exists: true
+  current_business_capability_match: PARTIAL
+  runtime_delta_from_audit_011:
+    - Route admission is authenticated-route-group only, not security-admin only.
+    - User-role and direct-capability writes use security-definer RPCs.
+    - Role-permission writes use a separate direct-table/RLS engine.
+    - Role creation, comparison and immutable publish/version lifecycle are absent.
+    - Management read and gate failures can collapse into read-only or empty-looking UI.
+  runtime_certification_claimed: false
+
+design_mapping_verdict:
+  primary:
+    design_id: WA-DES-043
+    validation: CONFIRMED_WITH_CORRECTION
+    correct_scope: /admin/access
+    incorrect_scope_to_remove: /admin/security-access
+    nearest_match_reasons:
+      - Users and Roles information architecture matches SCR-ADM-090.
+      - It distinguishes roster, role grants and effective capability sources.
+      - It represents self-target denial and sole-security-admin protection.
+      - It acknowledges RLS rather than menu visibility as the authority boundary.
+    mandatory_corrections:
+      - Replace all fixture names, email addresses, regions, dates and counts with source-labelled fixture or RLS data states.
+      - Remove the unsourced 54-policy runtime claim.
+      - Separate capabilities/role_capabilities from permissions/role_permissions.
+      - Add the real role-permission editor or explicitly mark it outside this design.
+      - Add route/gate/source failures, verified empty, partial data, conflict and audit-unavailable states.
+      - Remove Arabic-only wordmark text from the English/LTR shell.
+      - Provide complete English/LTR and Arabic/RTL parity.
+      - Do not imply role creation, comparison or published versioning is implemented.
+  secondary:
+    design_id: WA-DES-011
+    validation: AMBIGUOUS
+    allowed_scope: CONDITIONAL_SECONDARY_GUARDRAIL_PATTERN_ONLY
+    prohibited_scope: CURRENT_IMPLEMENTED_FLOW
+    conflict:
+      - Design requires a second security_admin approver and recorded reason.
+      - Accepted D-006 currently permits one security_admin and defers dual control.
+      - Current RPC contract has no reason, approver, draft, approval queue or override state machine.
+    required_decision: >-
+      Keep as non-consumable secondary/future design unless sponsor-authorized
+      change control replaces the current single-authority contract.
+  family_lineage:
+    design_id: CD-050
+    validation: INSUFFICIENT_EVIDENCE
+    proposed_lineage: CD-050_R2 -> WA-DES-043 -> SCR-ADM-090 -> /admin/access
+    boundary: >-
+      CD-050 is the cross-cutting Security/IAM family; M8 remains the Web/Admin
+      package owner and SCR-ADM-090 remains the route screen identity.
+    blocker: Exact R2 package bytes, hash and route-specific frame lineage are unavailable.
+
+permission_and_governance_review:
+  roles:
+    design_status: PARTIAL
+    required_truth:
+      - role catalogue is seed/governance managed
+      - user role grants are individual RPC transitions
+      - self-target and sole-admin guards apply
+      - role creation and published role-matrix versions are not implemented
+  permissions:
+    design_status: INCORRECTLY_COLLAPSED
+    required_truth:
+      - capabilities plus role_capabilities drive execution access
+      - user_capability_grants are positive direct grants only
+      - permissions plus role_permissions are a second planning/Factory360 engine
+      - removal of a direct grant does not remove role-derived access
+  maker_checker:
+    current_contract: SINGLE_SECURITY_ADMIN_WITH_DATABASE_GUARDS
+    dual_control: NOT_APPROVED_FOR_THIS_ROUTE
+    conflict_with_family_requirements: true
+    design_rule: Expose the unresolved decision; never present WA-DES-011 approval as live.
+  concurrency:
+    current_status: FAILED_OR_UNDEFINED
+    required_design_states:
+      - duplicate concurrent grant
+      - sole-admin revoke race
+      - stale role-permission edit
+      - deterministic no-change versus conflict
+  versioning:
+    current_status: NOT_IMPLEMENTED
+    missing:
+      - immutable role-matrix version
+      - draft and publish states
+      - comparison against current live version
+      - expected-version conflict boundary
+  audit:
+    current_status: PARTIAL_AND_LIVE_STATE_UNVERIFIED
+    required_truth:
+      - actor and target
+      - before and after
+      - semantic requirement reference
+      - actual change versus idempotent no-op
+      - duplicate semantic and row-trigger event reconciliation
+      - explicit unavailable state when role_permissions audit apply is unproven
+
+language_theme_responsive_accessibility:
+  wordmark:
+    english_ltr: FAIL
+    evidence: Both registered exports render Arabic صقيل صناعي in the English shell.
+    required: English SAQEEL Industrial identity in EN/LTR and approved Arabic identity in AR/RTL.
+  languages:
+    english_ltr: PARTIAL
+    arabic_rtl: MISSING
+  themes:
+    light: PRESENT_BUT_UNCERTIFIED
+    dark: PRESENT_BUT_UNCERTIFIED
+  responsive:
+    status: INSUFFICIENT
+    evidence:
+      - WA-DES-043 has a fixed 248px rail and no explicit narrow-screen breakpoint in the export.
+      - WA-DES-011 only collapses its two-column content at 1100px; its fixed rail remains.
+    required_viewports:
+      - 1440x900
+      - 1200x900
+      - 1024x768
+      - 768x1024
+      - 412x915
+      - 390x844
+      - 320x568
+  accessibility:
+    status: INSUFFICIENT
+    gaps:
+      - no complete keyboard and visible-focus evidence
+      - no confirmation focus-management evidence
+      - no pending/error/denial/success live-region evidence
+      - no labelled-card parity for narrow screens
+      - no zoom, reflow or reduced-motion proof
+
+hard_state_review:
+  present_or_partially_present:
+    - populated users
+    - populated roles
+    - selected user
+    - self-target disabled
+    - grant/revoke confirmation patterns
+  missing_or_unproven:
+    - loading
+    - verified empty roster
+    - RLS-zero versus unauthorized
+    - profiles unavailable
+    - roles unavailable
+    - user grants unavailable
+    - capability catalogue unavailable
+    - role-permission catalogue unavailable
+    - capability-gate unavailable
+    - multiple-source partial failure
+    - session expired
+    - unauthorized direct route
+    - pending mutation
+    - idempotent no-change
+    - stale or concurrent conflict
+    - audit evidence unavailable
+    - light/dark bilingual responsive matrix
+
+evidence_verdict:
+  source_fingerprints: PASS_FOR_WA_DES_043_AND_WA_DES_011
+  route_and_component_mapping: CONFIRMED_WITH_CORRECTION
+  CD_050_R2_lineage: BLOCKED_MISSING_PACKAGE_AND_FRAME_FINGERPRINT
+  complete_state_matrix: FAIL
+  bilingual_RTL_LTR_matrix: FAIL
+  responsive_matrix: FAIL
+  accessibility_matrix: FAIL
+  runtime_behavior: NOT_CERTIFIED_BY_THIS_REVIEW
+  implementation_completion: NOT_CLAIMED
+
+reviewer_recommendation:
+  decision: RETURN_FOR_MAPPING_CORRECTION
+  blocking_reason: >-
+    Confirm WA-DES-043 only for /admin/access, remove its incorrect
+    /admin/security-access mapping, keep WA-DES-011 conditional, retrieve and
+    fingerprint CD-050 R2, and close the single-authority, permission-engine,
+    database-guard, concurrency, versioning and audit contracts before design
+    correction or implementation handoff.
+  sponsor_business_decisions:
+    - Confirm WA-DES-043 as the primary existing Users & Roles design.
+    - Keep WA-DES-011 as a non-consumable future/guardrail pattern unless dual control is change-controlled.
+    - Require exact CD-050 R2 package and frame evidence before lineage certification.
+    - Decide whether D-006 remains single-authority or is replaced by maker-checker.
+    - Authorize only a separate bounded remediation preflight after those decisions.
+
+implementation_boundary:
+  implementation_authorized: false
+  application_lease_issued: false
+  design_write_issued: false
+  runtime_audit_011_reused_as_completion_evidence: false
+  rule: Design correction and runtime remediation require separate non-overlapping leases.
+
+next_collision_safe_admin_design_review:
+  task_id: M8-ADMIN-SECURITY-ACCESS-DESIGN-AUTHORITY-REVIEW-044
+  status: QUEUED_READ_ONLY
+  route: /admin/security-access
+  objective: >-
+    Independently validate WA-DES-004 as the nearest existing Security Access
+    Review design, prove that WA-DES-043 does not own this route, and reconcile
+    the exact CD-050 R2 route lineage, access-review maker-checker, evidence
+    grants, provider holds, hard states, bilingual/responsive/accessibility and
+    runtime mapping without mutating code or design.
+  collision_boundary:
+    - no live design writer
+    - no product, test, database, mapping, branch, lease or stash mutation
+    - no ownership of /admin/access files
+    - no runtime certification or completion credit
+
+validation:
+  yaml_parse_required: true
+  registered_hashes_recomputed: true
+  canonical_and_runtime_sources_reconciled: true
+  runtime_tests_run: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  data_or_supabase_mutation: false
+  branch_or_stash_mutation: false
