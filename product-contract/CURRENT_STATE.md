@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-07-25 UPDATE 131 — Repository consolidation activated
+
+The Product Owner explicitly approved `TASK-REPOSITORY-CONSOLIDATION-20260725`
+to restore `/Users/vikramindla/Developer/Inspection` and Git `main` as the one
+shared source of project truth. The isolated integration branch
+`codex/repository-consolidation` fast-forwarded from `main` `21f20e32` to the
+current SAQEEL V3 contract lineage at `27bce51e`.
+
+The audit found multiple concurrent product, control, preview, design and
+session-provenance branches based on different historical baselines. They are
+not interchangeable and are not silently accepted by this administrative
+task. Every locally unique committed line is being pushed to a named remote
+branch before promotion. Unaccepted M3 Operations, M9 Localization, M2
+Planning, preview and design outputs remain isolated with their existing
+acceptance state. Dirty audit/session records, dependency links and corrupt
+build output remain preserved in their original worktrees and are excluded
+from source promotion.
+
+No application source, database, provider, deployment, shared data, acceptance
+row or release status is changed by this consolidation. Exact inventory and
+promotion rules are recorded in
+`execution/TASK_REPOSITORY_CONSOLIDATION_20260725.yaml`.
+
 ## 2026-07-24 UPDATE 130 — Shared Web/Admin brand regressions corrected
 
 The Product Owner reported that the English Operations runtime displays the

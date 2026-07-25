@@ -72,6 +72,14 @@ items:
     blocked_by: []
     blocks: []
     note: "Re-audit completed 2026-07-21 under explicit sponsor direction: approved Web channel access, the Planning CR/licence/plant resolver and handoffs, and Execution Phase 3A/3B were merged into main. Typecheck/build pass and the combined Execution/shared-shell source contracts pass 43/43. Planning and Execution remain product work areas, but no longer require separate Git streams; main is the single source route. Merged worktrees/branches and the superseded setup/Inspection branch are to be removed after the final main push and remote-default change. No product acceptance changes."
+  - task_id: "TASK-REPOSITORY-CONSOLIDATION-20260725"
+    gate: "G11 repository administration"
+    priority: "P0"
+    status: "READY_FOR_MAIN_PROMOTION"
+    owner: "Codex repository administration"
+    blocked_by: []
+    blocks: ["Canonical main promotion"]
+    note: "Sponsor-approved re-consolidation after concurrent Claude/Codex worktree proliferation. The V3 contract lineage is promoted; locally unique commits are preserved on named remote branches. Unaccepted product, preview, design and divergent control-plane lines remain noncanonical until their own acceptance/reconciliation gates pass. No worktree or branch is deleted and no product acceptance changes."
   - task_id: "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001"
     gate: "G11 controlled public-access UI hardening"
     priority: "P0"
