@@ -1,0 +1,322 @@
+packet_id: M2-VS-002-WA-DES-045-CLAUDE-DESIGN-CORRECTION-REQUEST-008A
+packet_type: source_marked_claude_design_correction_request
+created_at: "2026-07-25"
+module: M2_PLANNING
+slice_id: M2-VS-002
+status: READY_TO_SEND_NOT_EXECUTED
+recipient: Claude_Design
+design_mutation_authorized_by_this_packet: false
+product_mutation_authorized: false
+database_or_test_mutation_authorized: false
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+
+source_authority:
+  precedence:
+    - rank: 1
+      source: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+      rows:
+        - CR-053
+        - CR-054
+        - CR-055
+        - CR-056
+        - CR-075
+      rule: "Behavior, data grain, persona, business rules and acceptance."
+    - rank: 2
+      source: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+      rule: "Planning-owned target route and inherited authenticated shell."
+    - rank: 3
+      source: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+      design_page_id: WA-DES-045
+      rule: "Registered Visits design identity and visual source mapping."
+    - rank: 4
+      source: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Visits.dc.html
+      size_bytes: 28502
+      sha256: 74fc7af27cfa7ce7a3f458ae42ac5464aefcfa79471eb8c9f2f9b083ba25e2d2
+      rule: "Current visual input to correct; not policy or fixture-data authority."
+    - rank: 5
+      source: M2-VS-002-DESIGN-AND-DATA-TRUTH-PREFLIGHT-007
+      rule: "Independent conflict findings and correction constraints."
+  source_marking_rule: >
+    Every returned design note must cite the governing source and requirement
+    ID. Fixture numbers, thresholds, people, factories and statuses may not be
+    promoted into business rules.
+
+exact_scope:
+  completion_candidate:
+    requirement_id: CR-053
+    acceptance_id: WA-AC-0053
+    evidence_id: WA-EV-0053
+    outcome: >
+      Read-only Visit Management workspace with truthful planning KPIs,
+      partial search, combinable filters and a complete paginated list of
+      permitted Planning-lifecycle visits.
+  semantic_constraints_no_completion_credit:
+    - CR-054
+    - CR-055
+    - CR-056
+    - CR-075
+  explicitly_excluded:
+    requirement_id: CR-071
+    remove:
+      - operational_alerts
+      - selection
+      - bulk_reschedule
+      - bulk_reassign
+      - bulk_cancel
+      - bulk_edit
+      - publish_or_return_actions
+    completion_credit: NONE
+  Future_no_credit:
+    - CR-053_attention_highlighting
+    - CR-054_abnormal_trend_highlighting
+    - CR-055_recent_search_suggestions
+    - CR-056_filter_recommendations
+
+target_mapping:
+  design_page_id: WA-DES-045
+  target_route: /planning/visits
+  review_route: /planning/visits?wa_preview=1
+  target_page: apps/web/src/app/(app)/planning/visits/page.tsx
+  proposed_component: apps/web/src/app/(app)/planning/visits/VisitList.tsx
+  proposed_styles: apps/web/src/app/(app)/planning/visits/VisitList.module.css
+  service: apps/web/src/lib/planning/visit-list.ts
+  inherited_F0_shell: true
+  cutover_authorized: false
+
+correction_request:
+  title: "WA-DES-045 — CR-053 read-only Planning Visit List"
+  objective: >
+    Produce one source-faithful, code-ready design revision for the read-only
+    CR-053 list slice without importing CR-071 actions or prototype policies.
+  preserve:
+    - SAQEEL premium density and visual language
+    - stable visit ID/reference
+    - factory identity
+    - planning status and operational state as visibly separate row fields
+    - inspector and visit window
+    - open_read_only_detail affordance
+    - RLS/access-controlled truth label
+  replace_KPIs:
+    remove:
+      - Executing_now
+      - Expiring_within_48_hours
+    add_or_retain_in_exact_order:
+      - Draft
+      - Published
+      - Returned
+      - Cancelled
+      - Expired
+    semantics:
+      Draft: "planning_status draft plus internal validated"
+      Published: "planning_status published"
+      Returned: "planning_status returned"
+      Cancelled: "planning_status cancelled"
+      Expired: "planning_status expired"
+    prohibited_grain:
+      - operational_state
+      - inspection_status
+      - unsupported_time_threshold
+    interaction: "Selecting a KPI preserves search/non-status filters and resets page to 1."
+  search:
+    visible_dimensions:
+      - Visit_ID_or_reference
+      - Factory_Name
+      - CR_Number
+      - Industrial_License
+      - Inspector
+    behavior_notes:
+      - case_insensitive_partial_match
+      - RLS_scoped
+      - URL_backed
+      - error_is_unavailable_not_zero_results
+  filters:
+    required:
+      - Planning_Status
+      - Business_Visit_Type
+      - Region
+      - City
+      - Visit_Window
+      - Inspector
+    behavior_notes:
+      - all_active_filters_combine_with_AND
+      - city_options_follow_region
+      - criteria_change_resets_page_to_1
+      - selected_criteria_survive_refresh
+      - option_source_failure_is_explicit
+  list:
+    minimum_columns:
+      - Visit_reference
+      - Factory_name_and_factory_code
+      - Business_Visit_Type
+      - Planning_Status
+      - Operational_State
+      - Inspector
+      - Visit_Window
+      - Last_Update_when_source_backed
+    allowed_interactions:
+      - sort
+      - previous_page
+      - next_page
+      - open_read_only_dossier
+    remove:
+      - row_checkbox
+      - select_all
+      - bulk_action_bar
+      - inline_edit
+    pagination_notes:
+      - page_size_25
+      - exact_total
+      - exact_page_count
+      - stable_sort_plus_visit_ID_tiebreak
+      - no_gap_or_duplicate
+      - out_of_range_request_resolves_to_last_valid_page
+
+required_hard_states:
+  - state_id: CR053-STATE-LOADING
+    behavior: "Non-interactive list/KPI/filter skeleton with no stale fixture values."
+  - state_id: CR053-STATE-RLS-ZERO
+    behavior: "No planned visits are visible in the authorized scope."
+  - state_id: CR053-STATE-NO-MATCH
+    behavior: "No result; active search and filters stay visible with Reset."
+  - state_id: CR053-STATE-DATA-UNAVAILABLE
+    behavior: "Counts and list unavailable; never render zero counts as success."
+  - state_id: CR053-STATE-OPTIONS-UNAVAILABLE
+    behavior: "Required filter options unavailable; never silently shorten them."
+  - state_id: CR053-STATE-UNAUTHORIZED
+    behavior: "Neutral authorized-role-required state with no row/count disclosure."
+  - state_id: CR053-STATE-OUT-OF-RANGE
+    behavior: "Resolve to last valid page, not false empty."
+
+F0_identity_and_focus_dependency:
+  source: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+  wordmark:
+    required: approved_bilingual_dark_surface_wordmark_asset
+    correction: "Remove generated Arabic-only wordmark from the English design."
+    ownership: F0
+  focus:
+    required: "One contiguous, visible, WCAG-compliant focus treatment."
+    technical_reference_commit: 31baf2f8
+    ownership: F0
+  shell:
+    inherit:
+      - fixed_navigation_hierarchy
+      - top_bar
+      - theme
+      - localization_and_RTL
+      - responsive_drawer
+    prohibit: "Do not redesign, fork or duplicate F0 inside WA-DES-045."
+  acceptance_dependency: "Final M2 visual evidence must name the certified sponsor-accepted F0 commit."
+
+query_and_RBAC_truth_notes_for_handoff:
+  query_corrections_required_before_build_completion:
+    - fully_page_factory_plan_and_inspector_search_sources
+    - fully_page_required_filter_option_sources
+    - exact_total_equals_count_at_identical_RLS_filter_grain
+    - out_of_range_page_requery_or_redirect
+    - whitelist_draft_validated_published_returned_cancelled_expired
+  authorization:
+    allowed: business_staff_with_planning.view
+    denied:
+      - admin
+      - inspector_pending_DEC-025
+      - anonymous
+    rule: "Resolve permission before any list/count/option query; retain RLS."
+  read_only:
+    rule: "Returned component must not import, bind, serialize or hide mutation actions."
+    page_load_writes: NONE
+
+responsive_and_accessibility_frames:
+  required:
+    - locale: en
+      direction: LTR
+      theme: light
+      viewport: 1440x900
+    - locale: en
+      direction: LTR
+      theme: dark
+      viewport: 1440x900
+    - locale: ar
+      direction: RTL
+      theme: light
+      viewport: 1024x768
+    - locale: ar
+      direction: RTL
+      theme: dark
+      viewport: 390x844
+    - locale: en
+      direction: LTR
+      theme: light
+      viewport: 320x800
+  interaction_notes:
+    - keyboard_order_from_shell_to_KPIs_to_search_to_filters_to_list_to_pagination
+    - one_visible_focus_treatment
+    - selected_KPI_announced
+    - filters_have_programmatic_labels
+    - table_headers_or_mobile_card_labels_preserved
+    - status_never_color_only
+    - no_horizontal_page_overflow
+
+acceptance_and_evidence_gates:
+  atomic:
+    - WA-AC-0053
+    - WA-EV-0053
+  package:
+    - WA-M2-AC-001
+    - WA-M2-AC-002
+    - WA-M2-AC-003
+    - WA-M2-AC-004
+    - WA-M2-AC-005
+    - WA-M2-AC-006
+  design_must_return:
+    - immutable_revision_identifier
+    - exported_source_hash
+    - exact_route_component_service_mapping
+    - source_citations_for_each_semantic_decision
+    - hard_state_matrix
+    - viewport_locale_theme_matrix
+    - interaction_and_accessibility_notes
+    - zero_CR071_controls_assertion
+    - explicit_HANDOFF_BLOCKED_until_sponsor_acceptance
+  prohibited_evidence:
+    - fixture_numbers_as_data_truth
+    - screenshot_only_behavior_claim
+    - design_self_approval
+    - missing_state_marked_not_applicable
+
+ownership_and_collision_boundary:
+  Claude_Design:
+    future_lease: WA-DES-045_design_revision_only
+    may_not_touch:
+      - application_code
+      - tests
+      - Supabase
+      - F0_source
+      - M2_VS_001A_dossier
+  Codex:
+    role_now: independent_read_only_reviewer
+  product_file_lease:
+    status: NOT_ISSUED
+    proposed_later:
+      - apps/web/src/app/(app)/planning/visits/page.tsx
+      - apps/web/src/app/(app)/planning/visits/VisitList.tsx
+      - apps/web/src/app/(app)/planning/visits/VisitList.module.css
+      - apps/web/src/lib/planning/visit-list.ts
+      - apps/web/e2e/web-admin-m2-readonly-visit-list.spec.ts
+  M2_VS_001A_overlap: NONE
+
+return_status:
+  recommendation_after_delivery: INDEPENDENT_RECHECK_REQUIRED
+  no_completion_or_build_authority: true
+  M3: BLOCKED
+
+exact_recheck_trigger:
+  task_id: M2-VS-002-CORRECTED-DESIGN-AND-LEASE-RECHECK
+  trigger_all:
+    - corrected_WA-DES-045_immutable_revision
+    - exported_hash
+    - complete_hard_state_and_viewport_matrix
+    - sponsor_design_disposition
+    - deterministic_seeder_manifest_008B
+  allowed_action_on_trigger: read_only_independent_preflight

@@ -1,0 +1,423 @@
+packet_id: M2-VS-002-DETERMINISTIC-SEEDER-TEST-DATA-MANIFEST-008B
+packet_type: deterministic_isolated_seeder_and_test_data_manifest
+created_at: "2026-07-25"
+module: M2_PLANNING
+slice_id: M2-VS-002
+status: SPECIFIED_NOT_EXECUTED
+remote_execution_authorized: false
+database_mutation_authorized: false
+product_or_test_mutation_authorized: false
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+
+source_authority:
+  requirement:
+    source: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    completion_candidate:
+      requirement_id: CR-053
+      acceptance_id: WA-AC-0053
+      evidence_id: WA-EV-0053
+    semantic_constraints_no_completion_credit:
+      - CR-054
+      - CR-055
+      - CR-056
+      - CR-075
+    excluded:
+      requirement_id: CR-071
+      rule: "Do not seed or test selection, bulk actions or mutation workflows for this slice."
+  validation:
+    source: M2-VS-002-DESIGN-AND-DATA-TRUTH-PREFLIGHT-007
+    result: BLOCKED
+  seeder_handoff:
+    source: /Users/vikramindla/Inspection Preprod/MIM_Inspection_Supabase_Seeding_Discovery_Handoff.zip
+    size_bytes: 183726
+    sha256: 350fb8f7443692173dae6c8c2fc1ffb71aaf79eb481663834db90b86cae64f3a
+    reused_contracts:
+      - SEEDER_IMPLEMENTATION_PLAN.md
+      - SEED_MANIFEST_SCHEMA.md
+      - PERSONA_AND_ORGANISATION_SEED_PLAN.csv
+      - RLS_SEED_ACCEPTANCE_MATRIX.csv
+      - SEED_CLEANUP_AND_ROLLBACK.md
+      - SEED_SCENARIO_CATALOG.csv
+    extraction_or_installation: NONE
+  design_companion_packet: M2-VS-002-WA-DES-045-CLAUDE-DESIGN-CORRECTION-REQUEST-008A
+
+execution_boundary:
+  purpose: >
+    Define the smallest deterministic evidence dataset and local service-test
+    fixtures needed to recheck CR-053 after the corrected WA-DES-045 revision.
+  current_action: MANIFEST_ONLY
+  prohibited_now:
+    - Supabase_connection
+    - remote_seed
+    - local_database_seed
+    - schema_or_migration_change
+    - auth_user_creation
+    - direct_workflow_status_update
+    - direct_audit_insert
+    - cleanup_or_rollback
+    - product_code_change
+    - test_code_change
+    - lease_or_branch_change
+  execution_blockers:
+    - separate_explicit_seeder_lease
+    - approved_exact_ID_tagging_and_cleanup_mechanism
+    - validated_target_environment
+    - preflight_and_dry_run_evidence
+  secrets_rule: "No credentials, service-role keys or personal data may appear in this manifest or evidence."
+
+isolation_and_identity:
+  manifest_label: M2-VS-002-CR053-QA-V1
+  deterministic_anchor: "2026-07-25T09:00:00+03:00"
+  seed_batch_id: TO_BE_DERIVED_BY_APPROVED_SEEDER
+  ID_rule: >
+    The future approved runner derives every row ID solely from its approved
+    deterministic batch root, entity domain and zero-padded sequence. No random
+    IDs, timestamps, discovery-by-name or mutable natural keys are permitted.
+  isolation_rule: >
+    Isolate by the deterministic batch manifest and exact member IDs. The
+    current product has no approved tenant/organisation partition that can be
+    invented for seed isolation.
+  registry_boundary: >
+    seed_runs and seed_batch_members are handoff proposals, not current schema
+    authority. This packet does not add them. Until an approved tagging
+    mechanism exists, the explicit external manifest of exact IDs is required
+    and execution remains blocked.
+  collision_checks_before_future_execution:
+    - every_derived_ID_is_absent_or_owned_by_the_same_exact_batch
+    - every_reused_reference_ID_exists_and_is_not_mutated
+    - no_human_or_non_batch_record_matches_the_cleanup_set
+    - dry_run_reports_insert_reuse_skip_and_conflict_counts
+
+approved_existing_personas_read_only:
+  primary_planners:
+    - P-007_Sara_planner
+    - P-008_Hanan_planner
+  supporting_probes:
+    - P-001_admin_security
+    - P-009_operations
+    - P-010_operations
+    - P-011_inspector
+    - P-012_inspector
+    - P-013_inspector
+    - P-014_inspector
+    - P-015_reviewer
+    - P-016_reviewer
+    - P-017_auditor
+    - P-018_leadership
+  rule: >
+    Reuse approved handoff persona identities if present. Do not create Auth
+    users, assign new permissions or mutate profiles/user_roles in this slice.
+
+database_seed_dataset:
+  remote_execution: PROHIBITED
+  expected_RLS_visible_visit_count_for_authorized_planner: 60
+  page_size: 25
+  expected_pages: 3
+  governed_status_distribution:
+    draft: 5
+    validated: 3
+    published: 30
+    returned: 8
+    cancelled: 7
+    expired: 7
+  KPI_expected_counts:
+    Draft: 8
+    Published: 30
+    Returned: 8
+    Cancelled: 7
+    Expired: 7
+  prohibited_statuses:
+    - executing
+    - completed
+    - inspection_status
+    - journey_state
+  business_dimensions:
+    business_visit_type:
+      minimum_distinct_values: 3
+    region:
+      minimum_distinct_values: 3
+    city:
+      minimum_distinct_values: 5
+      rule: "At least two cities share one region so dependent city filtering is testable."
+    inspector:
+      use_existing:
+        - P-011
+        - P-012
+        - P-013
+        - P-014
+      include_unassigned: true
+    visit_window:
+      relative_to_anchor:
+        - ends_before_anchor
+        - overlaps_anchor_day
+        - starts_after_anchor
+  search_sentinels:
+    required_dimensions:
+      - Visit_ID_or_reference
+      - Factory_Name
+      - CR_Number
+      - Industrial_License
+      - Inspector
+    rules:
+      - each_dimension_has_one_unique_case_mixed_partial_match
+      - one_visit_matches_two_dimensions_but_must_be_deduplicated
+      - wildcard_and_group_syntax_characters_are_escaped
+      - zero_match_term_is_present_in_the_fixture_contract
+  filter_sentinels:
+    required:
+      - Planning_Status
+      - Business_Visit_Type
+      - Region
+      - City
+      - Visit_Window
+      - Inspector
+    rules:
+      - each_filter_has_at_least_two_valid_values
+      - one_known_multi_filter_intersection_returns_exactly_one_visit
+      - one_valid_multi_filter_combination_returns_zero_visits
+      - city_values_are_verifiably_constrained_by_region
+  pagination_sentinels:
+    - identical_sort_timestamps_span_a_page_boundary
+    - deterministic_visit_ID_tiebreak_orders_equal_timestamps
+    - page_1_has_25_rows
+    - page_2_has_25_rows
+    - page_3_has_10_rows
+    - requested_page_4_resolves_to_page_3
+    - union_of_pages_contains_60_unique_visit_IDs
+
+approved_scenario_reuse:
+  from_handoff:
+    - scenario_id: SCN-001
+      purpose: draft_visit
+    - scenario_id: SCN-002
+      purpose: published_visit
+    - scenario_id: SCN-003
+      purpose: bulk_planning_context_without_bulk_action_credit
+    - scenario_id: SCN-022
+      purpose: cancelled_visit
+    - scenario_id: SCN-023
+      purpose: immediate_visit_context
+  workflow_rule: >
+    Create state only through canonical create/validate/publish/return/cancel/
+    expire transitions and guards where those transitions exist. Never update
+    workflow status columns directly.
+  audit_rule: >
+    Audit and lifecycle rows must be generated by canonical services/triggers.
+    The future seeder must not insert or rewrite immutable audit evidence.
+
+table_and_data_boundary:
+  read_only_references:
+    - profiles
+    - user_roles
+    - existing_factory_and_geography_seed_rows
+  future_exact_batch_members:
+    - visit_plans
+    - visits
+    - visit_assignments
+    - visit_lifecycle_events_generated_by_canonical_transition
+  forbidden_direct_members:
+    - auth.users
+    - audit_rows
+    - immutable_submitted_versions
+    - notification_rows_unless_generated_by_canonical_transition
+  service_role_rule: >
+    Do not introduce a new service-role path. Any future execution must use the
+    approved handoff runner bootstrap and authenticate validation probes as the
+    named personas.
+
+local_deterministic_test_fixtures_no_database_write:
+  purpose: >
+    Prove formerly capped search and option-source behavior without violating
+    the handoff QA profile caps or manufacturing hundreds of remote records.
+  fixtures:
+    - fixture_id: CR053-FACTORY-PLAN-BEYOND-500
+      deterministic_rows: 501
+      sentinel: FACTORY_PLAN_0501
+      proves:
+        - complete_factory_search_paging
+        - complete_plan_search_paging
+        - complete_region_and_city_option_paging
+    - fixture_id: CR053-INSPECTOR-BEYOND-200
+      deterministic_rows: 201
+      sentinel: INSPECTOR_0201
+      proves:
+        - complete_inspector_search_paging
+        - complete_inspector_option_paging
+    - fixture_id: CR053-INVALID-STATUS-SERVICE-DOUBLE
+      deterministic_rows: 1
+      sentinel: out_of_contract_status
+      database_insert: PROHIBITED
+      proves:
+        - governed_all_tab_status_whitelist
+    - fixture_id: CR053-CONTROLLED-FAILURES
+      database_corruption: PROHIBITED
+      proves:
+        - list_count_query_failure_maps_to_DATA_UNAVAILABLE
+        - filter_option_failure_maps_to_OPTIONS_UNAVAILABLE
+        - no_failed_query_is_rendered_as_zero_success
+    - fixture_id: CR053-AUTHORIZED-RLS-ZERO
+      database_insert: PROHIBITED
+      rule: >
+        Use a controlled authorized empty RLS response/test double unless an
+        approved real data boundary exists. Do not invent a second organisation.
+      proves:
+        - CR053-STATE-RLS-ZERO
+
+RBAC_and_RLS_probes:
+  resolve_permission_before_queries: true
+  allowed:
+    - persona: P-007
+      role: business_staff
+      permission: planning.view
+      expected: list_counts_and_options_visible_under_existing_RLS
+    - persona: P-008
+      role: business_staff
+      permission: planning.view
+      expected: list_counts_and_options_visible_under_existing_RLS
+  denied:
+    - persona: P-001
+      role: admin
+      expected: neutral_unauthorized_before_data_queries
+    - persona: P-011
+      role: inspector
+      dependency: DEC-025_remains_open
+      expected: neutral_unauthorized_before_data_queries
+    - persona: anonymous
+      expected: neutral_unauthorized_before_data_queries
+  no_fabricated_cross_organisation_probe: true
+
+hard_state_evidence_matrix:
+  - state_id: CR053-STATE-LOADING
+    evidence_driver: delayed_local_service_double
+  - state_id: CR053-STATE-RLS-ZERO
+    evidence_driver: controlled_authorized_empty_RLS_fixture
+  - state_id: CR053-STATE-NO-MATCH
+    evidence_driver: valid_zero_match_search_and_filter_combination
+  - state_id: CR053-STATE-DATA-UNAVAILABLE
+    evidence_driver: controlled_list_or_count_failure
+  - state_id: CR053-STATE-OPTIONS-UNAVAILABLE
+    evidence_driver: controlled_required_option_source_failure
+  - state_id: CR053-STATE-UNAUTHORIZED
+    evidence_driver: admin_inspector_and_anonymous_RBAC_probes
+  - state_id: CR053-STATE-OUT-OF-RANGE
+    evidence_driver: request_page_4_against_three_page_dataset
+
+F0_and_bilingual_dependency:
+  wordmark:
+    required: approved_bilingual_dark_surface_wordmark_asset
+    prohibited: generated_Arabic_only_text_on_English_surface
+  focus:
+    required: one_contiguous_visible_WCAG_compliant_focus_treatment
+    technical_reference_commit: 31baf2f8
+  final_evidence_dependency: >
+    The certified sponsor-accepted F0 commit must be named before CR-053 visual
+    evidence can pass. Seeder evidence cannot substitute for F0 acceptance.
+
+query_and_pagination_acceptance:
+  required_corrections:
+    - exact_count_at_identical_RLS_search_and_filter_grain
+    - complete_paging_of_factory_plan_inspector_search_sources
+    - complete_paging_of_required_filter_option_sources
+    - explicit_governed_status_whitelist
+    - stable_sort_plus_visit_ID_tiebreak
+    - out_of_range_requery_or_redirect_to_last_valid_page
+  proof:
+    - all_five_KPI_counts_equal_direct_RLS_count_queries
+    - list_total_equals_exact_count
+    - page_count_equals_three
+    - page_union_has_no_gap_or_duplicate
+    - former_501_and_201_cap_sentinels_are_found_in_local_service_tests
+    - option_source_failure_is_not_rendered_as_legitimate_empty
+    - all_tab_rejects_out_of_contract_status
+
+acceptance_and_evidence_gates:
+  atomic:
+    - WA-AC-0053
+    - WA-EV-0053
+  package:
+    - WA-M2-AC-001
+    - WA-M2-AC-002
+    - WA-M2-AC-003
+    - WA-M2-AC-004
+    - WA-M2-AC-005
+    - WA-M2-AC-006
+  future_seeder_evidence_required:
+    - deterministic_manifest_hash
+    - environment_identity_without_secret_disclosure
+    - preflight_row_counts_and_collision_report
+    - dry_run_insert_reuse_skip_conflict_report
+    - exact_created_and_reused_ID_member_list
+    - canonical_transition_and_generated_audit_proof
+    - rerun_idempotency_proof
+    - persona_RBAC_and_RLS_probe_results
+    - zero_page_load_writes_proof
+  future_runtime_evidence_required:
+    - corrected_WA-DES-045_revision_and_export_hash
+    - F0_certified_commit
+    - EN_LTR_and_AR_RTL_light_dark_viewports
+    - keyboard_and_focus_evidence
+    - loading_zero_no_match_unavailable_unauthorized_out_of_range_states
+    - URL_backed_search_filter_page_state
+    - page_1_page_2_page_3_and_page_4_resolution
+  prohibited_completion_evidence:
+    - fixture_number_presented_as_live_business_truth
+    - screenshot_only_behavior_claim
+    - direct_status_or_audit_mutation
+    - service_role_bypass_presented_as_RLS_proof
+    - missing_state_marked_not_applicable
+
+future_file_and_lease_boundary:
+  current_lease: NONE
+  seeder_lease_proposed_later:
+    - scripts/seed/scenarios/m2-vs-002-cr053.ts
+    - scripts/seed/manifests/m2-vs-002-cr053.json
+  local_test_fixture_lease_proposed_later:
+    - apps/web/e2e/fixtures/m2-vs-002-cr053.ts
+  product_lease_proposed_later:
+    - apps/web/src/app/(app)/planning/visits/page.tsx
+    - apps/web/src/app/(app)/planning/visits/VisitList.tsx
+    - apps/web/src/app/(app)/planning/visits/VisitList.module.css
+    - apps/web/src/lib/planning/visit-list.ts
+    - apps/web/e2e/web-admin-m2-readonly-visit-list.spec.ts
+  design_lease:
+    - WA-DES-045_design_revision_only
+  collision_rules:
+    - seeder_test_design_and_product_leases_must_be_separately_recorded
+    - one_owner_per_file_at_a_time
+    - no_overlap_with_M2_VS_001A_dossier
+    - no_overlap_with_active_F0_source_ownership
+    - reviewer_must_not_modify_leased_files
+
+cleanup_contract_for_future_execution:
+  execution_now: PROHIBITED
+  allowed_future_scope: exact_manifest_member_IDs_only
+  prohibited:
+    - truncate
+    - wildcard_delete
+    - delete_by_name
+    - delete_by_timestamp_window
+    - delete_or_rewrite_audit_history
+    - touch_reused_reference_rows
+  required_order: reverse_dependency_order_after_preflight
+  required_proof:
+    - exact_target_ID_list
+    - human_or_non_batch_collision_count_is_zero
+    - immutable_audit_rows_preserved
+    - post_cleanup_batch_member_count_is_zero
+
+return_status:
+  recommendation: ACCEPT_MANIFEST_FOR_FUTURE_SEPARATELY_LEASED_EXECUTION
+  no_execution_or_completion_authority: true
+  M3: BLOCKED
+
+exact_recheck_trigger:
+  task_id: M2-VS-002-CORRECTED-DESIGN-AND-LEASE-RECHECK
+  trigger_all:
+    - corrected_WA-DES-045_immutable_revision
+    - exported_hash
+    - complete_hard_state_and_viewport_matrix
+    - sponsor_design_disposition
+    - deterministic_seeder_manifest_008B
+  allowed_action_on_trigger: read_only_independent_preflight
