@@ -190,18 +190,33 @@ sessions against `/operations` and `/operations/live`:
 - **Responsive, live**: resized the Arabic session to 390×844 (mobile) —
   layout stacked cleanly, both disclosure banners fully readable, no
   horizontal overflow or clipped text.
-- **Negative role check — inconclusive, noted not fixed**: signed in as
-  `admin@mim.gov.sa` (roles `compliance_admin · form_admin`) and it was
-  **not** denied `/operations` — contradicts this suite's existing runtime
-  test expectation (`"an authenticated admin-only persona is denied both
-  Operations routes"`). Access is derived entirely from
-  `buildShellNavigation(routeRoleKeys)`, which lives in
-  `apps/web/src/lib/shell-navigation.ts` — outside every allowed_paths list
-  in both M3 packets (explicitly prohibited: shared shell/navigation). Not
-  investigated further or touched. This may be a stale test expectation
-  against current seed-role data, or a real shared-navigation entitlement
-  question — either way it is not this lease's file to fix. Flagging for
-  the shared-shell/navigation owner rather than silently ignoring it.
+- **Negative role check — root cause found, confirmed real, not fixed
+  (outside lease)**: signed in as `admin@mim.gov.sa` (roles
+  `compliance_admin · form_admin`) and it was **not** denied `/operations`
+  — contradicts this suite's existing runtime test expectation
+  (`"an authenticated admin-only persona is denied both Operations
+  routes"`). Traced to `apps/web/src/lib/shell-navigation.ts:235`:
+  ```ts
+  enabled: item.visibility === "business" || allowed,
+  ```
+  Every nav item with `visibility: "business"` (Dashboard, Operations
+  Center, Factory 360, Planning, Execution, Review & Approval, Compliance
+  Library, Awaiting Approval, Violations & Penalties) is enabled for **any
+  authenticated user** — the `allowed` role check (from each item's
+  `roles: businessRoles` list, built at `shell-navigation.ts:131-134`)
+  never runs for these items because `item.visibility === "business"`
+  short-circuits the `||` unconditionally. This is not a stale test or a
+  seed-data quirk — it is a real access-control gap on the shared
+  nav-enablement gate used by every business-tier route app-wide, not
+  scoped to Operations. Exact fix: `enabled: allowed` (drop the
+  `item.visibility === "business" ||` clause) — `visibility` should govern
+  display placement (business tab vs admin sidebar), not bypass the role
+  check. Not fixed here: `shell-navigation.ts` is explicit prohibited
+  territory in both M3 packets ("Do not modify the shared shell, shared
+  navigation, global tokens, global CSS or shared GeoMap") and outside
+  `LEASE-M3-OPS-CENTER-002`'s `allowed_paths`; the blast radius is
+  app-wide auth/nav-gating, not Operations-scoped, and needs its own
+  review and lease rather than a drive-by fix inside this packet.
 - **Instability observed while driving the browser**: the dev server died
   unprompted once mid-session (process exited with no fatal error logged,
   possibly resource pressure from concurrent tabs + HMR); restarted cleanly
