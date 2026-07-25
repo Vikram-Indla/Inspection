@@ -112,7 +112,7 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 5 workspace item lifecycle", () =
     // Effective scope drives every runtime view.
     expect(ws).toContain("effectiveSections(sections, allMap, itemStates, strings.libAddedGroup)");
     expect(ws).toContain("sectionProgress(sections, allMap, answers, runtimeCtx, itemStates)");
-    expect(ws).toContain("computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates)");
+    expect(ws).toContain("computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates, findings)");
     // Deselect: optional/added only (fail closed when metadata is absent), dialog with mandatory reason.
     expect(ws).toContain('itemRules[it.code]?.requirement ?? "required"');
     expect(ws).toContain("setDeselecting({ item: it, reason: \"\" })");
@@ -187,6 +187,24 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 5 workspace item lifecycle", () =
     expect(log).toContain("D-017");
     expect(log).toContain("D-018");
     expect(log).toContain("D-019");
+  });
+});
+
+test.describe("SCR-IPAD-650 findings workflow", () => {
+  test("uses canonical configuration and preserves offline recovery", () => {
+    const ws = read(workspacePath);
+    const page = read(workspacePagePath);
+    expect(page).toContain('sb.from("findings").select("id, item_id, severity, description")');
+    expect(ws).toContain('sb.from("findings").upsert({ id, ...payload }');
+    expect(ws).toContain("findingConfig.level");
+    expect(ws).toContain("readOnly value={`${violationCode} · ${findingConfig.title}`}");
+    expect(ws).toContain('local.saveDraft(inspection.id, `finding:${it.id}`');
+    expect(ws).toContain("pending.current.findings.add(it.id)");
+    expect(ws).toContain("findingRetry");
+    expect(ws).toContain("findings: implied.map");
+    const offline = read(offlinePath);
+    expect(offline).toContain('kind: "finding"');
+    expect(offline).toContain('sb.from("findings").upsert');
   });
 });
 

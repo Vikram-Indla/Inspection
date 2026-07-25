@@ -24,6 +24,7 @@ export type Item = {
 export type Answer = { value?: string; note?: string; date?: string };
 export type FormDef = { key: string; title: string; blocking?: boolean; fields: string[] };
 export type FormDraft = { [field: string]: string };
+export type FindingDraft = { id?: string; description: string; severity: string; classification: string; sync: "synced" | "pending" | "failed" };
 export type Section = { key: string; title: string; items?: string[] };
 export type VioConfig = { id: string; code: string; title: string; level: string; penalty_ref: string | null; legal_basis: string | null; mapping_version: string | null; penalty_conflict?: boolean };
 
@@ -207,18 +208,19 @@ export function impliedViolations(items: Item[], answers: Record<string, Answer>
 }
 
 /** Grouped submit blockers (M04-199/200/204/208): unanswered · evidence · forms. */
-export type SectionBlockers = { key: string; title: string; unanswered: string[]; evidence: string[]; forms: string[] };
+export type SectionBlockers = { key: string; title: string; unanswered: string[]; evidence: string[]; forms: string[]; findings: string[] };
 export function computeBlockers(
   sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>,
   ctx: Record<string, string>, evidencePerItem: Record<string, Record<string, number>>,
   formDrafts: Record<string, FormDraft>, defs: FormDef[], itemStates?: ItemStates,
+  findingDrafts: Record<string, FindingDraft> = {},
 ): SectionBlockers[] {
   // §15/§20 — deselected items require nothing; added items are fully required
   // per their own rules (effective scope, same as progress).
   const eff = itemStates ? effectiveSections(sections, imap, itemStates) : sections;
   const out: SectionBlockers[] = [];
   for (const s of eff) {
-    const g: SectionBlockers = { key: s.key, title: s.title, unanswered: [], evidence: [], forms: [] };
+    const g: SectionBlockers = { key: s.key, title: s.title, unanswered: [], evidence: [], forms: [], findings: [] };
     for (const c of s.items ?? []) {
       const it = imap[c]; if (!it || !isVisible(it, ctx)) continue;
       const v = answers[it.id]?.value;
@@ -227,8 +229,9 @@ export function computeBlockers(
       if (leg?.applies && leg.mandatory && (evidencePerItem[it.id]?.[leg.type] ?? 0) < leg.min) g.evidence.push(it.code);
       const def = formRequired(it, v, defs);
       if (def?.blocking && !formComplete(def, formDrafts[it.id])) g.forms.push(it.code);
+      if (it.response_model.mapping?.[v]?.violation && !findingDrafts[it.id]?.description.trim()) g.findings.push(it.code);
     }
-    if (g.unanswered.length || g.evidence.length || g.forms.length) out.push(g);
+    if (g.unanswered.length || g.evidence.length || g.forms.length || g.findings.length) out.push(g);
   }
   return out;
 }

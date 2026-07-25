@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
-  type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
+  type Item, type Answer, type FormDef, type FormDraft, type FindingDraft, type VioConfig, type Section, type ItemStates,
   isVisible, contextFlags, conditionContext, scoreExcluded, computeHealthScore, evidenceLeg, formRequired, formComplete,
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
@@ -36,6 +36,7 @@ export type WorkspacePanel = {
 export type PrevComparison = { label: string; date: string | null; answers: Record<string, string>; evidence: Record<string, number> };
 type SForm = { id: string; item_id: string | null; violation_id: string | null; form_type: string; owner_name: string | null; owner_role: string | null; due_at: string | null; required_correction: string | null; status: string };
 type SVio = { id: string; violation_code_id: string; invalidated_at?: string | null; invalidate_reason?: string | null };
+type SFinding = { id: string; item_id: string | null; severity: string; description: string };
 // Phase 5 (§15) — per-visit item lifecycle row from inspection_item_states.
 type SItemState = { item_id: string; state: "added" | "deselected"; reason: string | null; reverted_at: string | null };
 // Phase 5 (§18) — published action_form configuration template for manual add.
@@ -83,6 +84,9 @@ export type WorkspaceStrings = {
   afBlocking: string; afComplete: string; afIncomplete: string; afSaved: string; afFieldLabels: { [k: string]: string };
   vioTitle: string; vioNone: string; vioPenalty: string; vioLevel: string; vioAction: string;
   vioInvalidated: string; vioPenaltyConflict: string;
+  findingTitle: string; findingHint: string; findingClassification: string; findingSeverity: string;
+  findingNarrative: string; findingPlaceholder: string; findingRequired: string; findingSaved: string;
+  findingPending: string; findingFailed: string; findingRetry: string;
   // — Phase 5 item lifecycle (§15) —
   libTitle: string; libHint: string; libAdd: string; libEmpty: string; libAddedGroup: string; libAddedMsg: string;
   deselectBtn: string; deselectTitle: string; deselectReason: string; deselectReasonPh: string;
@@ -90,7 +94,7 @@ export type WorkspaceStrings = {
   deselectedTitle: string; deselectedAudit: string; restoreBtn: string; restoredMsg: string;
   // — Phase 5 manual action forms (§18) —
   afAddTitle: string; afAddHint: string; afAddPick: string; afAddBtn: string; afAddedMsg: string; afNone: string;
-  valTitle: string; valUnanswered: string; valEvidence: string; valForms: string;
+  valTitle: string; valUnanswered: string; valEvidence: string; valForms: string; valFindings: string;
   ready: string; notReady: string;
   sig: SignaturePadStrings;
   // — Slice F2 evidence & media depth —
@@ -108,8 +112,9 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
+export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverFindings, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
   inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
+  serverFindings: SFinding[];
   userId: string;
   serverItemStates: SItemState[]; actionTemplates: ActionTemplate[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
@@ -127,6 +132,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [ctx, setCtx] = useState(serverContext);
   const [forms, setForms] = useState(() => Object.fromEntries(serverForms.filter(f => !!f.item_id).map(f =>
     [f.item_id!, { owner_name: f.owner_name ?? "", owner_role: f.owner_role ?? "", due_at: f.due_at ? f.due_at.slice(0, 10) : "", required_correction: f.required_correction ?? "" }])) as { [itemId: string]: FormDraft });
+  const [findings, setFindings] = useState(() => Object.fromEntries(serverFindings.filter(f => !!f.item_id).map(f => [
+    f.item_id!, { id: f.id, description: f.description, severity: f.severity, classification: "", sync: "synced" },
+  ])) as Record<string, FindingDraft>);
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
   const [commentDrafts, setCommentDrafts] = useState({} as Record<string, string>);
   // F2 — captured photos awaiting the annotation overlay (pre-enqueue, offline-safe)
@@ -234,10 +242,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const answersRef = useRef(answers); answersRef.current = answers;
   const ctxRef = useRef(ctx); ctxRef.current = ctx;
   const formsRef = useRef(forms); formsRef.current = forms;
+  const findingsRef = useRef(findings); findingsRef.current = findings;
   const vioIdsRef = useRef(vioIds); vioIdsRef.current = vioIds;
   const itemStatesRef = useRef(itemStates); itemStatesRef.current = itemStates;
   const manualFormsRef = useRef(manualForms); manualFormsRef.current = manualForms;
-  const pending = useRef({ ctx: false, forms: new Set(), vios: new Set(), manual: [] as { id: string; form_type: string; title: string }[] } as { ctx: boolean; forms: Set<string>; vios: Set<string>; manual: { id: string; form_type: string; title: string }[] });
+  const pending = useRef({ ctx: false, forms: new Set(), findings: new Set(), vios: new Set(), manual: [] as { id: string; form_type: string; title: string }[] } as { ctx: boolean; forms: Set<string>; findings: Set<string>; vios: Set<string>; manual: { id: string; form_type: string; title: string }[] });
   const flushRef = useRef(() => {});
   // F2 — durable media pendings (replace-archive M04-163 · soft delete M04-164);
   // persisted as local drafts so they survive reload while offline.
@@ -257,6 +266,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
               return [...f, ...pending.current.manual.filter(m => !have.has(m.id)).map(m => ({ ...m, status: "open" }))];
             });
           }
+        }
+        if (k.startsWith(`${inspection.id}:finding:`)) {
+          const itemId = k.slice(`${inspection.id}:finding:`.length);
+          const draft = r.v as FindingDraft;
+          if (itemId && draft) setFindings(current => ({ ...current, [itemId]: { ...draft, sync: "pending" } }));
         }
       }
       if (pendingArch.current.length || pendingDel.current.length) {
@@ -412,6 +426,41 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const next = { ...formsRef.current[item.id], [field]: value };
     setForms(f => ({ ...f, [item.id]: next }));
     local.saveDraft(inspection.id, `af:${item.id}`, next);      // autosave draft (M04-181/182)
+  }
+  async function saveFinding(item: Item, classification: string, severity: string) {
+    const current = findingsRef.current[item.id];
+    const description = current?.description.trim() ?? "";
+    const id = current?.id ?? crypto.randomUUID();
+    const next: FindingDraft = { ...current, id, description, classification, severity, sync: "pending" };
+    setFindings(state => ({ ...state, [item.id]: next }));
+    await local.saveDraft(inspection.id, `finding:${item.id}`, next);
+    if (!description || description.length > 2000) {
+      pending.current.findings.add(item.id);
+      return;
+    }
+    if (!navigator.onLine) {
+      await local.enqueue({ kind: "finding", id, inspection_id: inspection.id, item_id: item.id, severity, description, queued_at: new Date().toISOString() });
+      pending.current.findings.delete(item.id);
+      processOutbox(userId, onState);
+      return;
+    }
+    const sb = supabaseBrowser();
+    const payload = { inspection_id: inspection.id, item_id: item.id, severity, description };
+    const result = await sb.from("findings").upsert({ id, ...payload }, { onConflict: "id" }).select("id").single();
+    if (result.error) {
+      console.error("[field workspace finding]", result.error.message);
+      await local.enqueue({ kind: "finding", id, inspection_id: inspection.id, item_id: item.id, severity, description, queued_at: new Date().toISOString() });
+      pending.current.findings.delete(item.id);
+      setFindings(state => ({ ...state, [item.id]: { ...next, sync: "failed" } }));
+      setMsg(strings.findingFailed);
+      processOutbox(userId, onState);
+      return;
+    }
+    pending.current.findings.delete(item.id);
+    const saved = { ...next, id: result.data.id, sync: "synced" as const };
+    setFindings(state => ({ ...state, [item.id]: saved }));
+    await local.saveDraft(inspection.id, `finding:${item.id}`, saved);
+    setMsg(fmt(strings.findingSaved, { code: item.code }));
   }
   // F2 — media lifecycle flush: archive rows once their replacement synced
   // (superseded_by needs the new evidence id), apply queued soft deletes.
@@ -606,8 +655,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const summary = summarize(sections, allMap, answers, runtimeCtx, activeEvidence.length + queuedEv.length, itemStates);
   const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx, itemStates);
   const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
-  const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
-  const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
+  const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates, findings);
+  const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length + g.findings.length, 0);
   // §15 — actively deselected items stay visible in a collapsed audit list
   // with their reason; restore is available before submit.
   const deselectedItems = useMemo(() => Object.entries(itemStates)
@@ -630,11 +679,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
   async function submit() {
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
-    const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
+    const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current, findingsRef.current);
     if (blockers.length) {
       setValidation(blockers);
       const missing = blockers.flatMap(b => b.unanswered);
-      setMsg(missing.length ? fmt(strings.blockers, { items: missing.join(", ") }) : fmt(strings.notReady, { n: blockers.reduce((n, g) => n + g.evidence.length + g.forms.length, 0) }));
+      setMsg(missing.length ? fmt(strings.blockers, { items: missing.join(", ") }) : fmt(strings.notReady, { n: blockers.reduce((n, g) => n + g.evidence.length + g.forms.length + g.findings.length, 0) }));
       return;
     }
     setValidation(null);
@@ -697,6 +746,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
         penalty_ref: v.config?.penalty_ref ?? null, legal_basis: v.config?.legal_basis ?? null,
         mapping_version: v.config?.mapping_version ?? null,
       })),
+      findings: implied.map(v => {
+        const finding = findings[v.itemId];
+        return {
+          id: finding?.id ?? null, item: v.itemCode, classification: v.code,
+          severity: v.config?.level ?? null, description: finding?.description.trim() ?? "",
+          sync: finding?.sync ?? "pending",
+        };
+      }),
       action_forms: Object.entries(forms).map(([itemId, draft]) => {
         const item = items.find(i => i.id === itemId) ?? library.find(i => i.id === itemId);
         if (!item) return null;
@@ -873,6 +930,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
             const def = formRequired(it, val?.value, formDefs);
             const draft = forms[it.id];
             const complete = def ? formComplete(def, draft) : false;
+            const violationCode = val?.value ? it.response_model.mapping?.[val.value]?.violation : undefined;
+            const findingConfig = violationCode ? vioConfig[violationCode] : undefined;
+            const finding = findings[it.id];
             const conditional = !!it.response_model.conditional?.visible_when;
             return (
               <div key={code} className={`${styles.question} ${val?.value ? styles.questionAnswered : ""}`}>
@@ -942,6 +1002,35 @@ export default function Workspace({ inspection, items, library, serverResponses,
                 </div>
                 {val?.value && scoreExcluded(it, val.value) && <p className="t-caption">{strings.naExcluded}</p>}
                 {leg?.applies && leg.mandatory && evCount < leg.min && <p className="t-caption" style={{ color: "var(--status-critical-text)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
+                {violationCode && findingConfig && (
+                  <div className={styles.panel} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)", borderInlineStart: finding?.description.trim() ? "4px solid var(--status-compliant)" : "4px solid var(--status-critical)" }}>
+                    <div className="row" style={{ justifyContent: "space-between", gap: "var(--space-2)", flexWrap: "wrap" }}>
+                      <strong>{strings.findingTitle}</strong>
+                      <span className={`badge ${finding?.sync === "failed" ? "badge-critical" : finding?.sync === "pending" ? "badge-warning" : "badge-compliant"}`}>
+                        {finding?.sync === "failed" ? strings.findingFailed : finding?.sync === "pending" ? strings.findingPending : strings.afComplete}
+                      </span>
+                    </div>
+                    <p className="t-caption">{strings.findingHint}</p>
+                    <div className={styles.grid2}>
+                      <label className={styles.fld}><span>{strings.findingClassification}</span><input className="input" readOnly value={`${violationCode} · ${findingConfig.title}`} /></label>
+                      <label className={styles.fld}><span>{strings.findingSeverity}</span><input className="input" readOnly value={findingConfig.level} /></label>
+                    </div>
+                    <label className={styles.fld}>
+                      <span>{strings.findingNarrative}<span className="req">*</span></span>
+                      <textarea className="input" rows={3} maxLength={2000} value={finding?.description ?? ""}
+                        placeholder={strings.findingPlaceholder}
+                        onChange={e => {
+                          const next: FindingDraft = { id: finding?.id, description: e.target.value, classification: violationCode, severity: findingConfig.level, sync: "pending" };
+                          setFindings(state => ({ ...state, [it.id]: next }));
+                          void local.saveDraft(inspection.id, `finding:${it.id}`, next);
+                          pending.current.findings.add(it.id);
+                        }}
+                        onBlur={() => saveFinding(it, violationCode, findingConfig.level)} />
+                    </label>
+                    {!finding?.description.trim() && <p className="t-caption" style={{ color: "var(--status-critical-text)" }}>{strings.findingRequired}</p>}
+                    {finding?.sync === "failed" && <button type="button" className="btn btn-secondary" onClick={() => saveFinding(it, violationCode, findingConfig.level)}>{strings.findingRetry}</button>}
+                  </div>
+                )}
                 {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
                     + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
                 {(() => {
@@ -1147,6 +1236,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                 {g.unanswered.length > 0 && <div className="t-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
                 {g.evidence.length > 0 && <div className="t-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
                 {g.forms.length > 0 && <div className="t-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
+                {g.findings.length > 0 && <div className="t-caption">{fmt(strings.valFindings, { items: g.findings.join(", ") })}</div>}
               </li>
             ))}
           </ul>

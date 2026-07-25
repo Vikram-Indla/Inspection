@@ -19,6 +19,9 @@ export function offlineDatabaseName(userId: string): string {
 export type SyncState = "synced" | "offline" | "pending" | "syncing" | "conflict" | "failed";
 export type OutboxOp =
   | { kind: "response"; inspection_id: string; item_id: string; response: unknown; baseline_updated_at: string | null; queued_at: string }
+  // SCR-IPAD-650 / FLD-FND-001..003 — stable client id makes offline create
+  // and later edits replay-safe, and FIFO keeps the finding ahead of submit.
+  | { kind: "finding"; id: string; inspection_id: string; item_id: string; severity: string; description: string; queued_at: string }
   // A real outside-fence check-in may be captured while offline. It is replayed
   // before its linked override request, and it never changes visit state.
   | { kind: "geo_checkin"; id: string; journey_id: string; visit_id: string; observed_lat: number; observed_lng: number; accuracy_m: number; altitude_m: number | null; distance_m: number; device_occurred_at: string; gis_version: string; device_id: string; queued_at: string }
@@ -314,6 +317,12 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
         const { error } = await guard.network(() => sb.from("checklist_responses").upsert(
           { inspection_id: op.inspection_id, item_id: op.item_id, response: op.response, is_complete: true, updated_at: new Date().toISOString() },
           { onConflict: "inspection_id,item_id" }));
+        if (error) throw error;
+      } else if (op.kind === "finding") {
+        const { error } = await guard.network(() => sb.from("findings").upsert({
+          id: op.id, inspection_id: op.inspection_id, item_id: op.item_id,
+          severity: op.severity, description: op.description,
+        }, { onConflict: "id" }));
         if (error) throw error;
       } else if (op.kind === "geo_checkin") {
         // M04-039/043 — durable captured facts for a later offline override.

@@ -115,6 +115,34 @@ test.describe("CD-006..011 backend completion", () => {
     expect(computeHealthScore([included, excluded], { included: { value: "non_compliant" }, excluded: { value: "compliant" } }, {})).toBe(0);
   });
 
+  test("SCR-IPAD-650 requires a question-linked finding for configured violations", () => {
+    const item = {
+      ...baseItem({
+        responses: ["compliant", "non_compliant"],
+        mapping: {
+          compliant: { result: "compliant" },
+          non_compliant: { result: "non_compliant", violation: "VIO-001", action_form: "corrective" },
+        },
+      }),
+      id: "finding-item",
+      code: "FIND-001",
+    };
+    const sections = [{ key: "s", title: "Section", items: [item.code] }];
+    const answers = { [item.id]: { value: "non_compliant" } };
+    const withoutFinding = computeBlockers(sections, { [item.code]: item }, answers, {}, {}, {}, [], undefined, {});
+    expect(withoutFinding[0]?.findings).toEqual([item.code]);
+
+    const withFinding = computeBlockers(sections, { [item.code]: item }, answers, {}, {}, {}, [], undefined, {
+      [item.id]: {
+        description: "Observed guard was removed from the operating equipment.",
+        severity: "L2",
+        classification: "VIO-001",
+        sync: "synced",
+      },
+    });
+    expect(withFinding[0]?.findings).toEqual([]);
+  });
+
   test("CD-007/CD-010 usage previews, scoped audit, and violation deactivation are wired", () => {
     const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
     const itemActions = source("src/app/(app)/admin/items/actions.ts");
