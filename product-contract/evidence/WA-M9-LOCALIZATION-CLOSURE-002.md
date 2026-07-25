@@ -135,6 +135,21 @@ Exact lease needed:
 Until that lease is granted, service-wiring proof remains `AMBER`; static
 wiring and read behavior do not substitute for this real mutation cycle.
 
+### Lease result — 2026-07-25
+
+The sponsor issued `DATA-LEASE-CODEX-ADMIN-LOCALIZATION-003`, but its mandatory
+pre-write restoration proof found a hard stop. The real restore action restores
+the selected Arabic value and sets status to `draft`; it does not and cannot
+restore the original `updated_by` or `updated_at`. Each business-field change
+also creates an append-only `ui_string_revisions` row by design. Because the
+issued lease required the exact original state and explicitly required stopping
+if exact restoration could not be proven, no Save, Review or Restore button was
+used and no remote row changed.
+
+The complete read-only preflight, stable baseline hash, Admin UI evidence,
+denied-user result and exact unblock condition are recorded in
+`product-contract/evidence/WA-M9-LOCALIZATION-DATA-PROOF-003.md`.
+
 ## Stop 3 — native-Arabic certification
 
 **Verdict: layout and RTL automation passed; native linguistic acceptance is
