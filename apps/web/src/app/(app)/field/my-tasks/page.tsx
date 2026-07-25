@@ -9,6 +9,8 @@ import { useT } from "@/lib/i18n";
 import { loadFactory360Dossier, resolveFactory360Permissions } from "@/lib/factory360/dossier";
 import type { ProductionLine } from "@/lib/factory360/dossier";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { isNotificationUnread } from "@/lib/notification-read";
+import AssignmentTaskBrowser, { type AssignmentTask } from "./AssignmentTaskBrowser";
 import styles from "./my-tasks.module.css";
 
 // SAQEEL Field My Tasks.dc.html — the design's real "My Tasks" screen: a
@@ -25,7 +27,12 @@ import styles from "./my-tasks.module.css";
 // calculations and permissions as web SCR-WEB-400 and the iPad Factory 360),
 // resolved from the selected visit's factory_id -> industrial_license -> CR.
 
-type Assignment = { visit_id: string; visits: VisitRow | null };
+type Assignment = {
+  visit_id: string;
+  status: string | null;
+  return_reason: string | null;
+  visits: VisitRow | null;
+};
 type VisitRow = {
   id: string;
   planning_status: string;
@@ -33,6 +40,9 @@ type VisitRow = {
   window_start: string;
   visit_type: string;
   execution_mode: string;
+  priority: string | null;
+  package_version_id: string | null;
+  window_end: string | null;
   factory_id: string | null;
   factories: {
     id: string;
@@ -91,10 +101,18 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
 
-  const { data: asg, error } = await sb.from("assignments")
-    .select("visit_id, visits(id, planning_status, operational_state, window_start, visit_type, execution_mode, factory_id, factories(id, name, factory_code, cr_number, region, city, official_lat, official_lng), inspections(id, status))")
-    .eq("inspector_id", user.id)
-    .order("created_at", { ascending: false });
+  const [assignmentRead, notificationRead] = await Promise.all([
+    sb.from("assignments")
+      .select("visit_id, status, return_reason, visits(id, planning_status, operational_state, window_start, window_end, visit_type, execution_mode, priority, package_version_id, factory_id, factories(id, name, factory_code, cr_number, region, city, official_lat, official_lng), inspections(id, status))")
+      .eq("inspector_id", user.id)
+      .order("created_at", { ascending: false }),
+    sb.from("notifications")
+      .select("payload, read_at, delivery_state")
+      .eq("recipient", user.id)
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+  const { data: asg, error } = assignmentRead;
 
   if (error) {
     console.error("[field my-tasks]", error.message);
@@ -112,10 +130,48 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     );
   }
 
-  const tasks = (asg as unknown as Assignment[] ?? [])
+  const assignments = (asg as unknown as Assignment[] ?? [])
+    .filter((a): a is Assignment & { visits: VisitRow } => !!a.visits && !!a.visits.factories)
+    .filter(a => ["published", "expired"].includes(a.visits.planning_status))
+    .filter(a => !isTestFixtureEstablishment(a.visits.factories));
+  const tasks = assignments
     .map(a => a.visits)
     .filter((v): v is VisitRow => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status))
     .filter(v => !isTestFixtureEstablishment(v.factories));
+  const unreadAlertsByVisit = new Map<string, number>();
+  if (!notificationRead.error) {
+    for (const row of notificationRead.data ?? []) {
+      if (!isNotificationUnread(row)) continue;
+      const payload = row.payload as Record<string, unknown> | null;
+      const visitId = typeof payload?.visit_id === "string" ? payload.visit_id : null;
+      if (visitId) unreadAlertsByVisit.set(visitId, (unreadAlertsByVisit.get(visitId) ?? 0) + 1);
+    }
+  } else {
+    console.error("[field my-tasks notifications]", notificationRead.error.message);
+  }
+
+  const browserTasks: AssignmentTask[] = assignments.map((a) => ({
+    id: a.visits.id,
+    assignmentStatus: a.status,
+    returnReason: a.return_reason,
+    planningStatus: a.visits.planning_status,
+    operationalState: a.visits.operational_state,
+    windowStart: a.visits.window_start,
+    windowEnd: a.visits.window_end,
+    visitType: a.visits.visit_type,
+    executionMode: a.visits.execution_mode,
+    priority: a.visits.priority,
+    packageVersionId: a.visits.package_version_id,
+    inspectionId: a.visits.inspections?.id ?? null,
+    inspectionStatus: a.visits.inspections?.status ?? null,
+    unreadAlertCount: unreadAlertsByVisit.get(a.visits.id) ?? 0,
+    factory: {
+      name: a.visits.factories!.name,
+      code: a.visits.factories!.factory_code,
+      region: a.visits.factories!.region,
+      city: a.visits.factories!.city,
+    },
+  }));
 
   const selected = tasks.find(v => v.id === params.task) ?? tasks[0] ?? null;
   const activeReg: RegChip = (REG_CHIPS as readonly string[]).includes(params.reg ?? "")
@@ -279,23 +335,57 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
       <div className={`${styles.grid} ${pane}`}>
         {/* LEFT — assigned task list */}
         <div className={styles.list}>
-          {tasks.length === 0 ? (
-            <div style={{ padding: 20 }}>
-              <div style={{ fontWeight: 600, marginBlockEnd: 6 }}>{tr("field.myTasks.empty", "No assigned tasks", "لا توجد مهام مسندة")}</div>
-              <p className="t-caption">{tr("field.myTasks.emptyBody", "Only your own assignments appear here (RBAC-009). New assignments arrive with a notification.", "تظهر هنا مهامك المسندة فقط (RBAC-009). تصل المهام الجديدة مع إشعار.")}</p>
-            </div>
-          ) : tasks.map(v => (
-            <Link key={v.id} href={`/field/my-tasks?task=${v.id}`} prefetch={false}
-              className={`${styles.item} ${selected?.id === v.id ? styles.itemActive : ""}`}
-              aria-current={selected?.id === v.id ? "true" : undefined}>
-              <span className={styles.kv} style={{ flex: 1 }}>
-                <span className="id-code" style={{ fontSize: 12, color: "var(--text-muted)" }}>#{v.id.slice(0, 8)}</span>
-                <span className="v" style={{ fontWeight: 600, fontSize: "14.5px" }}><bdi>{v.factories?.name ?? "—"}</bdi></span>
-                <span className="k">{dt(v.window_start)}</span>
-              </span>
-              <span className={`badge ${statusTone(v)}`} style={{ height: 20 }}>{statusLabel(v)}</span>
-            </Link>
-          ))}
+          <AssignmentTaskBrowser
+            tasks={browserTasks}
+            selectedId={selected?.id ?? null}
+            alertSourceAvailable={!notificationRead.error}
+            locale={locale === "ar" ? "ar" : "en"}
+            labels={{
+              search: tr("field.myTasks.search", "Search factory, visit, city or region", "ابحث عن منشأة أو زيارة أو مدينة أو منطقة"),
+              all: tr("field.myTasks.filter.all", "All", "الكل"),
+              today: tr("field.myTasks.filter.today", "Today", "اليوم"),
+              active: tr("field.myTasks.filter.active", "Active", "النشطة"),
+              upcoming: tr("field.myTasks.filter.upcoming", "Upcoming", "القادمة"),
+              alerts: tr("field.myTasks.filter.alerts", "Needs attention", "تحتاج إلى انتباه"),
+              alertsUnavailable: tr("field.myTasks.alertsUnavailable", "Assignment alerts are temporarily unavailable. Other assignment data remains visible.", "تنبيهات المهام غير متاحة مؤقتاً. تبقى بيانات المهام الأخرى ظاهرة."),
+              returned: tr("field.myTasks.filter.returned", "Returned", "المعادة"),
+              expired: tr("field.myTasks.filter.expired", "Expired", "المنتهية"),
+              earliest: tr("field.myTasks.sort.earliest", "Earliest first", "الأقرب أولاً"),
+              latest: tr("field.myTasks.sort.latest", "Latest first", "الأبعد أولاً"),
+              empty: tr("field.myTasks.empty", "No assigned tasks in your scope.", "لا توجد مهام مسندة ضمن نطاقك."),
+              emptyFiltered: tr("field.myTasks.emptyFiltered", "No assignments match this search and filter.", "لا توجد مهام تطابق البحث والتصفية."),
+              offline: tr("field.myTasks.offline", "Offline — server refresh is unavailable. Information shown may be stale; reconnect and retry.", "غير متصل — تحديث الخادم غير متاح. قد تكون المعلومات المعروضة قديمة؛ أعد الاتصال وحاول مجدداً."),
+              online: tr("field.myTasks.online", "Online — assignments are server-scoped to you.", "متصل — المهام محددة لك من الخادم."),
+              open: tr("field.myTasks.open", "Open assignment", "فتح المهمة"),
+              prepare: tr("field.myTasks.prepare", "Accept / prepare", "قبول / تحضير"),
+              continueAction: tr("field.myTasks.continue", "Continue", "متابعة"),
+              preparing: tr("field.myTasks.preparing", "Preparing…", "جارٍ التحضير…"),
+              returnAction: tr("field.myTasks.return", "Return…", "إعادة…"),
+              viewOnly: tr("field.myTasks.viewOnly", "View only", "عرض فقط"),
+              packageLinked: tr("field.myTasks.packageLinked", "Package linked", "حزمة مرتبطة"),
+              packageMissing: tr("field.myTasks.packageMissing", "Package not linked", "لا توجد حزمة مرتبطة"),
+              priority: tr("field.myTasks.priority", "Priority", "الأولوية"),
+              statusLabels: {
+                new: tr("field.myTasks.status.new", "New", "جديدة"),
+                prepared: tr("field.myTasks.status.prepared", "Prepared", "جاهزة"),
+                on_the_way: tr("field.myTasks.status.onTheWay", "On the way", "في الطريق"),
+                arrived: tr("field.myTasks.status.arrived", "Arrived", "تم الوصول"),
+                executing: tr("field.myTasks.status.executing", "In progress", "قيد التنفيذ"),
+                submitted: tr("field.myTasks.status.submitted", "Submitted", "مرسلة"),
+                approved: tr("field.myTasks.status.approved", "Approved", "معتمدة"),
+                completed: tr("field.myTasks.status.completed", "Completed", "مكتملة"),
+                closed: tr("field.myTasks.status.closed", "Closed", "مغلقة"),
+                cancelled: tr("field.myTasks.status.cancelled", "Cancelled", "ملغاة"),
+                rejected: tr("field.myTasks.status.rejected", "Rejected", "مرفوضة"),
+              },
+              priorityLabels: {
+                low: tr("field.myTasks.priority.low", "Low", "منخفضة"),
+                medium: tr("field.myTasks.priority.medium", "Medium", "متوسطة"),
+                high: tr("field.myTasks.priority.high", "High", "عالية"),
+                urgent: tr("field.myTasks.priority.urgent", "Urgent", "عاجلة"),
+              },
+            }}
+          />
         </div>
 
         {/* RIGHT — selected task establishment detail */}
