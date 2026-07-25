@@ -667,8 +667,9 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   return (
     <>
       <FieldHeader leading={back}
-        title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
-        subtitle={<>SCR-IPAD-610/620 · <span className="id-code">{v.id.slice(0, 8)}</span></>}
+        title={tr("field.start.preparationTitle", "Visit Preparation", "التحضير للزيارة")}
+        subtitle={<><bdi>{factoryName}</bdi> · <span className="id-code">{v.id.slice(0, 8)}</span></>}
+        right={<span className="badge badge-info">{tr("field.start.preExecution", "Pre-execution", "قبل التنفيذ")}</span>}
         langHref={langHref} langLabel={langLabel} />
       <CreatedToast created={created}
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
@@ -693,7 +694,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
           </Link>
         </div>
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
-        <div className="panel" style={{ padding: "var(--space-6)" }}>
+        <div className={`panel ${styles.preparationCard}`}>
           <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
           <div className="stack" style={{ gap: 8 }}>
             <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -722,7 +723,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             start stay locked inside Startup (preparationGated) with the
             reason visible — never hidden. */}
         {showPreparation && (
-          <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <div className={`panel ${styles.preparationCard}`}>
             <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{packStrings.title}</h4>
             <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>
               {tr("field.pack.hostCaption",

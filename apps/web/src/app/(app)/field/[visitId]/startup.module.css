@@ -6,7 +6,25 @@
    Component surfaces/badges/alerts/buttons/inputs use the ported SAQEEL DS
    classes linked by (app)/field/layout.tsx. No bare colors. */
 
-.page { display: flex; flex-direction: column; gap: var(--space-6); padding: var(--space-5) var(--space-5) 96px; max-inline-size: 860px; margin-inline: auto; }
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  inline-size: 100%;
+  max-inline-size: 760px;
+  margin-inline: auto;
+  padding: 16px 18px 100px;
+}
+
+/* Field Preparation authority: the route keeps the governed eligibility and
+   offline-pack behavior, but presents both as peers of the design's compact
+   preparation cards instead of console-sized panels. */
+.preparationCard {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+}
 
 /* Two-up responsive grid (former .ax-grid-2). */
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6); }
@@ -39,7 +57,7 @@
   gap: var(--space-3);
   padding: var(--space-4) var(--space-4);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
   background: var(--surface-primary);
   box-shadow: var(--shadow-card);
   color: var(--text-primary);
