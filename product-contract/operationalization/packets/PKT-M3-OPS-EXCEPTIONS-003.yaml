@@ -1,0 +1,144 @@
+schema_version: "1.0"
+packet_id: "PKT-M3-OPS-EXCEPTIONS-003"
+authored_by: "ChatGPT"
+planning_lane: "gpt-w1"
+status: "SUCCESSOR_QUEUED_NO_LEASE"
+queue_position: 3
+predecessor: "PKT-M3-OPS-CENTER-002"
+module: "M3 Operations Center and Live Operations"
+vertical_slice: "Authorized Operations user opens operational exceptions, sees source-backed alert and GPS-override records, and receives a bounded unavailable state when a required source or provider is not configured."
+
+contract_anchor:
+  repository: "Vikram-Indla/Inspection"
+  branch: "codex/saqeel-v3-contract-reset"
+  baseline_commit: "8ec751ad21f64d0764cd048f486879fc213f677c"
+  requirement_ids: ["CR-436", "CR-441", "CR-442", "CR-447", "CR-448"]
+  screen_ids: ["SCR-WEB-500", "WA-DES-033"]
+  engine_ids: ["G2-P12", "MOD-16", "WA-MIG-048"]
+  acceptance_ids:
+    - "WA-AC-0436"
+    - "WA-AC-0441"
+    - "WA-AC-0442"
+    - "WA-AC-0447"
+    - "WA-AC-0448"
+    - "WA-M3-AC-001..006"
+    - "WA-SHELL-AC-008"
+    - "WA-SHELL-AC-009"
+    - "WA-SHELL-AC-017"
+  evidence_ids: ["WA-EV-0436", "WA-EV-0441", "WA-EV-0442", "WA-EV-0447", "WA-EV-0448", "WA-M3-EV-001..006"]
+  route: "/operations/exceptions"
+  design_authority: "SAQEEL Operations Center.dc.html"
+
+business_scope:
+  persona: "Operations user"
+  outcome: >
+    Display only permission-scoped configured operational alerts, cancellations
+    and GPS override exceptions; preserve planned-versus-actual location and
+    confirmation audit truth where supplied; never synthesize an alert rule,
+    suspicious-pattern conclusion or provider response.
+  required_interactions:
+    - "Open /operations/exceptions from Operations Center."
+    - "Filter and inspect a permitted exception or cancellation record."
+    - "Open the permitted visit/factory handoff without expanding action authority."
+    - "Retry a failed source while the healthy route shell remains usable."
+  required_states: ["loading", "populated", "empty", "unauthorized", "partial-source error", "degraded", "provider unavailable", "not-yet-configured"]
+  delivery_matrix:
+    locales: ["EN/LTR", "AR/RTL"]
+    themes: ["light", "dark"]
+    viewports: ["1440x900", "1024x768", "412x915", "390x844", "320x800 reflow"]
+    accessibility: "Keyboard navigation, visible focus, semantic labels, non-colour exception cues and applicable WCAG checks."
+
+wiring_contract:
+  real_services:
+    - "Existing authenticated exception service and Supabase server reads recorded by WA-MIG-048."
+    - "Existing cases and risk_exceptions contracts; missing configuration remains explicitly unavailable."
+    - "Existing verified-user and permission boundaries inherited from the authenticated route group."
+  rls_rbac:
+    - "Positive Operations role within authorized scope."
+    - "Negative role and out-of-scope entity/geography tests."
+    - "No alert acknowledgement or override decision is added unless a separately proven existing permission and audited write contract authorizes it."
+  audit:
+    - "GPS override traceability must retain planned location, actual location and inspector confirmation when those source facts exist."
+    - "No new mutation is introduced by this monitoring slice."
+  truth_rules:
+    - "Alert and cancellation categories come from source records/configuration only."
+    - "No suspicious-pattern inference, threshold, risk score or alert rule may be invented."
+    - "A missing provider or source produces a truthful bounded unavailable/degraded state."
+
+write_lease:
+  requested_owner: "cc-w1"
+  module: "M3"
+  lease_state: "NONE_WHILE_SUCCESSOR_QUEUED"
+  activation_rule: "Codex may consider a lease only after PKT-M3-OPS-CENTER-002 has a recorded verdict and every earlier M3 write lease is released."
+  allowed_paths:
+    - "apps/web/src/app/(app)/operations/exceptions/page.tsx"
+    - "apps/web/src/app/(app)/operations/exceptions/loading.tsx"
+    - "apps/web/src/lib/operations/exceptions.ts"
+    - "apps/web/e2e/web-admin-m3-operations.spec.ts"
+    - "product-contract/evidence/PKT-M3-OPS-EXCEPTIONS-003.md"
+  prohibited_paths:
+    - "apps/web/src/app/(app)/operations/live/**"
+    - "apps/web/src/app/(app)/operations/page.tsx"
+    - "apps/web/src/app/(app)/layout.tsx"
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/app/astryx.css"
+    - "apps/web/src/app/globals.css"
+    - "apps/web/public/**"
+    - "apps/web/src/app/api/**"
+    - "supabase/**"
+    - "**/migrations/**"
+    - "apps/web/src/lib/providers/**"
+    - "/field/**"
+    - "PWA, iPad, offline, service-worker and manifest paths"
+    - "main and all unrelated worker branches"
+
+dependencies:
+  required:
+    - "PKT-M3-OPS-CENTER-002 has a recorded Codex verdict and no M3 write lease remains."
+    - "F0 shared shell remains the accepted inherited foundation."
+    - "WA-MIG-048 current exception contracts are revalidated before any future lease grant."
+  open_decisions:
+    - id: "DEC-001"
+      impact: "No risk model or suspicious-pattern rule may be created."
+    - id: "DEC-002"
+      impact: "No GIS accuracy or override policy may be created."
+    - id: "DEC-003"
+      impact: "No SLA or alert timing threshold may be created."
+    - id: "DEC-004"
+      impact: "Complete Arabic/RTL is mandatory."
+    - id: "DEC-010"
+      impact: "No NFR target may be invented."
+  fallback_read_work:
+    - "Kimi A maps exception service, RLS/RBAC and audit boundaries without a write lease."
+    - "Kimi B prepares negative-path and traceability review without modifying product code."
+    - "Claude Design read lane reviews design drift, Arabic, responsive behavior and accessibility only."
+
+evidence_required:
+  - "Commit-pinned positive and negative tests for permitted records, unauthorized role/entity/geography, empty, provider unavailable and partial-source states."
+  - "Browser evidence for every locale, theme and viewport with persona, route, commit, console and network result."
+  - "Source/audit evidence for GPS overrides without exposing personal data."
+  - "Accessibility and keyboard evidence."
+  - "Evidence index at product-contract/evidence/PKT-M3-OPS-EXCEPTIONS-003.md; external binaries remain under INSPECTION_DOCS_ROOT."
+
+stop_conditions:
+  - "Do not activate while PKT-M3-OPS-LIVE-001 or PKT-M3-OPS-CENTER-002 holds or requests the M3 write lease."
+  - "STOP THE LINE for suspected auth/RLS bypass, secret/PII exposure, data corruption or silent requirement loss."
+  - "Return rather than invent alert, SLA, risk, GIS, override, freshness or provider behavior."
+  - "Stop completion claims when a required state, locale, viewport, evidence leg or P0/P1 closure is absent."
+  - "Do not accept work, set severity, break leases, merge, deploy, run DDL, change providers or write outside allowed paths."
+
+definition_of_done:
+  - "The /operations/exceptions vertical slice is implementation-first and demonstrated in the real browser."
+  - "All listed IDs trace to current code, tests and evidence."
+  - "Real services, RLS/RBAC and existing audit boundaries pass positive and negative verification without permanent mocks."
+  - "EN/AR, responsive, accessibility and every required state pass."
+  - "Typecheck, production build, focused M3 suite, protected regression and git diff check pass."
+  - "Codex issues ACK only after real-browser review and zero P0/P1; sponsor acceptance remains separately recorded where required."
+
+estimated_size:
+  points: 3
+  class: "S"
+  target_elapsed: "one bounded implementation cycle plus independent review"
+  rationale: "One existing route and exception service contract with focused tests/evidence; no DDL, provider change, shared shell, Live Operations or Operations Center edit."
+
+queued_successor: null
