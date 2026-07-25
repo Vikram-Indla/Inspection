@@ -1,0 +1,473 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047
+title: Independent Planning Status Rules design authority and runtime-delta review
+status: RETURN_FOR_SEMANTIC_CONTRACT_AND_MAPPING_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The read-only route is real, but it has no governed screen identity, exact
+    atomic 478-row mapping or route-specific accepted design. Its fallback
+    assigns canonical transition IDs to materially incorrect lifecycle
+    semantics, and its live-version query does not prove the effective active
+    workflow for one governed object.
+
+task_contract:
+  task_id: M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047
+  gate: M9 Planning Status Rules design authority
+  route: /admin/planning/status
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids: []
+  screen_identity_status: MISSING_GOVERNED_SCREEN_ID
+  implementation_trace_ids: [PLN-CON-014]
+  exact_requirement_ids:
+    directly_governing_read_only_screen: NOT_FOUND
+    upstream_workflow_family: MVP2-REQ-0025_THROUGH_MVP2-REQ-0043
+    canonical_transition_ids:
+      - STM-PLAN-001
+      - STM-PLAN-002
+      - STM-VIS-001
+      - STM-VIS-002
+      - STM-VIS-003
+  acceptance_ids:
+    exact_screen_acceptance: NOT_FOUND
+    upstream_workflow_family: MVP2-AC-0025_THROUGH_MVP2-AC-0043
+    package_level_only:
+      - WA-M9-AC-001
+      - WA-M9-AC-002
+      - WA-M9-AC-003
+      - WA-M9-AC-004
+      - WA-M9-AC-005
+      - WA-M9-AC-006
+  dependencies:
+    - governed screen identity and exact acceptance rows
+    - explicit workflow object identity for the displayed planning lifecycle
+    - canonical active-version selection contract
+    - corrected transition semantics or removal of the static fallback
+    - route-specific accepted design and immutable frame manifest
+    - unambiguous CD lineage
+    - upstream workflow permission, maker-checker, audit and immutability remediation
+  do_not_touch:
+    - live Claude Design, WA-DES-014, WA-DES-015, CD-051, CD-043 or CD-044
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No product, design, database, test,
+    evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_capability_validation:
+  route_exists: true
+  page:
+    path: apps/web/src/app/(app)/admin/planning/status/page.tsx
+    validation: CONFIRMED
+  separate_component: false
+  server_actions: none
+  business_capability: >-
+    Read-only display of workflow states, transitions, actors, guards, terminal
+    flags, side effects and planning capabilities, with a link to the governed
+    workflow configuration route.
+  channel_validation: CONFIRMED_ADMIN
+  route_operationalization: >-
+    REAL_IMPLEMENTED_DERIVED_READ_ONLY_ROUTE_WITHOUT_GOVERNED_SCREEN_ID
+  route_authorization:
+    dedicated_route_guard: absent
+    config_versions_read_policy: any authenticated user
+    route_inventory_roles: [inspector, planner]
+    shell_navigation_roles: ADMIN_ROLE_SET
+    validation: INCONSISTENT_SCOPE_DECLARATION
+  upstream_editor:
+    route: /admin/workflows
+    screen_ids: [SCR-ADM-050, SCR-ADM-051]
+    design: WA-DES-014
+    validation: CONFIRMED_AS_CHANGE_DESTINATION_NOT_STATUS_ROUTE_AUTHORITY
+
+source_and_active_version_review:
+  source_table: public.config_versions
+  query:
+    engine_filter: workflow
+    status_filter: published
+    ordering: effective_from descending
+    row_limit: 1
+    object_id_filter: absent
+    effective_from_lte_now_filter: absent
+    scheduled_from_lte_now_or_null_filter: absent
+    retired_or_rollback_resolution: absent
+  source_identity:
+    payload_object_parsed: true
+    payload_object_displayed: false
+    config_object_id_displayed: false
+    selected_version_id_displayed: false
+    version_label_displayed: conditional
+    effective_from_displayed: conditional
+  critical_findings:
+    - >-
+      Multiple workflow objects are permitted by config_versions, but the page
+      does not identify or filter the planning lifecycle object.
+    - >-
+      A future scheduled version is marked published with effective_from set at
+      publish time; ordering only by effective_from can show it before its
+      scheduled activation.
+    - >-
+      The page does not apply the documented coalesce(scheduled_from,
+      effective_from) active-version selection rule.
+    - >-
+      The screen says database-enforced transitions but does not prove that the
+      selected row is the exact version bound to runtime transitions.
+  validation: INCORRECT_ACTIVE_VERSION_SELECTION
+
+canonical_transition_semantic_review:
+  authority: product-contract/domain/state_transitions.csv
+  fallback_claim: Static copy of canonical lifecycle visit-lifecycle-v4.
+  fallback_states:
+    - planned
+    - acknowledged
+    - in_execution
+    - completed
+    - closed
+  mismatches:
+    - transition_id: STM-PLAN-002
+      canonical: "Visit Plan: Validated -> Published; trigger Publish; actor Planner/Approver"
+      fallback: "planned -> acknowledged; actor inspector"
+      verdict: INCORRECT_ID_REUSE
+    - transition_id: STM-VIS-001
+      canonical: "Visit: Published -> Returned; trigger Return for update; actor Authorized Planner/Ops"
+      fallback: "acknowledged -> in_execution; actor inspector"
+      verdict: INCORRECT_ID_REUSE
+    - transition_id: STM-VIS-002
+      canonical: "Visit: Published/Returned -> Cancelled; trigger Cancel; actor Authorized role"
+      fallback: "in_execution -> completed; actor inspector"
+      verdict: INCORRECT_ID_REUSE
+    - transition_id: STM-VIS-003
+      canonical: "Visit: Eligible active -> Expired; trigger Expiry; actor System"
+      fallback: "completed -> closed; actor planner"
+      verdict: INCORRECT_ID_REUSE
+    - transition_id: republish
+      canonical: NOT_FOUND_IN_CANONICAL_TRANSITION_REGISTER
+      fallback: "any -> planned; actor planner"
+      verdict: UNREGISTERED_STATIC_RULE
+  omitted_canonical_transition:
+    transition_id: STM-PLAN-001
+    canonical: "Visit Plan: Draft -> Validated"
+  implication: >-
+    The fallback is not merely stale; it changes the meaning of controlled
+    transition identifiers. It must not be presented as a canonical lifecycle.
+  validation: CRITICAL_SEMANTIC_FAILURE
+
+permissions_maker_checker_dependency:
+  read_permission:
+    database: all authenticated users
+    route: no additional gate
+    sensitive_write_controls_exposed: capability names and transition guards
+    required_decision: Confirm whether authenticated-wide visibility is intended.
+  write_permission:
+    route_mutations: none
+    change_destination: /admin/workflows
+    implication: This route itself cannot bypass status changes.
+  maker_checker:
+    route: NOT_APPLICABLE_READ_ONLY
+    upstream: PARTIAL_AND_BYPASSABLE
+    reason: >-
+      The config_versions constraint only requires different actors when
+      approved_by is populated; generic administrative update policy does not
+      require approved_by for published status.
+  dependency_impact:
+    route_visibility: absent
+    in_flight_version_binding: not displayed
+    affected workflow objects: not displayed
+    affected visits_or_inspections: not displayed
+    scheduled successor impact: not displayed
+    validation: MISSING
+  status_transition_authority:
+    route_controls: none
+    static_capability_map:
+      - planning.publish
+      - planning.manage
+      - planning.cancel
+      - planning.reassign
+      - planning.reschedule
+    map_source: hard-coded in page
+    drift_risk: It is not loaded from the role-capability authority or exact workflow payload.
+    validation: PARTIAL_STATIC_EXPLANATION_ONLY
+
+audit_version_concurrency:
+  route_audit:
+    writes: none
+    read_access_event: not recorded
+    provenance_link: absent
+  upstream_config_audit:
+    generic_config_versions_audit_trigger: NOT_FOUND
+    lifecycle_action_audit: NOT_PROVEN
+    validation: FAIL_FOR_DEFINITION_CHANGE_PROVENANCE
+  versioning:
+    config_version_id_available: true
+    row_version_available: true
+    scheduled_from_available: true
+    rollback_of_available: true
+    displayed_row_version: false
+    displayed_schedule: false
+    displayed_rollback_lineage: false
+    active_selection_correct: false
+    validation: PRESENT_BUT_MISREPRESENTED
+  immutable_published_version:
+    delete_policy: absent
+    published_update_guard: NOT_FOUND
+    validation: NOT_PROVEN
+  concurrency:
+    route_writes: none
+    read_snapshot_token: absent
+    stale_indicator: absent
+    auto_refresh: absent
+    risk: The page can remain stale while a successor is published or activated.
+    validation: MISSING_STALE_STATE
+
+requirement_and_screen_mapping:
+  route_inventory_claim:
+    requirement_mapping: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD_MAPPING
+  screen_catalogue:
+    exact_route_row: NOT_FOUND
+    nearest_upstream_rows:
+      - SCR-ADM-050
+      - SCR-ADM-051
+    rule: >-
+      Workflow Library and Workflow Designer govern changes. They cannot be
+      silently reused as the identity of this separate read-only route.
+  internal_trace:
+    id: PLN-CON-014
+    validation: IMPLEMENTATION_TRACE_ONLY
+  canonical_transition_register:
+    validation: DIRECT_SEMANTIC_AUTHORITY
+  completion_rule: >-
+    No source requirement row receives credit until this route has an approved
+    screen identity, exact requirements, acceptance evidence and correct
+    transition semantics.
+
+registered_design_evidence:
+  nearest_semantic_design:
+    design_id: WA-DES-014
+    filename: SAQEEL Admin Workflow Builder.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Workflow Builder.dc.html
+    bytes: 12723
+    lines: 135
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    registered_route: /admin/workflows
+    validation: NEAREST_UPSTREAM_WORKFLOW_PATTERN_ONLY
+  secondary_overview:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    bytes: 42071
+    lines: 366
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    registered_route: /admin
+    validation: SECONDARY_ADMIN_OVERVIEW_ONLY
+  route_specific_design: NOT_FOUND
+  immutable_revision:
+    export_sha_available: true
+    platform_revision_id_available: false
+    exact_frame_manifest_available: false
+    accepted_route_specific_revision_available: false
+    validation: INSUFFICIENT_EVIDENCE
+  CD_lineage:
+    route_test_label: CD-044
+    CD_044_registered_elsewhere: External Portal foundation
+    upstream_claims:
+      - CD-051 R2 workflow package unavailable
+      - CD-043 identity collision or stale predecessor lineage
+    validation: AMBIGUOUS_AND_INSUFFICIENT
+
+nearest_design_validation:
+  classification: NO_DIRECT_DESIGN_MATCH
+  nearest_pattern: WA-DES-014
+  parity:
+    - workflow states and transitions
+    - actors and guards
+    - versioned workflow concept
+    - workflow-admin destination
+  design_has_code_lacks:
+    - state graph visualization
+    - clear workflow object identity
+    - maker-checker context
+    - validation result
+    - version lifecycle presentation
+  code_has_design_lacks:
+    - dedicated read-only status-rules route
+    - capability explanation table
+    - static fallback warning
+    - source version caption
+  correction_required:
+    - Create a read-only Planning Status design state only after screen identity approval.
+    - Show exact workflow object, version, effective/scheduled status and provenance.
+    - Use canonical transition semantics and never recycle IDs with new meanings.
+    - Distinguish live, scheduled, stale, unavailable and static-reference states.
+    - Link dependency impact and in-flight version binding where authorized.
+
+language_responsive_accessibility:
+  wordmark:
+    WA_DES_014_English_state: ARABIC_ONLY_WORDMARK
+    required: English SAQEEL Industrial identity in EN and approved Arabic identity in AR.
+    validation: INCORRECT
+  English_LTR:
+    implementation: translation keys with English fallbacks
+    validation: PARTIAL
+  Arabic_RTL:
+    implementation: shell translation invoked; dynamic state and capability identifiers remain untranslated
+    design: no complete Arabic or RTL route state
+    validation: INSUFFICIENT_EVIDENCE
+  responsive:
+    implementation: flex-wrapped states and table wrappers
+    missing: runtime desktop, tablet and mobile evidence
+    design: no route-specific responsive frames
+    validation: INSUFFICIENT_EVIDENCE
+  accessibility:
+    positive:
+      - semantic headings
+      - table header scopes
+      - native link
+      - fallback status role
+    missing:
+      - focus evidence
+      - wide-table small-screen reading alternative
+      - dynamic refresh announcement
+      - Arabic bidi and screen-reader evidence
+      - automated and manual accessibility results
+    validation: INSUFFICIENT_EVIDENCE
+
+hard_state_review:
+  evidenced:
+    - published workflow payload
+    - no published payload fallback
+    - provider read error fallback
+    - states collection
+    - transitions collection
+    - capability explanation
+  missing_or_inadequate:
+    - canonical semantic mismatch state
+    - multiple workflow objects ambiguity
+    - scheduled-not-active version
+    - stale version
+    - retired or rolled-back lineage
+    - empty states array
+    - empty transitions array
+    - malformed individual transition
+    - partial payload
+    - unauthorized
+    - session expired
+    - dependency impact
+    - in-flight version binding
+    - audit unavailable
+    - route loading
+    - light and dark evidence
+    - complete EN/LTR and AR/RTL evidence
+    - desktop, tablet and mobile evidence
+
+test_review:
+  focused_specs:
+    - apps/web/e2e/cd-044-admin-planning.spec.ts
+    - apps/web/e2e/cd-045-downstream-contract.spec.ts
+  positive_coverage:
+    - route renders governance banner
+    - workflow configuration link exists
+    - one transition ID is visible
+    - one capability name is visible
+    - planning control-plane navigation links exist
+  critical_gap: >-
+    The test asserts that STM-VIS-001 appears but never verifies its canonical
+    source, target, actor, guard or side effects. It therefore passes while the
+    fallback materially misstates that transition.
+  missing:
+    - correct active-version selection
+    - object identity
+    - scheduled version exclusion
+    - canonical transition semantics
+    - malformed payload
+    - no-source versus provider-error distinction
+    - role visibility
+    - stale refresh
+    - EN/AR, RTL/LTR, responsive, a11y and visual evidence
+
+bounded_delta:
+  bounded_frontend_only: false
+  immediate_data_migration_authorized: false
+  required_before_build:
+    - approve route screen identity and exact requirement/acceptance mapping
+    - correct fallback semantics or remove the fallback
+    - define and implement canonical active workflow selection by object and effective time
+    - resolve CD identity and immutable design lineage
+    - resolve upstream workflow permissions, maker-checker, audit and immutability
+  implementation_boundary: >-
+    Do not implement from this review. After sponsor consent, one owner may
+    lease this route, its focused tests and only explicitly approved shared
+    workflow-selection helpers. The reviewer must remain read-only.
+
+evidence:
+  - product-contract/domain/state_transitions.csv
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/seeding-discovery/ENDPOINT_DATA_SOURCE_MATRIX.csv
+  - product-contract/mvp2/MVP2_LOCAL_SOURCE_CERTIFICATE.md
+  - apps/web/src/app/(app)/admin/planning/status/page.tsx
+  - apps/web/src/app/(app)/admin/workflows/actions.ts
+  - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - apps/web/e2e/cd-045-downstream-contract.spec.ts
+  - supabase/migrations/0001_foundation.sql
+  - supabase/migrations/0002_rbac_audit.sql
+  - supabase/migrations/20260716120000_seco_config_versions_roles_rls.sql
+  - supabase/migrations/20260717010000_mvp2_m2_02_workflow_version_model.sql
+  - product-contract/operationalization/coordination/batches/M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045.yaml
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Workflow Builder.dc.html
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+
+reviewer_recommendation:
+  outcome: RETURN_FOR_DELTA_CORRECTION
+  blockers:
+    - BLOCK_DUE_TO_INCORRECT_CANONICAL_TRANSITION_SEMANTICS
+    - BLOCK_DUE_TO_INCORRECT_ACTIVE_VERSION_SELECTION
+    - BLOCK_DUE_TO_MISSING_GOVERNED_SCREEN_ID
+    - BLOCK_DUE_TO_MISSING_EXACT_REQUIREMENT_AND_ACCEPTANCE_MAPPING
+    - BLOCK_DUE_TO_NO_ROUTE_SPECIFIC_ACCEPTED_DESIGN
+    - BLOCK_DUE_TO_AMBIGUOUS_CD_LINEAGE
+    - BLOCK_DUE_TO_MISSING_IMMUTABLE_DESIGN_REVISION
+  sponsor_decision: >-
+    Do not approve the Planning Status route as complete and do not count any
+    of the 478 rows. Approve only a bounded semantic and governance correction
+    package after the route identity and exact contract are established.
+
+next_non_overlapping_review:
+  task_id: M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048
+  route: /admin/planning/expiry
+  mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+  scope:
+    - validate route, component and governed expiry capability
+    - establish exact screen, requirement and acceptance identities
+    - identify nearest immutable design and CD lineage
+    - review rule types, thresholds, scheduling, permissions and maker-checker
+    - review dependency impact, audit, version and concurrency
+    - review EN/AR, RTL/LTR, responsive, accessibility, wordmark and hard states
+  exclusions:
+    - /admin/planning/status
+    - /admin/planning/lookups
+    - /admin/workflows
+    - application, test, database, design, mapping or evidence modifications
+  queue_status: READY
