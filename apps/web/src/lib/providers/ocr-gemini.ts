@@ -40,13 +40,22 @@ export class GeminiOcrProvider {
   }
 }
 
+// Same key resolution as the assistive-AI adapter (ai-gemini.ts): the shared
+// dev/staging envs provision the project-scoped GEMINI_API_KEY_INSPECTION, and
+// only fall back to the plain GEMINI_API_KEY. Reading GEMINI_API_KEY alone made
+// OCR report 'unavailable' on an environment where the key is present, which is
+// fail-closed for the wrong reason.
+function resolveGeminiApiKey(): string | undefined {
+  return process.env.GEMINI_API_KEY_INSPECTION || process.env.GEMINI_API_KEY;
+}
+
 export function ocrProviderState(): "configured" | "unavailable" {
-  return process.env.GEMINI_API_KEY ? "configured" : "unavailable";
+  return resolveGeminiApiKey() ? "configured" : "unavailable";
 }
 
 /** Fail-closed factory: null when no key is configured. */
 export function getOcrProvider(): GeminiOcrProvider | null {
-  const key = process.env.GEMINI_API_KEY;
+  const key = resolveGeminiApiKey();
   if (!key) return null;
   return new GeminiOcrProvider(key, process.env.GEMINI_MODEL ?? "gemini-flash-latest");
 }

@@ -1,5 +1,5 @@
 {
-  "revision": "SB-r4",
+  "revision": "SB-r5",
   "updated": "2026-07-25",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
@@ -630,9 +630,9 @@
       "channel": "web",
       "group": "exec",
       "name": "AI Studio & advisory",
-      "design": 55,
-      "code": 70,
-      "wiring": 70,
+      "design": 75,
+      "code": 80,
+      "wiring": 78,
       "designPage": "SAQEEL AI Studio.dc.html · SAQEEL Evidence OCR.dc.html",
       "route": "web/src/app/(app)/ai/suggestions · evidence-ocr · lib/ai/* · lib/providers/ai-gemini.ts · ocr-gemini.ts",
       "pwa": {
@@ -642,11 +642,19 @@
       "pending": [
         {
           "lane": "design",
-          "text": "AI Studio has no matching route — only /ai/suggestions exists, and its rail entry is being removed (O-28)."
+          "text": "RESOLVED — 'SAQEEL AI Studio.dc.html' is not a separate surface: its own H1 is 'Assistive AI dockets', i.e. it is the canonical design for the existing /ai/suggestions route. No new route and no new rail entry were created; the Insights rail group stays owned by the shell card under O-28."
+        },
+        {
+          "lane": "design",
+          "text": "Neither route has been pixel-verified in a browser: no screenshot diff at the declared widths (1280 AI / 1440 OCR) and no AR/RTL pass. Spacing is quantised to the 4px token scale (design 18px/28px rendered as 20px/32px)."
+        },
+        {
+          "lane": "design",
+          "text": "/evidence-ocr keeps a 'How to use evidence text extraction' journey panel that is not in the .dc.html (retained deliberately — removing accepted usability content needs change control)."
         },
         {
           "lane": "wiring",
-          "text": "Advisory AI must stay human-disposition and fail-closed — assert in review."
+          "text": "Provider paths are unexercised here: no GEMINI key in this environment, so Generate and Extract were only observed on their fail-closed branches. Live Gemini generate/extract and the ai_events audit rows still need a keyed staging run."
         }
       ],
       "phase": 8,

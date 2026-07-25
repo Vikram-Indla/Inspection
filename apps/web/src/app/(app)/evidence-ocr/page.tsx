@@ -43,16 +43,42 @@ export default async function EvidenceOcrPage() {
     lastExtraction: latestByEvidence.get(r.id) ?? null,
   }));
   const strings: OcrStrings = {
-    extract: t("ocr.extract", "Extract text (OCR)"), extracting: t("ocr.extracting", "Extracting…"),
+    extract: t("ocr.extract", "Extract text"), extracting: t("ocr.extracting", "Extracting…"),
+    retry: t("ocr.retry", "Retry extraction"),
     extracted: t("ocr.extracted", "Extracted text (advisory — verify against the source image)"),
     noText: t("ocr.noText", "No text detected in this image."),
     unavailable: t("ocr.unavailable", "OCR provider unavailable — recorded as a request only; no extraction was attempted."),
     openInspection: t("ocr.openInspection", "Open the inspection item that owns this evidence →"),
+    notExtracted: t("ocr.notExtracted", "not extracted"), extractedBadge: t("ocr.extractedBadge", "extracted"),
+    failedBadge: t("ocr.failedBadge", "failed"),
+    extractHint: t("ocr.extractHint", "Runs Gemini vision on the stored file. The result is stored as an advisory extraction, timestamped, and shown here for a human to read."),
+    failedBody: t("ocr.failedBody", "Extraction failed. The evidence is unaffected; no text is invented. Retry when the provider is available."),
+    copy: t("ocr.copy", "Copy to note"), copied: t("ocr.copied", "Copied"),
+    copyHint: t("ocr.copyHint", "Copy is manual — no field is auto-filled"),
+    advisory: t("ocr.confidence", "confidence: model-reported, unverified"),
+    linked: t("ocr.linked", "linked"), captured: t("ocr.captured", "captured"),
   };
   return (
-    <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-info">REQ-OCR</span>}>
-      <div className="sq-banner"><div><strong>{t("ocr.banner.title", "Advisory only.")}</strong> {t("ocr.banner.body", "Extracted text helps a human read a photo faster — it is never auto-applied to any authoritative field. Always verify against the source image before acting on it.")}</div></div>
-      <section className="panel" style={{ padding: "var(--space-6)", marginBlock: "var(--space-6)" }} aria-labelledby="ocr-how-it-works">
+    <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")}
+      context={
+        <>
+          <span className="id-code">{t("ocr.provenance", "REQ-OCR · Gemini vision · advisory only")}</span>
+          <span className="badge badge-info"><span className="dot" />{t("ocr.advisoryBadge", "Advisory · never auto-fills")}</span>
+        </>
+      }>
+      <div className="alert alert-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden="true"><path d="M12 3 2 20h20L12 3z" /><path d="M12 10v4M12 17h.01" /></svg>
+        <div>{t("ocr.banner.body", "Extracted text is advisory — it helps a human read a photo faster and never auto-fills any authoritative field. OCR runs only on stored images and documents; it fails closed without a provider key.")}</div>
+      </div>
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
+      {!error && rows.length === 0 && (
+        <EmptyState icon={<IconSearch size={28} />} title={t("ocr.empty.title", "No evidence in scope")}
+          body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")} />
+      )}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "var(--space-4)" }}>
+        {rows.map((row) => <OcrRowView key={row.id} row={row} strings={strings} />)}
+      </div>
+      <section className="panel" style={{ padding: "var(--space-6)" }} aria-labelledby="ocr-how-it-works">
         <h3 id="ocr-how-it-works">{t("ocr.journey.title", "How to use evidence text extraction")}</h3>
         <ol style={{ marginBlock: "var(--space-3)", paddingInlineStart: "var(--space-8)" }}>
           <li>{t("ocr.journey.capture", "Open the relevant field inspection and attach a photo or document to its checklist item.")}</li>
@@ -61,12 +87,6 @@ export default async function EvidenceOcrPage() {
         </ol>
         <a className="btn btn-secondary btn-touch" href="/field">{t("ocr.journey.openField", "Open field inspections to capture evidence")}</a>
       </section>
-      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
-      {!error && rows.length === 0 && (
-        <EmptyState icon={<IconSearch size={28} />} title={t("ocr.empty.title", "No evidence in scope")}
-          body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")} />
-      )}
-      {rows.map((row) => <OcrRowView key={row.id} row={row} strings={strings} />)}
     </Shell>
   );
 }

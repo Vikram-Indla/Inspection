@@ -7,6 +7,7 @@ import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { IconRobot } from "@/app/icons";
 import { AiDockets, type AiRow, type AiStrings } from "./AiDockets";
 import type { AiDisposition } from "@/lib/ai/suggestions";
+import { geminiProviderState } from "@/lib/providers/ai-gemini";
 
 // TASK-MVP2-M2-11-ASSISTIVE-AI-001 · MVP2-REQ-0056..0066,0217..0223 · CD-048 (ai_dockets_v1, OFF).
 const MODES = ["off", "on"] as const;
@@ -30,13 +31,26 @@ export default async function AiSuggestionsPage() {
   const strings: AiStrings = {
     surface: t("ai.surface", "Surface"), text: t("ai.text", "Advisory suggestion"),
     propose: t("ai.propose", "Propose"), proposing: t("ai.proposing", "Proposing…"), proposed: t("ai.proposed", "proposed"),
-    dispose: t("ai.dispose", "Disposition"), disposing: t("ai.disposing", "Applying…"), disposed: t("ai.disposed", "disposed"),
-    reason: t("ai.reason", "Reason"),
-    context: t("ai.context", "Context (advisory)"), generate: t("ai.generate", "Generate (AI)"),
+    dispose: t("ai.dispose", "Disposition (allowed only)"), disposing: t("ai.disposing", "Applying…"), disposed: t("ai.disposed", "disposed"),
+    applyDisposition: t("ai.applyDisposition", "Apply disposition"),
+    reason: t("ai.reason", "Reason"), reasonHint: t("ai.reasonHint", "Rationale (recorded to audit)"),
+    context: t("ai.context", "Context (advisory)"), generate: t("ai.generate", "Generate"),
     generating: t("ai.generating", "Generating…"), generated: t("ai.generated", "generated"),
-    evidenceRefs: t("ai.evidenceRefs", "Evidence references"), clauseRefs: t("ai.clauseRefs", "Clause references"),
+    generateTitle: t("ai.generateTitle", "Generate advisory suggestion (AI)"),
+    proposeTitle: t("ai.proposeTitle", "Propose advisory item (human)"),
+    contextHint: t("ai.contextHint", "Non-authoritative context"),
+    textHint: t("ai.textHint", "What to consider (not a decision)"),
+    evidenceHint: t("ai.evidenceHint", "INS-… / EV-…"), clauseHint: t("ai.clauseHint", "FS-3.1"),
+    evidenceRefs: t("ai.evidenceRefs", "Evidence refs"), clauseRefs: t("ai.clauseRefs", "Clause refs"),
+    evidenceRefsLong: t("ai.evidenceRefsLong", "Evidence references"), clauseRefsLong: t("ai.clauseRefsLong", "Clause references"),
     confidence: t("ai.confidence", "Provider confidence"), confidenceUnavailable: t("ai.confidenceUnavailable", "Not supplied — do not infer"),
+    confidenceUnverified: t("ai.confidenceUnverified", "(provider-reported, unverified)"),
+    terminal: t("ai.terminal", "Terminal disposition — no further transition."),
+    providerReady: t("ai.providerReady", "provider ready"), providerHeld: t("ai.providerHeld", "fail-closed"),
+    generateHintReady: t("ai.generateHintReady", "Generated suggestions are still advisory and require a human disposition."),
+    generateHintHeld: t("ai.generateHintHeld", "Generation is disabled while the provider is fail-closed. A human may still propose an advisory item below."),
   };
+  const providerConfigured = geminiProviderState() === "configured";
   const mapped: AiRow[] = (rows ?? []).map((r) => ({
     id: r.id, surface: r.surface, text: String((r.suggestion as { text?: string })?.text ?? ""),
     disposition: r.disposition as AiDisposition, provider_status: r.provider_status,
@@ -45,14 +59,34 @@ export default async function AiSuggestionsPage() {
     confidence: typeof (r.suggestion as { confidence?: unknown })?.confidence === "number" ? (r.suggestion as { confidence: number }).confidence : null,
   }));
   return (
-    <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="badge badge-info">CD-048 · REQ-0056..0066</span>}>
-      <div className="sq-banner"><div><strong>{t("ai.banner.title", "Advisory only — human decides.")}</strong> {t("ai.banner.body", "AI never writes a decision or legal text. Every suggestion needs a human disposition. The provider is fail-closed (unavailable) until configured; nothing is auto-actioned.")}</div></div>
+    <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")}
+      context={
+        <>
+          <span className="t-caption">{t("ai.subtitle", "Advisory suggestions across planning, inspection, review & operations")}</span>
+          <span className={`badge ${providerConfigured ? "badge-compliant" : "badge-critical"}`}>
+            <span className="dot" />
+            {providerConfigured
+              ? t("ai.provider.configured", "AI provider · configured")
+              : t("ai.provider.held", "AI provider · fail-closed (unavailable)")}
+          </span>
+        </>
+      }>
+      {/* Advisory banner — the standing statement of the rule this route exists to keep. */}
+      <div className="panel" style={{ padding: "var(--space-4) var(--space-5)", borderInlineStart: "3px solid var(--action-primary)", display: "flex", gap: "var(--space-3)" }}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" strokeWidth={1.7} aria-hidden="true" style={{ width: 20, height: 20, flex: "none", marginBlockStart: 2 }}>
+          <circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v4h1" />
+        </svg>
+        <div>
+          <div style={{ fontWeight: 600 }}>{t("ai.banner.title", "Advisory only — human decides.")}</div>
+          <p className="t-caption" style={{ margin: "var(--space-1) 0 0" }}>{t("ai.banner.body", "AI never writes a decision or legal text. Every suggestion needs a human disposition. The provider is fail-closed (unavailable) until configured; nothing is auto-actioned.")}</p>
+        </div>
+      </div>
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("ai.error", "Couldn’t load suggestions. Nothing changed.")}</strong></div></div>}
+      <AiDockets rows={mapped} strings={strings} providerConfigured={providerConfigured} />
       {!error && mapped.length === 0 && (
         <EmptyState icon={<IconRobot size={28} />} title={t("ai.empty.title", "No suggestions")}
           body={t("ai.empty.body", "With no configured provider, none are generated. A human may propose an advisory item for disposition. Empty may also mean none are in your scope (RLS).")} />
       )}
-      <AiDockets rows={mapped} strings={strings} />
     </Shell>
   );
 }
