@@ -43,7 +43,9 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     const composed = itemsFor(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"]);
     expect(composed.filter(item => item.visibility === "admin-primary").every(item => item.enabled)).toBe(true);
     expect(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id)).toEqual([
-      "workflows", "gis", "audit", "platform-operations", "security-access", "devices", "enforcement-cases",
+      "execution", "workflows", "gis", "audit", "platform-operations", "security-access", "devices",
+      "admin-home", "inspection-items", "enforcement-recommendations", "bulk-violations", "localization",
+      "enforcement-cases",
     ]);
   });
 
@@ -112,17 +114,17 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
-    await expect(page.locator(".sq-shell")).toHaveClass(/is-collapsed/);
+    await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);
     await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Expand navigation" }).click();
-    await expect(page.locator(".sq-shell")).not.toHaveClass(/is-collapsed/);
+    await expect(page.locator(".ax-shell")).not.toHaveClass(/is-collapsed/);
   });
 
   test("government shell keeps notification and account controls responsive", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    const account = page.locator(".sq-shell-account__trigger");
+    const account = page.locator(".ax-shell-account__trigger");
     const identity = page.locator(".sq-shell-account__identity");
     await expect(account).toBeVisible();
     await expect(identity).toBeVisible();
@@ -142,10 +144,10 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/planning");
     const menu = page.getByRole("button", { name: "Open navigation" });
     await menu.click();
-    await expect(page.locator(".sq-shell")).toHaveClass(/is-drawer-open/);
-    await expect(page.locator(".sq-shell__close")).toBeFocused();
+    await expect(page.locator(".ax-shell")).toHaveClass(/is-drawer-open/);
+    await expect(page.locator(".ax-shell__close")).toBeFocused();
     await page.keyboard.press("Escape");
-    await expect(page.locator(".sq-shell")).not.toHaveClass(/is-drawer-open/);
+    await expect(page.locator(".ax-shell")).not.toHaveClass(/is-drawer-open/);
     await expect(menu).toBeFocused();
   });
 
@@ -154,8 +156,8 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/planning");
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.locator("nav.sq-shell__nav")).toHaveAttribute("aria-label", /[\u0600-\u06FF]/);
-    const theme = page.locator(".sq-pagehead__actions > button.sq-topbar-icon");
+    await expect(page.locator("nav.ax-shell__nav")).toHaveAttribute("aria-label", /[\u0600-\u06FF]/);
+    const theme = page.locator(".ax-pagehead__actions > button.ax-topbar-icon");
     const firstOfferedMode = await theme.getAttribute("aria-label");
     await theme.click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", firstOfferedMode?.includes("الفاتح") ? "light" : "dark");
