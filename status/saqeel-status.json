@@ -1715,7 +1715,7 @@
     },
     {
       "id": "BS-4",
-      "text": "Nothing is committed on feature/ipad-field-channel-delivery (~60 files). Any percentage here can vanish on a branch reset."
+      "text": "RESOLVED 2026-07-25. The field-channel work IS committed and on main (0d95313f, 77 files, plus 74f391c6). The original feature/ipad-field-channel-delivery branch was deleted after the work merged — not lost. This board now lives at status/saqeel-status.json in the repo, so card state is version-controlled too. Standing rule remains: commit each card's slice as it lands."
     },
     {
       "id": "BS-5",
