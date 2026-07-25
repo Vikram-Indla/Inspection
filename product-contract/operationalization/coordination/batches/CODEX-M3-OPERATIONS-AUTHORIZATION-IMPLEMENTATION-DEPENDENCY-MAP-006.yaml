@@ -1,0 +1,535 @@
+packet:
+  id: CODEX-M3-OPERATIONS-AUTHORIZATION-IMPLEMENTATION-DEPENDENCY-MAP-006
+  title: Operations authorization implementation dependency map
+  status: PROPOSAL_ONLY_NOT_AUTHORIZED
+  created_by: Codex orchestration
+  purpose: >-
+    Identify the exact current route, component, action, capability, database,
+    test, and ownership dependencies for five bounded Operations authorization
+    work packages without granting an implementation lease or changing product
+    code.
+
+authority_and_limits:
+  authoritative_repository: /Users/vikramindla/Developer/Inspection
+  evidence_snapshot_branch: codex/orchestration-control-plane
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  product_code_changes: PROHIBITED_BY_THIS_PACKET
+  database_changes: PROHIBITED_BY_THIS_PACKET
+  capability_changes: PROHIBITED_BY_THIS_PACKET
+  design_changes: PROHIBITED_BY_THIS_PACKET
+  implementation_lease_created: false
+  approval_claimed: false
+  map_provenance_lease_touched: false
+  warnings:
+    - This map is dependency evidence, not implementation authority.
+    - Proposed capabilities named below do not exist in the current database contract.
+    - Exact migration filenames and file leases must be assigned only after sponsor and contract approval.
+
+contract_drivers:
+  requirements:
+    - id: CR-430
+      implication: Operations Center is monitoring-only unless supervisor permissions authorize action.
+    - id: CR-433
+      implication: Inspector location visibility is limited to active journey or execution and policy.
+    - id: CR-439
+      implication: Operations visibility is limited to authorized regions.
+    - id: CR-447
+      implication: Role, region, branch, and permission restrictions must make unauthorized inspectors, factories, and regions invisible.
+    - id: RBAC-007
+      implication: Planner is limited to assigned organization scope and has no execution or review decision authority.
+    - id: RBAC-008
+      implication: Operations User scope is assigned region, branch, or all, with bounded operational actions.
+    - id: RBAC-013
+      implication: Leadership receives aggregated views for authorized geography or organization with sensitive details masked.
+  acceptance_basis:
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-NEGATIVE-ACCEPTANCE-MATRIX-004.csv
+  upstream_analysis:
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002.yaml
+    - CODEX-M3-OPERATIONS-AUTHORIZATION-DECISION-BOUNDARY-003.yaml
+    - CODEX-M3-OPERATIONS-REDUCED-PROJECTION-SPEC-005.yaml
+
+current_surface_map:
+  routes:
+    - route: /operations
+      file: apps/web/src/app/(app)/operations/page.tsx
+      capability_guard_present: false
+      observed_scope: national queries with presentation-only region and city filters
+    - route: /operations/live
+      file: apps/web/src/app/(app)/operations/live/page.tsx
+      capability_guard_present: false
+      observed_scope: national live-operations query
+    - route: /operations/exceptions
+      file: apps/web/src/app/(app)/operations/exceptions/page.tsx
+      capability_guard_present: false
+      observed_scope: feature-flag boundary followed by broad cases and risk-exceptions reads
+  shared_navigation:
+    file: apps/web/src/lib/shell-navigation.ts
+    role: menu discoverability and route grouping only
+    warning: Navigation visibility is not an authorization boundary.
+  components:
+    - apps/web/src/app/(app)/operations/Controls.tsx
+    - apps/web/src/app/(app)/operations/Monitoring.tsx
+    - apps/web/src/app/(app)/operations/OpsExport.tsx
+    - apps/web/src/app/(app)/operations/OpsMap.tsx
+    - apps/web/src/app/(app)/operations/OverrideQueue.tsx
+    - apps/web/src/app/(app)/operations/CancellationQueue.tsx
+    - apps/web/src/app/(app)/operations/region-posture.ts
+    - apps/web/src/app/(app)/operations/sla.ts
+    - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+    - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+    - apps/web/src/app/(app)/operations/live/types.ts
+  current_branch_only_component:
+    file: apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+    branch: codex/m3-map-provenance-correction
+    note: Not present on canonical main at this evidence snapshot; owned by Claude's active eight-file lease.
+  read_model_helpers:
+    - file: apps/web/src/lib/operations/exceptions.ts
+      role: group, count, and branch-scope exception rows
+      warning: Helper-side filtering cannot replace database-enforced row authorization.
+
+current_action_map:
+  file: apps/web/src/app/(app)/operations/actions.ts
+  actions:
+    - name: updateActionFormStatus
+      current_authority: actions_rw RLS
+      explicit_has_capability_check_in_action: false
+      concern: Current write policy is not a precise Operations resolution contract.
+    - name: fetchMonitoringRows
+      current_authority: source-table RLS
+      explicit_has_capability_check_in_action: false
+      concern: Client region and city values are filters, not authoritative user scope.
+    - name: markNotificationHandled
+      current_authority: recipient-or-ops notification RLS
+      explicit_has_capability_check_in_action: false
+      concern: Action authorization is role-broad and not expressed at the server-action boundary.
+    - name: decideGeoOverride
+      current_authority: decide_geo_override RPC guarded by has_role('ops')
+      explicit_has_capability_check_in_action: false
+      concern: Role check is broader and less auditable than the canonical capability model.
+    - name: decideActiveCancellation
+      current_authority: RPC guarded by operations.approve_active_cancel
+      explicit_has_capability_check_in_action: false
+      concern: RPC is capability-bound, but route and record scope still require verification.
+
+current_capability_sources:
+  database_authority:
+    - file: supabase/migrations/20260721093000_execution_canonical_contracts.sql
+      provides:
+        - capabilities
+        - role_capabilities
+        - has_capability
+        - operations.view granted to ops, planner, and leadership
+        - operations.resolve_exception granted to ops
+        - operations.approve_active_cancel granted to ops
+    - file: supabase/migrations/20260721110000_execution_access_grants.sql
+      provides:
+        - user_capability_grants
+        - additive direct grants included by has_capability
+        - governed security-admin grant and revoke with audit
+      limitation: >-
+        Direct grants are additive. The current model has no negative grant capable
+        of removing a capability inherited from a role.
+  ui_mirror:
+    file: apps/web/src/lib/execution/capabilities.ts
+    authority: NON_AUTHORITATIVE_UI_MIRROR
+  administration:
+    - apps/web/src/app/(app)/admin/access/page.tsx
+    - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+    - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+    - apps/web/src/app/(app)/admin/access/actions.ts
+    - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+  proposed_not_existing:
+    - operations.view_precise_location_identity
+    - operations.view_all_regions
+
+current_scope_sources:
+  profile_fields:
+    migration: supabase/migrations/0001_foundation.sql
+    fields:
+      - profiles.region
+      - profiles.org_scope
+    current_operations_binding: NOT_IMPLEMENTED
+    unresolved_contracts:
+      - Canonical values and referential meaning for profiles.region.
+      - Canonical values and row-ownership meaning for profiles.org_scope.
+      - Whether branch scope is encoded in org_scope or needs a separate governed relation.
+  spatial_visibility_candidate:
+    migration: supabase/migrations/20260717220000_mvp2_m2_06_spatial_gis.sql
+    table: location_visibility_matrix
+    fields:
+      - sensitivity_class
+      - role_key
+      - can_view_precise
+    current_state:
+      seeded_rows_found: false
+      application_consumption_found: false
+      reader_policy: all authenticated users
+      writer_roles:
+        - gis_admin
+        - security_admin
+        - compliance_admin
+    conclusion: >-
+      A possible governed input for precision projection, but not currently usable
+      as authorization authority until sensitivity classes, rows, precedence, and
+      consumption are approved and implemented.
+
+current_rls_map:
+  - resource: factories
+    source: supabase/migrations/0002_rbac_audit.sql
+    current_read_boundary: all authenticated
+    geography_predicate_present: false
+  - resource: visits
+    sources:
+      - supabase/migrations/0001_foundation.sql
+      - supabase/migrations/0012_admin_dossier_visibility.sql
+      - supabase/migrations/20260721030000_planning_capabilities.sql
+    current_read_boundary: assigned inspector or broad authorized roles and additive planning capability
+    geography_predicate_present: false
+  - resource: geo_events
+    source: supabase/migrations/0008_visibility_widen.sql
+    current_read_boundary: broad roles or assigned inspector
+    geography_predicate_present: false
+  - resource: profiles
+    source: supabase/migrations/0001_foundation.sql
+    current_read_boundary: self, security_admin, ops, or planner
+    geography_predicate_present: false
+  - resource: assignments
+    sources:
+      - supabase/migrations/0001_foundation.sql
+      - supabase/migrations/20260721030000_planning_capabilities.sql
+    current_read_boundary: assigned inspector or broad roles and additive planning capability
+    geography_predicate_present: false
+  - resource: action_forms
+    source: supabase/migrations/0002_rbac_audit.sql
+    current_write_boundary: assigned inspector or reviewer, auditor, or ops
+    concern: Not aligned to a single canonical Operations action capability.
+  - resource: notifications
+    sources:
+      - supabase/migrations/0001_foundation.sql
+      - supabase/migrations/0015_w1_field_home.sql
+    current_write_boundary: recipient or ops
+  - resource: geo_override_requests
+    source: supabase/migrations/20260716161605_m04_device_eta_override.sql
+    current_read_boundary: requester or ops
+    decision_boundary: decide_geo_override RPC uses has_role('ops')
+  - resource: cancellation_requests
+    source: supabase/migrations/20260721140000_execution_journey_cancellation.sql
+    current_read_boundary: requester, ops, planner, or leadership
+    decision_boundary: operations.approve_active_cancel capability
+  - resource: cases
+    source: supabase/migrations/20260717190000_mvp2_m2_10_case_spine.sql
+    current_read_boundary: all authenticated
+    geography_predicate_present: false
+  - resource: risk_exceptions
+    source: supabase/migrations/20260717170000_mvp2_m2_04_risk_workbench.sql
+    current_read_boundary: all authenticated
+    geography_predicate_present: false
+  - resource: location_visibility_matrix
+    source: supabase/migrations/20260717220000_mvp2_m2_06_spatial_gis.sql
+    current_read_boundary: all authenticated
+
+work_packages:
+  - id: WP-01
+    title: Route and view authorization
+    intent: >-
+      Make discoverability and direct-route access consistently enforce the
+      existing operations.view capability without changing its grants.
+    dependencies:
+      routes:
+        - apps/web/src/app/(app)/operations/page.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/src/app/(app)/operations/exceptions/page.tsx
+      navigation:
+        - apps/web/src/lib/shell-navigation.ts
+      authentication:
+        - verified-user server helper currently used by app routes
+        - server Supabase client
+      capability:
+        existing: operations.view
+        proposed_new: []
+      tests:
+        existing:
+          - apps/web/e2e/shell-navigation.spec.ts
+          - apps/web/e2e/execution-canonical-contract.spec.ts
+          - apps/web/e2e/execution-access-contract.spec.ts
+          - apps/web/e2e/web-admin-m3-operations.spec.ts
+        proposed:
+          - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+    collision_boundary:
+      - Operations and live pages are in Claude's active eight-file map-provenance lease.
+      - shell-navigation.ts is changed on the F0 shell authority branch.
+      - The old preview worktree has uncommitted live-page edits.
+    prerequisite_decisions:
+      - Confirm whether planner and leadership retain operations.view.
+      - Define denied-route behavior consistently: not-found, access-denied, or safe redirect.
+    readiness: BLOCKED_BY_ACTIVE_FILE_OWNERSHIP_AND_ROUTE_BEHAVIOR_DECISION
+
+  - id: WP-02
+    title: Precise identity and GPS projection
+    intent: >-
+      Separate full operational location data from masked, aggregate, or
+      identity-free projections without weakening CR-433 or RBAC-013.
+    dependencies:
+      routes_and_components:
+        - apps/web/src/app/(app)/operations/page.tsx
+        - apps/web/src/app/(app)/operations/OpsMap.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+        - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+        - apps/web/src/app/(app)/operations/live/types.ts
+        - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+      data:
+        - geo_events
+        - visits
+        - assignments
+        - profiles
+        - factories
+        - location_visibility_matrix
+      capability:
+        existing: null
+        proposed_not_existing: operations.view_precise_location_identity
+      projection_contract:
+        - CODEX-M3-OPERATIONS-REDUCED-PROJECTION-SPEC-005.yaml
+      tests:
+        existing:
+          - apps/web/e2e/web-admin-m3-operations.spec.ts
+          - apps/web/e2e/mvp2-mapbox-live.spec.ts
+          - apps/web/e2e/mapbox-provider.spec.ts
+          - apps/web/e2e/platform-design-system-contract.spec.ts
+        proposed:
+          - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+    collision_boundary:
+      - Six dependencies overlap Claude's active map-provenance lease.
+      - LiveMapInner.tsx, LiveOps.tsx, and live/page.tsx also have uncommitted edits in the old preview worktree.
+    prerequisite_decisions:
+      - Approve the precise-location capability and its role/direct-grant semantics.
+      - Approve sensitivity classes, masking resolution, temporal freshness, and aggregation thresholds.
+      - Decide whether projection is enforced by security-definer RPC, governed view, or equivalent database boundary.
+      - Seed and govern location_visibility_matrix only after the contract is approved.
+    readiness: BLOCKED_BY_MISSING_CONTRACT_AND_ACTIVE_FILE_OWNERSHIP
+
+  - id: WP-03
+    title: Write capability alignment
+    intent: >-
+      Ensure each Operations mutation has a server-side and database-side
+      capability boundary aligned to the intended business action.
+    dependencies:
+      actions:
+        - apps/web/src/app/(app)/operations/actions.ts
+      components:
+        - apps/web/src/app/(app)/operations/Controls.tsx
+        - apps/web/src/app/(app)/operations/OverrideQueue.tsx
+        - apps/web/src/app/(app)/operations/CancellationQueue.tsx
+        - apps/web/src/app/(app)/operations/page.tsx
+      database:
+        - action_forms policies
+        - notifications policies
+        - decide_geo_override RPC
+        - decide_active_cancellation RPC
+        - audit_events
+      capabilities:
+        existing:
+          - operations.resolve_exception
+          - operations.approve_active_cancel
+        unresolved_mapping:
+          - updateActionFormStatus to a canonical capability
+          - markNotificationHandled to recipient ownership or a canonical capability
+          - decideGeoOverride from has_role('ops') to an approved capability
+      tests:
+        existing:
+          - apps/web/e2e/execution-journey-contract.spec.ts
+          - apps/web/e2e/execution-journey-ui-contract.spec.ts
+          - apps/web/e2e/m04-device-eta-override.spec.ts
+          - apps/web/e2e/web-admin-m3-operations.spec.ts
+        proposed:
+          - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+    collision_boundary:
+      - operations/page.tsx overlaps Claude's active lease.
+      - actions and queue components have no active lease found, but must not be separated from database authorization work.
+    prerequisite_decisions:
+      - Approve the action-to-capability matrix.
+      - Confirm record-scope rules for each mutation.
+      - Require negative-path and audit evidence for every denied and successful decision.
+    readiness: BLOCKED_BY_CAPABILITY_MAPPING_DECISION
+
+  - id: WP-04
+    title: Region, branch, and organization server scope
+    intent: >-
+      Bind Operations reads to canonical user geography and organization scope
+      at a server and database boundary; never treat URL filters as authority.
+    dependencies:
+      routes_and_helpers:
+        - apps/web/src/app/(app)/operations/page.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/src/app/(app)/operations/exceptions/page.tsx
+        - apps/web/src/app/(app)/operations/actions.ts
+        - apps/web/src/lib/operations/exceptions.ts
+      profile_fields:
+        - profiles.region
+        - profiles.org_scope
+      row_sources:
+        - factories
+        - visits
+        - assignments
+        - geo_events
+        - profiles
+        - cases
+        - risk_exceptions
+      database_work_likely_required:
+        - governed scope relation or canonicalized profile-scope contract
+        - row-level predicates or scoped RPCs/views
+        - indexes supporting scope predicates
+        - audit coverage for scope changes
+      tests:
+        existing:
+          - apps/web/e2e/web-admin-m3-operations.spec.ts
+          - apps/web/e2e/mvp2-m2-09-exceptions.spec.ts
+          - apps/web/e2e/mvp2-modules-live.spec.ts
+          - apps/web/e2e/execution-access-contract.spec.ts
+        proposed:
+          - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+    collision_boundary:
+      - Operations and live pages overlap Claude's active lease.
+      - Live page also overlaps uncommitted old-preview changes.
+      - New migration ownership must be exclusive and sequenced after the scope contract.
+    prerequisite_decisions:
+      - Define canonical region, branch, and organization identifiers and hierarchy.
+      - Define how users receive one or multiple scopes.
+      - Define row-to-scope linkage for factories, visits, people, cases, and risk exceptions.
+      - Define cross-region exception handling and audited temporary access.
+    readiness: BLOCKED_BY_MISSING_SCOPE_CONTRACT
+
+  - id: WP-05
+    title: Explicit national-scope grants and administration
+    intent: >-
+      Govern exceptional national visibility through explicit, auditable
+      authority without silently broadening role defaults.
+    dependencies:
+      capability_database:
+        - supabase/migrations/20260721093000_execution_canonical_contracts.sql
+        - supabase/migrations/20260721110000_execution_access_grants.sql
+      administration_ui:
+        - apps/web/src/app/(app)/admin/access/page.tsx
+        - apps/web/src/app/(app)/admin/access/AccessManager.tsx
+        - apps/web/src/app/(app)/admin/access/RoleCapabilityPanel.tsx
+        - apps/web/src/app/(app)/admin/access/actions.ts
+        - apps/web/src/app/(app)/admin/access/role-capability-actions.ts
+      ui_mirror:
+        - apps/web/src/lib/execution/capabilities.ts
+      audit:
+        - audit_events
+        - governed capability grant and revoke functions
+      capability:
+        existing: null
+        proposed_not_existing: operations.view_all_regions
+      tests:
+        existing:
+          - apps/web/e2e/execution-canonical-contract.spec.ts
+          - apps/web/e2e/execution-access-contract.spec.ts
+          - apps/web/e2e/execution-admin-contract.spec.ts
+        proposed:
+          - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+    collision_boundary:
+      - No active lease was found for the access-admin files at this snapshot.
+      - A future migration and admin lease must still be checked immediately before dispatch.
+      - Role-derived capabilities cannot currently be negatively revoked by a direct grant record.
+    prerequisite_decisions:
+      - Approve operations.view_all_regions and eligible grantors, grantees, reasons, expiry, and review.
+      - Decide whether national scope is additive, time-bound, break-glass, or role-derived.
+      - Decide how expiry and revocation affect active sessions and cached projections.
+      - Require immutable audit evidence and periodic access review.
+    readiness: BLOCKED_BY_NEW_CAPABILITY_AND_GRANT_GOVERNANCE_DECISION
+
+test_dependency_catalog:
+  route_and_navigation:
+    - apps/web/e2e/shell-navigation.spec.ts
+    - apps/web/e2e/web-admin-m3-operations.spec.ts
+  capability_and_access:
+    - apps/web/e2e/execution-canonical-contract.spec.ts
+    - apps/web/e2e/execution-access-contract.spec.ts
+    - apps/web/e2e/execution-admin-contract.spec.ts
+  journey_and_mutation:
+    - apps/web/e2e/execution-journey-contract.spec.ts
+    - apps/web/e2e/execution-journey-ui-contract.spec.ts
+    - apps/web/e2e/m04-device-eta-override.spec.ts
+  exceptions:
+    - apps/web/e2e/mvp2-m2-09-exceptions.spec.ts
+    - apps/web/e2e/mvp2-modules-live.spec.ts
+  map_and_visual:
+    - apps/web/e2e/mvp2-mapbox-live.spec.ts
+    - apps/web/e2e/mapbox-provider.spec.ts
+    - apps/web/e2e/platform-design-system-contract.spec.ts
+  dashboard_regression:
+    - apps/web/e2e/dashboard-kpi-seed.spec.ts
+    - apps/web/e2e/dashboard-business.spec.ts
+  required_future_negative_suite:
+    - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+  matrix:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-AUTHORIZATION-NEGATIVE-ACCEPTANCE-MATRIX-004.csv
+
+ownership_and_collision_register:
+  active_claude_map_provenance:
+    worktree: /Users/vikramindla/Developer/Inspection-codex-m3-map-provenance
+    branch: codex/m3-map-provenance-correction
+    base: c48f71cc46ce027927224109f7b070ca489f2b15
+    files:
+      - apps/web/e2e/web-admin-m3-operations.spec.ts
+      - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+      - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+      - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/types.ts
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/live/loading.tsx
+    rule: No other implementation lease may touch these files until Claude returns and the work is accepted, rejected, or superseded.
+  old_preview_dirty_overlap:
+    worktree: /Users/vikramindla/Developer/Inspection-codex-m3-preview
+    overlapping_dirty_files:
+      - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+      - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/live.module.css
+      - apps/web/src/app/(app)/operations/operations.module.css
+    rule: Treat as a stale or competing claimant; do not overwrite, clean, stage, or reuse without explicit ownership disposition.
+  f0_shell_overlap:
+    worktree: /Users/vikramindla/Developer/Inspection-codex-f0-shell
+    branch: codex/f0-shell-authority-correction
+    changed_files_relevant_here:
+      - apps/web/src/lib/shell-navigation.ts
+      - apps/web/e2e/shell-navigation.spec.ts
+    rule: Route/navigation authorization work must wait for or explicitly supersede the F0 change set.
+  review_only_worktrees:
+    - worktree: /Users/vikramindla/Developer/Inspection-codex-m3-operations
+      branch: codex/m3-operations-reconciliation
+      state: PR_60_PENDING_REVIEW
+    - worktree: /Users/vikramindla/Developer/Inspection-codex-shared-brand
+      branch: codex/shared-brand-regression
+      state: PR_61_PENDING_REVIEW
+
+sequencing_recommendation:
+  status: PROPOSAL_ONLY
+  order:
+    - step: 1
+      action: Complete and independently review Claude's map-provenance correction.
+    - step: 2
+      action: Resolve F0 navigation and old-preview ownership collisions.
+    - step: 3
+      action: Approve scope, projection, action-capability, and national-grant contracts.
+    - step: 4
+      action: Implement database authorization boundaries and negative tests before exposing new UI authority.
+    - step: 5
+      action: Implement route, projection, and action consumers in exclusive file leases.
+    - step: 6
+      action: Run the 45-row negative matrix, regression suite, runtime browser review, audit verification, and evidence capture.
+  parallelism_after_contract_approval:
+    - WP-03 action mapping can proceed separately from WP-05 grant administration if their database migration and file leases are disjoint.
+    - WP-01 navigation work can proceed after F0 ownership resolves, but route files remain sequenced behind Claude.
+    - WP-02 and WP-04 are coupled because reduced location projections must consume authoritative geography and organization scope.
+
+dispatch_readiness:
+  claude_return_packet: product-contract/operationalization/coordination/batches/CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+  state: READY_TO_DISPATCH_AFTER_MANUAL_MAC_UNLOCK
+  instruction: >-
+    Dispatch the existing Claude packet unchanged immediately after manual Mac
+    unlock; do not substitute this proposal-only dependency map for the active
+    map-provenance task.
