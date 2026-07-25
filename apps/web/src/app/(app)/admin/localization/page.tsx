@@ -13,6 +13,7 @@ import { redirect } from "next/navigation";
 import Manager, { type Labels, type UiString } from "./Manager";
 
 export const dynamic = "force-dynamic";
+const UI_STRINGS_PAGE_SIZE = 1000;
 
 export default async function Localization() {
   const { t, locale } = await useT();
@@ -59,11 +60,26 @@ export default async function Localization() {
     );
   }
 
-  const { data, error } = await sb.from("ui_strings")
-    .select("key, en, ar, status, context, orphaned")
-    .order("key");
-  if (error) console.error("[localization] load failed", error);
-  const rows = (data ?? []) as UiString[];
+  // PostgREST caps one response at 1,000 rows in the configured project.
+  // The governed dictionary is larger, so a single unbounded select silently
+  // omits later keys. Read every stable key-ordered page before calculating
+  // coverage or handing the registry to the client.
+  const rows: UiString[] = [];
+  let loadFailed = false;
+  for (let from = 0; ; from += UI_STRINGS_PAGE_SIZE) {
+    const result = await sb.from("ui_strings")
+      .select("key, en, ar, status, context, orphaned")
+      .order("key")
+      .range(from, from + UI_STRINGS_PAGE_SIZE - 1);
+    if (result.error) {
+      console.error("[localization] load failed", result.error);
+      loadFailed = true;
+      break;
+    }
+    const page = (result.data ?? []) as UiString[];
+    rows.push(...page);
+    if (page.length < UI_STRINGS_PAGE_SIZE) break;
+  }
 
   const total = rows.length;
   const translated = rows.filter(r => r.ar !== null && r.ar.trim() !== "").length;
@@ -162,7 +178,7 @@ export default async function Localization() {
             : <a className="sq-link" href="/locale?set=ar" lang="ar">العربية</a>}
         </span>
       }>
-      {error ? (
+      {loadFailed ? (
         <div className="sq-banner sq-banner--critical" role="alert">
           {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>

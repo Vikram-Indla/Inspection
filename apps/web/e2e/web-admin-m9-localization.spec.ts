@@ -80,6 +80,13 @@ test.describe("WA-M9-AC-001/004/005 source and governance contracts", () => {
     expect(pageSource).toContain('"compliance_admin", "security_admin", "workflow_admin"');
     expect(pageSource).toContain("No localization data has been loaded");
   });
+
+  test("the registry pages through the complete governed dictionary", () => {
+    const pageSource = source("src/app/(app)/admin/localization/page.tsx");
+    expect(pageSource).toContain("UI_STRINGS_PAGE_SIZE = 1000");
+    expect(pageSource).toContain(".range(from, from + UI_STRINGS_PAGE_SIZE - 1)");
+    expect(pageSource).toContain("if (page.length < UI_STRINGS_PAGE_SIZE) break");
+  });
 });
 
 test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
@@ -99,6 +106,11 @@ test.describe("WA-M9-AC-001/002/003/006 admin runtime", () => {
     await expect(page.getByRole("heading", { name: "Translation registry", exact: true })).toBeVisible();
     await expect(registry.locator("article")).toHaveCount(12);
     await expect(page.getByText(/Page 1 \//)).toBeVisible();
+    const totalKeys = Number(await page.locator(".sq-kpi")
+      .filter({ hasText: "Total keys" })
+      .locator(".sq-kpi__value")
+      .textContent());
+    expect(totalKeys).toBeGreaterThan(1000);
 
     const addKey = page.getByRole("button", { name: "Add key", exact: true });
     await addKey.focus();

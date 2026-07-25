@@ -55,13 +55,16 @@ changed.
 
 ## Real behavior verified
 
-- Authenticated admin: the real seeded `ui_strings` registry loaded 1,000
-  keys, 991 Arabic translations, 0 reviewed keys and 99% coverage.
+- Authenticated admin: the real seeded `ui_strings` registry loaded all 2,844
+  keys, 2,790 Arabic translations, 0 reviewed keys and 98% coverage. Closure
+  task `CODEX-ADMIN-LOCALIZATION-CLOSURE-002` found and fixed the prior
+  PostgREST 1,000-row truncation; see
+  `product-contract/evidence/WA-M9-LOCALIZATION-CLOSURE-002.md`.
 - Unauthorized reviewer: role verification completed before the
   `ui_strings` read; the reviewer received an explicit denied state and no
   registry data.
-- Registry density: 12 rows per page instead of all 1,000 rows in one
-  approximately 140,000-pixel document.
+- Registry density: 12 rows per page instead of all 2,844 rows in one
+  unbounded document.
 - Search, status filters, pagination and keyboard-open/close of Add key passed.
 - English/LTR and Arabic/RTL passed in light/dark at 1440x900, 820x1180 and
   390x844, with no document horizontal overflow.
@@ -77,7 +80,7 @@ changed.
 - `npm --prefix apps/web run typecheck` — PASS
 - environment-backed `npm --prefix apps/web run build` — PASS
 - production standalone runtime, focused
-  `web-admin-m9-localization.spec.ts` — PASS, 5/5
+  `web-admin-m9-localization.spec.ts` — PASS, 6/6
 - `node scripts/validate_web_admin_phase1.mjs` — PASS, 478 rows validated
 - protected F0/shell selection — 11/12 PASS
   - Existing blocker: `shell-navigation.spec.ts` expects seven exact
