@@ -1,0 +1,407 @@
+packet_id: M2-VS-001A-CORRECTED-SCOPE-AND-SPONSOR-CONSENT-005
+packet_type: corrected_scope_and_sponsor_consent_request
+created_at: "2026-07-25"
+module: M2_PLANNING
+slice_id: M2-VS-001A
+slice_name: Read-only Visit Dossier
+supersedes_scope_of: M2-VS-001-READ-ONLY-VISIT-TRACE-CANDIDATE-003
+preflight_basis: M2-VS-001-AUTHORITY-AND-READONLY-PREFLIGHT-004
+status: AWAITING_SPONSOR_DECISIONS_AND_INDEPENDENT_PREFLIGHT
+implementation_authorized: false
+lease_issued: false
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+  credit_granted: false
+
+repository_boundary:
+  authoritative_repository: /Users/vikramindla/Developer/Inspection
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  product_worktree: /Users/vikramindla/Developer/Inspection-codex-planning-m2
+  product_branch: codex/planning-m2-saqeel-correction
+  observed_product_head: 48c58863a183c80171025c5770c4e3440392802b
+  do_not_touch:
+    - main
+    - setup/Inspection
+    - existing_stashes
+    - existing_dirty_files
+    - Field_PWA_iPad
+    - M3
+    - backend_schema_RLS_or_API_contracts
+
+corrected_requirement_scope:
+  exact_count: 2
+  rows:
+    - requirement_id: CR-057
+      acceptance_id: WA-AC-0057
+      evidence_id: WA-EV-0057
+      capability: View Visit Details
+      exact_system_outcome: >
+        Display factory profile, location, assignment, visit information,
+        timeline and audit history for the selected visit.
+      business_rule: "Information is read-only until Edit is selected."
+      persona: Planner
+      AI_boundary: "Risk summarization is explicitly Future in this row and receives no MVP1 completion credit."
+    - requirement_id: CR-076
+      acceptance_id: WA-AC-0076
+      evidence_id: WA-EV-0076
+      capability: View Visit Details
+      exact_system_outcome: >
+        Display factory profile, assignment, planning information, location,
+        timeline, attachments and audit for the selected visit.
+      business_rule: "Information remains read-only until Edit is selected."
+      persona: Planner
+      AI_boundary: >
+        The row contains visit-history and planning-risk summarization without a
+        Future marker. It must use an approved real service and traceable records.
+        An unavailable state is truthful but does not complete this AI leg.
+  no_credit_claimed:
+    - CR-053
+    - CR-065
+    - CR-066
+    - CR-071
+    - CR-096
+    - CR-097
+  exclusion_reason: >
+    Workspace, KPI, search, filter, action, alert, complete system-wide audit,
+    and complete all-activity timeline requirements exceed this smallest
+    coherent dossier slice.
+
+stable_design_authority:
+  design_page_id: WA-DES-045
+  design_page_name: SAQEEL Visits.dc.html
+  immutable_identity: WA-DES-045@sha256:74fc7af27cfa7ce7a3f458ae42ac5464aefcfa79471eb8c9f2f9b083ba25e2d2
+  source_pointer: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Visits.dc.html
+  size_bytes: 28502
+  observed_sha256: 74fc7af27cfa7ce7a3f458ae42ac5464aefcfa79471eb8c9f2f9b083ba25e2d2
+  registered_sha256: 74fc7af27cfa7ce7a3f458ae42ac5464aefcfa79471eb8c9f2f9b083ba25e2d2
+  hash_match: true
+  design_route_map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+  target_route_authority:
+    source: product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+    decision: "Planning owns Visits at /planning/visits and /planning/visits/:id."
+  target_route: /planning/visits/:id
+  review_route: /planning/visits/:id?wa_preview=1
+  current_compatibility_route: /visits/:id
+  cutover_status: NOT_AUTHORIZED
+  acceptance_state: REGISTERED_STABLE_INPUT_AWAITING_SPONSOR_ACCEPTANCE
+  prohibited_claims:
+    - "Do not call WA-DES-045 accepted before sponsor decision S2."
+    - "Do not label WA-DES-036-r4 as the Visit-detail authority."
+    - "Do not infer a newer R4 Visit-detail revision without an immutable handoff."
+
+complete_dossier_contract:
+  identity_and_planning:
+    - stable visit identifier and visit reference
+    - visit type and source channel
+    - planning status and operational state shown as separate domains
+    - priority
+    - creation timestamp
+    - visit window
+    - planning method
+    - plan identifier/reference and plan state
+    - package and immutable package-version reference
+  factory_profile:
+    - stable factory identifier and factory code
+    - factory name
+    - commercial registration number where permitted
+    - governed risk band where permitted
+    - master-data versus temporary/unverified provenance
+  assignment:
+    - assigned inspector identity where permitted
+    - assignment method
+    - assignment state
+    - neutral unavailable state when permission or source data prevents display
+  location:
+    - official factory location when permitted
+    - current planned pin
+    - original pin when corrected
+    - location source/provenance
+    - complete retrievable location-event history
+  timeline:
+    - complete retrievable visit lifecycle history
+    - complete retrievable journey/location events permitted to Planning
+    - stable event identifier
+    - event type
+    - actor or system attribution
+    - event timestamp
+    - reason and comments where permitted
+  attachments:
+    - read-only attachment metadata list
+    - permitted view/download through existing private signed-URL service
+    - file type, size, version/provenance and timestamp where available
+    - explicit expired-link, missing-file and permission-denied states
+    - no upload, replace, edit or delete control
+  audit:
+    - complete retrievable audit history, not latest-30 only
+    - stable audit identifier
+    - action
+    - actor or system attribution
+    - occurred timestamp
+    - before state
+    - after state
+    - explicit zero-history state
+    - distinct unavailable/denied/error state
+  AI_summary:
+    - "CR-057 Future leg remains labelled Future and is not counted."
+    - >
+      CR-076 summary may appear only when a real approved provider/service
+      returns a record-grounded result with provenance.
+    - "No generated fixture, permanent mock or unsupported risk statement."
+    - "Provider unavailable is fail-closed and leaves the CR-076 AI leg incomplete."
+
+complete_history_truth:
+  rule: >
+    Complete means every permitted event is retrievable. A bounded page size is
+    allowed only with stable cursor pagination until exhaustion; a hard
+    latest-30/latest-50 ceiling is prohibited.
+  ordering:
+    canonical: chronological
+    presentation: "Newest-first or oldest-first is allowed only if labelled and deterministic."
+    tie_breaker: "timestamp plus stable event identifier"
+  cursor_requirements:
+    - server-evaluated
+    - RLS-scoped
+    - stable under refresh
+    - no duplicated or omitted event at page boundaries
+    - terminal exhausted state
+  audit_truth:
+    - "Zero events is not equivalent to access denied."
+    - "Read failure is not rendered as empty success."
+    - "Truncated data is never labelled complete."
+
+authorization_boundary:
+  access_class: business_staff
+  required_capability: planning.view
+  required_server_sequence:
+    - verify authenticated identity
+    - resolve planning_access_class
+    - resolve has_planning_capability(planning.view)
+    - fail closed before dossier queries on either resolver error or denial
+    - query selected visit and related records under existing RLS
+  permitted_class_behavior:
+    business_staff_with_planning_view: ALLOW
+    admin: DENY
+    inspector: DENY_PENDING_DEC-025
+    anonymous: DENY
+  DEC_025_boundary: >
+    DEC-025 remains open. This slice neither grants Inspector selector/detail
+    access nor changes /planning or /planning/immediate routing.
+  cross_org_behavior: >
+    An out-of-scope identifier and a nonexistent identifier return the same
+    neutral result and reveal no record existence.
+
+read_only_invariant:
+  allowed:
+    - server-side RLS reads
+    - signed read URL generation through the existing attachment service
+    - cursor navigation
+    - locale, theme and non-mutating tab/section navigation
+  forbidden_controls:
+    - selection checkbox
+    - bulk action
+    - edit
+    - reschedule
+    - reassign
+    - cancel
+    - publish
+    - return
+    - status transition
+    - note editor
+    - attachment upload
+    - attachment replace
+    - attachment delete
+  implementation_rule: >
+    The read-only route must use a component path that does not import, bind,
+    serialize or render mutation server actions. Merely hiding enabled action
+    controls with CSS or a client-side flag is insufficient.
+  zero_write_proof:
+    - no write-capable form or server-action reference in rendered payload
+    - no POST/PATCH/PUT/DELETE request during the journey
+    - before/after database snapshots unchanged
+    - audit-event count unchanged solely from viewing
+    - no expiry or workflow RPC invoked on page load
+
+exact_future_file_lease:
+  status: PROPOSED_NOT_ISSUED
+  product_worktree: /Users/vikramindla/Developer/Inspection-codex-planning-m2
+  proposed_paths:
+    - apps/web/src/app/(app)/planning/visits/[id]/page.tsx
+    - apps/web/src/app/(app)/planning/visits/[id]/VisitDossier.tsx
+    - apps/web/src/app/(app)/planning/visits/[id]/VisitDossier.module.css
+    - apps/web/src/lib/planning/visit-dossier.ts
+    - apps/web/e2e/web-admin-m2-readonly-visit-dossier.spec.ts
+  shared_read_only_dependencies:
+    - apps/web/src/lib/planning/access.ts
+    - apps/web/src/lib/supabase-server.ts
+    - apps/web/src/lib/verified-user.ts
+    - apps/web/src/app/(app)/visits/[id]/neutral.ts
+    - apps/web/src/app/(app)/visits/[id]/DualStateRibbon.tsx
+  expressly_excluded:
+    - apps/web/src/app/(app)/visits/[id]/page.tsx
+    - apps/web/src/app/(app)/visits/[id]/actions.ts
+    - apps/web/src/app/(app)/visits/[id]/ActionBar.tsx
+    - apps/web/src/app/(app)/visits/[id]/Attachments.tsx
+    - apps/web/src/app/(app)/visits/[id]/NotesEditor.tsx
+    - apps/web/src/app/(app)/visits/VisitsBoard.tsx
+    - apps/web/src/app/(app)/visits/actions.ts
+    - F0_shared_shell_files
+    - Field_or_Execution_mutation_files
+  issuance_conditions:
+    - sponsor decisions S1 through S4 recorded
+    - independent preflight PASS
+    - exact central ACTIVE_WORKTREE_LEASES.csv row
+    - no active or dirty-path collision
+    - pinned clean base with existing user/concurrent dirt preserved
+
+non_skippable_test_contract:
+  rule: "No test.skip, conditional pass, absent-data bypass or self-referential visual assertion."
+  deterministic_data:
+    - RLS-visible selected visit
+    - cross-organization visit
+    - factory profile and location provenance
+    - assignment
+    - planning and package-version information
+    - more than one cursor page of lifecycle history
+    - more than one cursor page of audit history
+    - read-only attachment
+    - legitimate zero-history visit
+    - audit-denied/unavailable fixture
+  functional:
+    - complete_dossier_sections_render
+    - stable_cursor_pagination_reaches_exhaustion_without_gap_or_duplicate
+    - signed_attachment_view_or_download
+    - refresh_preserves_selected_visit_and_cursor
+  authorization:
+    - planner_or_approved_business_staff_allowed
+    - reviewer_business_staff_behavior_matches_S3
+    - admin_denied
+    - inspector_denied_and_DEC025_unchanged
+    - anonymous_denied
+    - planning_access_RPC_failure_neutral_unavailable
+    - planning_view_denial_before_dossier_queries
+    - cross_org_and_nonexistent_indistinguishable
+  read_only_negative:
+    - no_mutation_control_in_DOM
+    - no_server_action_reference_in_rendered_payload
+    - no_write_network_request
+    - no_page_load_expiry_or_workflow_RPC
+    - database_and_audit_snapshots_unchanged
+    - attachment_upload_replace_delete_absent
+  data_state_negative:
+    - visit_query_error_not_empty_success
+    - zero_audit_history_distinct
+    - audit_denied_or_unavailable_distinct
+    - attachment_missing_expired_and_denied_states
+    - provider_unavailable_fail_closed
+  quality:
+    - English_LTR_light_and_dark
+    - Arabic_RTL_light_and_dark
+    - viewport_1440x900
+    - viewport_1024x768
+    - viewport_390x844
+    - viewport_320x800
+    - keyboard_order_and_single_visible_focus
+    - screen_reader_names_and_landmarks
+    - axe_zero_serious_or_critical
+    - no_horizontal_overflow
+  regression:
+    - canonical_/visits/:id_unchanged
+    - F0_shell_unchanged
+    - Field_and_Execution_semantics_unchanged
+    - workflow_audit_version_and_RLS_contracts_unchanged
+
+browser_proof_contract:
+  current_status: BLOCKED_MAC_LOCKED
+  capture_rule: "Real implementation only; never substitute Claude Design or a locked-session capture."
+  preconditions:
+    - unlocked_console_session
+    - sponsor decisions S1 through S4
+    - accepted WA-DES-045 immutable authority
+    - certified F0 shell base
+    - exact implementation commit
+    - deterministic permitted dataset
+    - full non-skippable suite PASS
+  comparison_frames:
+    - design_WA-DES-045_fixed_1440x900
+    - runtime_English_light_1440x900
+    - runtime_English_dark_1440x900
+    - runtime_Arabic_light_1024x768
+    - runtime_Arabic_dark_390x844
+    - runtime_English_light_320x800
+  behavior_proof:
+    - authorized dossier and complete cursor exhaustion
+    - read-only attachment view/download
+    - zero-history audit
+    - audit unavailable/denied
+    - out-of-scope neutral result
+    - provider-unavailable state
+    - keyboard focus sequence
+    - network log proving zero writes
+  evidence_metadata:
+    - requirement_id
+    - acceptance_id
+    - evidence_id
+    - design_page_id_and_sha256
+    - route
+    - persona
+    - locale
+    - theme
+    - viewport
+    - dataset_or_fixture_id
+    - commit_sha
+    - timestamp
+
+sponsor_decisions:
+  - id: S1
+    title: Corrected scope
+    recommended_decision: APPROVE_M2_VS_001A_TWO_ROWS_ONLY
+    business_language: >
+      Approve one complete read-only Visit Dossier covering CR-057 and CR-076.
+      Do not count the six removed workspace/audit rows in this slice.
+    effect: "Allows independent preflight; does not authorize implementation."
+  - id: S2
+    title: Design authority
+    recommended_decision: ACCEPT_WA_DES_045_EXACT_HASH_FOR_VISIT_DOSSIER
+    business_language: >
+      Accept the exact registered SAQEEL Visits design file identified by
+      SHA-256 74fc7af2...e2d2 as the visual starting authority for this dossier,
+      subject to all required states and the certified F0 shell.
+    effect: "Freezes the input; does not approve cutover or visual parity."
+  - id: S3
+    title: Who may view
+    recommended_decision: BUSINESS_STAFF_WITH_PLANNING_VIEW_ONLY
+    business_language: >
+      Allow authenticated business staff who have Planning View. Keep Admin,
+      Inspector and anonymous users out. DEC-025 stays open and unchanged.
+    effect: "Defines the slice boundary without deciding Inspector selector routing."
+  - id: S4
+    title: Shared shell base
+    recommended_decision: USE_ONLY_THE_NEXT_CERTIFIED_F0_BASE
+    business_language: >
+      Require the dossier to inherit the independently certified and accepted
+      F0 shell. Do not repair or fork the shared shell inside the M2 lease.
+    effect: "Prevents visual certification on a drifting shell."
+
+approval_record_template:
+  required_text: >
+    APPROVE S1: M2-VS-001A two-row scope; APPROVE S2: WA-DES-045 exact hash;
+    APPROVE S3: business_staff plus planning.view only, DEC-025 unchanged;
+    APPROVE S4: certified F0 base only.
+  warning: >
+    Even with all four approvals, implementation remains blocked until the
+    queued independent preflight passes and the exact central file lease is issued.
+
+M3:
+  status: BLOCKED
+  authority_created_by_this_packet: NONE
+
+queued_follow_on:
+  task_id: M2-VS-001A-INDEPENDENT-CONSENT-AND-LEASE-PREFLIGHT
+  status: QUEUED_NOT_DISPATCHED
+  purpose: >
+    After sponsor decisions are recorded, independently verify the immutable
+    design hash, corrected two-row scope, AI/provider boundary, certified F0
+    base, collision-free file lease, non-skippable data/test plan and browser
+    evidence readiness before any implementation dispatch.
+  mutation_authority: NONE

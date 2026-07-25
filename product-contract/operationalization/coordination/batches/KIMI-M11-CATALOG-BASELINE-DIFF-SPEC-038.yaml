@@ -102,8 +102,10 @@ expected_objects_schema:
       - policy_mode
       - command_code
       - policy_roles
-      - using_expression
-      - check_expression
+      - using_expression_hash_algorithm
+      - using_expression_hash
+      - check_expression_hash_algorithm
+      - check_expression_hash
   table_acls:
     primary_key: [table_schema, table_name, grantee, privilege_type, grantor]
     required_fields: [is_grantable]
@@ -180,9 +182,10 @@ deterministic_normalization:
     dependencies: [dependent_function, dependency_type, referenced_object]
     database_audit_consumers: [consumer_kind, consumer_identity]
   expression_rule: >-
-    Compare pg_get_expr and catalog-returned definitions exactly after JSON
-    escaping only. Do not collapse whitespace, reorder predicates, simplify
-    boolean expressions or treat logically similar expressions as equal.
+    Within the controlled DB evidence lane, take the exact pg_get_expr text
+    without whitespace or semantic rewriting, calculate SHA-256, discard the
+    raw expression, and compare only like-for-like algorithm/hash fields
+    outside the lane.
   hash_rule:
     evidence_integrity_algorithm: SHA-256
     evidence_integrity_input: "Canonical JSON UTF-8 bytes with a terminal LF."
