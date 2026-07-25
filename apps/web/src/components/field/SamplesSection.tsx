@@ -38,6 +38,17 @@ function TrashIcon() {
   );
 }
 
+// Selected-gate glyph. Visit Results draws the pressed indicator as a filled
+// circle carrying a check, not an outline ring; the design's bare #fff stroke
+// is expressed here as the --text-on-action token.
+function GateCheckIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="samples-check">
+      <path d="m5 12 5 5 9-10" />
+    </svg>
+  );
+}
+
 export default function SamplesSection({ strings }: { strings: SamplesSectionStrings }) {
   const inputPrefix = useId();
   const [gateAnswer, setGateAnswer] = useState<"yes" | "no" | null>(null);
@@ -57,11 +68,11 @@ export default function SamplesSection({ strings }: { strings: SamplesSectionStr
         <p id={`${inputPrefix}-gate`}>{strings.gate}</p>
         <div className="samples-options">
           <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>
-            <span className="samples-radio" aria-hidden="true" />
+            <span className="samples-radio" aria-hidden="true">{gateAnswer === "yes" && <GateCheckIcon />}</span>
             {strings.gateYes}
           </button>
           <button type="button" aria-pressed={gateAnswer === "no"} onClick={() => setGateAnswer("no")}>
-            <span className="samples-radio" aria-hidden="true" />
+            <span className="samples-radio" aria-hidden="true">{gateAnswer === "no" && <GateCheckIcon />}</span>
             {strings.gateNo}
           </button>
         </div>
@@ -168,7 +179,7 @@ export default function SamplesSection({ strings }: { strings: SamplesSectionStr
           min-block-size: 50px;
           padding: 12px 14px;
           border: 1.5px solid var(--border-input);
-          border-radius: 12px;
+          border-radius: var(--radius-md);
           background: var(--surface-primary);
           color: var(--text-primary);
           cursor: pointer;
@@ -180,15 +191,24 @@ export default function SamplesSection({ strings }: { strings: SamplesSectionStr
           background: var(--accent-soft);
         }
         .samples-radio {
+          display: grid;
           inline-size: 18px;
           block-size: 18px;
           flex: none;
+          place-items: center;
           border: 2px solid var(--border-strong);
           border-radius: 50%;
         }
         .samples-options button[aria-pressed="true"] .samples-radio {
-          border: 5px solid var(--action-primary);
-          background: var(--surface-primary);
+          border-color: var(--action-primary);
+          background: var(--action-primary);
+        }
+        .samples-radio :global(.samples-check) {
+          inline-size: 11px;
+          block-size: 11px;
+          fill: none;
+          stroke: var(--text-on-action);
+          stroke-width: 3;
         }
         .samples-repeater {
           display: flex;
@@ -222,7 +242,17 @@ export default function SamplesSection({ strings }: { strings: SamplesSectionStr
           cursor: pointer;
         }
         .samples-delete:hover { background: var(--status-critical-soft); }
-        .samples-delete svg, .samples-add svg, .samples-photo svg {
+        /* The icons come from sibling components, so styled-jsx never stamps its
+           scope class on them; without :global() these rules match nothing and
+           the glyphs render at the UA default size with a solid fill. */
+        .samples-delete :global(svg), .samples-photo :global(svg) {
+          inline-size: 15px;
+          block-size: 15px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.7;
+        }
+        .samples-add :global(svg) {
           inline-size: 16px;
           block-size: 16px;
           fill: none;
@@ -272,10 +302,14 @@ export default function SamplesSection({ strings }: { strings: SamplesSectionStr
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        @media (max-width: 600px) {
-          .samples-card { padding: 16px; }
+        /* Visit Results collapses its two-column field grid (.vr-grid2) at 700px,
+           not at the 600px PWA shell breakpoint. */
+        @media (max-width: 700px) {
           .samples-fields { grid-template-columns: minmax(0, 1fr); }
           .samples-photo { align-self: stretch; }
+        }
+        @media (max-width: 600px) {
+          .samples-card { padding: 16px; }
         }
       `}</style>
     </section>

@@ -139,7 +139,8 @@
   flex: none;
 }
 
-@media (max-width: 640px) {
+/* 600px is the PWA shell breakpoint; this file previously broke at 640px. */
+@media (max-width: 600px) {
   .wrap {
     padding: 14px 12px 32px;
   }
