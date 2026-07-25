@@ -8,9 +8,9 @@ purpose: >
 
 status: "OPEN"
 note: >
-  CLI re-authentication is complete. ChatGPT has issued the V3 Operations queue
-  with one active vertical slice and one queued successor. No requirement figure
-  is inferred from prior chat or stale artifacts.
+  ChatGPT incorporated the Codex return, narrowed the active lease paths to the
+  proven coherent dirty slice, and issued one queued packet plus one bounded
+  successor. No lease or acceptance is granted and no requirement figure is inferred.
 
 current_cycle:
   cycle_id: "SAQEEL-CYCLE-2026-07-25-001"
@@ -18,20 +18,20 @@ current_cycle:
   closed_at: null
   watch_lanes:
     chatgpt:
-      state: "ISSUED"
+      state: "CORRECTED_ISSUED"
       active_packet: "PKT-M3-OPS-LIVE-001"
       queued_packet: "PKT-M3-OPS-CENTER-002"
       dependency: null
     kimi:
       state: "READY_READ_ONLY"
       active_packet: "PKT-M3-OPS-LIVE-001 service/RLS/RBAC review"
-      queued_packet: "PKT-M3-OPS-CENTER-002 review"
-      dependency: "DEP-M3-LEASE-RECONCILIATION-001"
+      queued_packet: "PKT-M3-OPS-CENTER-002 then PKT-M3-OPS-EXCEPTIONS-003 review"
+      dependency: null
     claude_code:
-      state: "READY"
+      state: "READY_FOR_CODEX_LEASE_REVIEW"
       active_packet: "PKT-M3-OPS-LIVE-001"
-      queued_packet: "PKT-M3-OPS-CENTER-002"
-      dependency: "DEP-M3-LEASE-RECONCILIATION-001"
+      queued_packet: "PKT-M3-OPS-CENTER-002 then PKT-M3-OPS-EXCEPTIONS-003"
+      dependency: null
     claude_design:
       state: "READY_READ_ONLY"
       active_packet: "PKT-M3-OPS-LIVE-001 design drift/accessibility review"
@@ -62,6 +62,11 @@ current_cycle:
       packet_id: "PKT-M3-OPS-CENTER-002"
       path: "product-contract/operationalization/packets/PKT-M3-OPS-CENTER-002.yaml"
       state: "QUEUED_NO_LEASE"
+      write_lease: "NONE"
+    - order: 3
+      packet_id: "PKT-M3-OPS-EXCEPTIONS-003"
+      path: "product-contract/operationalization/packets/PKT-M3-OPS-EXCEPTIONS-003.yaml"
+      state: "SUCCESSOR_QUEUED_NO_LEASE"
       write_lease: "NONE"
 
   cycle_history: []
