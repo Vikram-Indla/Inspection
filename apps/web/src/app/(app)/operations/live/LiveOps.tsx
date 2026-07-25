@@ -16,6 +16,8 @@ export type LiveOpsStrings = {
   projected: string;
   freshnessPolicy: string;
   lastObserved: string;
+  snapshotGenerated: string;
+  noRecordedPositions: string;
   activeList: string;
   since: string;
   noScope: string;
@@ -35,6 +37,16 @@ export type LiveOpsStrings = {
   visitReference: string;
   closeDetails: string;
   dataIntegrity: string;
+  outOfScopeGeography: string;
+  positionSourceField: string;
+  positionObservedField: string;
+  openVisit: string;
+};
+
+export type LiveInspectorWithPosition = LiveInspector & {
+  positionObservedAt: string | null;
+  positionObservedLabel: string;
+  positionSourceLabel: string | null;
 };
 
 const Map = dynamic(() => import("./LiveMapInner"), { ssr: false });
@@ -44,20 +56,24 @@ export default function LiveOps({
   regions,
   inspectors,
   strings: s,
-  observedAt,
+  snapshotAt,
+  positionObservedAt,
   wallboard,
   hasReadError,
   excludedRecordCount,
+  outOfScopeRecordCount,
   locale,
 }: {
   factories: LiveFactory[];
   regions: LiveRegion[];
-  inspectors: LiveInspector[];
+  inspectors: LiveInspectorWithPosition[];
   strings: LiveOpsStrings;
-  observedAt: string;
+  snapshotAt: string;
+  positionObservedAt: string | null;
   wallboard: boolean;
   hasReadError: boolean;
   excludedRecordCount: number;
+  outOfScopeRecordCount: number;
   locale: "en" | "ar";
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -69,11 +85,15 @@ export default function LiveOps({
   const noScopeRows = factories.length === 0 && inspectors.length === 0;
   const hasNoPositions = factories.length > 0
     && !inspectors.some(inspector => inspector.lat != null && inspector.lng != null);
-  const formattedObservedAt = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
+  const dateFormatter = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
     dateStyle: "medium",
     timeStyle: "medium",
     timeZone: "Asia/Riyadh",
-  }).format(new Date(observedAt));
+  });
+  const formattedSnapshotAt = dateFormatter.format(new Date(snapshotAt));
+  const formattedPositionObservedAt = positionObservedAt
+    ? dateFormatter.format(new Date(positionObservedAt))
+    : null;
 
   return (
     <div className={`${styles.page} ${wallboard ? styles.wallboard : ""}`} data-testid="operations-live">
@@ -81,12 +101,20 @@ export default function LiveOps({
         <div>
           <p className={styles.disclosure}>{s.projected}</p>
           <p className={styles.freshness}>
-            <span>{s.lastObserved}: <time data-testid="live-observed-at" dateTime={observedAt}>{formattedObservedAt}</time></span>
+            <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{formattedSnapshotAt}</time></span>
+            <span>{formattedPositionObservedAt
+              ? <>{s.lastObserved}: <time dateTime={positionObservedAt!}>{formattedPositionObservedAt}</time></>
+              : s.noRecordedPositions}</span>
             <span>{s.freshnessPolicy}</span>
           </p>
           {excludedRecordCount > 0 ? (
             <p className={styles.dataIntegrity} role="status">
               {s.dataIntegrity} <strong>{excludedRecordCount}</strong>
+            </p>
+          ) : null}
+          {outOfScopeRecordCount > 0 ? (
+            <p className={styles.dataIntegrity} role="status">
+              {s.outOfScopeGeography} <strong>{outOfScopeRecordCount}</strong>
             </p>
           ) : null}
         </div>
@@ -159,8 +187,19 @@ export default function LiveOps({
                     : selectedInspector.sinceLabel}</dd>
                 </div>
                 <div><dt>{s.visitReference}</dt><dd>{selectedInspector.visitId}</dd></div>
+                <div>
+                  <dt>{s.positionSourceField}</dt>
+                  <dd>{selectedInspector.positionSourceLabel ?? selectedInspector.positionObservedLabel}</dd>
+                </div>
+                <div>
+                  <dt>{s.positionObservedField}</dt>
+                  <dd>{selectedInspector.positionObservedAt
+                    ? <time dateTime={selectedInspector.positionObservedAt}>{selectedInspector.positionObservedLabel}</time>
+                    : selectedInspector.positionObservedLabel}</dd>
+                </div>
               </dl>
               <p className={styles.selectionDisclosure}>{s.projected}</p>
+              <a className="sq-btn sq-btn--secondary" href={`/visits/${selectedInspector.visitId}`}>{s.openVisit}</a>
             </section>
           ) : null}
           {inspectors.length ? (

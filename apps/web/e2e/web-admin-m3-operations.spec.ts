@@ -130,6 +130,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(livePageSource).not.toContain("originLat");
     expect(livePageSource).toContain("latestPositionByVisit.get(v.id)");
     expect(livePageSource).toContain("integration_mode.eq.production");
+    expect(livePageSource).toContain('.lte("occurred_at", observedAt.toISOString())');
     expect(liveShellSource).toContain('<bdi dir="auto">{inspector.inspector}</bdi>');
     expect(liveShellSource).toContain('data-live-since dateTime={inspector.sinceAt}');
   });
@@ -152,6 +153,30 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract
     expect(liveCssSource).toContain("@media (prefers-reduced-motion: reduce)");
     expect(liveCssSource).toContain("inset-inline");
     expect(liveCssSource).toContain('[dir="rtl"]');
+  });
+
+  test("scopes reads to the caller's authorized geography and discloses out-of-scope exclusions separately", () => {
+    expect(livePageSource).toContain('.from("profiles")');
+    expect(livePageSource).toContain('.select("region")');
+    expect(livePageSource).toContain("resolveRegionId(profileRow?.region ?? null)");
+    expect(livePageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null)");
+    expect(livePageSource).toContain("outOfScopeRecordCount");
+    expect(livePageSource.indexOf('.from("profiles")')).toBeGreaterThan(livePageSource.indexOf("if (!mayViewOperations)"));
+    expect(liveShellSource).toContain("outOfScopeRecordCount");
+    expect(liveShellSource).toContain("s.outOfScopeGeography");
+  });
+
+  test("carries per-position source and observation time and a read-only permitted visit handoff", () => {
+    expect(livePageSource).toContain("kind");
+    expect(livePageSource).toContain("positionSourceLabel");
+    expect(livePageSource).toContain("positionObservedAt: position?.occurred_at ?? null");
+    expect(liveShellSource).toContain("s.positionSourceField");
+    expect(liveShellSource).toContain("s.positionObservedField");
+    expect(liveShellSource).toContain("selectedInspector.positionObservedAt");
+    expect(liveShellSource).toContain(
+      'href={`/visits/${selectedInspector.visitId}`}',
+    );
+    expect(liveShellSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
   });
 });
 
@@ -239,13 +264,13 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByText("Recorded positions — not live GPS", { exact: true })).toHaveCount(2);
     await expect(page.getByText("Staleness cadence not yet configured — showing last-observed time only.", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Active inspectors", exact: true })).toBeVisible();
-    await expect(page.getByText("Last observed:", { exact: false })).toBeVisible();
+    await expect(page.getByText("Snapshot generated:", { exact: false })).toBeVisible();
     await expect(page.getByText(/Verification fixtures and future-dated visit windows are excluded/)).toBeVisible();
     await expect(page.getByText(/G10 Golden Journey|M04 Governed Integration|KPI Verify|F360 Runtime/)).toHaveCount(0);
     const firstInspector = page.locator('aside[aria-labelledby="live-inspector-list-title"] button[aria-pressed]').first();
     if (await firstInspector.count()) {
       await expect(firstInspector.locator('bdi[dir="auto"]')).toBeVisible();
-      const observedAt = Date.parse(await page.getByTestId("live-observed-at").getAttribute("datetime") ?? "");
+      const observedAt = Date.parse(await page.getByTestId("live-snapshot-at").getAttribute("datetime") ?? "");
       const visibleSinceValues = await page.locator("time[data-live-since]").evaluateAll(nodes =>
         nodes.map(node => Date.parse(node.getAttribute("datetime") ?? "")),
       );
@@ -257,6 +282,11 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
       await expect(details).toBeVisible();
       await expect(details.getByText("Inspector details", { exact: true })).toBeVisible();
       await expect(details.getByText("Visit reference", { exact: true })).toBeVisible();
+      await expect(details.getByText("Position source", { exact: true })).toBeVisible();
+      await expect(details.getByText("Position observed", { exact: true })).toBeVisible();
+      const openVisitLink = details.getByRole("link", { name: "Open visit record", exact: true });
+      await expect(openVisitLink).toBeVisible();
+      await expect(openVisitLink).toHaveAttribute("href", /^\/visits\/.+/);
       await page.getByRole("button", { name: "Close inspector details", exact: true }).click();
       await expect(details).toHaveCount(0);
     }
@@ -288,7 +318,7 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 runtime", () => {
     await expect(page.getByText("مفتشون في الطريق", { exact: true })).toBeVisible();
     await expect(page.getByText("مصانع قيد المتابعة", { exact: true })).toBeVisible();
     await expect(page.getByLabel("إجماليات العمليات المباشرة")).toBeVisible();
-    await expect(page.getByText("آخر رصد:", { exact: false })).toBeVisible();
+    await expect(page.getByText("وقت إنشاء اللقطة:", { exact: false })).toBeVisible();
   });
 
   test("Arabic Operations Center localizes the primary views and governed KPI frame", async ({ page }) => {
