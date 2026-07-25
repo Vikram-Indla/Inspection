@@ -1,0 +1,538 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-PLANNING-LOOKUPS-RUNTIME-TRUTH-028
+title: Independent Admin Planning Lookups runtime truth and acceptance-credit review
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY
+status: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+    accepted_designs: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    A real seven-kind Planning lookup editor, capability gate, RLS policies,
+    active-only Planning consumers, immutable audit-event trigger and
+    activate/deactivate behavior exist. Completion is unsafe because
+    cancellation vocabulary has two mutable authorities, Field and Execution
+    do not consume this route's table, high-impact edits publish immediately
+    without versions or maker-checker, stale writes silently overwrite, and
+    deactivation has no dependency guard. The live cancellation catalogue also
+    has only six active English-only values against the canonical twelve-value
+    initial vocabulary. No exact accepted design or screen-catalogue identity
+    exists, Arabic business UI is missing, and the sole focused test mutates
+    shared data and intentionally retains residue.
+
+task_contract:
+  task_id: CODEX-ADMIN-PLANNING-LOOKUPS-RUNTIME-TRUTH-028
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  package_id: M9
+  channel: ADMIN
+  business_capability: Planning reference-data administration
+  route: /admin/planning/lookups
+  implementation_contract: PLN-CON-012
+  database_capability: planning.configure_lookups
+  do_not_touch_observed:
+    - product application code
+    - product tests
+    - design files or design mappings
+    - local or shared product data
+    - Supabase schema, policies, providers or rows
+    - branches, leases, stashes, main or setup/Inspection
+    - peer-owned orchestration packets
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_and_after: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_write: 9d05a48b87003ef0b9160160b27fe5174e78fb88
+  runtime_source_worktree: /Users/vikramindla/Developer/Inspection-codex-f0-shell
+  runtime_source_head: c8bdf6d185d0326454f8d95247cfbaab10f47ae4
+  runtime_scope_diff_against_product_head: NONE_FOR_ROUTE_MIGRATION_CONSUMERS_AND_FOCUSED_SPEC
+  runtime_worktree_authority: SAME_CANONICAL_GIT_COMMON_DIRECTORY
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_business_data_mutation: false
+  browser_business_action_submitted: false
+  focused_mutating_test_executed: false
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+    - product-contract/screens/screen_route_catalogue.csv
+  route_and_design:
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+  runtime:
+    - apps/web/src/app/(app)/admin/planning/lookups/page.tsx
+    - apps/web/src/app/(app)/admin/planning/lookups/LookupsAdmin.tsx
+    - apps/web/src/app/(app)/admin/planning/lookups/actions.ts
+    - apps/web/src/app/(app)/admin/planning/lookups/constants.ts
+  database:
+    - supabase/migrations/20260721030000_planning_capabilities.sql
+    - supabase/migrations/20260721030100_planning_canonical_structures.sql
+    - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0005_audit_absolute_immutability.sql
+  downstream:
+    - apps/web/src/app/(app)/planning/page.tsx
+    - apps/web/src/app/(app)/planning/bulk/actions.ts
+    - apps/web/src/app/(app)/planning/immediate/page.tsx
+    - apps/web/src/app/(app)/planning/immediate/actions.ts
+    - apps/web/src/lib/planning/lifecycle.ts
+    - apps/web/src/app/(app)/visits/actions.ts
+    - apps/web/src/app/(app)/visits/[id]/actions.ts
+    - apps/web/src/app/(app)/field/[visitId]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+    - apps/web/src/app/(app)/operations/page.tsx
+    - apps/web/src/app/admin/execution/page.tsx
+    - supabase/migrations/0020_fix_field_journey.sql
+    - supabase/migrations/20260721140000_execution_journey_cancellation.sql
+  tests:
+    - apps/web/e2e/cd-044-admin-planning.spec.ts
+    - apps/web/e2e/cd-027-visit-detail.spec.ts
+  peer_evidence_not_authority:
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-LOOKUPS-DESIGN-AUTHORITY-REVIEW-046.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-LOOKUPS-RUNTIME-PERMISSION-MAPPING-022.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-LOOKUPS-RUNTIME-REMEDIATION-PREFLIGHT-023.yaml
+
+canonical_scope:
+  ownership_correction:
+    route_inventory_claim: CR-001..CR-478
+    disposition: OVERBROAD_NOT_CREDITABLE
+    reason: >-
+      This route manages seven Planning vocabulary families. It cannot own all
+      478 customer rows, penalty lookup requirements, or every M9 configuration
+      control merely because the route inventory carries a package-wide range.
+    canonical_change_written: false
+  direct_atomic_obligations:
+    - requirement_id: REQ-R0C-01411
+      obligation: Return Reason must be selected from an active lookup.
+      result: PARTIAL
+      reason: Planning visit lifecycle reads active return_reason rows, but the Admin route has no version, approval or dependency safety.
+    - requirement_id: REQ-R0C-01464
+      obligation: Provide Visit Type, Visit Mode, priority, return reason, cancellation reason, region, city and other values.
+      result: PARTIAL
+      reason: Seven Planning kinds exist, but region/city and other generic lookup families are not managed here.
+    - requirement_id: REQ-R0C-01486
+      obligation: Configurable twelve-value initial cancellation vocabulary with mandatory free text for Other.
+      result: FAIL
+      reason: >-
+        Live planning_lookups exposes six active cancellation values, all
+        without Arabic labels. Five canonical values are absent or semantically
+        collapsed, and the route is not the Field/Execution authority.
+  dependent_customer_rows:
+    direct_planning_master_data:
+      - [CR-006, WA-AC-0006, WA-EV-0006, "REQ-R0C-00020..REQ-R0C-00023"]
+      - [CR-017, WA-AC-0017, WA-EV-0017, "REQ-R0C-00052..REQ-R0C-00054"]
+      - [CR-027, WA-AC-0027, WA-EV-0027, "REQ-R0C-00078..REQ-R0C-00081"]
+      - [CR-039, WA-AC-0039, WA-EV-0039, "REQ-R0C-00119..REQ-R0C-00123"]
+      - [CR-045, WA-AC-0045, WA-EV-0045, "REQ-R0C-00139..REQ-R0C-00141"]
+      - [CR-047, WA-AC-0047, WA-EV-0047, "REQ-R0C-00146..REQ-R0C-00150"]
+    override_context:
+      - [CR-019, WA-AC-0019, WA-EV-0019, "REQ-R0C-00056..REQ-R0C-00057"]
+      - [CR-029, WA-AC-0029, WA-EV-0029, "REQ-R0C-00086..REQ-R0C-00088"]
+    governed_reason_consumers:
+      - [CR-033, WA-AC-0033, WA-EV-0033, "REQ-R0C-00099..REQ-R0C-00102"]
+      - [CR-060, WA-AC-0060, WA-EV-0060, "REQ-R0C-00185..REQ-R0C-00187"]
+      - [CR-062, WA-AC-0062, WA-EV-0062, "REQ-R0C-00190..REQ-R0C-00192"]
+      - [CR-063, WA-AC-0063, WA-EV-0063, "REQ-R0C-00193..REQ-R0C-00196"]
+      - [CR-080, WA-AC-0080, WA-EV-0080, "REQ-R0C-00232..REQ-R0C-00233"]
+      - [CR-081, WA-AC-0081, WA-EV-0081, "REQ-R0C-00234..REQ-R0C-00236"]
+      - [CR-086, WA-AC-0086, WA-EV-0086, "REQ-R0C-00244..REQ-R0C-00245"]
+    field_and_virtual_context_only:
+      - [CR-104, WA-AC-0104, WA-EV-0104, "REQ-R0C-00282..REQ-R0C-00284", PHASE2_IPAD_DEFERRED]
+      - [CR-170, WA-AC-0170, WA-EV-0170, "REQ-R0C-00443..REQ-R0C-00445", PHASE2_IPAD_DEFERRED]
+      - [CR-171, WA-AC-0171, WA-EV-0171, "REQ-R0C-00446..REQ-R0C-00448", PHASE2_IPAD_DEFERRED]
+      - [CR-342, WA-AC-0342, WA-EV-0342, REQ-R0C-00820, PHASE1_WEB]
+  explicitly_excluded_generic_lookup_rows:
+    - [REQ-R0C-01790, "Penalty Types maintained through Lookup Management"]
+    - [REQ-R0C-01999, "Cross-domain values retrieved from Lookup Management"]
+    - [REQ-R0C-02089, "Cross-domain values retrieved from Lookup Management"]
+    - [REQ-R0C-02197, "Penalty Type values retrieved from Lookup Management"]
+  exclusion_reason: >-
+    The route has no penalty, region, city, dashboard, approval, enforcement or
+    analytics families and no evidence that those domains consume planning_lookups.
+  web_admin_quality:
+    - [WA-M9-AC-001, P0, FAIL, "Real Planning consumers exist, but the route falsely claims every consumer and does not reach Field/Execution."]
+    - [WA-M9-AC-002, P0, FAIL, "Stale conflict, dependency-blocked deactivation, maker-checker and behavioral RLS denial are absent."]
+    - [WA-M9-AC-003, P1, BLOCKED, "No exact accepted route design or fixed-viewport comparison authority exists."]
+    - [WA-M9-AC-004, P1, FAIL, "Arabic business UI and data parity fail; tablet/narrow and full accessibility certification are absent."]
+    - [WA-M9-AC-005, P0, FAIL, "The sole focused test is mutation-heavy, leaves residue and does not cover the required protected control paths."]
+    - [WA-M9-AC-006, P1, FAIL, "Exact screen/design identity, live audit reconciliation and browser evidence bundle are incomplete."]
+
+design_and_route_truth:
+  real_route: /admin/planning/lookups
+  shell_entry:
+    order: 13
+    label: Lookup Management
+    manifest_target: /admin/planning/lookups
+    children: [/admin/localization, /admin/planning/status, /admin/planning/expiry]
+  exact_screen_catalogue_row: ABSENT
+  registered_lookup_design:
+    primary_id: WA-DES-010
+    alias_id: WA-DES-009
+    filename: SAQEEL Admin Lookups.dc.html
+    sha256: 11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d
+    alias_byte_identity: CONFIRMED_BY_REGISTERED_HASH
+    registered_route: /admin/localization
+    registered_component: apps/web/src/app/(app)/admin/localization/page.tsx
+    disposition_for_planning_lookups: NEAREST_GENERIC_PATTERN_ONLY_NOT_ROUTE_AUTHORITY
+  result: BLOCKED_PENDING_GOVERNED_DESIGN_AND_SCREEN_MAPPING
+
+implementation_truth:
+  route_exists: true
+  lookup_kinds:
+    - visit_type
+    - visit_mode
+    - priority
+    - return_reason
+    - cancellation_reason
+    - manual_entry_reason
+    - assignment_override_reason
+  implemented:
+    - all-row read including inactive rows and raw metadata
+    - add with kind/key/English-label/sort/JSON validation
+    - in-place edit of English/Arabic labels, sort order and metadata
+    - activate and deactivate
+    - unique kind/key database constraint
+    - no DELETE policy
+    - updated_at touch trigger
+    - generic before/after audit trigger
+  absent:
+    - immutable versions or revisions
+    - draft, review, approve or publish workflow
+    - effective_from and effective_to
+    - maker-checker separation
+    - compare-and-set or stale-write recovery
+    - dependency or in-use impact check before deactivation
+    - route-level history, rollback or audit-row reconciliation
+    - route-specific loading boundary
+    - per-kind empty-state copy
+    - dedicated degraded-state behavior
+  degraded_truth_gap: >-
+    If the catalogue query fails, the page supplies an empty row array while a
+    separately successful capability check can still expose the add form. A
+    configurator can therefore see an apparently empty catalogue and attempt a
+    write while the authoritative read is degraded.
+
+permission_rls_audit_truth:
+  anonymous: REDIRECT_TO_LOGIN
+  authenticated_select_policy: auth.uid() is not null
+  write_gate:
+    application: has_planning_capability(planning.configure_lookups)
+    rls_insert: planning_lookups_write
+    rls_update: planning_lookups_update
+    delete_policy: ABSENT
+  default_configurators:
+    - compliance_admin
+    - form_admin
+    - workflow_admin
+    - risk_owner
+    - gis_admin
+    - security_admin
+  owner_policy_status: UNRESOLVED_ALL_ADMIN_CLASS_DEFAULT
+  reviewer_browser_result: >-
+    Reviewer deep-link access succeeded and exposed active and inactive rows
+    without add, edit or deactivate controls.
+  direct_live_rls_write_denial: NOT_EXECUTED_READ_ONLY
+  audit:
+    trigger: trg_audit_planning_lookups
+    function: audit_row_change
+    captured: actor, object_type, object_id, action, before_state, after_state
+    immutable_storage: audit_events update/delete rejected
+    route_history_ui: ABSENT
+    current_live_write_to_audit_reconciliation: NOT_EXECUTED_READ_ONLY
+  supabase_connector:
+    intended_project: iiozvqntawxfwbgffzqu
+    project_available_to_connector: false
+    unrelated_project_queried: false
+    direct_policy_or_advisor_runtime_check: BLOCKED_BY_CONNECTOR_PROJECT_ACCESS
+
+downstream_truth:
+  consumers_of_planning_lookups:
+    - consumer: Planning home
+      kinds: [visit_type, priority]
+      active_only: true
+    - consumer: Bulk Planning
+      kinds: [visit_type, visit_mode, priority]
+      active_only: true
+    - consumer: Immediate Planning
+      kinds: [visit_type, manual_entry_reason]
+      active_only: true
+      server_revalidation: true
+    - consumer: Visit return and cancellation lifecycle
+      kinds: [return_reason, cancellation_reason]
+      active_only: true
+  no_consumer_found:
+    - assignment_override_reason
+  separate_authority:
+    consumers:
+      - Field visit
+      - Field inspection
+      - Operations
+      - Execution cancellation RPCs
+    actual_source: engine_settings.field.cancellation_reasons
+    planning_source: planning_lookups.cancellation_reason
+    synchronization: NONE_AFTER_ONE_TIME_MIGRATION_COPY
+    business_effect: >-
+      Editing cancellation_reason on this page can succeed while Inspector,
+      Operations and Execution continue using unchanged engine_settings data.
+  success_copy_truth: FAILS_FOR_CANCELLATION_REASON_AND_ASSIGNMENT_OVERRIDE_REASON
+
+live_data_observation:
+  source: Real Admin Planning Lookups UI using the configured non-production application data
+  as_observed_on: "2026-07-25"
+  total_rows: 30
+  inactive_rows: 1
+  missing_arabic_labels: 22
+  by_kind:
+    visit_type: {rows: 3, inactive: 0, missing_arabic: 0}
+    visit_mode: {rows: 3, inactive: 0, missing_arabic: 2}
+    priority: {rows: 4, inactive: 0, missing_arabic: 4}
+    return_reason: {rows: 6, inactive: 1, missing_arabic: 6}
+    cancellation_reason: {rows: 6, inactive: 0, missing_arabic: 6}
+    manual_entry_reason: {rows: 4, inactive: 0, missing_arabic: 0}
+    assignment_override_reason: {rows: 4, inactive: 0, missing_arabic: 4}
+  retained_test_residue:
+    kind: return_reason
+    key: m9_test_reason
+    status: inactive
+    source_test_comment: Intentionally retained because the table has no delete policy.
+    changed_by_this_task: false
+  cancellation_keys:
+    - access_denied
+    - factory_closed
+    - other
+    - rep_unavailable
+    - safety_risk
+    - wrong_location
+  canonical_twelve_value_match: FAIL
+
+browser_evidence:
+  runtime_origin: Local canonical-repository worktree wired to configured shared non-production Supabase
+  authorized_admin:
+    route: http://127.0.0.1:3160/admin/planning/lookups
+    observed:
+      - seven kind tabs
+      - add form
+      - edit and activate/deactivate controls
+      - live active and inactive rows
+      - all current Admin roles
+      - light and dark theme rendering
+      - keyboard Tab produced a visible two-pixel focus outline
+  reviewer:
+    route: http://localhost:3160/admin/planning/lookups
+    observed:
+      - direct read-only catalogue access
+      - no add, edit or activate/deactivate controls
+      - active and inactive values visible
+      - raw status and metadata flags visible
+  anonymous:
+    requested_route: http://saqeel.localhost:3161/admin/planning/lookups
+    result: redirected to /login
+  arabic_rtl:
+    html_lang: ar
+    html_dir: rtl
+    shared_shell: ARABIC
+    route_business_ui: ENGLISH_FALLBACK
+    catalogue_arabic_completeness: FAIL_22_OF_30_LABELS_MISSING
+    document_horizontal_overflow_at_available_desktop_view: NONE_OBSERVED
+    native_arabic_review: NOT_PERFORMED
+  responsive:
+    desktop: OBSERVED
+    tablet: NOT_PROVEN_BROWSER_VIEWPORT_CONTROL_DID_NOT_CHANGE_INNER_WIDTH
+    narrow: NOT_PROVEN_BROWSER_VIEWPORT_CONTROL_DID_NOT_CHANGE_INNER_WIDTH
+  accessibility:
+    semantic_table_headers: PRESENT
+    visible_keyboard_focus: BASIC_PASS
+    full_keyboard_journey: NOT_PROVEN
+    focus_recovery_after_save_or_toggle: NOT_PROVEN_READ_ONLY
+    screen_reader: NOT_PROVEN
+    zoom_200_400: NOT_PROVEN
+  error_and_empty:
+    real_provider_error: NOT_INJECTED
+    empty_state: NO_DEDICATED_PER_KIND_STATE_IN_SOURCE
+    loading_state: NO_ROUTE_LOADING_FILE
+  console:
+    browser_console_errors_observed: 0
+    development_only_messages: React DevTools and Fast Refresh
+    transient_development_server_errors: >-
+      Two route requests returned a Next development Fast Refresh TypeError
+      during reload and later recovered to 200. This is recorded as runtime
+      evidence, not classified as a production defect or ignored as a pass.
+  prohibited_actions_confirmed:
+    - no add
+    - no edit
+    - no activate
+    - no deactivate
+    - no role or permission change
+    - no audit-row mutation
+
+test_and_validator_evidence:
+  canonical_validator:
+    command: node scripts/validate_web_admin_phase1.mjs
+    result: PASS
+    requirement_rows: 478
+    limitation: Structural contract validation does not certify this route's runtime behavior.
+  focused_discovery:
+    command: npx playwright test e2e/cd-044-admin-planning.spec.ts --list
+    result: PASS
+    listed_tests:
+      setup: 5
+      focused_file: 10
+      planning_lookup_tests: 1
+  focused_execution:
+    result: NOT_RUN_READ_ONLY
+    reason: >-
+      The lookup test REST-stages or reactivates m9_test_reason, deactivates it
+      through the UI and explicitly retains the row. Other tests in the same
+      file grant/revoke roles and create expiry versions. Executing it would
+      violate this task's no-data-mutation boundary.
+  readiness: NOT_READY_FOR_CERTIFICATION
+  missing_coverage:
+    - configurator and non-configurator database write enforcement
+    - exact lookup audit row and immutable custody
+    - two-editor stale conflict
+    - maker-checker and version/effective-date lifecycle
+    - dependency-blocked deactivation
+    - canonical twelve-value cancellation vocabulary
+    - Planning/Field/Execution/Operations consumer equality
+    - Arabic completeness and qualified native-Arabic review
+    - desktop, tablet and narrow responsive matrix
+    - full keyboard, focus recovery, screen-reader and zoom
+    - loading, empty, error and degraded paths
+    - light/dark visual comparison against an exact accepted design
+
+p0_findings:
+  - id: PLN-LK-P0-001
+    finding: Cancellation vocabulary has two unsynchronized mutable authorities.
+    impact: An Admin receives success while Field, Operations and Execution behavior remains unchanged.
+    blocks: [WA-M9-AC-001, WA-M9-AC-005, WA-AC-0170, WA-AC-0342, REQ-R0C-01486]
+  - id: PLN-LK-P0-002
+    finding: Lookup edits and activation publish immediately without maker-checker, versions or effective dates.
+    impact: High-impact operational vocabulary changes have no governed approval, scheduled activation or rollback lineage.
+    blocks: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-LK-P0-003
+    finding: Concurrent updates filter only by row ID and silently overwrite.
+    impact: A stale editor can erase another administrator's labels, order or metadata without warning.
+    blocks: [WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-LK-P0-004
+    finding: Deactivation performs no dependency, in-use or last-required-value check.
+    impact: Active drafts and future actions can lose a required selectable value without impact analysis.
+    blocks: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-LK-P0-005
+    finding: The live six-value cancellation set fails the canonical twelve-value initial vocabulary.
+    impact: The configurable cancellation obligation and dependent workflows cannot be credited.
+    blocks: [REQ-R0C-01486, WA-M9-AC-001, WA-M9-AC-005]
+
+p1_findings:
+  - id: PLN-LK-P1-001
+    finding: No exact accepted design or screen-catalogue identity exists for /admin/planning/lookups.
+  - id: PLN-LK-P1-002
+    finding: The route's CR-001..CR-478 ownership and package acceptance assignment are overbroad.
+  - id: PLN-LK-P1-003
+    finding: Every Admin-class role is a default configurator without a recorded narrow owner decision.
+  - id: PLN-LK-P1-004
+    finding: Every authenticated user can deep-link to inactive rows and admin metadata.
+  - id: PLN-LK-P1-005
+    finding: assignment_override_reason has no application consumer.
+  - id: PLN-LK-P1-006
+    finding: Success messages overstate downstream propagation.
+  - id: PLN-LK-P1-007
+    finding: Arabic route UI is English fallback and 22 of 30 live labels lack Arabic.
+  - id: PLN-LK-P1-008
+    finding: Query failure can expose an empty editor while the catalogue source is degraded.
+  - id: PLN-LK-P1-009
+    finding: Loading, empty, degraded and recoverable error states are incomplete.
+  - id: PLN-LK-P1-010
+    finding: Audit exists only as backend custody; route history, correlation and rollback evidence are absent.
+  - id: PLN-LK-P1-011
+    finding: Current focused tests mutate shared data, leave residue and omit required negative paths.
+  - id: PLN-LK-P1-012
+    finding: Tablet, narrow, full accessibility and qualified native-Arabic certification are unproven.
+
+exact_prerequisites:
+  policy_decisions:
+    - Select one authoritative cancellation vocabulary and backward-compatibility plan.
+    - Select the lookup owner persona/capability model.
+    - Approve version, effective-date and maker-checker behavior or a bounded documented exception by lookup kind.
+    - Define in-use and historical-reference behavior for deactivation.
+    - Define mandatory Arabic completeness and qualified-review ownership.
+  governed_mapping:
+    - Register one exact screen-catalogue row for /admin/planning/lookups.
+    - Accept and fingerprint a route-specific design or formally govern reuse of WA-DES-010 without changing /admin/localization ownership.
+    - Replace the blanket CR-001..CR-478 claim with the exact dependent rows in this packet.
+  database_and_service:
+    - Converge Planning, Field, Execution and Operations on one active/effective projection.
+    - Enforce maker-checker or the approved exception in the database.
+    - Add immutable versions, effective dates and compare-and-set conflict rejection.
+    - Add dependency impact and historical-reference protection before retirement.
+    - Preserve append-only audit custody and expose correlated history without deleting required audit evidence.
+  data:
+    - Reconcile REQ-R0C-01486 with an approved key and metadata migration.
+    - Complete Arabic labels under the approved translation workflow.
+    - Use a separately leased isolated fixture with deterministic cleanup for future behavioral tests.
+  qa:
+    - Replace or isolate the residue-producing focused test.
+    - Add database RLS, concurrency, lifecycle, audit and consumer-equality probes.
+    - Certify EN/LTR and AR/RTL, light/dark, desktop/tablet/narrow, keyboard/focus, screen-reader and negative states.
+    - Require independent qualified native-Arabic review; automation may not self-certify it.
+
+rollback_and_stop_conditions:
+  rollback: No runtime rollback is required because this packet changed no product or data.
+  packet_rollback: Remove only this unique YAML packet before integration if Codex lead returns it.
+  stop_conditions:
+    - two mutable cancellation authorities remain
+    - exact original and historical references cannot be preserved
+    - maker-checker or approved direct-publication policy is unresolved
+    - stale writes can overwrite
+    - dependency behavior is undefined
+    - Arabic scope or owner is invented
+    - route design identity remains ungoverned
+    - focused proof would modify shared data without a lease
+
+safe_queued_successor:
+  packet_id: CODEX-ADMIN-PLANNING-STATUS-RUNTIME-TRUTH-029
+  mode: READ_ONLY
+  scope: >-
+    Independently audit /admin/planning/status route, workflow/config-version
+    sources, permissions, downstream Planning consumption, tests and real
+    browser truth while leaving design identity/revision as a separate
+    dependency.
+  non_overlap: >-
+    Does not write Planning Lookups, database, design, product, tests or shared
+    data and does not consume any remediation lease proposed for this route.
+
+validation:
+  yaml_parse: PASS
+  required_packet_id_match: PASS
+  exact_one_owned_file_diff: PASS
+  product_worktree_clean: PASS
+  prohibited_paths_changed: NONE
+  canonical_validator: PASS_478_OF_478
+  verdict: PASS_PACKET_IS_INTERNALLY_VALID_RETURN_BLOCKED_ZERO_CREDIT
