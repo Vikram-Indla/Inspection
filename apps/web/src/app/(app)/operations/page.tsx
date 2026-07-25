@@ -72,7 +72,7 @@ type OverrideRow = {
   id: string; visit_id: string; status: string; reason_label: string; explanation: string;
   safety_security_exception: boolean; observed_lat: number; observed_lng: number;
   accuracy_m: number; distance_m: number; device_occurred_at: string; requested_at: string; expires_at: string;
-  visits: { factories: { name: string } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
+  visits: { factories: { name: string; region: string | null } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
 };
 
 const NOTIF_TONE: Record<string, string> = {
@@ -269,7 +269,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .limit(8),
     // M04-043 / RBAC-008 — only Operations sees pending requests through RLS.
     sb.from("geo_override_requests")
-      .select("id, visit_id, status, reason_label, explanation, safety_security_exception, observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at, requested_at, expires_at, visits(factories(name), assignments(profiles(full_name)))")
+      .select("id, visit_id, status, reason_label, explanation, safety_security_exception, observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at, requested_at, expires_at, visits(factories(name, region), assignments(profiles(full_name)))")
       .eq("status", "pending")
       .gt("expires_at", nowIso)
       .order("expires_at", { ascending: true }),
@@ -315,7 +315,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const engines = (engineRes.data ?? []) as unknown as EngineRow[];
   const highRisk = ((riskRes.data ?? []) as unknown as FactoryRow[])
     .filter(factory => !isVerificationFactory(factory) && inAuthorizedGeography(factory.region));
-  const overrides = (overrideRes.data ?? []) as unknown as OverrideRow[];
+  const integrityFilteredOverrides = (overrideRes.data ?? []) as unknown as OverrideRow[];
+  const overrides = integrityFilteredOverrides
+    .filter(row => inAuthorizedGeography(row.visits?.factories?.region ?? null));
+  const outOfScopeOverrideCount = integrityFilteredOverrides.length - overrides.length;
   const evidenceByRequest = new Map<string, number>();
   const evidenceUrls = new Map<string, string>();
   const overrideIds = new Set(overrides.map(row => row.id));
@@ -353,12 +356,13 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   type CancellationReqRow = {
     id: string; visit_id: string; phase: string; reason_key: string; comment: string | null;
     evidence_id: string | null; requested_at: string;
-    visits: { factories: { name: string } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
+    visits: { factories: { name: string; region: string | null } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
   };
   let cancellationQueueRows: CancellationQueueRow[] = [];
+  let outOfScopeCancellationCount = 0;
   {
     const { data: cancelRows, error: cancelError } = await sb.from("cancellation_requests")
-      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, visits(factories(name), assignments(profiles(full_name)))")
+      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, visits(factories(name, region), assignments(profiles(full_name)))")
       .eq("status", "pending")
       .order("requested_at", { ascending: true });
     if (cancelError) {
@@ -368,7 +372,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         loadErrors.push("cancellation requests");
       }
     } else {
-      const rows = (cancelRows ?? []) as unknown as CancellationReqRow[];
+      const integrityFilteredRows = (cancelRows ?? []) as unknown as CancellationReqRow[];
+      const rows = integrityFilteredRows
+        .filter(row => inAuthorizedGeography(row.visits?.factories?.region ?? null));
+      outOfScopeCancellationCount = integrityFilteredRows.length - rows.length;
       const reasonLabels = new Map<string, string>();
       for (const r of fieldCfgReasons) reasonLabels.set(r.key, r.label);
       const evidenceIds = rows.map(r => r.evidence_id).filter((v): v is string => !!v);
@@ -429,6 +436,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     }
   }
 
+  const outOfScopeRecordCount = outOfScopeVisitCount + outOfScopeOverrideCount + outOfScopeCancellationCount;
   const gisConf = (engines.find(e => e.engine === "gis")?.settings ?? {}) as { geofence_default_radius_m?: number };
   const slaConf = (engines.find(e => e.engine === "sla")?.settings ?? {}) as SlaConf;
 
@@ -788,7 +796,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <a className="sq-link" href="/operations">{t("ops.err.retry", "Retry")}</a>
         </div></div>
       )}
-      {outOfScopeVisitCount > 0 && (
+      {outOfScopeRecordCount > 0 && (
         <div className="sq-banner sq-banner--warning" role="status"><div>
           {t(
             "ops.outOfScopeGeography",
@@ -796,7 +804,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
               "Records outside your authorized region are excluded from this view. Excluded records:",
               "تُستبعد السجلات خارج نطاقك الجغرافي المخوَّل من هذا العرض. السجلات المستبعدة:",
             ),
-          )} <strong>{outOfScopeVisitCount}</strong>
+          )} <strong>{outOfScopeRecordCount}</strong>
         </div></div>
       )}
 

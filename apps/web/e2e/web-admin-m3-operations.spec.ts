@@ -99,17 +99,50 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(cssSource).toContain(".page :global(a.sq-link:focus-visible)");
   });
 
-  test("scopes every widget to the caller's authorized geography and offers a real partial-error retry", () => {
+  test("scopes every widget — visits, factories, override and cancellation queues — to the caller's authorized geography [positive: unassigned region keeps existing RLS grant]", () => {
     expect(pageSource).toContain('.from("profiles")');
     expect(pageSource).toContain('.select("region")');
     expect(pageSource).toContain("resolveRegionId(profileRow?.region ?? null)");
+    expect(pageSource).toContain("authorizedRegionId === null || resolveRegionId(r) === authorizedRegionId");
     expect(pageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null)");
     expect(pageSource).toContain("inAuthorizedGeography(factory.region)");
-    expect(pageSource).toContain("outOfScopeVisitCount");
     expect(pageSource.indexOf('.from("profiles")')).toBeGreaterThan(pageSource.indexOf("if (!mayViewOperations)"));
+    expect(pageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
+  });
+
+  test("[negative: out-of-region] visits, override and cancellation rows outside the authorized region are excluded and disclosed, never silently dropped", () => {
+    expect(pageSource).toContain("outOfScopeVisitCount");
+    expect(pageSource).toContain("inAuthorizedGeography(row.visits?.factories?.region ?? null)");
+    expect(pageSource).toContain("outOfScopeOverrideCount");
+    expect(pageSource).toContain("outOfScopeCancellationCount");
+    expect(pageSource).toContain("outOfScopeRecordCount = outOfScopeVisitCount + outOfScopeOverrideCount + outOfScopeCancellationCount");
+    expect(pageSource).toContain("outOfScopeRecordCount > 0");
+    expect(pageSource).toContain("visits(factories(name, region), assignments(profiles(full_name)))");
+    expect(pageSource).toContain("visits(factories(name, region)");
+  });
+
+  test("[positive: partial-source retry] a failed source degrades only its own banner and offers a real same-route retry, never a dead affordance", () => {
+    expect(pageSource).toContain("loadErrors.length > 0");
     expect(pageSource).toContain('href="/operations">{t("ops.err.retry"');
     expect(pageSource).not.toContain('{t("ops.err.retry", "retry")}.');
-    expect(pageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
+    // Every read is independently tolerant — one rejected promise cannot throw
+    // before the page renders the other, healthy widgets (Promise.all resolves
+    // per-call PostgrestSingleResponse objects with their own .error, it does
+    // not reject the whole batch on a single query failure).
+    expect(pageSource).toContain("visitsRes.error && \"visit monitoring\"");
+    expect(pageSource).toContain("cancelError.message.includes(\"cancellation_requests\")");
+  });
+
+  test("[FND-002 positive/negative] operational_state and planning_status remain two distinct state machines, never conflated into one gate", () => {
+    // Positive: the operational-state KPI board counts ALL visits by
+    // operational_state alone — filtering that count by planning_status was a
+    // proven regression (previously zeroed the cards) and must not return.
+    expect(pageSource).toContain("const counts = Object.fromEntries(states.map(s => [s, visits.filter(v => v.operational_state === s).length]))");
+    // Negative: an active on_the_way/arrived/executing journey remains
+    // monitored even if its planning window/status has lapsed — operational
+    // state is not gated behind workflow status.
+    expect(pageSource).toContain('(v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state))');
+    expect(pageSource).toContain("planning_status and operational_state are separate state");
   });
 });
 
