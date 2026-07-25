@@ -1,0 +1,442 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+status: READ_ONLY_SPONSOR_DECISION_PACKET_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Present the five unresolved M11 audit-redaction decisions as neutral business
+  choices with consequences, prohibited combinations, preservation floor and
+  post-decision lease/test gates. This packet records no answer and grants no
+  authority.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+  - KIMI-M11-IMPLEMENTATION-PATH-OBJECT-COLLISION-REFRESH-074
+  - KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+  - KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+
+hard_boundary:
+  - "Read-only sponsor-decision preparation plus this one uniquely owned packet."
+  - "No answer is selected, inferred or recorded on the sponsor's behalf."
+  - "No code, SQL, database, data, seed, test, evidence, design, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+  - "No provider, OTP threshold, retention, page size or break-glass procedure is invented."
+  - "No requirement credit."
+
+business_context:
+  current_material_finding: >-
+    The application stores OTP verification details server-side. Current
+    row-level access and audit-read paths can expose the complete
+    verification_record, including code_hash and provider metadata, to callers
+    who should need only business proof that verification occurred.
+  current_product_gap: >-
+    The Virtual room displays a parallel session timeline, not the immutable
+    audit-event stream. The Admin Audit screen can display raw M11 participant
+    before/after snapshots.
+  proposed_outcome: >-
+    Preserve the original immutable audit record while normal application
+    screens receive only the exact business facts needed for operation and
+    review.
+  current_state: BLOCKED_PENDING_FIVE_SPONSOR_DECISIONS
+
+decision_order:
+  sequence:
+    - SD-077-01
+    - SD-077-02
+    - SD-077-03
+    - SD-077-04
+    - SD-077-05
+  rule: >-
+    All five answers must be explicit. An answer to one decision does not imply
+    an answer to another.
+
+decisions:
+  - decision_id: SD-077-01
+    title: "Who may read the complete OTP verification record?"
+    business_question: >-
+      Should the complete technical verification record remain server-only,
+      with users receiving only safe participant fields and bounded OTP status?
+    choices:
+      - choice_id: SD-077-01-A
+        choice: "Server-only complete record"
+        consequence:
+          - "Normal application users cannot directly request verification_record."
+          - "Assigned inspectors retain safe participant details and bounded OTP status."
+          - "OTP request and verification continue on the server."
+          - "Enables the direct-query security cases to proceed."
+        implementation_scope_effect: BOUNDED
+        acceptance_effect: MAY_PROCEED_AFTER_LEASE_AND_TESTS
+      - choice_id: SD-077-01-B
+        choice: "Retain current direct row-authorized access"
+        consequence:
+          - "Row-authorized users may continue requesting the complete record."
+          - "The code_hash and provider-metadata exposure remains open."
+          - "M11 redaction/security acceptance cannot be claimed."
+        implementation_scope_effect: NO_CHANGE
+        acceptance_effect: BLOCK
+      - choice_id: SD-077-01-C
+        choice: "Hold for additional security review"
+        consequence:
+          - "No direct-access change begins."
+          - "Virtual audit wiring and Admin Audit M11 detail remain blocked."
+        implementation_scope_effect: HOLD
+        acceptance_effect: BLOCK_PENDING_REVIEW
+    answer: UNSELECTED
+
+  - decision_id: SD-077-02
+    title: "What may the session audit timeline show?"
+    business_question: >-
+      Should the session audit return only stable event identity and an
+      explicit list of safe business details, while preserving every original
+      audit row?
+    choices:
+      - choice_id: SD-077-02-A
+        choice: "Approve the field-exact safe event view"
+        consequence:
+          - "Shows event ID, time, action, object, actor and approved business detail."
+          - "OTP events show bounded counts, verification result/time and method=OTP."
+          - "Raw before/after state and technical provider data remain hidden."
+          - "Raw trigger rows and explicit OTP events remain traceable and are labelled separately."
+        implementation_scope_effect: BOUNDED_TO_SAFE_READ_SEAM
+        acceptance_effect: MAY_PROCEED_AFTER_LEASE_AND_TESTS
+      - choice_id: SD-077-02-B
+        choice: "Request changes to the safe event fields"
+        consequence:
+          - "No implementation begins until the exact added/removed fields are approved."
+          - "Any requested secret or provider field requires a separate security decision."
+        implementation_scope_effect: RETURN_FOR_CONTRACT_CORRECTION
+        acceptance_effect: BLOCK_PENDING_FIELD_DECISION
+      - choice_id: SD-077-02-C
+        choice: "Retain raw audit detail"
+        consequence:
+          - "The known secret exposure remains."
+          - "Virtual audit and Admin Audit acceptance remain blocked."
+        implementation_scope_effect: NO_CHANGE
+        acceptance_effect: BLOCK
+    answer: UNSELECTED
+
+  - decision_id: SD-077-03
+    title: "How should Admin Audit handle M11 participant events?"
+    business_question: >-
+      Should Admin Audit redact only M11 participant snapshots while leaving
+      other modules' audit display unchanged?
+    choices:
+      - choice_id: SD-077-03-A
+        choice: "M11-specific Admin Audit redaction"
+        consequence:
+          - "Admin users retain event identity, actor, action, time and approved M11 business facts."
+          - "Raw verification_record is not delivered to the page."
+          - "Non-M11 audit presentation stays outside this change."
+        implementation_scope_effect: BOUNDED_CROSS_MODULE_PATH
+        acceptance_effect: MAY_PROCEED_AFTER_LEASE_AND_TESTS
+      - choice_id: SD-077-03-B
+        choice: "Redesign redaction for every module"
+        consequence:
+          - "Expands scope beyond M11."
+          - "Requires a separate global audit contract, mapping, design review and regression plan."
+          - "Cannot be folded into the bounded M11 implementation lease."
+        implementation_scope_effect: SEPARATE_CHANGE_CONTROL_REQUIRED
+        acceptance_effect: BLOCK_M11_UNTIL_SEPARATED_OR_FULL_SCOPE_APPROVED
+      - choice_id: SD-077-03-C
+        choice: "Retain raw M11 snapshots in Admin Audit"
+        consequence:
+          - "Known verification-record exposure remains."
+          - "Admin Audit and M11 security acceptance remain blocked."
+        implementation_scope_effect: NO_CHANGE
+        acceptance_effect: BLOCK
+    answer: UNSELECTED
+
+  - decision_id: SD-077-04
+    title: "How should existing historical audit rows be handled?"
+    business_question: >-
+      Should existing immutable rows remain untouched, with the same redaction
+      applied whenever old or new rows are read?
+    choices:
+      - choice_id: SD-077-04-A
+        choice: "Preserve rows; redact every read"
+        consequence:
+          - "Historical event IDs, chronology and stored hashes remain unchanged."
+          - "Old and new rows use the same safe presentation."
+          - "No backfill or destructive rewrite is required."
+        implementation_scope_effect: PROJECTION_ONLY
+        acceptance_effect: MAY_PROCEED_AFTER_IMMUTABILITY_PROOF
+      - choice_id: SD-077-04-B
+        choice: "Rewrite or delete secret-bearing historical rows"
+        consequence:
+          - "Would break the platform's append-only audit rule."
+          - "Would destroy evidence integrity."
+        implementation_scope_effect: PROHIBITED
+        acceptance_effect: REJECT
+      - choice_id: SD-077-04-C
+        choice: "Temporarily hide historical M11 detail"
+        consequence:
+          - "Can prevent exposure while a safe projection is unresolved."
+          - "Does not satisfy the requirement that complete session history remains available."
+          - "Cannot be represented as final acceptance."
+        implementation_scope_effect: TEMPORARY_FAIL_CLOSED_OPTION_REQUIRES_SEPARATE_AUTHORITY
+        acceptance_effect: BLOCK_FINAL_ACCEPTANCE
+    answer: UNSELECTED
+
+  - decision_id: SD-077-05
+    title: "Where and how should users browse immutable session history?"
+    business_question: >-
+      Should Claude Design place the immutable timeline on the Virtual session
+      experience and define a bounded, accessible paging interaction before
+      application wiring?
+    choices:
+      - choice_id: SD-077-05-A
+        choice: "Approve design placement and bounded paging"
+        consequence:
+          - "Claude Design supplies the accepted placement, responsive states and paging behavior."
+          - "Implementation can wire the safe audit projection without inventing UI behavior."
+          - "Exact page size remains a design/performance decision, not an assumption in this packet."
+        implementation_scope_effect: DESIGN_THEN_BOUNDED_WIRING
+        acceptance_effect: MAY_PROCEED_AFTER_DESIGN_SIGNOFF_AND_LEASE
+      - choice_id: SD-077-05-B
+        choice: "Approve placement but defer paging"
+        consequence:
+          - "An unbounded audit response remains unacceptable."
+          - "Only design refinement may proceed; production wiring stays blocked."
+        implementation_scope_effect: DESIGN_ONLY
+        acceptance_effect: BLOCK_WIRING
+      - choice_id: SD-077-05-C
+        choice: "Defer the immutable timeline"
+        consequence:
+          - "The existing parallel session timeline may remain honestly labelled."
+          - "Reviewer-visible complete immutable audit acceptance remains open."
+        implementation_scope_effect: NO_WIRING
+        acceptance_effect: BLOCK_CR_348_AND_REDACTION_UI_CLOSURE
+    answer: UNSELECTED
+
+prohibited_combinations:
+  - combination_id: PC-077-01
+    choices:
+      - SD-077-01-B
+      - SD-077-02-A
+    reason: >-
+      A safe audit view cannot close secret exposure while the same callers
+      can directly request verification_record.
+    disposition: BLOCK_ACCEPTANCE
+  - combination_id: PC-077-02
+    choices:
+      - SD-077-01-B
+      - SD-077-03-A
+    reason: >-
+      Redacting Admin Audit alone does not close direct participant-table
+      exposure.
+    disposition: BLOCK_ACCEPTANCE
+  - combination_id: PC-077-03
+    choices:
+      - SD-077-02-C
+      - SD-077-05-A
+    reason: "An approved UI may not be wired to a known unsafe raw audit response."
+    disposition: BLOCK_WIRING
+  - combination_id: PC-077-04
+    choices:
+      - SD-077-03-C
+      - SD-077-04-A
+    reason: >-
+      Preserving raw storage is safe only when every normal read projection,
+      including Admin Audit, redacts the M11 secret fields.
+    disposition: BLOCK_ACCEPTANCE
+  - combination_id: PC-077-05
+    choices:
+      - SD-077-04-B
+      - ANY
+    reason: "Historical audit mutation violates the immutable audit contract regardless of other answers."
+    disposition: REJECT
+  - combination_id: PC-077-06
+    choices:
+      - SD-077-05-B
+      - IMPLEMENT_NOW
+    reason: "Placement without bounded paging does not authorize an unbounded production read."
+    disposition: BLOCK_WIRING
+  - combination_id: PC-077-07
+    choices:
+      - SD-077-03-B
+      - M11_BOUNDED_LEASE
+    reason: "A global audit redesign cannot be hidden inside the bounded M11 lease."
+    disposition: RETURN_FOR_SEPARATE_CHANGE_CONTROL
+
+preservation_floor:
+  control_floor:
+    value: "20/361/18/9/12"
+    handling: >-
+      Preserve the existing control-plane floor exactly as recorded by the
+      dispatch guards. This packet does not reinterpret or reduce its
+      components.
+  source_requirements:
+    mandatory: 478
+    credit_before_implementation_and_certification: 0
+  product_behaviors_to_preserve:
+    - "Safe participant fields remain available to currently authorized session personas."
+    - "OTP request, verify, lockout, resend and status remain server-enforced."
+    - "No code_hash is returned by vp_otp_status."
+    - "Virtual-session relationship authorization remains enforced."
+    - "virtual_sessions and virtual_participants audit rows remain append-only."
+    - "Session state transitions, readiness guard and common execution redirect remain unchanged."
+    - "Provider-unavailable behavior remains honest."
+    - "Non-M11 Admin Audit display remains unchanged under a bounded M11 decision."
+    - "Existing CD-041, CD-042, CD-043, execution and neutral-error regressions remain protected."
+  zero_regression_rule: >-
+    A redaction implementation is rejected if it weakens authentication,
+    authorization, audit immutability, business facts, workflow guards,
+    provider truth or existing non-M11 behavior.
+
+post_decision_gates:
+  - gate_id: GATE-077-01
+    name: DECISION_RECEIPT
+    pass_when:
+      - "All five decision IDs have one explicit sponsor-selected choice."
+      - "No prohibited combination is present."
+      - "Decision provenance and timestamp are recorded through approved governance."
+    fail_effect: NO_IMPLEMENTATION
+  - gate_id: GATE-077-02
+    name: DESIGN_AUTHORITY
+    pass_when:
+      - "The accepted Virtual timeline placement, responsive states and bounded paging behavior are stable."
+      - "No application code is used as a substitute for missing design authority."
+    fail_effect: NO_VIRTUAL_UI_WIRING
+  - gate_id: GATE-077-03
+    name: COLLISION_REFRESH
+    pass_when:
+      - "Current product and coordination refs are repinned."
+      - "Exact application, migration, object, test and evidence paths are collision-free."
+      - "A forward migration filename and object allocation are reserved."
+    fail_effect: NO_LEASE
+  - gate_id: GATE-077-04
+    name: IMPLEMENTATION_LEASE
+    pass_when:
+      - "One implementation owner receives exact paths and database objects."
+      - "Global audit storage/function/triggers, OTP mutation/status functions and unrelated Virtual actions remain excluded unless separately approved."
+      - "Lease has a release boundary and dirty-path disposition."
+    fail_effect: NO_PRODUCT_OR_SQL_WRITE
+  - gate_id: GATE-077-05
+    name: INDEPENDENT_QA_LEASE
+    pass_when:
+      - "A different owner receives exact test/evidence paths."
+      - "QA may not modify implementation-leased files."
+      - "The 35-case acceptance matrix is the required proof scope."
+    fail_effect: NO_CERTIFICATION
+  - gate_id: GATE-077-06
+    name: IMPLEMENTATION_VERIFICATION
+    pass_when:
+      - "Every P0 case passes."
+      - "Every P1 case passes or has an accepted requirement-safe disposition."
+      - "Recursive forbidden-key/value scans return zero findings."
+      - "Historical row counts, IDs and raw hashes remain unchanged."
+      - "Direct verification_record query is denied while safe participant fields and OTP RPCs work."
+      - "Protected regression suites pass with no exclusion."
+    fail_effect: RETURN_FOR_CORRECTION
+  - gate_id: GATE-077-07
+    name: EVIDENCE_AND_SPONSOR_REVIEW
+    pass_when:
+      - "All seven evidence rows from matrix 076 are complete and reviewed."
+      - "The real Virtual and Admin Audit implementations are shown in the browser."
+      - "No design image is represented as implemented software."
+      - "Sponsor accepts the bounded result."
+    fail_effect: NO_REQUIREMENT_CREDIT
+
+post_decision_lease_boundary:
+  minimum_implementation_paths:
+    - apps/web/src/app/(app)/virtual/[id]/page.tsx
+    - "supabase/migrations/<reserved_timestamp>_m11_audit_consumer_redaction.sql"
+    - apps/web/e2e/m11-audit-consumer-redaction.spec.ts
+    - supabase/tests/m11_audit_consumer_redaction_security.sql
+  conditional_paths:
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - apps/web/src/app/(app)/virtual/[id]/AuditTimeline.tsx
+    - apps/web/src/app/(app)/admin/audit/page.tsx
+    - apps/web/e2e/m11-audit-direct-table-secret-negative.spec.ts
+  minimum_database_object:
+    - public.vs_audit_trail(uuid)
+  conditional_database_objects:
+    - public.vp_rw
+    - "A new redacted Admin Audit read seam whose name must be allocated."
+  protected_exclusions:
+    - public.audit_events
+    - public.audit_row_change()
+    - public.trg_audit_virtual_participants
+    - public.trg_audit_virtual_sessions
+    - public.vp_request_otp(uuid)
+    - public.vp_verify_otp(uuid,text)
+    - public.vp_otp_status(uuid)
+    - public.vs_append_event(uuid,text,jsonb)
+    - public.vs_mark_session_verified(uuid,uuid)
+    - public.set_operational_state(uuid,operational_state)
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/actions.ts
+
+test_gate_summary:
+  matrix: KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+  total_cases: 35
+  P0_rule: ALL_PASS
+  regression_exclusions_allowed: 0
+  forbidden_key_findings_allowed: 0
+  historical_row_mutations_allowed: 0
+  provider_lifecycle_qualification: >-
+    The audit-redaction slice cannot close full CR-347 or CR-348 until real
+    leave, disconnect and reconnect producers and consumers are contracted and
+    proven.
+
+sponsor_response_template:
+  instruction: "Select exactly one choice for each decision; no default is assumed."
+  responses:
+    SD-077-01: UNSELECTED
+    SD-077-02: UNSELECTED
+    SD-077-03: UNSELECTED
+    SD-077-04: UNSELECTED
+    SD-077-05: UNSELECTED
+  validation_rule: "Reject missing, multiple, unknown or prohibited-combination responses."
+
+current_disposition:
+  decisions_selected: 0
+  decisions_unresolved: 5
+  implementation_authorized: false
+  QA_authorized: false
+  tests_executed: 0
+  evidence_captured: 0
+  blockers_closed: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define a deterministic receipt validator for sponsor answers, prohibited
+    combinations, preservation floor and post-decision readiness without
+    selecting answers or creating leases.
+  prohibited:
+    - "No answer selection, code, SQL, database, data, test, evidence, design, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  decisions: 5
+  choices: 15
+  prohibited_combinations: 7
+  post_decision_gates: 7
+  preservation_floor_present: true
+  sponsor_answers_selected: 0
+  leases_created: 0
+  tests_executed: 0
+  evidence_captured: 0
+  commits_created: 0
+  pushes_created: 0
+  blockers_closed: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

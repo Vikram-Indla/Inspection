@@ -1,0 +1,493 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-EXECUTION-DESIGN-AUTHORITY-REVIEW-054
+title: Independent Admin Execution design authority and runtime-governance review
+status: BLOCK_DUE_TO_AUTHORIZATION_BYPASS_FALSE_SUCCESS_AND_MISSING_ACCEPTED_DESIGN
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The route and configuration components exist, and several settings are
+    consumed by execution journeys, but the screen is outside the authenticated
+    application shell, table-write authorization can bypass the capability and
+    validation boundary, form_admin can receive a false success after a
+    row-level-security no-op, audit is not an atomic scoped event, concurrent
+    edits can overwrite one another, several settings have no proven runtime
+    consumer, no governed screen identity exists, and the corrective Claude
+    Design successor has not been created or accepted.
+
+task_contract:
+  task_id: M9-ADMIN-EXECUTION-DESIGN-AUTHORITY-REVIEW-054
+  gate: M10 Admin Execution design authority
+  routes: [/admin/execution]
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_ids: [M9, M10]
+  screen_ids:
+    governed: []
+    missing: ADMIN_EXECUTION_SCREEN_ID_REQUIRED
+    prohibited_substitution: SCR-ADM-060
+  source_requirement_ids:
+    exact_primary: []
+    contextual_by_section:
+      capacity_and_journey: [CR-007, CR-018, CR-028, CR-040, CR-048, CR-114, CR-115, CR-116, CR-117, CR-118, CR-119, CR-120, CR-121, CR-122, CR-123, CR-124, CR-125, CR-126, CR-127, CR-128, CR-129, CR-130, CR-131, CR-132, CR-133]
+      visit_modes: [CR-111, CR-112, CR-337, CR-338, CR-339, CR-340, CR-341, CR-342, CR-343, CR-344, CR-345, CR-346, CR-347, CR-348, CR-349, CR-350, CR-351, CR-352, CR-353, CR-354, CR-355, CR-356]
+      cancellation_and_override_reasons: [CR-033, CR-062, CR-063, CR-080, CR-086, CR-169, CR-170, CR-171, CR-172, CR-173, CR-174, CR-341, CR-342, CR-441]
+      gis: [CR-145, CR-150, CR-151, CR-152, CR-153, CR-154, CR-155, CR-156, CR-157, CR-158, CR-159, CR-160, CR-161, CR-162]
+      evidence: [CR-158, CR-171, CR-221, CR-236, CR-259, CR-267, CR-268, CR-269, CR-270, CR-271, CR-272, CR-273, CR-274, CR-275, CR-276, CR-277, CR-278, CR-279, CR-280, CR-281, CR-282, CR-283, CR-292, CR-309, CR-325, CR-453, CR-473]
+      offline: [CR-120, CR-126, CR-142, CR-143, CR-184, CR-280, CR-281]
+  design_acceptance_ids:
+    predecessor: WA-DES-003
+    proposed_successor: WA-DES-003-C1
+  approved_decisions:
+    - D-004
+    - D-005
+  dependencies:
+    - authenticated Web/Admin route ownership
+    - exact governed screen identity and exact requirement ownership
+    - accepted immutable WA-DES-003-C1 revision
+    - capability-aligned database mutation boundary
+    - transactional scoped audit
+    - optimistic concurrency or equivalent conflict protection
+    - runtime consumption proof for each editable setting
+    - complete EN/AR and RTL/LTR behavior
+    - focused functional, security, negative and visual evidence
+  do_not_touch:
+    - live Claude Design, supplied design exports or accepted design revisions
+    - product application code, tests, evidence or providers
+    - Supabase, migrations, seeds, credentials or shared data
+    - frozen route, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, database,
+    test, evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_screen_validation:
+  route:
+    page: apps/web/src/app/admin/execution/page.tsx
+    actions: apps/web/src/app/admin/execution/actions.ts
+    components:
+      - apps/web/src/app/admin/execution/CapacityForm.tsx
+      - apps/web/src/app/admin/execution/VisitModesForm.tsx
+      - apps/web/src/app/admin/execution/ReasonsManager.tsx
+      - apps/web/src/app/admin/execution/GisRulesForm.tsx
+      - apps/web/src/app/admin/execution/EvidencePolicyForm.tsx
+      - apps/web/src/app/admin/execution/OfflinePolicyForm.tsx
+      - apps/web/src/app/admin/execution/RawJsonDetails.tsx
+    validation: CONFIRMED_REAL_ROUTE_AND_COMPONENTS
+  business_capability:
+    validation: CONFIRMED_WITH_CORRECTION
+    correction: >-
+      This is an execution-policy administration surface, not an inspector
+      execution page and not a generic owner of every source requirement.
+  screen_catalogue:
+    entry_found: false
+    route_inventory_persona_claim: inspector
+    route_inventory_requirement_claim: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD_MAPPING
+    required_correction: >-
+      Assign one governed Admin screen ID and exact section-level requirement
+      ownership. Do not reuse SCR-ADM-060 or claim the entire 478-row baseline.
+  route_location:
+    actual_directory: apps/web/src/app/admin/execution
+    authenticated_route_group: apps/web/src/app/(app)
+    inherits_authenticated_app_layout: false
+    inherits_AppShell: false
+    middleware_enforces_authentication: false
+    verification_helper_redirects_anonymous_user: false
+    validation: FAIL_CRITICAL_AUTHENTICATED_ROUTE_BOUNDARY
+
+design_authority_validation:
+  nearest_existing_design:
+    design_id: WA-DES-003
+    filename: SAQEEL Admin Execution.dc.html
+    sha256: 47a54a5b2dc9863310496ccbd14695bdc9795b887ed8b29256a2fd712047c0b8
+    proposed_route: /admin/execution
+    route_map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+    nearest_match: true
+    known_delta:
+      - Arabic-only wordmark in the English design
+      - incorrect Risk Settings navigation framing
+      - invented fixed values and version claims
+      - incomplete empty, error, denied, conflict and unavailable states
+      - insufficient responsive and accessibility evidence
+    validation: INSUFFICIENT_EVIDENCE_NOT_CERTIFIED
+  proposed_corrective_design:
+    design_id: WA-DES-003-C1
+    filename: SAQEEL Admin Execution - WA-DES-003-C1.dc.html
+    state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+    sponsor_acceptance: pending
+    implementation_lease: pending
+    validation: NO_ACCEPTED_CORRECTIVE_REVISION
+  immutable_revision_rule: >-
+    Preserve WA-DES-003 and its hash. Create WA-DES-003-C1 as a new immutable
+    successor with explicit lineage; never overwrite the supplied predecessor.
+
+approved_policy_interpretation:
+  D_004:
+    authority: Direct-but-audited engine_settings administration is approved.
+    maker_checker: NOT_REQUIRED_BY_APPROVED_DECISION
+    reviewer_position: >-
+      This review does not invent a maker-checker requirement. It requires the
+      approved direct path to be capability-bound, validated, atomic, auditable
+      and concurrency-safe.
+  D_005:
+    authority: Offline overrides may remain unset and use the platform default.
+    reviewer_position: >-
+      Unset values are valid. If an override is set, the consuming runtime must
+      demonstrably use it and disclose the effective source.
+
+authorization_and_mutation_boundary:
+  page_capabilities:
+    checked:
+      - admin.execution_capacity
+      - admin.execution_modes
+      - admin.execution_reasons
+      - admin.execution_gis
+      - admin.execution_evidence_offline
+    provider: apps/web/src/lib/execution/capabilities.ts
+  route_level_failure:
+    - anonymous requests are not redirected
+    - provider errors are collapsed into denial
+    - the unauthenticated route does not inherit Admin shell identity or navigation
+  raw_json_disclosure:
+    behavior: >-
+      Possession of any one execution capability causes RawJsonDetails to render
+      every fetched engine row, including when the only direct grant is the
+      lookup capability and no governed form section is shown.
+    validation: FAIL_LEAST_PRIVILEGE
+  default_role_mapping:
+    roles:
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - risk_owner
+      - gis_admin
+      - security_admin
+    behavior: all five Admin capabilities are assigned to every listed role
+    validation: OVERBROAD_DEFAULT_CAPABILITY_MAPPING
+  table_RLS:
+    engine_write_roles:
+      - risk_owner
+      - gis_admin
+      - compliance_admin
+      - workflow_admin
+      - security_admin
+    omitted_role_with_default_capabilities: form_admin
+    validation: CAPABILITY_RLS_MISMATCH
+  false_success_path:
+    sequence:
+      - form_admin passes application capability check
+      - row-level security can reduce UPDATE to zero affected rows
+      - action does not request or verify the updated row count
+      - action continues to audit attempt and can return ok true
+      - UI displays saved and effective immediately
+    validation: FAIL_CRITICAL
+  bypass_path:
+    behavior: >-
+      Eligible engine_write roles can update engine_settings directly, outside
+      the server actions, bypassing per-capability checks, governed-key
+      restrictions, protected reason-key rules, payload validation, the
+      self-assessment release gate and version-label convention.
+    validation: FAIL_NON_BYPASSABLE_POLICY_BOUNDARY
+
+audit_version_and_concurrency:
+  application_action:
+    pattern: read current JSON, merge governed keys, update full row, insert audit separately
+    transaction: none
+    affected_row_verification: none
+    expected_version_predicate: none
+    returned_persisted_version: none
+  database_trigger:
+    available: true
+    behavior: generic full-row before/after audit on successful engine_settings update
+    strength: a successful direct row update receives a database-trigger audit
+    limitation: not the scoped execution_config_update event claimed by the action
+  manual_scoped_audit:
+    policy_or_grant_proving_authenticated_insert: not found
+    failure_behavior: logged but does not fail the configuration write
+    validation: UNPROVEN_AND_NON_ATOMIC
+  concurrency:
+    failure_mode: >-
+      Two administrators can read the same settings object and then write full
+      merged rows. A later writer can overwrite the earlier writer's same-section
+      or unrelated-section update without a stale-version conflict.
+    immutable_version_history: absent
+    compare_or_rollback: absent
+    validation: FAIL_LOST_UPDATE_PROTECTION
+  UI_claim:
+    text: saved — effective immediately
+    issue: >-
+      The claim can appear after a zero-row update and after scoped-audit failure;
+      no persisted version is returned to substantiate it.
+    validation: FALSE_SUCCESS_AND_UNSUPPORTED_EFFECTIVE_STATE
+
+section_runtime_wiring:
+  capacity:
+    authored_key: daily_visit_cap
+    consumer_found: capacity and execution scheduling RPC paths
+    fallback_found: 10
+    validation: PARTIALLY_WIRED_WITH_FALLBACK
+  visit_modes:
+    authored_keys:
+      - physical_enabled
+      - virtual_enabled
+      - virtual_requires_otp
+      - virtual_appointment_required
+      - self_assessment_release
+    consumers_found: preparation and field journeys
+    dependency_validation_missing:
+      - both physical and virtual can be disabled
+      - virtual subordinate controls can remain enabled when virtual is disabled
+    validation: WIRED_BUT_POLICY_DEPENDENCIES_INCOMPLETE
+  reasons:
+    authored_keys:
+      - cancellation_reasons
+      - geo_override_reasons
+    consumers_found: execution runtime RPCs and pages
+    protected_reason_guard: present in action
+    direct_table_bypass: present
+    validation: WIRED_BUT_BYPASSABLE
+  gis:
+    authored_keys:
+      - gps_accuracy_threshold_m
+      - geofence_radius_m
+      - arrival_radius_m
+      - telemetry_interval_s
+    consumers_found: execution and location runtime paths
+    runtime_fallbacks_found: [25, 150, 200, 30]
+    validation: PARTIALLY_WIRED_WITH_MULTIPLE_EFFECTIVE_SOURCES
+  evidence:
+    authored_controls:
+      - allowed formats
+      - maximum size
+      - duration
+      - retention years
+    proven_execution_consumer: false
+    implication: >-
+      The route can save a policy whose enforcement and retention behavior are
+      not demonstrated by the inspected runtime.
+    validation: INSUFFICIENT_RUNTIME_EVIDENCE
+  offline:
+    authored_keys:
+      - max_sync_attempts
+      - autosave_interval_s
+    runtime_consumer_found: false
+    unset_platform_default_per_D005: allowed
+    set_override_effect: no effect proven
+    validation: NOT_WIRED_WHEN_CONFIGURED
+
+validation_and_safety:
+  strengths:
+    - server actions verify a user and section capability
+    - each action parses and limits its intended governed keys
+    - reason keys receive protected-key checks
+    - evidence types preserve extra existing fields
+    - labels and control names are generally present
+  gaps:
+    - full direct table updates bypass every application validator
+    - visit modes permit a no-execution-mode configuration
+    - subordinate virtual settings are not normalized or rejected
+    - evidence formats accept arbitrary lowercased strings without a governed vocabulary
+    - GIS values have no accepted business range contract
+    - no impact preview or dependent-consumer warning
+  policy_boundary: >-
+    Do not invent upper bounds, formats, defaults or dependencies. Resolve them
+    through exact requirement/design acceptance where the source contract is
+    silent.
+  validation: INCOMPLETE_AND_BYPASSABLE
+
+hard_states_localization_and_accessibility:
+  loading_route: absent
+  error_route: absent
+  permission_provider_failure: falsely rendered as no access
+  engine_read_failure: logged then rendered like absent configuration
+  empty_and_not_configured: partially represented
+  conflict_or_stale_state: absent
+  retry: absent
+  localization:
+    page_content: mostly translated
+    hardcoded_English:
+      - Raw JSON (advanced)
+      - server action error strings
+    LTR_isolation_for_keys_units_and_versions: inconsistent
+    validation: FAIL_COMPLETE_EN_AR_PARITY
+  accessibility:
+    strengths:
+      - labels and aria-labels exist for most controls
+      - validation messages commonly use role alert
+      - pending actions disable submit
+    gaps:
+      - success messages are not consistently live status regions
+      - no focus transfer to validation, failure or success
+      - no keyboard or screen-reader runtime evidence
+  responsive_theme_and_wordmark:
+    authenticated_shell_wordmark: absent
+    English_wordmark_parity: absent
+    RTL_LTR_visual_evidence: absent
+    responsive_evidence: absent
+    light_dark_evidence: absent
+    validation: FAIL_VISUAL_AND_SHELL_EVIDENCE
+
+test_and_evidence_review:
+  focused_spec: apps/web/e2e/execution-admin-contract.spec.ts
+  test_type: SOURCE_TEXT_CONTRACT_ONLY
+  runtime_browser_proof: false
+  unsupported_claim: every write is audited
+  missing_proof:
+    - unauthenticated redirect and unauthorized role denial
+    - capability versus RLS role matrix
+    - zero-row update must fail rather than report success
+    - direct-table bypass denial
+    - atomic scoped audit correlation
+    - concurrent edit and stale-version conflict
+    - each setting's real runtime consumer
+    - invalid combinations and dependency guards
+    - provider unavailable versus denied versus empty
+    - EN/LTR and AR/RTL content parity
+    - 1160, 1024, 412 or 390, and 320 layouts
+    - light and dark visual comparison
+    - keyboard, focus and screen-reader behavior
+    - accepted WA-DES-003-C1 visual diff
+  validation: INSUFFICIENT_EVIDENCE
+
+priority_findings:
+  - id: EXECADM-P0-01
+    severity: P0
+    finding: Route is outside the authenticated AppShell and has no redirect guard.
+    action: CORRECT
+  - id: EXECADM-P0-02
+    severity: P0
+    finding: Direct engine_settings writes bypass capability and payload guards.
+    action: CORRECT
+  - id: EXECADM-P0-03
+    severity: P0
+    finding: form_admin can receive a false success after a row-level-security no-op.
+    action: CORRECT
+  - id: EXECADM-P0-04
+    severity: P0
+    finding: Scoped audit is separate, unproven and non-atomic with the write.
+    action: CORRECT
+  - id: EXECADM-P0-05
+    severity: P0
+    finding: Full-row read-modify-write has no stale-version conflict protection.
+    action: CORRECT
+  - id: EXECADM-P0-06
+    severity: P0
+    finding: No governed screen identity or exact primary requirement ownership exists.
+    action: BLOCK
+  - id: EXECADM-P1-01
+    severity: P1
+    finding: Configured offline overrides have no proven runtime consumer.
+    action: WIRE
+  - id: EXECADM-P1-02
+    severity: P1
+    finding: Evidence-policy enforcement and retention consumers are unproven.
+    action: WIRE
+  - id: EXECADM-P1-03
+    severity: P1
+    finding: Any one capability exposes raw JSON for all execution engines.
+    action: CORRECT
+  - id: EXECADM-P1-04
+    severity: P1
+    finding: Provider failures are falsely represented as access denial or missing data.
+    action: CORRECT
+  - id: EXECADM-P1-05
+    severity: P1
+    finding: WA-DES-003-C1 is not created, immutable or accepted.
+    action: CHANGE DESIGN
+  - id: EXECADM-P1-06
+    severity: P1
+    finding: No runtime visual, responsive, bilingual or accessibility certification exists.
+    action: BLOCK
+
+reviewer_recommendation:
+  classification: RETURN_FOR_SECURITY_GOVERNANCE_MAPPING_AND_RUNTIME_WIRING_CORRECTION
+  sponsor_decision: DO_NOT_CERTIFY_OR_COUNT_COMPLETE
+  maker_checker_decision: NOT_REQUIRED_UNDER_D004
+  bounded_next_actions:
+    - "Place the route inside the authenticated Admin shell and define exact allowed personas."
+    - "Assign a governed screen ID and exact section-level requirement and acceptance rows."
+    - "Unify capability and database authorization so every authorized role writes and every unauthorized role is denied truthfully."
+    - "Remove the direct-table bypass or enforce equivalent capability and validation controls inside the database mutation boundary."
+    - "Make the update, scoped audit and persisted version one atomic operation and verify the affected row."
+    - "Add expected-version conflict detection and immutable version/audit visibility."
+    - "Prove and wire the runtime consumer for every editable evidence and offline value."
+    - "Separate denied, provider unavailable, engine unavailable, empty and conflict states."
+    - "Create and accept WA-DES-003-C1 with corrected shell, wordmark, navigation, states and governed values."
+    - "Run functional, security, negative, concurrent, EN/AR, RTL/LTR, responsive, accessibility and visual evidence."
+
+ownership_boundary:
+  claude_design:
+    - create immutable WA-DES-003-C1 successor with predecessor lineage
+    - correct English and Arabic wordmarks, shell and navigation
+    - design denied, unavailable, empty, invalid, impact, saved, audit and conflict states
+    - design narrow, RTL/LTR, light/dark and keyboard-ready variants
+    - do not invent policy values or overwrite WA-DES-003
+  claude_code:
+    - authenticated route ownership and bounded frontend/database wiring after lease
+    - capability-aligned atomic mutation and concurrency implementation
+    - runtime-consumer wiring without inventing business policy
+  kimi:
+    - independently test authorization/RLS matrix, direct-write bypass, false success, audit and concurrency
+    - verify evidence/offline runtime consumption without editing leased files
+  codex:
+    - final requirement, design, runtime and evidence certification
+    - no implementation write while reviewer
+
+evidence:
+  application:
+    - apps/web/src/app/admin/execution/page.tsx
+    - apps/web/src/app/admin/execution/actions.ts
+    - apps/web/src/app/admin/execution/CapacityForm.tsx
+    - apps/web/src/app/admin/execution/VisitModesForm.tsx
+    - apps/web/src/app/admin/execution/ReasonsManager.tsx
+    - apps/web/src/app/admin/execution/GisRulesForm.tsx
+    - apps/web/src/app/admin/execution/EvidencePolicyForm.tsx
+    - apps/web/src/app/admin/execution/OfflinePolicyForm.tsx
+    - apps/web/src/app/admin/execution/RawJsonDetails.tsx
+    - apps/web/src/lib/verified-user.ts
+    - apps/web/src/lib/execution/capabilities.ts
+    - apps/web/src/middleware.ts
+    - apps/web/e2e/execution-admin-contract.spec.ts
+  database:
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/20260721093000_execution_canonical_contracts.sql
+    - supabase/migrations/20260721100000_execution_admin_audit.sql
+    - supabase/migrations/20260721110000_execution_access_grants.sql
+  contract:
+    - product-contract/execution/EXECUTION_DECISION_LOG.md
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  prior_reviews:
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-EXECUTION-DESIGN-READINESS-014.yaml
+    - product-contract/operationalization/coordination/batches/M10-WA-DES-003-C1-DESIGN-LEASE-READINESS-024.yaml
+    - product-contract/operationalization/coordination/batches/M10-REGISTERED-DESIGN-CORRECTION-CONSENT-CLOSEOUT-028.yaml
+
+next_queue:
+  task_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+  scope: >-
+    Independently review /admin/gis and its location, map, geofence, override,
+    telemetry and audit controls against exact requirements, stable Claude
+    Design lineage, execution-policy ownership, permissions, runtime providers,
+    EN/AR, responsive, accessibility and hard-state contracts.
+  mode: READ_ONLY
+  completion_credit: 0

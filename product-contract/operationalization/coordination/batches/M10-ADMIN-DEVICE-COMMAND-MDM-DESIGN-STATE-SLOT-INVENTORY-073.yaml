@@ -1,0 +1,507 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+title: Trusted Devices future design-state slot inventory
+status: SLOT_INVENTORY_COMPLETE_LIVE_DESIGN_UNCHANGED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_DESIGN_READINESS
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_created_or_modified: 0
+  states_accepted: 0
+  reason: >-
+    Slots describe proof needs only. They contain no accepted semantics,
+    provider facts, production data, stable revision or sponsor design
+    approval.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+  source_task: DEV-PRE-DES-02
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+    - M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+    - M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  acceptance_cases: 60
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-041 and CD-056
+    - design route maps, fingerprints and acceptance records
+    - application, database, provider, data, tests and evidence
+    - branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only slot inventory; no live design or authority is opened or changed.
+
+null_binding_template:
+  sponsor_decision_revision: null
+  role_capability_binding: null
+  transition_binding: null
+  approval_binding: null
+  trust_evidence_binding: null
+  provider_binding: null
+  receipt_binding: null
+  package_invalidation_binding: null
+  sync_health_binding: null
+  reviewed_Arabic_copy_binding: null
+  stable_design_id: null
+  stable_design_revision: null
+  stable_frame_id: null
+  sha256: null
+  sponsor_design_acceptance: null
+
+slot_rules:
+  - Every slot inherits all null_binding_template fields until recorded authorities exist.
+  - A null binding renders the slot unresolved/held; it cannot be filled from current code, a mock, a seed or illustrative design values.
+  - Machine identifiers and immutable evidence remain factual; human-friendly labels require governed bilingual copy.
+  - A design state may explain a blocked dependency but cannot imply provider delivery or completion.
+  - State color never acts as the only status signal.
+  - Every action state must retain device, actor, reason, version, time and evidence association where applicable.
+  - Slots are not frames and do not allocate design IDs.
+
+design_state_slots:
+  route_and_source:
+    - slot_id: DEV-DS-001
+      state: route_loading
+      purpose: Preserve shell and page hierarchy while device and command reads are pending.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-POS-14]
+      required_content: Localized loading name; no fabricated count or healthy state.
+      required_interaction: Keyboard focus remains stable and no action is available.
+    - slot_id: DEV-DS-002
+      state: verified_empty
+      purpose: Distinguish a successful zero-row result from denial or source failure.
+      decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-10]
+      cases: [DEV-NEG-AUTH-01, DEV-NEG-AUTH-04, DEV-POS-14]
+      required_content: Access-scoped empty explanation and safe next action if authorized.
+      required_interaction: No command controls.
+    - slot_id: DEV-DS-003
+      state: unauthorized_route
+      purpose: Deny the direct route without disclosing device or command evidence.
+      decisions: [DEV-CMD-DEC-01]
+      cases: [DEV-NEG-AUTH-01, DEV-NEG-AUTH-02, DEV-NEG-AUTH-03, DEV-NEG-AUTH-04]
+      required_content: Neutral localized denial and permitted recovery.
+      required_interaction: No mutation or automatic replay after authentication.
+    - slot_id: DEV-DS-004
+      state: source_error
+      purpose: Distinguish device-read, command-read and schema/service failure.
+      decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-08, DEV-CMD-DEC-10]
+      cases: [DEV-NEG-OFF-05, DEV-NEG-AUD-01, DEV-POS-11, DEV-POS-12, DEV-POS-14]
+      required_content: Last confirmed fact/time where safe; no false empty or schema diagnosis.
+      required_interaction: Dependent mutation disabled with retry/recovery semantics unresolved.
+    - slot_id: DEV-DS-005
+      state: stale_or_conflicting_source
+      purpose: Show that displayed device version is no longer current.
+      decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-05, DEV-CMD-DEC-06]
+      cases: [DEV-NEG-STALE-01, DEV-NEG-STALE-02, DEV-NEG-STALE-05]
+      required_content: Stale marker, last confirmed time and conflict explanation.
+      required_interaction: Refresh/reconcile; no blind resubmit.
+
+  persona_and_permission:
+    - slot_id: DEV-DS-006
+      state: authorized_read_only
+      purpose: Allow approved evidence viewing without mutation.
+      decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      cases: [DEV-NEG-AUTH-03, DEV-NEG-AUTH-05]
+      required_content: Read scope and action-disabled reason.
+      required_interaction: Direct submission remains denied.
+    - slot_id: DEV-DS-007
+      state: authorized_mutation_scope
+      purpose: Present only capabilities approved for the actor and device.
+      decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02]
+      cases: [DEV-NEG-AUTH-05, DEV-POS-02, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-10]
+      required_content: Actor role/scope and per-command eligibility.
+      required_interaction: Controls absent or disabled consistently with server authority.
+    - slot_id: DEV-DS-008
+      state: session_expired_or_role_lookup_failed
+      purpose: Prevent an action viewed under old authority from being submitted.
+      decisions: [DEV-CMD-DEC-01]
+      cases: [DEV-NEG-AUTH-06]
+      required_content: Neutral recovery without leaking raw database error.
+      required_interaction: Re-authentication never auto-replays the privileged command.
+    - slot_id: DEV-DS-009
+      state: independent_approval_required
+      purpose: Separate requester from approver when policy requires it.
+      decisions: [DEV-CMD-DEC-03]
+      cases: [DEV-NEG-AUTH-07, DEV-POS-06, DEV-POS-08, DEV-POS-09]
+      required_content: Requester, approver boundary, pending/expiry and reason.
+      required_interaction: Requester cannot approve.
+    - slot_id: DEV-DS-010
+      state: approval_rejected_withdrawn_or_expired
+      purpose: Preserve a non-completed approval outcome and history.
+      decisions: [DEV-CMD-DEC-03, DEV-CMD-DEC-06]
+      cases: [DEV-NEG-AUTH-07, DEV-NEG-AUD-04, DEV-POS-12]
+      required_content: Outcome, actor/time/reason and safe next action.
+      required_interaction: Cannot dispatch or advance the command.
+
+  device_register:
+    - slot_id: DEV-DS-011
+      state: device_pending
+      purpose: Show enrolled but not trusted and fail-closed.
+      decisions: [DEV-CMD-DEC-05]
+      cases: [DEV-POS-01, DEV-POS-02, DEV-POS-03]
+      required_content: Assignment, app policy and missing evidence facts.
+      required_interaction: No official package access.
+    - slot_id: DEV-DS-012
+      state: device_trusted_with_evidence
+      purpose: Show positive trust only with approved current evidence.
+      decisions: [DEV-CMD-DEC-05, DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      cases: [DEV-POS-03, DEV-POS-04, DEV-POS-05, DEV-POS-07]
+      required_content: Evidence authority/version/time, app policy, assignment and lifecycle source.
+      required_interaction: Evidence detail is inspectable by an authorized actor.
+    - slot_id: DEV-DS-013
+      state: device_suspended
+      purpose: Show reversible fail-closed state without implying terminal identity.
+      decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+      cases: [DEV-NEG-STATE-08, DEV-POS-06, DEV-POS-07]
+      required_content: Governing command/effect evidence and package/sync denial.
+      required_interaction: Resume eligibility remains null until policy is recorded.
+    - slot_id: DEV-DS-014
+      state: device_revoked_terminal
+      purpose: Show revoked identity and preserved history.
+      decisions: [DEV-CMD-DEC-04]
+      cases: [DEV-NEG-STATE-03, DEV-NEG-STATE-07, DEV-NEG-STATE-08, DEV-POS-08, DEV-POS-13]
+      required_content: Terminal/exceptional policy, original evidence and re-enrollment boundary.
+      required_interaction: Ordinary Resume unavailable.
+    - slot_id: DEV-DS-015
+      state: device_wipe_pending
+      purpose: Separate requested/accepted wipe from verified completion.
+      decisions: [DEV-CMD-DEC-04, DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      cases: [DEV-NEG-STATE-05, DEV-NEG-OFF-02, DEV-NEG-PROV-04, DEV-POS-09]
+      required_content: Last proven stage, provider/device evidence absence and fail-closed access.
+      required_interaction: Contradictory commands unavailable.
+    - slot_id: DEV-DS-016
+      state: device_wiped_terminal
+      purpose: Show verified wipe effect without erasing identity history.
+      decisions: [DEV-CMD-DEC-04, DEV-CMD-DEC-06]
+      cases: [DEV-NEG-STATE-04, DEV-NEG-STATE-07, DEV-NEG-STATE-08, DEV-POS-09, DEV-POS-13]
+      required_content: Completion evidence, time and preserved former identity.
+      required_interaction: Ordinary Resume unavailable.
+    - slot_id: DEV-DS-017
+      state: trust_evidence_missing_stale_or_conflicting
+      purpose: Prevent partial local fields from appearing trusted.
+      decisions: [DEV-CMD-DEC-05]
+      cases: [DEV-NEG-STATE-07, DEV-NEG-STALE-03, DEV-NEG-STALE-05]
+      required_content: Exact missing/stale/conflicting evidence class without invented freshness.
+      required_interaction: Positive trust and package access unavailable.
+    - slot_id: DEV-DS-018
+      state: device_unassigned_noncompliant_or_wrong_platform
+      purpose: Explain fail-closed eligibility other than trust state.
+      decisions: [DEV-CMD-DEC-05]
+      cases: [DEV-NEG-STATE-08, DEV-POS-01, DEV-POS-02, DEV-POS-04, DEV-POS-05]
+      required_content: Assignment/platform/app-policy facts and governing version.
+      required_interaction: Download/open/sync/submit unavailable.
+
+  command_request_and_conflict:
+    - slot_id: DEV-DS-019
+      state: command_validation_error
+      purpose: Show missing device, invalid command or insufficient reason without side effect.
+      decisions: [DEV-CMD-DEC-02]
+      cases: [DEV-NEG-STATE-01, DEV-NEG-STATE-02]
+      required_content: Localized field association and no false queueing.
+      required_interaction: Focus moves to correct field; correction preserves safe context.
+    - slot_id: DEV-DS-020
+      state: command_ineligible_for_state
+      purpose: Explain a disallowed or terminal transition before and after forced submission.
+      decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-04]
+      cases: [DEV-NEG-STATE-03, DEV-NEG-STATE-04, DEV-NEG-STATE-05, DEV-NEG-STATE-06]
+      required_content: Current state, attempted command and governed denial reason.
+      required_interaction: No provider dispatch or local state advance.
+    - slot_id: DEV-DS-021
+      state: destructive_command_confirmation
+      purpose: Bind device, impact scope, reason and approval before wipe/expiry/revoke.
+      decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-03, DEV-CMD-DEC-07]
+      cases: [DEV-POS-08, DEV-POS-09, DEV-POS-10]
+      required_content: Exact device/package scope and remote-request-not-result warning.
+      required_interaction: Cancel is safe; confirmation does not imply approval/completion.
+    - slot_id: DEV-DS-022
+      state: command_submitting
+      purpose: Prevent double-submit while preserving accessible progress.
+      decisions: [DEV-CMD-DEC-06]
+      cases: [DEV-NEG-DUP-01, DEV-NEG-OFF-01]
+      required_content: Localized pending label and correlation-safe status.
+      required_interaction: Duplicate input disabled; focus/status remains perceivable.
+    - slot_id: DEV-DS-023
+      state: command_stale_or_concurrent_conflict
+      purpose: Reconcile a changed device or contradictory actor command.
+      decisions: [DEV-CMD-DEC-02, DEV-CMD-DEC-06]
+      cases: [DEV-NEG-STALE-01, DEV-NEG-STALE-02]
+      required_content: Expected/current version and non-destructive conflict outcome.
+      required_interaction: Refresh/reconcile; no blind overwrite.
+    - slot_id: DEV-DS-024
+      state: command_duplicate_existing
+      purpose: Resolve resubmission to existing correlation identity.
+      decisions: [DEV-CMD-DEC-06]
+      cases: [DEV-NEG-DUP-01, DEV-NEG-DUP-02, DEV-NEG-DUP-03, DEV-NEG-DUP-04]
+      required_content: Original command/stage/effect and duplicate handling.
+      required_interaction: No second destructive effect.
+
+  provider_and_receipt:
+    - slot_id: DEV-DS-025
+      state: provider_held_or_unconfigured
+      purpose: Keep provider-dependent mutation visibly fail-closed.
+      decisions: [DEV-CMD-DEC-09]
+      cases: [DEV-NEG-PROV-01, DEV-POS-03, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-12, DEV-POS-13]
+      required_content: Dependency-blocked fact and unaffected read-only capabilities.
+      required_interaction: No transmission or positive trust/completion.
+    - slot_id: DEV-DS-026
+      state: provider_rejected
+      purpose: Preserve authenticated provider rejection without claiming effect.
+      decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      cases: [DEV-NEG-PROV-02, DEV-POS-12]
+      required_content: Correlated rejection, safe reason and next action.
+      required_interaction: Retry only if future policy permits.
+    - slot_id: DEV-DS-027
+      state: provider_timeout_or_unverifiable_response
+      purpose: Keep unknown remote result unknown.
+      decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      cases: [DEV-NEG-PROV-03, DEV-NEG-AUD-02, DEV-POS-12]
+      required_content: Last proven stage, receipt/authentication failure and no completion.
+      required_interaction: Bounded retry remains null until approved.
+    - slot_id: DEV-DS-028
+      state: provider_accepted_device_not_confirmed
+      purpose: Separate provider acceptance from device receipt/effect.
+      decisions: [DEV-CMD-DEC-06]
+      cases: [DEV-NEG-PROV-04, DEV-POS-06, DEV-POS-09]
+      required_content: Stage actor/time/receipt and still-pending device effect.
+      required_interaction: Trust/wipe/expiry completion remains unavailable.
+    - slot_id: DEV-DS-029
+      state: receipt_mismatched_late_duplicate_or_quarantined
+      purpose: Retain anomalous receipt without advancing current state.
+      decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      cases: [DEV-NEG-STALE-04, DEV-NEG-DUP-03, DEV-NEG-PROV-06, DEV-NEG-AUD-02]
+      required_content: Anomaly class, correlation mismatch and quarantine state.
+      required_interaction: Authorized evidence inspection; no state override.
+    - slot_id: DEV-DS-030
+      state: canonical_verified_completion
+      purpose: Show completion only with approved genuine effect evidence.
+      decisions: [DEV-CMD-DEC-06, DEV-CMD-DEC-09]
+      cases: [DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-10]
+      required_content: Device/command/effect, authoritative actor, receipt, version and completion time.
+      required_interaction: Open immutable evidence; no edit.
+
+  package_and_offline:
+    - slot_id: DEV-DS-031
+      state: package_access_allowed
+      purpose: Show trusted assigned compliant active-package access.
+      decisions: [DEV-CMD-DEC-05, DEV-CMD-DEC-07]
+      cases: [DEV-POS-04, DEV-POS-05]
+      required_content: Device, manifest/version, assignment, app policy and access event.
+      required_interaction: Download/open/sync/submit remain separately proven.
+    - slot_id: DEV-DS-032
+      state: package_access_denied
+      purpose: Explain unregistered/unassigned/non-trusted/noncompliant/expired denial.
+      decisions: [DEV-CMD-DEC-04, DEV-CMD-DEC-05, DEV-CMD-DEC-07]
+      cases: [DEV-NEG-STATE-08, DEV-POS-01, DEV-POS-06, DEV-POS-08, DEV-POS-09, DEV-POS-10]
+      required_content: Safe denial reason and immutable access-event reference.
+      required_interaction: No package content disclosure.
+    - slot_id: DEV-DS-033
+      state: package_invalidation_scope_selection
+      purpose: Show exact affected packages/inspections or governed policy scope.
+      decisions: [DEV-CMD-DEC-07]
+      cases: [DEV-NEG-DUP-04, DEV-POS-10]
+      required_content: Manifest identities, server/device effects and partial-failure semantics remain null until approved.
+      required_interaction: Scope validation and reversible cancel.
+    - slot_id: DEV-DS-034
+      state: cached_invalidation_unconfirmed
+      purpose: Separate server denial from offline cached-device deletion.
+      decisions: [DEV-CMD-DEC-07, DEV-CMD-DEC-08]
+      cases: [DEV-NEG-OFF-02, DEV-NEG-OFF-03, DEV-POS-10]
+      required_content: Server effect, offline pending fact and absent device evidence.
+      required_interaction: Cannot claim cached removal.
+    - slot_id: DEV-DS-035
+      state: offline_replay_denied_after_trust_change
+      purpose: Preserve unsent evidence while rejecting invalid replay.
+      decisions: [DEV-CMD-DEC-04, DEV-CMD-DEC-08]
+      cases: [DEV-NEG-OFF-04, DEV-POS-05]
+      required_content: Current trust/version, rejected operation and recovery/escalation evidence.
+      required_interaction: No silent loss or overwrite.
+
+  sync_health_and_rescue:
+    - slot_id: DEV-DS-036
+      state: sync_health_source_backed
+      purpose: Present current outbox/conflict/error/replay facts only from approved sources.
+      decisions: [DEV-CMD-DEC-08]
+      cases: [DEV-POS-11]
+      required_content: Source, formula/version, freshness and last-confirmed time remain null until approved.
+      required_interaction: Bounded rescue action per role remains null.
+    - slot_id: DEV-DS-037
+      state: sync_health_held
+      purpose: Preserve MVP2-REQ-0186 as open while sources/thresholds are unresolved.
+      decisions: [DEV-CMD-DEC-08]
+      cases: [DEV-NEG-STALE-05, DEV-NEG-OFF-05, DEV-POS-11]
+      required_content: Dependency block; no illustrative count or online/healthy inference.
+      required_interaction: Link only to approved existing facts, if any.
+    - slot_id: DEV-DS-038
+      state: sync_error_conflict_or_replay_rescue
+      purpose: Make an actionable issue visible without fabricating success.
+      decisions: [DEV-CMD-DEC-08]
+      cases: [DEV-NEG-OFF-04, DEV-NEG-OFF-05, DEV-POS-11]
+      required_content: Exact operation/source/version/error and audit context.
+      required_interaction: Rescue action, role and result remain null until policy.
+
+  evidence_and_audit:
+    - slot_id: DEV-DS-039
+      state: complete_command_evidence_history
+      purpose: Present request, approval, transport, receipt and effect without silent truncation.
+      decisions: [DEV-CMD-DEC-03, DEV-CMD-DEC-05, DEV-CMD-DEC-06]
+      cases: [DEV-NEG-AUD-03, DEV-NEG-AUD-04, DEV-POS-03, DEV-POS-06, DEV-POS-07, DEV-POS-08, DEV-POS-09, DEV-POS-10, DEV-POS-12, DEV-POS-13]
+      required_content: Device, command, actor(s), reason, version, timestamps, before/after and evidence.
+      required_interaction: Pagination/filter does not conceal history length.
+    - slot_id: DEV-DS-040
+      state: audit_write_failed
+      purpose: Show transaction failure without claiming queueing or dispatch.
+      decisions: [DEV-CMD-DEC-06]
+      cases: [DEV-NEG-AUD-01]
+      required_content: Neutral failure and zero-side-effect fact.
+      required_interaction: Safe recovery; no automatic destructive retry.
+    - slot_id: DEV-DS-041
+      state: immutable_evidence_tamper_denied
+      purpose: Preserve original lifecycle evidence against edit/delete.
+      decisions: [DEV-CMD-DEC-03, DEV-CMD-DEC-06]
+      cases: [DEV-NEG-AUD-04]
+      required_content: Original evidence/version and denied attempt if actor may view it.
+      required_interaction: No edit affordance.
+
+  presentation_matrix:
+    - slot_id: DEV-DS-042
+      state: English_LTR_light_and_dark
+      purpose: Verify all prior slots in both supported themes.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-POS-14]
+      required_content: Governed English labels and non-color state cues.
+      required_interaction: Theme change preserves focus/status.
+    - slot_id: DEV-DS-043
+      state: Arabic_RTL_light_and_dark
+      purpose: Verify all prior slots with reviewed Arabic and logical layout.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-NEG-I18N-01, DEV-NEG-I18N-02, DEV-POS-14]
+      required_content: Reviewed Arabic, bidi-isolated UUID/device/platform values and localized status/date semantics.
+      required_interaction: Action-to-device association and focus order remain correct.
+    - slot_id: DEV-DS-044
+      state: desktop_and_1024
+      purpose: Preserve full evidence/action hierarchy at governed desktop and 1024 viewports.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-NEG-RESP-01, DEV-NEG-RESP-02, DEV-POS-14]
+      required_content: No clipped evidence, shell overlap or uncontrolled table width.
+      required_interaction: Keyboard and 200 percent zoom remain usable.
+    - slot_id: DEV-DS-045
+      state: narrow_412_or_390_and_320
+      purpose: Reflow device, command and evidence association at narrow widths.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-NEG-RESP-01, DEV-NEG-RESP-02, DEV-POS-14]
+      required_content: Intentional reflow or bounded scroll with repeated context.
+      required_interaction: No off-screen confirmation/error or hidden destructive scope.
+    - slot_id: DEV-DS-046
+      state: keyboard_focus_and_error_recovery
+      purpose: Verify complete action flow without pointer.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-NEG-A11Y-01, DEV-POS-14]
+      required_content: Visible focus and programmatic labels.
+      required_interaction: Logical order, modal containment if used, cancel and field-error focus.
+    - slot_id: DEV-DS-047
+      state: screen_reader_status_and_evidence
+      purpose: Announce state changes once and expose relationships.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-NEG-A11Y-02, DEV-POS-14]
+      required_content: Semantic status, disabled reason, device/action association and evidence labels.
+      required_interaction: Pending/error/success announcements do not duplicate or steal focus.
+    - slot_id: DEV-DS-048
+      state: contrast_forced_colors_reduced_motion_and_touch
+      purpose: Keep routine/destructive actions distinguishable and operable.
+      decisions: [DEV-CMD-DEC-10]
+      cases: [DEV-NEG-A11Y-03, DEV-POS-14]
+      required_content: Text/icon/state redundancy and approved touch targets.
+      required_interaction: Forced colors and reduced motion preserve meaning.
+
+case_coverage_groups:
+  authorization:
+    cases: [DEV-NEG-AUTH-01..07]
+    slots: [DEV-DS-002, DEV-DS-003, DEV-DS-006, DEV-DS-007, DEV-DS-008, DEV-DS-009, DEV-DS-010]
+  transition:
+    cases: [DEV-NEG-STATE-01..08]
+    slots: [DEV-DS-013, DEV-DS-014, DEV-DS-015, DEV-DS-016, DEV-DS-017, DEV-DS-018, DEV-DS-019, DEV-DS-020, DEV-DS-032]
+  stale:
+    cases: [DEV-NEG-STALE-01..05]
+    slots: [DEV-DS-005, DEV-DS-017, DEV-DS-023, DEV-DS-029, DEV-DS-037]
+  duplicate:
+    cases: [DEV-NEG-DUP-01..04]
+    slots: [DEV-DS-022, DEV-DS-024, DEV-DS-029, DEV-DS-033]
+  provider:
+    cases: [DEV-NEG-PROV-01..06]
+    slots: [DEV-DS-025, DEV-DS-026, DEV-DS-027, DEV-DS-028, DEV-DS-029]
+  offline:
+    cases: [DEV-NEG-OFF-01..05]
+    slots: [DEV-DS-004, DEV-DS-015, DEV-DS-022, DEV-DS-034, DEV-DS-035, DEV-DS-037, DEV-DS-038]
+  audit:
+    cases: [DEV-NEG-AUD-01..04]
+    slots: [DEV-DS-027, DEV-DS-029, DEV-DS-039, DEV-DS-040, DEV-DS-041]
+  i18n:
+    cases: [DEV-NEG-I18N-01..02]
+    slots: [DEV-DS-043]
+  responsive:
+    cases: [DEV-NEG-RESP-01..02]
+    slots: [DEV-DS-044, DEV-DS-045]
+  accessibility:
+    cases: [DEV-NEG-A11Y-01..03]
+    slots: [DEV-DS-046, DEV-DS-047, DEV-DS-048]
+  positive:
+    cases: [DEV-POS-01..14]
+    slots: [DEV-DS-001, DEV-DS-004, DEV-DS-007, DEV-DS-009, DEV-DS-010, DEV-DS-011, DEV-DS-012, DEV-DS-013, DEV-DS-014, DEV-DS-015, DEV-DS-016, DEV-DS-018, DEV-DS-021, DEV-DS-025, DEV-DS-026, DEV-DS-028, DEV-DS-030, DEV-DS-031, DEV-DS-032, DEV-DS-033, DEV-DS-034, DEV-DS-035, DEV-DS-036, DEV-DS-037, DEV-DS-038, DEV-DS-039, DEV-DS-042, DEV-DS-043, DEV-DS-044, DEV-DS-045, DEV-DS-046, DEV-DS-047, DEV-DS-048]
+
+required_capture_matrix:
+  locales: [English_LTR, Arabic_RTL]
+  themes: [light, dark]
+  viewports:
+    governed_fixed: null
+    desktop: 1200_or_approved_route_width
+    tablet: 1024x768
+    narrow: 412x915_or_390x844
+    minimum_reflow: 320x800
+  interaction_modes: [pointer, keyboard, screen_reader_semantics, touch, zoom_200_percent, forced_colors, reduced_motion]
+  route_states: [loading, verified_empty, unauthorized, source_error, stale_conflict, provider_held, degraded, lifecycle_states]
+  capture_authority: null
+  visual_diff_threshold: null
+  browser_and_font_environment: null
+
+design_stop_rules:
+  - Do not open or modify live Claude Design from this inventory.
+  - Do not allocate a new design ID or fingerprint.
+  - Do not render a role-specific action until D01/D02 are recorded.
+  - Do not render approval semantics until D03 is recorded.
+  - Do not render terminal/reactivation behavior until D04 is recorded.
+  - Do not label Trusted until D05 evidence is recorded.
+  - Do not label Acknowledged/Completed until D06 and D09 authority is recorded.
+  - Do not show expiry effect until D07 is recorded.
+  - Do not show online/healthy/outbox/rescue truth until D08 is recorded.
+  - Do not show provider success while D09 is held/unresolved.
+  - Do not claim accepted route authority until D10 lineage is governed and sponsor-approved.
+
+review:
+  disposition: ACK
+  code: ACK_READ_ONLY_DESIGN_SLOT_INVENTORY
+  validation_summary:
+    slots: 48
+    acceptance_cases_expected: 60
+    acceptance_cases_grouped: 60
+    live_design_changes: 0
+    populated_policy_or_provider_bindings: 0
+  caveat: ACK applies only to slot completeness; every slot remains unaccepted and policy-bound.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-DESIGN-REUSE-COLLISION-MAP-074
+    mode: READ_ONLY
+    source_task: DEV-PRE-DES-01
+    objective: >-
+      Inventory exact reusable states and collisions in registered WA-DES-015,
+      WA-DES-041 and CD-056 references without opening or changing live design,
+      then map them to the 48 future slots.

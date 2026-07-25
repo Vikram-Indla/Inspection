@@ -1,0 +1,343 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+title: Trusted Devices sponsor-answer deterministic validation checklist
+status: CHECKLIST_COMPLETE_ANSWERS_NOT_SUPPLIED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_DECISION_VALIDATION
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  sponsor_answers_validated: 0
+  leases_granted: 0
+  reason: >-
+    The checklist defines how future sponsor answers will be assessed. No
+    answer is inferred, supplied, approved or recorded by this packet.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+    - M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    - M10-ADMIN-DEVICE-COMMAND-MDM-BLOCKER-OWNERSHIP-BOARD-066
+  governed_decisions: [DEV-CMD-DEC-01, DEV-CMD-DEC-02, DEV-CMD-DEC-03, DEV-CMD-DEC-04, DEV-CMD-DEC-05, DEV-CMD-DEC-06, DEV-CMD-DEC-07, DEV-CMD-DEC-08, DEV-CMD-DEC-09, DEV-CMD-DEC-10]
+  governed_acceptance_cases:
+    negative: 46
+    positive: 14
+    total: 60
+  do_not_touch:
+    - sponsor response or canonical decision register
+    - RBAC, transitions, provider hold/contract or design identity registers
+    - Claude Design, application, database, provider, seed, test or evidence files
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only future-answer validation definition. No product or governance
+    authority, record, design, data, test, branch, status or lease is changed.
+
+result_semantics:
+  ACK:
+    meaning: >-
+      The answer set is complete, internally compatible, within sponsor
+      authority and safe for formal change-control recording.
+    does_not_mean:
+      - design approved
+      - provider enabled
+      - implementation or test lease granted
+      - requirement or acceptance case completed
+  RETURN:
+    meaning: >-
+      One or more answers are incomplete, ambiguous, unverified or mutually
+      inconsistent but appear correctable without weakening requirements.
+    next_action: Return exact failed check IDs to sponsor/governance; do not infer missing content.
+  BLOCK:
+    meaning: >-
+      An answer authorizes an unsafe/prohibited outcome, claims authority it
+      does not possess, invents provider/policy facts, or weakens the mandatory
+      requirement/evidence floor.
+    next_action: Stop design/implementation consumption and escalate the exact prohibited check.
+
+global_checks:
+  - check_id: ANS-G-01
+    test: Exactly ten decision objects exist, keyed DEV-CMD-DEC-01 through DEV-CMD-DEC-10.
+    fail_result: RETURN
+  - check_id: ANS-G-02
+    test: Each decision selects exactly one option from its declared allow-list.
+    fail_result: RETURN
+  - check_id: ANS-G-03
+    test: Every unconditional and option-conditional companion field is non-null, bounded and actionable.
+    fail_result: RETURN
+  - check_id: ANS-G-04
+    test: No answer delegates the choice to Claude Design, implementation, QA, a provider or an unspecified future actor.
+    fail_result: RETURN
+  - check_id: ANS-G-05
+    test: All named external governance/provider/design references resolve to existing authoritative records; a URL, label or assertion alone is insufficient.
+    fail_result: RETURN
+  - check_id: ANS-G-06
+    test: The answer set explicitly retains the preservation floor and all 60 cases remain applicable, passed later, or truthfully blocked.
+    fail_result: BLOCK
+  - check_id: ANS-G-07
+    test: No answer claims that selecting an option grants a design, engineering, provider, data or QA lease.
+    fail_result: BLOCK
+  - check_id: ANS-G-08
+    test: No policy value, provider, threshold, freshness, retry, SLA, retention, Arabic approval or evidence result is invented.
+    fail_result: BLOCK
+
+decision_checks:
+  DEV-CMD-DEC-01:
+    allowed_options: [D01-A, D01-B, D01-C]
+    required_fields: [role_to_capability_matrix]
+    deterministic_checks:
+      - {check_id: ANS-D01-01, test: Matrix names every canonical role and every read/register/assign/suspend/resume/revoke/remote_wipe/expire_packages/sync-rescue capability., fail_result: RETURN}
+      - {check_id: ANS-D01-02, test: Inspector and Auditor have no mutation capability., fail_result: BLOCK}
+      - {check_id: ANS-D01-03, test: Direct server authorization is required independently of navigation visibility., fail_result: BLOCK}
+      - {check_id: ANS-D01-04, test: Device Admin or Mobile Admin is mapped to an existing canonical role or a separately change-controlled new role., fail_result: RETURN}
+      - {check_id: ANS-D01-05, test: If D01-B or D01-C creates a role, role lifecycle, assignment authority, navigation and RLS/RPC impact are explicitly deferred to change control., fail_result: RETURN}
+
+  DEV-CMD-DEC-02:
+    allowed_options: [D02-A, D02-B, D02-C]
+    required_fields: [per_command_role_and_source_state_matrix]
+    deterministic_checks:
+      - {check_id: ANS-D02-01, test: Matrix contains suspend/resume/revoke/remote_wipe/expire_packages and pending/trusted/suspended/revoked/wipe_pending/wiped., fail_result: RETURN}
+      - {check_id: ANS-D02-02, test: Each allowed pair has an authorized role; each disallowed pair is explicit rather than omitted., fail_result: RETURN}
+      - {check_id: ANS-D02-03, test: Ordinary Resume is disallowed from revoked, wipe_pending and wiped., fail_result: BLOCK}
+      - {check_id: ANS-D02-04, test: Invalid and terminal transitions create no command/provider/state side effect., fail_result: BLOCK}
+      - {check_id: ANS-D02-05, test: Revocation is not silently omitted merely because current code lacks the command., fail_result: BLOCK}
+
+  DEV-CMD-DEC-03:
+    allowed_options: [D03-A, D03-B, D03-C]
+    required_fields: [commands_requiring_approval]
+    conditional_fields:
+      D03-A: []
+      D03-B: [emergency_or_expiry_behavior]
+      D03-C: [emergency_or_expiry_behavior]
+    deterministic_checks:
+      - {check_id: ANS-D03-01, test: D03-A has no command falsely described as independently approved., fail_result: RETURN}
+      - {check_id: ANS-D03-02, test: D03-B names every selected command; D03-C includes every trust-restoring or destructive command., fail_result: RETURN}
+      - {check_id: ANS-D03-03, test: Requester cannot approve a command requiring independent approval., fail_result: BLOCK}
+      - {check_id: ANS-D03-04, test: Provider/device acknowledgement cannot satisfy human approval., fail_result: BLOCK}
+      - {check_id: ANS-D03-05, test: Required approval has pending, approve, reject, expiry/withdrawal and race outcomes; emergency behavior does not silently bypass audit., fail_result: RETURN}
+
+  DEV-CMD-DEC-04:
+    allowed_options: [D04-A, D04-B, D04-C]
+    required_fields: []
+    conditional_fields:
+      D04-A: []
+      D04-B: [reactivation_process_owner_and_evidence]
+      D04-C: [reactivation_process_owner_and_evidence]
+    deterministic_checks:
+      - {check_id: ANS-D04-01, test: Wipe-pending cannot be restored by ordinary Resume under any option., fail_result: BLOCK}
+      - {check_id: ANS-D04-02, test: D04-A makes Revoked and Wiped terminal for that enrolled identity., fail_result: BLOCK}
+      - {check_id: ANS-D04-03, test: D04-B or D04-C defines a separate exceptional process rather than ordinary Resume., fail_result: BLOCK}
+      - {check_id: ANS-D04-04, test: Any reactivation requires fresh authoritative attestation, app compliance, assignment validation, actor and governing version., fail_result: BLOCK}
+      - {check_id: ANS-D04-05, test: Original terminal-state history remains immutable and linked to any new identity/process., fail_result: BLOCK}
+
+  DEV-CMD-DEC-05:
+    allowed_options: [D05-A, D05-B, D05-C]
+    required_fields: [attestation_authority_and_freshness_rule]
+    deterministic_checks:
+      - {check_id: ANS-D05-01, test: Trust requires valid enrollment/assignment, current app compliance, authoritative attestation, policy version, source/actor and timestamp., fail_result: BLOCK}
+      - {check_id: ANS-D05-02, test: Authority is named through a verifiable governance/provider reference and freshness has an approved rule rather than an invented duration., fail_result: RETURN}
+      - {check_id: ANS-D05-03, test: MDM text, app boolean, last-seen, queued Resume and manual database edit are individually insufficient., fail_result: BLOCK}
+      - {check_id: ANS-D05-04, test: D05-B names human approval ownership; D05-C enforces requester/approver independence consistently with D03., fail_result: RETURN}
+      - {check_id: ANS-D05-05, test: Stale, missing or conflicting evidence cannot retain or restore positive trust without the approved policy outcome., fail_result: BLOCK}
+
+  DEV-CMD-DEC-06:
+    allowed_options: [D06-A, D06-B, D06-C]
+    required_fields: [authoritative_actor_and_receipt_for_each_stage]
+    deterministic_checks:
+      - {check_id: ANS-D06-01, test: Every stage has one unambiguous meaning, authoritative actor, timestamp, correlation and tamper-evident receipt., fail_result: RETURN}
+      - {check_id: ANS-D06-02, test: Queued/requested is not acknowledged, received, applied or completed., fail_result: BLOCK}
+      - {check_id: ANS-D06-03, test: Privileged direct table update cannot create product acknowledgement/completion., fail_result: BLOCK}
+      - {check_id: ANS-D06-04, test: Completed includes completion time and verified effect receipt., fail_result: BLOCK}
+      - {check_id: ANS-D06-05, test: Duplicate, late, stale, rejected, mismatched and unverifiable receipts have explicit fail-closed outcomes., fail_result: RETURN}
+      - {check_id: ANS-D06-06, test: Correlation and idempotency identity are defined without inventing retry counts or timing., fail_result: RETURN}
+
+  DEV-CMD-DEC-07:
+    allowed_options: [D07-A, D07-B, D07-C]
+    required_fields: [exact_scope_and_server_device_effects]
+    deterministic_checks:
+      - {check_id: ANS-D07-01, test: Exact affected manifest/package identities and server access changes are defined., fail_result: RETURN}
+      - {check_id: ANS-D07-02, test: D07-B defines selection validation and partial-failure behavior; D07-C cites a versioned approved policy., fail_result: RETURN}
+      - {check_id: ANS-D07-03, test: A command row with no server package effect cannot be accepted as expiry., fail_result: BLOCK}
+      - {check_id: ANS-D07-04, test: Cached/offline deletion is not claimed before genuine device evidence., fail_result: BLOCK}
+      - {check_id: ANS-D07-05, test: Packages outside selected/approved scope cannot be silently invalidated., fail_result: BLOCK}
+      - {check_id: ANS-D07-06, test: Immutable inspection/package evidence is preserved even when future access is invalidated., fail_result: BLOCK}
+
+  DEV-CMD-DEC-08:
+    allowed_options: [D08-A, D08-B, D08-C]
+    required_fields: []
+    conditional_fields:
+      D08-A: [source_owner_formula_threshold_and_actions]
+      D08-B: [source_owner_formula_threshold_and_actions]
+      D08-C: []
+    deterministic_checks:
+      - {check_id: ANS-D08-01, test: D08-A or D08-B names authoritative sources, owner, formula, approved thresholds and bounded rescue actions., fail_result: RETURN}
+      - {check_id: ANS-D08-02, test: D08-B names the future governed route boundary without inventing its design identity., fail_result: RETURN}
+      - {check_id: ANS-D08-03, test: D08-C keeps sync-health requirement open/blocked and removes illustrative metrics from accepted runtime truth., fail_result: BLOCK}
+      - {check_id: ANS-D08-04, test: Last-seen alone cannot assert online/offline/healthy., fail_result: BLOCK}
+      - {check_id: ANS-D08-05, test: RLS-empty, failed reads and stale sources cannot display healthy or zero., fail_result: BLOCK}
+      - {check_id: ANS-D08-06, test: No hard-coded outbox/conflict/retry/replay number is approved., fail_result: BLOCK}
+
+  DEV-CMD-DEC-09:
+    allowed_options: [D09-A, D09-B, D09-C]
+    required_fields: []
+    conditional_fields:
+      D09-A: []
+      D09-B: [separate_provider_governance_reference]
+      D09-C: [separate_provider_governance_reference]
+    deterministic_checks:
+      - {check_id: ANS-D09-01, test: D09-A records a formal fail-closed hold and prohibits transport, acknowledgement, completion and trust-restoration claims., fail_result: BLOCK}
+      - {check_id: ANS-D09-02, test: D09-B reference proves named provider, credential boundary, attestation, transport, receipt, retry, privacy and release governance., fail_result: RETURN}
+      - {check_id: ANS-D09-03, test: D09-C reference defines only a provider-neutral contract and keeps provider-specific runtime/live completion held., fail_result: BLOCK}
+      - {check_id: ANS-D09-04, test: The sponsor option alone is not treated as provider enablement or credential authority., fail_result: BLOCK}
+      - {check_id: ANS-D09-05, test: Arbitrary MDM reference or seeded/mock response cannot be called verified attestation or genuine receipt., fail_result: BLOCK}
+      - {check_id: ANS-D09-06, test: Existing contradiction between MDM-held narrative and missing provider-hold row is resolved through change control., fail_result: RETURN}
+
+  DEV-CMD-DEC-10:
+    allowed_options: [D10-A, D10-B]
+    required_fields: []
+    applied_after_answer_fields: [governed_identity_fingerprint_and_lineage]
+    deterministic_checks:
+      - {check_id: ANS-D10-01, test: D10-A preserves other WA-DES-015 states and selector behavior; D10-B uses collision-checked governance allocation., fail_result: RETURN}
+      - {check_id: ANS-D10-02, test: Lineage binds stable revision/fingerprint to WA-DES-015, CD-056 and /admin/devices., fail_result: RETURN}
+      - {check_id: ANS-D10-03, test: WA-DES-004, WA-DES-043, WA-DES-011 and WA-DES-041 are not reused as the Devices route design., fail_result: BLOCK}
+      - {check_id: ANS-D10-04, test: Illustrative device/person/outbox/health values are not promoted as runtime truth., fail_result: BLOCK}
+      - {check_id: ANS-D10-05, test: Design work consuming role/state/provider semantics waits until D01 through D09 are ACK and recorded., fail_result: BLOCK}
+      - {check_id: ANS-D10-06, test: Sponsor answer does not itself fabricate a fingerprint or claim design acceptance., fail_result: RETURN}
+
+cross_decision_checks:
+  - check_id: ANS-X-01
+    condition: D04-A with any ordinary Resume from revoked or wiped.
+    result: BLOCK
+  - check_id: ANS-X-02
+    condition: D04-B or D04-C without a separately named reactivation process and fresh D05 evidence.
+    result: BLOCK
+  - check_id: ANS-X-03
+    condition: D03-B or D03-C, or D05-C, while requester may approve their own action.
+    result: BLOCK
+  - check_id: ANS-X-04
+    condition: D05-A/B/C allows queueing Resume or local fields alone to satisfy Trusted.
+    result: BLOCK
+  - check_id: ANS-X-05
+    condition: D06-A/B/C permits positive acknowledgement/completion without the D09-approved authority and genuine receipt.
+    result: BLOCK
+  - check_id: ANS-X-06
+    condition: D09-A with any live acknowledgement, completion, attestation or trust-restoration claim.
+    result: BLOCK
+  - check_id: ANS-X-07
+    condition: D09-C with any provider-specific runtime or live-completion claim.
+    result: BLOCK
+  - check_id: ANS-X-08
+    condition: D07-A/B/C treats queueing as cached-device deletion or lacks identifiable affected manifests.
+    result: BLOCK
+  - check_id: ANS-X-09
+    condition: D08-C while sync-health/outbox metrics are accepted as current truth or MVP2-REQ-0186 is marked complete.
+    result: BLOCK
+  - check_id: ANS-X-10
+    condition: Any D01 option grants Inspector or Auditor mutation.
+    result: BLOCK
+  - check_id: ANS-X-11
+    condition: D01 role/capability matrix and D02 per-command matrix disagree on any role or command.
+    result: RETURN
+  - check_id: ANS-X-12
+    condition: D02 permits a transition that D04 declares terminal.
+    result: BLOCK
+  - check_id: ANS-X-13
+    condition: D03 approval stages and D06 command lifecycle use incompatible actors or ordering.
+    result: RETURN
+  - check_id: ANS-X-14
+    condition: D05 trust evidence claims a provider authority that D09 holds or does not authorize.
+    result: BLOCK
+  - check_id: ANS-X-15
+    condition: D07 cached invalidation or D08 offline/replay behavior lacks a shared fail-closed boundary.
+    result: RETURN
+  - check_id: ANS-X-16
+    condition: D10 design selection is consumed before D01 through D09 are complete, compatible and recorded.
+    result: BLOCK
+
+acceptance_preservation_checks:
+  negative_cases:
+    source: M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+    expected: 46
+    checks:
+      - Every case remains mapped to an answered policy or remains explicitly blocked.
+      - No answer changes REJECT/HOLD/DEGRADE/BLOCK into optimistic success without approved evidence.
+      - No provider-held case is removed from the ledger.
+  positive_cases:
+    source: M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    expected: 14
+    checks:
+      - Every positive lifecycle has an allowed path or a truthful dependency block.
+      - A held provider may block completion but cannot cause the mandatory requirement to be deleted or marked complete.
+      - Current source behavior or adjacent tests cannot substitute for future lifecycle evidence.
+  fail_result:
+    missing_or_ambiguous_mapping: RETURN
+    removed_or_weakened_case: BLOCK
+
+provider_authority_verification:
+  D09-A:
+    required: Canonical provider-hold record resolving the current MDM hold contradiction.
+    forbidden: Credentials, transport, provider receipt, attestation or positive completion claim.
+  D09-B:
+    required:
+      - separate approved provider governance reference
+      - named non-production environment and credential owner
+      - authenticated request/receipt and correlation contract
+      - privacy/security/release evidence requirements
+    forbidden: Enabling provider solely from sponsor option text.
+  D09-C:
+    required:
+      - separate approved provider-neutral schema/governance reference
+      - explicit hold on provider-specific execution and live completion
+    forbidden: Claiming mock/seed contract tests prove provider runtime.
+  unverified_reference_result: RETURN
+  invented_or_false_runtime_authority_result: BLOCK
+
+evaluation_algorithm:
+  ordered_steps:
+    - Parse exact ten-answer structure and allow-listed option IDs.
+    - Evaluate required and conditional companion fields.
+    - Resolve cited governance/provider references read-only.
+    - Run per-decision checks.
+    - Run all cross-decision checks.
+    - Reconcile every one of the 46 negative and 14 positive cases.
+    - Confirm no lease, enablement, completion or design-acceptance authority is implied.
+    - Emit one overall result and every failed check ID.
+  precedence: BLOCK overrides RETURN; RETURN overrides ACK.
+  ACK_condition: No BLOCK or RETURN check fails.
+  output_fields:
+    - answer_set_revision
+    - overall_result
+    - passed_check_ids
+    - failed_return_check_ids
+    - failed_block_check_ids
+    - unresolved_references
+    - acceptance_case_reconciliation
+    - next_authorized_change_control_step
+
+review:
+  disposition: BLOCK
+  code: BLOCK_PENDING_TEN_COMPLETE_COMPATIBLE_SPONSOR_ANSWERS
+  current_facts:
+    - No sponsor answer set is present in the reviewed inputs.
+    - Current Resume source remains incompatible with the preservation floor.
+    - MDM provider authority and formal hold trace remain unresolved.
+    - Stable governed Devices design identity remains unresolved.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+    mode: READ_ONLY
+    objective: >-
+      Build a concise file-and-function hazard register for current Devices,
+      command, package, offline and evidence source behavior, linking each
+      hazard to the 60-case ledger and an eventual non-overlapping remediation
+      owner without proposing code or granting a lease.

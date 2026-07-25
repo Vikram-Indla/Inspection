@@ -1,0 +1,185 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CONTROL-REF-CLASSIFIER-LIVE-REPLAY-069
+status: READ_ONLY_LIVE_REPLAY_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Replay the packet-067/068 classifier against the latest local product and
+  coordination refs, distinguish documentation movement from lease or
+  ownership change, and report the exact dispatch-readiness delta.
+
+authority:
+  classifier:
+    packet: KIMI-M11-CONTROL-REF-ADVANCE-CLASSIFIER-067
+    sha256: 788ad21df990884831e3639bcbd9b3fc83a892bdd02cffae159ec0c407fe1652
+  self_test:
+    packet: KIMI-M11-CONTROL-REF-CLASSIFIER-SELF-TEST-068
+    sha256: 24b5653a550470bb334d4265d278c472c650ff88750cf6b9e9fbf3db3eec462c
+
+hard_boundary:
+  - "Read-only local ref/blob/path inspection and classifier replay plus this one owned packet."
+  - "No fetch, checkout, branch/worktree creation, merge, push, dispatch, identity, owner, lease or shared-control mutation."
+  - "No implementation, QA, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+prior_checkpoint:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 79ebbc8bf947635b6c01cd23135883c38463d96f
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+live_checkpoint:
+  product:
+    ref: origin/main
+    commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    commit_delta: NONE
+    work_queue_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+    work_queue_delta: NONE
+    current_slice_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+    current_slice_delta: NONE
+  coordination:
+    ref: origin/codex/orchestration-control-plane
+    commit: 9d05a48b87003ef0b9160160b27fe5174e78fb88
+    prior_commit: 79ebbc8bf947635b6c01cd23135883c38463d96f
+    commit_delta: ADVANCED
+    observed_intermediate_commit: 6f2c927fee7646b03d3a23200777611278b5d5ff
+    observation_note: >-
+      The ref advanced from 6f2c927f to 9d05a48b during the replay. The final
+      checkpoint, changed-path set and lease hash were re-read at 9d05a48b.
+    lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+    lease_blob_delta: NONE
+    lease_row_delta: []
+
+changed_path_replay:
+  changed_path_count: 10
+  added_path_count: 10
+  modified_path_count: 0
+  deleted_path_count: 0
+  paths:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-APPROVALS-RUNTIME-TRUTH-027.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CONTROL-REF-ADVANCE-CLASSIFIER-067.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-CONTROL-REF-CLASSIFIER-SELF-TEST-068.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-DISPATCH-VALIDATOR-REGRESSION-DRIFT-MONITOR-066.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-BLOCKER-OWNERSHIP-BOARD-066.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-CONSOLIDATED-SPONSOR-CONSENT-PACKET-048.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-DECISION-TO-ACCEPTANCE-TRACE-050.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-UNTRACED-AUTHORITY-GAP-REGISTER-051.yaml
+  all_under_read_only_coordination_batches: true
+  authority_control_paths_changed: []
+  product_test_SQL_data_design_paths_changed: []
+
+live_signals:
+  ownership_drift:
+    value: false
+    evidence:
+      - "Lease registry blob and parsed rows are unchanged."
+      - "No exact M11 application, database, migration, test or QA lease exists."
+      - "No M11 dispatch manifest exists."
+  lease_authority_change:
+    value: false
+    evidence:
+      - "Old and new ACTIVE_WORKTREE_LEASES.csv SHA-256 values match exactly."
+      - "No lease row was added, removed or modified."
+  stale_dispatch_pin:
+    value: false
+    evidence:
+      - "No active M11 dispatch manifest exists to become stale."
+    qualification: >-
+      Prior read-only checkpoints refer to the older commit, but they are
+      evidence packets, not dispatch authority. Any future dispatch must pin
+      the latest revalidated commit.
+  documentation_only_movement:
+    value: true
+    evidence:
+      - "All ten changed files are newly added read-only coordination packets."
+      - "No authority blob or ownership row changed."
+
+classifier_replay:
+  precedence_inputs: [false, false, false, true]
+  selected_class: HARMLESS_DOCUMENTATION_ADVANCE
+  expected_verdict: ACK_DOCUMENTATION_ADVANCE
+  actual_verdict: ACK_DOCUMENTATION_ADVANCE
+  result: PASS
+  exhaustive_self_test_regression:
+    truth_table_rows_expected: 16
+    truth_table_rows_replayed: 16
+    truth_table_rows_passed: 16
+    semantic_mutations_expected: 4
+    semantic_mutations_replayed: 4
+    semantic_mutations_passed: 4
+    result: PASS_NO_CLASSIFIER_REGRESSION
+
+readiness_delta:
+  product_control: UNCHANGED
+  lease_authority: UNCHANGED
+  ownership: UNCHANGED
+  active_M11_dispatch_manifest:
+    before: ABSENT
+    after: ABSENT
+  exact_M11_write_lease:
+    before: ABSENT
+    after: ABSENT
+  exact_M11_QA_lease:
+    before: ABSENT
+    after: ABSENT
+  implementation:
+    before: BLOCKED
+    after: BLOCKED
+  QA:
+    before: BLOCKED
+    after: BLOCKED
+  requirement_credit:
+    before: 0
+    after: 0
+  net_readiness_change: NONE
+
+verdict:
+  ref_movement: ACK_HARMLESS_DOCUMENTATION_ADVANCE
+  lease_or_ownership_change: NONE
+  future_dispatch_pin: REFRESH_AND_REVALIDATE_AT_TIME_OF_DISPATCH
+  dispatch_readiness: BLOCK
+  exact_reason: BLOCK_NO_ACTIVE_M11_MANIFEST_OR_EXACT_LEASE
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+  leases_issued: 0
+
+queued_next:
+  packet: KIMI-M11-BLOCKER-EVIDENCE-DELTA-070
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Re-evaluate all 12 frozen M11 blockers against current product and
+    coordination refs and report only evidence-backed OPEN, CHANGED or
+    PROVABLY_CLOSED deltas without resolving or waiving any blocker.
+  prohibited:
+    - "No fetch, dispatch, option, owner, worktree, branch, lease, provider, catalog query, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  changed_paths_expected: 10
+  changed_paths_observed: 10
+  authority_control_paths_changed: 0
+  lease_blob_drift: false
+  lease_row_deltas: 0
+  truth_table_rows_replayed: 16
+  truth_table_rows_passed: 16
+  semantic_mutations_replayed: 4
+  semantic_mutations_passed: 4
+  selected_class: HARMLESS_DOCUMENTATION_ADVANCE
+  readiness_changed: false
+  real_dispatches_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

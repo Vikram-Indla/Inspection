@@ -1,0 +1,277 @@
+schema_version: "1.0"
+packet_id: M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+status: REVIEWER_READY_READ_ONLY_LOCK_SAFE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Reconcile WA-DES-007 with the real Factory Data Integration control plane:
+  provider truth, strict CSV custody and staging, rejected rows, reconciliation
+  history, and retained governed factory master-data operations. Prevent staged
+  data, design fixtures or provider configuration from being presented as
+  imported, synchronized or authoritative source truth.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 12e55da3bdbdc6e155ca9fd4a244a416cfbbf7a1
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-DESIGN-READINESS-015.yaml
+  dirty_path_ownership: "Preceding Claude Design lane packet; preserved."
+  task: M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+  process_ids: ["G2-P00", "G2-P12"]
+  requirement_ids:
+    primary_context: ["CR-410..CR-429"]
+    direct_control_plane_primary_range: "NONE_IN_478_BASELINE"
+  acceptance_ids: ["WA-M10-AC-001..006", "WA-AC-0410..0429"]
+  route: /admin/integrations/factory-data
+  dependencies:
+    - TASK-FACTORY-360-COMPLETE-010
+    - "SENAEI_API_CONTRACT_NOT_SUPPLIED"
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "Design, frozen mappings/requirements and application/test/data artifacts."
+    - "Providers, credentials, migrations, Supabase and shared data."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  external_contract_register: product-contract/seeding-discovery/EXTERNAL_SOURCE_CONTRACT_REGISTER.csv
+  implementation:
+    - apps/web/src/app/(app)/admin/integrations/factory-data/layout.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/page.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/CsvImportForm.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/MasterDataForms.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/actions.ts
+  test: apps/web/e2e/factory360-admin-control-plane.spec.ts
+  predecessor:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Integrations Data.dc.html"
+    logical_id: WA-DES-007
+    bytes: 12588
+    sha256: "a35484895fbb0965ef63f42842a832c7dcd69a164069e1f0e059a1fae17f049b"
+    viewport: "1160x880"
+
+independent_mapping_result:
+  route_exists: true
+  component_exists: true
+  nearest_design: WA-DES-007
+  channel: ADMIN
+  claude_code_classification: CURRENT_BACKEND_PRESERVED_NEW_FRONTEND
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  alternative_route_or_component:
+    spatial_canvas: /admin/gis/spatial
+    rule: "Do not merge its feature-held GIS behavior into this route."
+  mapping_corrections:
+    - "CR-001..CR-478 is overbroad; contextual ownership is CR-410..CR-429."
+    - "Technical Admin is not a real role; exact allowed roles are security_admin, workflow_admin and compliance_admin."
+    - "Use WA-DES-007 alone, not the seven-design M10 bundle."
+    - "Add CsvImportForm, MasterDataForms and actions.ts to implementation evidence."
+    - "Current evidence is source-contract only; runtime certification remains required."
+
+requirement_ownership:
+  contextual:
+    - ids: ["CR-410..CR-414"]
+      relevance: "Source identity, license/CR truth and official-versus-observed location."
+    - ids: ["CR-415..CR-418", "CR-425"]
+      relevance: "Products, materials, capacity, documents and controlled local metadata."
+    - ids: ["CR-426", "CR-428", "CR-429"]
+      relevance: "Immutable chronology, permissions and partial-failure behavior."
+  excluded:
+    - ids: ["CR-419..CR-424", "CR-427"]
+      reason: "Visit, inspection, compliance, corrective-action, risk and card behaviors remain Factory 360 route-owned."
+  rule: >-
+    This control plane supports Factory 360 source and local metadata. It does
+    not make the profile editable, calculate risk or own dossier presentation.
+    Governance must approve any new direct control-plane requirement.
+
+real_permissions_services_and_data:
+  allowed_roles: [security_admin, workflow_admin, compliance_admin]
+  guards:
+    route: AdminRouteBoundary
+    actions: "getVerifiedUser plus user_roles exact allowlist."
+    database: "RLS and audit triggers remain authoritative."
+  reads:
+    - factories
+    - senaei_sync_runs
+    - factory_import_batches
+    - factory_import_rows
+    - senaei_reconciliation_records
+    - factory_representatives
+  writes:
+    csv_staging:
+      tables: [senaei_sync_runs, factory_import_batches, factory_import_rows]
+      guarantees:
+        - "CSV only; maximum 2 MiB and 5,000 data rows."
+        - "Exact schema version factory360-v2-staging-1."
+        - "Required identity headers and allowlisted columns."
+        - "SHA-256 file custody."
+        - "Rows become pending or rejected; zero become accepted/imported here."
+        - "Duplicate custody and partial-write failures return safe codes."
+    local_master_data:
+      tables:
+        - factory_documents
+        - factory_representatives
+        - factory_products
+        - factory_materials
+      operations:
+        - "Add document metadata."
+        - "Add/deactivate/reactivate representative."
+        - "Add product."
+        - "Add raw material."
+      exclusion: "Never edit external CR, licence or plant identifiers."
+  provider:
+    name: Senaei
+    state: NOT_CONFIGURED_AND_NOT_VERIFIED_HERE
+    remote_call_from_page: false
+    missing_contract: SENAEI_API_CONTRACT_NOT_SUPPLIED
+    rule: "Configuration, stored runs or fixtures never prove live connectivity."
+
+predecessor_findings:
+  preserved:
+    - "Control-plane-only warning."
+    - "Provider unverified truth."
+    - "CSV staging versus import distinction."
+    - "Sync/import custody table."
+    - "Rejected rows and reconciliation history."
+    - "Master-data boundary."
+  corrections:
+    - "Replace Arabic-only صقيل صناعي in the English shell with approved SAQEEL | صقيل."
+    - "Remove fabricated run dates, filenames, correlation IDs, hashes, counts, external IDs, outcomes and reason codes."
+    - "Do not present reconciled/imported sample rows unless returned by real RLS-scoped data."
+    - "Remove the Factory data/Spatial canvas segmented switch; they are separate routes."
+    - "Fix the blank FND-007 placeholder in Spatial copy; do not copy that panel into this successor."
+    - "Add the real selected-factory master-data forms and representative status controls."
+    - "Add schema-unavailable, empty, unauthorized, validation and partial-write states."
+  design_only_actions: "None may be inferred from static rows, badges or tabs."
+
+successor_identity:
+  logical_id: WA-DES-007
+  proposed_revision: WA-DES-007-C1
+  filename: "SAQEEL Admin Integrations Data - WA-DES-007-C1.dc.html"
+  lineage: CORRECTIVE_SUCCESSOR
+  state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+  creation_authorized: false
+  acceptance_rule: >-
+    Create only under an explicit design lease; export, fingerprint, independently
+    review and sponsor-accept before mapping replacement.
+
+successor_design_contract:
+  identity: "Approved SAQEEL | صقيل wordmark; no صناعي/Industrial sub-brand."
+  title: "Factory data integration"
+  route_context: "Control plane; TASK-FACTORY-360-COMPLETE-010."
+  regions:
+    - "Provider truth: explicitly not configured/not verified; no remote-call implication."
+    - "CSV staging with schema, required columns, file preview and custody explanation."
+    - "Governed factory selector and read-only dossier link."
+    - "Document, representative, product and material forms after selection."
+    - "Representative activation status."
+    - "Sync/import history with exact record-sourced custody."
+    - "Rejected staged rows using safe error codes."
+    - "Reconciliation history with exact outcome and safe reasons."
+  truth_rules:
+    - "Staged never means imported, accepted, synchronized or source-authoritative."
+    - "Empty is distinct from unavailable and from RLS-hidden."
+    - "No provider health, freshness, contract version or success is inferred."
+    - "Never reveal raw provider errors, raw row payloads or sensitive contacts in history."
+    - "Source identifiers cannot be replaced by local controls."
+    - "Fixture/example values are visibly labelled and excluded from sponsor evidence."
+
+state_matrix:
+  loading: "Reserve provider, staging, controls and history geometry; announce loading."
+  empty: "No RLS-visible factories/runs/rejections/reconciliation shown separately."
+  schema_unavailable: "Warn that no provider or history state is inferred."
+  provider_unavailable: "Preserve CSV/local controls permitted by contract; no green cue."
+  csv_preview_valid: "Show name, row/header counts and schema."
+  csv_preview_invalid: "Show safe field/file errors; disable staging."
+  staging_pending: "One action pending; prevent duplicate submission."
+  staged_success: "Batch ID, pending and rejected counts; explicitly zero accepted."
+  staging_failure: "Safe error code; no imported claim; retain chosen-file context where safe."
+  partial_write_failure: "Failed run/batch state remains visible and retry does not duplicate custody."
+  selected_factory: "Show exact source identifiers read-only and local forms."
+  unauthorized: "Route and direct actions deny without leaking data."
+  degraded: "One history/read failure does not fabricate or zero healthy sources."
+  stale_conflict: "No silent overwrite of representative status or duplicate batch; current runtime proof required."
+
+responsive_bidi_theme_accessibility:
+  viewports: ["1440x900", "1160x880", "1024x768", "768x1024", "412x915", "390x844", "320x568"]
+  locales: ["EN/LTR", "AR/RTL with identifiers, hashes and codes isolated LTR"]
+  themes: ["Light", "Dark"]
+  requirements:
+    - "Single h1 and ordered section headings."
+    - "Persistent programmatic labels, required/optional hints and associated errors."
+    - "Keyboard-operable file chooser, selector, forms, tables and dossier link."
+    - "44px targets and visible focus."
+    - "Tables become labelled horizontal regions or cards without task loss."
+    - "Status uses text/icon/shape, not color alone."
+    - "Live regions announce preview, staging and mutation results."
+    - "Long hashes, IDs and error codes wrap or truncate with accessible full value."
+    - "Sensitive representative contact fields are not exposed outside selected authorized context."
+
+test_and_evidence_assessment:
+  current_test: SOURCE_CONTRACT_ONLY
+  proven:
+    - "Exact role allowlist exists in layout/actions."
+    - "Strict CSV guards and SHA-256 custody exist."
+    - "No factories/source upsert occurs during staging."
+    - "Retained operations and provider/staged truth copy exist."
+  missing_runtime_proof:
+    - "Authorized role route and each local master-data operation with refresh persistence."
+    - "Unauthorized route and direct server-action attempts."
+    - "Valid, invalid, duplicate, oversized, malformed and all-rejected CSVs."
+    - "Audit rows for local operations and staging lifecycle."
+    - "Schema unavailable, empty, partial-source and RLS-hidden states."
+    - "No raw provider/database error leakage."
+    - "Concurrent representative/batch behavior."
+    - "EN/AR RTL, light/dark, desktop/tablet/mobile, keyboard, zoom and accessibility."
+  completion_rule: "Do not mark M10, CR-410..429 or WA-M10-AC-001..006 complete from this source-only spec."
+
+risk_register:
+  - {id: FDI-RISK-001, severity: CRITICAL, risk: "Staged CSV is represented as imported source truth."}
+  - {id: FDI-RISK-002, severity: CRITICAL, risk: "Invented provider health or undocumented contract is shown as live."}
+  - {id: FDI-RISK-003, severity: HIGH, risk: "Local controls overwrite external identifiers or read-only dossier truth."}
+  - {id: FDI-RISK-004, severity: HIGH, risk: "Fabricated design history enters sponsor evidence."}
+  - {id: FDI-RISK-005, severity: HIGH, risk: "Role/RLS or contact privacy is weakened."}
+  - {id: FDI-RISK-006, severity: HIGH, risk: "Partial write or duplicate custody is hidden."}
+
+do_not_build:
+  - "No live Senaei call, provider-health probe, endpoint, mapping or contract."
+  - "No reconciliation/apply/import action; staging only."
+  - "No external CR, licence, plant ID or official factory overwrite."
+  - "No fabricated rows, dates, counts, hashes, IDs, outcomes or freshness."
+  - "No Spatial Canvas behavior or merged route."
+  - "No risk, compliance, visit or Factory 360 dossier calculation."
+  - "No role, RLS, schema, provider, seed or shared-data change."
+
+recommended_reviewer_action: APPROVE_FOR_SPONSOR_CONSENT
+recommendation: >-
+  Approve WA-DES-007-C1 design correction with exact real behavior and fixture-free
+  states. Separately correct frozen requirement/design bundles. Do not authorize
+  new provider, reconciliation or import capability.
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-INTEGRATION-HUB-DESIGN-READINESS-017
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    route: /admin/integrations
+    design_logical_id: WA-DES-008
+  scope: >-
+    Reconcile the integration hub with real endpoint, event, export-job and
+    provider-held truth; exact permissions, services, tests, failure, degraded,
+    responsive, RTL, theme and accessibility states. No live design or product change.
+  collision_check: "Distinct route/design/component; recheck lane ownership before dispatch."

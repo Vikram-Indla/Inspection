@@ -1,0 +1,212 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-WORKFLOWS-RUNTIME-REMEDIATION-PREFLIGHT-021
+title: Collision-safe Workflow Library remediation lease preflight
+status: PREFLIGHT_READY_ALL_IMPLEMENTATION_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessors:
+    - M9-ADMIN-WORKFLOWS-RUNTIME-PERMISSION-MAPPING-020
+    - M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045
+  package: M9
+  route: /admin/workflows
+  screens: [SCR-ADM-050, SCR-ADM-051]
+  process_ids: [G2-P00]
+  requirements:
+    - MVP2-REQ-0025 through MVP2-REQ-0043
+    - MVP2-REQ-0249
+    - MVP2-REQ-0250
+    - RBAC-002
+    - RBAC-003
+    - ENG-03
+  acceptance:
+    - MVP2-AC-0025 through MVP2-AC-0043
+    - MVP2-AC-0249
+    - MVP2-AC-0250
+    - WA-M9-AC-001 through WA-M9-AC-006
+  mode: READ_ONLY
+  no_lease_claimed: true
+  no_mutation: true
+  sponsor_approval_required_before_implementation: true
+
+design_boundary:
+  owner: claude_design
+  packet: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045
+  current_verdict: RETURN_FOR_CONTRACT_AND_DESIGN_CORRECTION_BLOCK_CD051_PACKAGE
+  blockers:
+    - CD-051 R2 package and exact frame fingerprints unavailable.
+    - Workflow Library versus inline Designer surface requires corrected authority.
+    - Workflow Admin versus broader config-writer policy decision is unresolved.
+    - Governed lifecycle and hard-state designs are incomplete.
+  prohibited_for_engineering:
+    - Inventing the corrected visual hierarchy or lifecycle states.
+    - Treating WA-DES-014 as cutover-ready.
+    - Adding unapproved SLA calendars, durations, providers or thresholds.
+
+proposed_lease_sequence:
+  - lease_id: WF-LEASE-DB-001
+    order: 1
+    purpose: Engine-scoped config authorization, immutable published rows and lifecycle audit boundary.
+    proposed_owner: ONE_DATABASE_ENGINEER_ONLY
+    paths:
+      - new forward-only Supabase migration dedicated to Workflow config hardening
+      - new focused authenticated RLS probe
+    forbidden_overlap:
+      - existing migrations
+      - audit replay remediation
+      - seed data
+      - remote Supabase apply
+    entry_criteria:
+      - Sponsor accepts Workflow Admin-only or explicitly governed broader writer decision.
+      - Migration filename and owner are recorded.
+      - Audit contract owner confirms non-overlap.
+    exit_criteria:
+      - Authenticated non-Workflow Admin cannot insert/update engine=workflow.
+      - Workflow Admin cannot write another engine unless separately authorized.
+      - Published workflow payload/version identity cannot be updated or deleted.
+      - Draft-to-publish lifecycle changes append durable audit facts atomically.
+      - Database negative probe passes under real role contexts.
+  - lease_id: WF-LEASE-APP-001
+    order: 2
+    purpose: Route authorization and end-to-end row_version compare-and-set.
+    proposed_owner: ONE_WEB_ENGINEER_ONLY
+    paths:
+      - apps/web/src/app/(app)/admin/workflows/layout.tsx
+      - apps/web/src/app/(app)/admin/workflows/page.tsx
+      - apps/web/src/app/(app)/admin/workflows/Controls.tsx
+      - apps/web/src/app/(app)/admin/workflows/actions.ts
+    shared_dependency:
+      - apps/web/src/components/AdminRouteBoundary.tsx
+    shared_dependency_rule: Reuse without modifying unless a separate F0/shared-shell lease is approved.
+    entry_criteria:
+      - WF-LEASE-DB-001 contract is reviewed or its exact API is frozen.
+      - Claude Design correction defines the accepted Library/Designer boundary.
+    exit_criteria:
+      - Deep-link route is fail-closed to the approved persona set.
+      - page.tsx selects row_version and the form posts the loaded token.
+      - stale writer receives a recoverable conflict without overwrite.
+      - loading, empty, error, unauthorized, stale and conflict states are explicit.
+  - lease_id: WF-LEASE-LIFECYCLE-001
+    order: 3
+    purpose: Wire governed review, approval, schedule, retire and rollback controls.
+    proposed_owner: SAME_WEB_OWNER_OR_SEPARATE_ONLY_AFTER_FILE_SPLIT
+    paths:
+      - dedicated new lifecycle control component
+      - apps/web/src/app/(app)/admin/workflows/actions.ts
+      - apps/web/src/app/(app)/admin/workflows/page.tsx
+    entry_criteria:
+      - Accepted design frames and exact lifecycle contract exist.
+      - Effective-version resolver and in-flight binding contract are approved.
+    exit_criteria:
+      - Draft, Review, Approved, Published, Scheduled, Retired and Rolled Back semantics are not approximated.
+      - Maker cannot approve/publish/retire own version.
+      - Scheduled version does not become active before its governed time.
+      - Retirement requires successor and reason.
+      - Rollback preserves lineage and follows normal validation/publish.
+  - lease_id: WF-LEASE-TEST-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    purpose: Focused runtime, RLS, concurrency and version-selection certification.
+    proposed_owner: INDEPENDENT_QA_REVIEWER
+    paths:
+      - new apps/web/e2e/web-admin-m9-workflows-runtime.spec.ts
+      - new supabase/tests/m9_admin_workflows_runtime_probe.sql
+      - new external evidence folder under approved INSPECTION_DOCS_ROOT
+    entry_criteria:
+      - Exact personas and isolated fixture IDs are assigned.
+      - No implementation engineer owns the certification verdict.
+    exit_criteria:
+      - All P0/P1 cases below have evidence.
+      - Protected cross-module suites remain green.
+
+persona_fixture_plan:
+  required:
+    - workflow_admin_maker
+    - workflow_admin_checker
+    - workflow_admin_second_editor
+    - compliance_admin
+    - form_admin
+    - risk_owner
+    - gis_admin
+    - security_admin
+    - planner
+    - reviewer
+    - anonymous
+  fixture_rules:
+    - Isolated synthetic accounts only; do not repurpose sponsor credentials.
+    - Seed one draft at row_version N and one immutable published version.
+    - Seed a second object and a second config engine to prove negative scope.
+    - Seed one in-flight object pinned to the old workflow and one future object eligible for the successor.
+    - Every seeded row carries the approved seed_batch_id and targeted cleanup manifest.
+  seeder_dependency: >-
+    Seed design may use the approved SAQEEL seeder, but execution requires a
+    separate data lease and may not run concurrently with migration ownership.
+
+focused_test_matrix:
+  p0:
+    - id: WF-TST-001
+      proof: Anonymous and every non-approved persona are denied /admin/workflows without existence disclosure.
+    - id: WF-TST-002
+      proof: Navigation visibility and direct-route authorization agree.
+    - id: WF-TST-003
+      proof: Each admin role can mutate only its approved config engine.
+    - id: WF-TST-004
+      proof: Published workflow UPDATE and DELETE fail through authenticated REST.
+    - id: WF-TST-005
+      proof: Two editors load one draft; the second save rejects stale row_version and preserves the first save.
+    - id: WF-TST-006
+      proof: Maker self-approval fails and a distinct authorized checker succeeds.
+    - id: WF-TST-007
+      proof: VAL-01 through VAL-06 failures block publish server-side.
+    - id: WF-TST-008
+      proof: Future scheduled version is inactive before time and selected after activation.
+    - id: WF-TST-009
+      proof: In-flight inspection remains pinned to its original immutable workflow version.
+    - id: WF-TST-010
+      proof: Lifecycle mutation and audit append are atomic or use a durable governed outbox.
+  p1:
+    - id: WF-TST-011
+      proof: Retire requires a reason, distinct authority and a live successor.
+    - id: WF-TST-012
+      proof: Rollback preserves rollback_of lineage and does not mutate history.
+    - id: WF-TST-013
+      proof: Missing simulation persistence is presented honestly until its contract is built.
+    - id: WF-TST-014
+      proof: EN/AR, LTR/RTL, light/dark and 1240x880, 1024x768, 412x915 and 320x800 render correctly.
+    - id: WF-TST-015
+      proof: Keyboard, focus order, labels, error recovery and screen-reader names pass.
+
+protected_regression:
+  - apps/web/e2e/mvp2-m2-02-workflow-validator.spec.ts
+  - apps/web/e2e/mvp2-m2-02-transition-guards.spec.ts
+  - apps/web/e2e/mvp2-m2-02-governed-transition.spec.ts
+  - apps/web/e2e/mvp2-m2-02-outbox-idempotency.spec.ts
+  - apps/web/e2e/mvp2-m2-02-lifecycles.spec.ts
+  - apps/web/e2e/mvp2-m2-02-normalize.spec.ts
+  - apps/web/e2e/mvp2-m2-02-task-model.spec.ts
+  - apps/web/e2e/mvp2-m2-02-sla-model.spec.ts
+  - apps/web/e2e/shell-navigation.spec.ts
+  - apps/web/e2e/neutral-error-sweep.spec.ts
+
+collision_register:
+  observed_untracked_peer_packets:
+    - M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045.yaml
+    - KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042.yaml
+  touched_by_this_lane: false
+  known_shared_collision_risks:
+    - apps/web/src/app/(app)/admin/workflows/page.tsx
+    - apps/web/src/app/(app)/admin/workflows/actions.ts
+    - config_versions policies and triggers
+    - audit_events lifecycle writes
+    - shared Admin shell and AdminRouteBoundary
+  rule: One recorded owner per path; recheck immediately before any lease.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Keep implementation blocked until Claude Design 045's contract/design
+    corrections and the Workflow Admin authorization decision are accepted.
+    Then lease DB hardening first, application wiring second, and independent
+    certification separately. No implementation claim is permitted from this preflight.

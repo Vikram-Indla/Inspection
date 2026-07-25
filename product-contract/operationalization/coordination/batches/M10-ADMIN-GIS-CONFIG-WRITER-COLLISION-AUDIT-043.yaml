@@ -1,0 +1,477 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-CONFIG-WRITER-COLLISION-AUDIT-043
+title: Admin GIS configuration writer collision and lineage audit
+status: BLOCK_CONFIRMED_WRITER_AUTHORITY_CAS_AUDIT_AND_LINEAGE_FAILURES
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_COLLISION_AUDIT
+
+scope:
+  configuration_writers:
+    - /admin/gis per-factory radius
+    - /admin/execution shared GIS rules
+    - /admin/gis/spatial GIS layer creation
+  protected_consumers:
+    - Field journey, travel, arrival, check-in, telemetry, deviation and offline replay
+    - server confirm_arrival
+    - Operations maps and geofence monitoring
+    - Planning maps and factory resolution
+    - Factory 360 and Visit Detail lineage
+    - shared Mapbox renderer and Directions API
+  exclusions:
+    - no application, database, seed, test, design or evidence mutation
+    - no branch, lease, stash, authority or decision change
+    - no invented GIS values, upper bounds, roles, provider proof or offline behavior
+
+authority:
+  screen_ids:
+    - SCR-ADM-070
+    - SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+  exact_primary_478_requirements: []
+  contextual_requirement_acceptance_pairs:
+    - CR-037 / WA-AC-0037
+    - CR-038 / WA-AC-0038
+    - CR-046 / WA-AC-0046
+    - CR-091 / WA-AC-0091
+    - CR-101 / WA-AC-0101
+    - CR-117 / WA-AC-0117
+    - CR-123 / WA-AC-0123
+    - CR-124 / WA-AC-0124
+    - CR-129 / WA-AC-0129
+    - CR-130 / WA-AC-0130
+    - CR-135 / WA-AC-0135
+    - CR-136 / WA-AC-0136
+    - CR-137 / WA-AC-0137
+    - CR-138 / WA-AC-0138
+    - CR-140 / WA-AC-0140
+    - CR-144 / WA-AC-0144
+    - CR-145 / WA-AC-0145
+    - CR-150 / WA-AC-0150
+    - CR-151 / WA-AC-0151
+    - CR-152 / WA-AC-0152
+    - CR-153 / WA-AC-0153
+    - CR-154 / WA-AC-0154
+    - CR-155 / WA-AC-0155
+    - CR-156 / WA-AC-0156
+    - CR-157 / WA-AC-0157
+    - CR-158 / WA-AC-0158
+    - CR-159 / WA-AC-0159
+    - CR-160 / WA-AC-0160
+    - CR-161 / WA-AC-0161
+    - CR-162 / WA-AC-0162
+    - CR-173 / WA-AC-0173
+    - CR-174 / WA-AC-0174
+    - CR-414 / WA-AC-0414
+    - CR-431 / WA-AC-0431
+    - CR-442 / WA-AC-0442
+    - CR-443 / WA-AC-0443
+  transferred:
+    - MVP2-REQ-0072 / MVP2-AC-0072
+    - MVP2-REQ-0075 / MVP2-AC-0075
+    - MVP2-REQ-0233 / MVP2-AC-0233
+  package_acceptance:
+    - WA-M10-AC-001..006
+  special_component_acceptance:
+    - SPC-GIS-001..008
+
+reconciliation:
+  runtime_mapping:
+    packet_id: M10-ADMIN-GIS-RUNTIME-PERMISSION-MAPPING-040
+    status: BLOCK_P0_ROUTE_ENTITLEMENT_RADIUS_AUTHORITY_CONCURRENCY_AND_POLICY
+  remediation_preflight:
+    packet_id: M10-ADMIN-GIS-REMEDIATION-PREFLIGHT-041
+    status: PREFLIGHT_DEFINED_IMPLEMENTATION_BLOCKED
+    future_ownership_envelopes: UNGRANTED
+  consumer_inventory:
+    packet_id: M10-ADMIN-GIS-CONSUMER-TEST-INVENTORY-042
+    status: BLOCK_CONSUMER_LINEAGE_AND_TEST_EVIDENCE_INCOMPLETE
+  design_review:
+    packet_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+    status: BLOCK_DUE_TO_ROUTE_ENTITLEMENT_POLICY_HOLD_AND_UNSAFE_RADIUS_MUTATION
+    use: Dependency only.
+
+writer_matrix:
+  - writer_id: FACTORY_RADIUS_WRITER
+    route: /admin/gis
+    source: apps/web/src/app/(app)/admin/gis/actions.ts
+    record: factories row
+    owned_field: geofence_radius_m
+    current_authorization:
+      page: Any authenticated non-field user can reach the route directly.
+      action: Any authenticated user may invoke.
+      RLS: gis_admin or planner may update the row.
+    validation:
+      - positive
+      - finite
+      - rounded integer
+    missing:
+      - explicit GIS capability check
+      - approved upper bound
+      - expected current value or version
+      - reason
+      - GIS policy version context
+      - conflict result
+    audit: Generic factory update trigger only.
+    refresh: /admin/gis only.
+  - writer_id: SHARED_GIS_RULE_WRITER
+    route: /admin/execution
+    source: apps/web/src/app/admin/execution/actions.ts
+    record: engine_settings row where engine equals gis
+    owned_fields:
+      - arrival_detection_radius_m
+      - geofence_default_radius_m
+      - gps_accuracy_checkin_max_m
+      - telemetry_interval_s
+    current_authorization:
+      page_and_action_capability: admin.execution_workflow
+      default_capability_roles:
+        - compliance_admin
+        - form_admin
+        - workflow_admin
+        - risk_owner
+        - gis_admin
+        - security_admin
+      direct_user_grants: Possible through user_capability_grants.
+      RLS_update_roles:
+        - risk_owner
+        - gis_admin
+        - compliance_admin
+        - workflow_admin
+        - security_admin
+      mismatch:
+        - form_admin has the capability but not engine_write RLS.
+        - A directly granted non-RLS persona can render and invoke but cannot update.
+    validation:
+      - integer
+      - minimum 1
+    missing:
+      - approved upper bounds
+      - DEC-002 formal authority
+      - expected updated_at or version_label
+      - atomic update and audit
+      - downstream invalidation
+    version_behavior: Creates a timestamp-derived version_label in application code.
+    refresh: /admin/execution only.
+  - writer_id: SPATIAL_LAYER_WRITER
+    route: /admin/gis/spatial
+    source: apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+    record: gis_layers row
+    current_authorization:
+      page: Any authenticated non-field user can reach the route when enabled.
+      action: Authenticated user plus feature flag.
+      RLS:
+        - gis_admin
+        - security_admin
+        - compliance_admin
+    validation:
+      - nonempty key
+      - nonempty label
+      - enumerated layer type
+    missing:
+      - governed screen identity
+      - explicit action capability
+      - audit trigger
+      - version lifecycle
+      - provider and policy clearance
+
+authority_collision_proof:
+  GIS_screen_contract:
+    screen: SCR-ADM-070
+    personas:
+      - GIS Admin
+      - Technical Admin
+    purpose: Manage coordinates, geofence rules, arrival thresholds and override policy.
+  RBAC_contract:
+    source: product-contract/domain/rbac_matrix.csv
+    role: GIS Admin
+    capability: GIS Configuration
+  field_dictionary:
+    source: product-contract/domain/field_dictionary.csv
+    official_coordinate_owner: GIS Admin
+  runtime_conflicts:
+    - Planner can write per-factory radius under factories_update.
+    - All six Admin roles receive admin.execution_workflow and can see the shared GIS rules editor.
+    - Five Admin roles pass engine_write; form_admin or direct-only grantees can pass the capability but fail RLS.
+    - Spatial RLS grants three Admin roles without an exact route capability.
+  result: CONFIRMED_MULTIPLE_INCOMPATIBLE_AUTHORITY_MODELS
+
+permission_failure_paths:
+  - id: GISCOL-PERM-01
+    actor: planner
+    path: Direct invoke /admin/gis updateGeofenceRadius.
+    capability_result: No explicit check.
+    RLS_result: Allowed.
+    business_result: Planner changes a GIS-owned radius.
+    severity: P0
+  - id: GISCOL-PERM-02
+    actor: form_admin
+    path: /admin/execution saveGisRules.
+    capability_result: Allowed.
+    RLS_result: Denied by engine_write row filter.
+    application_detection: Update has no selected-row or affected-row assertion.
+    possible_user_result: False success despite no row change.
+    severity: P0
+  - id: GISCOL-PERM-03
+    actor: user with direct admin.execution_workflow grant but no engine_write role.
+    path: /admin/execution GIS editor and raw JSON.
+    capability_result: Allowed.
+    RLS_result: Full engine read allowed; update row filtered.
+    possible_user_result: Full GIS policy disclosed and save may appear successful without mutation.
+    severity: P0
+  - id: GISCOL-PERM-04
+    actor: unrelated authenticated web persona
+    path: Direct GET /admin/gis.
+    capability_result: No route check.
+    RLS_result: Full factory and engine reads allowed.
+    business_result: Precise coordinates, risks, radii and full settings disclosed.
+    severity: P0
+  - id: GISCOL-PERM-05
+    actor: compliance_admin or security_admin
+    path: /admin/gis/spatial create layer.
+    capability_result: No explicit action check.
+    RLS_result: Allowed.
+    business_result: Spatial layer created under an unapproved route persona model.
+    severity: P0
+
+CAS_and_lost_update_proof:
+  factory_radius_same_row:
+    initial: Radius R0.
+    sequence:
+      - Editor A and Editor B load R0.
+      - A saves R1 using only factory ID.
+      - B saves R2 using only factory ID.
+    observed_contract: Both writes may succeed; R2 silently replaces R1.
+    rejected_or_conflict_state: absent
+    proof_source: updateGeofenceRadius filters only .eq("id", factory_id).
+  shared_GIS_rules_same_row:
+    initial: Settings S0 and version V0.
+    sequence:
+      - Editor A and Editor B read S0.
+      - A writes four rule values S1 with generated version V1.
+      - B writes four rule values S2 from stale S0 with generated version V2.
+    observed_contract: B overwrites A; no version or updated_at predicate exists.
+    rejected_or_conflict_state: absent
+    proof_source: writeGovernedKeys reads settings, then updates only by .eq("engine", "gis").
+  factory_override_versus_shared_default:
+    initial: Factory has null override and therefore inherits default D0.
+    sequence:
+      - /admin/execution changes default to D1.
+      - Open /admin/gis page still shows D0 until reload because only /admin/execution is revalidated.
+      - An Admin saves the displayed D0 as an explicit factory override.
+    observed_contract: The factory becomes permanently pinned to stale D0 while other null-radius factories inherit D1.
+    conflict_state: absent
+    severity: P0
+  open_Field_session:
+    initial: Field page loads old policy P0 and old default/accuracy/interval.
+    sequence:
+      - Admin changes shared policy to P1 effective immediately.
+      - Field client continues displaying and calculating with P0.
+      - Server confirm_arrival reads P1 at transaction time.
+    observed_contract: Client preview can disagree with the authoritative server result.
+    conflict_or_refresh_contract: absent
+    severity: P0
+
+audit_failure_proof:
+  generic_engine_trigger:
+    source:
+      - supabase/migrations/0002_rbac_audit.sql
+      - supabase/migrations/20260721100000_execution_admin_audit.sql
+    behavior: A successful engine_settings update appends a generic audit event through a security-definer trigger.
+  explicit_execution_audit:
+    source: apps/web/src/app/admin/execution/actions.ts
+    behavior: After update, the action directly inserts a second execution_config_update event.
+    RLS_state:
+      audit_events_RLS_enabled: true
+      authenticated_insert_policy_found: false
+      read_policy_only: audit_read
+    current_result: Direct application insert is expected to be rejected by RLS.
+    action_handling: Error is logged, then the action returns ok true.
+    implication:
+      - Source-level test claims explicit audited behavior without proving the insert.
+      - Generic audit may exist, but scoped governed keys and EXE-ADMIN refs are absent from that generic event.
+      - User is told success even when the intended scoped audit fails.
+    severity: P0
+  duplicate_risk:
+    condition: If a future policy permits the explicit insert without removing or correlating the generic trigger.
+    result: One update can generate two overlapping audit records.
+    severity: P1
+  factory_radius_audit:
+    behavior: Generic before/after event exists for a successful update.
+    gaps:
+      - no radius-change reason
+      - no governing policy version
+      - no conflict/rejection event
+      - gis_admin cannot read audit_events under current audit_read roles
+  spatial_audit:
+    behavior: No audit trigger found on gis_layers or factory_locations.
+    severity: P0
+
+version_lineage_collision:
+  shared_engine_version:
+    writer: /admin/execution
+    value: Timestamp-derived application string.
+    CAS: absent
+  server_arrival:
+    source: supabase/migrations/20260721140000_execution_journey_cancellation.sql
+    value: Reads current engine_settings.gis version_label during confirm_arrival.
+    result: Canonical inside arrival carries current server-resolved lineage.
+  Field_client:
+    source: apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+    value: v1-accepted-2026-07-11
+    affected_records:
+      - telemetry
+      - deviation
+      - outside check-in
+      - legacy check-in
+      - legacy arrival
+      - exception
+      - offline queued geo_checkin
+    result: Events can carry stale or false lineage after an Admin change.
+  offline_replay:
+    source: apps/web/src/lib/offline.ts
+    behavior: Preserves the queued caller-provided GIS version.
+    issue: No reconciliation against the effective server version is defined.
+  Visit_detail:
+    source: apps/web/src/app/(app)/visits/[id]/page.tsx
+    behavior: Displays stored GIS version as audit lineage.
+    issue: Cannot distinguish server-resolved from client-hard-coded provenance.
+  verdict: CONFIRMED_P0_LINEAGE_DIVERGENCE
+
+consumer_dependency_and_failure_matrix:
+  - consumer: /admin/gis
+    dependency: engine_settings.gis plus factories
+    writer_effect: Shared default and version change.
+    refresh_gap: /admin/execution does not revalidate /admin/gis.
+    failure: One source error hides both healthy sources.
+  - consumer: /field/[visitId]
+    dependency: accuracy, default radius, telemetry and deviation settings.
+    writer_effect: Behavior changes after page reload, while open sessions remain stale.
+    failure: Client fallbacks can mask missing policy and disagree with server.
+  - consumer: server confirm_arrival
+    dependency: current accuracy, radius and version at transaction time.
+    writer_effect: Immediate.
+    failure: May reject a client preview calculated under stale settings.
+  - consumer: /field/[visitId]/travel
+    dependency: default/factory radius and Directions.
+    writer_effect: Requires page reload.
+    failure: Literal radius fallback and provider failure are independent.
+  - consumer: /operations
+    dependency: default/factory radius and geo-event results.
+    writer_effect: Requires navigation or refresh for page-level map.
+    failure: Old open screen can show stale rings and mixed-version events.
+  - consumer: Planning
+    dependency: official coordinates and per-factory radius.
+    writer_effect: Factory override appears after query refresh.
+    failure: No explicit GIS policy lineage is shown.
+  - consumer: Factory 360
+    dependency: coordinates, radius and geo events.
+    writer_effect: Null override is labelled engine default without loading its current value.
+    failure: Audit presentation can imply lineage not actually resolved.
+  - consumer: spatial schema
+    dependency: gis_layers, factory_locations, visibility matrix, map packs and snapshots.
+    writer_effect: Only gis_layers has a current writer.
+    failure: Other foundations remain unwired and unaudited.
+
+test_claim_audit:
+  source_contract_test:
+    file: apps/web/e2e/execution-admin-contract.spec.ts
+    claimed: Every write is capability-gated, merge-scoped and audited.
+    validated:
+      - capability source exists
+      - governed key source exists
+      - version-label source exists
+      - explicit audit insert source exists
+    disproven_as_runtime_claim:
+      - capability and engine RLS disagree for form_admin and direct grantees
+      - zero affected rows are not detected
+      - explicit audit insert has no authenticated insert policy and failure is ignored
+      - CAS is absent
+    action: RETURN
+  GIS_policy_test:
+    file: apps/web/e2e/ipad-gps-policy.spec.ts
+    claimed: Sponsor-approved defaults.
+    conflict: DEC-002 remains canonical OPEN and Phase 1 WAP1-DEC-002 remains open.
+    action: RETURN
+  server_journey_tests:
+    files:
+      - apps/web/e2e/execution-journey-contract.spec.ts
+      - apps/web/e2e/m04-device-eta-override.spec.ts
+      - supabase/tests/0033_m04_device_eta_override_contract.sql
+    strength: Protect authoritative server arrival and override behavior.
+    missing:
+      - policy writer change followed by new server result
+      - open stale client versus current server
+      - hard-coded client version versus server version
+      - offline replay across version change
+    action: ACK_WITH_GAPS
+  spatial_tests:
+    files:
+      - apps/web/e2e/mvp2-m2-06-spatial.spec.ts
+      - apps/web/e2e/mvp2-modules-live.spec.ts
+      - apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+    strength: Pure helpers and one RLS create path exist.
+    missing:
+      - production helper consumption
+      - route entitlement
+      - audit
+      - isolated cleanup
+    action: ACK_WITH_GAPS
+
+required_convergence_decisions:
+  - Determine the single authority for shared GIS rule editing.
+  - Determine whether /admin/execution may host a bounded execution-facing view or writer after SCR-ADM-070 authority is applied.
+  - Determine exact persona and capability mapping for shared GIS rules, factory radius, and spatial layers.
+  - Determine whether per-factory radius is direct audited configuration or versioned publish workflow.
+  - Determine CAS inputs and stale-conflict recovery for engine settings and factory radius.
+  - Determine atomic audit behavior and whether generic or scoped events are canonical.
+  - Determine how current GIS version reaches Field online, legacy, telemetry, and offline events.
+  - Determine how open clients react when policy changes.
+  - Formally disposition DEC-002 or require explicit unresolved behavior.
+  - Preserve MVP3-HOLD-002 and relevant HOLD-006 clauses until exact evidence closes them.
+
+no_code_convergence_recommendation:
+  recommended_authority_shape:
+    - SCR-ADM-070 remains the single GIS governance authority.
+    - /admin/execution must not independently broaden GIS ownership; its future role requires sponsor decision.
+    - Consumer routes receive only the minimum effective policy projection they require.
+  recommended_transaction_shape:
+    - One authorized server boundary validates capability, expected version/value, update and scoped audit atomically.
+    - A zero-row or stale update returns an explicit conflict, never success.
+    - Audit failure rolls back the governed change.
+  recommended_lineage_shape:
+    - Server-resolved effective GIS version is the only stored policy lineage.
+    - Offline items retain capture-time policy context but reconcile without silent overwrite on replay.
+    - UI distinguishes capture-time and current policy when they differ.
+  recommendation_status: PROPOSED_FOR_SPONSOR_DECISION_NOT_IMPLEMENTATION_AUTHORITY
+
+verdict:
+  recommendation: BLOCK
+  ACK:
+    - The server confirm_arrival path resolves current GIS policy and version.
+    - Generic engine and factory audit triggers provide partial before/after history.
+    - Capability, validation and neutral-error foundations exist.
+  RETURN:
+    - Return the claim that /admin/execution writes are runtime-proven audited.
+    - Return the claim that seeded GIS values close DEC-002.
+    - Return any plan that changes one writer without testing all downstream consumers.
+  BLOCK:
+    - Block implementation until single authority, persona, CAS, atomic audit, version lineage, policy and provider decisions are recorded.
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+  future_ownership_envelopes: UNGRANTED
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-WRITER-CONVERGENCE-DECISION-PACKET-044
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Convert the proven collisions into a sponsor-facing business decision
+    packet with bounded choices for single configuration authority, personas,
+    direct-versus-published radius governance, CAS/conflict behavior, atomic
+    audit, open-client refresh, capture-time policy lineage and the exact
+    unresolved DEC-002/provider boundaries.
+  safe_non_overlap:
+    - Produces decision text only.
+    - Does not alter either writer, consumer, RLS, audit, test, fixture, design or lease.
+    - Keeps every future ownership envelope ungranted.

@@ -1,0 +1,536 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+status: INDEPENDENT_REVIEWER_READY_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+purpose: >-
+  Define the independent negative-test and acceptance proof required before
+  queued remediation packets 010, 013, 014 and 015 may be certified.
+
+review_authority:
+  acceptance:
+    WA-M11-AC-001:
+      priority: P0
+      criterion: "Authorized source-backed behavior and required interactions use real services."
+    WA-M11-AC-002:
+      priority: P0
+      criterion: "Unauthorized, validation, stale/conflict and RLS/RBAC negative paths fail safely."
+    WA-M11-AC-005:
+      priority: P0
+      criterion: "Protected backend, workflow, audit and adjacent-route regression passes."
+    WA-M11-AC-006:
+      priority: P1
+      criterion: "Requirement/design/route IDs and evidence manifests are complete and truthful."
+  requirements:
+    - CR-338
+    - CR-348
+    - CR-349
+    - CR-350
+    - CR-351
+    - CR-352
+    - CR-353
+    - CR-354
+    - CR-355
+    - CR-356
+  permission_contracts:
+    - RBAC-007
+    - RBAC-008
+    - RBAC-009
+    - RBAC-011
+    - RBAC-012
+    - RBAC-014
+  source_packets:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+
+explicit_exclusions:
+  - "KIMI-M11-EXECUTION-WINDOW-LEASE-011 and every execution-window assertion."
+  - "CR-337 today/confirmed list semantics and its unresolved sponsor decision."
+  - "Factory-representative access while DEC-005 is unresolved."
+  - "Live-video provider proof, provider substitution or provider policy."
+  - "Any invented retry limit, OTP lifetime, grace period, threshold or SLA."
+
+fixture_and_execution_contract:
+  environment:
+    - "Fresh isolated PostgreSQL/Supabase-compatible test database per suite run."
+    - "Apply the canonical migration chain plus only the leased forward migrations under review."
+    - "Use a unique run_id prefix in every factory, visit, session, participant, profile and audit subject."
+    - "Run serially unless a case explicitly coordinates concurrent transactions."
+    - "Never execute against shared staging, pre-production or sponsor demonstration records."
+  identities:
+    - "Create dedicated authenticated test principals for Planner, Operations, Reviewer, assigned Inspector and unassigned Inspector."
+    - "Exercise application/RPC calls with each principal's ordinary caller session and RLS."
+    - "Do not use service_role, a management token, BYPASSRLS, schema-owner execution or an impersonated shared session for proof."
+    - "Administrative fixture creation is allowed only before assertions through a local isolated harness transaction; all proof calls must use normal persona sessions."
+  mutation_safety:
+    - "Each case owns its complete fixture graph; no record is reused by another case."
+    - "Rollback-only failure seams must be transaction-local, automatically removed and impossible to enable in application/runtime configuration."
+    - "No shared setting, feature flag, environment variable, provider switch or permanent trigger may be introduced for fault injection."
+    - "Teardown verifies zero owned rows remain, or discards the entire isolated database."
+  evidence:
+    - "Capture stable error token/status, before/after row snapshots, affected-row counts and relevant audit rows."
+    - "Capture concurrent transaction ordering and final cardinality for race cases."
+    - "Hash/redaction assertions inspect RPC JSON, application response, rendered DOM, logs and evidence exports."
+    - "No source-only or self-authored-test claim counts as runtime certification."
+
+p0_proof_coverage:
+  D-M11-001:
+    authorized: [M11-010-AUTH-001, M11-010-AUTH-002]
+    unauthorized: [M11-010-UNAUTH-001]
+    partial_failure: [M11-010-PARTIAL-001]
+    concurrency: [M11-010-CONC-001]
+    audit: [M11-010-AUDIT-001]
+    secret_redaction:
+      disposition: NOT_APPLICABLE_TO_CREATION_PAYLOAD
+      guard: "010 must not add a secret-bearing return or audit projection; 015-SECRET-001 protects the shared audit read seam."
+    neutral_error: [M11-010-UNAUTH-001]
+  M11-PERM-001:
+    authorized: [M11-010-AUTH-001, M11-010-AUTH-002]
+    unauthorized: [M11-010-UNAUTH-001]
+    partial_failure: [M11-010-PARTIAL-001]
+    concurrency: [M11-010-CONC-001]
+    audit: [M11-010-AUDIT-001]
+    secret_redaction:
+      disposition: NOT_APPLICABLE_TO_CREATION_PAYLOAD
+      guard: "No raw database error or secret-bearing audit state may be returned; shared audit redaction is proven by M11-015-SECRET-001."
+    neutral_error: [M11-010-UNAUTH-001]
+  M11-PERM-002:
+    authorized: [M11-013-AUTH-001]
+    unauthorized: [M11-013-UNAUTH-001, M11-013-UNAUTH-002]
+    partial_failure: [M11-013-PARTIAL-001]
+    concurrency: [M11-013-CONC-001]
+    audit: [M11-013-AUDIT-001]
+    secret_redaction: [M11-015-SECRET-001]
+    neutral_error: [M11-015-NEUTRAL-001]
+  M11-PERM-003:
+    authorized: [M11-013-AUTH-002]
+    unauthorized: [M11-013-UNAUTH-001, M11-013-UNAUTH-002]
+    partial_failure: [M11-013-PARTIAL-001]
+    concurrency: [M11-013-CONC-001]
+    audit: [M11-013-AUDIT-001]
+    secret_redaction: [M11-015-SECRET-001]
+    neutral_error: [M11-015-NEUTRAL-001]
+  M11-PERM-004:
+    authorized: [M11-014-AUTH-002]
+    unauthorized: [M11-014-UNAUTH-001]
+    partial_failure: [M11-014-PARTIAL-002]
+    concurrency: [M11-014-CONC-001]
+    audit: [M11-014-AUDIT-001]
+    secret_redaction:
+      disposition: NOT_APPLICABLE_TO_BEGIN_RESULT
+      guard: "014 may not add secret-bearing result fields; shared audit output remains subject to M11-015-SECRET-001."
+    neutral_error: [M11-015-NEUTRAL-001]
+  M11-PERM-007:
+    authorized: [M11-014-AUTH-001]
+    unauthorized: [M11-014-UNAUTH-001]
+    partial_failure: [M11-014-PARTIAL-001]
+    concurrency: [M11-014-CONC-001]
+    audit: [M11-014-AUDIT-001]
+    secret_redaction:
+      disposition: NOT_APPLICABLE_TO_JOIN_RESULT
+      guard: "014 may not return participant verification internals; shared audit output remains subject to M11-015-SECRET-001."
+    neutral_error: [M11-015-NEUTRAL-001]
+  M11-PERM-005:
+    authorized: [M11-015-AUTH-001]
+    unauthorized: [M11-015-UNAUTH-001]
+    partial_failure: [M11-015-PARTIAL-001]
+    concurrency: [M11-015-CONC-001]
+    audit: [M11-015-AUDIT-001]
+    secret_redaction: [M11-015-SECRET-001]
+    neutral_error: [M11-015-NEUTRAL-001]
+
+matrix:
+  "010":
+    packet: KIMI-M11-ATOMIC-FIX-LEASE-010
+    p0_findings: [D-M11-001, M11-PERM-001]
+    cases:
+      - id: M11-010-AUTH-001
+        proof_class: authorized
+        priority: P0
+        actor: assigned_inspector
+        setup: "Virtual published visit assigned to actor; no existing session."
+        action: "Invoke the atomic create RPC through the normal application caller."
+        expected:
+          - "Exactly one virtual_sessions row and the complete required participant set commit."
+          - "Returned session ID identifies the committed row."
+          - "No direct table privilege is required by the caller."
+        acceptance: [WA-M11-AC-001]
+
+      - id: M11-010-AUTH-002
+        proof_class: authorized
+        priority: P0
+        actor: planner_and_operations_separate_fixtures
+        setup: "One isolated eligible visit per persona; no session."
+        action: "Invoke the same atomic creation path."
+        expected:
+          - "Each contract-authorized management persona succeeds only for its owned fixture."
+          - "Each fixture produces one complete session graph."
+        acceptance: [WA-M11-AC-001, WA-M11-AC-005]
+
+      - id: M11-010-UNAUTH-001
+        proof_class: unauthorized
+        priority: P0
+        actor: reviewer_and_unassigned_inspector_separate_fixtures
+        setup: "Known eligible visit outside caller authority."
+        action: "Attempt application action, RPC call and direct session INSERT."
+        expected:
+          - "All paths return the governed neutral authorization result."
+          - "No session, participant or audit INSERT row exists."
+          - "Response does not confirm whether the visit exists."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-010-PARTIAL-001
+        proof_class: partial_failure
+        priority: P0
+        actor: assigned_inspector
+        setup: >-
+          Install a transaction-local, rollback-only rejection inside the
+          isolated test transaction after session INSERT but before participant
+          completion.
+        action: "Invoke the atomic create RPC once."
+        expected:
+          - "The RPC returns one stable safe failure."
+          - "No session, participant or trigger-generated audit row remains."
+          - "A clean retry after automatic seam removal succeeds."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-010-CONC-001
+        proof_class: concurrency
+        priority: P0
+        actor: two_authorized_sessions_same_persona_or_role
+        setup: "One isolated eligible visit; two independently authenticated callers synchronized at the RPC boundary."
+        action: "Release both atomic creation calls concurrently."
+        expected:
+          - "Exactly one complete session graph commits."
+          - "The losing call returns the governed existing/conflict result."
+          - "No orphan participant, duplicate audit set or raw unique-constraint text escapes."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-010-AUDIT-001
+        proof_class: audit
+        priority: P0
+        actor: assigned_inspector
+        setup: "One successful and one rollback-only failed creation fixture."
+        action: "Read immutable audit evidence through the authorized audit boundary."
+        expected:
+          - "Successful session and participant INSERT facts are present."
+          - "Failed transaction leaves no partial audit residue."
+          - "Actor and object IDs correlate to the unique run_id."
+        acceptance: [WA-M11-AC-005, WA-M11-AC-006]
+
+  "013":
+    packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    p0_findings: [M11-PERM-002, M11-PERM-003]
+    cases:
+      - id: M11-013-AUTH-001
+        proof_class: authorized
+        priority: P0
+        actor: assigned_inspector
+        setup: "Assigned verified-path fixture with a fresh participant."
+        action: "Execute the governed OTP request/status/verify paths using separate fresh participants where cooldown or active code could interfere."
+        expected:
+          - "The governed path succeeds within exact row scope."
+          - "Caller never receives direct UPDATE/DELETE rights on participant verification columns."
+        acceptance: [WA-M11-AC-001, WA-M11-AC-005]
+
+      - id: M11-013-AUTH-002
+        proof_class: authorized
+        priority: P0
+        actor: planner_operations_reviewer
+        setup: "One isolated readable session per persona."
+        action: "Exercise only the read/management/audit operation explicitly supported by each role contract."
+        expected:
+          - "Planner and Operations retain their governed management reads/actions."
+          - "Reviewer retains contracted audit visibility without mutation."
+        acceptance: [WA-M11-AC-001, WA-M11-AC-005]
+
+      - id: M11-013-UNAUTH-001
+        proof_class: unauthorized
+        priority: P0
+        actor: reviewer_planner_operations_unassigned_inspector
+        setup: "A separate participant/session fixture per actor and attempted mutation."
+        action: "Attempt direct participant INSERT, UPDATE of joined_at/verified_at/verification_record and DELETE."
+        expected:
+          - "Every mutation is denied by the database boundary."
+          - "Participant row and audit state are byte-for-byte unchanged."
+          - "No persona gains rights through an earlier successful case."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-013-UNAUTH-002
+        proof_class: unauthorized
+        priority: P0
+        actor: reviewer_planner_operations_unassigned_inspector
+        setup: "Fresh participant per RPC/persona pair."
+        action: "Attempt OTP request, verify and status execution."
+        expected:
+          - "Mutation-capable OTP actions are denied outside assigned Inspector authority."
+          - "No verification record, counter, cooldown, semantic OTP event or generic audit mutation occurs."
+          - "No shared participant causes active-code or cooldown cross-contamination."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-013-PARTIAL-001
+        proof_class: partial_failure
+        priority: P0
+        actor: assigned_inspector
+        setup: "Transaction-local rejection at the governed verification persistence boundary."
+        action: "Execute verification with an otherwise valid isolated OTP fixture."
+        expected:
+          - "No verified_at or verification_record partial write remains."
+          - "No success event/audit claim remains."
+          - "The stable application result is failure, not success or raw database text."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-013-CONC-001
+        proof_class: concurrency
+        priority: P0
+        actor: assigned_inspector
+        setup: "One fresh participant and two synchronized verify requests for the same valid code."
+        action: "Release both governed verification calls concurrently."
+        expected:
+          - "Exactly one verification transition succeeds."
+          - "The other returns deterministic already-used/stale behavior without duplicate success events."
+          - "Verification evidence has one canonical timestamp/fact."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-013-AUDIT-001
+        proof_class: audit
+        priority: P0
+        actor: assigned_inspector_and_reviewer
+        setup: "One successful governed verification and multiple denied direct mutations."
+        action: "Inspect authorized safe audit output and immutable source counts."
+        expected:
+          - "Successful governed fact is represented once."
+          - "Denied attempts do not fabricate successful business events."
+          - "Reviewer can observe the permitted audit fact but cannot mutate it."
+        acceptance: [WA-M11-AC-005, WA-M11-AC-006]
+
+  "014":
+    packet: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    p0_findings: [M11-PERM-004, M11-PERM-007]
+    cases:
+      - id: M11-014-AUTH-001
+        proof_class: authorized
+        priority: P0
+        actor: assigned_inspector
+        setup: "Eligible verified session with unjoined participant and canonical pre-join state."
+        action: "Invoke the transactional join path."
+        expected:
+          - "participant.joined_at, session state and existing semantic join event commit together."
+          - "Retry is deterministic and does not duplicate the event."
+        acceptance: [WA-M11-AC-001, WA-M11-AC-005]
+
+      - id: M11-014-AUTH-002
+        proof_class: authorized
+        priority: P0
+        actor: assigned_inspector
+        setup: "Eligible verified and ready session with its canonical Ready-created inspection."
+        action: "Invoke transactional begin and follow its post-commit redirect."
+        expected:
+          - "Inspection start, visit executing, session in_progress and begin event commit together."
+          - "Redirect targets the common execution engine only after commit."
+          - "No parallel inspection is created."
+        acceptance: [WA-M11-AC-001, WA-M11-AC-005]
+
+      - id: M11-014-UNAUTH-001
+        proof_class: unauthorized
+        priority: P0
+        actor: planner_operations_reviewer_unassigned_inspector
+        setup: "A separate eligible session per actor."
+        action: "Attempt join and begin through application action, RPC and any former direct-CAS fallback."
+        expected:
+          - "All begin attempts are denied; no fallback executes."
+          - "Inspection, visit, session, participant and audit/event state remain unchanged."
+          - "No execution-workspace redirect occurs."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-014-PARTIAL-001
+        proof_class: partial_failure
+        priority: P0
+        actor: assigned_inspector
+        setup: "One isolated join fixture per mutation boundary with a transaction-local rollback-only rejection."
+        action: "Force failure after each attempted join mutation boundary."
+        expected:
+          - "Every run leaves participant, session and event history unchanged."
+          - "No success toast/result is returned on error or zero-row update."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-014-PARTIAL-002
+        proof_class: partial_failure
+        priority: P0
+        actor: assigned_inspector
+        setup: "One isolated begin fixture per inspection/visit/session/event mutation boundary."
+        action: "Force a transaction-local rejection after each attempted boundary."
+        expected:
+          - "Every run rolls back all inspection, visit, session and semantic event changes."
+          - "No redirect or notification claims successful start."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-014-CONC-001
+        proof_class: concurrency
+        priority: P0
+        actor: assigned_inspector_two_authenticated_sessions
+        setup: "One eligible verified session; two calls synchronized at begin."
+        action: "Release both begin calls concurrently."
+        expected:
+          - "Exactly one canonical begin commits."
+          - "One inspection is used; one begin event exists."
+          - "The losing call returns deterministic stale/already-started behavior."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-014-AUDIT-001
+        proof_class: audit
+        priority: P0
+        actor: assigned_inspector_and_reviewer
+        setup: "Successful join/begin fixtures plus failed and unauthorized fixtures."
+        action: "Read safe session audit as permitted."
+        expected:
+          - "Committed join/begin facts each appear once with correct actor/object correlation."
+          - "Rolled-back and unauthorized attempts do not appear as successful semantic facts."
+          - "Reviewer visibility does not confer mutation rights."
+        acceptance: [WA-M11-AC-005, WA-M11-AC-006]
+
+  "015":
+    packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    p0_findings: [M11-PERM-005]
+    p1_security_findings: [M11-PERM-006, M11-PERM-008]
+    cases:
+      - id: M11-015-AUTH-001
+        proof_class: authorized
+        priority: P0
+        actor: reviewer_and_assigned_inspector_separate_fixtures
+        setup: "Session with legitimate session and participant audit history."
+        action: "Read vs_audit_trail through normal persona sessions."
+        expected:
+          - "Each persona receives only the safe allowlisted projection within row scope."
+          - "Required lifecycle and verification evidence remains usable."
+        acceptance: [WA-M11-AC-001, WA-M11-AC-005]
+
+      - id: M11-015-UNAUTH-001
+        proof_class: unauthorized
+        priority: P0
+        actor: unassigned_inspector
+        setup: "One existing out-of-scope session and one syntactically valid missing ID."
+        action: "Call audit and OTP request/verify/status boundaries for both IDs."
+        expected:
+          - "Missing and out-of-scope calls have identical status, token and safe body."
+          - "No resource fact, participant name, state or audit cardinality is disclosed."
+          - "No row or audit/event mutation occurs."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-015-PARTIAL-001
+        proof_class: partial_failure
+        priority: P0
+        actor: authorized_audit_reader
+        setup: "Audit source includes old and new participant rows with optional/missing safe fields."
+        action: "Exercise the projection across every source shape."
+        expected:
+          - "Projection fails closed rather than returning a raw whole-row object."
+          - "A malformed/unexpected source shape never releases a secret-bearing fallback."
+          - "Immutable source rows remain unchanged."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-015-CONC-001
+        proof_class: concurrency
+        priority: P0
+        actor: assigned_inspector_and_authorized_audit_reader
+        setup: "One isolated participant verification transaction and synchronized audit reads before/during/after commit."
+        action: "Read the safe audit seam around the committing transaction."
+        expected:
+          - "Readers see either the prior committed safe projection or the new committed safe projection."
+          - "No partial verification_record/code_hash is observable."
+          - "The final semantic verification fact appears once."
+        acceptance: [WA-M11-AC-005]
+
+      - id: M11-015-AUDIT-001
+        proof_class: audit
+        priority: P0
+        actor: authorized_audit_reader
+        setup: "Audit rows containing verification_record, code_hash and dev_code in immutable source JSON."
+        action: "Read every exposed audit API and render the authorized application view."
+        expected:
+          - "Safe envelope and allowlisted business fields remain visible."
+          - "Immutable source rows are not rewritten or deleted."
+          - "No generic raw before_state/after_state object is returned."
+        acceptance: [WA-M11-AC-005, WA-M11-AC-006]
+
+      - id: M11-015-SECRET-001
+        proof_class: secret_redaction
+        priority: P0
+        actor: reviewer_and_assigned_inspector
+        setup: "Known sentinel secrets in code_hash, verification_record and dev_code."
+        action: "Inspect RPC JSON, server action payload, rendered HTML, browser console, server logs and evidence export."
+        expected:
+          - "No exact sentinel, field name carrying its value or reversible derivative appears in any surface."
+          - "The audit view still identifies the safe verification business fact."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005, WA-M11-AC-006]
+
+      - id: M11-015-NEUTRAL-001
+        proof_class: neutral_error
+        priority: P0
+        actor: unassigned_inspector
+        setup: "Paired missing and existing-out-of-scope IDs for participant and session."
+        action: "Call vp_request_otp, vp_verify_otp, vp_otp_status and vs_audit_trail."
+        expected:
+          - "Every paired response uses VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE."
+          - "HTTP/application status and normalized response body are identical within each RPC pair."
+          - "Timing is recorded for diagnostic review but no unsupported constant-time claim is required."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+      - id: M11-015-TIMELINE-001
+        proof_class: unauthorized
+        priority: P1
+        actor: planner_operations_reviewer_assigned_inspector
+        setup: "A separate readable session for each persona."
+        action: "Attempt arbitrary vs_append_event names/details outside a governed transition."
+        expected:
+          - "Direct append is denied and no semantic or generic audit row is created."
+          - "Governed join/begin/OTP paths still write only their existing accepted event."
+        acceptance: [WA-M11-AC-002, WA-M11-AC-005]
+
+cross_packet_regression:
+  priority: P0
+  cases:
+    - id: M11-XPKT-001
+      assertion: "010 creation succeeds without reopening 013 direct participant DML."
+    - id: M11-XPKT-002
+      assertion: "013 policy hardening does not block 014's governed join/begin RPCs."
+    - id: M11-XPKT-003
+      assertion: "014 committed semantic events remain readable through 015's safe projection."
+    - id: M11-XPKT-004
+      assertion: "015 redaction does not mutate immutable audit source or hide required safe lifecycle facts."
+    - id: M11-XPKT-005
+      assertion: "No diff introduces service_role, BYPASSRLS, shared fault settings, permanent test seams or raw database errors in the DOM."
+    - id: M11-XPKT-006
+      assertion: "Protected workflow/state-transition and adjacent virtual-route regression suites pass on the isolated database."
+
+certification_gate:
+  verdicts:
+    PASS: "All P0 cases and required P1 evidence execute and pass with complete manifests."
+    FAIL: "Any authorized-path, denial, atomicity, audit, redaction, neutral-error or regression assertion fails."
+    BLOCKED_UPSTREAM: "Only a genuinely unresolved authority such as DEC-005 may be blocked; it must remain unimplemented and truthful."
+  mandatory_before_acceptance:
+    - "100% of matrix P0 cases executed; no skip, TODO, proposed-only test or source-read substitute."
+    - "All P1 cases executed unless an exact approved decision records a bounded deferral."
+    - "Runtime, API/data, audit and application evidence correlate by run_id."
+    - "No unauthorized mock, service-role proof path or open P0/P1 blocker."
+    - "Protected regression rerun passes."
+    - "Independent reviewer records PASS/FAIL/BLOCKED_UPSTREAM per case."
+  current_verdict: NOT_EXECUTED_NOT_ACCEPTED
+  requirement_count_effect: >-
+    This specification accepts zero of the 478 requirements. Counts change only
+    after implementation, execution, evidence and independent certification.
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_AND_009R_ACCEPTANCE
+  kimi_status: COMPLETED
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  acceptance_rows_checked: PASS
+  isolated_fixture_contract_checked: PASS
+  no_service_key_shortcut_checked: PASS
+  scope_separation_checked: PASS

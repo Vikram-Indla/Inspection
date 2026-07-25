@@ -1,0 +1,343 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CATALOG-REDACTION-SYNTHETIC-DRY-REVIEW-040
+status: SYNTHETIC_DOCUMENTATION_DRY_REVIEW_COMPLETE_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Exercise the catalog evidence release rules with inert, synthetic
+  catalog-shaped labels only. The cases demonstrate allowed-field filtering,
+  prohibited-content rejection, transient hashing, whole-bundle quarantine,
+  checksums, producer attestation and independent reviewer signoff without
+  real data, realistic secrets, SQL, a database connection or product changes.
+
+authority:
+  capture_pack: KIMI-M11-FUTURE-CATALOG-PROOF-PACK-037
+  diff_spec: KIMI-M11-CATALOG-BASELINE-DIFF-SPEC-038
+  redaction_checklist: KIMI-M11-CATALOG-EVIDENCE-REDACTION-CHECKLIST-039
+
+hard_boundary:
+  - "Every value below is an inert uppercase synthetic label or a hash of one."
+  - "No realistic credential, token, OTP, person, host, URL, project ref, query, body or application row is used."
+  - "No SQL, database connection, project test, dispatch, review 025, lease, product/DB/data change or unlock attempt."
+  - "Dry-review PASS does not authorize future catalog capture or evidence release."
+  - "Zero change to the 478-row completion count."
+
+synthetic_label_policy:
+  allowed_prefix: SYNTHETIC_
+  forbidden_fixture_shapes:
+    - realistic_email_or_phone
+    - JWT_like_three_part_string
+    - URI_or_connection_string
+    - long_random_key_like_value
+    - numeric_OTP_like_value
+    - person_or_factory_name
+    - actual_SQL_or_catalog_definition
+  value_hash_rule: >-
+    Only explicitly transient synthetic definition markers are hashed.
+    Synthetic markers representing a prohibited secret or personal value are
+    rejected without hashing, matching checklist 039.
+
+case_schema:
+  required_fields:
+    - case_id
+    - objective
+    - synthetic_input
+    - expected_controls
+    - expected_released_output
+    - expected_outcome
+    - expected_incident
+    - dry_review_result
+  allowed_outcomes:
+    - RELEASE_ELIGIBLE
+    - BLOCK_AND_QUARANTINE
+    - RETURN_TO_PRODUCER
+
+cases:
+  - case_id: DRY-040-A01
+    objective: "Allow an exact function-catalog field set."
+    synthetic_input:
+      file: 01-function-catalog.json
+      row:
+        function_schema: SYNTHETIC_SCHEMA
+        function_name: SYNTHETIC_FUNCTION
+        identity_arguments: SYNTHETIC_ARGUMENT_SIGNATURE
+        result_type: SYNTHETIC_RESULT_TYPE
+        owner_name: SYNTHETIC_SYSTEM_OWNER
+        owner_is_superuser: false
+        owner_bypasses_rls: false
+        owner_can_login: false
+        security_mode: INVOKER
+        leakproof: false
+        volatility: SYNTHETIC_VOLATILITY_CODE
+        parallel_mode: SYNTHETIC_PARALLEL_CODE
+        accepted_function_settings: [search_path=SYNTHETIC_SCHEMA]
+        definition_hash_algorithm: SYNTHETIC_HASH_ALGORITHM
+        definition_hash: SYNTHETIC_DEFINITION_HASH
+        acl_manifest: [SYNTHETIC_ACL_ENTRY]
+    expected_controls:
+      - "Every field is on the Q01 allowlist."
+      - "Owner is explicitly a synthetic non-personal system role."
+      - "Only search_path appears under function settings."
+    expected_released_output: SAME_FIELDS_AND_VALUES
+    expected_outcome: RELEASE_ELIGIBLE
+    expected_incident: NONE
+    dry_review_result: PASS
+
+  - case_id: DRY-040-A02
+    objective: "Reject an unclassified extra catalog field."
+    synthetic_input:
+      file: 01-function-catalog.json
+      row:
+        function_schema: SYNTHETIC_SCHEMA
+        function_name: SYNTHETIC_FUNCTION
+        identity_arguments: SYNTHETIC_ARGUMENT_SIGNATURE
+        unclassified_extra_field: SYNTHETIC_UNCLASSIFIED_VALUE
+    expected_controls:
+      - "Default-deny field filter detects unclassified_extra_field."
+      - "No partial row is released."
+    expected_released_output: NONE
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: UNCLASSIFIED_FIELD
+    dry_review_result: PASS
+
+  - case_id: DRY-040-P01
+    objective: "Reject a prohibited secret-class field without hashing it."
+    synthetic_input:
+      file: 01-function-catalog.json
+      row:
+        dev_code: SYNTHETIC_PROHIBITED_SECRET_LABEL
+    expected_controls:
+      - "Field name matches the prohibited secret class."
+      - "No value-derived hash, prefix, suffix or equality token is produced."
+      - "The entire candidate bundle enters quarantine."
+    expected_released_output:
+      incident_only:
+        prohibited_class: SECRET_OR_SECRET_DERIVATIVE
+        offending_value_present: false
+        offending_value_hash_present: false
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: PROHIBITED_SECRET_FIELD
+    dry_review_result: PASS
+
+  - case_id: DRY-040-P02
+    objective: "Reject a prohibited personal-data field without hashing it."
+    synthetic_input:
+      file: 07-audit-consumer-catalog.json
+      row:
+        email: SYNTHETIC_PROHIBITED_PERSON_LABEL
+    expected_controls:
+      - "Field name matches the prohibited personal-data class."
+      - "No value or value-derived hash is released."
+    expected_released_output:
+      incident_only:
+        prohibited_class: PERSONAL_OR_APPLICATION_DATA
+        offending_value_present: false
+        offending_value_hash_present: false
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: PROHIBITED_PERSONAL_FIELD
+    dry_review_result: PASS
+
+  - case_id: DRY-040-B01
+    objective: "Reject a raw function body rather than transforming it."
+    synthetic_input:
+      file: 01-function-catalog.json
+      row:
+        function_body: SYNTHETIC_PROHIBITED_BODY_LABEL
+    expected_controls:
+      - "function_body is a prohibited body, not a transiently permitted definition."
+      - "No hash is retained and the bundle is quarantined."
+    expected_released_output: NONE
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: PROHIBITED_BODY
+    dry_review_result: PASS
+
+  - case_id: DRY-040-Q01
+    objective: "Reject runtime query text at collection boundary."
+    synthetic_input:
+      file: SYNTHETIC_UNEXPECTED_FILE
+      row:
+        pg_stat_statements_query: SYNTHETIC_PROHIBITED_QUERY_TEXT_LABEL
+    expected_controls:
+      - "Runtime query-text field is prohibited."
+      - "Unexpected file and prohibited field both independently block."
+    expected_released_output: NONE
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: PROHIBITED_RUNTIME_QUERY_TEXT
+    dry_review_result: PASS
+
+  - case_id: DRY-040-T01
+    objective: "Hash and discard a transient policy-expression marker."
+    synthetic_input:
+      transient_field: raw_policy_using_expression
+      transient_value: SYNTHETIC_POLICY_EXPRESSION
+    expected_controls:
+      - "Value exists only inside the synthetic DB-lane model."
+      - "SHA-256 is calculated before the raw marker is discarded."
+      - "Released field contains algorithm/hash only."
+    expected_released_output:
+      using_expression_hash_algorithm: SHA-256
+      using_expression_hash: 24a5d298d7934d22fb974defbba4bb0627e14c73e5829a1ed394132732023c87
+      raw_expression_present: false
+    expected_outcome: RELEASE_ELIGIBLE
+    expected_incident: NONE
+    dry_review_result: PASS
+
+  - case_id: DRY-040-T02
+    objective: "Hash and discard a transient trigger-definition marker."
+    synthetic_input:
+      transient_field: raw_trigger_definition
+      transient_value: SYNTHETIC_TRIGGER_DEFINITION
+    expected_controls:
+      - "SHA-256 is calculated before the raw marker is discarded."
+      - "Released field contains algorithm/hash only."
+    expected_released_output:
+      trigger_definition_hash_algorithm: SHA-256
+      trigger_definition_hash: 69c5a5091b758cd387fdf8acbe05d3bbc069b4e90b94488e640e22214d2d8d1b
+      raw_definition_present: false
+    expected_outcome: RELEASE_ELIGIBLE
+    expected_incident: NONE
+    dry_review_result: PASS
+
+  - case_id: DRY-040-H01
+    objective: "Verify canonical released-file checksum behavior."
+    synthetic_input:
+      exact_UTF8_bytes_with_terminal_LF: "SYNTHETIC_ALLOWED_BUNDLE\n"
+    expected_controls:
+      - "Hash includes the terminal LF."
+      - "Algorithm label is SHA-256."
+    expected_released_output:
+      algorithm: SHA-256
+      content_sha256: df61761eda490176f4b411dbee7b7195f8df935022f23b278932372fd7435c35
+    expected_outcome: RELEASE_ELIGIBLE
+    expected_incident: NONE
+    dry_review_result: PASS
+
+  - case_id: DRY-040-H02
+    objective: "Reject a bundle-index checksum mismatch."
+    synthetic_input:
+      indexed_file_hash: SYNTHETIC_EXPECTED_HASH
+      recalculated_file_hash: SYNTHETIC_DIFFERENT_HASH
+    expected_controls:
+      - "Exact checksum comparison fails."
+      - "No file from the candidate bundle is released."
+    expected_released_output: NONE
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: CHECKSUM_MISMATCH
+    dry_review_result: PASS
+
+  - case_id: DRY-040-S01
+    objective: "Accept complete producer attestation plus independent reviewer signoff."
+    synthetic_input:
+      producer_identity: SYNTHETIC_PRODUCER_ROLE
+      reviewer_identity: SYNTHETIC_INDEPENDENT_REVIEWER_ROLE
+      bundle_sha256: SYNTHETIC_BUNDLE_HASH
+      automated_check_result: PASS
+      unresolved_incident_ids: []
+      release_decision: APPROVE_RELEASE_FROM_DB_LANE
+    expected_controls:
+      - "Producer and reviewer identities differ."
+      - "Required checksums and decision are present."
+      - "No unresolved incident exists."
+    expected_released_output: COMPLETE_SIGNOFF_RECORD
+    expected_outcome: RELEASE_ELIGIBLE
+    expected_incident: NONE
+    dry_review_result: PASS
+
+  - case_id: DRY-040-S02
+    objective: "Reject self-review."
+    synthetic_input:
+      producer_identity: SYNTHETIC_SAME_ROLE
+      reviewer_identity: SYNTHETIC_SAME_ROLE
+      release_decision: APPROVE_RELEASE_FROM_DB_LANE
+    expected_controls:
+      - "Producer and reviewer equality invalidates signoff."
+      - "Approval text cannot override independence."
+    expected_released_output: NONE
+    expected_outcome: BLOCK_AND_QUARANTINE
+    expected_incident: REVIEWER_NOT_INDEPENDENT
+    dry_review_result: PASS
+
+  - case_id: DRY-040-S03
+    objective: "Return an incomplete but uncontaminated attestation to producer."
+    synthetic_input:
+      producer_identity: SYNTHETIC_PRODUCER_ROLE
+      reviewer_identity: SYNTHETIC_INDEPENDENT_REVIEWER_ROLE
+      bundle_sha256: SYNTHETIC_BUNDLE_HASH
+      automated_check_result: PASS
+      unresolved_incident_ids: []
+      release_decision: SYNTHETIC_MISSING
+    expected_controls:
+      - "No prohibited value is present."
+      - "Missing required release decision prevents signoff."
+    expected_released_output: NONE
+    expected_outcome: RETURN_TO_PRODUCER
+    expected_incident: INCOMPLETE_SIGNOFF
+    dry_review_result: PASS
+
+dry_review_summary:
+  total_cases: 13
+  expected_release_eligible: 5
+  expected_block_and_quarantine: 7
+  expected_return_to_producer: 1
+  passed_cases: 13
+  failed_cases: 0
+  proves:
+    - allowed_field_filtering
+    - unknown_field_rejection
+    - prohibited_secret_rejection_without_hash
+    - prohibited_personal_data_rejection_without_hash
+    - body_and_runtime_query_text_rejection
+    - transient_policy_and_trigger_hashing
+    - whole_bundle_quarantine
+    - checksum_match_and_mismatch
+    - producer_attestation
+    - independent_reviewer_signoff
+  does_not_prove:
+    - live_catalog_state
+    - real_scanner_implementation
+    - runtime_persona_behavior
+    - provider_delivery
+    - quiesce_or_drain
+    - authorization_to_execute_pack_037
+
+hard_stop_review:
+  result: PASS_FOR_SYNTHETIC_DOCUMENTATION_ONLY
+  assertions:
+    - "Every prohibited case releases no offending value or value hash."
+    - "Every contaminated candidate bundle is quarantined as a whole."
+    - "Transient hashing is limited to policy/trigger definition markers."
+    - "Checksums distinguish exact bytes including terminal LF."
+    - "Self-review cannot release a bundle."
+    - "No case creates execution authority."
+
+queued_safe_follow_on:
+  queue_id: KIMI-M11-CATALOG-PREAUTHORIZATION-GO-NOGO-041
+  status: QUEUED_DOCUMENTATION_ONLY_NOT_DISPATCHED
+  purpose: >-
+    Consolidate packets 037-040 into a one-page future preauthorization
+    GO/NO-GO operator checklist without connecting, executing or releasing
+    evidence.
+  activation_conditions:
+    - "Parent orchestrator explicitly assigns the documentation-only task."
+    - "No database connection, SQL/test execution, dispatch, lease or product/data mutation."
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: UNLOCKED_CONSOLE_SESSION_ACTIVE
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  synthetic_only_review: PASS
+  allowed_field_case_present: PASS
+  prohibited_rejection_cases_present: PASS
+  transient_hash_cases_present: PASS
+  quarantine_case_present: PASS
+  checksum_cases_present: PASS
+  attestation_cases_present: PASS
+  reviewer_signoff_cases_present: PASS
+  safe_follow_on_queued: PASS
+  executed: false

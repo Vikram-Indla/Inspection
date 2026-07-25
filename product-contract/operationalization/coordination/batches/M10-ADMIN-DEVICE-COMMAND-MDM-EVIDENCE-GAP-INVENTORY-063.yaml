@@ -1,0 +1,454 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-GAP-INVENTORY-063
+title: Trusted Devices decision and acceptance evidence gap inventory
+status: INVENTORY_COMPLETE_ALL_TEN_DECISIONS_UNEVIDENCED_FOR_ACCEPTANCE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_EVIDENCE_INVENTORY
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  sponsor_decisions_fully_evidenced: 0
+  reason: >-
+    Existing evidence proves several source foundations and one rollback-only
+    suspend request, but none of the ten sponsor decisions has complete design,
+    permission, lifecycle, provider, audit, offline and browser acceptance
+    evidence. This inventory does not run or add tests and does not convert
+    structural assertions, route smoke or privileged database updates into
+    runtime completion.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-GAP-INVENTORY-063
+  predecessors:
+    - M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CONTRACT-READINESS-061
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  direct_requirement_ids: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+  acceptance_ids: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-001..006]
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-041 or CD-056
+    - Devices, Field/iPad, offline, package, sync or provider application code
+    - database, migrations, RPCs, data, seeds, tests or evidence
+    - decision register, RBAC, state transitions, provider holds or mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only source and evidence reconciliation. No product, design, provider,
+    database, test, evidence, control-file, mapping, branch, lease or status is
+    changed.
+
+evidence_grading:
+  DESIGN_SOURCE: Registered source file or frame content; appearance intent only.
+  SOURCE_ASSERTION: Static test or direct source inspection; no runtime proof.
+  DATABASE_ROLLBACK: Live or local transactional database behavior with no persisted product result.
+  BROWSER_SMOKE: Route/title or shell visibility only.
+  ADJACENT_RUNTIME: Real behavior on a related Field/package/offline surface, not Admin Devices acceptance.
+  ROUTE_RUNTIME: Behavior executed through /admin/devices with a named persona.
+  PROVIDER_RUNTIME: Approved external provider transport and genuine receipt.
+  ACCEPTANCE_EVIDENCE: Versioned evidence tied to exact requirement, persona, state and negative path.
+  rule: >-
+    A lower grade does not satisfy a higher grade. Design source, static text
+    matching, privileged SQL and adjacent Field behavior cannot substitute for
+    route, provider or acceptance evidence.
+
+current_evidence_sources:
+  design:
+    - file: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+      identity: WA-DES-015
+      sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+      grade: DESIGN_SOURCE
+      proves:
+        - desktop multi-state Admin source contains a Devices state
+        - illustrative device, inspector, OS, last-sync, outbox and status table
+      does_not_prove:
+        - route-specific accepted revision
+        - CD-056 lineage
+        - real data, permissions, commands, MDM, offline or accessibility
+    - file: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL States System.dc.html
+      identity: WA-DES-041
+      sha256: 9e78eb7ced8d9b43096d2346a8925534feeecd30c748cc48f70a86a17f4b5d9a
+      grade: DESIGN_SOURCE
+      proves: English/Arabic verified-empty wording foundation
+      does_not_prove: complete Devices route
+  route_source:
+    - file: apps/web/src/app/(app)/admin/devices/page.tsx
+      grade: SOURCE_ASSERTION
+      proves: device and command reads, current visible fields, forms and source-error handling
+    - file: apps/web/src/app/(app)/admin/mvp3-actions.ts
+      grade: SOURCE_ASSERTION
+      proves: input validation, RPC call, raw-error behavior and generic queued success copy
+    - file: apps/web/src/components/Mvp3ActionForm.tsx
+      grade: SOURCE_ASSERTION
+      proves: pending disable and status/alert rendering
+  database_source:
+    - file: supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+      grade: SOURCE_ASSERTION
+      proves:
+        - device and command schemas
+        - RLS roles
+        - trusted-row MDM-reference and app-compliance check
+        - current unsafe immediate state updates
+        - package-open guard and access event
+    - file: supabase/migrations/20260723090200_mvp3_devices_self_enroll_insert.sql
+      grade: SOURCE_ASSERTION
+      proves: self-enrollment may insert only a fail-closed pending iPad row for self
+  tests:
+    - file: apps/web/e2e/mvp3-enterprise-contract.spec.ts
+      grade: SOURCE_ASSERTION
+      proves:
+        - tables and RLS source tokens exist
+        - package trust check and requested device identifier source exist
+        - command table is intentionally not append-only
+        - Arabic fallback keys exist
+      does_not_prove: persona behavior, command lifecycle, UI action, provider, receipt or Arabic rendering
+    - file: supabase/tests/mvp3_retrofit_live_probe.sql
+      grade: DATABASE_ROLLBACK
+      proves:
+        - authorized synthetic suspend request creates a command
+        - missing device is rejected
+        - suspend changes local stored trust state
+        - package open can be denied and existing-manifest access logged
+      limitation: Acknowledged is set by privileged direct update after reset role, not a canonical application/provider transition.
+    - file: apps/web/e2e/mvp3-retrofit-regression.spec.ts
+      grade: BROWSER_SMOKE
+      proves: Security Admin route returns 200 and title/shell render
+      limitation: Arabic/mobile/theme test covers Integrations, not Devices.
+    - file: apps/web/e2e/field-settings-contract.spec.ts
+      grade: SOURCE_ASSERTION
+      proves: Field self-enrollment source is pending, self-bound and non-overwriting
+      limitation: Admin approval/trust transition and runtime RLS are not proven.
+    - file: apps/web/e2e/field-settings-rls-live.spec.ts
+      grade: TEST_AVAILABLE_NOT_DEFAULT_EVIDENCE
+      proves_if_run: self pending insert, cross-user and self-trust denial, Ops managed pending insert
+      limitation: Suite is skipped unless RUN_FIELD_SETTINGS_RLS_LIVE=1; no run receipt is bound here.
+    - file: apps/web/e2e/field-offline-isolation.spec.ts
+      grade: ADJACENT_RUNTIME
+      proves: user-scoped offline stores and replay isolation source/runtime behavior
+      limitation: No admin command, MDM receipt, device trust or package invalidation.
+    - file: apps/web/e2e/offline-drill.spec.ts
+      grade: ADJACENT_RUNTIME
+      proves: offline answer queue, one replay and no false submit success
+      limitation: No device command or remote-wipe/expiry acknowledgement.
+    - file: apps/web/e2e/m04-device-eta-override.spec.ts
+      grade: ADJACENT_RUNTIME
+      proves: field device provenance, offline ETA and governed location override behavior
+      limitation: Device identifier metadata is not MDM trust or admin command evidence.
+    - file: apps/web/e2e/cd-008-009-packages.spec.ts
+      grade: ADJACENT_RUNTIME
+      proves: package authoring/projection, hard states, Arabic, theme and reflow on package routes
+      limitation: No device download/open/submit trust matrix or cached invalidation.
+  certificates:
+    - file: product-contract/evidence/TASK-MVP3-REMOTE-SUPABASE-MIGRATION-001.md
+      grade: DATABASE_FOUNDATION_CERTIFICATE
+      proves: MVP3 migration, RLS and RPC foundation was applied
+      does_not_prove: application command acknowledgement, MDM or route UX
+    - file: product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md
+      grade: INTEGRATION_CERTIFICATE_WITH_PROVIDER_BOUNDARY
+      proves: broad regression and rollback probe passed
+      discrepancy: >-
+        It says MDM is disabled or held in MVP3_PROVIDER_POLICY_HOLDS.csv, but
+        that canonical register contains no MDM row.
+    - file: product-contract/evidence/TASK-I18N-RTL-AUDIT-001.md
+      grade: SOURCE_LOCALIZATION_AUDIT
+      proves: translation-key sweep and draft Arabic fallback presence
+      limitation: Device strings remain draft/unreviewed and no Devices RTL browser matrix exists.
+
+quantitative_evidence_snapshot:
+  sponsor_decisions: 10
+  sponsor_decisions_with_complete_acceptance_evidence: 0
+  registered_nearest_design_sources: 1
+  governed_route_specific_design_revisions: 0
+  CD_056_package_or_frame_fingerprints_available: 0
+  admin_devices_browser_action_tests: 0
+  admin_devices_persona_route_tests:
+    security_admin_smoke: 1
+    command_permission_or_action: 0
+    ops: 0
+    auditor: 0
+    assigned_self: 0
+    unrelated_authenticated: 0
+    unauthenticated: 0
+  command_request_database_positive_paths:
+    suspend: 1
+    resume: 0
+    remote_wipe: 0
+    expire_packages: 0
+    revoke: 0
+  command_transition_negative_paths:
+    missing_device: 1
+    invalid_source_state: 0
+    terminal_state_resurrection: 0
+    duplicate_or_idempotent: 0
+    stale_or_version_conflict: 0
+    unauthorized_persona: 0
+  genuine_provider_receipts: 0
+  canonical_authenticated_acknowledgement_paths: 0
+  route_specific_Arabic_RTL_browser_viewports: 0
+  route_specific_light_dark_visual_pairs: 0
+  route_specific_accessibility_runs: 0
+  route_specific_versioned_screenshots_or_videos_located: 0
+
+decision_evidence_inventory:
+  DEV-CMD-DEC-01:
+    decision: role ownership
+    existing:
+      - navigation source names security_admin
+      - RLS/RPC source names ops, security_admin, auditor and assigned self
+      - Security Admin route smoke exists
+    missing_design:
+      - canonical Device Admin/Mobile Admin persona definitions
+      - Security Admin, Ops, Auditor, assigned-self and denied frames
+      - action visibility and disabled-reason states
+    missing_runtime:
+      - direct-route and data/action matrix for every persona
+      - role lookup failure and session expiry
+    missing_permission:
+      - canonical mapping from requirement personas to RBAC roles
+      - per-command capability vocabulary
+    verdict: INSUFFICIENT_EVIDENCE
+  DEV-CMD-DEC-02:
+    decision: command eligibility by role and source state
+    existing:
+      - all four current commands share one ops/security RPC role guard
+      - one suspend request and missing-device negative database probe
+    missing_design:
+      - valid commands per device state
+      - ineligible state, reason, conflict and recovery
+    missing_runtime:
+      - every command from every allowed and denied state
+      - no-op, repeated, contradictory and concurrent requests
+    missing_permission:
+      - per-command role and scope proof
+    verdict: INSUFFICIENT_EVIDENCE
+  DEV-CMD-DEC-03:
+    decision: independent approval
+    existing:
+      - no implementation or evidence
+    missing_design:
+      - requester, approver, pending, denied, rejected, expired and emergency states
+    missing_runtime:
+      - self-approval denial
+      - independent approval persistence
+      - expiry/withdrawal and race behavior
+    missing_audit:
+      - requester and approver identities plus before/after
+    verdict: NO_EVIDENCE
+  DEV-CMD-DEC-04:
+    decision: revoked and wiped terminal behavior
+    existing:
+      - revoked, wipe_pending and wiped enum values
+      - package-open rejects every non-trusted state
+    contradictory_source:
+      - ordinary Resume attempts to set trusted from any source state
+    missing_design:
+      - terminal state, re-enrollment and historical identity evidence
+    missing_runtime:
+      - revoked/wiped Resume denial
+      - re-enrollment positive and prior-history preservation
+      - wiped/revoked package and sync denial
+    verdict: CONTRADICTED_BY_CURRENT_BEHAVIOR
+  DEV-CMD-DEC-05:
+    decision: evidence required for trusted
+    existing:
+      - table check requires non-empty MDM reference and app-compliant boolean
+      - self-enrollment cannot self-assert either and remains pending
+    missing_provider:
+      - approved attestation authority
+      - freshness, signature, device identity and policy-version contract
+    missing_runtime:
+      - pending-to-trusted approval
+      - stale/invalid attestation denial
+      - app-policy version change and revocation
+    missing_design:
+      - source, as-of, policy version and approval evidence
+    verdict: PARTIAL_STORAGE_INVARIANT_NO_AUTHORITATIVE_ATTESTATION
+  DEV-CMD-DEC-06:
+    decision: acknowledgement and completion meaning
+    existing:
+      - status enum and requested/completed timestamps
+      - privileged rollback probe can update queued to acknowledged
+    missing_provider:
+      - callback/polling authority and receipt schema
+    missing_runtime:
+      - authenticated provider/device transition
+      - invalid receipt, duplicate callback, out-of-order event and timeout
+      - completed_at/effect invariant
+    missing_audit:
+      - immutable transport, acknowledgement and completion events
+    missing_browser:
+      - device-linked timeline and receipt detail
+    verdict: NO_CANONICAL_LIFECYCLE_EVIDENCE
+  DEV-CMD-DEC-07:
+    decision: expire-package scope and effect
+    existing:
+      - command value can be queued
+      - package manifests have expiry and open guard
+    missing_behavior:
+      - no manifest/package mutation, invalidation record or device effect
+      - no selected or policy-derived package scope
+    missing_offline:
+      - cached package invalidation, offline receipt and reconnection behavior
+    missing_runtime:
+      - server access denial after expiry command
+      - partial/failed device deletion and recovery
+    verdict: COMMAND_NAME_ONLY_NO_EFFECT_EVIDENCE
+  DEV-CMD-DEC-08:
+    decision: sync health, outbox, conflict and replay ownership
+    existing:
+      - WA-DES-015 shows illustrative last sync/outbox/online-offline
+      - Field offline isolation and replay tests exist on adjacent surfaces
+    missing_source:
+      - Admin Devices queries no outbox, sync, conflict or replay source
+      - no approved health formula or threshold
+    missing_design:
+      - source provenance, stale/unknown, rescue action and ownership boundary
+    missing_runtime:
+      - Admin operational sync dashboard and rescue journey
+      - RLS/persona, partial source and refresh behavior
+    verdict: DESIGN_FIXTURE_ONLY_NO_ROUTE_EVIDENCE
+  DEV-CMD-DEC-09:
+    decision: MDM provider contract or hold
+    existing:
+      - broad certificate labels MDM held
+      - schema stores MDM reference
+    governance_gap:
+      - no MDM row in MVP3_PROVIDER_POLICY_HOLDS.csv
+      - no provider contract, credentials boundary or approved identity
+    missing_provider:
+      - enrollment, attestation, transport, acknowledgement, completion and failure receipts
+      - authentication, privacy, retention, timeout, retry and duplicate behavior
+    missing_runtime:
+      - dependency-blocked provider state tied to exact hold
+      - provider sandbox and genuine integration proof
+    verdict: BLOCKED_NO_FORMAL_HOLD_OR_PROVIDER_EVIDENCE
+  DEV-CMD-DEC-10:
+    decision: stable Devices design identity
+    existing:
+      - WA-DES-015 source hash verified
+      - Devices state is nearest semantic match
+      - WA-DES-041 supplies verified-empty wording
+    missing_design_authority:
+      - governed route-specific state/frame identifier and fingerprint
+      - CD-056 R2 package and exact frame manifest/fingerprint
+      - approved screen identity and requirement ownership
+      - mapping removal for WA-DES-004/043/011
+    missing_design_evidence:
+      - corrected command, trust, evidence and provider-held state frames
+      - English/Arabic, light/dark, responsive and accessibility matrix
+    verdict: CONFIRMED_NEAREST_NON_CONSUMABLE
+
+cross_cutting_design_evidence_gaps:
+  authority:
+    - No accepted immutable route-specific Devices revision.
+    - No CD-056 package or exact frame fingerprint.
+    - No governed screen identity.
+  states:
+    - loading, partial source, verified empty, unavailable, denied and session expired
+    - every trust and command state
+    - destructive confirmation, pending, conflict, failure and recovery
+    - provider held, offline and acknowledgement unavailable
+  fixture_truth:
+    - WA-DES-015 device, person, OS, timestamp, outbox and online/offline values are illustrative.
+  language:
+    - English design uses Arabic wordmark.
+    - No approved Arabic Devices frame or qualified Arabic review.
+    - Raw status, command, platform, MDM and date values lack bilingual/bidi contract.
+  responsive:
+    - No 1440, 1200, 1024, 768, 412, 390 and 320 accepted comparison matrix.
+    - Fixed design rail and wide table have no proven narrow task flow.
+  accessibility:
+    - No destructive-action confirmation semantics.
+    - No unique device-specific action names.
+    - No keyboard, focus recovery, screen-reader, target-size, zoom/reflow or reduced-motion evidence.
+
+cross_cutting_runtime_evidence_gaps:
+  source_truth:
+    - Device-read error still renders zero trusted.
+    - Command error becomes No RLS-visible commands.
+    - Thirty-row command history has no bounded disclosure or total.
+  permission:
+    - No focused browser/RLS matrix for Security Admin, Ops, Auditor, assigned self and unrelated user.
+    - No proof that read-only users lack rendered controls.
+  transitions:
+    - Resume safety, terminal states, revoke and allowed-state matrix untested.
+    - Duplicate, stale and contradictory commands untested.
+  audit:
+    - Command UI hides device, requester and timestamps.
+    - No immutable command lifecycle event or receipt.
+  package_and_offline:
+    - Download and submit trust enforcement unproven.
+    - Expire-package and offline cache effect absent.
+    - Revoked-device sync denial unproven.
+    - Adjacent offline replay does not prove command delivery.
+  provider:
+    - No formal MDM hold row, sandbox, callback, poll, receipt or failure contract.
+  localization:
+    - Arabic fallback presence only; values documented as draft.
+    - No Devices Arabic route test; hard-coded English and raw enums remain.
+  responsive_theme_accessibility:
+    - No Devices-specific viewport/theme visual or automated accessibility run.
+    - No browser screenshot/video evidence located for the route.
+
+minimum_future_evidence_package:
+  authority:
+    - governed WA-DES-015/CD-056 frame identity, hashes and exact requirement/screen map
+  design:
+    - every persona, state, action, error, offline and provider-held frame
+    - EN/AR, light/dark, all required viewports and accessibility annotations
+  database_and_API:
+    - allowed/denied transition matrix
+    - idempotency, expected version, concurrency and terminal-state negatives
+    - immutable command/audit evidence and receipt invariants
+  permission:
+    - route, navigation, RLS and per-command RPC matrix for every persona
+  provider:
+    - formal hold while unavailable
+    - later approved transport, acknowledgement and completion receipts
+  offline_and_package:
+    - download/open/submit enforcement
+    - expire-package server and cached-device effects
+    - offline command, reconnection, replay and conflict behavior
+  browser:
+    - action visibility, confirmation, pending, failure, conflict and persistence
+    - device-linked evidence timeline
+    - Arabic/RTL, themes, viewports, keyboard, focus, screen reader, zoom and reduced motion
+  provenance:
+    - evidence manifest with commit, schema version, provider mode, persona, locale, viewport, test and artifact hashes
+
+reviewer_disposition:
+  acknowledgement:
+    - Device storage, RLS, pending self-enrollment and package-open denial foundations have source or rollback proof.
+    - Adjacent Field offline isolation and package design-system evidence may be reused only for regression, not Devices acceptance.
+    - WA-DES-015 remains the nearest non-consumable design source.
+  return:
+    - Any evidence packet that substitutes source assertions, route smoke, privileged SQL or adjacent tests for command/provider acceptance.
+    - Any packet that cites the MDM hold without adding its canonical governance record.
+  block:
+    - All ten sponsor decisions remain unevidenced for acceptance.
+    - Resume, terminal-state, acknowledgement, expiry, permission and provider gaps block build completion.
+    - No route/design/requirement completion credit is available.
+  decision: BLOCK_DUE_TO_MISSING_ACCEPTANCE_EVIDENCE
+  recommended_action: USE_INVENTORY_TO_PLAN_POST_DECISION_TEST_AND_EVIDENCE_LEASES
+
+safe_follow_on:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+  objective: >-
+    Read-only define exact expected results and evidence identifiers for every
+    unauthorized, invalid-state, stale, duplicate, offline, provider-blocked,
+    receipt-invalid and destructive-action cancellation path without selecting
+    sponsor options or editing tests.
+  constraints:
+    - No design, application, Field/iPad, provider, database, test, evidence, control-file or mapping mutation.
+    - No branch, lease, main, setup/Inspection or stash change.

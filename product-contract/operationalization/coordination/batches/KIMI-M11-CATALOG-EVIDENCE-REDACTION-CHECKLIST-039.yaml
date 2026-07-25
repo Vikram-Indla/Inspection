@@ -1,0 +1,486 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CATALOG-EVIDENCE-REDACTION-CHECKLIST-039
+status: DOCUMENTATION_ONLY_COMPLETE_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Define the exact export allowlist, prohibited content, transient
+  transformation, hashing, quarantine, bundle review and reviewer signoff
+  required before future Q01-Q08 catalog evidence may leave the controlled
+  database evidence lane. This checklist performs no connection, query, test,
+  dispatch, lease, migration or product/data change.
+
+authority:
+  catalog_capture_pack: KIMI-M11-FUTURE-CATALOG-PROOF-PACK-037
+  baseline_diff_spec: KIMI-M11-CATALOG-BASELINE-DIFF-SPEC-038
+  source_inventory: KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+  security_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+
+hard_boundary:
+  - "Default deny: a field may leave the DB lane only when explicitly allowed below."
+  - "Secrets, secret derivatives and personal/application row data are never exported, hashed for retention or represented by reversible redaction."
+  - "Function/procedure/view/materialized-view/trigger bodies and raw policy expressions never leave the DB lane."
+  - "Runtime query text, statement text and logs never enter the catalog evidence bundle."
+  - "No bundle leaves the DB lane without producer attestation and independent reviewer signoff."
+  - "Any prohibited or unclassified field quarantines the complete bundle and yields BLOCKED."
+  - "Zero change to the 478-row completion count."
+
+terms:
+  DB_lane: >-
+    The access-controlled, isolated working boundary in which authorized
+    catalog output is received and transformed before any evidence export.
+  released_bundle: >-
+    The minimal normalized and checksummed evidence set approved to leave the
+    DB lane; it contains only allowlisted catalog metadata and hashes.
+  quarantine: >-
+    Non-exportable holding state. Quarantined content is not attached to
+    tickets, chat, Git, browser evidence or general documentation.
+
+exact_allowed_export_fields:
+  environment_manifest:
+    allowed:
+      - target_alias
+      - target_environment_class
+      - catalog_reader_role
+      - postgres_server_version_num
+      - transaction_read_only
+      - is_replica
+      - repository_commit
+      - migration_revision_manifest_sha256
+      - authorization_id
+      - lease_id
+      - capture_started_at
+      - capture_completed_at
+    constraints:
+      target_alias: "Use the pre-approved non-secret alias; never export host, URL, project ref or connection string."
+      catalog_reader_role: "Must be a non-personal service/catalog role name; a person-derived role name is prohibited."
+  Q01_functions:
+    allowed:
+      - function_schema
+      - function_name
+      - identity_arguments
+      - result_type
+      - owner_name
+      - owner_is_superuser
+      - owner_bypasses_rls
+      - owner_can_login
+      - security_mode
+      - leakproof
+      - volatility
+      - parallel_mode
+      - accepted_function_settings
+      - definition_hash_algorithm
+      - definition_hash
+      - acl_manifest
+    constraints:
+      owner_name: "Allowed only for non-personal database roles."
+      accepted_function_settings: "Export search_path only; any other setting key is BLOCKED pending explicit review."
+      definition: "Hash only. Function body is prohibited."
+  Q02_effective_execute:
+    allowed:
+      - role_name
+      - role_exists
+      - function_schema
+      - function_name
+      - identity_arguments
+      - effective_execute
+    constraints:
+      role_name: "Only PUBLIC, anon, authenticated and exact accepted non-personal system roles."
+  Q03_extensions_and_types:
+    allowed:
+      - extension_name
+      - extension_version
+      - extension_schema
+      - extension_owner
+      - function_schema
+      - function_name
+      - identity_arguments
+      - function_owner
+      - owning_extension
+      - type_schema
+      - type_name
+      - type_owner
+      - type_kind
+      - type_category
+    constraints:
+      owners: "Only non-personal database role names."
+  Q04_dependencies:
+    allowed:
+      - dependent_function
+      - dependency_type
+      - referenced_object
+    constraints:
+      object_identity: "Schema/object/type/function identities only; no definition text."
+  Q05_policies_and_table_acls:
+    allowed:
+      - table_schema
+      - table_name
+      - rls_enabled
+      - rls_forced
+      - policy_name
+      - policy_mode
+      - command_code
+      - policy_roles
+      - using_expression_hash_algorithm
+      - using_expression_hash
+      - check_expression_hash_algorithm
+      - check_expression_hash
+      - grantee
+      - grantor
+      - privilege_type
+      - is_grantable
+    constraints:
+      expressions: "Exact raw expressions are transient inside the DB lane; export only SHA-256 algorithm/hash."
+      roles: "Only non-personal database role names; OIDs are transport-only and not exported."
+  Q06_triggers:
+    allowed:
+      - table_schema
+      - table_name
+      - trigger_name
+      - enabled_mode
+      - for_each_row
+      - is_before
+      - is_instead_of
+      - fires_insert
+      - fires_delete
+      - fires_update
+      - fires_truncate
+      - function_schema
+      - function_name
+      - function_arguments
+      - trigger_definition_hash_algorithm
+      - trigger_definition_hash
+      - same_kind_execution_order_key
+    constraints:
+      trigger_definition: "Raw pg_get_triggerdef output is transient; export only SHA-256 algorithm/hash."
+  Q07_database_audit_consumers:
+    allowed:
+      - consumer_kind
+      - consumer_identity
+      - dependency_type
+      - referenced_object
+      - definition_hash_algorithm
+      - definition_hash
+      - owner_or_role
+      - field_contract_id
+      - adaptation_decision
+    constraints:
+      definitions: "Function/view/materialized-view definitions are prohibited; retain only algorithm/hash."
+      field_contract_id: "Reference an approved contract ID; do not export a free-text field list derived from data."
+  Q08_drift_snapshot:
+    allowed:
+      - schema_name
+      - object_name
+      - object_kind
+      - owner_name
+      - rls_enabled
+      - rls_forced
+      - type_kind
+    constraints:
+      owner_name: "Only non-personal database role names."
+  comparison_outputs:
+    allowed:
+      - baseline_manifest_id
+      - baseline_sha256
+      - observed_bundle_sha256
+      - difference_id
+      - object_type
+      - canonical_object_key
+      - field
+      - difference_class
+      - severity
+      - expected_value_hash
+      - observed_value_hash
+      - allowlist_id
+      - routed_packet_owner
+      - required_action
+      - final_outcome
+    constraints:
+      values: "Plain expected/observed values are allowed only if they are already allowlisted catalog metadata; otherwise retain hashes."
+
+prohibited_content:
+  secrets_and_secret_derivatives:
+    fields:
+      - database_password
+      - connection_string
+      - database_host_or_url
+      - Supabase_project_ref
+      - service_role_key
+      - anon_key
+      - JWT_or_session_token
+      - API_key
+      - provider_credential
+      - webhook_secret
+      - OTP_code
+      - dev_code
+      - code_hash
+      - verification_record
+      - reset_or_invitation_token
+    handling: "Do not export and do not retain a value-derived hash; quarantine and BLOCK."
+  prohibited_bodies:
+    fields:
+      - pg_get_functiondef_output
+      - function_body
+      - procedure_body
+      - view_definition
+      - materialized_view_definition
+    handling: "Never collect or transform for this bundle; quarantine and BLOCK."
+  transient_definitions_and_expressions:
+    fields:
+      - raw_trigger_definition
+      - raw_policy_using_expression
+      - raw_policy_check_expression
+    handling: "Transform transiently to the required hash, verify disposal, then export the hash only."
+  runtime_query_and_log_text:
+    fields:
+      - pg_stat_activity_query
+      - pg_stat_statements_query
+      - statement_log
+      - error_context_containing_SQL_or_bind_values
+      - application_log_line
+      - HTTP_request_or_response_body
+    handling: "Never collect for this bundle; presence quarantines and BLOCKS."
+  personal_and_application_data:
+    fields:
+      - auth_users_rows
+      - email
+      - phone
+      - person_name
+      - national_or_government_identifier
+      - device_identifier
+      - IP_address
+      - precise_location
+      - participant_or_inspector_record
+      - visit_or_factory_row
+      - audit_before_state
+      - audit_after_state
+      - notification_body
+      - any_application_table_row_or_count_small_enough_to_identify_a_person
+    handling: "Do not export or hash; quarantine and BLOCK."
+  infrastructure_identifiers:
+    fields:
+      - raw_database_name
+      - hostname
+      - IP_or_socket
+      - port
+      - cloud_project_identifier
+      - region_if_not_preapproved
+    handling: "Replace only with the pre-approved target alias; otherwise quarantine and BLOCK."
+
+row_and_value_transformation:
+  ordered_steps:
+    - id: R01
+      action: "Reject any column not in exact_allowed_export_fields before serializing a released row."
+    - id: R02
+      action: "Classify every value as allowed metadata, transient definition/expression, prohibited secret, prohibited personal data or unclassified."
+    - id: R03
+      action: "Immediately quarantine on secret, personal or unclassified content; do not calculate a value-derived hash."
+    - id: R04
+      action: "For raw policy/trigger definitions, calculate SHA-256 inside the DB lane and discard raw text before bundle assembly."
+    - id: R05
+      action: "For function/view fingerprints already emitted by pack 037, retain the emitted algorithm and hash; never relabel MD5 as SHA-256."
+    - id: R06
+      action: "Map raw target identity to its pre-approved alias and discard the raw value."
+    - id: R07
+      action: "Normalize only under spec 038; preserve null, false, empty and missing as distinct states."
+    - id: R08
+      action: "Sort rows deterministically and reject duplicate primary keys."
+    - id: R09
+      action: "Serialize canonical JSON and add a terminal LF."
+    - id: R10
+      action: "Calculate SHA-256 for every released file and the bundle index."
+  redaction_marker:
+    permitted_use: "Only to state that a prohibited field was detected, never to stand in for its value."
+    exact_shape:
+      redacted: true
+      classification: SECRET_OR_PERSONAL_DATA
+      incident_id: NON_SECRET_RANDOM_IDENTIFIER
+    forbidden:
+      - original_length
+      - prefix
+      - suffix
+      - reversible_ciphertext
+      - unsalted_or_salted_value_hash
+      - equality_linkable_token
+
+hashing_contract:
+  evidence_files:
+    algorithm: SHA-256
+    bytes: "Exact released UTF-8/canonical-JSON bytes including terminal LF."
+    filename: "sha256-manifest.json"
+  baseline_and_observed_manifests:
+    algorithm: SHA-256
+    self_field_rule: "Exclude the manifest's own checksum field when calculating it."
+  transient_policy_and_trigger_text:
+    algorithm: SHA-256
+    lifecycle: "Hash within DB lane, then destroy raw text before release review."
+  catalog_function_and_view_fingerprints:
+    rule: "Retain algorithm with value and compare like-for-like; these are drift fingerprints, not evidence integrity."
+  prohibited_values:
+    rule: "Never hash for retention; hashing a low-entropy secret or personal value is not redaction."
+
+bundle_layout:
+  allowed_files:
+    - 00-environment-manifest.json
+    - 01-function-catalog.json
+    - 02-effective-execute.json
+    - 03-extension-type-catalog.json
+    - 04-dependency-catalog.json
+    - 05-policy-table-acl-catalog.json
+    - 06-trigger-catalog.json
+    - 07-audit-consumer-catalog.json
+    - 08-drift-snapshot.json
+    - 09-normalized-diff.json
+    - 10-assertion-results.json
+    - 11-unknown-register.json
+    - 12-review-signoff.json
+    - sha256-manifest.json
+  forbidden_files:
+    - raw_SQL_output
+    - console_transcript
+    - database_dump
+    - log_export
+    - screenshot
+    - HAR
+    - function_or_view_definition
+    - free_form_notes_containing_values
+  unexpected_file_rule: "Quarantine and BLOCK; do not silently omit."
+
+automated_pre_release_checks:
+  structural:
+    - "Only allowed filenames and allowed fields are present."
+    - "Every required file has schema_version, capture_run_id and content_sha256."
+    - "All rows have unique canonical primary keys."
+    - "Canonical sort and null semantics match spec 038."
+    - "Every hash has an explicit algorithm."
+  prohibited_pattern_scan:
+    minimum_classes:
+      - credential_and_connection_URI_patterns
+      - JWT_shape
+      - common_API_key_and_service_role_labels
+      - email_and_phone_patterns
+      - IPv4_IPv6_and_hostname_fields
+      - OTP_dev_code_code_hash_verification_record_labels
+      - SQL_body_and_runtime_query_text_field_names
+    rule: >-
+      Pattern scanning is defense in depth, not proof of absence. A clean scan
+      never replaces field allowlisting and independent review.
+  content:
+    - "No raw function/view/matview/trigger body or raw policy expression."
+    - "No application schema row payload or audit before/after state."
+    - "No raw target identity."
+    - "No prohibited field represented as a value-derived hash."
+  integrity:
+    - "Recalculate and match every SHA-256."
+    - "Bundle index covers every released file exactly once."
+    - "No unindexed file exists."
+    - "Pack 037, spec 038 and accepted baseline checksums match authorization."
+
+independent_review_checklist:
+  producer_attestation:
+    required:
+      - "Authorized isolated target and read-only envelope confirmed."
+      - "Exact Q01-Q08 packet/checksum used."
+      - "Raw transient definitions disposed before release staging."
+      - "Allowlist applied only after redaction checks."
+      - "Automated checks all PASS with output checksums."
+    may_not_sign_as_reviewer: true
+  reviewer_verification:
+    required:
+      - "Reviewer is independent from capture producer and implementation owner."
+      - "Review source packet, baseline and spec checksums."
+      - "Inspect field inventory and a deterministic sample of every file type without requesting prohibited source values."
+      - "Recalculate bundle/file hashes."
+      - "Confirm any ALLOWED_CHANGE has exact prior authority and has not suppressed a prohibited class."
+      - "Confirm unknown register preserves runtime consumer, quiesce and provider limits."
+      - "Confirm outcome is mechanically derived under spec 038."
+  signoff_schema:
+    required_fields:
+      - capture_run_id
+      - bundle_sha256
+      - producer_identity
+      - producer_attested_at
+      - reviewer_identity
+      - reviewer_role
+      - reviewed_at
+      - checklist_version
+      - automated_check_result_sha256
+      - prohibited_content_result
+      - final_release_decision
+      - unresolved_incident_ids
+    allowed_release_decisions:
+      - APPROVE_RELEASE_FROM_DB_LANE
+      - RETURN_TO_PRODUCER
+      - BLOCK_AND_QUARANTINE
+    invalid_signoff:
+      - "Same person/agent signs producer and independent reviewer."
+      - "Missing checksum or unresolved incident."
+      - "Conditional approval or free-text exception."
+
+hard_stops_before_evidence_leaves_DB_lane:
+  - "No explicit TEST-CATALOG authorization/lease or wrong owner."
+  - "Target identity is production, ambiguous or differs from authorization."
+  - "Read-only envelope is unproven."
+  - "Any unexpected column, file or catalog object."
+  - "Any secret, secret derivative, personal/application row data or raw target identity."
+  - "Any function/procedure/view/matview/trigger body or raw policy expression remains."
+  - "Any runtime query/statement/log text."
+  - "Any prohibited value was hashed, tokenized or partially revealed instead of blocked."
+  - "Automated scan/check is incomplete, failed or unavailable."
+  - "Bundle/file checksum mismatch."
+  - "Producer attestation or independent reviewer signoff missing."
+  - "Reviewer is not independent."
+  - "Unresolved incident or unclassified value."
+  - "Attempt to use released catalog evidence as runtime, provider or quiesce certification."
+
+failure_handling:
+  result: BLOCK_AND_QUARANTINE
+  permitted_records_outside_quarantine:
+    - incident_id
+    - capture_run_id
+    - prohibited_class
+    - detection_stage
+    - detected_at
+    - assigned_security_reviewer
+    - resolution_status
+  prohibited_in_incident_record:
+    - offending_value
+    - value_hash
+    - source_row
+    - raw_output_excerpt
+  recovery: >-
+    Correct the capture/transformation procedure, obtain renewed authorization
+    if required, and recapture from the beginning. Do not edit a contaminated
+    bundle into an apparently clean one.
+
+queued_safe_follow_on:
+  queue_id: KIMI-M11-CATALOG-REDACTION-SYNTHETIC-DRY-REVIEW-040
+  status: QUEUED_DOCUMENTATION_ONLY_NOT_DISPATCHED
+  purpose: >-
+    Define a synthetic, non-database dry-review fixture covering allowed,
+    prohibited and ambiguous fields to verify this checklist without secrets,
+    personal data, SQL execution or live evidence.
+  activation_conditions:
+    - "Parent orchestrator explicitly assigns the documentation-only task."
+    - "Fixtures are synthetic labels only and contain no realistic secret or personal values."
+    - "No database connection, test execution, dispatch, lease or product/data mutation."
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  allowed_fields_defined: PASS
+  prohibited_content_defined: PASS
+  row_value_transformation_defined: PASS
+  hashing_defined: PASS
+  bundle_review_defined: PASS
+  reviewer_signoff_defined: PASS
+  hard_stops_defined: PASS
+  safe_follow_on_queued: PASS
+  executed: false

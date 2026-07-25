@@ -1,0 +1,261 @@
+schema_version: "1.0"
+packet_id: M10-INTEGRATION-HUB-DESIGN-READINESS-017
+status: REVIEWER_READY_READ_ONLY_RETURN_PROVIDER_TRUTH
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Reconcile WA-DES-008 with the read-only Integration Trust Console. The route
+  exposes governed endpoint registry truth, append-only API/rule outcomes and
+  data-sharing export status; it does not configure credentials, call providers,
+  test connectivity or infer health.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 3b544b515b7fe15e6622aaee3fd02a782755adbf
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-PERMISSION-AUDIT-012.yaml
+    - product-contract/operationalization/coordination/batches/M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016.yaml
+  dirty_path_ownership: "Other active/preceding lanes; preserved and not modified."
+  task: M10-INTEGRATION-HUB-DESIGN-READINESS-017
+  process_ids: ["G2-P00", "G2-P12"]
+  requirement_ids:
+    phase_1_direct: "NONE_IN_478_BASELINE"
+    transferred_m3_00:
+      - MVP2-REQ-0073
+      - MVP2-REQ-0078
+      - MVP2-REQ-0188..0192
+      - MVP2-REQ-0224
+      - MVP2-REQ-0226
+      - MVP2-REQ-0227
+      - MVP2-REQ-0238
+      - MVP2-REQ-0239
+      - MVP2-REQ-0241
+      - MVP2-REQ-0256
+  acceptance_ids: ["WA-M10-AC-001..006", "MVP2-AC counterparts for the 14 M3-00 rows"]
+  dependencies:
+    - "MVP3 additive integration registry contract"
+    - "Provider-specific holds and approved runtime addresses"
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "Design, mappings, requirements, product, tests, migrations, provider configuration and data."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  mvp3_register: product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+  provider_holds: product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+  implementation: apps/web/src/app/(app)/admin/integrations/page.tsx
+  tests:
+    - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    - apps/web/e2e/factory360-admin-control-plane.spec.ts
+  predecessor:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Integrations.dc.html"
+    logical_id: WA-DES-008
+    bytes: 9039
+    sha256: "c5c61acd5b854928b4972fbf6122381a7c0f11dcdb6fbaa018f08fdba954be55"
+    viewport: "1160x820"
+
+independent_mapping_result:
+  route: /admin/integrations
+  route_exists: true
+  component_exists: true
+  channel: ADMIN
+  nearest_design: WA-DES-008
+  claude_code_classification: CURRENT_BACKEND_PRESERVED_NEW_FRONTEND
+  codex_validation: CONFIRMED_WITH_CORRECTION
+  real_capability:
+    - "Read RLS-visible endpoint registry."
+    - "Read latest append-only API/rule events."
+    - "Read latest export jobs."
+    - "Link to the separate Factory Data integration route."
+  absent_capability:
+    - "No credential view/edit."
+    - "No provider test or live health call."
+    - "No endpoint create/edit/publish."
+    - "No retry, replay, webhook or sync action."
+    - "No aggregate delivery-health calculation."
+
+mapping_corrections:
+  requirement_ids:
+    current: CR-001..CR-478
+    verdict: INCORRECTLY_OVERBROAD
+    correction: >-
+      No Phase 1 478-row requirement directly owns this additive hub. Use the
+      14 exact M3-00 transferred rows and approved contextual links; never count
+      all 478 complete through this route.
+  persona:
+    current: Technical Admin
+    verdict: FICTIONAL_ROLE
+    correction: >-
+      The route is inside the authenticated Admin channel and table RLS governs
+      row visibility. Do not invent Integration Admin authority in Phase 1 or
+      imply every authenticated admin sees identical rows.
+  design_authority:
+    current: "Seven-design M10 bundle"
+    correction: "WA-DES-008-C1 alone for this route; child routes retain separate authority."
+
+real_data_contract:
+  tables:
+    endpoint_registry:
+      table: mvp3_integration_endpoints
+      fields: [endpoint_key, display_name, endpoint_kind, contract_version, status, updated_at]
+      shown: [display_name, endpoint_key, endpoint_kind, contract_version, status]
+      rule: "configured requires an approved contract and non-empty runtime address at database level."
+    events:
+      table: mvp3_api_events
+      fields: [event_kind, direction, outcome, correlation_id, occurred_at]
+      shown: [event_kind, direction, outcome]
+      rule: "Append-only outcomes; absence means no RLS-visible events, not healthy."
+    exports:
+      table: mvp3_export_jobs
+      fields: [export_kind, purpose, status, artifact_hash, requested_at, completed_at]
+      shown: [export_kind, purpose, status]
+      rule: "Prepared is not delivered; delivery requires artifact hash and receipt/completion truth."
+  errors:
+    current_gap: >-
+      Only endpoint-registry error controls the schema-unavailable banner.
+      Events and exports errors are not captured independently and can appear
+      as empty. Design must mark per-source error isolation as an implementation
+      gap, not portray verified emptiness.
+  secrets: "Never selected or displayed."
+
+predecessor_findings:
+  acceptable:
+    - "External providers fail closed until configured."
+    - "Secrets never shown."
+    - "DocuSign, Teams and Zoom held states are not presented as connected."
+  fabricated_and_prohibited:
+    - "Twilio connected/Live, OTP sent 13:41 and 128 sent/0 failed."
+    - "Resend connected/Live, delivered 12:07 and 54 sent/1 bounced."
+    - "Senaei scheduled 06:00, partial sync 08:41 and one-of-five sources late."
+    - "Provider cards infer live connectivity and 24-hour health not computed by the route."
+    - "Provider names/purposes may not be added unless returned by the endpoint registry."
+  identity_defect: "Arabic-only صقيل صناعي appears in an English shell."
+  information_architecture_delta:
+    design: "Six provider cards with health."
+    code: "Registry table plus event and export evidence."
+    decision: "Use record-backed registry/evidence structure; reject the fabricated health-card model."
+
+successor_identity:
+  logical_id: WA-DES-008
+  proposed_revision: WA-DES-008-C1
+  filename: "SAQEEL Admin Integrations - WA-DES-008-C1.dc.html"
+  lineage: CORRECTIVE_SUCCESSOR
+  state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+  creation_authorized: false
+  acceptance_rule: "Explicit lease, export fingerprint, independent review, sponsor acceptance and change control required."
+
+successor_design_contract:
+  identity: "Approved SAQEEL | صقيل wordmark; no صناعي/Industrial sub-brand."
+  title: "Integration trust console"
+  truth_banner: "Configuration is not connectivity; secrets never display."
+  regions:
+    - "Governed endpoint registry with exact record-backed contract and truth status."
+    - "API/rule event outcomes with correlation identity available in an accessible detail."
+    - "Data-sharing export status with purpose and delivery-proof boundary."
+    - "Separate Factory Data integration link."
+  record_rules:
+    - "Status is displayed exactly from the record; never promoted to healthy/connected."
+    - "No last-event date, count, latency, uptime or delivery percentage unless queried and sourced."
+    - "No base URL, token, credential, certificate or secret."
+    - "Configured, dependency-blocked, held, degraded and unavailable remain semantically distinct."
+    - "Zero rows is verified empty only when that source read succeeds."
+    - "RLS-hidden and source-failed are not represented as zero."
+    - "Identifiers, statuses and versions use human-readable text plus machine value where needed."
+
+state_matrix:
+  loading: "Reserve registry/events/exports geometry and announce loading."
+  configured: "Record says configured and contract/address database invariant is satisfied; still not a health claim."
+  dependency_blocked: "Explain held dependency without provider simulation."
+  degraded: "Show record-sourced degraded state and available unaffected evidence."
+  empty_registry: "Verified successful registry read with zero rows."
+  empty_events: "Verified successful events read with zero RLS-visible rows."
+  empty_exports: "Verified successful exports read with zero RLS-visible rows."
+  schema_unavailable: "No data inferred; no provider state shown."
+  partial_source_error: "Each source independently unavailable; healthy sources remain."
+  unauthorized: "Channel/RLS denial without registry, event or export leakage."
+  stale: "Display updated/occurred/requested timestamps only when sourced; label staleness by approved policy only."
+  conflict: "Contradictory registry/event truth is shown as unresolved, never auto-reconciled."
+
+responsive_bidi_theme_accessibility:
+  viewports: ["1440x900", "1160x820", "1024x768", "768x1024", "412x915", "390x844", "320x568"]
+  locales: ["EN/LTR", "AR/RTL with endpoint keys, versions, hashes and correlation IDs isolated LTR"]
+  themes: ["Light", "Dark"]
+  requirements:
+    - "One h1 and ordered section headings."
+    - "Registry table becomes labelled scroll region or cards without column loss."
+    - "Status never relies on color alone."
+    - "Long IDs/versions wrap or expose accessible full value."
+    - "44px controls and visible focus."
+    - "Keyboard reaches Factory Data link and any row detail."
+    - "Empty/error/degraded messages use live-region semantics where state changes."
+    - "No horizontal page overflow at zoom/reflow."
+
+test_and_evidence_assessment:
+  proven:
+    - "MVP3 tables, RLS, fail-closed dependency states and export delivery invariant exist."
+    - "Live admin smoke expects four registry rows."
+    - "Arabic RTL mobile and theme switching are exercised."
+    - "Inspector channel redirect prevents registry leakage."
+  gaps:
+    - "No focused per-source read-error isolation test."
+    - "No proof that configured status is not misread as live health."
+    - "No authorized admin-role/RLS matrix beyond the shared admin fixture."
+    - "No endpoint/event/export record-detail accessibility proof."
+    - "No tablet, 320px, keyboard, zoom or full light/dark visual evidence."
+    - "No stale/conflict scenario."
+  completion_rule: "Do not mark M10 or M3-00 complete from route smoke and source contracts alone."
+
+risk_register:
+  - {id: INT-RISK-001, severity: CRITICAL, risk: "Fabricated connected provider status influences operational decisions."}
+  - {id: INT-RISK-002, severity: CRITICAL, risk: "Secret, credential or endpoint detail is exposed."}
+  - {id: INT-RISK-003, severity: HIGH, risk: "Source failure is rendered as verified empty or healthy."}
+  - {id: INT-RISK-004, severity: HIGH, risk: "Prepared export is shown as delivered."}
+  - {id: INT-RISK-005, severity: HIGH, risk: "RLS-visible scope is mistaken for global inventory."}
+  - {id: INT-RISK-006, severity: HIGH, risk: "Fictional role changes authorization expectations."}
+
+do_not_build:
+  - "No provider card with invented success, health, calls, counts, dates or schedule."
+  - "No credential, secret, token, certificate or base-URL control."
+  - "No provider test, retry, replay, webhook, sync or endpoint mutation."
+  - "No new provider name, mapping, adapter or contract."
+  - "No export delivery claim without hash and receipt/completion evidence."
+  - "No role, RLS, table, migration, provider, seed or shared-data change."
+  - "No child-route behavior inside the hub."
+
+recommended_reviewer_action: RETURN_FOR_DELTA_CORRECTION
+recommendation: >-
+  Create WA-DES-008-C1 only after removing every fabricated provider-health
+  card and using the real registry/events/exports information architecture.
+  No implementation or provider enablement is authorized.
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-ADMIN-OPERATIONS-DESIGN-READINESS-018
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    route: /admin/operations
+    design_logical_id: WA-DES-020
+  scope: >-
+    Reconcile system operations/resilience design with real error queue,
+    feature flags and endpoint controls; exact roles, contracts, actions,
+    negative states, responsive, RTL, theme and accessibility. No product change.
+  collision_check: "Distinct route/design/component; recheck lane ownership before dispatch."

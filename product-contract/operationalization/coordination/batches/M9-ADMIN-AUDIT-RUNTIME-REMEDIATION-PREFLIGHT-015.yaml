@@ -1,0 +1,201 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-RUNTIME-REMEDIATION-PREFLIGHT-015
+title: Bounded remediation preflight for /admin/audit
+status: READY_AS_PLAN_BLOCKED_FOR_IMPLEMENTATION
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+predecessor:
+  packet_id: M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+  verdict: BLOCKED_MISSING_SCREEN_IDENTITY_POLICY_CONTRACT_AND_COMPLETE_RUNTIME_EVIDENCE
+
+scope:
+  package: M9
+  module: M3-04
+  route: /admin/audit
+  governed_screen_id: NONE
+  requirements:
+    module: [MVP2-REQ-0230, MVP2-REQ-0237, MVP2-REQ-0254]
+    ontology: MVP2-REQ-0137_THROUGH_MVP2-REQ-0172
+  acceptance:
+    module: [MVP2-AC-0230, MVP2-AC-0237, MVP2-AC-0254]
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+  mode: READ_ONLY_PREFLIGHT
+  implementation_lease_issued: false
+  design_authority: DEPENDENCY_ONLY
+
+decision_blockers:
+  - id: M9-AUD-DEC-001
+    priority: P0
+    decision: Allocate a governed screen identity for /admin/audit.
+    owner: Product governance
+  - id: M9-AUD-DEC-002
+    priority: P0
+    decision: Define object and field scope for generic audit_events by persona.
+    owner: Security, privacy and product governance
+  - id: M9-AUD-DEC-003
+    priority: P0
+    decision: Define sensitive-field redaction and reveal authority for before_state, after_state and payload.
+    owner: Security, privacy and legal governance
+  - id: M9-AUD-DEC-004
+    priority: P0
+    decision: Define export, watermark, retention, purge and legal-evidence boundaries.
+    owner: Records, legal and security governance
+  - id: M9-AUD-DEC-005
+    priority: P1
+    decision: Define display timezone and timestamp provenance.
+    owner: Product governance
+  - id: M9-AUD-DEC-006
+    priority: P1
+    decision: Define whether generic and semantic events remain separately visible or correlate into one business-event projection.
+    owner: Audit architecture
+
+ordered_work_packages:
+  - id: M9-AUD-REM-01
+    name: Identity, traceability and policy closure
+    prerequisites: []
+    outputs:
+      - governed screen identity
+      - exact CD-054 route-frame lineage
+      - approved persona/object/field disclosure matrix
+      - approved export, redaction, retention, legal and timezone decisions
+      - disposition for eight partial or dependency-blocked ontology rows
+    exit_acceptance: [WA-M9-AC-006]
+  - id: M9-AUD-REM-02
+    name: Database least-privilege projection
+    prerequisites: [M9-AUD-REM-01]
+    outputs:
+      - object-scoped generic audit read boundary
+      - field-redacted projection or guarded reveal RPC
+      - no direct raw-table read where persona scope is narrower
+      - correlated generic and semantic identity
+      - bounded keyset paging and truthful total-unknown semantics
+    exit_acceptance: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: M9-AUD-REM-03
+    name: Route and workspace truth
+    prerequisites: [M9-AUD-REM-01, M9-AUD-REM-02]
+    outputs:
+      - route admission matching the approved role contract
+      - compliance_admin partial-scope disclosure
+      - server-backed bounded search with explicit scope
+      - explicit page/truncation navigation
+      - redacted event detail and guarded reveal state
+      - policy-held controls remain disabled or absent
+      - governed timestamp and timezone display
+    exit_acceptance: [WA-M9-AC-001, WA-M9-AC-002]
+  - id: M9-AUD-REM-04
+    name: Ontology producer completion
+    prerequisites: [M9-AUD-REM-01, M9-AUD-REM-02]
+    outputs:
+      - resolve or explicitly hold MVP2-REQ-0144
+      - resolve or explicitly hold MVP2-REQ-0155
+      - resolve or explicitly hold MVP2-REQ-0156
+      - resolve or explicitly hold MVP2-REQ-0164
+      - resolve or explicitly hold MVP2-REQ-0168
+      - resolve or explicitly hold MVP2-REQ-0169
+      - resolve or explicitly hold MVP2-REQ-0170
+      - resolve or explicitly hold MVP2-REQ-0172
+    exit_acceptance: [MVP2-AC-0144, MVP2-AC-0155, MVP2-AC-0156, MVP2-AC-0164, MVP2-AC-0168, MVP2-AC-0169, MVP2-AC-0170, MVP2-AC-0172]
+  - id: M9-AUD-REM-05
+    name: Runtime security and integrity certification
+    prerequisites: [M9-AUD-REM-02, M9-AUD-REM-03, M9-AUD-REM-04]
+    outputs:
+      - persona-by-persona RLS matrix
+      - raw generic disclosure denial
+      - redaction and reveal authorization
+      - live generic and semantic update/delete denial
+      - idempotent semantic append and conflict proof
+      - correlation and duplicate-business-fact behavior
+      - bounded 250 and 5000 history proof
+      - source, ontology and recovery negatives
+    exit_acceptance: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: M9-AUD-REM-06
+    name: Browser and evidence certification
+    prerequisites: [M9-AUD-REM-03, M9-AUD-REM-05]
+    outputs:
+      - full, partial, empty, unauthorized, degraded, truncated and recovery states
+      - recorder, reconstruct, compare, completeness, custody and print-safe modes
+      - EN/LTR and AR/RTL
+      - light and dark
+      - fixed design, 1024, 412 or 390, and 320 viewports
+      - keyboard, focus, zoom and accessibility proof
+      - complete requirement/design/route/evidence manifest
+    exit_acceptance: [WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-006]
+
+proposed_future_leases:
+  application:
+    - apps/web/src/app/(app)/admin/audit/page.tsx
+    - apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx
+    - apps/web/src/lib/audit-replay.ts
+  database:
+    - supabase/migrations/20260725150000_admin_audit_scope_projection.sql
+  tests:
+    - apps/web/e2e/web-admin-m9-admin-audit-runtime.spec.ts
+    - supabase/tests/m9_admin_audit_runtime_probe.sql
+  evidence:
+    - product-contract/evidence/screens/m9-admin-audit-runtime
+  rule: Proposed paths are not leases and may be allocated only after collision and authority checks.
+
+isolated_data_and_recovery:
+  fixture_family: M9_AUDIT_REPLAY_FIXTURES
+  requirements:
+    - fixed case and aggregate identifiers
+    - generic-only event
+    - correlated semantic event
+    - scoped region/object visible to one persona and denied to another
+    - redacted sensitive field
+    - more than 250 portfolio facts for bounded-page proof
+    - controlled case-page boundary without polluting unrelated audit history
+  cleanup:
+    - transaction rollback for database probes
+    - fixed source objects with explicit inverse cleanup for browser tests
+    - immutable audit rows are never deleted; fixture namespace must make retained test evidence identifiable
+  recovery_rule: If retained immutable fixture events cannot be safely isolated, browser mutation tests stop.
+
+negative_tests:
+  - inspector gets zero rows and unauthorized UI
+  - scoped role cannot read unrelated generic or semantic object
+  - compliance_admin sees partial-scope disclosure
+  - raw sensitive field is redacted for an actor without reveal authority
+  - direct raw audit table read cannot bypass the approved projection
+  - audit_events UPDATE and DELETE fail for authenticated and elevated test actors
+  - audit_semantic_events UPDATE and DELETE fail
+  - identical semantic append is idempotent
+  - changed semantic payload with reused idempotency key fails
+  - invalid case and malformed timestamps fail neutrally
+  - portfolio over 250 declares partial history and supports bounded continuation
+  - case over 5000 declares uncertifiable completeness
+  - generic source failure does not promote semantic data to full truth
+  - semantic or ontology failure preserves generic-only provenance
+  - duplicate generic and semantic facts are correlated, never silently double-counted
+  - print-safe view never claims export or legal evidence
+
+rollback_and_stop:
+  rollback:
+    - New forward-only migration only; never edit applied migrations.
+    - Application rollback remains compatible with the forward database projection.
+    - No cleanup deletes immutable audit facts.
+    - Failed tests reconcile source fixtures and retain namespaced audit evidence truthfully.
+  stop_conditions:
+    - No governed screen identity.
+    - Disclosure or redaction matrix is unapproved.
+    - Export, retention or legal semantics are invented.
+    - Migration, app, test or evidence lease overlaps another lane.
+    - Raw generic table access remains broader than approved object scope.
+    - Immutable fixture evidence cannot be isolated safely.
+    - Any one of the eight incomplete ontology rows is falsely claimed complete.
+    - Any P0 negative path lacks runtime evidence.
+
+next_queued_task:
+  packet_id: M9-ADMIN-AUDIT-RLS-PRIVACY-ENGINEERING-DESIGN-016
+  status: QUEUED_READY_READ_ONLY
+  objective: >-
+    Draft alternative non-mutating database projections for unified object scope,
+    field redaction and guarded reveal, including exact SQL contracts, test
+    matrices and migration collision checks.
+  completion_credit: 0
+
+validation:
+  implementation_blocked: true
+  product_test_data_design_lease_branch_stash_mutation: false

@@ -1,0 +1,195 @@
+schema_version: "1.0"
+packet_id: M11-CR337-LIST-SEMANTIC-DECISION-001
+status: SPONSOR_DECISION_REQUIRED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+decision_scope: "CR-337 /virtual list filtering only"
+
+business_question: >-
+  Define exactly which records count as today's confirmed virtual inspections
+  before the bounded /virtual list-filter lease is implemented.
+
+authority_audit:
+  requirement_ids: [CR-337]
+  acceptance_ids:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  sources_reviewed:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/domain/process_catalog.yaml
+    - product-contract/business/master_end_to_end_process.md
+    - product-contract/domain/field_dictionary.csv
+    - product-contract/domain/state_transitions.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/governance/decision_register.csv
+    - product-contract/governance/CC-SAQEEL-V5-IMPLEMENTATION-001.yaml
+    - product-contract/web-admin-phase1/OPEN_DECISIONS_AND_BLOCKERS.yaml
+    - product-contract/requirements-control/OPEN_REQUIREMENT_DECISIONS.yaml
+
+finding:
+  verdict: NO_EXACT_EXISTING_AUTHORITY
+  timezone_day_boundary:
+    status: MISSING
+    confirmed_evidence:
+      - >-
+        product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv:338 says
+        "today's confirmed virtual inspection" but supplies no timezone,
+        day-boundary rule or authoritative date column.
+      - >-
+        product-contract/governance/CC-SAQEEL-V5-IMPLEMENTATION-001.yaml:14-18
+        limits authorization to the presentation layer, line 27 authorizes
+        Riyadh-timezone user-facing date formatting, and lines 30-34 forbid new
+        product/schema/workflow calculations. It therefore cannot define the
+        CR-337 database filter boundary.
+      - >-
+        product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv:68-73
+        requires source-backed behavior and truthful evidence but does not
+        define temporal semantics.
+    not_authority:
+      - "Host/database timezone."
+      - "Browser locale or client clock."
+      - "An unrelated dashboard metric's today calculation."
+      - "The display-formatting change control."
+  confirmed_predicate:
+    status: MISSING
+    confirmed_evidence:
+      - >-
+        product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv:338 and
+        product-contract/requirements-control/REQUIREMENT_INDEX.csv:810-811
+        require only confirmed virtual visits but do not name a field, state or
+        transition that means confirmed.
+      - >-
+        product-contract/domain/process_catalog.yaml:201-228 and
+        product-contract/business/master_end_to_end_process.md:239-270 define
+        Scheduled -> Waiting -> Joined -> Verified -> In Progress and output a
+        Verified session, but do not equate Verified with a confirmed
+        appointment/visit for list eligibility.
+      - >-
+        product-contract/domain/state_transitions.csv:20-22 uses the STM-VIR-001
+        guard "Appointment valid" but defines no persisted confirmation field or
+        predicate.
+      - >-
+        product-contract/domain/field_dictionary.csv:13-18 defines visit
+        window/mode fields; the complete dictionary defines no virtual
+        appointment-confirmation field.
+      - >-
+        supabase/migrations/0001_foundation.sql:281-295 defines no confirmed
+        session field/state, and apps/web/src/app/(app)/virtual/page.tsx:13-21
+        applies no visit confirmation filter.
+    not_equivalent_without_sponsor_decision:
+      - "visits.planning_status = published"
+      - "virtual_sessions.state = scheduled"
+      - "virtual_sessions.state = verified"
+      - "visit_preparations.confirmed_ready_at is not null"
+      - "A virtual_sessions row merely exists"
+
+sponsor_decisions:
+  - decision_id: M11-LIST-D01
+    question: >-
+      What exact calendar boundary and timestamp determine "today" for CR-337?
+    recommended_choice:
+      label: RIYADH_APPOINTMENT_CALENDAR_DAY
+      definition: >-
+        Use virtual_sessions.appointment_at within the Asia/Riyadh calendar day:
+        inclusive local 00:00 and exclusive next local 00:00, converted to
+        timestamptz for the server query.
+      rationale: >-
+        This aligns the appointment list with the already governed Riyadh
+        user-facing date service while still requiring explicit sponsor
+        authorization for the product filter calculation.
+    alternatives:
+      - label: VISIT_WINDOW_OVERLAPS_RIYADH_DAY
+        definition: >-
+          Use visits.window_start/window_end overlap with the Asia/Riyadh
+          calendar day rather than appointment_at.
+        implication: "A multi-day visit may appear even when its appointment is on another day."
+      - label: ORGANISATION_CONFIGURED_DAY
+        definition: >-
+          Use an organization-configured timezone and day boundary.
+        implication: "Blocked until the configuration source, fallback and governance owner are defined."
+    sponsor_response_required:
+      - "Selected label or an exact replacement definition."
+      - "Authoritative timestamp column."
+      - "Inclusive/exclusive boundary rule."
+
+  - decision_id: M11-LIST-D02
+    question: >-
+      What exact stored predicate means a virtual visit is "confirmed" for
+      CR-337 list eligibility?
+    recommended_choice:
+      label: PUBLISHED_VIRTUAL_VISIT_WITH_SESSION
+      definition: >-
+        For MVP1 list eligibility, confirmed means the joined visit has
+        execution_mode = virtual and planning_status = published, and a
+        virtual_sessions row exists for it. Session state may be any
+        non-closed state unless the sponsor states otherwise.
+      rationale: >-
+        This uses existing governed fields and requires no invented provider or
+        new confirmation workflow. It is a sponsor definition, not an inference
+        from the current schema.
+      explicit_follow_up: >-
+        If factory appointment confirmation is required as a separate business
+        event, that needs its own future field/state/workflow change control and
+        must not be silently represented by published.
+    alternatives:
+      - label: EXPLICIT_APPOINTMENT_CONFIRMATION
+        definition: >-
+          Only a separately persisted appointment-confirmation event/field
+          qualifies the visit.
+        implication: >-
+          Requires a new product-contract field, actor, transition, audit event,
+          negative paths and migration; the list lease remains blocked until
+          those are approved.
+      - label: VERIFIED_SESSION_ONLY
+        definition: >-
+          Only virtual_sessions.state in verified or in_progress qualifies.
+        implication: >-
+          Excludes scheduled appointments before participant OTP verification
+          and changes "My Schedule" into an active/verified execution list.
+    sponsor_response_required:
+      - "Selected label or an exact replacement predicate."
+      - "Treatment of closed sessions."
+      - "Whether factory confirmation is a separate persisted event."
+
+bounded_effect:
+  blocked_packet: KIMI-M11-SESSION-LIST-FILTER-LEASE-TBD
+  not_blocked:
+    - KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  no_change_to:
+    - "Virtual-session atomicity."
+    - "Execution-window enforcement."
+    - "OTP, provider or notification behavior."
+    - "Any other M11 route or requirement."
+
+after_sponsor_decision:
+  required_updates:
+    - "Record the two selected definitions through approved change control."
+    - "Replace the list lease's missing-contract blocker with the exact approved predicates."
+    - "Add deterministic inclusion/exclusion tests at both approved day boundaries."
+    - "Independently review the revised lease before implementation."
+  completion_rule: >-
+    Sponsor selection alone does not complete CR-337. Runtime, RLS, negative,
+    data-truth and evidence gates must still pass.
+
+operational_state:
+  kimi_status: COMPLETED
+  kimi_active: false
+  dispatched: false
+  mac_state: MANUAL_UNLOCK_REQUIRED
+  writes:
+    application: false
+    tests: false
+    migrations: false
+    database: false
+    ui: false
+
+validation:
+  yaml_parse: PASS
+  citations_checked: PASS
+  bounded_blocker_checked: PASS

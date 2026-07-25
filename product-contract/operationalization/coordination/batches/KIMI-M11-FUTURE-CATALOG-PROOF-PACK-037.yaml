@@ -1,0 +1,609 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-FUTURE-CATALOG-PROOF-PACK-037
+status: PREPARED_NOT_AUTHORIZED_NOT_EXECUTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Provide an exact, read-only PostgreSQL catalog capture and evidence contract
+  for authorized execution after a dedicated TEST-CATALOG lease. This packet
+  resolves the live-catalog unknowns recorded by inventory 036; it does not
+  authorize a connection, query, migration, test, dispatch or lease.
+
+authority:
+  dependency_matrix: KIMI-M11-SPONSOR-AUTHORITY-DEPENDENCY-MATRIX-035
+  source_inventory: KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+  security_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  evidence_gap_map: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+  proposed_future_test_path: supabase/tests/m11_stack_security_catalog.sql
+  proposed_future_test_owner: M11_SECURITY_CATALOG_QA_OWNER_TBD
+
+hard_boundary:
+  - "Do not execute this packet before an explicit isolated TEST-CATALOG lease."
+  - "Do not run against production or any database containing uncontrolled personal or secret-bearing evidence."
+  - "Do not output row data, OTP material, verification_record, tokens, credentials, connection strings or function bodies."
+  - "Use a least-privileged catalog-reader identity approved for the isolated target."
+  - "Every query is SELECT-only; BEGIN READ ONLY and ROLLBACK frame the capture."
+  - "A catalog match is necessary but not sufficient for runtime, persona, concurrency, audit-secret or quiesce certification."
+  - "Any unexpected overload, owner, grant, policy, trigger, dependency or consumer keeps implementation fail-closed."
+
+authorization_preconditions:
+  all_required:
+    - "Canonical corrected packets 010/011/013/014/015/017 have independent acceptance."
+    - "The exact expected object manifest is frozen and checksum-recorded."
+    - "A dedicated TEST-CATALOG owner and non-overlapping lease are recorded."
+    - "The isolated database identity and migration-chain revision are recorded without exposing credentials."
+    - "The target is explicitly confirmed non-production."
+    - "Evidence destination and redaction reviewer are assigned."
+  stop_if_missing: "Do not connect and do not execute even the preamble."
+
+execution_envelope:
+  preamble_sql: |-
+    BEGIN TRANSACTION READ ONLY;
+    SET LOCAL statement_timeout = '15s';
+    SET LOCAL lock_timeout = '2s';
+    SET LOCAL idle_in_transaction_session_timeout = '30s';
+    SET LOCAL search_path = pg_catalog;
+
+    SELECT
+      current_database() AS database_name,
+      current_user AS catalog_reader,
+      pg_is_in_recovery() AS is_replica,
+      current_setting('server_version_num')::integer AS server_version_num,
+      current_setting('transaction_read_only') AS transaction_read_only;
+  safe_assertions:
+    - "transaction_read_only = on."
+    - "database_name and catalog_reader equal the pre-authorized evidence manifest."
+    - "The target fingerprint identifies the isolated environment, never production."
+  immediate_stop:
+    - "transaction_read_only is not on."
+    - "Database, user, environment or migration revision differs from the authorized manifest."
+    - "Any statement timeout, permission error or unavailable catalog prevents a complete snapshot."
+  close_sql: "ROLLBACK;"
+
+catalog_queries:
+  Q01_function_identity_owner_security_search_path_acl:
+    resolves: [M11-TECH-OWNER-01, M11-TECH-SCHEMA-01]
+    sql: |-
+      WITH target_functions AS (
+        SELECT
+          p.oid,
+          n.nspname,
+          p.proname,
+          pg_get_function_identity_arguments(p.oid) AS identity_arguments,
+          pg_get_function_result(p.oid) AS result_type,
+          p.proowner,
+          p.prosecdef,
+          p.proleakproof,
+          p.provolatile,
+          p.proparallel,
+          p.proconfig,
+          p.proacl,
+          md5(pg_get_functiondef(p.oid)) AS definition_hash
+        FROM pg_proc AS p
+        JOIN pg_namespace AS n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND p.prokind = 'f'
+          AND (
+            p.proname ~ '^(vs_|vp_)'
+            OR p.proname IN (
+              'has_any_role',
+              'is_assigned_inspector',
+              'audit_row_change',
+              'guard_virtual_transition',
+              'set_operational_state'
+            )
+          )
+      ),
+      acl_rows AS (
+        SELECT
+          f.oid,
+          CASE WHEN a.grantee = 0 THEN 'PUBLIC'
+               ELSE pg_get_userbyid(a.grantee)
+          END AS grantee,
+          pg_get_userbyid(a.grantor) AS grantor,
+          a.privilege_type,
+          a.is_grantable
+        FROM target_functions AS f
+        CROSS JOIN LATERAL aclexplode(
+          COALESCE(f.proacl, acldefault('f', f.proowner))
+        ) AS a
+      )
+      SELECT
+        f.nspname AS function_schema,
+        f.proname AS function_name,
+        f.identity_arguments,
+        f.result_type,
+        pg_get_userbyid(f.proowner) AS owner_name,
+        r.rolsuper AS owner_is_superuser,
+        r.rolbypassrls AS owner_bypasses_rls,
+        r.rolcanlogin AS owner_can_login,
+        CASE WHEN f.prosecdef THEN 'DEFINER' ELSE 'INVOKER' END AS security_mode,
+        f.proleakproof,
+        f.provolatile,
+        f.proparallel,
+        COALESCE(f.proconfig, ARRAY[]::text[]) AS function_settings,
+        f.definition_hash,
+        COALESCE(
+          array_agg(
+            format('%s:%s:%s', a.grantee, a.privilege_type, a.is_grantable)
+            ORDER BY a.grantee, a.privilege_type
+          ) FILTER (WHERE a.oid IS NOT NULL),
+          ARRAY[]::text[]
+        ) AS acl_manifest
+      FROM target_functions AS f
+      JOIN pg_roles AS r ON r.oid = f.proowner
+      LEFT JOIN acl_rows AS a ON a.oid = f.oid
+      GROUP BY
+        f.oid, f.nspname, f.proname, f.identity_arguments, f.result_type,
+        f.proowner, r.rolsuper, r.rolbypassrls, r.rolcanlogin,
+        f.prosecdef, f.proleakproof, f.provolatile, f.proparallel,
+        f.proconfig, f.definition_hash
+      ORDER BY f.nspname, f.proname, f.identity_arguments;
+    expected_safe_assertions:
+      - "Exact schema/name/identity-argument set equals the frozen accepted manifest; no obsolete overload exists."
+      - "Every owner and owner BYPASSRLS effect equals the accepted owner model."
+      - "Every SECURITY DEFINER has the exact accepted proconfig/search_path and uses fully reviewed dependencies."
+      - "No trigger/helper-only function is executable by PUBLIC, anon or authenticated."
+      - "No caller-facing governed RPC is executable by PUBLIC or anon; authenticated access exists only where explicitly accepted."
+      - "Definition hashes equal the accepted post-correction manifest."
+    stop_conditions:
+      - "Any extra or missing overload."
+      - "Unknown, login-capable, superuser or BYPASSRLS owner not explicitly accepted."
+      - "Missing or unexpected search_path/function setting."
+      - "Unexpected PUBLIC, anon, authenticated or inherited execution privilege."
+      - "Definition hash mismatch."
+
+  Q02_effective_execute_for_application_roles:
+    resolves: [M11-TECH-OWNER-01]
+    sql: |-
+      WITH candidate_roles(role_name) AS (
+        VALUES ('anon'::name), ('authenticated'::name)
+      ),
+      roles AS (
+        SELECT c.role_name, r.oid AS role_oid
+        FROM candidate_roles AS c
+        LEFT JOIN pg_roles AS r ON r.rolname = c.role_name
+      ),
+      target_functions AS (
+        SELECT
+          p.oid,
+          n.nspname,
+          p.proname,
+          pg_get_function_identity_arguments(p.oid) AS identity_arguments
+        FROM pg_proc AS p
+        JOIN pg_namespace AS n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND p.prokind = 'f'
+          AND (
+            p.proname ~ '^(vs_|vp_)'
+            OR p.proname IN (
+              'has_any_role',
+              'is_assigned_inspector',
+              'audit_row_change',
+              'guard_virtual_transition',
+              'set_operational_state'
+            )
+          )
+      )
+      SELECT
+        r.role_name,
+        r.role_oid IS NOT NULL AS role_exists,
+        f.nspname AS function_schema,
+        f.proname AS function_name,
+        f.identity_arguments,
+        CASE
+          WHEN r.role_oid IS NULL THEN NULL
+          ELSE has_function_privilege(r.role_oid, f.oid, 'EXECUTE')
+        END AS effective_execute
+      FROM roles AS r
+      CROSS JOIN target_functions AS f
+      ORDER BY r.role_name, f.nspname, f.proname, f.identity_arguments;
+    expected_safe_assertions:
+      - "Both anon and authenticated roles exist in the isolated Supabase-compatible target."
+      - "The effective matrix exactly equals the frozen per-signature privilege manifest."
+    stop_conditions:
+      - "A required role is absent."
+      - "PUBLIC or role-membership inheritance produces an unexpected effective grant."
+      - "A helper/trigger function is effectively executable by either application role."
+
+  Q03_extension_type_and_function_namespace:
+    resolves: [M11-TECH-SCHEMA-01]
+    sql: |-
+      SELECT
+        e.extname,
+        e.extversion,
+        n.nspname AS extension_schema,
+        pg_get_userbyid(e.extowner) AS extension_owner
+      FROM pg_extension AS e
+      JOIN pg_namespace AS n ON n.oid = e.extnamespace
+      WHERE e.extname IN ('pgcrypto')
+      ORDER BY e.extname;
+
+      SELECT
+        n.nspname AS object_schema,
+        p.proname,
+        pg_get_function_identity_arguments(p.oid) AS identity_arguments,
+        pg_get_userbyid(p.proowner) AS owner_name,
+        e.extname AS owning_extension
+      FROM pg_proc AS p
+      JOIN pg_namespace AS n ON n.oid = p.pronamespace
+      LEFT JOIN pg_depend AS d
+        ON d.classid = 'pg_proc'::regclass
+       AND d.objid = p.oid
+       AND d.refclassid = 'pg_extension'::regclass
+       AND d.deptype = 'e'
+      LEFT JOIN pg_extension AS e ON e.oid = d.refobjid
+      WHERE p.proname = 'digest'
+      ORDER BY n.nspname, p.proname, identity_arguments;
+
+      SELECT
+        n.nspname AS type_schema,
+        t.typname,
+        pg_get_userbyid(t.typowner) AS owner_name,
+        t.typtype,
+        t.typcategory
+      FROM pg_type AS t
+      JOIN pg_namespace AS n ON n.oid = t.typnamespace
+      WHERE (n.nspname, t.typname) IN (
+        ('public', 'virtual_state'),
+        ('public', 'operational_state')
+      )
+      ORDER BY n.nspname, t.typname;
+    expected_safe_assertions:
+      - "Exactly one pgcrypto extension is installed in the accepted schema and version."
+      - "Every digest overload used by OTP resolves to the accepted extension-owned identity."
+      - "M11 enum/type identities exactly match the accepted schema manifest."
+    stop_conditions:
+      - "pgcrypto is absent, duplicated by an unowned look-alike, or installed outside the accepted schema."
+      - "Unqualified resolution could select a non-extension digest overload."
+      - "A required type is missing or exists in an unexpected schema."
+
+  Q04_function_dependency_graph:
+    resolves: [M11-TECH-SCHEMA-01, M11-TECH-OWNER-01]
+    sql: |-
+      WITH target_functions AS (
+        SELECT p.oid
+        FROM pg_proc AS p
+        JOIN pg_namespace AS n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND p.prokind = 'f'
+          AND (
+            p.proname ~ '^(vs_|vp_)'
+            OR p.proname IN (
+              'has_any_role',
+              'is_assigned_inspector',
+              'audit_row_change',
+              'guard_virtual_transition',
+              'set_operational_state'
+            )
+          )
+      )
+      SELECT
+        pg_describe_object('pg_proc'::regclass, d.objid, 0) AS dependent_function,
+        d.deptype,
+        pg_describe_object(d.refclassid, d.refobjid, d.refobjsubid) AS referenced_object
+      FROM pg_depend AS d
+      JOIN target_functions AS f ON f.oid = d.objid
+      WHERE d.classid = 'pg_proc'::regclass
+      ORDER BY dependent_function, d.deptype, referenced_object;
+    expected_safe_assertions:
+      - "Tracked dependencies equal the frozen manifest and resolve only to accepted schemas/objects."
+      - "The static qualified-name review is attached because PL/pgSQL body references are not always dependency-tracked."
+    stop_conditions:
+      - "An unexpected extension, function, relation, type or schema appears."
+      - "Catalog dependency output is treated as complete without the paired static function-definition review."
+
+  Q05_rls_policy_and_table_acl_manifest:
+    resolves: [M11-TECH-AUDIT-INVENTORY-01, M11-TECH-SAFE-TRIGGER-01]
+    sql: |-
+      SELECT
+        n.nspname AS table_schema,
+        c.relname AS table_name,
+        c.relrowsecurity AS rls_enabled,
+        c.relforcerowsecurity AS rls_forced,
+        p.polname AS policy_name,
+        CASE WHEN p.polpermissive THEN 'PERMISSIVE' ELSE 'RESTRICTIVE' END AS policy_mode,
+        p.polcmd AS command_code,
+        ARRAY(
+          SELECT CASE WHEN role_oid = 0 THEN 'PUBLIC'
+                      ELSE pg_get_userbyid(role_oid)
+                 END
+          FROM unnest(p.polroles) AS u(role_oid)
+          ORDER BY 1
+        ) AS policy_roles,
+        pg_get_expr(p.polqual, p.polrelid) AS using_expression,
+        pg_get_expr(p.polwithcheck, p.polrelid) AS check_expression
+      FROM pg_class AS c
+      JOIN pg_namespace AS n ON n.oid = c.relnamespace
+      LEFT JOIN pg_policy AS p ON p.polrelid = c.oid
+      WHERE n.nspname = 'public'
+        AND c.relname IN (
+          'virtual_sessions',
+          'virtual_participants',
+          'audit_events'
+        )
+      ORDER BY n.nspname, c.relname, p.polcmd, p.polname;
+
+      WITH target_tables AS (
+        SELECT c.oid, c.relowner, n.nspname, c.relname, c.relacl
+        FROM pg_class AS c
+        JOIN pg_namespace AS n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'public'
+          AND c.relname IN (
+            'virtual_sessions',
+            'virtual_participants',
+            'audit_events'
+          )
+      )
+      SELECT
+        t.nspname AS table_schema,
+        t.relname AS table_name,
+        CASE WHEN a.grantee = 0 THEN 'PUBLIC'
+             ELSE pg_get_userbyid(a.grantee)
+        END AS grantee,
+        pg_get_userbyid(a.grantor) AS grantor,
+        a.privilege_type,
+        a.is_grantable
+      FROM target_tables AS t
+      CROSS JOIN LATERAL aclexplode(
+        COALESCE(t.relacl, acldefault('r', t.relowner))
+      ) AS a
+      ORDER BY t.nspname, t.relname, grantee, a.privilege_type;
+    expected_safe_assertions:
+      - "RLS enablement/force state, policy names, mode, command, roles and predicates exactly equal the accepted per-command manifest."
+      - "No unintended permissive-policy OR path remains."
+      - "PUBLIC, anon and authenticated table privileges exactly equal the accepted table ACL manifest."
+      - "Raw audit reads are denied to application personas except through an accepted safe projection."
+    stop_conditions:
+      - "Any extra/missing policy or policy predicate drift."
+      - "A broad FOR ALL, PUBLIC-role or WITH CHECK true path exists outside the accepted manifest."
+      - "Unexpected direct INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES privilege."
+      - "Raw audit SELECT remains effectively reachable contrary to the accepted model."
+
+  Q06_trigger_inventory_and_effective_order:
+    resolves: [M11-TECH-SAFE-TRIGGER-01]
+    sql: |-
+      SELECT
+        n.nspname AS table_schema,
+        c.relname AS table_name,
+        t.tgname AS trigger_name,
+        t.tgenabled AS enabled_mode,
+        (t.tgtype & 1) <> 0 AS for_each_row,
+        (t.tgtype & 2) <> 0 AS is_before,
+        (t.tgtype & 64) <> 0 AS is_instead_of,
+        (t.tgtype & 4) <> 0 AS fires_insert,
+        (t.tgtype & 8) <> 0 AS fires_delete,
+        (t.tgtype & 16) <> 0 AS fires_update,
+        (t.tgtype & 32) <> 0 AS fires_truncate,
+        pn.nspname AS function_schema,
+        p.proname AS function_name,
+        pg_get_function_identity_arguments(p.oid) AS function_arguments,
+        pg_get_triggerdef(t.oid, true) AS trigger_definition,
+        t.tgname AS same_kind_execution_order_key
+      FROM pg_trigger AS t
+      JOIN pg_class AS c ON c.oid = t.tgrelid
+      JOIN pg_namespace AS n ON n.oid = c.relnamespace
+      JOIN pg_proc AS p ON p.oid = t.tgfoid
+      JOIN pg_namespace AS pn ON pn.oid = p.pronamespace
+      WHERE NOT t.tgisinternal
+        AND n.nspname = 'public'
+        AND c.relname IN (
+          'virtual_sessions',
+          'virtual_participants',
+          'audit_events'
+        )
+      ORDER BY n.nspname, c.relname, t.tgname;
+    expected_safe_assertions:
+      - "Exact trigger set, enablement, event/timing and function identity equal the accepted manifest."
+      - "The specialized safe participant audit trigger is installed before any hardened OTP mutation is enabled."
+      - "For triggers sharing event/timing on a table, alphabetical trigger-name execution order matches the reviewed order."
+      - "No generic full-row participant audit trigger can persist verification_record or code_hash."
+    stop_conditions:
+      - "Specialized trigger missing, disabled or ordered incorrectly."
+      - "Generic full-row participant trigger remains active for OTP-bearing updates."
+      - "Unexpected trigger, event, helper identity or enablement mode."
+
+  Q07_audit_database_consumer_dependencies:
+    resolves: [M11-TECH-AUDIT-INVENTORY-01]
+    sql: |-
+      WITH audit_table AS (
+        SELECT c.oid
+        FROM pg_class AS c
+        JOIN pg_namespace AS n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'public'
+          AND c.relname = 'audit_events'
+      )
+      SELECT DISTINCT
+        pg_describe_object(d.classid, d.objid, d.objsubid) AS dependent_object,
+        d.deptype,
+        pg_describe_object(d.refclassid, d.refobjid, d.refobjsubid) AS referenced_object
+      FROM pg_depend AS d
+      JOIN audit_table AS a ON a.oid = d.refobjid
+      ORDER BY dependent_object, d.deptype;
+
+      SELECT
+        n.nspname AS function_schema,
+        p.proname AS function_name,
+        pg_get_function_identity_arguments(p.oid) AS identity_arguments,
+        md5(pg_get_functiondef(p.oid)) AS definition_hash
+      FROM pg_proc AS p
+      JOIN pg_namespace AS n ON n.oid = p.pronamespace
+      WHERE n.nspname NOT IN ('pg_catalog', 'information_schema')
+        AND p.prokind = 'f'
+        AND position('audit_events' IN pg_get_functiondef(p.oid)) > 0
+      ORDER BY n.nspname, p.proname, identity_arguments;
+
+      SELECT
+        schemaname,
+        viewname,
+        md5(definition) AS definition_hash
+      FROM pg_views
+      WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+        AND position('audit_events' IN definition) > 0
+      ORDER BY schemaname, viewname;
+
+      SELECT
+        schemaname,
+        matviewname,
+        md5(definition) AS definition_hash
+      FROM pg_matviews
+      WHERE position('audit_events' IN definition) > 0
+      ORDER BY schemaname, matviewname;
+    expected_safe_assertions:
+      - "Every database function/view/materialized-view/trigger dependency is mapped to an accepted consumer owner."
+      - "Results are reconciled with inventory 036 application file/role/field consumers."
+      - "Safe projection replacements and required maker-checker/admin consumers are explicitly preserved."
+    stop_conditions:
+      - "Any database consumer lacks an owner, field contract or adaptation decision."
+      - "Catalog evidence is presented as proof of external or dynamically generated application queries."
+      - "Raw audit policy contraction is proposed before static and approved runtime consumer inventories are complete."
+    privacy_note: >-
+      pg_stat_statements query text is intentionally excluded because it can
+      expose literals and is neither complete nor a safe consumer registry.
+      If runtime telemetry is later required, it needs a separate approved,
+      redacted evidence contract.
+
+  Q08_catalog_drift_snapshot:
+    resolves: [M11-TECH-OWNER-01, M11-TECH-SCHEMA-01, M11-TECH-AUDIT-INVENTORY-01, M11-TECH-SAFE-TRIGGER-01]
+    sql: |-
+      SELECT
+        n.nspname AS schema_name,
+        c.relname AS object_name,
+        c.relkind,
+        pg_get_userbyid(c.relowner) AS owner_name,
+        c.relrowsecurity,
+        c.relforcerowsecurity
+      FROM pg_class AS c
+      JOIN pg_namespace AS n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public'
+        AND c.relname IN (
+          'virtual_sessions',
+          'virtual_participants',
+          'audit_events',
+          'engine_settings'
+        )
+      ORDER BY n.nspname, c.relname;
+
+      SELECT
+        n.nspname AS schema_name,
+        t.typname AS object_name,
+        t.typtype,
+        pg_get_userbyid(t.typowner) AS owner_name
+      FROM pg_type AS t
+      JOIN pg_namespace AS n ON n.oid = t.typnamespace
+      WHERE n.nspname = 'public'
+        AND t.typname IN ('virtual_state', 'operational_state')
+      ORDER BY n.nspname, t.typname;
+    expected_safe_assertions:
+      - "Q01-Q08 normalized outputs match the frozen expected manifest byte-for-byte after deterministic ordering."
+      - "The evidence bundle records accepted manifest checksum, target revision and every query-output checksum."
+      - "No unexpected M11 object, overload, policy, trigger or dependency exists."
+    stop_conditions:
+      - "Any checksum mismatch or unexplained object drift."
+      - "Expected manifest was generated from the same live output instead of independently reviewed source authority."
+
+quiesce_proof_boundary:
+  resolves: [M11-TECH-QUIESCE-01]
+  catalog_limit: >-
+    A catalog query cannot prove that traffic is blocked, requests have drained
+    to zero, abort works, or recovery is safe. Candidate object-name discovery
+    is not accepted as a quiesce proof.
+  required_future_manifest:
+    - "Exact traffic-disable control identity and owner."
+    - "Exact in-flight counter/query and zero assertion."
+    - "Mutating endpoint inventory."
+    - "Disable, drain, abort, 013→015 uninterrupted contract and roll-forward recovery steps."
+    - "Correlated server/browser/database timestamps from an isolated rehearsal."
+  safe_assertions:
+    - "Traffic-disable is effective before drain measurement."
+    - "In-flight M11 mutation count reaches and remains zero for the accepted observation interval."
+    - "No M11 traffic resumes between 013 and 015."
+    - "Abort occurs before contraction if disable or drain proof fails."
+    - "Only roll-forward recovery is allowed after contraction begins."
+  stop_conditions:
+    - "The exact hook/counter manifest is not accepted."
+    - "Zero-in-flight cannot be proven."
+    - "A UI-only offline state or feature label is offered as global quiescence."
+    - "The run would require an invented timeout, SLA or observation interval."
+
+provider_proof_boundary:
+  resolves: [M11-TECH-PROVIDER-01]
+  catalog_limit: >-
+    Function/catalog inspection can prove that legacy dev_code or unsafe
+    grants are absent, but cannot prove external OTP delivery, secret handling,
+    callback authenticity or operational observability.
+  required_separate_evidence:
+    - "Sponsor-approved provider contract."
+    - "Configured adapter identity with secret values redacted."
+    - "Delivery callback/receipt correlation without OTP disclosure."
+    - "Provider-unavailable fail-closed evidence."
+  stop_conditions:
+    - "Provider remains DEV-CONSOLE or vp_request_otp returns dev_code."
+    - "A notification row or provider label is used as delivery proof."
+    - "Secrets or OTP values would enter the evidence bundle."
+
+evidence_pack_contract:
+  required_files_after_authorized_execution:
+    - id: ENVIRONMENT-MANIFEST
+      content: "Redacted target identity, revision, reader role, timestamps and authorization/lease IDs."
+    - id: QUERY-CHECKSUMS
+      content: "Checksum of this packet and each exact query text."
+    - id: RAW-CATALOG-OUTPUTS
+      content: "Deterministically ordered CSV for Q01-Q08, reviewed for secret absence."
+    - id: NORMALIZED-MANIFEST-DIFF
+      content: "Expected versus observed rows with additions, deletions and changes."
+    - id: ASSERTION-RESULTS
+      content: "One PASS/FAIL/BLOCKED result per assertion; no aggregate-only pass."
+    - id: UNKNOWN-REGISTER
+      content: "Anything not proven by catalog, including runtime consumers, quiesce and provider delivery."
+    - id: HASH-MANIFEST
+      content: "SHA-256 for every retained evidence file."
+  redaction_rules:
+    - "Never retain connection strings, environment variable values, JWTs, tokens, passwords or OTPs."
+    - "Never select application row data or verification_record."
+    - "Store function definition hashes, not bodies."
+    - "Store view definition hashes, not definitions."
+    - "Do not capture pg_stat_statements query text."
+  completion_rule: >-
+    TEST-CATALOG may pass only when every expected catalog assertion passes,
+    every output is complete and checksummed, and all non-catalog unknowns
+    remain explicitly delegated to their separate test/evidence gates.
+
+global_stop_conditions:
+  - "No explicit TEST-CATALOG lease or wrong owner."
+  - "Target is production, ambiguous or contains uncontrolled evidence."
+  - "Transaction is not read-only."
+  - "Accepted expected manifest or its checksum is missing."
+  - "Any result is incomplete, nondeterministic, permission-filtered or timed out."
+  - "Any extra/missing function overload, policy, trigger, grant, dependency or consumer."
+  - "Any owner/BYPASSRLS/search_path/security-mode mismatch."
+  - "Any secret-bearing output."
+  - "Attempt to treat catalog proof as runtime persona, concurrency, provider, audit-sentinel or quiesce proof."
+
+queued_safe_follow_on:
+  queue_id: KIMI-M11-CATALOG-BASELINE-DIFF-SPEC-038
+  status: QUEUED_DOCUMENTATION_ONLY_NOT_DISPATCHED
+  purpose: >-
+    Define a deterministic, secret-free expected-versus-observed CSV
+    normalization and diff schema for Q01-Q08 after corrected packet manifests
+    are accepted.
+  activation_conditions:
+    - "Parent orchestrator explicitly assigns the documentation-only task."
+    - "No execution, database access, test lease or product/source mutation."
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  query_count: 8
+  select_only_review: PASS
+  secret_output_review: PASS
+  stop_conditions_present: PASS
+  safe_follow_on_queued: PASS
+  executed: false

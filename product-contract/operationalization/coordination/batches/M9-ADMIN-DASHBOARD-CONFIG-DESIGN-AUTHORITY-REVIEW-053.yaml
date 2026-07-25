@@ -1,0 +1,571 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+title: Independent Admin Dashboard Configuration and KPI Management design authority review
+status: BLOCK_DUE_TO_UNAUTHENTICATED_ROUTE_AND_MISSING_TYPED_POLICY_CONTRACT
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The database foundation contains a promising non-bypassable RPC lifecycle,
+    but the route is outside the authenticated application layout, no governed
+    screen identity exists, the configuration payload is arbitrary JSON rather
+    than a typed policy, the runtime consumes only a head ID rather than policy
+    values, effective-date semantics are incorrect, and no route-focused test
+    or immutable design-acceptance evidence exists.
+
+task_contract:
+  task_id: M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+  gate: M9 Admin Dashboard Configuration design authority
+  routes:
+    - /admin/dashboard-config
+    - "/admin/dashboard-config?view=kpis"
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_ids: [M3, M9]
+  screen_ids:
+    governed: []
+    missing: DASHBOARD_CONFIGURATION_SCREEN_ID_REQUIRED
+  source_requirement_ids:
+    primary: [CR-445]
+    dependent: [CR-430, CR-431, CR-432, CR-433, CR-434, CR-435, CR-436, CR-437, CR-438, CR-439, CR-440, CR-441, CR-442, CR-443, CR-444, CR-446, CR-447, CR-448]
+  business_acceptance_ids:
+    - WA-AC-0445
+    - DASH-AC-004
+    - DASH-AC-014
+    - DASH-AC-015
+    - DASH-AC-016
+  local_claim_ids:
+    - ADM-DASH-001..018
+    - STR-KPI-001..012
+    - OPS-KPI-001..009
+    - IPAD-KPI-001..007
+  dependencies:
+    - authenticated Web/Admin route ownership
+    - exact governed screen identity
+    - accepted WA-DES-021 and WA-DES-031 evidence
+    - typed per-domain payload schemas
+    - configured KPI-period vocabulary and validation
+    - effective-date activation semantics
+    - runtime consumption of the published policy payload
+    - one current base version and stale-draft protection
+    - complete EN/AR content
+    - focused functional, security, negative and visual tests
+  do_not_touch:
+    - live Claude Design, supplied design exports or accepted design revisions
+    - product application code, tests, evidence or providers
+    - Supabase, migrations, seeds, credentials or shared data
+    - frozen route, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, database,
+    test, evidence, provider, mapping, branch, lease or stash is changed.
+
+runtime_delta_input:
+  requested_input: independent runtime audit 018
+  exact_dashboard_config_packet_found: false
+  files_named_018_found:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-STACK-REQUIREMENT-PRESERVATION-AUDIT-018.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-OPERATIONS-DESIGN-READINESS-018.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-AUDIT-GUARDED-REPLAY-TEST-EVIDENCE-MATRIX-018.yaml
+    - product-contract/operationalization/coordination/batches/M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018.yaml
+  reconciliation: >-
+    None is a Dashboard Configuration runtime audit. Their unrelated findings
+    were not imported. This review records the exact dependency as unavailable
+    rather than constructing a second or falsely attributed audit.
+  validation: MISSING_DEPENDENCY_DOCUMENTED
+
+route_and_screen_validation:
+  base:
+    route: /admin/dashboard-config
+    page: apps/web/src/app/admin/dashboard-config/page.tsx
+    action_form: apps/web/src/app/admin/dashboard-config/ActionForm.tsx
+    actions: apps/web/src/app/admin/dashboard-config/actions.ts
+    validation: CONFIRMED_REAL_ROUTE
+  kpi_view:
+    proposed_route: "/admin/dashboard-config?view=kpis"
+    search_parameter_read_by_page: false
+    distinct_component_or_state: false
+    actual_result: identical base page
+    validation: INCORRECT_MAPPING
+  screen_catalogue:
+    entry_found: false
+    implication: >-
+      The route cannot be certified against a governed screen ID, persona,
+      action inventory, error contract or screen-specific acceptance record.
+    validation: NO_GOVERNED_SCREEN_ID
+  route_location:
+    actual_directory: apps/web/src/app/admin/dashboard-config
+    authenticated_route_group: apps/web/src/app/(app)
+    inherits_authenticated_app_layout: false
+    inherits_AppShell: false
+    middleware_enforces_authentication: false
+    validation: CRITICAL_ROUTE_OWNERSHIP_FAILURE
+
+unauthenticated_and_shell_boundary:
+  current_behavior:
+    - root layout supplies theme and locale only
+    - no AppShell sign-in redirect
+    - no channel-access enforcement
+    - no role-scoped navigation, account, notification, language or sign-out controls
+    - database RLS suppresses protected records for anonymous callers
+    - code-owned KPI registry still renders independently of database access
+  exposure:
+    - metric IDs
+    - titles
+    - categories and units
+    - owner roles
+    - delivery states
+    - decision references
+    - configured domain names
+    - migration filename and internal foundation message
+  implication: >-
+    Data-layer RLS prevents unauthorised mutation but does not make the public,
+    bare route an authenticated Admin screen. It also violates the binding
+    Phase 1 Web/Admin shell and wordmark contract.
+  validation: FAIL_CRITICAL
+
+current_capability:
+  kpi_catalogue:
+    - code-registry list of strategic, operational and inspector metric definitions
+    - database seed-status comparison when readable
+    - formula implementation count
+    - implementation and decision-state lozenges
+  configuration_domains:
+    - fourteen hard-coded domain keys
+    - published head and active version display
+    - effective-from display
+    - most-recent in-flight draft display
+  draft_workspace:
+    - writer-created domain/title/raw-JSON draft
+    - owner submission
+    - independent reviewer return with reason
+    - independent reviewer publication
+    - immutable published version row and head-pointer switch
+    - audit rows correlated to draft lifecycle
+  roles_implemented:
+    writers:
+      - compliance_admin
+      - ops
+      - security_admin
+    reviewers:
+      - compliance_admin
+      - leadership
+      - security_admin
+
+requirement_authority_review:
+  CR_445:
+    requirement: >-
+      Operations KPIs calculate visits planned, completed, cancelled, overdue,
+      active inspectors, average duration and SLA breach rate; the KPI
+      calculation period is configurable.
+    current_admin_support:
+      - generic kpi_parameters domain name
+      - raw JSON draft/publish lifecycle
+      - published version ID can be attached to projected metrics
+    missing:
+      - named period fields
+      - allowed unit or range
+      - timezone and boundary semantics
+      - validation and dependency rules
+      - preview of affected metrics
+      - runtime reading of the published payload
+      - source-backed proof that all CR-445 metrics use the period
+    validation: NOT_IMPLEMENTED_END_TO_END
+  broad_route_mapping:
+    current_claim: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD
+    correction: >-
+      CR-445 is the direct customer authority. Other Dashboard and Operations
+      requirements are dependent consumers only when a specific configuration
+      domain demonstrably controls them.
+  local_ADM_DASH_claim:
+    source_contract_found: false
+    page_claim: ADM-DASH-001..018
+    validation: UNGOVERNED_IDENTIFIER_RANGE
+
+kpi_period_and_typed_payload_review:
+  authoring_control:
+    field: free-text textarea
+    parser: any JSON object
+    per_domain_schema: none
+    unknown_key_rejection: none
+    required_key_validation: none
+    type_range_enum_or_unit_validation: none
+    cross_field_validation: none
+  database:
+    payload_check: JSON object only
+    publish_dependency_validation: none
+  runtime:
+    loader: apps/web/src/lib/dashboard-kpi/loader.ts
+    consumed_from_head:
+      - current_version_id
+      - config_key
+    version_payload_loaded: false
+    version_effective_from_loaded: false
+    projected_field: policyVersionId only
+  implication: >-
+    Arbitrary payloads can be approved, but their values do not configure KPI
+    calculations. The system proves lineage decoration, not CR-445 period
+    configurability.
+  validation: FAIL_TYPED_POLICY_AND_RUNTIME_WIRING
+
+maker_checker_and_mutation_boundary:
+  strengths:
+    - no authenticated table INSERT, UPDATE or DELETE policy
+    - direct authenticated DML explicitly revoked
+    - all application mutations use role-gated security-definer RPCs
+    - owner identity is non-null
+    - return and publish reject the maker
+    - selected draft row is locked for transition
+    - published version row is append-only
+    - audit is written in the transition transaction
+  gaps:
+    - no route authentication or Admin route boundary
+    - multiple open drafts for one domain are allowed
+    - no base_version_id or expected-head comparison
+    - a stale pending draft can publish after a newer domain policy
+    - no UI action invokes dash_update_config_draft
+    - returned drafts can only be resubmitted unchanged
+    - return_reason and prior decision metadata remain visible/stale after resubmission
+    - generic JSON is not validated before submit or publish
+  validation: STRONG_NON_BYPASSABLE_RPC_PATH_BUT_INCOMPLETE_WORKFLOW
+
+effective_date_and_concurrency:
+  storage:
+    requested_effective_from: nullable timestamp
+    published_effective_from: timestamp
+    effective_to: absent
+  current_UI:
+    requested_effective_from_input: absent
+    result: every UI-created publication defaults to publication time
+  publication_RPC:
+    future_date_allowed: true
+    past_date_allowed: true
+    head_switch: immediate regardless of effective_from
+    domain_level_lock: absent
+    next_version_algorithm: max(version_number) plus one
+  runtime_loader:
+    head_effective_date_filter: absent
+    version_effective_date_filter: absent
+  concurrency:
+    simultaneous_different_pending_drafts_same_domain: permitted
+    duplicate_next_version_result: one transaction may fail on unique constraint
+    conflict_message: generic neutral error
+    stale_draft_publish_guard: absent
+  implication: >-
+    A future-effective version becomes the head immediately, while a stale
+    draft can replace a newer policy. The displayed effective date therefore
+    does not govern activation.
+  validation: FAIL_EFFECTIVE_DATE_AND_STALE_CONCURRENCY
+
+version_audit_and_history:
+  strengths:
+    - immutable version rows
+    - monotonically intended version number
+    - source parameter, publisher, publication time and correlation
+    - publication audit reference
+    - lifecycle audit for create, update, submit, return and publish
+  gaps:
+    - UI shows only the current head version
+    - no version history or compare
+    - no payload display for active or draft records
+    - no before/after impact
+    - no audit timeline
+    - no cancellation path despite cancelled status
+    - no effective-period history
+  validation: PARTIAL_BACKEND_NO_REVIEWABLE_GOVERNANCE_EVIDENCE
+
+kpi_definition_governance:
+  source_table: mvp3_kpi_definitions
+  seed_rows: 28
+  current_data_quality:
+    dashboard_config_heads: 0
+    dashboard_config_parameters: 0
+    dashboard_config_versions: 0
+  formula_authority:
+    UI_source: apps/web/src/lib/dashboard-kpi/registry.ts
+    database_source: seeded formula rows
+    ordinary_admin_update_policy: absent
+    governed_publish_RPC: absent
+  mismatch_risk:
+    - page renders code registry even when database catalogue is unavailable
+    - database status is shown beside code delivery state without reconciliation
+    - seeded definition rows remain draft with no dashboard-config publication action
+    - code and database definitions can diverge without a visible integrity result
+  validation: AMBIGUOUS_DUAL_CATALOGUE_AUTHORITY
+
+permissions_and_disclosure:
+  route_inventory_claim:
+    - compliance_admin
+    - leadership
+    - ops
+    - reviewer
+    - security_admin
+  actual_route_guard: none
+  draft_read_policy:
+    - owner
+    - any configured writer
+    - any configured reviewer
+  published_read_policy: any authenticated principal
+  UI_role_read:
+    query_scope: current authenticated user through RLS
+    error_handling: ignored
+  findings:
+    - "Anonymous callers reach the route and code registry."
+    - "Reviewer is listed in route inventory but is neither writer nor reviewer in the RPC predicates."
+    - "Leadership can review/publish but cannot draft."
+    - "Ops can draft and submit but cannot review."
+    - "Compliance and Security Admin can both draft or review, provided identity differs."
+    - "Role-provider failure silently becomes no authority rather than an explicit unavailable state."
+  validation: FAIL_ROUTE_AND_ROLE_CONTRACT
+
+provider_and_hard_state_review:
+  migrationApplied_flag_checks:
+    - KPI read
+    - head read
+    - parameter read
+  ignored_errors:
+    - versionRead
+    - roleRead
+    - userRead
+  false_state_risks:
+    - version failure becomes Not configured
+    - parameter failure becomes No configuration drafts in flight
+    - role failure becomes a role-authority note
+    - any selected table failure is called migration not applied
+  route_files_absent:
+    - loading.tsx
+    - error.tsx
+  hard_states_absent_or_incomplete:
+    - authenticated unauthorized
+    - partial-provider unavailable by source
+    - stale read
+    - version conflict
+    - scheduled future activation
+    - active versus draft comparison
+    - safe not-found
+    - retry
+    - cancellation
+  validation: FAIL_TRUTHFUL_FAILURE_AND_RECOVERY_STATES
+
+localization_direction_and_accessibility:
+  localized_via_useT:
+    - page title only
+  hard_coded_English:
+    - context
+    - all section headings and explanatory text
+    - all table headers and captions
+    - all domain names
+    - all form labels, buttons, placeholders and statuses
+    - all action success and error messages
+  KPI_registry:
+    Arabic_titles_present: 1
+    Arabic_titles_null: 27
+  document_direction:
+    EN_LTR: inherited from root
+    AR_RTL: inherited from root
+  accessibility_strengths:
+    - table captions
+    - table header scopes
+    - fieldset and legend
+    - labels
+    - native required controls
+    - alert and status roles
+    - aria-busy on action forms
+  accessibility_gaps:
+    - no invalid-field or result focus management
+    - raw JSON authoring is not an accessible business control
+    - no announced partial-source boundaries
+    - no keyboard/visual evidence for design parity
+  responsive_evidence: none
+  light_dark_evidence: none
+  wordmark:
+    route_has_approved_authenticated_shell_wordmark: false
+    implication: >-
+      The known English/Arabic wordmark requirement is not reached because the
+      entire authenticated shell is absent.
+  validation: FAIL_EN_AR_PARITY_RESPONSIVE_AND_SHELL_IDENTITY
+
+design_authority_validation:
+  base:
+    design_id: WA-DES-021
+    filename: SAQEEL Dashboard Config.dc.html
+    sha256: f4e52ffe845f1e7c8ca2b6d46f8097db7c6981aa1e7346ea42ec2fae892fa8ed
+    source_manifest_status: PRIMARY_TARGET_DESIGN_PRODUCT_OWNER_SUPPLIED
+    route_map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+    immutable_export_in_git: false
+    visual_acceptance_evidence_in_git: false
+    nearest_match: exact named predecessor
+    validation: INSUFFICIENT_EVIDENCE_NOT_CERTIFIED
+  KPI_mode:
+    design_id: WA-DES-031
+    filename: SAQEEL KPI Management.dc.html
+    sha256: 1736d9c5f20d1b29ea530b756565e0802019a1356a323da4bed93d268645537c
+    source_manifest_status: PRIMARY_TARGET_DESIGN_PRODUCT_OWNER_SUPPLIED
+    proposed_route: "/admin/dashboard-config?view=kpis"
+    implementation_reads_view: false
+    visual_acceptance_evidence_in_git: false
+    validation: INCORRECT_MAPPING_AND_INSUFFICIENT_EVIDENCE
+  shell_authority:
+    source: WA-SHELL-SRC-001
+    binding_scope: every represented Phase 1 Web/Admin surface
+    current_route_parity: absent
+  immutable_revision_rule: >-
+    Preserve the supplied hashes. Any correction must be a separately identified
+    successor revision with explicit lineage and acceptance; do not overwrite
+    WA-DES-021 or WA-DES-031.
+
+test_and_evidence_review:
+  route_focused_spec_found: false
+  endpoint_matrix_statement: none found
+  current_route_inventory_statement: TEST_GAP_REQUIRES_PACKAGE_FOCUSED_SPEC
+  required_missing_proof:
+    - unauthenticated redirect
+    - unauthorized role denial
+    - writer and reviewer positive paths
+    - maker self-review rejection
+    - direct table DML denial
+    - typed payload invalid and valid paths
+    - returned-draft edit and resubmit
+    - concurrent publication and stale-head conflict
+    - future, current and past effective-date behavior
+    - version history and comparison
+    - audit correlation
+    - runtime payload consumption by CR-445 metrics
+    - partial-provider isolation and retry
+    - EN/LTR and AR/RTL content parity
+    - 1160, 1024, 412 or 390, and 320 layouts
+    - light and dark visual comparison
+    - keyboard and focus behavior
+    - accepted WA-DES-021 and WA-DES-031 visual diffs
+  validation: INSUFFICIENT_EVIDENCE
+
+priority_findings:
+  - id: DASHCFG-P0-01
+    severity: P0
+    finding: Route is outside the authenticated AppShell and has no route guard.
+    action: CORRECT
+  - id: DASHCFG-P0-02
+    severity: P0
+    finding: CR-445 KPI-period payload is untyped and not consumed by calculations.
+    action: WIRE
+  - id: DASHCFG-P0-03
+    severity: P0
+    finding: Future-effective versions become the head immediately.
+    action: CORRECT
+  - id: DASHCFG-P0-04
+    severity: P0
+    finding: Stale drafts can supersede newer policy without expected-head conflict.
+    action: CORRECT
+  - id: DASHCFG-P0-05
+    severity: P0
+    finding: No governed screen ID or screen-specific acceptance contract exists.
+    action: BLOCK
+  - id: DASHCFG-P1-01
+    severity: P1
+    finding: WA-DES-031 query-mode mapping has no implemented view state.
+    action: CORRECT
+  - id: DASHCFG-P1-02
+    severity: P1
+    finding: Returned drafts cannot be edited in the UI.
+    action: BUILD
+  - id: DASHCFG-P1-03
+    severity: P1
+    finding: Partial provider failures become false empty or not-configured states.
+    action: CORRECT
+  - id: DASHCFG-P1-04
+    severity: P1
+    finding: Page and 27 of 28 KPI titles lack Arabic content.
+    action: UPDATE
+  - id: DASHCFG-P1-05
+    severity: P1
+    finding: No route-focused test, responsive, accessibility or visual evidence exists.
+    action: BLOCK
+
+reviewer_recommendation:
+  classification: BLOCK_DUE_TO_MISSING_CONTRACT
+  sponsor_decision: DO_NOT_CERTIFY_OR_COUNT_COMPLETE
+  bounded_next_actions:
+    - "Move or wrap the route under the authenticated Web/Admin layout and record exact allowed roles."
+    - "Assign a governed screen ID with exact CR-445 and dependent acceptance rows."
+    - "Define typed, bilingual policy schemas per configuration domain; prohibit arbitrary JSON authoring."
+    - "Define the KPI-period unit, range, timezone and boundary contract without inventing values."
+    - "Load, validate and consume the effective published payload in every governed KPI calculation."
+    - "Correct scheduled activation and add expected-head stale-draft conflict handling."
+    - "Expose draft editing, payload review, version compare, impact and audit evidence."
+    - "Separate truthful provider failures from empty and not-configured states."
+    - "Resolve WA-DES-021 acceptance and either implement or correct the WA-DES-031 query-mode mapping."
+    - "Run full security, functional, negative, EN/AR, RTL/LTR, responsive, accessibility and visual evidence."
+
+ownership_boundary:
+  claude_design:
+    - accepted successor evidence for WA-DES-021 and WA-DES-031
+    - typed business controls replacing raw JSON
+    - policy version, compare, impact, scheduled and conflict states
+    - EN/AR, RTL/LTR, narrow, error and unavailable states
+    - no edit to immutable supplied design hashes
+  claude_code:
+    - authenticated route ownership and bounded frontend/runtime wiring after lease
+    - no policy value invention
+  kimi:
+    - independent route authorization, RPC/RLS, concurrency and effective-date negatives
+    - no overlap with leased implementation files
+  codex:
+    - final requirement, design, runtime and evidence certification
+    - no implementation write while reviewer
+
+evidence:
+  application:
+    - apps/web/src/app/admin/dashboard-config/page.tsx
+    - apps/web/src/app/admin/dashboard-config/ActionForm.tsx
+    - apps/web/src/app/admin/dashboard-config/actions.ts
+    - apps/web/src/app/layout.tsx
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/components/Shell.tsx
+    - apps/web/src/middleware.ts
+    - apps/web/src/lib/dashboard-kpi/loader.ts
+    - apps/web/src/lib/dashboard-kpi/registry.ts
+    - apps/web/src/lib/dashboard-kpi/projection.ts
+  database:
+    - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+    - supabase/migrations/20260721010000_dashboard_kpi_admin_foundation.sql
+  contract:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/authority/DASHBOARD_BUSINESS_REQUIREMENT_CONTRACT_V1.md
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  data_quality:
+    - product-contract/seeding-discovery/CURRENT_DATA_QUALITY_FINDINGS.csv
+    - product-contract/seeding-discovery/CURRENT_DATA_QUALITY_REPORT.md
+    - product-contract/seeding-discovery/SCHEMA_CATALOG.csv
+    - product-contract/seeding-discovery/MIGRATION_STATE_MATRIX.csv
+
+next_queue:
+  task_id: M9-ADMIN-EXECUTION-DESIGN-AUTHORITY-REVIEW-054
+  scope: >-
+    Independently review /admin/execution and its evidence, capacity, GIS,
+    visit-mode, offline, reason and raw-policy controls against exact
+    requirements, stable design lineage, permissions, governed values,
+    publication/version/audit, concurrency, EN/AR, responsive, accessibility
+    and hard-state contracts.
+  mode: READ_ONLY
+  completion_credit: 0

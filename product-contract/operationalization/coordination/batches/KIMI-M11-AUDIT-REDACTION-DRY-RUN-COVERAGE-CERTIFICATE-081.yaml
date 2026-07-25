@@ -1,0 +1,284 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-DRY-RUN-COVERAGE-CERTIFICATE-081
+status: SYNTHETIC_COVERAGE_CERTIFIED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Independently certify the structural and semantic coverage of dry-run 080:
+  one synthetic pass, all 36 failure mutations, all 13 gates, protected
+  paths/objects, four-lane separation and zero-authority semantics.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079
+  - KIMI-M11-AUDIT-REDACTION-LEASE-MANIFEST-DRY-RUN-080
+
+hard_boundary:
+  - "Read-only independent certification plus this one uniquely owned packet."
+  - "Certification applies only to synthetic validator coverage."
+  - "No real answer, identity, owner, lease, dispatch, code, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+  - "No synthetic result grants implementation authority or requirement credit."
+
+certification_method:
+  - check_id: CM-081-01
+    method: "Parse packet 080 as YAML."
+  - check_id: CM-081-02
+    method: "Count pass/failure cases and verify unique IDs and mutation strings."
+  - check_id: CM-081-03
+    method: "Resolve every gate-coverage failure reference and detect orphan or unknown case IDs."
+  - check_id: CM-081-04
+    method: "Compare each failure's expected first gate with its coverage allocation."
+  - check_id: CM-081-05
+    method: "Compare 080 protected paths/objects byte-for-byte as sets against 079."
+  - check_id: CM-081-06
+    method: "Check pairwise lane identity and repository write-path separation in the synthetic pass."
+  - check_id: CM-081-07
+    method: "Check DATA and REVIEW have zero repository write paths."
+  - check_id: CM-081-08
+    method: "Intersect synthetic pass implementation paths/objects with the protected sets."
+  - check_id: CM-081-09
+    method: "Verify 35 acceptance cases, seven evidence rows and zero-secret/audit/regression thresholds."
+  - check_id: CM-081-10
+    method: "Verify explicit synthetic=true, zero real leases and zero real credit semantics."
+
+independent_results:
+  YAML_and_shape:
+    yaml_parse: PASS
+    manifest_required_fields: 20
+    lanes: 4
+    gates: 13
+  synthetic_pass:
+    cases: 1
+    synthetic_flag: true
+    expected_result: PASS_SYNTHETIC_ONLY_NO_AUTHORITY
+    real_leases_created: 0
+    real_credit_granted: 0
+    verdict: PASS
+  synthetic_failures:
+    cases: 36
+    unique_case_ids: 36
+    unique_mutation_strings: 36
+    cases_with_expected_result: 36
+    verdict: PASS
+  gate_coverage:
+    gates: 13
+    referenced_unique_failure_ids: 36
+    orphan_failure_cases: 0
+    unknown_failure_references: 0
+    gates_without_failure_case: 0
+    gate_assignment_mismatches: 0
+    verdict: PASS
+  protected_paths:
+    packet_079_count: 19
+    packet_080_count: 19
+    missing_from_080: 0
+    unexpected_in_080: 0
+    pass_manifest_protected_path_hits: 0
+    verdict: PASS
+  protected_objects:
+    packet_079_count: 10
+    packet_080_count: 10
+    missing_from_080: 0
+    unexpected_in_080: 0
+    pass_manifest_protected_object_hits: 0
+    verdict: PASS
+  lane_separation:
+    distinct_synthetic_identities: 4
+    pairwise_repository_write_path_overlaps: 0
+    QA_implementation_path_overlap: 0
+    DATA_repository_write_paths: 0
+    REVIEW_repository_write_paths: 0
+    nonimplementation_database_object_claims: 0
+    verdict: PASS
+  execution_floor:
+    acceptance_cases_required: 35
+    evidence_rows_required: 7
+    forbidden_key_or_value_findings_allowed: 0
+    historical_audit_row_mutations_allowed: 0
+    protected_regression_exclusions_allowed: 0
+    unauthorized_rows_returned_allowed: 0
+    QA_product_repairs_allowed: 0
+    verdict: PASS
+
+unique_mutation_coverage:
+  authority_and_receipt:
+    covered_by:
+      - FAIL-080-01
+      - FAIL-080-02
+  design_and_ref_allocation:
+    covered_by:
+      - FAIL-080-03
+      - FAIL-080-04
+      - FAIL-080-05
+  identity_separation:
+    covered_by:
+      - FAIL-080-06
+      - FAIL-080-07
+  path_object_and_lane_separation:
+    covered_by:
+      - FAIL-080-08
+      - FAIL-080-09
+      - FAIL-080-10
+      - FAIL-080-11
+      - FAIL-080-12
+      - FAIL-080-13
+  implementation_and_self_check:
+    covered_by:
+      - FAIL-080-14
+      - FAIL-080-15
+      - FAIL-080-16
+      - FAIL-080-17
+  data_environment_cleanup_and_immutability:
+    covered_by:
+      - FAIL-080-18
+      - FAIL-080-19
+      - FAIL-080-20
+  acceptance_and_QA_independence:
+    covered_by:
+      - FAIL-080-21
+      - FAIL-080-22
+      - FAIL-080-23
+      - FAIL-080-24
+      - FAIL-080-25
+  evidence_and_zero_thresholds:
+    covered_by:
+      - FAIL-080-26
+      - FAIL-080-27
+      - FAIL-080-28
+      - FAIL-080-29
+      - FAIL-080-30
+  independent_review:
+    covered_by:
+      - FAIL-080-31
+  real_browser_and_sponsor:
+    covered_by:
+      - FAIL-080-32
+      - FAIL-080-33
+      - FAIL-080-34
+  completion_credit:
+    covered_by:
+      - FAIL-080-35
+      - FAIL-080-36
+  duplicate_mutation_strings: 0
+  orphan_mutation_domains: 0
+  verdict: PASS
+
+gate_certificate:
+  - gate: G01_VALID_SAFE_DECISION_RECEIPT
+    failure_cases: 2
+    status: COVERED
+  - gate: G02_ACCEPTED_DESIGN_AUTHORITY
+    failure_cases: 1
+    status: COVERED
+  - gate: G03_CURRENT_REF_COLLISION_MIGRATION
+    failure_cases: 2
+    status: COVERED
+  - gate: G04_FOUR_DISTINCT_IDENTITIES
+    failure_cases: 2
+    status: COVERED
+  - gate: G05_EXACT_NONOVERLAPPING_LEASES
+    failure_cases: 6
+    status: COVERED
+  - gate: G06_BOUNDED_IMPLEMENTATION
+    failure_cases: 2
+    status: COVERED
+  - gate: G07_IMPLEMENTATION_SELF_CHECK
+    failure_cases: 2
+    status: COVERED
+  - gate: G08_CONTROLLED_DATA_FIXTURE
+    failure_cases: 3
+    status: COVERED
+  - gate: G09_INDEPENDENT_QA_35_CASES
+    failure_cases: 5
+    status: COVERED
+  - gate: G10_EVIDENCE_7_ROWS
+    failure_cases: 5
+    status: COVERED
+  - gate: G11_FINAL_INDEPENDENT_REVIEW
+    failure_cases: 1
+    status: COVERED
+  - gate: G12_REAL_BROWSER_SPONSOR_REVIEW
+    failure_cases: 3
+    status: COVERED
+  - gate: G13_COMPLETION_CREDIT
+    failure_cases: 2
+    status: COVERED
+
+zero_authority_certificate:
+  synthetic_identity_prefix_required: SYNTHETIC-
+  real_sponsor_answers_present: false
+  real_identities_present: false
+  real_owners_present: false
+  real_leases_present: false
+  real_dispatches_present: false
+  real_migration_allocated: false
+  real_tests_executed: false
+  real_evidence_captured: false
+  real_completion_credit_granted: false
+  strongest_permitted_interpretation: >-
+    Packet 080 proves that the proposed validator examples are internally
+    covered. It does not prove that a real receipt, design, implementation,
+    data run, QA run, review or sponsor acceptance exists.
+  verdict: PASS_ZERO_AUTHORITY
+
+limitations:
+  - "This is structural certification of synthetic examples, not execution of the examples against a software validator."
+  - "No future receipt exists to validate."
+  - "No exact migration name, real environment or lane identity is allocated."
+  - "No application, database, test, evidence or browser behavior is certified."
+  - "Full CR-347/CR-348 remains blocked by the missing provider lifecycle contract."
+
+certificate_verdict:
+  classification: CERTIFY_SYNTHETIC_COVERAGE
+  dry_run_080: PASS
+  implementation_authority: false
+  QA_authority: false
+  data_authority: false
+  review_authority: false
+  blockers_closed: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-BLOCKER-DELTA-WATCH-082
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Recheck current product/coordination refs for a real sponsor receipt,
+    accepted design authority, M11 leases, provider-lifecycle contract or
+    implementation/QA evidence, and report only true blocker deltas.
+  prohibited:
+    - "No answer selection, real identity, owner, lease, dispatch, code, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  certification_methods: 10
+  synthetic_pass_cases_certified: 1
+  synthetic_failure_cases_certified: 36
+  unique_mutations_certified: 36
+  gates_certified: 13
+  protected_paths_certified: 19
+  protected_objects_certified: 10
+  lane_identities_certified_distinct: 4
+  orphan_failure_cases: 0
+  unknown_failure_references: 0
+  gate_assignment_mismatches: 0
+  real_authority_created: 0
+  commits_created: 0
+  pushes_created: 0
+  blockers_closed: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

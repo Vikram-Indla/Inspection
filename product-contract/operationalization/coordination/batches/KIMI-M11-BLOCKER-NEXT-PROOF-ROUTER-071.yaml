@@ -1,0 +1,354 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-BLOCKER-NEXT-PROOF-ROUTER-071
+status: READ_ONLY_PROOF_ROUTER_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Route each of the 12 open M11 blockers to its next exact admissible proof,
+  authoritative source, permitted owner boundary, dependencies and safe
+  read-only fallback without assigning an owner or treating control evidence
+  as closure.
+
+authority:
+  blocker_delta: KIMI-M11-BLOCKER-EVIDENCE-DELTA-070
+  frozen_handoff: KIMI-M11-FINAL-HANDOFF-SCORECARD-RECONCILIATION-053
+  QA_readiness: KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+  control_visibility: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+
+hard_boundary:
+  - "Read-only proof routing plus this one owned coordination packet."
+  - "Owner types are boundaries, not appointments; no real owner, worktree, branch, dispatch or lease is created."
+  - "No fetch, checkout, merge, push, queue/slice/lease edit, provider call, catalog query or shared-control mutation."
+  - "No implementation, QA execution, product/test/SQL/data/seed/design/stash mutation or requirement credit."
+  - "Planning, control, specification or synthetic-validator evidence never closes a runtime/authority blocker."
+
+admissibility_rule:
+  exact_proof_must:
+    - "Come from the named authoritative source or an accepted successor."
+    - "Be produced by the permitted owner type under an exact active authority boundary when mutation is required."
+    - "Satisfy every listed dependency."
+    - "Include reproducible content hashes, negative paths and independent review where applicable."
+    - "Be explicit about partial, blocked or unavailable results."
+  rejected_as_closure:
+    - "Queue owner text."
+    - "Synthetic examples or validator PASS."
+    - "Documentation-only ref movement."
+    - "Unexecuted test specifications."
+    - "Unmaterialized owner/lease suggestions."
+    - "Screenshots without source/runtime provenance."
+    - "Mocks or inferred provider/catalog facts."
+
+proof_routes:
+  - blocker_id: BLK-M11-MAC-CAPTURE
+    next_exact_admissible_proof:
+      artifact: M11-MAC-UNLOCK-KIMI-VISIBLE-CAPTURE
+      required_content:
+        - "Visible unlocked desktop and confirmed existing Kimi conversation identity."
+        - "Complete Kimi response captured without truncation."
+        - "Timestamp, session identity and response content hash."
+    authoritative_source:
+      - "Human-visible macOS session."
+      - "Existing Kimi conversation after manual unlock."
+    owner_boundary: HUMAN_OPERATOR_FOR_UNLOCK_PLUS_READ_ONLY_CAPTURE_REVIEWER
+    dependencies: []
+    safe_fallback_work:
+      - "Poll lock state read-only."
+      - "Revalidate expected packet names, response schema and rejection checklist."
+      - "Do not automate unlock or accept unseen output."
+    closure_forbidden_until: "CGSSessionScreenIsLocked=No and visible capture is independently validated."
+
+  - blocker_id: BLK-M11-KIMI-RETURN
+    next_exact_admissible_proof:
+      artifact: M11-KIMI-SIX-PACKET-RETURN-MANIFEST
+      required_content:
+        - "Complete corrected payloads for 010, 011, 013, 014, 015 and 017."
+        - "One response manifest with packet order, hashes, source fingerprints and all collision-stop acknowledgements."
+        - "repository_write_attempted=false, implementation_claimed=false and lease_claimed=false."
+    authoritative_source:
+      - KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+      - KIMI-M11-CORRECTION-READINESS-REVIEW-024
+      - KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+      - KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029
+    owner_boundary: EXISTING_KIMI_SESSION_READ_ONLY_CHAT_RETURN
+    dependencies: [BLK-M11-MAC-CAPTURE]
+    safe_fallback_work:
+      - "Re-hash source packets and validate manifest schema."
+      - "Maintain exact partial/title-only/fingerprint-mismatch rejection rules."
+      - "Do not materialize a guessed or reconstructed Kimi response."
+    closure_forbidden_until: "All six payloads and manifest parse, hash and independently validate."
+
+  - blocker_id: BLK-M11-REVIEW-025
+    next_exact_admissible_proof:
+      artifact: KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025-ACTUAL-VERDICT
+      required_content:
+        - "Review of actual corrected payloads, not proposed content."
+        - "Per-packet ACK/RETURN/BLOCK with source fingerprint, permission, collision, rollout and evidence findings."
+        - "One allowed final verdict from packet 025."
+    authoritative_source:
+      - KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+      - M11-KIMI-SIX-PACKET-RETURN-MANIFEST
+    owner_boundary: INDEPENDENT_CONTROL_REVIEWER_NOT_THE_RETURN_AUTHOR
+    dependencies: [BLK-M11-KIMI-RETURN]
+    safe_fallback_work:
+      - "Re-run review precondition and source-hash checks."
+      - "Keep 025 QUEUED_NOT_EXECUTED."
+    closure_forbidden_until: "Actual corrected inputs exist and the independent review completes."
+
+  - blocker_id: BLK-M11-009R
+    next_exact_admissible_proof:
+      artifact: M11-009R-ACCEPTED-NEGATIVE-AUTHORITY-AND-QA-BOUNDARY
+      required_content:
+        - "Corrected 009r with accepted negative cases, fixtures, rollback and evidence contract."
+        - "One independent QA owner type and exact future path boundary."
+        - "No implementation ownership or test execution claim."
+    authoritative_source:
+      - KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
+      - KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+      - KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+    owner_boundary: INDEPENDENT_QA_AUTHORITY_AFTER_ACCEPTED_CORRECTION
+    dependencies: [BLK-M11-MAC-CAPTURE, BLK-M11-KIMI-RETURN, BLK-M11-REVIEW-025]
+    safe_fallback_work:
+      - "Reconcile all 361 case IDs and nine future QA paths against 009r."
+      - "Detect missing negative personas, rollback or teardown clauses."
+    closure_forbidden_until: "Corrected 009r and its single QA boundary receive accepted review."
+
+  - blocker_id: BLK-M11-CATALOG
+    next_exact_admissible_proof:
+      artifact: M11-LIVE-CATALOG-AUTHORITY-EVIDENCE-BUNDLE
+      required_content:
+        - "Server/version, schema owner, function owner, SECURITY DEFINER, search_path and extension-schema facts."
+        - "Table ACL, default privilege, RLS policy, trigger, index and dependency facts."
+        - "Redacted query text, row/column schema, timestamp, project/environment identity and independent review."
+    authoritative_source:
+      - "Authorized live Supabase/Postgres catalog on the exact non-production project."
+      - KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+      - KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050
+    owner_boundary: GOVERNED_READ_ONLY_DATABASE_CATALOG_OPERATOR_PLUS_INDEPENDENT_SECURITY_REVIEWER
+    dependencies:
+      - "Explicit catalog-query authority and exact environment identity."
+      - "Credential-safe redaction/evidence handling."
+    safe_fallback_work:
+      - "Maintain an exact read-only catalog query pack and expected evidence schema without executing it."
+      - "Diff known migration declarations against the query plan."
+    closure_forbidden_until: "Live catalog facts are queried under authority and independently accepted."
+
+  - blocker_id: BLK-M11-PROVIDER
+    next_exact_admissible_proof:
+      artifact: M11-APPROVED-PROVIDER-CALLBACK-DELIVERY-CONTRACT
+      required_content:
+        - "Provider identity, API/callback authentication, event signatures, replay/idempotency and timeout/degraded behavior."
+        - "Delivery evidence, retention/redaction, ownership and fail-closed activation rule."
+        - "Configured non-production proof without exposing secrets."
+    authoritative_source:
+      - "Signed provider/API contract and governed configuration authority."
+      - KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+      - KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049
+    owner_boundary: PROVIDER_CONTRACT_OWNER_PLUS_SECURITY_REVIEWER_PLUS_GOVERNED_CONFIG_OPERATOR
+    dependencies:
+      - "Sponsor-approved provider selection and contract."
+      - "Credential-safe non-production configuration authority."
+    safe_fallback_work:
+      - "Maintain endpoint/event/authentication/degraded-path contract checklist."
+      - "Reconcile missing provider fields against 044 and 049 without calling a provider."
+    closure_forbidden_until: "Provider contract, configuration and runtime negative proof are accepted."
+
+  - blocker_id: BLK-M11-IMPLEMENTATION
+    next_exact_admissible_proof:
+      artifact: M11-ACCEPTED-AUTHORITY-EXACT-IMPLEMENTATION-LEASE-AND-RUNTIME-DELTA
+      required_content:
+        - "One selected authority option with accepted change control."
+        - "22-field dispatch manifest and 16-field exact lease reproduced from pinned refs."
+        - "One implementation owner, exact paths/objects/migration order and independent reviewer."
+        - "Implemented bounded delta with tests, negative paths and runtime evidence."
+    authoritative_source:
+      - KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057
+      - KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+      - KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+      - "Accepted corrected source chain and active lease registry."
+    owner_boundary: SINGLE_IMPLEMENTATION_OWNER_UNDER_EXACT_ACTIVE_LEASE_PLUS_INDEPENDENT_REVIEWER
+    dependencies:
+      - BLK-M11-KIMI-RETURN
+      - BLK-M11-REVIEW-025
+      - BLK-M11-009R
+      - BLK-M11-CATALOG
+      - BLK-M11-PROVIDER
+      - BLK-M11-FIXTURES
+      - BLK-M11-AUDIT-CONSUMERS
+    safe_fallback_work:
+      - "Recheck paths, database objects, branch existence, ref hashes and collision state."
+      - "Run only synthetic dispatch validators and documentation-only design of materialization order."
+      - "Do not write product, migrations or tests."
+    closure_forbidden_until: "Accepted authority and exact lease precede a verified implementation/runtime delta."
+
+  - blocker_id: BLK-M11-QA-LEASES
+    next_exact_admissible_proof:
+      artifact: M11-INDEPENDENT-QA-LEASE-NINE-PATH-EXECUTION-AND-EVIDENCE
+      required_content:
+        - "One independent QA owner different from implementation owner/reviewer."
+        - "Exact lease for nine declared QA paths after implementation lease release."
+        - "361 unique case verdicts, 18 proof-cluster runs and complete evidence index."
+    authoritative_source:
+      - KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+      - KIMI-M11-DISPATCH-VALIDATOR-COVERAGE-CERTIFICATE-065
+      - "Accepted integrated implementation commit and active QA lease registry."
+    owner_boundary: SINGLE_INDEPENDENT_QA_OWNER_AFTER_IMPLEMENTATION_RELEASE
+    dependencies:
+      - BLK-M11-IMPLEMENTATION
+      - BLK-M11-009R
+      - BLK-M11-FIXTURES
+      - BLK-M11-EVIDENCE
+    safe_fallback_work:
+      - "Revalidate 361 IDs, 18 clusters, nine path uniqueness and evidence mappings."
+      - "Maintain fail-closed mutation/regression monitors."
+      - "Do not create or execute tests before an exact QA lease."
+    closure_forbidden_until: "All nine paths execute under independent QA authority and every case/evidence gate passes."
+
+  - blocker_id: BLK-M11-FIXTURES
+    next_exact_admissible_proof:
+      artifact: M11-GOVERNED-DETERMINISTIC-FIXTURE-AND-TEARDOWN-PACK
+      required_content:
+        - "Synthetic persona/data catalogue mapped to every required positive and negative test."
+        - "Project/environment pin, provenance, idempotency key, dry-run, rollback and deterministic teardown."
+        - "No governed policy value, secret or personal data invented."
+    authoritative_source:
+      - "Accepted fixture specification and governed non-production Supabase authority."
+      - KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+      - KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+    owner_boundary: DEDICATED_DATA_SEEDER_OPERATOR_UNDER_EXACT_DATA_LEASE_PLUS_INDEPENDENT_QA_REVIEW
+    dependencies:
+      - "Exact non-production project confirmation."
+      - "Accepted fixture schema, dry-run and cleanup authority."
+    safe_fallback_work:
+      - "Design fixture rows, provenance fields and teardown assertions without seeding."
+      - "Map each fixture to case IDs and redaction rules."
+    closure_forbidden_until: "Authorized dry-run, seed, RLS checks and teardown execute reproducibly."
+
+  - blocker_id: BLK-M11-AUDIT-CONSUMERS
+    next_exact_admissible_proof:
+      artifact: M11-GLOBAL-AUDIT-CONSUMER-AND-REDACTION-INVENTORY
+      required_content:
+        - "Every code, export, report and service consumer of raw/safe audit data."
+        - "Exact file/query/function path, fields consumed, persona, redaction need and compatibility owner type."
+        - "Zero unknown consumers before raw-audit contraction."
+    authoritative_source:
+      - "Canonical repository static inventory at the pinned product commit."
+      - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+      - KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+      - KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048
+    owner_boundary: READ_ONLY_REPOSITORY_INVESTIGATOR_PLUS_AUDIT_SECURITY_REVIEWER
+    dependencies:
+      - "Pinned canonical product ref."
+      - "Exact search scope and zero-write boundary."
+    safe_fallback_work:
+      - "Run read-only repository call-site and query inventory."
+      - "Produce unresolved-consumer register and redaction crosswalk."
+    closure_forbidden_until: "Every consumer is mapped and the accepted safe-audit contract preserves required behavior."
+
+  - blocker_id: BLK-M11-QUIESCE
+    next_exact_admissible_proof:
+      artifact: M11-QUIESCE-DRAIN-NO-TRAFFIC-ROLLBACK-REHEARSAL
+      required_content:
+        - "Implemented maintenance gate, in-flight counter and zero-drain assertion."
+        - "Ordered expand/switch/quiesce/contract rehearsal with no M11 traffic in unsafe intervals."
+        - "Failure injection, rollback, recovery and immutable-audit proof."
+    authoritative_source:
+      - KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045
+      - KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051
+      - "Accepted migration/integration plan and controlled non-production runtime."
+    owner_boundary: SINGLE_DATABASE_INTEGRATION_OPERATOR_PLUS_INDEPENDENT_RELEASE_QA
+    dependencies:
+      - BLK-M11-IMPLEMENTATION
+      - BLK-M11-FIXTURES
+      - "Controlled migration rehearsal authority."
+    safe_fallback_work:
+      - "Maintain migration dependency graph, stop points and dry rehearsal checklist."
+      - "Statically verify every unsafe interval has a declared traffic gate."
+    closure_forbidden_until: "Controlled runtime rehearsal proves drain, no-traffic, rollback and recovery."
+
+  - blocker_id: BLK-M11-EVIDENCE
+    next_exact_admissible_proof:
+      artifact: M11-COMPLETE-RUNTIME-EVIDENCE-BUNDLE-AND-SPONSOR-DECISION
+      required_content:
+        - "Database, browser, provider, catalog, persona, redaction, audit, rollback, quiesce and deployment evidence."
+        - "Case-to-evidence index for all 361 cases and 18 proof clusters."
+        - "Hashes, timestamps, environment/build identity, failures, redaction and independent review."
+        - "Sponsor acceptance or explicit returned defects."
+    authoritative_source:
+      - KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+      - KIMI-M11-FINAL-HANDOFF-SCORECARD-RECONCILIATION-053
+      - "Executed nine-path QA bundle and independent review record."
+    owner_boundary: INDEPENDENT_QA_EVIDENCE_OWNER_PLUS_SPONSOR_ACCEPTANCE_AUTHORITY
+    dependencies:
+      - BLK-M11-CATALOG
+      - BLK-M11-PROVIDER
+      - BLK-M11-IMPLEMENTATION
+      - BLK-M11-QA-LEASES
+      - BLK-M11-FIXTURES
+      - BLK-M11-AUDIT-CONSUMERS
+      - BLK-M11-QUIESCE
+    safe_fallback_work:
+      - "Maintain evidence schema, redaction checklist, case index and missing-evidence register."
+      - "Do not create placeholder evidence or claim unexecuted proof."
+    closure_forbidden_until: "Complete runtime bundle and independent/sponsor acceptance exist."
+
+dependency_order:
+  phase_1_human_capture: [BLK-M11-MAC-CAPTURE, BLK-M11-KIMI-RETURN, BLK-M11-REVIEW-025, BLK-M11-009R]
+  phase_2_external_and_inventory: [BLK-M11-CATALOG, BLK-M11-PROVIDER, BLK-M11-AUDIT-CONSUMERS, BLK-M11-FIXTURES]
+  phase_3_authorized_build: [BLK-M11-IMPLEMENTATION]
+  phase_4_runtime_safety: [BLK-M11-QUIESCE]
+  phase_5_independent_QA: [BLK-M11-QA-LEASES]
+  phase_6_final_evidence: [BLK-M11-EVIDENCE]
+  parallel_read_only_fallback_groups:
+    - [BLK-M11-MAC-CAPTURE, BLK-M11-CATALOG, BLK-M11-PROVIDER]
+    - [BLK-M11-AUDIT-CONSUMERS, BLK-M11-FIXTURES, BLK-M11-IMPLEMENTATION]
+    - [BLK-M11-QA-LEASES, BLK-M11-QUIESCE, BLK-M11-EVIDENCE]
+  rule: >-
+    Parallel groups authorize only their listed safe fallback analysis.
+    Mutable proof production follows dependencies and exact leases.
+
+result:
+  verdict: ACK
+  exact_reason: ACK_12_BLOCKERS_ROUTED_TO_EXACT_ADMISSIBLE_NEXT_PROOF
+  blockers_routed: 12
+  real_owners_assigned: 0
+  real_leases_created: 0
+  blockers_closed: 0
+  control_evidence_treated_as_closure: false
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-SAFE-FALLBACK-WORK-QUEUE-072
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Convert the 12 routed fallbacks into a dependency-aware, non-overlapping
+    read-only queue with exact outputs, stop conditions and two-task continuity
+    per available lane, without assigning real owners or leases.
+  prohibited:
+    - "No fetch, dispatch, real owner, worktree, branch, lease, provider call, catalog query, shared-control mutation, implementation, QA execution or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  blockers_expected: 12
+  blockers_routed: 12
+  routes_with_exact_proof: 12
+  routes_with_authoritative_source: 12
+  routes_with_owner_boundary: 12
+  routes_with_dependencies: 12
+  routes_with_safe_fallback: 12
+  blockers_closed: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

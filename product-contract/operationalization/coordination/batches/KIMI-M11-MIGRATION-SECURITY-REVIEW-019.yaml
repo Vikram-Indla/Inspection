@@ -1,0 +1,336 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-MIGRATION-SECURITY-REVIEW-019
+status: INDEPENDENT_REVIEW_COMPLETE_READ_ONLY
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+reviewed_stack:
+  - KIMI-M11-ATOMIC-FIX-LEASE-010
+  - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+dependency_plan: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+review_verdict: RETURN_FOR_SECURITY_CORRECTION_BEFORE_DISPATCH
+
+review_boundary:
+  performed:
+    - "Canonical migration and proposed-packet source review."
+    - "SECURITY DEFINER/invoker, search_path, grants, policies, triggers, audit, RLS, concurrency, rollback and deployment-skew analysis."
+  not_performed:
+    - "No product, migration, test, database or UI write."
+    - "No migration execution, remote advisor call or shared-database inspection."
+    - "No implementation certification."
+
+external_security_authority:
+  - title: "Supabase database functions"
+    url: "https://supabase.com/docs/guides/database/functions"
+    rule: >-
+      SECURITY DEFINER must use a safe search_path; functions receive PUBLIC
+      execute by default unless explicitly revoked.
+  - title: "Supabase Row Level Security"
+    url: "https://supabase.com/docs/guides/database/postgres/row-level-security"
+    rule: >-
+      Security-definer helpers bypass RLS and should not be exposed as public
+      API functions; UPDATE also needs compatible SELECT policy.
+  - title: "Supabase securing the Data API"
+    url: "https://supabase.com/docs/guides/api/securing-your-api"
+    rule: "RLS does not secure RPC execution; grants and in-function authorization are mandatory."
+  - title: "PostgreSQL CREATE FUNCTION security guidance"
+    url: "https://www.postgresql.org/docs/current/sql-createfunction.html"
+    rule: "Exclude untrusted schemas from search_path and revoke default PUBLIC execute for definer functions."
+
+confirmed_current_risk_context:
+  - "vp_request_otp and vp_verify_otp are SECURITY DEFINER with search_path public,extensions."
+  - "vp_otp_status and vs_audit_trail are SECURITY DEFINER with search_path public."
+  - "has_role, has_any_role and is_assigned_inspector are SECURITY DEFINER in public with search_path public."
+  - "Several RPC migrations grant authenticated but do not first revoke PUBLIC/anon execution."
+  - "audit_row_change now uses search_path='' and schema-qualified public.audit_events, but stores full participant rows."
+  - "audit_read and audit_read_compliance are permissive SELECT policies over raw audit_events."
+  - "virtual-participant UPDATE produces a generic full-row audit event plus explicit OTP semantic audit events."
+  - "vp_request_otp currently returns dev_code and stores code_hash in verification_record."
+
+findings:
+  - finding_id: M11-MIGSEC-001
+    severity: P0
+    category: SECURITY_DEFINER_SEARCH_PATH_AND_EXPOSURE
+    affected_packets: ["010", "011", "014", "013", "015"]
+    evidence:
+      - "supabase/migrations/0023_fix_otp_rpc_authorization.sql:20-21,58-59"
+      - "supabase/migrations/20260715180000_cd042_otp_status_authorization.sql:11-12"
+      - "supabase/migrations/20260715190000_cd042_audit_read_seam.sql:10-12"
+      - "supabase/migrations/0001_foundation.sql:342-344"
+      - "supabase/migrations/0002_rbac_audit.sql:6-12"
+    risk: >-
+      A definer function that searches public/extensions by name trusts schema
+      resolution while running with owner privileges. A new atomic function
+      copied from this pattern could bypass RLS and resolve unintended objects.
+    required_correction:
+      - "Every new/replaced definer function sets search_path=''."
+      - "Schema-qualify every table, function, type, operator-sensitive extension call and sequence reference."
+      - "Keep privileged helpers in a non-exposed private schema where callable API shape permits."
+      - "For a public Data API RPC, use an invoker wrapper over a private, tightly granted definer helper or document an equivalent catalog-proven boundary."
+      - "Do not copy search_path=public or public,extensions into 010/011/014/013/015."
+    gate: "Catalog inspection proves proconfig search_path and function schema/owner for every touched function."
+
+  - finding_id: M11-MIGSEC-002
+    severity: P0
+    category: DEFAULT_PUBLIC_EXECUTE_AND_OVERLOAD_PRIVILEGES
+    affected_packets: ["010", "011", "014", "013", "015"]
+    evidence:
+      - "0018 grants vs_append_event and vp_otp_status to authenticated without an explicit preceding PUBLIC/anon revoke."
+      - "0023 says OTP grants are unchanged rather than reasserting a deny-by-default function privilege boundary."
+      - "CD-041 grants vs_mark_session_verified to authenticated without an explicit preceding PUBLIC/anon revoke."
+      - "CD-042 audit grants vs_audit_trail to authenticated without an explicit preceding PUBLIC/anon revoke."
+    risk: >-
+      PostgreSQL grants EXECUTE on new functions to PUBLIC by default. Granting
+      authenticated does not remove PUBLIC or a prior overload's privilege.
+    required_correction:
+      - "Revoke ALL/EXECUTE from PUBLIC and anon on every exact function signature in the same migration transaction."
+      - "Grant only the intended authenticated/application role after the revoke."
+      - "Enumerate and revoke obsolete overloads; do not rely on name-only statements."
+      - "Set safe default privileges for future functions only if separately reviewed for repository-wide impact."
+    gate: "pg_proc/acl catalog matrix shows no PUBLIC/anon execution and no callable obsolete overload."
+
+  - finding_id: M11-MIGSEC-003
+    severity: P0
+    category: DEFINER_AUTHORIZATION_AND_FINAL_STACK_RLS_MISMATCH
+    affected_packets: ["010", "014", "013"]
+    evidence:
+      - "010 requires initial participant INSERT only through the atomic RPC."
+      - "014 requires participant/session/inspection/visit writes in one RPC."
+      - "013 later denies ordinary direct participant UPDATE/DELETE and governed-column bypass."
+    risk: >-
+      SECURITY INVOKER RPCs may pass before 013 and then fail after 013 removes
+      underlying table rights/policies. SECURITY DEFINER RPCs will continue but
+      bypass RLS completely unless every role, row, state, assignment and input
+      condition is rechecked inside the function.
+    required_correction:
+      - "Choose and document one final-stack privilege model for each RPC before implementation."
+      - "If definer: validate auth.uid(), role, assignment, row relationship, state, window and immutable fields inside the transaction before any write."
+      - "If invoker: prove final 013 table grants/policies allow the RPC without allowing equivalent direct DML."
+      - "Run authorization tests only after the complete 010→011→014→013 stack, not just before 013."
+    gate: "Final-stack persona matrix and direct-DML negative tests pass with ordinary sessions."
+
+  - finding_id: M11-MIGSEC-004
+    severity: P0
+    category: RAW_AUDIT_POLICY_BYPASSES_015_REDACTION
+    affected_packets: ["015", "013"]
+    evidence:
+      - "20260716210000 audit_row_change writes to_jsonb(new/old), including verification_record and code_hash."
+      - "0002 audit_read permits auditor, ops, security_admin, leadership, reviewer and planner to SELECT raw audit_events."
+      - "0019 audit_read_compliance independently permits compliance_admin."
+      - "015 currently specifies redaction at vs_audit_trail but does not close these direct raw-table policies."
+    risk: >-
+      Authorized staff can bypass the redacted RPC and read brute-forceable
+      code_hash, dev/provider metadata and raw verification_record directly from
+      audit_events.after_state. Multiple permissive policies combine with OR,
+      so changing only one policy is insufficient.
+    required_correction:
+      - "Expand 015 to inventory and replace every permissive raw audit_events SELECT policy that exposes virtual_participant secret rows."
+      - "Deny raw virtual_participant before_state/after_state to ordinary staff while preserving required safe audit facts through an explicit projection."
+      - "Adjust audit_read and audit_read_compliance together in one transaction; include any later permissive policy found by catalog scan."
+      - "Prove admin audit and maker-checker audit regressions retain non-secret evidence."
+    gate: "Direct audit_events query as every staff persona cannot retrieve secret-bearing virtual participant JSON; safe audit RPC still works."
+
+  - finding_id: M11-MIGSEC-005
+    severity: P0
+    category: SECRET_DUPLICATION_AT_REST_AND_FUTURE_AUDIT_CAPTURE
+    affected_packets: ["015", "013"]
+    evidence:
+      - "OTP request stores code_hash inside virtual_participants.verification_record."
+      - "Generic participant audit trigger copies the entire verification_record into immutable audit_events."
+      - "Existing immutable audit rows cannot be rewritten without violating the audit contract."
+    risk: >-
+      Every OTP update duplicates a brute-forceable secret into permanent
+      immutable audit storage even if read output is later redacted.
+    required_correction:
+      - "Stop future generic audit capture of code_hash/dev_code/raw verification_record while retaining safe verification business facts."
+      - "Do not rewrite/delete historical immutable rows; quarantine their read access through the corrected policies/projection."
+      - "Record a security disposition for historical secret-bearing rows and privileged operational access."
+    gate: "New OTP operations create no secret sentinel in any new audit row; historical rows remain immutable and inaccessible to ordinary roles."
+
+  - finding_id: M11-MIGSEC-006
+    severity: P0
+    category: OTP_SECRET_AND_FUNCTION_OWNERSHIP_COLLISION
+    affected_packets: ["013", "015", "017"]
+    evidence:
+      - "013 owns OTP RPC role/row authorization."
+      - "015 requires neutral errors for vp_request_otp, vp_verify_otp and vp_otp_status and prohibits dev_code exposure."
+      - "017 currently labels 013 sole OTP authorization owner and 015 only an audit consumer."
+      - "0023 vp_request_otp returns dev_code to the caller."
+    risk: >-
+      Both packets must replace the same exact functions. Parallel or ambiguous
+      ownership can overwrite authorization, neutral-error or secret-removal
+      logic with CREATE OR REPLACE.
+    required_correction:
+      - "Make 013 the initial owner and 015 the explicit sequential successor for all three exact OTP signatures."
+      - "015 must preserve 013's final authorization predicates while adding neutral errors and removing secret output."
+      - "No parallel migration or cherry-pick order is permitted."
+      - "Update 017's collision map before dispatch."
+    gate: "Final function definitions simultaneously prove 013 authorization, 015 neutral errors and zero dev_code/code_hash output."
+
+  - finding_id: M11-MIGSEC-007
+    severity: P0
+    category: OTP_CONCURRENCY_AND_LOST_UPDATE
+    affected_packets: ["013", "015"]
+    evidence:
+      - "0023 reads verification_record, calculates attempts/resends, then updates without SELECT FOR UPDATE or an equivalent atomic predicate."
+      - "Matrix 016 requires concurrent verification to create one canonical verification fact."
+    risk: >-
+      Concurrent request/verify calls can reuse stale counters, exceed resend or
+      attempt limits, or write duplicate semantic success/failure facts.
+    required_correction:
+      - "Lock the participant row or use one atomic compare-and-set predicate before reading/mutating OTP counters."
+      - "Ensure one verification success, one canonical verified_at and no duplicate OTP_VERIFIED event."
+      - "Keep neutral missing/out-of-scope behavior outside the lock oracle."
+    gate: "Synchronized request/verify races pass with deterministic counters and event cardinality."
+
+  - finding_id: M11-MIGSEC-008
+    severity: P0
+    category: EXPAND_CONTRACT_DEPLOYMENT_SKEW
+    affected_packets: ["010", "011", "014", "013", "015", "017"]
+    evidence:
+      - "013 removes direct DML only after governed RPCs exist."
+      - "015 restricts vs_append_event while the current application still calls it directly."
+      - "A new application can call an RPC that an old database does not yet contain."
+      - "An old application can fail after restrictive policies/RPC grants land."
+    risk: >-
+      Treating the complete stack as one conceptual promotion unit does not make
+      database and application deployment atomic. Version skew can cause 42883
+      failures, lost functionality or continued broad-access exposure.
+    required_correction:
+      - "Define explicit expand → application switch → contract deployment phases."
+      - "Expand first: add governed RPCs/guard/projection with compatible signatures and no security regression."
+      - "Switch application to governed paths and verify health."
+      - "Contract last: remove broad policies, obsolete grants and generic append authority."
+      - "Keep the expansion window controlled and do not claim security completion until contract phase passes."
+    gate: "Old-app/new-DB and new-app/expanded-DB compatibility tests plus final contract-state security tests pass."
+
+  - finding_id: M11-MIGSEC-009
+    severity: P1
+    category: POLICY_REPLACEMENT_AND_PERMISSIVE_OR_SEMANTICS
+    affected_packets: ["010", "013", "015"]
+    evidence:
+      - "vs_write and vp_rw are broad permissive policies."
+      - "audit_read and audit_read_compliance are separate permissive policies."
+      - "RLS combines permissive policies with OR."
+    risk: >-
+      Adding a restrictive policy without dropping/replacing every overlapping
+      permissive policy leaves the broad path effective. UPDATE also needs a
+      compatible SELECT policy and both USING/WITH CHECK semantics.
+    required_correction:
+      - "Inventory pg_policy by table/command/role before and after each migration."
+      - "Drop and recreate overlapping policies within the same migration transaction."
+      - "Use explicit TO authenticated and explicit USING/WITH CHECK for UPDATE."
+      - "Do not leave a legacy FOR ALL policy beside operation-specific policies."
+    gate: "Catalog snapshot proves exactly the intended policies and role targets; persona matrix confirms behavior."
+
+  - finding_id: M11-MIGSEC-010
+    severity: P1
+    category: RLS_RECURSION_AND_CIRCULAR_POLICY_DEPENDENCY
+    affected_packets: ["010", "013", "014"]
+    evidence:
+      - "Current participant policy selects virtual_sessions."
+      - "Current session policy calls definer assignment/role helpers."
+    risk: >-
+      A future session policy that queries participants, combined with the
+      participant-to-session policy, can recurse or fail unpredictably. A
+      definer helper can also hide recursion by bypassing RLS more broadly than
+      intended.
+    required_correction:
+      - "Keep dependency direction participant → session → private role/assignment helper only."
+      - "Do not make session policies query virtual_participants."
+      - "Run a catalog/dependency and real persona query test for recursion/stack-depth errors."
+      - "Index policy join keys used by the final predicates."
+    gate: "Every SELECT/INSERT/UPDATE/DELETE policy executes for all personas without recursion or silent zero-row surprises."
+
+  - finding_id: M11-MIGSEC-011
+    severity: P1
+    category: TRIGGER_ORDER_DOUBLE_AUDIT_AND_TRANSACTION_EFFECTS
+    affected_packets: ["010", "011", "014", "013", "015"]
+    evidence:
+      - "virtual_sessions has transition and generic audit triggers."
+      - "virtual_participants has generic full-row audit plus explicit OTP semantic inserts."
+      - "011 may add a new window guard while 014 owns transactional state changes."
+    risk: >-
+      Multiple triggers can execute in name order, duplicate facts, expose
+      secrets or reject a later write after earlier trigger work. Rolled-back
+      trigger audit must not be mistaken for committed evidence.
+    required_correction:
+      - "Prefer the shared 011 predicate inside governed RPCs over a second order-dependent state trigger."
+      - "If a trigger is required, define/test exact trigger order and coexistence with trg_guard_virtual/trg_audit."
+      - "Separate generic row audit from semantic event cardinality; no duplicate success events."
+      - "Prove forced failure rolls back trigger-generated and explicit audit rows together."
+    gate: "Catalog trigger inventory and rollback/concurrency tests prove one semantic fact and zero partial audit."
+
+  - finding_id: M11-MIGSEC-012
+    severity: P1
+    category: FAIL_CLOSED_ROLLBACK_AND_DOWNGRADE_HAZARD
+    affected_packets: ["010", "011", "014", "013", "015", "017"]
+    evidence:
+      - "013 and 015 are restrictive contract migrations."
+      - "The old application depends on direct DML and generic vs_append_event."
+    risk: >-
+      Rolling the application back after restrictive migrations may break valid
+      actions. Rolling database security back by regranting broad access would
+      reopen confirmed P0 vulnerabilities.
+    required_correction:
+      - "After contract migration, rollback is roll-forward only."
+      - "Disable unsafe create/join/begin/audit actions rather than restoring sequential writes, broad RLS or raw audit."
+      - "Preserve compatible governed function signatures across one application rollback window where safe."
+      - "Never edit applied migrations or delete immutable audit/business rows."
+    gate: "Documented rehearsal proves each packet's disable state is safe and no rollback step widens privileges."
+
+required_packet_corrections_before_dispatch:
+  KIMI_M11_ATOMIC_FIX_LEASE_010:
+    - "Declare final definer/invoker model, secure search_path, exact revoke/grant and final-stack 013 compatibility."
+  KIMI_M11_EXECUTION_WINDOW_LEASE_011:
+    - "Use one non-recursive guard authority; avoid trigger-order dependence; define expansion compatibility."
+  KIMI_M11_BEGIN_ATOMICITY_LEASE_014:
+    - "Declare final definer/invoker model, in-function authorization and final 013 compatibility."
+  KIMI_M11_PERMISSION_HARDENING_LEASE_013:
+    - "Add exact policy/grant catalog contract, OTP row locking and sequential OTP ownership handoff to 015."
+  KIMI_M11_AUDIT_BOUNDARY_LEASE_015:
+    - "Close raw audit_events policy bypass, stop future secret duplication, take sequential OTP function ownership and preserve 013 auth."
+  KIMI_M11_REMEDIATION_DEPENDENCY_LEASE_COLLISION_PLAN_017:
+    - "Add expand/application-switch/contract deployment phases and correct OTP function successor ownership."
+
+review_gates:
+  source_gate:
+    - "All required packet corrections incorporated and independently reread."
+  static_migration_gate:
+    - "No unsafe search_path, PUBLIC/anon EXECUTE, broad FOR ALL, unqualified definer object or obsolete overload."
+    - "No raw secret in RPC return or safe audit projection."
+  catalog_gate:
+    - "pg_proc owner/security/proconfig/proacl and pg_policy/pg_trigger snapshots match the reviewed manifest."
+    - "No RLS recursion and all required indexes exist."
+  isolated_runtime_gate:
+    - "Ordinary persona, direct-DML, forced rollback, concurrency and secret-sentinel cases pass."
+    - "No service role, BYPASSRLS, shared setting or permanent fault seam."
+  deployment_gate:
+    - "Expand/switch/contract compatibility and fail-closed disable rehearsal pass."
+  final_verdict_rule: "Any open P0 finding keeps the entire stack RETURNED and not dispatchable."
+
+unresolved_dependencies_preserved:
+  - "Corrected 009r acceptance."
+  - "CR-337 today/confirmed semantics remain isolated."
+  - "DEC-005 factory representative access remains isolated."
+  - "Provider disconnect/reconnect/leave event source remains unproven."
+  - "Fresh isolated database and ordinary persona authentication are required for execution."
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_009R_ACCEPTANCE_AND_P0_MIGSEC_CORRECTIONS
+  kimi_status: COMPLETED
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  security_definer_reviewed: PASS
+  grants_revokes_reviewed: PASS
+  policy_order_reviewed: PASS
+  trigger_audit_reviewed: PASS
+  rollback_reviewed: PASS
+  rls_recursion_reviewed: PASS
+  deployment_concurrency_reviewed: PASS
+  secret_exposure_reviewed: PASS

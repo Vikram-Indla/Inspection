@@ -1,0 +1,341 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-DESIGN-REUSE-COLLISION-MAP-074
+title: Trusted Devices current design reuse and collision map
+status: MAP_COMPLETE_ROUTE_DESIGN_REMAINS_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_DESIGN_REUSE_ANALYSIS
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_created_or_modified: 0
+  slots_accepted: 0
+  reason: >-
+    Existing export structures are classified for future reuse only. None is
+    promoted to accepted route authority and no live design is changed.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-DESIGN-REUSE-COLLISION-MAP-074
+  source_task: DEV-PRE-DES-01
+  predecessors:
+    - M10-ADMIN-DEVICES-DESIGN-AUTHORITY-REVIEW-060
+    - M10-ADMIN-DEVICE-COMMAND-MDM-REPOSITORY-AUTHORITY-TARGET-MAP-071
+    - M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+  route: /admin/devices
+  slots: 48
+  do_not_touch:
+    - live Claude Design and all design exports
+    - WA-DES-015, WA-DES-041, CD-056 and design authority maps
+    - application, database, provider, data, tests and evidence
+    - branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only export/source inspection; no design session or authority record changed.
+
+reviewed_design_sources:
+  WA-DES-015:
+    filename: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    authority_status: REGISTERED_FOR_ADMIN_ROOT_NOT_ACCEPTED_FOR_ADMIN_DEVICES
+    relevant_state: Devices selector state at source lines 256 through 268.
+    contains:
+      - fixed 256px Admin sidebar, header and main layout
+      - Devices navigation entry
+      - Field devices heading
+      - table columns Device, Inspector, OS, Last sync, Outbox and Status
+      - illustrative offline, online and revoked rows
+      - shared panel, table, badge and immutable-alert patterns across other states
+    does_not_contain:
+      - role/action/approval design
+      - trust evidence or attestation detail
+      - command lifecycle/provider receipt
+      - package invalidation/offline replay behavior
+      - route error/empty/unauthorized states
+      - Arabic Devices state
+      - responsive or accessibility acceptance
+    identity_defect: English Admin shell uses Arabic صقيل wordmark and ADMIN qualifier; not the accepted English SAQEEL Industrial identity.
+  WA-DES-041:
+    filename: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL States System.dc.html
+    sha256: 9e78eb7ced8d9b43096d2346a8925534feeecd30c748cc48f70a86a17f4b5d9a
+    authority_status: SUPPORTING_STATE_REFERENCE_NOT_ROUTE_AUTHORITY
+    contains:
+      - verified-empty Device copy in English and Arabic
+      - loading skeleton with aria-busy
+      - neutral error with nothing-changed message
+      - RLS-denied/empty distinction
+      - not-yet/provider-held foundation
+      - EN/LTR and AR/RTL plus light/dark selectors
+      - role=status and aria-pressed examples
+    limitations:
+      - fixed 248px sidebar and 820px content, no responsive media behavior
+      - generic screen shell, not Devices lifecycle/action design
+      - English labels remain in the controls/content scaffold
+      - same Arabic wordmark problem
+      - accessibility primitives are examples, not tested route acceptance
+  CD-056:
+    reference: product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    claimed_artifacts: CD-056_M3-06_R2_FINAL and CD-056_R2_FINAL/renders/01..06-CD-056_R2.png
+    located_route_package: null
+    located_sha256: null
+    located_exact_frame_manifest: null
+    authority_status: INSUFFICIENT_STABLE_REVISION_EVIDENCE
+
+component_reuse_map:
+  - component_id: DEV-DES-COMP-01
+    component: Admin shell/sidebar/header structure
+    source: WA-DES-015
+    reuse: STRUCTURE_ONLY_AFTER_SHELL_AND_IDENTITY_RECONCILIATION
+    candidate_slots: [DEV-DS-001..48]
+    collisions:
+      - Arabic wordmark in English profile
+      - fixed 256px rail has no narrow behavior
+      - route shell authority belongs to shared Web/Admin foundation
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-02
+    component: Device register panel and six-column table
+    source: WA-DES-015
+    reuse: STRUCTURE_AND_INFORMATION_SEED_ONLY
+    candidate_slots: [DEV-DS-011..18, DEV-DS-036..39, DEV-DS-044]
+    collisions:
+      - online/offline inferred without approved rule
+      - Outbox counts and people/device values are illustrative
+      - Status mixes trust, connectivity and revocation
+      - no actions, attestation evidence or package enforcement
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-03
+    component: Panel, table wrapper, row header and factual metadata patterns
+    source: WA-DES-015
+    reuse: VISUAL_PRIMITIVE_ONLY
+    candidate_slots: [DEV-DS-011..21, DEV-DS-026..41]
+    collisions:
+      - dense tables have no narrow reflow contract
+      - generic badges do not encode lifecycle semantics
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-04
+    component: Immutable/fail-closed explanatory alert
+    source: WA-DES-015
+    reuse: CONTENT_HIERARCHY_PATTERN_ONLY
+    candidate_slots: [DEV-DS-014, DEV-DS-016, DEV-DS-020, DEV-DS-025, DEV-DS-032, DEV-DS-035, DEV-DS-041]
+    collisions:
+      - current Device state has no such alert
+      - exact terminal/provider/package copy depends on unresolved decisions
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-05
+    component: Verified-empty state and bilingual Devices empty copy
+    source: WA-DES-041
+    reuse: SUPPORTING_FOUNDATION
+    candidate_slots: [DEV-DS-002]
+    collisions:
+      - must distinguish verified zero, RLS-empty and source failure at route runtime
+      - route-specific safe next action remains unresolved
+    new_authority_required: false
+  - component_id: DEV-DES-COMP-06
+    component: Loading skeleton
+    source: WA-DES-041
+    reuse: SUPPORTING_FOUNDATION
+    candidate_slots: [DEV-DS-001]
+    collisions:
+      - fixed shell dimensions
+      - localized accessible name and focus preservation require route validation
+    new_authority_required: false
+  - component_id: DEV-DES-COMP-07
+    component: Neutral source-error pattern
+    source: WA-DES-041
+    reuse: SUPPORTING_FOUNDATION
+    candidate_slots: [DEV-DS-004, DEV-DS-040]
+    collisions:
+      - device-read, command-read, provider and audit failures need distinct factual boundaries
+      - retry semantics remain unresolved
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-08
+    component: RLS-denied and scoped-empty distinction
+    source: WA-DES-041
+    reuse: SUPPORTING_FOUNDATION
+    candidate_slots: [DEV-DS-003, DEV-DS-006]
+    collisions:
+      - canonical role and route behavior unresolved
+      - current generic copy does not cover session expiry or direct-submit denial
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-09
+    component: Not-yet/provider-held pattern
+    source: WA-DES-041
+    reuse: SUPPORTING_FOUNDATION
+    candidate_slots: [DEV-DS-025, DEV-DS-037]
+    collisions:
+      - cannot name provider, policy, seam or enabled prerequisites while null
+      - must preserve read-only device facts and open requirements
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-10
+    component: Theme and direction selector scaffold
+    source: WA-DES-041
+    reuse: DEMONSTRATION_MECHANIC_ONLY
+    candidate_slots: [DEV-DS-042, DEV-DS-043]
+    collisions:
+      - does not prove Devices content in Arabic
+      - English controls remain in scaffold
+      - bidi machine-value handling absent
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-11
+    component: Status badges and dots
+    source: WA-DES-015
+    reuse: TOKEN_AND_SHAPE_ONLY
+    candidate_slots: [DEV-DS-011..18, DEV-DS-022..30, DEV-DS-036..41]
+    collisions:
+      - current online/offline/revoked labels conflate different state dimensions
+      - color cannot be the sole status cue
+      - lifecycle vocabulary remains null
+    new_authority_required: true
+  - component_id: DEV-DES-COMP-12
+    component: Basic accessibility primitives
+    source: WA-DES-041
+    reuse: SUPPORTING_PATTERN_NOT_ACCEPTANCE
+    candidate_slots: [DEV-DS-046, DEV-DS-047, DEV-DS-048]
+    collisions:
+      - no command form, dialog, focus recovery or device/action relationship
+      - no screen-reader, forced-colors, reduced-motion or touch evidence
+    new_authority_required: true
+
+rejected_reuse:
+  - source: WA-DES-004
+    reason: Registered map includes /admin/devices, but reviewed design has no Devices state and is wrong authority.
+  - source: WA-DES-043
+    reason: Users/Roles design cannot define device trust, MDM or command lifecycle.
+  - source: WA-DES-011
+    reason: Role override design cannot define the Devices route.
+  - source: WA-DES-041_as_route
+    reason: Foundation state reference only; cannot replace the route design.
+  - source: WA-DES-015_illustrative_rows
+    reason: People, devices, OS, last-sync, outbox and online/offline values are illustrative and cannot become runtime truth.
+
+slot_primary_classification:
+  REUSE_AS_SUPPORTING_FOUNDATION_ONLY:
+    slots: [DEV-DS-001, DEV-DS-002, DEV-DS-003, DEV-DS-004, DEV-DS-006, DEV-DS-025, DEV-DS-042, DEV-DS-043]
+    rule: Pattern may inform a future route state but does not supply route identity or policy semantics.
+  REUSE_STRUCTURE_REQUIRES_NEW_ROUTE_AUTHORITY:
+    slots: [DEV-DS-011, DEV-DS-012, DEV-DS-013, DEV-DS-014, DEV-DS-015, DEV-DS-016, DEV-DS-017, DEV-DS-018, DEV-DS-036, DEV-DS-037, DEV-DS-038, DEV-DS-039, DEV-DS-040, DEV-DS-044]
+    rule: Existing table/panel/status structures may be adapted only after decisions and responsive authority.
+  NEW_ACCEPTED_ROUTE_DESIGN_REQUIRED:
+    slots: [DEV-DS-005, DEV-DS-007, DEV-DS-008, DEV-DS-009, DEV-DS-010, DEV-DS-019, DEV-DS-020, DEV-DS-021, DEV-DS-022, DEV-DS-023, DEV-DS-024, DEV-DS-026, DEV-DS-027, DEV-DS-028, DEV-DS-029, DEV-DS-030, DEV-DS-031, DEV-DS-032, DEV-DS-033, DEV-DS-034, DEV-DS-035, DEV-DS-041, DEV-DS-045, DEV-DS-046, DEV-DS-047, DEV-DS-048]
+    rule: No reviewed design supplies the required interaction, semantics or acceptance state.
+
+policy_and_provider_collisions:
+  - collision_id: DEV-DES-COL-01
+    subject: Actor-specific visibility and mutation.
+    affected_slots: [DEV-DS-003, DEV-DS-006, DEV-DS-007, DEV-DS-008]
+    missing_authority: DEV-CMD-DEC-01 and DEV-CMD-DEC-02
+    forbidden_design_move: Choose Security Admin/Ops/Device Admin/Mobile Admin from current code or labels.
+  - collision_id: DEV-DES-COL-02
+    subject: Command eligibility, terminal states and reactivation.
+    affected_slots: [DEV-DS-013..16, DEV-DS-019..24]
+    missing_authority: DEV-CMD-DEC-02 and DEV-CMD-DEC-04
+    forbidden_design_move: Show ordinary Resume for revoked, wipe-pending or wiped.
+  - collision_id: DEV-DES-COL-03
+    subject: Approval workflow.
+    affected_slots: [DEV-DS-009, DEV-DS-010, DEV-DS-021]
+    missing_authority: DEV-CMD-DEC-03
+    forbidden_design_move: Label a flow maker-checker or invent emergency/expiry behavior.
+  - collision_id: DEV-DES-COL-04
+    subject: Trusted evidence and freshness.
+    affected_slots: [DEV-DS-011, DEV-DS-012, DEV-DS-017, DEV-DS-018, DEV-DS-031, DEV-DS-032]
+    missing_authority: DEV-CMD-DEC-05
+    forbidden_design_move: Treat MDM text, app boolean, last-seen or queued Resume as sufficient.
+  - collision_id: DEV-DES-COL-05
+    subject: Acknowledgement, completion and receipt stages.
+    affected_slots: [DEV-DS-015, DEV-DS-022..30, DEV-DS-039..41]
+    missing_authority: DEV-CMD-DEC-06 and DEV-CMD-DEC-09
+    forbidden_design_move: Name stages/actors or show positive completion from mock/local state.
+  - collision_id: DEV-DES-COL-06
+    subject: Package expiry and offline cached effect.
+    affected_slots: [DEV-DS-021, DEV-DS-031..35]
+    missing_authority: DEV-CMD-DEC-07 and DEV-CMD-DEC-08
+    forbidden_design_move: Claim cached deletion or select scope/effect without policy.
+  - collision_id: DEV-DES-COL-07
+    subject: Sync health and rescue.
+    affected_slots: [DEV-DS-034..38]
+    missing_authority: DEV-CMD-DEC-08
+    forbidden_design_move: Reuse illustrative outbox count, online/offline or infer health from last sync.
+  - collision_id: DEV-DES-COL-08
+    subject: Provider state.
+    affected_slots: [DEV-DS-025..30]
+    missing_authority: DEV-CMD-DEC-09
+    forbidden_design_move: Name/configure provider or show accepted/completed while held.
+  - collision_id: DEV-DES-COL-09
+    subject: Route identity and accepted revision.
+    affected_slots: [DEV-DS-001..48]
+    missing_authority: DEV-CMD-DEC-10 plus recorded DEV-CMD-DEC-01..09
+    forbidden_design_move: Allocate fingerprint/ID or implement before governance and sponsor acceptance.
+
+shell_i18n_responsive_accessibility_boundaries:
+  shell:
+    reusable:
+      - sidebar grouping and active-item hierarchy
+      - sticky page header and content panel rhythm
+    collisions:
+      - Arabic wordmark appears in English profile
+      - WA-DES-015 fixed 256px and WA-DES-041 fixed 248px sidebars
+      - shared shell is outside a route-local Devices design/implementation lease
+    future_boundary: One shared-shell owner; route design consumes rather than forks it.
+  i18n:
+    reusable:
+      - WA-DES-041 Device verified-empty English/Arabic copy
+      - dir/lang switching concept
+    collisions:
+      - lifecycle/provider/package/sync terminology has no reviewed Arabic authority
+      - machine identifiers and dates lack demonstrated bidi/locale handling
+      - control scaffold remains partly English
+    future_boundary: Arabic reviewer and localization authority before design acceptance; route UI cannot self-translate.
+  responsive:
+    reusable:
+      - table-wrap suggests bounded overflow as a primitive
+      - auto-fit fact/grid patterns exist elsewhere in WA-DES-015
+    collisions:
+      - no Devices-specific 1024, 412/390 or 320 state
+      - fixed rails and six-column table have no demonstrated reflow
+      - no 200 percent zoom or virtual-keyboard layout
+    future_boundary: New route-specific responsive design; shared shell breakpoint remains shared-owner authority.
+  accessibility:
+    reusable:
+      - role=status, aria-busy and aria-pressed examples
+      - scoped headings/table row-header patterns
+    collisions:
+      - no destructive confirmation, eligibility reason, focus recovery or modal semantics
+      - no device-to-command/evidence accessible relationship
+      - no forced-colors, reduced-motion, screen-reader or touch verification
+    future_boundary: Route-specific interaction specification plus independent accessibility review.
+
+reuse_constraints:
+  - Reuse never imports illustrative values.
+  - A supporting foundation may be referenced but not registered as the route design.
+  - Any adapted component receives a new route-level accepted revision, not silent mutation of unrelated states.
+  - Shell/i18n/shared token changes are isolated from route-specific design and implementation.
+  - Provider-held designs show blocked dependency, not simulated lifecycle.
+  - Existing online/offline labels are rejected until source/formula/threshold authority exists.
+  - Existing Arabic wordmark defect must not be copied into the English route.
+  - No slot becomes consumable until its null bindings in 073 are populated through governance.
+
+review:
+  disposition: BLOCK
+  code: BLOCK_ROUTE_DESIGN_AUTHORITY_AND_POLICY_BINDINGS_MISSING
+  validation_summary:
+    design_sources_reviewed: 3
+    reusable_components_or_patterns: 12
+    slots_classified: 48
+    supporting_foundation_only: 8
+    structure_requires_new_route_authority: 14
+    new_accepted_route_design_required: 26
+    live_design_changes: 0
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-DB-CALL-SURFACE-INVENTORY-075
+    mode: READ_ONLY
+    source_task: DEV-PRE-DB1-01
+    objective: >-
+      Inventory exact current device/command schema, RLS, RPC, grants, tests,
+      generated types and application call sites with collision notes, without
+      proposing transitions or editing source.

@@ -1,0 +1,147 @@
+schema_version: "1.0"
+certificate_id: KIMI-M11-ACCEPTANCE-HARNESS-PREFLIGHT-CERTIFICATE-031
+certificate_type: SPECIFICATION_SELF_CONSISTENCY_PREFLIGHT
+verdict: PASS
+status: PASS_SPECIFICATION_ONLY_LOCKED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+subject:
+  packet: KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
+  sha256: dfc85496a4bc217bf5848d75f1fe5523f2667d3319a7b34efce777891841c1fe
+
+comparison_scope:
+  substantive_authorities:
+    - KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+    - KIMI-M11-CORRECTION-READINESS-REVIEW-024
+    - KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+    - KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+    - KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028
+    - KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029
+  excluded:
+    - "No corrected payload, materialized corrected packet or review-025 result exists or was evaluated."
+    - "The 025 fingerprint carried by harness 030 is a future trigger-integrity guard only; 025 content was not used as substantive authority in this preflight."
+
+fingerprint_coverage:
+  verdict: PASS
+  checks:
+    KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022:
+      expected_and_actual_sha256: 384ed1fe0bceacd4bcb3bea2fd665c28a750f9084cb875a5ebfb15eba4b07546
+    KIMI-M11-CORRECTION-READINESS-REVIEW-024:
+      expected_and_actual_sha256: aa9beb6787536b73803467e6c47130358e991557b66593539167bcb9fc433e75
+    KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026:
+      expected_and_actual_sha256: 70013fa37f25231eb4a9e4520c415e914d814b601f6a450addb7889436c6fe96
+    KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027:
+      expected_and_actual_sha256: 35d23cea16d13b7dff29376280645067556f2e53e6d0d46f3f89bd3d927252da
+    KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028:
+      expected_and_actual_sha256: 2d613f96665f16584b4825d19e08c7e8019d78236be6ed34731392f64156d1f5
+    KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029:
+      expected_and_actual_sha256: ef8237ebce091cc13d11f847ccf4cbd7163227de86808ce49d09c0813340496b
+  coverage_result: "Every substantive authority named for this preflight is fingerprinted by harness 030 and matches current bytes."
+
+row_accounting:
+  verdict: PASS
+  authority_counts:
+    migration_security:
+      source: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+      P0: 8
+      P1: 4
+      total: 12
+    addendum:
+      source: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+      P0: 8
+      P1: 5
+      total: 13
+    contradictions:
+      source: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+      total: 6
+  harness_counts:
+    P0: 16
+    P1: 9
+    contradictions: 6
+    total: 31
+  ownership_index:
+    source: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+    primary_rows: 31
+    duplicate_primary_owners: 0
+  equation: "12 migration-security + 13 addendum + 6 contradictions = 31."
+
+output_precedence:
+  verdict: PASS
+  ordered_rules:
+    - "Missing execution preconditions produce DO_NOT_RUN_025_KEEP_QUEUED and no acceptance result."
+    - "Fingerprint, YAML/schema, closure-cardinality, contradiction or author-correctable content failure produces RETURN_FOR_CORRECTION."
+    - "After correction-content passes, a genuine external authority/provider/owner/lease dependency produces BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE."
+    - "Only a clean content result with no ownership blocker produces ACK_CORRECTED_PACKETS_READY_FOR_SPONSOR_LEASE_DECISION."
+  precedence_guards:
+    - "RETURN precedes BLOCKED for defects the packet author can correct."
+    - "BLOCKED cannot conceal malformed or contradictory packet content."
+    - "ACK cannot bypass a remaining authority/provider/owner/lease blocker."
+
+lease_and_collision_alignment:
+  verdict: PASS
+  authority_stop_count:
+    source: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+    count: 16
+  dispatch_stop_count:
+    source: KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028
+    count: 16
+  harness_controls:
+    - "Re-read ACTIVE_WORKTREE_LEASES.csv immediately before any future verdict."
+    - "Reject active application/Supabase overlap."
+    - "Require every corrected lease to remain PROPOSED_NOT_ISSUED."
+    - "Preserve 010→011 and 011→014→single bounded integrator application-file sequences."
+    - "Preserve 010 creation→011 successor and 013 OTP→015 exact no-traffic successor object sequences."
+    - "Reserve migration filename allocation for a future integration owner after predecessor acceptance."
+    - "Require corrected 009r acceptance, one QA owner and complete global audit-consumer inventory."
+    - "Require all 16 collision stops."
+  result: "Harness 030 does not issue, infer or transfer a lease."
+
+PASS_semantics:
+  verdict: PASS
+  allowed_meaning: >-
+    ACK_CORRECTED_PACKETS_READY_FOR_SPONSOR_LEASE_DECISION means only that the
+    six orchestration corrections are coherent enough for a sponsor to decide
+    whether to issue a future bounded implementation lease.
+  prohibited_implications:
+    - "No product or application implementation."
+    - "No database, migration, remote DDL, data or seed change."
+    - "No runtime, browser, SQL, security or regression test execution."
+    - "No acceptance criterion or requirement completion."
+    - "No lease issuance or implementation authorization."
+    - "No completion credit against the 478 rows."
+  supporting_harness_guards:
+    - "hard_boundary prohibits runtime, migration, security and requirement certification."
+    - "CLOSED_IN_CORRECTED_PACKET is defined as textually complete and not implemented."
+    - "decision_algorithm states ACK does not issue a lease or authorize implementation."
+    - "completion_effect remains zero."
+
+preflight_result:
+  harness_self_consistency: PASS
+  independent_acceptance_executed: false
+  review_025_executed: false
+  dispatch_attempted: false
+  leases_issued: false
+  source_packets_changed: false
+  requirement_completion_change: 0
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+
+certificate_rule: >-
+  This PASS certifies only the internal consistency of harness specification
+  030 against 022/024/026/027/028/029. It is not an acceptance result for any
+  future corrected packet and cannot trigger review 025 while inputs are absent.
+
+validation:
+  yaml_parse: PASS
+  six_authority_fingerprints_match: PASS
+  row_accounting_31: PASS
+  output_precedence_checked: PASS
+  lease_collision_controls_checked: PASS
+  PASS_non_implementation_semantics_checked: PASS
+  review_025_not_executed: PASS
+  locked_no_dispatch_boundary: PASS

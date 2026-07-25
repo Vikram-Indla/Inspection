@@ -1,0 +1,301 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-LIVE-COLLISION-RECHECK-MATERIALIZATION-ORDER-AUDIT-060
+status: READ_ONLY_LIVE_RECHECK_COMPLETE_BLOCKED_CONTROL_PLANE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Recheck the live work queue, lease registry, Git worktrees, branches and M11
+  path ownership, then define a fail-closed materialization order for every
+  authority option without selecting an option, issuing a lease or changing
+  shared controls.
+
+authority:
+  conformance_spec: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+  preservation_audit: KIMI-M11-PRESERVATION-FLOOR-INDEPENDENT-AUDIT-058
+  decision_brief: KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057
+  control_plane_reconciliation: KIMI-M11-CONTROL-PLANE-SCOPE-LEASE-RECONCILIATION-055
+
+hard_boundary:
+  - "Read-only repository, worktree, branch, queue, lease and path inspection plus this one owned coordination packet."
+  - "No authority selection, ownership inference, lease issuance, queue/slice/shared-control mutation or branch/worktree creation."
+  - "No product, test, migration, SQL, data, seed, provider, design, stash, push, merge or deployment mutation."
+  - "No runtime certification or requirement credit."
+
+source_snapshot:
+  canonical_repository:
+    path: /Users/vikramindla/Developer/Inspection
+    branch: docs/saqeel-inspector-inventory
+    head: 3323a8ef3d788c1c157a9bf0d63e32a3d9334e42
+  main:
+    local_head: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    origin_head: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    local_remote_match: true
+  orchestration_worktree:
+    path: /Users/vikramindla/Developer/Inspection-codex-orchestration
+    branch: codex/orchestration-control-plane
+    head: bdbe23244a2f2d1547caf429449705d1026f9adf
+  active_lease_registry:
+    path: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+    visible_in_orchestration_branch: true
+    visible_in_canonical_checkout: false
+    sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+  work_queue:
+    path: product-contract/execution/WORK_QUEUE.yaml
+    sha256: aff5b85b4571c5b061db221c047106843846b3dd4f2f2c6e5728b678c18d744f
+  current_slice:
+    path: product-contract/execution/CURRENT_SLICE.yaml
+    sha256: 26ea731defb1b40db610229f95f6189ba70899715fc4858a7a5847b1f8ff0be1
+  execution_task_slice:
+    path: product-contract/execution/CURRENT_SLICE.TASK-EXECUTION-MODULE-001.yaml
+    sha256: 7d0fe22d4d57a7a722dde2a9b074fe72edc17c644754bae8f1a2016a48d6d667
+
+live_Git_recheck:
+  worktrees_total: 18
+  attached_branch_worktrees: 16
+  detached_worktrees: 2
+  targeted_M11_dirty_worktrees: 0
+  targeted_M11_branch_deltas_from_main: 0
+  targeted_paths_checked:
+    - apps/web/src/app/(app)/virtual/**
+    - apps/web/e2e/m11-*.spec.ts
+    - supabase/tests/m11_*.sql
+    - supabase/migrations/20260721*
+  main_contains:
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - apps/web/src/app/(app)/virtual/[id]/page.tsx
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+  execution_phase7_commit:
+    commit: ae7638dc
+    subject: "feat(execution): Phase 7 virtual/immediate handoffs and cross-module state reconciliation"
+    ancestor_of_main: true
+  declared_execution_branch:
+    name: kimi/execution-module-001
+    local_ref: MISSING
+    origin_ref: MISSING
+    authority_effect: >-
+      The task-specific slice names a branch that is not a live local or remote
+      ref. The work queue says phases landed on main. The missing branch cannot
+      be treated as current ownership or a future lease target.
+  relevant_active_write_leases:
+    M11_application: NONE
+    M11_database: NONE
+    M11_migration: NONE
+    M11_test: NONE
+    M11_QA: NONE
+  Kimi_live_registry_row:
+    packet: KIMI-M4-READINESS-001
+    mode: READ_ONLY
+    leased_paths: []
+    status: ACTIVE
+
+collision_findings:
+  - id: M11-LIVE-060-001
+    layer: WORKTREE_PATHS
+    result: ACK_NO_ACTIVE_PATH_WRITE_COLLISION
+    evidence: "No dirty targeted M11 path exists across 18 registered Git worktrees."
+  - id: M11-LIVE-060-002
+    layer: BRANCH_DELTAS
+    result: ACK_NO_LIVE_BRANCH_DELTA_COLLISION
+    evidence: "No attached or other local/origin ref differs from main on the targeted M11 paths."
+  - id: M11-LIVE-060-003
+    layer: CAPABILITY_AUTHORITY
+    result: BLOCK_PROVEN_SCOPE_OVERLAP
+    evidence: >-
+      TASK-EXECUTION-MODULE-001 and the M11 chain govern the same Virtual
+      capability, files and database objects; neither supersession nor
+      narrowing has been accepted.
+  - id: M11-LIVE-060-004
+    layer: LEASE
+    result: BLOCK_NO_EXACT_ACTIVE_M11_LEASE
+    evidence: "Kimi has only a read-only M4 row with no leased paths."
+  - id: M11-LIVE-060-005
+    layer: BRANCH_AUTHORITY
+    result: RETURN_DECLARED_EXECUTION_BRANCH_MISSING
+    evidence: "kimi/execution-module-001 is absent locally and remotely while its implementation commits are already ancestors of main."
+  - id: M11-LIVE-060-006
+    layer: CONTROL_PLANE_VISIBILITY
+    result: RETURN_LEASE_REGISTRY_NOT_VISIBLE_IN_CANONICAL_CHECKOUT
+    evidence: >-
+      ACTIVE_WORKTREE_LEASES.csv is present on the orchestration control branch
+      but absent from the canonical checkout's current branch. Future workers
+      require an explicit immutable registry ref/hash and bootstrap rule before
+      any lease can be safely consumed.
+  - id: M11-LIVE-060-007
+    layer: CURRENT_SLICE
+    result: BLOCK_CURRENT_SLICE_IS_M2_NOT_M11
+    evidence: "CURRENT_SLICE remains Web/Admin M2 Planning and grants no M11 authority."
+
+common_materialization_preconditions:
+  - order: 1
+    action: FREEZE_AND_RECHECK
+    requirements:
+      - "Re-read main/origin-main, queue, current slice, task-specific slice and active registry."
+      - "Confirm all targeted M11 worktrees and paths remain clean."
+      - "Confirm 20/361/18/9/12 preservation and 0 requirement credit."
+  - order: 2
+    action: VALIDATE_EXPLICIT_DECISION_RESPONSE
+    requirements:
+      - "Apply KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059."
+      - "Require a proven decision authority; do not infer from chat, queue, role or branch."
+  - order: 3
+    action: RESOLVE_CONTROL_PLANE_VISIBILITY
+    requirements:
+      - "Establish the exact authoritative registry ref, path and content hash all workers must read."
+      - "Do not treat an absent file in a worker checkout as an empty lease registry."
+  - order: 4
+    action: RECORD_ACCEPTED_CHANGE_CONTROL_FAIL_CLOSED
+    requirements:
+      - "Record the selected option and preserved contract before any worktree or write lease is enabled."
+      - "Status remains blocked/awaiting lease."
+  - order: 5
+    action: RECONCILE_QUEUE_AND_TASK_SLICE
+    requirements:
+      - "Remove stale branch authority and explicitly record supersession, narrowing or continued block."
+      - "Current slice/task metadata cannot itself authorize writes."
+  - order: 6
+    action: PREPARE_DEDICATED_WORKTREE_AND_BRANCH
+    requirements:
+      - "Use a new exact branch/worktree from the accepted baseline; never revive the missing branch by inference."
+      - "Record baseline commit and dirty-path disposition before lease activation."
+  - order: 7
+    action: MATERIALIZE_EXACT_ACTIVE_LEASE_LAST
+    requirements:
+      - "Populate all 16 lease fields from packet 059."
+      - "Exact application paths, test paths, database objects and migration rules replace broad globs."
+      - "Lease activation is the last authority-enabling shared-control change."
+  - order: 8
+    action: INDEPENDENT_POST_MATERIALIZATION_RECHECK
+    requirements:
+      - "Re-read the recorded registry from its authoritative ref/hash."
+      - "Confirm one implementation owner, no path/object collision and a separate future QA owner."
+      - "Implementation remains stopped until this recheck passes."
+
+option_materialization_orders:
+  EXECUTION_TASK_ABSORBS_M11:
+    selected_here: false
+    order_after_common_1_to_3:
+      - order: 4
+        action: ACCEPT_ABSORPTION_CHANGE_CONTROL
+        effect: "Map and preserve CR-337..CR-356, all 361 cases, 18 clusters, nine QA paths and 12 blockers."
+      - order: 5
+        action: SUPERSEDE_M11_IMPLEMENTATION_PACKET_OWNERSHIP_ONLY
+        effect: "Preserve M11 acceptance/security/QA evidence as mandatory; do not delete the packet chain."
+      - order: 6
+        action: RECONCILE_EXECUTION_TASK_BRANCH_AND_EXACT_SCOPE
+        effect: "Replace missing kimi/execution-module-001 reference with a newly authorized branch/worktree and exact M11 paths/objects."
+      - order: 7
+        action: MATERIALIZE_ONE_EXECUTION_IMPLEMENTATION_LEASE
+        effect: "Lease exact Virtual paths/objects only after the registry visibility rule is resolved."
+      - order: 8
+        action: POST_MATERIALIZATION_RECHECK
+      - order: 9
+        action: IMPLEMENT_SEQUENTIALLY
+        effect: "One owner follows accepted expand/switch/quiesce/contract order."
+      - order: 10
+        action: RELEASE_IMPLEMENTATION_LEASE
+      - order: 11
+        action: MATERIALIZE_SEPARATE_QA_LEASE
+        effect: "A different owner receives the nine exact QA paths only after implementation acceptance."
+  M11_CHAIN_OWNS_VIRTUAL:
+    selected_here: false
+    order_after_common_1_to_3:
+      - order: 4
+        action: ACCEPT_EXECUTION_TASK_NARROWING_CHANGE_CONTROL
+        effect: "Explicitly remove all M11 Virtual paths, objects, migrations and tests from TASK-EXECUTION-MODULE-001 ownership."
+      - order: 5
+        action: ACCEPT_CORRECTED_M11_SOURCE_CHAIN
+        effect: "Require corrected packets, review 025 and every applicable blocker gate."
+      - order: 6
+        action: RECORD_SINGLE_SEQUENTIAL_M11_INTEGRATION_OWNER
+      - order: 7
+        action: PREPARE_NEW_M11_WORKTREE_AND_BRANCH
+        effect: "Use the accepted baseline; do not infer or revive the missing Execution branch."
+      - order: 8
+        action: MATERIALIZE_ONE_EXACT_M11_IMPLEMENTATION_LEASE
+      - order: 9
+        action: POST_MATERIALIZATION_RECHECK
+      - order: 10
+        action: IMPLEMENT_EXPAND_SWITCH_QUIESCE_CONTRACT_SEQUENCE
+      - order: 11
+        action: RELEASE_IMPLEMENTATION_LEASE
+      - order: 12
+        action: MATERIALIZE_SEPARATE_QA_LEASE
+        effect: "A different owner receives the nine exact QA paths."
+  KEEP_BOTH_BLOCKED:
+    selected_here: false
+    order_after_common_1_to_3:
+      - order: 4
+        action: RECORD_CONTINUED_BLOCK_DECISION
+        effect: "Preserve the complete 20/361/18/9/12 floor and zero credit."
+      - order: 5
+        action: RECONCILE_STALE_QUEUE_AND_BRANCH_TEXT
+        effect: "Make clear that no live M11 implementation branch or write authority exists."
+      - order: 6
+        action: RETAIN_READ_ONLY_LEASE_STATE
+        effect: "Do not create an implementation or QA lease."
+      - order: 7
+        action: CONTINUE_READ_ONLY_EVIDENCE_AND_BLOCKER_WORK
+
+unsafe_orders:
+  - "Create or activate a write lease before accepted change control and queue/slice reconciliation."
+  - "Treat the missing execution branch as implicitly owned or recreate it without an exact decision."
+  - "Allow implementation from main or the canonical checkout because commits are already landed there."
+  - "Issue QA ownership concurrently with implementation to the same actor."
+  - "Write broad apps/** or supabase/** leases for M11."
+  - "Interpret canonical-checkout absence of ACTIVE_WORKTREE_LEASES.csv as no competing lease."
+  - "Enable writes before every worker can verify the same registry ref and hash."
+
+verdict:
+  result: BLOCK
+  exact_reason: BLOCK_CONTROL_PLANE_AUTHORITY_AND_VISIBILITY_NOT_MATERIALIZED
+  active_path_write_collision: false
+  active_branch_delta_collision: false
+  capability_scope_collision: true
+  exact_M11_write_lease_exists: false
+  exact_M11_QA_lease_exists: false
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+  explanation: >-
+    No live worktree, branch-delta or dirty-path collision currently exists,
+    but the overlapping authorities remain unreconciled, the declared
+    Execution branch is missing, CURRENT_SLICE is M2, and the lease registry is
+    not visible in the canonical checkout. No authority option is executable.
+
+queued_next:
+  packet: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Independently define how every worker proves the same authoritative queue,
+    slice and lease-registry ref/hash before accepting any future M11 lease,
+    without moving or editing shared controls.
+  prohibited:
+    - "No authority choice, file move, merge, push, queue/slice/lease edit, branch/worktree creation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  worktrees_checked: 18
+  targeted_dirty_worktrees: 0
+  targeted_branch_deltas: 0
+  materialization_options_audited: 3
+  required_lease_fields_preserved: 16
+  preservation_requirements: 20
+  preservation_test_cases: 361
+  preservation_proof_clusters: 18
+  preservation_QA_paths: 9
+  preservation_blockers: 12
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

@@ -1,0 +1,124 @@
+packet_id: M2-VS-002-WA-DES-045-DESIGN-CORRECTION-DISPATCH-042
+packet_type: claude_design_bounded_write_dispatch
+created_at: "2026-07-25"
+module: M2_PLANNING
+slice_id: M2-VS-002
+status: RETURN_FOR_CORRECTION_BLOCK_DUE_TO_MISSING_CONTRACT
+completion_credit:
+  atomic_requirements_fully_proven: 0
+  atomic_requirements_total: 98
+
+authority:
+  correction_packet: M2-VS-002-WA-DES-045-CLAUDE-DESIGN-CORRECTION-REQUEST-008A
+  project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
+  existing_design_file: SAQEEL Visits.dc.html
+  design_page_id: WA-DES-045
+  predecessor:
+    source_path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Visits.dc.html
+    size_bytes: 28502
+    sha256: 74fc7af27cfa7ce7a3f458ae42ac5464aefcfa79471eb8c9f2f9b083ba25e2d2
+  target_route: /planning/visits
+
+exclusive_lease:
+  owner: Claude_Design
+  scope: existing_WA-DES-045_design_revision_only
+  observed_second_active_controller: false
+  verification:
+    - existing Claude Design project opened directly on SAQEEL Visits.dc.html
+    - selected file name and preview URL matched the registered design source
+    - other visible Claude Design session was for M3 Operations and was not editing WA-DES-045
+  prohibit:
+    - create_design_file_or_page
+    - duplicate_design_file_or_page
+    - rename_design_file_or_page
+    - delete_design_file_or_page
+    - edit_application_code
+    - edit_tests
+    - edit_data_or_Supabase
+    - edit_route_mapping
+    - edit_F0_shell_source
+
+dispatch:
+  sent_at: "2026-07-25T06:53:03+03:00"
+  recipient: Claude_Design
+  observed_state_after_send: processing_and_listing_project_files
+  required_self_status: READY_FOR_INDEPENDENT_REVIEW
+  self_approval_allowed: false
+  implementation_authority_granted: false
+  product_completion_claim_allowed: false
+
+independent_return_review:
+  reviewed_at: "2026-07-25T06:59:40+03:00"
+  claude_self_status: READY_FOR_INDEPENDENT_REVIEW
+  codex_disposition:
+    - RETURN_FOR_CORRECTION
+    - BLOCK_DUE_TO_MISSING_CONTRACT
+  accepted: false
+  completion_credit_granted: false
+  confirmed:
+    - existing_WA_DES_045_identity_preserved
+    - no_second_controller_detected
+    - no_file_or_page_create_duplicate_rename_delete_claimed
+    - zero_CR071_controls_claimed
+    - labels_repaired_after_generation_check
+  blocking_findings:
+    - no_immutable_successor_revision_identifier
+    - no_successor_export_bytes_or_sha256
+    - registered_predecessor_export_not_byte_identical_to_live_predecessor
+    - mandatory_exact_route_component_service_HANDOFF_BLOCKED_section_absent
+    - frame_matrix_reported_as_selector_reachability_not_exported_observed_evidence
+  reported_live_predecessor:
+    chars: 28351
+    lines: 267
+    relationship_to_registered_export: NOT_BYTE_IDENTICAL
+  reported_successor_identity: current_live_content_only
+  design_consumer_status: NON_CONSUMABLE
+  correction_return_sent_in_live_Claude_Design_chat: true
+
+required_return_evidence:
+  - predecessor_and_successor_revision_identifiers
+  - successor_export_bytes_and_sha256_or_explicit_BLOCKED
+  - WA_DES_045_identity_preserved
+  - zero_file_or_page_create_duplicate_rename_delete
+  - EN_LTR_light_1440x900
+  - EN_LTR_dark_1440x900
+  - AR_RTL_light_1024x768
+  - AR_RTL_dark_390x844
+  - EN_LTR_light_320x800
+  - CR053_STATE_LOADING
+  - CR053_STATE_RLS_ZERO
+  - CR053_STATE_NO_MATCH
+  - CR053_STATE_DATA_UNAVAILABLE
+  - CR053_STATE_OPTIONS_UNAVAILABLE
+  - CR053_STATE_UNAUTHORIZED
+  - CR053_STATE_OUT_OF_RANGE
+  - keyboard_order
+  - visible_focus
+  - programmatic_labels
+  - non_color_status
+  - reflow_without_horizontal_page_overflow
+  - zero_CR071_controls
+  - exact_design_route_component_service_handoff
+  - HANDOFF_BLOCKED_for_every_unproven_runtime_leg
+
+acceptance_rule:
+  accept_only_when: all_required_return_evidence_is_revision_stamped_and_complete
+  otherwise:
+    - RETURN_FOR_CORRECTION
+    - BLOCK_DUE_TO_MISSING_CONTRACT
+
+queued_follow_on:
+  task_id: M8-ADMIN-USERS-ROLES-DESIGN-AUTHORITY-REVIEW-043
+  mode: READ_ONLY
+  ownership_correction: /admin/access_is_M8_not_M9
+  primary_design: WA-DES-043
+  secondary_design: WA-DES-011
+  may_not_write_design_or_product: true
+
+boundary:
+  product_code_modified: false
+  tests_modified: false
+  data_modified: false
+  mappings_modified: false
+  branches_or_stashes_modified: false
+  completion_declared: false

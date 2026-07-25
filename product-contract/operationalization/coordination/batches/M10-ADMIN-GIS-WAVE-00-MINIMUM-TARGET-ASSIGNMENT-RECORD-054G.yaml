@@ -1,0 +1,519 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-WAVE-00-MINIMUM-TARGET-ASSIGNMENT-RECORD-054G
+title: Admin GIS minimum controlled-dispatch target assignment record templates
+status: BLANK_TEMPLATES_ONLY_NO_ASSIGNMENTS
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_TEMPLATE_PREPARATION
+
+purpose: >
+  Provide seven request-specific, fail-closed governance-record templates for
+  later completion by an authorized human governance process. Every identity,
+  authority assignment, channel, destination, sender, delegation, approval,
+  disposition and timestamp remains null. These templates neither appoint a
+  recipient nor authorize, dispatch or answer any acknowledgement request.
+
+boundary:
+  authority_resolution_source: M10-ADMIN-GIS-WAVE-00-RECIPIENT-AUTHORITY-RESOLUTION-054F
+  templates_prepared: 7
+  assignments_created: 0
+  actual_people_identified: 0
+  authority_sources_selected: 0
+  channels_selected: 0
+  destinations_selected: 0
+  senders_authorized: 0
+  requests_sent: 0
+  acknowledgements_recorded: 0
+  authority_granted: false
+  implementation_lease_granted: false
+  product_design_data_control_mutation: NONE
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+canonical_source:
+  packet_id: M10-ADMIN-GIS-WAVE-00-RECIPIENT-AUTHORITY-RESOLUTION-054F
+  path: product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-RECIPIENT-AUTHORITY-RESOLUTION-054F.yaml
+  sha256: de4f9fbcd9d8ad6903b2e1716ef6c523638b16ca7744603e3b33815205124d38
+  use: >
+    Supplies the seven authority-type resolutions, canonical source candidates,
+    request-specific scope, exclusions and minimum governance-record fields.
+  limitation: >
+    Packet 054F maps authority types only. It does not identify a person,
+    select an authority source for an assignment, authorize a sender or channel,
+    or permit dispatch.
+
+null_semantics:
+  null_means: UNASSIGNED_AND_NOT_AUTHORIZED
+  prohibited_interpretations:
+    - A null field is not implied consent.
+    - A canonical source candidate is not a selected assignment authority.
+    - A runtime role is not a dispatch identity or policy authority.
+    - An empty prerequisite list is not proof that prerequisites are satisfied.
+    - A prepared template is not a request, acknowledgement, lease or completion event.
+
+assignment_record_templates:
+  - template_id: GIS-TARGET-ASSIGNMENT-W00-01
+    request_id: GIS-REQ-W00-01
+    acknowledgement_id: GIS-ACK-W00-01
+    required_authority_type: Product-contract source custodian
+    record_type: SOURCE_CUSTODY_ACK_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Product-contract source custodian
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-HUMAN-APPROVALS
+        - AUTH-SCREEN-CATALOGUE
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Attest only the named source files and hashes supplied by the request.
+        - Confirm or reject source-custody accuracy without changing requirements or decisions.
+      explicit_excluded_scope:
+        - requirement changes
+        - decision changes
+        - product, design, data or control mutation
+        - sponsor, Product Owner or implementation authority
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        No delegation is permitted unless a later canonical governance record
+        explicitly authorizes it and supplies the delegator, delegate, scope,
+        evidence, effective time and expiry.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids: []
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+  - template_id: GIS-TARGET-ASSIGNMENT-W00-02
+    request_id: GIS-REQ-W00-02
+    acknowledgement_id: GIS-ACK-W00-02
+    required_authority_type: Independent governance reviewer
+    record_type: GIS_GOVERNANCE_REVIEW_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Independent governance reviewer
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-CODEX-AUDIT-CHECKLIST
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Review the exact packets and hashes named in the assignment.
+        - Return only ACK, RETURN or BLOCK under the assigned review method.
+      explicit_excluded_scope:
+        - sponsor-answer substitution
+        - authorship of reviewed packets
+        - future implementation of the reviewed GIS scope
+        - product, design, data or control mutation
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        Independence is personal to the assigned reviewer and cannot be
+        delegated without a new canonical assignment and conflict review.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids: []
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+  - template_id: GIS-TARGET-ASSIGNMENT-W01-01
+    request_id: GIS-REQ-W01-01
+    acknowledgement_id: GIS-ACK-W01-01
+    required_authority_type: Sponsor
+    record_type: SPONSOR_PACKET_DISPATCH_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Sponsor
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-HUMAN-APPROVALS
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Receive and answer only the exact sponsor decision request and source hashes.
+        - Record a bounded sponsor disposition for packet 048.
+      explicit_excluded_scope:
+        - implementation authority
+        - closure of unresolved holds without an explicit answer
+        - substitution for Product Owner, GIS/Operations, security/privacy or compatibility review
+        - product, design, data or control mutation
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        Sponsor decision authority is not delegated by this template. Any
+        delegation requires an explicit canonical governance record.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids: []
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+  - template_id: GIS-TARGET-ASSIGNMENT-W01-02
+    request_id: GIS-REQ-W01-02
+    acknowledgement_id: GIS-ACK-W01-02
+    required_authority_type: Product Owner
+    record_type: PRODUCT_OWNER_GIS_SCOPE_ACK_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Product Owner
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-HUMAN-APPROVALS
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Review exact requirement, screen and non-double-counting scope in the request.
+        - Return a bounded product-scope acknowledgement or correction.
+      explicit_excluded_scope:
+        - privacy or security authority
+        - RBAC authority
+        - implementation authority
+        - product, design, data or control mutation
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        Product Owner acknowledgement authority is not delegated by this
+        template. Any delegation requires an explicit canonical record.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids: []
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+  - template_id: GIS-TARGET-ASSIGNMENT-W01-03
+    request_id: GIS-REQ-W01-03
+    acknowledgement_id: GIS-ACK-W01-03
+    required_authority_type: Existing GIS / Operations domain authority
+    record_type: GIS_OPERATIONS_DOMAIN_REVIEW_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Existing GIS / Operations domain authority
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      joint_or_final_authority_rule: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-RBAC-MATRIX
+        - AUTH-SCREEN-CATALOGUE
+        - AUTH-CAPABILITY-MIGRATION
+        - AUTH-RLS-EXPECTATION
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Review the exact writer, activation, emergency and recovery boundaries.
+        - Confirm whether acknowledgement requires joint authority or a governed final authority.
+      explicit_excluded_scope:
+        - sponsor-answer substitution
+        - RBAC or privacy decision substitution
+        - default selection of a policy writer from runtime roles
+        - product, design, data or control mutation
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        Neither GIS Admin nor Operations User may delegate or assume the joint
+        domain decision through runtime access. A canonical assignment is required.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids:
+        - GIS-ACK-W01-01
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+  - template_id: GIS-TARGET-ASSIGNMENT-W01-04
+    request_id: GIS-REQ-W01-04
+    acknowledgement_id: GIS-ACK-W01-04
+    required_authority_type: Existing Security and privacy governance
+    record_type: GIS_DISCLOSURE_SECURITY_PRIVACY_REVIEW_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Existing Security and privacy governance
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      joint_or_final_authority_rule: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-RBAC-MATRIX
+        - AUTH-SCREEN-CATALOGUE
+        - AUTH-CAPABILITY-MIGRATION
+        - AUTH-RLS-EXPECTATION
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Review the exact persona, data, purpose, export and masking matrix.
+        - Preserve the explicit legal and retention hold boundary.
+      explicit_excluded_scope:
+        - invention of roles, purposes, policy values or retention rules
+        - broadening current reads
+        - sponsor or Product Owner substitution
+        - product, design, data or control mutation
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        Security Admin runtime access is not delegable privacy, legal or
+        retention authority. Any joint or delegated authority must be explicit.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids:
+        - GIS-ACK-W01-01
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+  - template_id: GIS-TARGET-ASSIGNMENT-W01-05
+    request_id: GIS-REQ-W01-05
+    acknowledgement_id: GIS-ACK-W01-05
+    required_authority_type: Independent compatibility reviewer
+    record_type: GIS_ACK_COMPATIBILITY_REVIEW_ASSIGNMENT
+    template_status: BLANK_UNASSIGNED
+    accountable_authority:
+      authority_type: Independent compatibility reviewer
+      named_dispatch_identity: null
+      accountable_body_or_role: null
+      canonical_authority_source_selected: null
+      canonical_source_candidates:
+        - AUTH-DECISION-REGISTER
+        - AUTH-CODEX-AUDIT-CHECKLIST
+      authority_evidence_reference: null
+      authority_evidence_hash: null
+      evidence_reviewed_by: null
+      evidence_reviewed_at: null
+    scope:
+      exact_allowed_scope:
+        - Compare the four prerequisite owner responses under assigned compatibility rules.
+        - Return the earliest incompatible wave or a bounded compatibility verdict.
+      explicit_excluded_scope:
+        - filling or interpreting absent prerequisite responses
+        - owner, author or implementation participation in the reviewed scope
+        - sponsor-answer substitution
+        - product, design, data or control mutation
+      scope_accepted: null
+    channel_and_sender_authority:
+      permitted_delivery_channel: null
+      exact_destination: null
+      authorized_sender_identity: null
+      sender_authority_source: null
+      sender_authority_evidence: null
+      one_request_or_expiry_boundary: null
+    delegation:
+      delegation_permitted: false
+      non_delegation_statement: >
+        The compatibility review assignment is not transferable. A replacement
+        reviewer requires a new authority record and independence check.
+      delegation_authority_source: null
+      delegator_identity: null
+      delegate_identity: null
+      delegation_evidence: null
+    conflict_and_prerequisites:
+      conflict_and_non_overlap_declaration: null
+      prerequisite_response_ids:
+        - GIS-ACK-W01-01
+        - GIS-ACK-W01-02
+        - GIS-ACK-W01-03
+        - GIS-ACK-W01-04
+      prerequisite_evidence: null
+    approval_and_audit:
+      approval_reference: null
+      approval_timestamp_with_timezone: null
+      record_effective_at: null
+      record_expires_at: null
+      no_implementation_authority_statement: null
+      disposition: null
+    dispatch_readiness: BLOCK_BLANK_TEMPLATE
+
+template_completion_rules:
+  required_before_any_controlled_dispatch:
+    - Every null assignment field required by the request must be populated by an authorized governance process.
+    - The selected canonical authority source must directly support the exact assignment scope.
+    - Authority evidence must be stable, reviewable and hashable.
+    - The named identity must be distinct from an authority type or runtime role.
+    - Channel, destination and sender authority must all be explicit.
+    - The non-delegation statement must remain effective unless an explicit governed delegation record exists.
+    - Conflict and non-overlap declarations must be complete.
+    - Every listed prerequisite response must exist and be hash-verified.
+    - The record must contain an approval reference, effective time, expiry or one-request boundary.
+    - The no-implementation-authority statement must be explicit.
+  automatic_block_conditions:
+    - any required field remains null
+    - authority is inferred from runtime access, prior conversation or silence
+    - a source candidate is treated as selected without approval
+    - sender and recipient authority are represented by the same unreviewed assertion
+    - any prerequisite acknowledgement is absent
+    - delegation is implied rather than evidenced
+    - the record attempts to modify product, design, data, controls or requirements
+
+validation_summary:
+  templates_expected: 7
+  templates_present: 7
+  blank_identity_fields: 7
+  blank_authority_assignments: 7
+  blank_channels: 7
+  blank_destinations: 7
+  blank_sender_authorities: 7
+  dispatch_ready: 0
+  review_result: ACK_TEMPLATE_STRUCTURE_BLOCK_DISPATCH
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-RECORD-VALIDATOR-054H
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Define a deterministic, read-only completeness and conflict validator for
+    any later human-populated copies of the seven templates. Validate only
+    field presence, canonical evidence linkage, prerequisites, non-delegation,
+    channel/sender separation and expiry boundaries. Do not populate records,
+    infer identities or authority, send requests, or mutate any product,
+    design, data, evidence, control, branch or lease.
+  non_overlap:
+    - no external communication
+    - no identity discovery
+    - no authority inference
+    - no request dispatch or acknowledgement
+    - no product, design, data, test, fixture, evidence, shared control, branch or lease mutation

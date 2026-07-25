@@ -1,0 +1,758 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A
+title: Compliance Request neutral decision-to-acceptance trace
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: ACK_TRACE_COMPLETE_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  packet_quality_gate: PASS
+  implementation_gate: BLOCKED
+  selection_state: ALL_23_OPTIONS_UNSELECTED
+  options_traced: 23
+  orphaned_options: 0
+  source_unspecified_authority_inputs: 9
+  lease_authority_granted: false
+  implementation_authority_granted: false
+  migration_authority_granted: false
+  remote_ddl_authority_granted: false
+  data_authority_granted: false
+  design_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    Every neutral option in packet 035 now has an exact requirement,
+    acceptance, planned-test, evidence, consumer and stop-condition trace.
+    This proves trace completeness only. It does not resolve any choice.
+    Nine required policy or architecture inputs have requirement pressure but
+    no authorized value in the product contract; they remain explicit
+    authority blockers. No future lease may start from this packet alone.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  business_function: >-
+    Govern Regulation, Inspection Item, Violation and Penalty changes through
+    maker-checker Compliance Requests and carry approved immutable versions
+    safely into Library, Packages, Planning and Field execution.
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+    source_sha256: 33e175516b95cc6f842d1dceb88f5c4395cd426ca735fc46c4545d55b960f668
+    source_status: ACK_DECISION_PACK_READY_IMPLEMENTATION_BLOCKED
+  bypassed_wait:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-RECEIPT-036
+    reason: No authorized selections exist.
+    effect: Receipt work remains dormant; no selection is inferred.
+  allowed_output:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A.yaml
+  prohibited:
+    - product code, tests, migrations, database objects or business data
+    - design files or design authority
+    - branches, stashes, main, setup/Inspection, merge or deployment
+    - selection, ranking, recommendation or defaulting of an option
+    - lease grant or sponsor/database authority inference
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: 8a498cc78fe187d88418766bf956c5b4d754a0c8
+  concurrent_orchestration_files_preserved:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-DRY-RUN-COVERAGE-CERTIFICATE-081.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-CLOSURE-SEQUENCE-054K.yaml
+  concurrent_orchestration_files_observed_during_validation:
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-IMPLEMENTATION-LEASE-SPLIT-PREFLIGHT-079.yaml
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+authority:
+  hierarchy:
+    - 478-row customer requirement baseline
+    - normalized requirement index
+    - Web/Admin M6 acceptance contract
+    - existing CCR engine acceptance contract
+    - packets 031 through 035 as peer evidence and boundary control
+  design_dependency:
+    design_id: WA-DES-019
+    status: SEPARATE_UNCHANGED
+    design_selection_or_revision_authorized: false
+  preservation_floor:
+    - CCR-only create and modify for Regulation, Item, Violation and Penalty.
+    - Maker-checker remains database-enforced.
+    - Future-effective content is unavailable before its effective boundary.
+    - The prior approved version remains operational until its successor is effective.
+    - Rejected, invalid or incomplete branches never enter operational truth.
+    - Historical Inspection, Enforcement and Package references never repoint.
+    - Package publication is transactional, concurrency-safe and immutable.
+    - Field and offline execution use only the pinned immutable Package version.
+    - Attachment hashes, lineage, access control and audit remain durable.
+    - Direct Data API, legacy RPC or service-role bypass cannot support a completion claim.
+
+canonical_scope:
+  customer_requirements:
+    - [CR-449, WA-AC-0449, WA-EV-0449, Regulation Management]
+    - [CR-450, WA-AC-0450, WA-EV-0450, Inspection Item Management]
+    - [CR-451, WA-AC-0451, WA-EV-0451, Violation Management]
+    - [CR-452, WA-AC-0452, WA-EV-0452, Penalty Management]
+    - [CR-458, WA-AC-0458, WA-EV-0458, Configuration Versioning]
+    - [CR-459, WA-AC-0459, WA-EV-0459, Draft and Publish Lifecycle]
+    - [CR-460, WA-AC-0460, WA-EV-0460, Dependency Validation]
+    - [CR-463, WA-AC-0463, WA-EV-0463, Audit Trail]
+    - [CR-478, WA-AC-0478, WA-EV-0478, Runtime Locking]
+  module_acceptance:
+    - WA-M6-AC-001
+    - WA-M6-AC-002
+    - WA-M6-AC-005
+    - WA-M6-AC-006
+  ccr_engine_acceptance:
+    source: product-contract/acceptance/CMP_COMPLIANCE_REQUEST_ENGINE_002.csv
+    ids: CMP-ACC-CCR-001..030
+    rule: >-
+      Existing PASS rows prove the bounded request engine only. They do not
+      prove the future operational projection, legacy bypass closure, Package
+      bridge, downstream runtime or any unselected policy.
+
+future_evidence_contract:
+  status: PLANNED_NOT_AUTHORIZED
+  sql_probes:
+    A: supabase/tests/compliance_request_operational_projection_probe.sql
+    B: supabase/tests/compliance_request_authoring_cutover_probe.sql
+    C: supabase/tests/compliance_package_snapshot_bridge_probe.sql
+  browser_specs:
+    projection: apps/web/e2e/compliance-request-operational-projection.spec.ts
+    downstream: apps/web/e2e/compliance-request-downstream-runtime.spec.ts
+  evidence_files:
+    A: product-contract/evidence/LEASE-CCR-LIFECYCLE-PROJECTION-032A.md
+    B: product-contract/evidence/LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B.md
+    C: product-contract/evidence/LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C.md
+    D: product-contract/evidence/LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D.md
+    E: product-contract/evidence/CODEX-ADMIN-COMPLIANCE-REQUESTS-DOWNSTREAM-CERT-032E.md
+  protected_regression:
+    - supabase/tests/compliance_request_engine_probe.sql
+    - apps/web/e2e/compliance-request-engine.spec.ts
+    - apps/web/e2e/compliance-approval-queue.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+    - apps/web/e2e/cd-005-006-regulations.spec.ts
+    - apps/web/e2e/cd-008-009-packages.spec.ts
+    - apps/web/e2e/golden-journey.spec.ts
+    - apps/web/e2e/offline-drill.spec.ts
+  evidence_rule: >-
+    A future case ID below is a planned trace label, not a passing test.
+    Evidence is valid only on the exact candidate commit with separate
+    implementer, test-author, data-operator and certifier ownership.
+
+consumer_catalogue:
+  C1_CCR: [/admin/compliance-requests, /admin/compliance-requests/new, "/admin/compliance-requests/:id", /admin/compliance-approvals]
+  C2_LIBRARY: [/admin/regulations, Regulation Library, Item catalogue, Violation catalogue, Penalty catalogue]
+  C3_PACKAGE: [/admin/packages, Package publication, Package export]
+  C4_PLANNING: [Planning selectors, bulk planning, visit preparation]
+  C5_FIELD: [Field online execution, offline materialization, inspection submission]
+  C6_ENFORCEMENT: [inspection approval, enforcement recommendation, penalty issuance]
+  C7_AUDIT: [configuration audit, publication history, evidence custody, reporting]
+  C8_SECURITY: [RLS, grants, RPC guards, storage policies, authenticated personas]
+  C9_OPERATIONS: [scheduled activation monitoring, degraded-state handling]
+
+parameter_trace:
+  - parameter_id: PAR-D1-FIELD-MANIFEST
+    applies_to: [D1-O1, D1-O2, D1-O3]
+    value_required: Per-kind fields, types, required/optional/nullability, validation and projection.
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-460, REQ-R0C-01803, REQ-R0C-01868..01872, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-003, CMP-ACC-CCR-004, CMP-ACC-CCR-016]
+    future_cases: [CCR-036A-TC-001, CCR-036A-TC-002, CCR-036A-TC-003]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT]
+    stop: Missing, ambiguous or inferred field rule blocks D1 and A.
+  - parameter_id: PAR-D1-O1-MODEL
+    applies_to: [D1-O1]
+    value_required: Table model, identity/version uniqueness and relationship/deletion rules.
+    requirements: [CR-458, CR-460, CR-463, REQ-R0C-01868..01878]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0463, CMP-ACC-CCR-006, CMP-ACC-CCR-016..018]
+    future_cases: [CCR-036A-TC-001]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C7_AUDIT, C8_SECURITY]
+    stop: No architecture/cardinality signoff or any mutable published row.
+  - parameter_id: PAR-D1-O2-SCHEMA
+    applies_to: [D1-O2]
+    value_required: Schema format/owner, compatibility, additional-property policy and governed projections.
+    requirements: [CR-458, CR-460, CR-463, REQ-R0C-01868..01872, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0463, CMP-ACC-CCR-003, CMP-ACC-CCR-006, CMP-ACC-CCR-016]
+    future_cases: [CCR-036A-TC-002]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT]
+    stop: Unversioned schema, permissive unknown fields or unavailable historical schema.
+  - parameter_id: PAR-D1-O3-CORE-BODY
+    applies_to: [D1-O3]
+    value_required: Typed-core list, per-kind schemas, duplicate-field precedence and projection contract.
+    requirements: [CR-458, CR-460, CR-463, REQ-R0C-01803, REQ-R0C-01868..01872]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0463, CMP-ACC-CCR-003, CMP-ACC-CCR-006, CMP-ACC-CCR-016]
+    future_cases: [CCR-036A-TC-003]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT]
+    stop: Conflicting duplicate authority or projection/hash mismatch.
+  - parameter_id: PAR-D2-ACTIVATION
+    applies_to: [D2-A1, D2-A2, D2-A3]
+    value_required: Status transition, audit semantics, failure/retry/idempotency, stale-head and clock authority.
+    requirements: [CR-458, CR-459, CR-463, REQ-R0C-01627, REQ-R0C-01638, REQ-R0C-01804..01805, REQ-R0C-01879..01883, REQ-R0C-01900, REQ-R0C-01915, REQ-R0C-02234]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-002, CMP-ACC-CCR-011, CMP-ACC-CCR-016..018]
+    future_cases: [CCR-036A-TC-004, CCR-036A-TC-005, CCR-036A-TC-006]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C7_AUDIT, C9_OPERATIONS]
+    stop: More than one authority, early exposure, prior-head loss or unhandled failure.
+  - parameter_id: PAR-D2-TIME
+    applies_to: [D2-T1, D2-T2]
+    value_required: Data type, authoritative timezone, inclusivity, displayed local meaning and trusted clock.
+    requirements: [CR-449, CR-458, CR-459, REQ-R0C-01627, REQ-R0C-01900, REQ-R0C-01906, REQ-R0C-01915, REQ-R0C-01919]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0459, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-001, CMP-ACC-CCR-016..018]
+    future_cases: [CCR-036A-TC-007, CCR-036A-TC-008]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT]
+    stop: Approval date substitution, hidden instant or unspecified boundary semantics.
+  - parameter_id: PAR-D2-BACKFILL
+    applies_to: [D2-B1, D2-B2, D2-B3]
+    value_required: Legacy lineage scope, ambiguity disposition, anchors, cutover unit and reconciliation evidence.
+    requirements: [CR-458, CR-463, CR-478, REQ-R0C-01655, REQ-R0C-01673, REQ-R0C-01726, REQ-R0C-01785, REQ-R0C-01923, REQ-R0C-02210]
+    acceptance: [WA-AC-0458, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-018, CMP-ACC-CCR-020, CMP-ACC-CCR-021]
+    future_cases: [CCR-036A-TC-009, CCR-036A-TC-010, CCR-036A-TC-011]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Fabricated values, collapsed versions, repointed history or partial parent-child cutover.
+  - parameter_id: PAR-D2-DEACTIVATION
+    applies_to: [D2-A1, D2-A2, D2-A3, D3-A1, D3-A2]
+    value_required: Standalone deactivation semantics distinct from successor replacement.
+    requirements: [CR-449, CR-459, CR-463, REQ-R0C-01815]
+    acceptance: [WA-AC-0449, WA-AC-0459, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-011]
+    future_cases: [CCR-036A-TC-004, CCR-036A-TC-005, CCR-036A-TC-006, CCR-036A-TC-012, CCR-036A-TC-013]
+    consumers: [C1_CCR, C2_LIBRARY, C4_PLANNING, C7_AUDIT]
+    stop: Deactivation silently rewrites content, history or effective-date rules.
+  - parameter_id: PAR-D3-ACTION-MATRIX
+    applies_to: [D3-A1, D3-A2]
+    value_required: Per-action entity, entry point, role, maker-checker, reason/evidence, allowed fields, audit and rollback.
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-459, CR-463, REQ-R0C-01623, REQ-R0C-01666, REQ-R0C-01684, REQ-R0C-01709, REQ-R0C-01768, REQ-R0C-01903, REQ-R0C-01916, REQ-R0C-02041, REQ-R0C-02131, REQ-R0C-02208]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0459, WA-AC-0463, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-007..011, CMP-ACC-CCR-016..018, CMP-ACC-CCR-029]
+    future_cases: [CCR-036A-TC-012, CCR-036A-TC-013]
+    consumers: [C1_CCR, C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Any unclassified legacy action or bypass-capable RPC/privilege blocks B.
+  - parameter_id: PAR-D3-ATTACHMENT-CUSTODY
+    applies_to: [D3-S1, D3-S2, D3-I1, D3-I2]
+    value_required: Bucket/object/manifest identity, immutable hash, access, adoption, supersession, history and audit.
+    requirements: [CR-449, CR-458, CR-463, REQ-R0C-01623, REQ-R0C-01903, REQ-R0C-01916]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-003, CMP-ACC-CCR-006, CMP-ACC-CCR-011, CMP-ACC-CCR-016]
+    future_cases: [CCR-036A-TC-014, CCR-036A-TC-015, CCR-036A-TC-016, CCR-036A-TC-017]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT, C8_SECURITY]
+    stop: Mutable object, direct Active metadata write, missing hash/lineage/access or unavailable historical read.
+  - parameter_id: PAR-D3-EXCEPTION
+    applies_to: [D3-A2]
+    value_required: Exact lifecycle-only field allow-list, roles, justification and audit event.
+    requirements: [CR-449, CR-459, CR-463, REQ-R0C-01815]
+    acceptance: [WA-AC-0449, WA-AC-0459, WA-AC-0463, WA-M6-AC-002, CMP-ACC-CCR-008..011, CMP-ACC-CCR-029]
+    future_cases: [CCR-036A-TC-013]
+    consumers: [C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Exception can alter business content, attachments, relationships or effective boundary.
+  - parameter_id: PAR-D3-QUARANTINE
+    applies_to: [D3-I2]
+    value_required: Retention/expiry, orphan disposition, access, adoption transaction and audit.
+    requirements: [CR-449, CR-463]
+    acceptance: [WA-AC-0449, WA-AC-0463, WA-M6-AC-002, CMP-ACC-CCR-011, CMP-ACC-CCR-015..017]
+    future_cases: [CCR-036A-TC-017]
+    consumers: [C1_CCR, C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Quarantine visible operationally or retention/orphan handling is unspecified.
+  - parameter_id: PAR-D4-MAPPING
+    applies_to: [D4-S1, D4-S2, D4-S3]
+    value_required: CCR/revision/component/version/publication/schema/hash provenance and complete execution projection.
+    requirements: [CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, CR-478, REQ-R0C-01805, REQ-R0C-01868..01878, REQ-R0C-01885..01886, REQ-R0C-01888..01889, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-015..018, CMP-ACC-CCR-021]
+    future_cases: [CCR-036A-TC-018, CCR-036A-TC-019, CCR-036A-TC-020]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Floating lookup, incomplete hierarchy, missing provenance/hash, partial commit or client-authoritative snapshot.
+  - parameter_id: PAR-D4-ELIGIBILITY
+    applies_to: [D4-E1, D4-E2, D4-E3]
+    value_required: Package/component date relationship, selectability, activation dependency and degraded behavior.
+    requirements: [CR-458, CR-459, CR-460, CR-478, REQ-R0C-01805, REQ-R0C-01879..01883]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0460, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-015..018]
+    future_cases: [CCR-036A-TC-021, CCR-036A-TC-022, CCR-036A-TC-023]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT, C9_OPERATIONS]
+    stop: Package is selectable/executable before every dependency is effective or dependency readiness is unprovable.
+
+option_trace:
+  - option_id: D1-O1
+    label: Fully relational version records
+    selection: UNSELECTED
+    parameter_refs: [PAR-D1-FIELD-MANIFEST, PAR-D1-O1-MODEL]
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, REQ-R0C-01803, REQ-R0C-01868..01872, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-006, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-001, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT, C8_SECURITY]
+    stop: Typed table/cardinality manifest or immutable/RLS proof is absent.
+  - option_id: D1-O2
+    label: Versioned schema-validated documents
+    selection: UNSELECTED
+    parameter_refs: [PAR-D1-FIELD-MANIFEST, PAR-D1-O2-SCHEMA]
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, REQ-R0C-01803, REQ-R0C-01868..01872, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-006, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-002, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT]
+    stop: Schema registry, compatibility or missing/wrong/unknown-field negatives are undefined.
+  - option_id: D1-O3
+    label: Typed core with schema-validated body
+    selection: UNSELECTED
+    parameter_refs: [PAR-D1-FIELD-MANIFEST, PAR-D1-O3-CORE-BODY]
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, REQ-R0C-01803, REQ-R0C-01868..01872, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-006, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-003, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT]
+    stop: Core/body precedence or projection equivalence is undefined or fails.
+  - option_id: D2-A1
+    label: Derived effective state
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-ACTIVATION, PAR-D2-DEACTIVATION]
+    requirements: [CR-458, CR-459, CR-463, CR-478, REQ-R0C-01627, REQ-R0C-01638, REQ-R0C-01804..01805, REQ-R0C-01879..01883, REQ-R0C-01900, REQ-R0C-01915]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-002, CMP-ACC-CCR-011, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-004, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT]
+    stop: Any consumer reads stored status/head without the canonical effective projection.
+  - option_id: D2-A2
+    label: Database-scheduled persisted transition
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-ACTIVATION, PAR-D2-DEACTIVATION]
+    requirements: [CR-458, CR-459, CR-463, CR-478, REQ-R0C-01627, REQ-R0C-01638, REQ-R0C-01804..01805, REQ-R0C-01879..01883, REQ-R0C-01900, REQ-R0C-01915]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-011, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-005, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C7_AUDIT, C9_OPERATIONS]
+    stop: Database scheduling capability, monitor/retry owner, idempotency or stale-head proof is absent.
+  - option_id: D2-A3
+    label: Managed application or queue transition
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-ACTIVATION, PAR-D2-DEACTIVATION]
+    requirements: [CR-458, CR-459, CR-463, CR-478, REQ-R0C-01627, REQ-R0C-01638, REQ-R0C-01804..01805, REQ-R0C-01879..01883, REQ-R0C-01900, REQ-R0C-01915]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-011, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-006, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C7_AUDIT, C9_OPERATIONS]
+    stop: Runtime/queue provider, deployment owner, degraded state, retry or idempotency is unapproved.
+  - option_id: D2-T1
+    label: Date-only business boundary
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-TIME]
+    requirements: [CR-449, CR-458, CR-459, REQ-R0C-01627, REQ-R0C-01900, REQ-R0C-01906, REQ-R0C-01915, REQ-R0C-01919]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0459, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-001, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-007, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT]
+    stop: Timezone, start-of-day or inclusivity is not explicitly authorized.
+  - option_id: D2-T2
+    label: Exact effective instant
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-TIME]
+    requirements: [CR-449, CR-458, CR-459, REQ-R0C-01627, REQ-R0C-01900, REQ-R0C-01906, REQ-R0C-01915, REQ-R0C-01919]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0459, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-001, CMP-ACC-CCR-016..018]
+    future: [CCR-036A-TC-008, SQL-A, BROWSER-projection, EVIDENCE-A]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT]
+    stop: Date-only UI/export hides the instant or sub-day scope lacks authority.
+  - option_id: D2-B1
+    label: Full reconstructible lineage
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-BACKFILL]
+    requirements: [CR-458, CR-463, CR-478, REQ-R0C-01655, REQ-R0C-01673, REQ-R0C-01726, REQ-R0C-01785, REQ-R0C-01923, REQ-R0C-02210]
+    acceptance: [WA-AC-0458, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-018, CMP-ACC-CCR-020..021]
+    future: [CCR-036A-TC-009, SQL-A, BROWSER-downstream, EVIDENCE-A, EVIDENCE-D]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Any unreconstructible record is guessed, collapsed or silently omitted.
+  - option_id: D2-B2
+    label: Active-head bootstrap with legacy historical anchors
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-BACKFILL]
+    requirements: [CR-458, CR-463, CR-478, REQ-R0C-01655, REQ-R0C-01673, REQ-R0C-01726, REQ-R0C-01785, REQ-R0C-01923, REQ-R0C-02210]
+    acceptance: [WA-AC-0458, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-018, CMP-ACC-CCR-020..021]
+    future: [CCR-036A-TC-010, SQL-A, BROWSER-downstream, EVIDENCE-A, EVIDENCE-D]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Legacy anchors are mutable, unavailable or cause historical repointing.
+  - option_id: D2-B3
+    label: Staged full lineage by entity kind
+    selection: UNSELECTED
+    parameter_refs: [PAR-D2-BACKFILL]
+    requirements: [CR-458, CR-460, CR-463, CR-478, REQ-R0C-01655, REQ-R0C-01673, REQ-R0C-01726, REQ-R0C-01785, REQ-R0C-01923, REQ-R0C-02210]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-004, CMP-ACC-CCR-018, CMP-ACC-CCR-020..021]
+    future: [CCR-036A-TC-011, SQL-A, BROWSER-downstream, EVIDENCE-A, EVIDENCE-D]
+    consumers: [C2_LIBRARY, C3_PACKAGE, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: A child cuts over without its exact valid parent or dual-read truth diverges.
+  - option_id: D3-A1
+    label: Every governed action through CCR
+    selection: UNSELECTED
+    parameter_refs: [PAR-D3-ACTION-MATRIX, PAR-D2-DEACTIVATION]
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-459, CR-463, REQ-R0C-01623, REQ-R0C-01666, REQ-R0C-01684, REQ-R0C-01709, REQ-R0C-01768, REQ-R0C-01903, REQ-R0C-01916, REQ-R0C-02041, REQ-R0C-02131, REQ-R0C-02208]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-007..011, CMP-ACC-CCR-016..018, CMP-ACC-CCR-029]
+    future: [CCR-036A-TC-012, SQL-B, BROWSER-projection, EVIDENCE-B]
+    consumers: [C1_CCR, C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Any direct create/modify/lifecycle path remains callable outside CCR.
+  - option_id: D3-A2
+    label: CCR content with direct lifecycle-only exception
+    selection: UNSELECTED
+    parameter_refs: [PAR-D3-ACTION-MATRIX, PAR-D3-EXCEPTION, PAR-D2-DEACTIVATION]
+    requirements: [CR-449, CR-450, CR-451, CR-452, CR-458, CR-459, CR-463, REQ-R0C-01623, REQ-R0C-01666, REQ-R0C-01684, REQ-R0C-01709, REQ-R0C-01768, REQ-R0C-01815, REQ-R0C-01903, REQ-R0C-01916, REQ-R0C-02041, REQ-R0C-02131, REQ-R0C-02208]
+    acceptance: [WA-AC-0449, WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-008..011, CMP-ACC-CCR-016..018, CMP-ACC-CCR-029]
+    future: [CCR-036A-TC-013, SQL-B, BROWSER-projection, EVIDENCE-B]
+    consumers: [C1_CCR, C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Exception allow-list, role, reason or database bypass negative is incomplete.
+  - option_id: D3-S1
+    label: Immutable copy per approved Regulation version
+    selection: UNSELECTED
+    parameter_refs: [PAR-D3-ATTACHMENT-CUSTODY]
+    requirements: [CR-449, CR-458, CR-463, REQ-R0C-01623, REQ-R0C-01903, REQ-R0C-01916]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-003, CMP-ACC-CCR-006, CMP-ACC-CCR-011, CMP-ACC-CCR-016]
+    future: [CCR-036A-TC-014, SQL-B, BROWSER-projection, EVIDENCE-B]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT, C8_SECURITY]
+    stop: A copy lacks immutable hash, version linkage, access or audit evidence.
+  - option_id: D3-S2
+    label: Content-addressed immutable object with version manifests
+    selection: UNSELECTED
+    parameter_refs: [PAR-D3-ATTACHMENT-CUSTODY]
+    requirements: [CR-449, CR-458, CR-463, REQ-R0C-01623, REQ-R0C-01903, REQ-R0C-01916]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-003, CMP-ACC-CCR-006, CMP-ACC-CCR-011, CMP-ACC-CCR-016]
+    future: [CCR-036A-TC-015, SQL-B, BROWSER-projection, EVIDENCE-B]
+    consumers: [C1_CCR, C2_LIBRARY, C3_PACKAGE, C7_AUDIT, C8_SECURITY]
+    stop: Reference counting, access revocation, retention or immutable path rules are unresolved.
+  - option_id: D3-I1
+    label: Upload only inside an existing CCR revision
+    selection: UNSELECTED
+    parameter_refs: [PAR-D3-ATTACHMENT-CUSTODY]
+    requirements: [CR-449, CR-458, CR-463, REQ-R0C-01623, REQ-R0C-01903, REQ-R0C-01916]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-003, CMP-ACC-CCR-006, CMP-ACC-CCR-011]
+    future: [CCR-036A-TC-016, SQL-B, BROWSER-projection, EVIDENCE-B]
+    consumers: [C1_CCR, C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Upload succeeds without exact request, revision and Regulation component linkage.
+  - option_id: D3-I2
+    label: Quarantined intake then CCR adoption
+    selection: UNSELECTED
+    parameter_refs: [PAR-D3-ATTACHMENT-CUSTODY, PAR-D3-QUARANTINE]
+    requirements: [CR-449, CR-458, CR-463, REQ-R0C-01623, REQ-R0C-01903, REQ-R0C-01916]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, CMP-ACC-CCR-003, CMP-ACC-CCR-011, CMP-ACC-CCR-015..017]
+    future: [CCR-036A-TC-017, SQL-B, BROWSER-projection, EVIDENCE-B]
+    consumers: [C1_CCR, C2_LIBRARY, C7_AUDIT, C8_SECURITY]
+    stop: Retention/orphan/access policy is absent or quarantine can become operational without adoption.
+  - option_id: D4-S1
+    label: Full Package-local embedded snapshots
+    selection: UNSELECTED
+    parameter_refs: [PAR-D4-MAPPING]
+    requirements: [CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, CR-478, REQ-R0C-01805, REQ-R0C-01868..01878, REQ-R0C-01885..01886, REQ-R0C-01888..01889, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-015..018]
+    future: [CCR-036A-TC-018, SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Embedded hierarchy or provenance is incomplete, non-atomic or mutable.
+  - option_id: D4-S2
+    label: Immutable component references and hashes
+    selection: UNSELECTED
+    parameter_refs: [PAR-D4-MAPPING]
+    requirements: [CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, CR-478, REQ-R0C-01805, REQ-R0C-01868..01878, REQ-R0C-01885..01886, REQ-R0C-01888..01889, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-015..018, CMP-ACC-CCR-021]
+    future: [CCR-036A-TC-019, SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Version rows are not permanently available or offline materialization is unproven.
+  - option_id: D4-S3
+    label: Manifest plus embedded execution projection
+    selection: UNSELECTED
+    parameter_refs: [PAR-D4-MAPPING]
+    requirements: [CR-450, CR-451, CR-452, CR-458, CR-460, CR-463, CR-478, REQ-R0C-01805, REQ-R0C-01868..01878, REQ-R0C-01885..01886, REQ-R0C-01888..01889, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-015..018, CMP-ACC-CCR-021]
+    future: [CCR-036A-TC-020, SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD, C6_ENFORCEMENT, C7_AUDIT]
+    stop: Manifest/projection hash equivalence, atomicity or precedence is unproven.
+  - option_id: D4-E1
+    label: Active components only
+    selection: UNSELECTED
+    parameter_refs: [PAR-D4-ELIGIBILITY]
+    requirements: [CR-458, CR-459, CR-460, CR-478, REQ-R0C-01805, REQ-R0C-01879..01883]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0460, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-015..018]
+    future: [CCR-036A-TC-021, SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD]
+    stop: Package publication reads any Scheduled component.
+  - option_id: D4-E2
+    label: Scheduled components allowed for future Package
+    selection: UNSELECTED
+    parameter_refs: [PAR-D4-ELIGIBILITY, PAR-D2-TIME]
+    requirements: [CR-458, CR-459, CR-460, CR-478, REQ-R0C-01805, REQ-R0C-01879..01883]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0460, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-015..018]
+    future: [CCR-036A-TC-022, SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT]
+    stop: Cross-date validation fails or Package becomes usable before every dependency is Active.
+  - option_id: D4-E3
+    label: Publish Package as Scheduled until dependencies activate
+    selection: UNSELECTED
+    parameter_refs: [PAR-D4-ELIGIBILITY, PAR-D2-ACTIVATION, PAR-D2-TIME]
+    requirements: [CR-458, CR-459, CR-460, CR-478, REQ-R0C-01805, REQ-R0C-01879..01883]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0460, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-015..018]
+    future: [CCR-036A-TC-023, SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    consumers: [C3_PACKAGE, C4_PLANNING, C5_FIELD, C7_AUDIT, C9_OPERATIONS]
+    stop: Package/component activation is unordered, non-idempotent or hides dependency failure.
+
+prohibited_combination_trace:
+  common_evidence_rule: >-
+    Every prohibition is a negative case in the referenced option's planned
+    SQL/browser case. Any prohibited combination observed or left possible is
+    a P0 stop under WA-M6-AC-002 and WA-M6-AC-005.
+  D1:
+    requirements: [CR-458, CR-460, CR-463, REQ-R0C-01868..01878, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-003..004, CMP-ACC-CCR-006, CMP-ACC-CCR-016..018]
+    future: [SQL-A, BROWSER-projection, EVIDENCE-A]
+    rows:
+      - [PROH-D1-01, "Any option plus unvalidated arbitrary JSON.", [D1-O1, D1-O2, D1-O3], STOP]
+      - [PROH-D1-02, "A relational core and document body both claiming authority for the same field without precedence.", [D1-O3], STOP]
+      - [PROH-D1-03, "Schema evolution without immutable schema-version retention.", [D1-O2, D1-O3], STOP]
+      - [PROH-D1-04, "Reusing one generic shape that drops kind-specific required facts.", [D1-O1, D1-O2, D1-O3], STOP]
+      - [PROH-D1-05, "Package or Field interpreting fields not declared in the approved manifest.", [D1-O1, D1-O2, D1-O3, D4-S1, D4-S2, D4-S3], STOP]
+  D2:
+    requirements: [CR-458, CR-459, CR-463, CR-478, REQ-R0C-01627, REQ-R0C-01638, REQ-R0C-01879..01883]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-011, CMP-ACC-CCR-016..018]
+    future: [SQL-A, BROWSER-projection, BROWSER-downstream, EVIDENCE-A, EVIDENCE-D]
+    rows:
+      - [PROH-D2-01, "More than one authoritative activation mechanism for the same entity kind.", [D2-A1, D2-A2, D2-A3], STOP]
+      - [PROH-D2-02, "Date-only activation without an approved timezone and inclusive-boundary rule.", [D2-T1], STOP]
+      - [PROH-D2-03, "Exact-instant activation while retaining a date-only UI that hides the instant.", [D2-T2], STOP]
+      - [PROH-D2-04, "Approval date substituted for a future Release or Effective Date.", [D2-A1, D2-A2, D2-A3, D2-T1, D2-T2], STOP]
+      - [PROH-D2-05, "A new successor becoming available before approval or its effective boundary.", [D2-A1, D2-A2, D2-A3], STOP]
+      - [PROH-D2-06, "Removing the prior Active version before the successor is effectively Active, except an explicitly approved standalone deactivation.", [D2-A1, D2-A2, D2-A3], STOP]
+      - [PROH-D2-07, "Automatic activation without idempotency, retry and stale-head protection.", [D2-A2, D2-A3], STOP]
+      - [PROH-D2-08, "Backfill that fabricates missing values, collapses versions or repoints historical records.", [D2-B1, D2-B2, D2-B3], STOP]
+      - [PROH-D2-09, "Entity-kind staged cutover that permits a child without its exact valid parent.", [D2-B3], STOP]
+  D3:
+    requirements: [CR-449, CR-458, CR-459, CR-463, REQ-R0C-01623, REQ-R0C-01815, REQ-R0C-01903, REQ-R0C-01916]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0459, WA-AC-0463, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-006..011, CMP-ACC-CCR-016..018, CMP-ACC-CCR-029]
+    future: [SQL-B, BROWSER-projection, EVIDENCE-B]
+    rows:
+      - [PROH-D3-01, "Direct legacy draft creation or content update while claiming CCR-only authoring.", [D3-A1, D3-A2], STOP]
+      - [PROH-D3-02, "Both legacy publish RPC and CCR publication remaining independent authoritative paths.", [D3-A1, D3-A2], STOP]
+      - [PROH-D3-03, "A lifecycle-only exception that can change title, legal content, relationships, rules or attachments.", [D3-A2], STOP]
+      - [PROH-D3-04, "Manual activation before the configured effective boundary.", [D3-A2], STOP]
+      - [PROH-D3-05, "Attachment metadata added directly to an Active version.", [D3-S1, D3-S2, D3-I1, D3-I2], STOP]
+      - [PROH-D3-06, "File replacement, deletion or path reuse that breaks a historical hash or version manifest.", [D3-S1, D3-S2], STOP]
+      - [PROH-D3-07, "Quarantined intake treated as approved or operational content.", [D3-I2], STOP]
+      - [PROH-D3-08, "Attachment custody without request, revision, version, actor, timestamp, hash and access evidence.", [D3-S1, D3-S2, D3-I1, D3-I2], STOP]
+  D4:
+    requirements: [CR-450, CR-451, CR-452, CR-458, CR-459, CR-460, CR-463, CR-478, REQ-R0C-01805, REQ-R0C-01868..01889, REQ-R0C-01894..01896]
+    acceptance: [WA-AC-0450, WA-AC-0451, WA-AC-0452, WA-AC-0458, WA-AC-0459, WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005, CMP-ACC-CCR-015..018, CMP-ACC-CCR-021]
+    future: [SQL-C, BROWSER-downstream, EVIDENCE-C, EVIDENCE-D, EVIDENCE-E]
+    rows:
+      - [PROH-D4-01, "Any snapshot option plus a floating current, active or latest lookup after Package publication.", [D4-S1, D4-S2, D4-S3], STOP]
+      - [PROH-D4-02, "Reference-only storage without permanent immutable version availability and offline materialization proof.", [D4-S2], STOP]
+      - [PROH-D4-03, "Embedded storage without exact source version IDs and hashes.", [D4-S1, D4-S3], STOP]
+      - [PROH-D4-04, "Scheduled component eligibility without cross-date validation.", [D4-E2, D4-E3], STOP]
+      - [PROH-D4-05, "Package becoming selectable or executable before all required components are effective.", [D4-E1, D4-E2, D4-E3], STOP]
+      - [PROH-D4-06, "Client-supplied snapshot JSON treated as authoritative without database re-read and validation.", [D4-S1, D4-S2, D4-S3], STOP]
+      - [PROH-D4-07, "Field resolving legacy live catalogue values when a Package snapshot is missing.", [D4-S1, D4-S2, D4-S3], STOP]
+      - [PROH-D4-08, "One invalid branch partially committed into a Package version.", [D4-S1, D4-S2, D4-S3], STOP]
+      - [PROH-D4-09, "Package maker self-publication or historical Package rewrite.", [D4-S1, D4-S2, D4-S3], STOP]
+  cross_decision:
+    requirements: [CR-449..CR-452, CR-458..CR-460, CR-463, CR-478]
+    acceptance: [WA-AC-0449..WA-AC-0452, WA-AC-0458..WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005, WA-M6-AC-006]
+    future: [SQL-A, SQL-B, SQL-C, BROWSER-projection, BROWSER-downstream, EVIDENCE-E]
+    rows:
+      - [PROH-X-01, "D2-A1 combined with a second persisted activation authority for the same kind.", [D2-A1, D2-A2, D2-A3], STOP]
+      - [PROH-X-02, "D2-T1 and D2-T2 both authoritative for the same field.", [D2-T1, D2-T2], STOP]
+      - [PROH-X-03, "D3-A2 without a signed lifecycle field allow-list and reason/audit contract.", [D3-A2], STOP]
+      - [PROH-X-04, "D3-I2 without an approved orphan and retention policy.", [D3-I2], STOP]
+      - [PROH-X-05, "D4-E1 combined with Package publication that reads Scheduled components.", [D4-E1], STOP]
+      - [PROH-X-06, "D4-E2 or D4-E3 combined with an activation mechanism that cannot prove dependency readiness.", [D4-E2, D4-E3, D2-A1, D2-A2, D2-A3], STOP]
+      - [PROH-X-07, "Any D1 option combined with an incomplete field manifest.", [D1-O1, D1-O2, D1-O3], STOP]
+      - [PROH-X-08, "Any combination that weakens the preservation floor.", [ALL_OPTIONS], STOP]
+
+allowed_combination_extra_gates:
+  - combination: D1-O1 with D4-S1, D4-S2 or D4-S3
+    requirements: [CR-458, CR-460, CR-478]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0478, CMP-ACC-CCR-016..018]
+    future_case: CCR-036A-XG-001
+    gate: Exact relational version rows and hashes are in the signed mapping manifest.
+  - combination: D1-O2 with D4-S2
+    requirements: [CR-458, CR-460, CR-478]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0478, CMP-ACC-CCR-016..018, CMP-ACC-CCR-021]
+    future_case: CCR-036A-XG-002
+    gate: Immutable schema registry and permanent document-version availability.
+  - combination: D1-O3 with D4-S3
+    requirements: [CR-458, CR-460, CR-478]
+    acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0478, CMP-ACC-CCR-016..018]
+    future_case: CCR-036A-XG-003
+    gate: Core/body/projection precedence and hash equivalence.
+  - combination: D2-A1 with D4-E2 or D4-E3
+    requirements: [CR-458, CR-459, CR-460]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0460, CMP-ACC-CCR-016..018]
+    future_case: CCR-036A-XG-004
+    gate: Package and component projections share one clock and boundary rule.
+  - combination: D2-A2 or D2-A3 with D4-E3
+    requirements: [CR-458, CR-459, CR-460]
+    acceptance: [WA-AC-0458, WA-AC-0459, WA-AC-0460, WA-M6-AC-002, CMP-ACC-CCR-011, CMP-ACC-CCR-016..018]
+    future_case: CCR-036A-XG-005
+    gate: Package/component activation is idempotent, ordered and transactionally guarded.
+  - combination: D3-I2 with D3-S1 or D3-S2
+    requirements: [CR-449, CR-458, CR-463]
+    acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, CMP-ACC-CCR-011]
+    future_case: CCR-036A-XG-006
+    gate: Quarantine retention, orphan resolution, access and adoption audit are approved.
+
+untraced_authority_inputs:
+  interpretation: >-
+    No option is orphaned from a requirement or acceptance row. The following
+    inputs are untraced to an authorized value: the contract establishes the
+    outcome and stop condition but does not supply the value. They must not be
+    guessed by an implementer.
+  rows:
+    - id: UAI-001
+      input: Exact per-kind field/type/nullability/additional-property manifest.
+      affected_options: [D1-O1, D1-O2, D1-O3]
+      requirement_pressure: [CR-449..CR-452, CR-458, CR-460]
+      blocked_acceptance: [WA-AC-0449..WA-AC-0452, WA-AC-0458, WA-AC-0460, WA-M6-AC-001, WA-M6-AC-002]
+      stop: D1 and boundary A remain blocked.
+    - id: UAI-002
+      input: Schema format, schema owner and backward-compatibility policy.
+      affected_options: [D1-O2, D1-O3]
+      requirement_pressure: [CR-458, CR-460, CR-463]
+      blocked_acceptance: [WA-AC-0458, WA-AC-0460, WA-AC-0463, WA-M6-AC-002]
+      stop: Document-backed representation cannot be accepted.
+    - id: UAI-003
+      input: Release/effective authoritative timezone, inclusivity and clock.
+      affected_options: [D2-T1, D2-T2, D2-A1, D2-A2, D2-A3]
+      requirement_pressure: [CR-449, CR-458, CR-459, REQ-R0C-01627, REQ-R0C-01900]
+      blocked_acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0459, WA-M6-AC-001, WA-M6-AC-002]
+      stop: No activation/time option may be implemented.
+    - id: UAI-004
+      input: Scheduler/queue/runtime provider, owner, monitor and retry contract.
+      affected_options: [D2-A2, D2-A3]
+      requirement_pressure: [CR-459, CR-463, REQ-R0C-01881]
+      blocked_acceptance: [WA-AC-0459, WA-AC-0463, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005]
+      stop: Persisted or worker activation remains unavailable and fail-closed.
+    - id: UAI-005
+      input: Standalone deactivation policy distinct from successor activation.
+      affected_options: [D2-A1, D2-A2, D2-A3, D3-A1, D3-A2]
+      requirement_pressure: [CR-449, CR-459, CR-463, REQ-R0C-01815]
+      blocked_acceptance: [WA-AC-0449, WA-AC-0459, WA-AC-0463, WA-M6-AC-002]
+      stop: Deactivation path remains blocked.
+    - id: UAI-006
+      input: Disposition of ambiguous or unreconstructible legacy lineage.
+      affected_options: [D2-B1, D2-B2, D2-B3]
+      requirement_pressure: [CR-458, CR-463, CR-478]
+      blocked_acceptance: [WA-AC-0458, WA-AC-0463, WA-AC-0478, WA-M6-AC-002, WA-M6-AC-005]
+      stop: No backfill or historical cutover may mutate data.
+    - id: UAI-007
+      input: Lifecycle-exception field allow-list, roles, justification and audit semantics.
+      affected_options: [D3-A2]
+      requirement_pressure: [CR-449, CR-459, CR-463, REQ-R0C-01815]
+      blocked_acceptance: [WA-AC-0449, WA-AC-0459, WA-AC-0463, WA-M6-AC-002]
+      stop: D3-A2 and boundary B remain blocked.
+    - id: UAI-008
+      input: Attachment retention, orphan/disposal, reference counting and access-revocation policy.
+      affected_options: [D3-S2, D3-I2]
+      requirement_pressure: [CR-449, CR-458, CR-463]
+      blocked_acceptance: [WA-AC-0449, WA-AC-0458, WA-AC-0463, WA-M6-AC-002]
+      stop: Content-addressed or quarantine custody remains blocked.
+    - id: UAI-009
+      input: Exact CCR-to-Package field mapping and offline execution projection format.
+      affected_options: [D4-S1, D4-S2, D4-S3, D4-E1, D4-E2, D4-E3]
+      requirement_pressure: [CR-450..CR-452, CR-458..CR-460, CR-463, CR-478]
+      blocked_acceptance: [WA-AC-0450..WA-AC-0452, WA-AC-0458..WA-AC-0460, WA-AC-0463, WA-AC-0478, WA-M6-AC-001, WA-M6-AC-002, WA-M6-AC-005]
+      stop: Boundaries C, D and E remain blocked.
+
+future_case_definitions:
+  rule: >-
+    Each option case must prove the selected option's positive outcome, every
+    applicable prohibition as a negative path, unauthorized personas, stale
+    and concurrent attempts, immutable history, audit, rollback and all named
+    downstream consumers. A non-selected option is not exercised as accepted
+    behavior; only its prohibition interactions are denied.
+  rows:
+    - [CCR-036A-TC-001, D1-O1, "typed relational constraints, identity/cardinality, RLS, immutability and Package projection"]
+    - [CCR-036A-TC-002, D1-O2, "schema version, missing/wrong/unknown fields, compatibility and projection"]
+    - [CCR-036A-TC-003, D1-O3, "typed core, body schema, duplicate precedence and equivalence"]
+    - [CCR-036A-TC-004, D2-A1, "shared-clock derived projection and no competing persisted authority"]
+    - [CCR-036A-TC-005, D2-A2, "scheduled persisted transition, retry/idempotency/stale-head/degraded failure"]
+    - [CCR-036A-TC-006, D2-A3, "worker transition, queue failure/retry/idempotency/stale-head/degraded failure"]
+    - [CCR-036A-TC-007, D2-T1, "timezone start-of-day, inclusivity, before/at/after boundary"]
+    - [CCR-036A-TC-008, D2-T2, "stored instant and consistent local UI/export/audit meaning"]
+    - [CCR-036A-TC-009, D2-B1, "full lineage reconciliation with zero inference"]
+    - [CCR-036A-TC-010, D2-B2, "active bootstrap plus immutable legacy historical anchors"]
+    - [CCR-036A-TC-011, D2-B3, "per-kind staged cutover with exact-parent gate"]
+    - [CCR-036A-TC-012, D3-A1, "all legacy content and lifecycle bypass paths denied"]
+    - [CCR-036A-TC-013, D3-A2, "only signed lifecycle fields/roles/reasons allowed; content denied"]
+    - [CCR-036A-TC-014, D3-S1, "immutable per-version copy, hash/access/audit/history"]
+    - [CCR-036A-TC-015, D3-S2, "content hash, immutable manifest, reference/access/retention"]
+    - [CCR-036A-TC-016, D3-I1, "upload requires exact request/revision/component"]
+    - [CCR-036A-TC-017, D3-I2, "quarantine isolation, expiry/orphan/adoption/access/audit"]
+    - [CCR-036A-TC-018, D4-S1, "atomic complete embedded hierarchy with exact provenance"]
+    - [CCR-036A-TC-019, D4-S2, "permanent immutable references/hashes and offline materialization"]
+    - [CCR-036A-TC-020, D4-S3, "manifest/projection equality, atomicity and immutable runtime"]
+    - [CCR-036A-TC-021, D4-E1, "Scheduled component rejection at Package publication"]
+    - [CCR-036A-TC-022, D4-E2, "future Package cross-date validation and pre-effective denial"]
+    - [CCR-036A-TC-023, D4-E3, "Package Scheduled activation dependency, ordering and failure visibility"]
+
+global_stop_conditions:
+  - Any of the 23 options is represented as selected, preferred or default.
+  - Any of UAI-001..UAI-009 is inferred rather than supplied by recorded authority.
+  - A partial selection or incomplete attached manifest is treated as a decision receipt.
+  - A prohibited combination remains possible or is omitted from its future negative tests.
+  - A future test/evidence label is treated as existing PASS evidence.
+  - Direct legacy authoring, publication, attachment or Package bypass remains unclassified.
+  - RLS, maker-checker, immutable history, audit, concurrency or rollback is weakened.
+  - Historical Inspection, Enforcement, Package or attachment references are rewritten.
+  - Field or offline runtime falls back to mutable legacy/latest values.
+  - A lease, migration, data write, merge, deployment or completion credit is inferred from this trace.
+
+gate_check:
+  task_packet_result: PASS
+  implementation_result: BLOCKED
+  exact_next_allowed_action: >-
+    Submit UAI-001..UAI-009 and the nine choice sets from packet 035 to the
+    recorded sponsor/product/database authority. If selections and parameters
+    are later received, validate them in the dormant receipt packet 036 before
+    any serial A-C lease preflight.
+  browser_readiness: NOT_READY_DECISION_ONLY
+  current_p0_p1: >-
+    P0 operational projection, bypass closure and Package/Field integration
+    remain unresolved; P1 complete evidence remains unresolved. This trace
+    removes no blocker.
+
+rollback:
+  this_packet: Remove only this packet if returned; no product, test, design, branch, database or data state changed.
+  future_rule: >-
+    Any implemented policy change is forward-only and may never erase or
+    rewrite immutable versions, Packages, attachments, audit, Inspection or
+    Enforcement history.
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B
+  mode: READ_ONLY_CONTROL_PLANE
+  scope: >-
+    Convert UAI-001..UAI-009 into neutral, answerable authority questions with
+    required response fields, source consequences and rejection criteria.
+    Preserve all 23 options as unselected. Do not recommend an answer, grant a
+    lease, modify code/tests/design/data/contracts, or start receipt 036.
+  safe_because: >-
+    It makes the missing authority inputs decision-ready without overlapping
+    implementation, design or data ownership.
+
+validation:
+  yaml_parse: PASS
+  source_sha_match: PASS
+  exact_23_option_ids_match_source: PASS
+  unique_option_ids: PASS
+  all_options_unselected: PASS
+  every_option_has_requirements: PASS
+  every_option_has_acceptance: PASS
+  every_option_has_future_test_and_evidence: PASS
+  every_option_has_consumers: PASS
+  every_option_has_stop_condition: PASS
+  source_prohibitions_count_31_plus_cross_8: PASS
+  all_source_prohibitions_traced: PASS
+  source_allowed_extra_gates_count_6: PASS
+  all_source_allowed_extra_gates_traced: PASS
+  untraced_inputs_identified: PASS
+  no_selection_or_lease_authority: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS

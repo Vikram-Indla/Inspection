@@ -1,0 +1,309 @@
+schema_version: "1.0"
+packet_id: M6-COMPLIANCE-REQUEST-MAPPING-CORRECTION-013
+status: REVIEWER_READY_READ_ONLY_LOCK_SAFE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mapping_writes_performed: false
+design_writes_performed: false
+application_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Propose the exact frozen-mapping correction that assigns WA-DES-019-C1 to
+  the four existing Compliance Request and Approval surfaces, narrows its
+  primary requirement ownership to CR-458..CR-463, and removes unrelated
+  Committee, Risk and operational Enforcement design ownership.
+
+lock_safe_boundary:
+  state: MAC_LOCKED_OR_UI_UNAVAILABLE
+  allowed:
+    - "Read canonical mapping, route and component artifacts."
+    - "Create and validate this owned proposal packet."
+  prohibited:
+    - "Computer Use, browser, desktop or live Claude Design."
+    - "Mutation of DESIGN_ROUTE_MAP.csv, ROUTE_INVENTORY.csv or any frozen contract."
+    - "Application, test, database, seed, provider or shared-data change."
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: da0c3e0bb4b2f26130c697ef35385dc12b710e1d
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-REQUEST-SUCCESSOR-012.yaml
+  dirty_path_ownership: "Prior Claude Design lane packet; preserved and not modified."
+  task: M6-COMPLIANCE-REQUEST-MAPPING-CORRECTION-013
+  process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+  primary_requirement_ids: ["CR-458..CR-463"]
+  contextual_requirement_ids:
+    - "CR-449..CR-457"
+    - "CR-464..CR-478"
+  acceptance_ids: ["WA-M6-AC-001..006"]
+  routes:
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - "/admin/compliance-requests/:id"
+    - /admin/compliance-approvals
+  dependencies:
+    - M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+    - M6-TRACEABILITY-SPLIT-011
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - "All Claude Design and application files."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  successor_packet: product-contract/operationalization/coordination/batches/M6-COMPLIANCE-REQUEST-SUCCESSOR-012.yaml
+  corrected_traceability: product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+
+current_mapping_findings:
+  design_route_map:
+    logical_id: WA-DES-019
+    design_file: "SAQEEL Compliance Requests.dc.html"
+    sha256: "05332be7bf0ed96a70f58507aa183f2f3010adada28938bf70466fa4038fad18"
+    target_routes:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+    missing_route: /admin/compliance-approvals
+    persona: "Compliance Admin"
+    requirement_ids: "CR-449..CR-478"
+    correction_required:
+      - "Add the existing Approval Queue route."
+      - "Add Form Admin and Reviewer personas according to current components."
+      - "Narrow primary requirement ownership to CR-458..CR-463."
+      - "Replace predecessor identity only after WA-DES-019-C1 acceptance."
+  route_inventory:
+    affected_rows:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+      - /admin/compliance-approvals
+    current_design_authority_bundle:
+      - "SAQEEL Compliance Requests.dc.html"
+      - "SAQEEL Enforcement.dc.html"
+      - "SAQEEL Committee.dc.html"
+      - "SAQEEL Risk.dc.html"
+    current_requirement_ids: "CR-449..CR-478"
+    correction_required:
+      - "Use only the accepted WA-DES-019-C1 design for these four request-envelope routes."
+      - "Remove Committee, operational Enforcement and Risk from design authority."
+      - "Set primary requirement ownership to CR-458..CR-463."
+      - "Preserve route, component, guard, service, table, state and test fields."
+
+semantic_ownership:
+  primary:
+    requirement_ids: ["CR-458..CR-463"]
+    capability: "Versioned request, review, publication, deactivation-request and immutable audit envelope."
+    rule: >-
+      The request surfaces coordinate maker-checker lifecycle and evidence.
+      They do not author or semantically own domain fields.
+  contextual:
+    requirement_ids:
+      - "CR-449..CR-457"
+      - "CR-464..CR-478"
+    capability: "Domain configuration payload and dependency context."
+    rule: >-
+      Contextual rows remain owned by Regulation, Item, Package, Violation,
+      Penalty and Template designs. Their values may appear in a comparison
+      snapshot but are not designed or counted complete here.
+  unsupported_extension:
+    current_component_kinds:
+      - regulation
+      - inspection_item
+      - violation
+      - penalty
+    prohibited_new_kinds:
+      - package
+      - template
+      - workflow
+      - risk
+      - operational_enforcement
+
+proposed_design_route_map_row:
+  application_condition: >-
+    This row may be applied only after WA-DES-019-C1 exists, is independently
+    exported/fingerprinted, passes all P0/P1 acceptance, and receives explicit
+    sponsor approval. Placeholder values below must never enter the CSV.
+  fields:
+    design_id: WA-DES-019
+    design_file: "SAQEEL Compliance Requests - WA-DES-019-C1.dc.html"
+    sha256: "<ACCEPTED_WA-DES-019-C1_SHA256>"
+    unique_payload: NO_ALIAS
+    duplicate_of: ""
+    phase_1_scope: BUSINESS_WEB
+    owner_package: M6
+    target_routes: "/admin/compliance-requests;/admin/compliance-requests/new;/admin/compliance-requests/:id;/admin/compliance-approvals"
+    target_persona: "Compliance Admin; Form Admin; Reviewer"
+    requirement_ids: "CR-458..CR-463"
+    acceptance_ids: "WA-M6-AC-001..006"
+    dependencies: F0
+    evidence_ids: "WA-M6-EV-001..006"
+    current_implementation_files: >-
+      apps/web/src/app/(app)/admin/compliance-requests/page.tsx;
+      apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx;
+      apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx;
+      apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+    backend_preservation: PRESERVE_RLS_RBAC_WORKFLOW_AUDIT_VERSIONING_FAIL_CLOSED_PROVIDERS
+    delta_class: CURRENT_BACKEND_PRESERVED_NEW_FRONTEND
+    required_states: "loading;empty;error;degraded;unauthorized;stale/conflict;not-found;immutable"
+    desktop_rtl: "EN/LTR;AR/RTL;logical properties;keyboard/focus parity"
+    reference_viewport: 1160x900
+    viewport_source: DESIGN_DECLARED_PREVIEW
+    responsive_matrix: "1440x900;1024x768;412x915;390x844;320x568 reflow"
+    visual_acceptance: ZERO_UNAPPROVED_DIFF_FIXED_CHROMIUM_FONT_ENVIRONMENT
+    functional_acceptance: REAL_DATA_RLS_ACTIONS_AUDIT_NEGATIVE_STATES
+    deviation_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+  normalization_rule: >-
+    The multi-line current_implementation_files value above is explanatory
+    YAML. A future approved CSV edit must serialize it as one semicolon-delimited
+    field with no whitespace-only path segments.
+
+proposed_route_inventory_corrections:
+  common_changes:
+    requirement_ids:
+      from: "CR-449..CR-478"
+      to: "CR-458..CR-463"
+    design_authority:
+      from: >-
+        SAQEEL Compliance Requests.dc.html;SAQEEL Enforcement.dc.html;
+        SAQEEL Committee.dc.html;SAQEEL Risk.dc.html
+      to: "SAQEEL Compliance Requests - WA-DES-019-C1.dc.html"
+    acceptance_ids:
+      preserve: "WA-M6-AC-001..006"
+    rule: >-
+      Preserve every other current route-inventory field unless separately
+      listed below. No route, component, guard, table, RPC, state, test or
+      evidence status is invented.
+  rows:
+    - route: /admin/compliance-requests
+      page_or_handler_file: apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+      preserve:
+        - "AdminRouteBoundary, Shell, i18n, neutral-error, notify and Supabase dependencies."
+        - "compliance_configuration_requests, notification_rules and user_roles reads."
+        - "create_compliance_request RPC and current VERSION/IMMUTABLE flags."
+        - "Current loading, empty and error states and named tests."
+    - route: /admin/compliance-requests/new
+      page_or_handler_file: apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+      preserve:
+        - "Compliance/Form Admin route boundary."
+        - "Current guarded creation and tests."
+      evidence_gap: "Route inventory currently lists no static backend markers; do not invent them."
+    - route: "/admin/compliance-requests/:id"
+      page_or_handler_file: apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+      preserve:
+        - "Request, revision, component, dependency, decision, publication and role reads."
+        - "AUDIT, VERSION and IMMUTABLE flags."
+        - "Current error/not-found states and named tests."
+    - route: /admin/compliance-approvals
+      page_or_handler_file: apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+      preserve:
+        - "Compliance Admin/Reviewer boundary."
+        - "Request, component and dependency reads."
+        - "Current loading/error states and approval-queue tests."
+      correction: "This existing route becomes an exact WA-DES-019-C1 target instead of a broad four-design bundle."
+
+component_mapping:
+  - route: /admin/compliance-requests
+    component: apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+    role: REQUEST_REGISTER
+  - route: /admin/compliance-requests/new
+    component: apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+    role: REQUEST_ENVELOPE_CREATION
+  - route: "/admin/compliance-requests/:id"
+    component: apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+    supporting_components:
+      - apps/web/src/app/(app)/admin/compliance-requests/ActionForm.tsx
+      - apps/web/src/app/(app)/admin/compliance-requests/actions.ts
+    role: REQUEST_REVISION_REVIEW_PUBLICATION_WORKSPACE
+  - route: /admin/compliance-approvals
+    component: apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+    role: MAKER_CHECKER_APPROVAL_QUEUE
+
+designs_removed_from_these_routes:
+  designs:
+    - logical_id: WA-DES-018
+      name: Committee
+      reason: "Committee is a later governance product, not the Compliance Request envelope."
+    - logical_id: WA-DES-023
+      name: Operational Enforcement
+      reason: "Cases, objections, notices and decisions are runtime Enforcement."
+    - logical_id: WA-DES-040
+      name: Risk
+      reason: "Risk policy and scoring are unrelated and decision-blocked."
+  preservation_rule: "Removal from these four route mappings does not delete or weaken those products."
+
+no_build_boundary:
+  - "No new route, redirect, alias or navigation target."
+  - "No new entity kind, snapshot schema, table, RPC or provider."
+  - "No Regulation, Item, Package, Template, Violation or Penalty editor."
+  - "No Committee, Risk or operational Enforcement behavior."
+  - "No score, weight, SLA, legal, penalty or provider value."
+  - "No change to current application components, tests or data."
+  - "No mapping mutation before exact successor acceptance."
+
+acceptance_gate_for_future_mapping_write:
+  identity:
+    - "Live inventory proves exact WA-DES-019-C1 filename and URL."
+    - "Successor byte count/SHA-256 recorded; predecessor remains unchanged."
+  design:
+    - "Four route variants complete."
+    - "All responsive, EN/AR RTL, state and accessibility evidence passes."
+  runtime:
+    - "Current commit proves roles, RLS, transitions, revision, publication, audit and conflicts."
+    - "Real browser proof covers all four routes and negative paths."
+  governance:
+    - "Codex independent ACK."
+    - "Sponsor accepts exact successor hash and mapping correction."
+    - "Approved change-control task leases only the two frozen mapping files."
+  stop_rule: "Any placeholder, P0/P1, stale evidence or ownership conflict blocks the write."
+
+rollback:
+  proposal: "Discard this packet; frozen mappings remain unchanged."
+  post_acceptance_mapping: >-
+    If an approved mapping change is later found incorrect before implementation,
+    restore the retained predecessor mapping through approved change control and
+    mark WA-DES-019-C1 non-consumable.
+  implementation: "No implementation is authorized or changed by this packet."
+
+next_module_design_readiness:
+  packet: M10-ADMIN-EXECUTION-DESIGN-READINESS-014
+  status: READY_READ_ONLY_LOCK_SAFE_AFTER_THIS_REVIEW
+  logical_id: WA-DES-003
+  design_file: "SAQEEL Admin Execution.dc.html"
+  route: /admin/execution
+  objective: >-
+    Independently reconcile the M10 Admin Execution design with the existing
+    route/component, exact requirement ownership, provider truth, responsive
+    states, Arabic/RTL and accessibility without design or product writes.
+  non_overlap: "Different module, route, design ID and application component."
+
+recommendation:
+  disposition: APPROVE_PROPOSAL_FOR_FUTURE_CHANGE_CONTROL
+  apply_mapping_now: false
+  design_write_now: false
+  product_write_now: false
+  completion_score_change: 0
+  real_browser_proof_ready: false
+
+stop_conditions:
+  - "WA-DES-019-C1 is absent, rejected or not fingerprinted."
+  - "A placeholder SHA, file or route would enter a frozen CSV."
+  - "Primary/contextual ownership is collapsed back to CR-449..CR-478."
+  - "Committee, Risk or operational Enforcement remains mapped to these routes."
+  - "Any route, entity, backend, provider, application, test or data change is introduced."
+  - "P0/P1 design, runtime or evidence gaps remain."

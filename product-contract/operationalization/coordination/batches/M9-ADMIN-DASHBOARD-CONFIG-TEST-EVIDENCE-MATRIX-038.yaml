@@ -1,0 +1,540 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-DASHBOARD-CONFIG-TEST-EVIDENCE-MATRIX-038
+title: Admin Dashboard Config CR-445 test and evidence matrix
+status: READY_AFTER_POLICY_DECISIONS
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_TEST_DESIGN
+
+authority:
+  requirement_ids: [CR-445]
+  acceptance_ids: [WA-AC-0445]
+  module_ids: [MVP1-M08-016]
+  governed_screen_ids:
+    - SCR-WEB-500
+  route_authority:
+    - /operations/**
+  required_kpis:
+    - visits planned
+    - visits completed
+    - visits cancelled
+    - visits overdue
+    - active inspectors
+    - average duration
+    - SLA breach rate
+  business_rule: KPI calculation period is configurable.
+
+reconciliation:
+  design_review:
+    packet_id: M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+    status: BLOCK_DUE_TO_UNAUTHENTICATED_ROUTE_AND_MISSING_TYPED_POLICY_CONTRACT
+    enforced_blocks:
+      - No governed Admin Dashboard Configuration screen identity.
+      - /admin/dashboard-config is outside the authenticated application shell.
+      - The payload is arbitrary JSON rather than an accepted typed policy.
+      - Effective-date, stale-draft, localization, and route-focused evidence are incomplete.
+  consumer_inventory:
+    packet_id: M9-ADMIN-DASHBOARD-CONFIG-CONSUMER-INVENTORY-037
+    status: VALIDATED_NO_EFFECTIVE_POLICY_CONSUMER_BLOCK_P0
+    enforced_findings:
+      - No production consumer reads the Admin policy payload or effective_from.
+      - /dashboard independently uses URL date scope with a hard-coded 30-day default.
+      - /operations uses separate ad hoc counters and no KPI calculation period.
+      - The typed resolver, projections, and presentation components have no production caller.
+      - No KPI/dashboard API exists and current exports omit the CR-445 scorecard and policy metadata.
+  missing_dependency:
+    expected_packet_id: CODEX-ADMIN-DASHBOARD-CONFIG-018
+    status: MISSING
+    handling: Not invented, substituted, or credited.
+
+entry_gate:
+  implementation_tests_may_start_when:
+    - The Admin screen identity and accepted design authority are recorded.
+    - The typed KPI-period schema is approved.
+    - URL scope versus Admin policy precedence is approved.
+    - Effective-from activation and publication concurrency semantics are approved.
+    - Personas permitted to author, review, publish, read full payload, and read reduced policy are approved.
+    - The intended /operations, export, and API consumer boundaries are approved.
+  current_result: BLOCKED_PENDING_POLICY_DECISIONS
+  completion_credit: 0
+
+isolated_fixture_contract:
+  namespace: dashboard_config_cr445_038
+  requirements:
+    - Use deterministic identifiers unique to this packet.
+    - Create and remove data only through an approved isolated seed/test harness.
+    - Never depend on shared pre-production counts.
+    - Never alter existing published policies, accepted evidence, or non-test identities.
+    - Freeze the application clock at an approved Asia/Riyadh boundary.
+    - Include records immediately before, at, and after both calculation-period and effective-time boundaries.
+  personas:
+    - id: persona_writer
+      intended_role: approved configuration writer
+      expected_capability: create, edit, and submit a draft only
+    - id: persona_reviewer
+      intended_role: approved independent reviewer
+      expected_capability: return or publish a draft not authored by this identity
+    - id: persona_leadership
+      intended_role: approved KPI consumer
+      expected_capability: read the reduced effective policy and governed KPI results
+    - id: persona_operations
+      intended_role: approved Operations consumer
+      expected_capability: read authorized operational KPI output
+    - id: persona_inspector
+      intended_role: field-only user
+      expected_capability: no Admin Dashboard Config access
+    - id: persona_unauthenticated
+      intended_role: no session
+      expected_capability: no page, registry, payload, or metadata disclosure
+    - id: persona_dual_role
+      intended_role: explicitly approved multi-role identity
+      expected_capability: deterministic highest-authority behavior without cross-user roster leakage
+  policy_versions:
+    - id: policy_v1_active
+      purpose: Currently effective typed calculation-period policy.
+    - id: policy_v2_future
+      purpose: Approved but not yet effective successor.
+    - id: policy_v3_stale_draft
+      purpose: Draft based on a superseded head for concurrency rejection.
+    - id: policy_invalid_shape
+      purpose: Unknown keys, wrong types, missing required fields, and out-of-range values.
+  business_records:
+    - planned inside period
+    - completed inside period
+    - cancelled inside period
+    - overdue inside period
+    - in-progress visit assigned to an active inspector inside period
+    - completed visit with deterministic start and finish duration inside period
+    - breached and non-breached SLA records inside period
+    - equivalent records outside the period
+    - records exactly on inclusive and exclusive boundaries
+    - region and city records both inside and outside the selected scope
+    - deliberately absent source rows for degraded-state tests
+
+evidence_contract:
+  common_artifacts:
+    - machine-readable test result with requirement and acceptance IDs
+    - fixture manifest and frozen-clock declaration
+    - exact expected versus actual values for all seven KPIs
+    - policy ID, version, effective_from, calculation period, timezone, and scope precedence shown in evidence
+    - negative-path result proving no unauthorized mutation or disclosure
+    - EN and AR browser screenshots at approved desktop and responsive viewports
+    - accessibility scan and keyboard-flow result
+    - server/database audit correlation for every accepted state transition
+  prohibited_evidence:
+    - screenshots without runtime assertions
+    - shared-environment values with no isolated fixture manifest
+    - code inspection presented as runtime proof
+    - a null policyVersionId presented as configured behavior
+    - evidence from the missing audit 018
+
+test_matrix:
+  - id: DB-038-001
+    area: DB_RLS
+    priority: P0
+    case: Anonymous and authenticated non-Admin identities cannot select full policy payloads, drafts, role rosters, or audit internals.
+    expected: Access is denied or reduced to the explicitly approved effective settings view.
+    evidence:
+      - SQL assertions for anonymous, inspector, operations, leadership, writer, and reviewer identities
+      - zero-row or permission-denied results with no payload leakage
+  - id: DB-038-002
+    area: DB_RLS
+    priority: P0
+    case: Direct authenticated INSERT, UPDATE, and DELETE remain revoked for drafts, versions, heads, and audit rows.
+    expected: Only approved RPC transitions can mutate lifecycle state.
+    evidence:
+      - negative SQL assertions per table and persona
+      - immutable published-version and audit-row proof
+  - id: DB-038-003
+    area: DB_RLS
+    priority: P0
+    case: Writer, independent reviewer, and publisher permissions match the approved persona matrix.
+    expected: Maker cannot review or publish own draft; unauthorized roles cannot invoke transitions.
+    evidence:
+      - RPC result matrix for every persona and transition
+      - correlated immutable audit rows for successful transitions only
+  - id: DB-038-004
+    area: DB_RLS
+    priority: P0
+    case: The route obtains current-user roles without reading an unfiltered user roster.
+    expected: Only roles for auth.uid() are returned and evaluated.
+    evidence:
+      - SQL/RPC assertion with multiple fixture users
+      - browser network evidence showing no cross-user roster payload
+
+  - id: POLICY-038-001
+    area: TYPED_POLICY
+    priority: P0
+    case: The approved calculation-period schema accepts every valid field, enum, unit, and boundary combination.
+    expected: A normalized typed policy is stored and returned without arbitrary keys.
+    evidence:
+      - schema unit cases
+      - persisted payload equality assertion
+  - id: POLICY-038-002
+    area: TYPED_POLICY
+    priority: P0
+    case: Unknown keys, missing required fields, wrong types, invalid enums, invalid ranges, and contradictory fields are submitted.
+    expected: Each payload is rejected before publication with a field-specific EN/AR-safe error.
+    evidence:
+      - table-driven schema negatives
+      - browser validation screenshots
+      - proof that no version or head changed
+  - id: POLICY-038-003
+    area: TYPED_POLICY
+    priority: P0
+    case: The consumer resolver loads the approved effective payload and version.
+    expected: A typed policy, version ID, effective timestamp, and source state are returned together.
+    evidence:
+      - resolver contract result
+      - no-policy, malformed-policy, and read-failure discrimination
+
+  - id: TIME-038-001
+    area: EFFECTIVE_TIME
+    priority: P0
+    case: policy_v2_future is published before its effective_from.
+    expected: policy_v1_active remains the resolved policy until the exact approved activation boundary.
+    evidence:
+      - frozen-clock SQL and resolver assertions before, at, and after the boundary
+  - id: TIME-038-002
+    area: EFFECTIVE_TIME
+    priority: P0
+    case: Past, present, future, equal-time, and overlapping policy versions exist.
+    expected: One deterministic effective version is selected according to approved precedence; ambiguity is rejected.
+    evidence:
+      - table-driven precedence results
+      - head/version history
+  - id: TIME-038-003
+    area: EFFECTIVE_TIME
+    priority: P0
+    case: KPI records occur immediately before, at, and after the approved period boundary in Asia/Riyadh.
+    expected: Inclusion and exclusion exactly match the approved timezone and interval semantics.
+    evidence:
+      - exact record IDs and expected seven-KPI totals
+      - daylight/UTC conversion proof where applicable
+  - id: TIME-038-004
+    area: EFFECTIVE_TIME
+    priority: P0
+    case: URL from/to scope and Admin calculation-period policy are both present.
+    expected: Approved override, inherit, or constraint precedence is applied and visibly disclosed.
+    evidence:
+      - browser assertions for every approved precedence branch
+      - methodology evidence naming the resulting period and policy version
+
+  - id: AUTH-038-001
+    area: CURRENT_USER_AUTHORIZATION
+    priority: P0
+    case: Unauthenticated user opens /admin/dashboard-config and its KPI view.
+    expected: Redirect or denial occurs before registry, role, payload, migration, or internal metadata renders.
+    evidence:
+      - browser redirect/denial assertion
+      - screenshot and network-response absence proof
+  - id: AUTH-038-002
+    area: CURRENT_USER_AUTHORIZATION
+    priority: P0
+    case: Inspector and other unauthorized authenticated roles open the Admin route or invoke actions directly.
+    expected: Page and server action are denied consistently.
+    evidence:
+      - browser and direct-action negative tests
+      - no mutation and no audit-success event
+  - id: AUTH-038-003
+    area: CURRENT_USER_AUTHORIZATION
+    priority: P0
+    case: Approved Admin personas enter through the authenticated shell.
+    expected: Correct shell, navigation, locale, account, and sign-out controls render with persona-appropriate actions.
+    evidence:
+      - route screenshot
+      - visible-action matrix by persona
+
+  - id: KPI-038-001
+    area: KPI_CONSUMER
+    priority: P0
+    case: policy_v1_active resolves for /dashboard with the deterministic CR-445 fixture.
+    expected: All seven KPI values match exact source-backed formulas for the effective calculation period.
+    evidence:
+      - expected-versus-actual table
+      - browser screenshot showing all seven results or an approved bounded presentation
+      - methodology showing policy and formula versions
+  - id: KPI-038-002
+    area: KPI_CONSUMER
+    priority: P0
+    case: policy_v2_future reaches its activation boundary.
+    expected: Consumer results change only when the new period changes the included fixture records.
+    evidence:
+      - before/after values using the same frozen fixture set
+      - version transition proof
+  - id: KPI-038-003
+    area: KPI_CONSUMER
+    priority: P0
+    case: Existing user-selected dashboard ranges and formulas are exercised during convergence.
+    expected: Accepted CR-445 selected-window behavior remains correct under the approved precedence model.
+    evidence:
+      - regression results for TASK-WEB-DASHBOARD-002
+      - explicit comparison against legacy expected values
+  - id: KPI-038-004
+    area: KPI_CONSUMER
+    priority: P0
+    case: /operations is exercised against the approved CR-445 consumer boundary.
+    expected: Only contract-authorized CR-445 measures use the policy; unrelated SLA engine policy remains separate.
+    evidence:
+      - route-level calculation trace
+      - proof that region/city and date scope are applied in the approved order
+  - id: KPI-038-005
+    area: KPI_CONSUMER
+    priority: P1
+    case: Field and iPad routes are regression-tested without joining this remediation lease.
+    expected: No Field behavior, projection, or offline contract regresses.
+    evidence:
+      - existing Field smoke/regression result
+      - proof that stale field-dashboard-presentation path is corrected only under a separate lease
+
+  - id: EXPORT-038-001
+    area: EXPORT_API
+    priority: P1
+    case: Authorized export is generated under region, city, and calculation-period scope.
+    expected: Every row and KPI summary respects the approved scope; no globally selected high-risk row leaks into a scoped export.
+    evidence:
+      - deterministic CSV comparison
+      - policy/formula/version metadata if approved
+  - id: EXPORT-038-002
+    area: EXPORT_API
+    priority: P1
+    case: Unauthorized persona attempts an export or future KPI API call.
+    expected: Access is denied and no restricted payload or metadata is returned.
+    evidence:
+      - browser/API negative result
+      - no-download assertion
+  - id: EXPORT-038-003
+    area: EXPORT_API
+    priority: P1
+    case: No KPI API is approved.
+    expected: No new API is created merely to satisfy this matrix.
+    evidence:
+      - route inventory and approved decision reference
+  - id: EXPORT-038-004
+    area: EXPORT_API
+    priority: P1
+    case: A KPI API is explicitly approved.
+    expected: Response schema, permissions, period, timezone, policy version, formula version, partial state, and cache contract are stable.
+    evidence:
+      - API schema contract tests
+      - unauthorized, malformed-scope, no-policy, and partial-source cases
+
+  - id: CONCURRENCY-038-001
+    area: CONCURRENCY
+    priority: P0
+    case: Two drafts are created from the same base head and the first publishes.
+    expected: Publishing policy_v3_stale_draft is rejected by an approved compare-and-swap rule.
+    evidence:
+      - parallel RPC results
+      - unchanged head after stale attempt
+      - audit event for rejection if contract requires it
+  - id: CONCURRENCY-038-002
+    area: CONCURRENCY
+    priority: P0
+    case: Two reviewers publish competing drafts at the same time.
+    expected: Exactly one transition succeeds; version numbering and head selection remain deterministic.
+    evidence:
+      - concurrent transaction results
+      - unique version/head invariants
+  - id: CONCURRENCY-038-003
+    area: CONCURRENCY
+    priority: P1
+    case: A returned draft is edited and resubmitted after the head changes.
+    expected: Approved editing and rebasing rules apply; stale return metadata does not masquerade as current state.
+    evidence:
+      - state-machine transition trace
+      - immutable history and current-state assertions
+
+  - id: CACHE-038-001
+    area: CACHE_REFRESH
+    priority: P0
+    case: A currently effective policy publishes while /dashboard and /operations are open.
+    expected: Approved invalidation, polling, navigation, or realtime behavior exposes the new version within the specified contract.
+    evidence:
+      - timestamped browser sequence
+      - route cache/tag invalidation trace
+  - id: CACHE-038-002
+    area: CACHE_REFRESH
+    priority: P0
+    case: A future policy publishes.
+    expected: Consumers do not switch early and activate without requiring an unrelated Admin-page visit.
+    evidence:
+      - frozen-clock before/after browser assertion
+      - effective resolver trace
+  - id: CACHE-038-003
+    area: CACHE_REFRESH
+    priority: P1
+    case: /operations monitoring polls while the governing policy or non-polled source data changes.
+    expected: UI clearly distinguishes refreshed monitoring data from stale page-level KPI data, or refreshes both per approved contract.
+    evidence:
+      - timestamp and version labels
+      - browser polling trace
+
+  - id: ERROR-038-001
+    area: DEGRADED_ERROR
+    priority: P0
+    case: No effective policy exists.
+    expected: The approved explicit unavailable/default state renders; it is not silently represented as configured.
+    evidence:
+      - resolver state assertion
+      - browser screenshot and no false policy version
+  - id: ERROR-038-002
+    area: DEGRADED_ERROR
+    priority: P0
+    case: Policy read fails, payload is malformed, or version linkage is broken.
+    expected: Each condition is distinguishable, auditable, and fail-safe; values are not silently computed as zero.
+    evidence:
+      - injected failure assertions
+      - user-visible error/partial-state proof
+  - id: ERROR-038-003
+    area: DEGRADED_ERROR
+    priority: P0
+    case: One or more KPI source queries fail.
+    expected: Affected KPIs display unavailable/partial rather than zero while unaffected KPIs remain usable.
+    evidence:
+      - per-source fault injection
+      - expected availability matrix
+  - id: ERROR-038-004
+    area: DEGRADED_ERROR
+    priority: P1
+    case: Export is requested while policy or KPI sources are partial.
+    expected: Export is blocked or explicitly marked partial according to the approved contract.
+    evidence:
+      - exported file or blocked-state assertion
+      - warning and source-status metadata
+
+  - id: LOCALE-038-001
+    area: EN_AR
+    priority: P0
+    case: Admin configuration and KPI consumer journeys run in English.
+    expected: English labels, errors, values, dates, units, and wordmark are semantically correct with no Arabic brand text.
+    evidence:
+      - desktop and responsive screenshots
+      - text assertion inventory
+  - id: LOCALE-038-002
+    area: EN_AR
+    priority: P0
+    case: The same journeys run in Arabic.
+    expected: Accepted Arabic content, RTL layout, localized dates/numbers/units, logical navigation, and correct Arabic wordmark render without clipping.
+    evidence:
+      - mirrored desktop and responsive screenshots
+      - text and directionality assertions
+  - id: LOCALE-038-003
+    area: EN_AR
+    priority: P1
+    case: Locale changes with a draft containing validation errors and a consumer showing a degraded source.
+    expected: State is preserved and every message changes language without leaking raw keys or internal errors.
+    evidence:
+      - before/after browser sequence
+      - absence of untranslated implementation keys
+
+  - id: UI-038-001
+    area: RESPONSIVE_A11Y
+    priority: P0
+    case: Admin route, dashboard, and authorized Operations view render at approved desktop, laptop, and narrow responsive widths.
+    expected: No hanging sidebar, clipped actions, peeking submenu icons, horizontal page overflow, obscured controls, or unreadable KPI content.
+    evidence:
+      - full-page screenshots at each approved viewport
+      - overflow geometry assertions
+  - id: UI-038-002
+    area: RESPONSIVE_A11Y
+    priority: P0
+    case: Keyboard-only user authors, submits, reviews, publishes, changes KPI scope, opens methodology, and exports.
+    expected: Logical focus order, visible focus, accessible names, no traps, and confirmation/error announcements.
+    evidence:
+      - keyboard trace
+      - focus screenshots
+      - live-region assertions
+  - id: UI-038-003
+    area: RESPONSIVE_A11Y
+    priority: P0
+    case: Automated and manual accessibility checks cover forms, tables, tabs, dialogs, charts, maps, status colors, and KPI values.
+    expected: Approved WCAG target is met; meaning is never color-only and charts/maps have equivalent text.
+    evidence:
+      - automated scan
+      - manual landmark, heading, name/role/value, contrast, zoom, and screen-reader checklist
+  - id: UI-038-004
+    area: RESPONSIVE_A11Y
+    priority: P1
+    case: 200% zoom and long EN/AR content are applied.
+    expected: No loss of information, action, methodology, policy lineage, or transition controls.
+    evidence:
+      - zoom screenshots
+      - interaction assertions
+
+future_collision_safe_paths:
+  DB:
+    suggested_paths:
+      - supabase/tests/dashboard_config_cr445_038/
+      - supabase/migrations/<approved_dashboard_config_remediation>.sql
+    exclusive_ownership: Effective policy selection, RLS/RPC permissions, concurrency, and audit invariants.
+  CONTRACT:
+    suggested_paths:
+      - apps/web/src/lib/dashboard-kpi/policy-schema.ts
+      - apps/web/src/lib/dashboard-kpi/policy-contract.ts
+      - apps/web/src/lib/dashboard-kpi/__tests__/policy-contract.spec.ts
+    exclusive_ownership: Typed period vocabulary, validation, precedence, and error states.
+  CONSUMER:
+    suggested_paths:
+      - apps/web/src/lib/dashboard-kpi/loader.ts
+      - apps/web/src/app/(app)/dashboard/
+      - apps/web/src/app/(app)/operations/
+    exclusive_ownership: Resolver and route consumption; one lease owner at a time for each route subtree.
+  ADMIN_UI:
+    suggested_paths:
+      - apps/web/src/app/(app)/admin/dashboard-config/
+    exclusive_ownership: Authenticated route placement and accepted typed UI after design approval.
+  E2E:
+    suggested_paths:
+      - apps/web/e2e/dashboard-config-cr445-038.spec.ts
+      - apps/web/e2e/dashboard-config-cr445-038.fixtures.ts
+      - product-contract/evidence/M9-ADMIN-DASHBOARD-CONFIG-CR445-038/
+    exclusive_ownership: Isolated fixture orchestration, browser evidence, and requirement-linked results.
+  EXPORT_API:
+    suggested_paths:
+      - apps/web/src/app/api/<approved-kpi-route>/
+      - apps/web/src/app/(app)/operations/OpsExport.tsx
+    exclusive_ownership: Only after an explicit export/API decision; otherwise no path is created.
+  do_not_touch:
+    - Field or iPad source under this remediation
+    - Existing accepted evidence files
+    - Frozen product-contract artifacts without approved change control
+    - Peer-owned untracked packets
+    - main, setup/Inspection, stashes, active leases, or shared seed data
+
+execution_order:
+  - DB-038-001..004 and AUTH-038-001..003
+  - POLICY-038-001..003
+  - TIME-038-001..004 and CONCURRENCY-038-001..003
+  - KPI-038-001..005
+  - CACHE-038-001..003 and ERROR-038-001..004
+  - EXPORT-038-001..004 when authorized
+  - LOCALE-038-001..003 and UI-038-001..004
+  - regression, evidence reconciliation, and sponsor browser review
+
+exit_criteria:
+  - Every P0 case passes with named runtime evidence.
+  - All seven CR-445 values are source-backed for the approved effective calculation period.
+  - Current-user authorization and RLS agree for page, action, resolver, export, and any API.
+  - Future-effective policies do not activate early.
+  - Stale or concurrent publication cannot silently replace the accepted head.
+  - No-policy, read-failure, malformed-policy, and partial-source states are distinguishable.
+  - Existing selected-window dashboard behavior remains passing under approved precedence.
+  - EN and AR journeys, responsive layouts, keyboard operation, and accessibility evidence pass.
+  - Design Review 053 has an approved replacement authority and the missing audit dependency is either supplied or explicitly waived through change control.
+
+next_queue:
+  packet_id: M9-ADMIN-DASHBOARD-CONFIG-LEASE-READINESS-039
+  mode: READ_ONLY
+  status: BLOCKED_PENDING_POLICY_DECISIONS
+  objective: >
+    Convert approved policy decisions and this matrix into mutually exclusive
+    AUTH, CONTRACT, DB, CONSUMER, ADMIN_UI, EXPORT_API, and E2E implementation
+    leases with exact file ownership, dependency order, stop conditions, and
+    merge/evidence gates.
+  must_not_start_until:
+    - Governed Admin screen and design authority are approved.
+    - Typed KPI-period and precedence contracts are approved.
+    - Effective-time and publication concurrency semantics are approved.
+    - Current-user and reduced-policy-read personas are approved.
+    - /operations, export, and API boundaries are approved.

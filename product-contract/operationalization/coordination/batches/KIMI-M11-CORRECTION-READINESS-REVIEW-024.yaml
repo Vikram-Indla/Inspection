@@ -1,0 +1,302 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+status: INDEPENDENT_REVIEW_EXECUTED_READ_ONLY
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+executed_review: KIMI-M11-CORRECTED-PACKETS-INDEPENDENT-REVIEW-023
+consolidated_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+reviewed_source_packets:
+  - KIMI-M11-ATOMIC-FIX-LEASE-010
+  - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  - KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+
+verdict:
+  consolidated_022: ACK
+  source_packets: RETURN_FOR_PACKET_CORRECTION
+  implementation: BLOCKED
+  explanation: >-
+    022 is a coherent, non-executable correction authority. The source packets
+    are still their pre-022 versions and therefore do not close its security,
+    rollout, persona/provider, audit, ownership or lease conditions. No
+    implementation lease may be issued.
+
+review_boundary:
+  performed:
+    - "Read-only cross-packet source and authority comparison."
+    - "Every 022 P0/P1 condition, rollout, persona/provider, audit, neutral-error, locking, ownership, rollback and contradiction check."
+  not_performed:
+    - "No application, database, remote DDL, test, migration, data, UI, branch, lease, push, merge, main, setup/Inspection or stash mutation."
+    - "No implementation/runtime/security certification."
+
+consolidated_022_validation:
+  - check_id: 024-ACK-001
+    status: PASS
+    item: "All MIGSEC-019 8 P0 and 4 P1 findings are preserved."
+  - check_id: 024-ACK-002
+    status: PASS
+    item: "All 021 addendum 8 P0 and 5 P1 conditions are preserved."
+  - check_id: 024-ACK-003
+    status: PASS
+    item: "Exact persona truth distinguishes allowed, denied and authority-blocked roles."
+  - check_id: 024-ACK-004
+    status: PASS
+    item: "Provider truth removes dev_code and blocks runtime completion without approved delivery."
+  - check_id: 024-ACK-005
+    status: PASS
+    item: "Safe trigger precedes hardened OTP and raw audit denial covers every authenticated application role."
+  - check_id: 024-ACK-006
+    status: PASS
+    item: "Neutral token applies to every governed public RPC."
+  - check_id: 024-ACK-007
+    status: PASS
+    item: "Deterministic visit→session→participants→inspection lock order is defined."
+  - check_id: 024-ACK-008
+    status: PASS
+    item: "Expand→switch→quiesce/drain→contract→certify order is coherent."
+  - check_id: 024-ACK-009
+    status: PASS
+    item: "Rollback is roll-forward/fail-closed after contraction."
+  - check_id: 024-ACK-010
+    status: PASS
+    item: "022 remains explicitly non-executable and CR-337/DEC-005 remain isolated."
+
+migration_security_closure_matrix:
+  - finding_id: M11-MIGSEC-001
+    severity: P0
+    source_status: OPEN
+    reason: "010/011/013/014/015 do not yet mandate search_path='', full qualification and safe helper boundaries."
+    required_source_revision: "Apply 022 function_security_contract to every proposed function."
+  - finding_id: M11-MIGSEC-002
+    severity: P0
+    source_status: OPEN
+    reason: "Exact PUBLIC/anon revokes, intended grants and overload cleanup are not present in each source packet."
+    required_source_revision: "Add exact-signature ACL and catalog proof to 010/011/013/014/015."
+  - finding_id: M11-MIGSEC-003
+    severity: P0
+    source_status: OPEN
+    reason: "010/014 do not yet declare a final post-013 invoker/definer authorization model."
+    required_source_revision: "Declare final-stack model and in-function authority/row/state checks."
+  - finding_id: M11-MIGSEC-004
+    severity: P0
+    source_status: OPEN
+    reason: "015 redacts vs_audit_trail but does not close raw audit_read/audit_read_compliance paths."
+    required_source_revision: "Add all-policy raw participant audit denial and safe projection."
+  - finding_id: M11-MIGSEC-005
+    severity: P0
+    source_status: OPEN
+    reason: "015 does not yet replace the participant generic audit trigger before OTP use."
+    required_source_revision: "Add phase-1 specialized safe trigger and historical-row quarantine."
+  - finding_id: M11-MIGSEC-006
+    severity: P0
+    source_status: CONTRADICTED
+    reason: "013 and 015 both touch OTP functions while 017 still calls 013 the sole OTP owner."
+    required_source_revision: "Record 013 initial owner and 015 exact sequential successor."
+  - finding_id: M11-MIGSEC-007
+    severity: P0
+    source_status: OPEN
+    reason: "013 does not require participant row locking or atomic OTP counters/event cardinality."
+    required_source_revision: "Add 022 provider_and_otp_truth concurrency contract."
+  - finding_id: M11-MIGSEC-008
+    severity: P0
+    source_status: CONTRADICTED
+    reason: "017 still uses one conceptual sequence without application switch or traffic drain."
+    required_source_revision: "Replace with 022 expand/switch/quiesce/contract/certify rollout."
+  - finding_id: M11-MIGSEC-009
+    severity: P1
+    source_status: PARTIAL
+    reason: "013 proposes separated policies but lacks final pg_policy permissive-OR and exact table ACL manifest."
+    required_source_revision: "Add per-command policy/table-grant catalog contract."
+  - finding_id: M11-MIGSEC-010
+    severity: P1
+    source_status: OPEN
+    reason: "No source packet prohibits session↔participant policy recursion or unsafe nested legacy helpers."
+    required_source_revision: "Add one-way policy dependency and helper dependency proof."
+  - finding_id: M11-MIGSEC-011
+    severity: P1
+    source_status: PARTIAL
+    reason: "Packets require audit rollback but do not define safe trigger timing/order and semantic cardinality together."
+    required_source_revision: "Add 022 safe_audit_and_trigger_contract."
+  - finding_id: M11-MIGSEC-012
+    severity: P1
+    source_status: PARTIAL
+    reason: "Packet rollback is forward-only but lacks the pre/post-contract compatibility boundary and quiesced disable rehearsal."
+    required_source_revision: "Add 022 rollback_and_disable and rollout phase boundary."
+
+addendum_closure_matrix:
+  - condition_id: 021-P0-01
+    severity: P0
+    source_status: PASS_IN_013_TEXT
+    reason: "013 states assigned Inspector-only OTP execution and Reviewer audit-only."
+    retained_gate: "Final corrected role matrix must keep this exact authority."
+  - condition_id: 021-P0-02
+    severity: P0
+    source_status: OPEN
+    reason: "Source packets do not state truthful runtime BLOCKED after dev_code removal when provider delivery is unavailable."
+  - condition_id: 021-P0-03
+    severity: P0
+    source_status: OPEN
+    reason: "015 does not deny raw secret-bearing audit to every authenticated application role."
+  - condition_id: 021-P0-04
+    severity: P0
+    source_status: OPEN
+    reason: "Safe participant trigger does not yet precede hardened OTP."
+  - condition_id: 021-P0-05
+    severity: P0
+    source_status: OPEN
+    reason: "Source table DML contract does not explicitly revoke PUBLIC and anon."
+  - condition_id: 021-P0-06
+    severity: P0
+    source_status: PARTIAL
+    reason: "015 covers OTP/audit neutral errors, not every governed RPC."
+  - condition_id: 021-P0-07
+    severity: P0
+    source_status: OPEN
+    reason: "017 has no quiesce/drain or uninterrupted 013→015 contract boundary."
+  - condition_id: 021-P0-08
+    severity: P0
+    source_status: OPEN
+    reason: "No global audit consumer inventory/adaptation precedes raw-policy contraction."
+  - condition_id: 021-P1-01
+    severity: P1
+    source_status: OPEN
+    reason: "Source packets may still call public search_path=public definer helpers."
+  - condition_id: 021-P1-02
+    severity: P1
+    source_status: OPEN
+    reason: "Reschedule/waiting/close Planner/Operations authority remains implicit or overbroad."
+  - condition_id: 021-P1-03
+    severity: P1
+    source_status: OPEN
+    reason: "No common visit→session→participants→inspection lock order."
+  - condition_id: 021-P1-04
+    severity: P1
+    source_status: OPEN
+    reason: "No exact owner/bypass-RLS/extension namespace manifest."
+  - condition_id: 021-P1-05
+    severity: P1
+    source_status: PARTIAL
+    reason: "Some zero-row cases exist, but no final policy-index and normalized zero-row contract."
+
+persona_provider_truth_review:
+  OTP:
+    consolidated_022: PASS
+    source_packets: RETURN
+    gaps:
+      - "Provider-unavailable runtime block is absent."
+      - "Planner/Operations current positive behavior is not consistently removed from all source/test assumptions."
+  scheduling_reschedule_waiting_close:
+    consolidated_022: PASS_WITH_AUTHORITY_BLOCKS
+    source_packets: RETURN
+    gaps:
+      - "Per-RPC Planner/Operations citations are absent."
+      - "Current broad RLS cannot substitute for canonical authority."
+  representative:
+    consolidated_022: PASS_BLOCKED_ON_DEC_005
+    source_packets: PASS_BLOCKED
+
+audit_security_review:
+  safe_projection: "PASS in 022; OPEN in 015."
+  raw_audit_denial: "PASS in 022; OPEN in 015."
+  future_secret_capture: "PASS in 022; OPEN in 015."
+  global_consumer_preservation: "PASS as gate in 022; OPEN in source packets."
+  maker_checker_preservation: "PASS as required regression gate; not executed."
+
+neutral_and_locking_review:
+  neutral_token:
+    consolidated_022: PASS
+    source_packets: RETURN_PARTIAL
+    exact_token: VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE
+  deterministic_lock_order:
+    consolidated_022: PASS
+    source_packets: RETURN_OPEN
+  OTP_row_lock:
+    consolidated_022: PASS
+    source_packets: RETURN_OPEN
+
+ownership_and_lease_readiness:
+  function_owner_manifest:
+    status: BLOCKED
+    reason: "OWNER_ROLE_MUST_BE_CONFIRMED_FROM_ISOLATED_CATALOG."
+  function_policy_trigger_ownership:
+    status: BLOCKED
+    reason: "Source packets/017 have not adopted 022 sequential ownership."
+  file_and_migration_leases:
+    status: BLOCKED
+    reason: "No exact non-overlapping implementation leases may be issued before corrected packet acceptance."
+  application_QA_ownership:
+    status: BLOCKED
+    reason: "Corrected 009r and final QA ownership remain unaccepted."
+
+rollout_and_rollback_review:
+  consolidated_order:
+    status: PASS
+    order:
+      - database_expand
+      - application_switch_with_OTP_disabled
+      - quiesce_and_drain
+      - database_contract_013_then_015_without_traffic
+      - certification
+  source_017_order:
+    status: RETURN
+    reason: "No application switch, OTP disable, quiesce/drain or uninterrupted contract boundary."
+  rollback:
+    consolidated_022: PASS
+    source_packets: RETURN_PARTIAL
+    rule: "Roll-forward only after contraction; fail closed without privilege widening."
+
+source_contradictions:
+  - contradiction_id: 024-X01
+    source: "010 vs 022"
+    detail: "010 lacks exact function security/ACL/final-013 model."
+  - contradiction_id: 024-X02
+    source: "011 vs 022"
+    detail: "011 lacks governed reschedule/open-waiting RPC ownership and safe helper rules."
+  - contradiction_id: 024-X03
+    source: "014 vs 022"
+    detail: "014 lacks final post-013 privilege model, neutral token and common lock order."
+  - contradiction_id: 024-X04
+    source: "013 vs 022"
+    detail: "013 lacks expansion/contract split, close/verify ownership, OTP locking and 015 handoff."
+  - contradiction_id: 024-X05
+    source: "015 vs 022"
+    detail: "015 lacks all-role raw denial, phase-1 safe trigger, global consumers and final OTP successor rules."
+  - contradiction_id: 024-X06
+    source: "017 vs 022"
+    detail: "017 retains old sequence/OTP ownership and no quiesced rollout."
+
+implementation_blockers:
+  - MANUAL_MAC_UNLOCK
+  - CORRECTED_009R_ACCEPTANCE
+  - CORRECTED_010_011_013_014_015_017_RETURN
+  - INDEPENDENT_CORRECTED_PACKET_ACCEPTANCE
+  - EXACT_FUNCTION_OWNER_MANIFEST
+  - EXACT_NON_OVERLAPPING_OWNERSHIP_AND_LEASES
+  - OTP_PROVIDER_FOR_RUNTIME_COMPLETION
+
+next_action:
+  after_manual_unlock: >-
+    Dispatch consolidated packet 022 to the existing Kimi conversation for
+    orchestration-only corrections. Confirm first token/running state. Do not
+    issue implementation leases.
+  after_Kimi_return: >-
+    Execute safe follow-on KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025.
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+  kimi_status: COMPLETED
+
+validation:
+  yaml_parse: PASS
+  consolidated_022_ACK_checked: PASS
+  MIGSEC_matrix_checked: PASS
+  addendum_matrix_checked: PASS
+  rollout_persona_provider_audit_checked: PASS
+  ownership_lease_blockers_checked: PASS
+  source_contradictions_checked: PASS
+  non_executable_boundary_checked: PASS

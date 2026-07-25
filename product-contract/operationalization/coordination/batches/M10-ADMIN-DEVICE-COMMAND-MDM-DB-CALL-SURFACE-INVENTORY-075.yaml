@@ -1,0 +1,475 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-DB-CALL-SURFACE-INVENTORY-075
+title: Trusted Devices database and consumer call-surface inventory
+status: INVENTORY_COMPLETE_FUTURE_DATABASE_AUTHORITY_NULL
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_DATABASE_SURFACE_ANALYSIS
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  database_changes: 0
+  calls_added_or_executed: 0
+  reason: >-
+    Current surfaces and missing future seams are inventoried only. No
+    transition, role, provider, retry or evidence authority is supplied.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-DB-CALL-SURFACE-INVENTORY-075
+  source_task: DEV-PRE-DB1-01
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CURRENT-SOURCE-HAZARD-REGISTER-068
+    - M10-ADMIN-DEVICE-COMMAND-MDM-HAZARD-TO-CHANGE-BOUNDARY-069
+    - M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+    - M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+  route: /admin/devices
+  design_slots: 48
+  do_not_touch:
+    - database, migrations, RLS, RPCs, grants, generated types and remote data
+    - application, provider, design, seed, tests, evidence and controls
+    - branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Read-only source inventory; current slice forbids Devices migrations/provider/Field mutation.
+
+unresolved_authority:
+  canonical_device_admin_roles: null
+  per_command_role_matrix: null
+  allowed_transition_matrix: null
+  terminal_state_rule: null
+  approval_rule: null
+  trust_attestation_authority: null
+  trust_freshness_rule: null
+  command_lifecycle_stages: null
+  receipt_authentication_schema: null
+  correlation_identity: null
+  idempotency_rule: null
+  package_invalidation_scope: null
+  cached_device_effect: null
+  sync_health_sources: null
+  sync_health_formula_and_thresholds: null
+  provider_or_hold_authority: null
+  retry_policy: null
+  retention_rule: null
+  future_migration_name_and_order: null
+  future_lease_owner: null
+
+current_database_surfaces:
+  - surface_id: DEV-DB-CUR-01
+    object: public.mvp3_devices
+    kind: TABLE
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:113"
+    current_contract:
+      fields: [id, device_identifier, platform, assigned_user_id, trust_status, mdm_reference, app_version, app_version_compliant, last_seen_at, enrolled_by, enrolled_at, updated_at]
+      states: [pending, trusted, suspended, revoked, wipe_pending, wiped]
+      trusted_check: nonempty mdm_reference and app_version_compliant=true
+      triggers: 0
+      rls_enabled: true
+    gaps:
+      - no row version/expected-version field
+      - no attestation source/version/freshness/evidence
+      - no trust actor/approval/effect history
+      - no verified provider reference
+  - surface_id: DEV-DB-CUR-02
+    object: public.mvp3_device_commands
+    kind: TABLE
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:130"
+    current_contract:
+      fields: [id, device_id, requested_device_identifier, command, status, reason, requested_by, requested_at, completed_at]
+      commands: [suspend, resume, remote_wipe, expire_packages]
+      statuses: [queued, acknowledged, completed, failed, dependency_blocked]
+      triggers: 0
+      rls_enabled: true
+    gaps:
+      - revoke absent
+      - device_id nullable
+      - no approver, expected version, correlation or idempotency
+      - no before/after, policy version, provider/device receipt or stage actor
+      - no canonical acknowledgement/completion transition
+      - no immutable mutation guard
+  - surface_id: DEV-DB-CUR-03
+    object: public.mvp3_inspection_package_manifests
+    kind: TABLE
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:143"
+    current_contract:
+      fields: [id, inspection_id, package_version_id, workflow_version_id, manifest, manifest_hash, expires_at, compiled_by, compiled_at]
+      append_only_trigger: true
+      rls_enabled: true
+    gaps:
+      - no device-specific invalidation relation or command effect
+      - no cached-device invalidation acknowledgement
+  - surface_id: DEV-DB-CUR-04
+    object: public.mvp3_package_access_events
+    kind: TABLE
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:157"
+    current_contract:
+      fields: [id, manifest_id, device_id, requested_device_identifier, actor_id, outcome, reason, occurred_at]
+      outcomes: [opened, denied_missing, denied_untrusted, denied_unassigned, denied_expired, denied_app_version]
+      rls_enabled: true
+    gaps:
+      - no download, cached-open, sync or submit outcomes
+      - no governing device/package version or correlation
+      - no explicit invalidated outcome
+  - surface_id: DEV-DB-CUR-05
+    object: public.mvp3_issue_device_command
+    kind: SECURITY_DEFINER_RPC
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:275"
+    current_contract:
+      roles: [ops, security_admin]
+      validation: allow-listed current command and trimmed reason length >= 8
+      locking: SELECT device FOR UPDATE
+      result: inserts queued command
+      immediate_effects:
+        suspend: suspended
+        resume: trusted
+        remote_wipe: wipe_pending
+        expire_packages: none
+    gaps:
+      - unsafe Resume before evidence
+      - no source-state/terminal guard
+      - no expected version, idempotency or approval
+      - no provider dispatch or receipt
+      - no package effect
+  - surface_id: DEV-DB-CUR-06
+    object: public.mvp3_open_inspection_package
+    kind: SECURITY_DEFINER_RPC
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:316"
+    current_contract:
+      gates:
+        - authenticated
+        - manifest exists
+        - device exists and assigned to auth user
+        - trust_status=trusted
+        - app_version_compliant=true
+        - manifest not expired
+      result: opened plus manifest hash, or denied plus reason
+      audit: inserts access event only when manifest exists
+    gaps:
+      - no located application consumer
+      - no download, cached-open, sync or submit guard
+      - no platform/attestation freshness check beyond stored trust
+      - unknown manifest produces no access event
+  - surface_id: DEV-DB-CUR-07
+    object: mvp3_devices_read
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:425"
+    current_contract: Assigned self, Ops, Security Admin and Auditor may select rows.
+    gap: Canonical Device/Mobile Admin capability authority is missing.
+  - surface_id: DEV-DB-CUR-08
+    object: mvp3_devices_insert
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:427"
+    current_contract: Ops or Security Admin may insert own enrolled_by row with pending trust.
+    gap: Assignment/platform/MDM/compliance values are not fully constrained by this base policy.
+  - surface_id: DEV-DB-CUR-09
+    object: mvp3_devices_self_enroll_insert
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260723090200_mvp3_devices_self_enroll_insert.sql:1"
+    current_contract: Self may insert only own pending iPad with null MDM/last-seen and false compliance.
+    gap: No Admin approval/trust transition follows.
+  - surface_id: DEV-DB-CUR-10
+    object: mvp3_device_commands_read
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:429"
+    current_contract: Ops, Security Admin and Auditor may read all command rows.
+    gap: No assigned-self command evidence or per-device scope; canonical read authority unresolved.
+  - surface_id: DEV-DB-CUR-11
+    object: mvp3_device_commands_insert
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:431"
+    current_contract: Ops/Security Admin may insert rows where requested_by=self.
+    gap: Direct insert policy can express no lifecycle/transition/approval/provider guards beyond table checks.
+  - surface_id: DEV-DB-CUR-12
+    object: mvp3_package_manifests_read
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:433"
+    current_contract: Form Admin, Planner, Security Admin or assigned Inspector may read manifests.
+    gap: Manifest row visibility is not equivalent to device-bound download/open/submit authorization.
+  - surface_id: DEV-DB-CUR-13
+    object: mvp3_package_access_events_read
+    kind: RLS_POLICY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:441"
+    current_contract: Own actor, Ops, Security Admin or Auditor may read.
+    gap: Route does not consume these events and lifecycle scope is open-only.
+  - surface_id: DEV-DB-CUR-14
+    object: authenticated grants
+    kind: GRANT_BOUNDARY
+    source: "supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql:374"
+    current_contract:
+      - select granted on four current tables subject to RLS
+      - insert granted on Devices/Commands subject to RLS
+      - execute granted on issue/open RPCs
+      - public/anon execute revoked
+    gap: No authenticated receipt-transition RPC or provider service role boundary exists.
+  - surface_id: DEV-DB-CUR-15
+    object: generated_database_types
+    kind: TYPE_SURFACE
+    source: apps/web/src
+    current_contract: No generated database type file containing device tables/RPCs was located; consumers use inferred/manual row shapes.
+    gap: A future additive schema would need one serialized type-generation owner if the project adopts generated types.
+
+current_application_call_surfaces:
+  - call_id: DEV-CALL-CUR-01
+    caller: /admin/devices server component
+    source: "apps/web/src/app/(app)/admin/devices/page.tsx:10"
+    call: SELECT mvp3_devices ordered by enrolled_at desc.
+    selected_fields: [id, device_identifier, platform, assigned_user_id, trust_status, mdm_reference, last_seen_at, enrolled_at]
+    missing_fields: [app_version, app_version_compliant, updated_at, trust evidence/version fields]
+    source_error_behavior: Device error becomes generic schema-not-applied warning for every error type.
+  - call_id: DEV-CALL-CUR-02
+    caller: /admin/devices server component
+    source: "apps/web/src/app/(app)/admin/devices/page.tsx:11"
+    call: SELECT latest 30 mvp3_device_commands ordered by requested_at desc.
+    selected_fields: [id, device_id, command, status, reason, requested_at, completed_at]
+    missing_fields: [requested_by, approver, before_after, version, receipt, full_history_count]
+    source_error_behavior: Command-query error is discarded and renders as empty evidence.
+  - call_id: DEV-CALL-CUR-03
+    caller: issueDeviceCommand server action
+    source: "apps/web/src/app/(app)/admin/mvp3-actions.ts:46"
+    call: RPC mvp3_issue_device_command(deviceId, command, reason).
+    source_error_behavior: Raw Supabase error.message returned to browser; success always says queued.
+    gap: No expected version/idempotency/provider/approval fields.
+  - call_id: DEV-CALL-CUR-04
+    caller: readOwnDevice/readFieldDeviceEnrollment
+    source: "apps/web/src/app/(app)/field/settings/actions.ts:59"
+    call: SELECT own mvp3_devices row by device_identifier and assigned_user_id.
+    source_error_behavior: Distinguishes signed-out, unavailable, not-enrolled and existing row.
+    gap: Does not prove authoritative attestation or Admin approval.
+  - call_id: DEV-CALL-CUR-05
+    caller: selfEnrollFieldDevice
+    source: "apps/web/src/app/(app)/field/settings/actions.ts:103"
+    call: INSERT fail-closed pending self iPad and return selected row.
+    source_error_behavior: Distinguishes duplicate own, privacy-safe collision, policy_pending and unavailable.
+    gap: No later trust transition or provider evidence.
+  - call_id: DEV-CALL-CUR-06
+    caller: application package/open boundary
+    source: apps/web/src
+    call: No application invocation of mvp3_open_inspection_package located.
+    source_error_behavior: null
+    gap: Existing RPC evidence is not wired to a real Field download/open journey.
+  - call_id: DEV-CALL-CUR-07
+    caller: Field offline queue/replay
+    source: apps/web/src/lib/offline.ts
+    call: No located mvp3_devices/command/package-access call in the offline engine.
+    source_error_behavior: Existing offline behavior has its own conflict/replay contracts, not device-command authority.
+    gap: Trust change, cached invalidation and revoked replay are not connected.
+
+current_test_and_probe_surfaces:
+  - test_id: DEV-TEST-CUR-01
+    file: supabase/tests/mvp3_retrofit_live_probe.sql
+    surfaces: [device insert, suspend RPC, missing-device rejection, package open, direct acknowledged update, rollback cleanup]
+    evidence_grade: DATABASE_ROLLBACK
+    limitation: One command positive; direct ack is not product/provider behavior.
+  - test_id: DEV-TEST-CUR-02
+    file: apps/web/e2e/field-settings-rls-live.spec.ts
+    surfaces: [self pending insert, cross-user/self-trust denial, Ops pending insert]
+    evidence_grade: OPT_IN_LIVE_TEST
+    limitation: Skipped unless RUN_FIELD_SETTINGS_RLS_LIVE=1 and no Admin trust/command flow.
+  - test_id: DEV-TEST-CUR-03
+    file: apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    surfaces: [schema/RLS/source token assertions]
+    evidence_grade: SOURCE_ASSERTION
+  - test_id: DEV-TEST-CUR-04
+    file: apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    surfaces: [/admin/devices route/title smoke]
+    evidence_grade: BROWSER_SMOKE
+  - test_id: DEV-TEST-CUR-05
+    file: apps/web/e2e/field-offline-isolation.spec.ts
+    surfaces: [user-scoped offline stores and replay isolation]
+    evidence_grade: ADJACENT_RUNTIME
+  - test_id: DEV-TEST-CUR-06
+    file: apps/web/e2e/offline-drill.spec.ts
+    surfaces: [offline answer queue and replay]
+    evidence_grade: ADJACENT_RUNTIME
+  - test_id: DEV-TEST-CUR-07
+    file: apps/web/e2e/cd-008-009-packages.spec.ts
+    surfaces: [package authoring/projection hard states]
+    evidence_grade: ADJACENT_RUNTIME
+
+future_required_call_surfaces:
+  - surface_id: DEV-DB-FUT-01
+    purpose: Persona-safe device register and detail projection.
+    future_kind: VIEW_OR_QUERY_CONTRACT
+    consumed_by_slots: [DEV-DS-002..18, DEV-DS-042..48]
+    required_facts: Device identity, assignment, platform, trust, app policy, evidence authority/version/time and row version.
+    role_scope_authority: null
+    source_error_contract: null
+    primary_future_boundary: DEV-CHG-DB-02
+  - surface_id: DEV-DB-FUT-02
+    purpose: Versioned command eligibility and request.
+    future_kind: RPC_OR_EQUIVALENT_SERVER_BOUNDARY
+    consumed_by_slots: [DEV-DS-007, DEV-DS-019..24]
+    required_inputs: Device, command, reason, expected device version, idempotency/correlation identity and approval context if required.
+    role_and_transition_authority: null
+    rejection_contract: No row/state/provider effect for unauthorized, invalid, stale, duplicate or terminal request.
+    primary_future_boundary: DEV-CHG-DB-01
+  - surface_id: DEV-DB-FUT-03
+    purpose: Independent approval decision.
+    future_kind: RPC_OR_EQUIVALENT_SERVER_BOUNDARY
+    consumed_by_slots: [DEV-DS-009, DEV-DS-010, DEV-DS-021]
+    required_inputs: Command request/version, decision, reason, approver.
+    approval_authority: null
+    self_approval_rule: null
+    primary_future_boundary: DEV-CHG-DB-01
+  - surface_id: DEV-DB-FUT-04
+    purpose: Trust evidence evaluation and transition.
+    future_kind: GOVERNED_DB_PROVIDER_BOUNDARY
+    consumed_by_slots: [DEV-DS-011, DEV-DS-012, DEV-DS-017, DEV-DS-018, DEV-DS-031, DEV-DS-032]
+    required_inputs: Enrollment, assignment, platform, app policy/version, attestation authority/version/time and approval if required.
+    attestation_and_freshness_authority: null
+    provider_authority: null
+    primary_future_boundary: DEV-CHG-DB-02
+  - surface_id: DEV-DB-FUT-05
+    purpose: Authenticated provider/device receipt ingestion.
+    future_kind: PROVIDER_SERVICE_TO_DATABASE_BOUNDARY
+    consumed_by_slots: [DEV-DS-015, DEV-DS-025..30]
+    required_inputs: Command/correlation/device identity, stage, authoritative actor, authenticated receipt, timestamp and verified effect.
+    stage_and_receipt_authority: null
+    duplicate_late_mismatch_rules: null
+    primary_future_boundary: DEV-CHG-SVC-01
+  - surface_id: DEV-DB-FUT-06
+    purpose: Immutable command/effect evidence projection.
+    future_kind: VIEW_OR_QUERY_CONTRACT
+    consumed_by_slots: [DEV-DS-010, DEV-DS-029, DEV-DS-030, DEV-DS-039, DEV-DS-041]
+    required_facts: Requester/approver/provider/device actors, reason, before/after, versions, stages, timestamps, receipts and history count.
+    read_scope_authority: null
+    retention_authority: null
+    primary_future_boundary: DEV-CHG-DB-01
+  - surface_id: DEV-DB-FUT-07
+    purpose: Atomic audit failure boundary.
+    future_kind: TRANSACTION_GUARD
+    consumed_by_slots: [DEV-DS-040]
+    required_behavior: Audit failure rolls back command, state and provider outbox/dispatch intent.
+    audit_event_authority: null
+    primary_future_boundary: DEV-CHG-DB-01
+  - surface_id: DEV-DB-FUT-08
+    purpose: Exact package invalidation request and server effect.
+    future_kind: RPC_OR_EQUIVALENT_SERVER_BOUNDARY
+    consumed_by_slots: [DEV-DS-021, DEV-DS-033, DEV-DS-034]
+    required_inputs: Device, selected manifests/inspections or policy version, reason, expected versions and correlation.
+    invalidation_scope_authority: null
+    partial_failure_rule: null
+    primary_future_boundary: DEV-CHG-DB-02
+  - surface_id: DEV-DB-FUT-09
+    purpose: Device-bound package download/open/cached-open/sync/submit enforcement.
+    future_kind: SHARED_SERVER_AND_FIELD_GUARD
+    consumed_by_slots: [DEV-DS-031, DEV-DS-032, DEV-DS-034, DEV-DS-035]
+    required_behavior: Every operation checks current assignment/trust/app/package policy and records an immutable outcome.
+    cached_device_effect_authority: null
+    offline_replay_authority: null
+    primary_future_boundary: DEV-CHG-FLD-01
+  - surface_id: DEV-DB-FUT-10
+    purpose: Sync-health projection.
+    future_kind: VIEW_OR_QUERY_CONTRACT
+    consumed_by_slots: [DEV-DS-004, DEV-DS-005, DEV-DS-036, DEV-DS-037, DEV-DS-038]
+    required_facts: Outbox, conflicts, errors, replay, last-confirmed source/version and source-health state.
+    source_formula_threshold_authority: null
+    primary_future_boundary: DEV-CHG-FLD-02
+  - surface_id: DEV-DB-FUT-11
+    purpose: Bounded sync-rescue action.
+    future_kind: RPC_OR_EQUIVALENT_SERVER_BOUNDARY
+    consumed_by_slots: [DEV-DS-038]
+    required_inputs: Source operation/version, requested rescue, actor, reason and idempotency identity.
+    rescue_role_action_authority: null
+    primary_future_boundary: DEV-CHG-FLD-02
+  - surface_id: DEV-DB-FUT-12
+    purpose: Typed source-error and freshness envelope.
+    future_kind: APPLICATION_QUERY_CONTRACT
+    consumed_by_slots: [DEV-DS-001, DEV-DS-002, DEV-DS-003, DEV-DS-004, DEV-DS-005, DEV-DS-008, DEV-DS-022, DEV-DS-023, DEV-DS-025, DEV-DS-026, DEV-DS-027, DEV-DS-037, DEV-DS-040]
+    required_outcomes: Loading, verified empty, unauthorized, unavailable, dependency blocked, stale, conflict, rejected and success.
+    neutral_copy_authority: null
+    retry_policy: null
+    primary_future_boundary: DEV-CHG-SVC-02
+
+design_slot_call_crosswalk:
+  route_and_source:
+    slots: [DEV-DS-001..05]
+    current_surfaces: [DEV-CALL-CUR-01, DEV-CALL-CUR-02]
+    future_surfaces: [DEV-DB-FUT-01, DEV-DB-FUT-10, DEV-DB-FUT-12]
+  persona_and_permission:
+    slots: [DEV-DS-006..10]
+    current_surfaces: [DEV-DB-CUR-07, DEV-DB-CUR-10, DEV-DB-CUR-11, DEV-DB-CUR-05]
+    future_surfaces: [DEV-DB-FUT-01, DEV-DB-FUT-02, DEV-DB-FUT-03, DEV-DB-FUT-12]
+  device_register:
+    slots: [DEV-DS-011..18]
+    current_surfaces: [DEV-DB-CUR-01, DEV-DB-CUR-07, DEV-CALL-CUR-01, DEV-CALL-CUR-04, DEV-CALL-CUR-05]
+    future_surfaces: [DEV-DB-FUT-01, DEV-DB-FUT-04]
+  command_request_and_conflict:
+    slots: [DEV-DS-019..24]
+    current_surfaces: [DEV-DB-CUR-02, DEV-DB-CUR-05, DEV-DB-CUR-11, DEV-CALL-CUR-03]
+    future_surfaces: [DEV-DB-FUT-02, DEV-DB-FUT-03, DEV-DB-FUT-12]
+  provider_and_receipt:
+    slots: [DEV-DS-025..30]
+    current_surfaces: [DEV-DB-CUR-02, DEV-DB-CUR-14]
+    future_surfaces: [DEV-DB-FUT-05, DEV-DB-FUT-06, DEV-DB-FUT-12]
+  package_and_offline:
+    slots: [DEV-DS-031..35]
+    current_surfaces: [DEV-DB-CUR-03, DEV-DB-CUR-04, DEV-DB-CUR-06, DEV-DB-CUR-12, DEV-DB-CUR-13, DEV-CALL-CUR-06, DEV-CALL-CUR-07]
+    future_surfaces: [DEV-DB-FUT-08, DEV-DB-FUT-09]
+  sync_health_and_rescue:
+    slots: [DEV-DS-036..38]
+    current_surfaces: [DEV-CALL-CUR-07]
+    future_surfaces: [DEV-DB-FUT-10, DEV-DB-FUT-11, DEV-DB-FUT-12]
+  evidence_and_audit:
+    slots: [DEV-DS-039..41]
+    current_surfaces: [DEV-DB-CUR-02, DEV-CALL-CUR-02]
+    future_surfaces: [DEV-DB-FUT-06, DEV-DB-FUT-07, DEV-DB-FUT-12]
+  presentation:
+    slots: [DEV-DS-042..48]
+    current_surfaces: [DEV-CALL-CUR-01, DEV-CALL-CUR-02, DEV-CALL-CUR-04]
+    future_surfaces: [DEV-DB-FUT-01, DEV-DB-FUT-06, DEV-DB-FUT-10, DEV-DB-FUT-12]
+
+source_error_findings:
+  - Device read error and command read error are not represented independently on Admin.
+  - Command error is ignored and can appear as verified empty.
+  - Admin action exposes raw database error text.
+  - Field enrollment correctly separates signed-out, invalid identifier, unavailable, policy pending and privacy-safe identifier collision; this is reusable behavior evidence, not a Device Admin policy.
+  - Package open returns structured denial for trust/assignment/app/expiry but has no located application consumer.
+  - Provider timeout/rejection/receipt errors have no current source because no provider adapter exists.
+  - Sync source unavailable/stale/empty semantics have no current Devices query contract.
+
+collision_boundaries:
+  migrations:
+    objects: [mvp3_devices, mvp3_device_commands, mvp3_inspection_package_manifests, mvp3_package_access_events, mvp3_issue_device_command, mvp3_open_inspection_package]
+    rule: DB-01 and DB-02 combine or serialize under one migration owner.
+  RLS_and_roles:
+    objects: [device and command read/insert policies, package manifest/access-event reads]
+    rule: Governance role/capability authority precedes policy edits; no navigation-derived grants.
+  generated_types:
+    objects: [future database types]
+    rule: One integration owner after final additive migration; none located today.
+  shared_server_action:
+    objects: [apps/web/src/app/(app)/admin/mvp3-actions.ts, apps/web/src/components/Mvp3ActionForm.tsx]
+    rule: Prefer route-local Devices service; shared files serialize through one owner.
+  Field_and_offline:
+    objects: [Field settings actions, package call sites, offline queue/replay]
+    rule: Web/Admin lease cannot edit them; separate Field/offline lease consumes the same stable DB contract.
+  tests_and_live_data:
+    objects: [rollback probe, opt-in RLS test, future deterministic fixtures]
+    rule: QA/seeder namespaces and cleanup are isolated; tests never become migration authority.
+
+review:
+  disposition: BLOCK
+  code: BLOCK_DATABASE_AUTHORITY_AND_CALL_SURFACES_INCOMPLETE
+  validation_summary:
+    current_database_surfaces: 15
+    current_application_calls: 7
+    current_test_surfaces: 7
+    future_required_surfaces: 12
+    design_slots_crosswalked: 48
+    database_changes: 0
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-PACKAGE-OFFLINE-CALL-PATH-INVENTORY-076
+    mode: READ_ONLY
+    source_task: DEV-PRE-DB2-01
+    objective: >-
+      Trace every current download/open/cached-open/sync/submit and invalidation
+      path across package, Field and offline code/tests, identifying where
+      device trust is enforced or absent without editing source.

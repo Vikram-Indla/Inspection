@@ -1,0 +1,662 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-037
+title: Admin Workflow Settings design authority and runtime contract review
+status: BLOCKED_CONTRACT_CORRECTION_AND_CD051_PACKAGE_REQUIRED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+review_mode: READ_ONLY
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+collision_check:
+  checked_on: "2026-07-25"
+  workflow_owner_found: false
+  active_risk_scope_touched: false
+  observed_other_outputs:
+    - KIMI-M11-FUTURE-CATALOG-PROOF-PACK-037
+    - M2-VS-001-READ-ONLY-VISIT-TRACE-CANDIDATE-003
+    - M9-ADMIN-AUDIT-PRIMARY-FRAME-RETRIEVAL-READINESS-036
+  disposition: SAFE_READ_ONLY_SCOPE
+  rule: Do not touch Admin Risk, Integration Hub, Planning or Audit sources.
+
+task_contract:
+  task_id: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-037
+  gate: Admin Workflow Settings design authority and bounded delta
+  route: /admin/workflows
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids: [SCR-ADM-050, SCR-ADM-051]
+  engines: [ENG-03, WORKFLOW, AUDIT, VERSION, IMMUTABLE]
+  design_ids:
+    primary_visual: WA-DES-014
+    logical_supplement: CD-051
+    upstream_claimed: CD-043
+    secondary_overview: WA-DES-015
+  requirement_ids:
+    mvp2_source: MVP2-REQ-0025_THROUGH_MVP2-REQ-0043
+    mvp3_extension: [MVP2-REQ-0249, MVP2-REQ-0250]
+    preservation: CR-001_THROUGH_CR-478
+  acceptance_ids:
+    mvp2_source: MVP2-AC-0025_THROUGH_MVP2-AC-0043
+    mvp3_extension: [MVP2-AC-0249, MVP2-AC-0250]
+    web_admin: [WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-003, WA-M9-AC-004, WA-M9-AC-005, WA-M9-AC-006]
+  dependencies:
+    - WA-DES-014_exact_visual_authority
+    - SCR-ADM-050_and_051_consolidated_route_contract
+    - CD-051_R2_package_retrieval_and_fingerprint
+    - CD-043_identity_collision_or_upstream_lineage_resolution
+    - workflow_admin_vs_config_writer_permission_decision
+    - published_config_versions_immutability_guard
+    - publish_maker_checker_server_boundary
+    - workflow_config_audit_append
+    - row_version_CAS_end_to_end_wiring
+    - scheduled_activation_contract_correction
+    - simulation_fixture_and_persisted_replay_contract
+    - DEC-003_authorized_SLA_calendar_and_values
+    - notification_provider_contract
+  do_not_touch:
+    - live Claude Design, WA-DES-014, WA-DES-015, CD-051, CD-043 or exported designs
+    - Admin Risk, Integration Hub, Planning or Audit artifacts
+    - frozen design, route, screen, requirement, acceptance, evidence or wiring mappings
+    - application code, tests, data, Supabase, migrations, RPCs, credentials, providers, seeds or environments
+    - branches, commits, pushes, merges, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 37829f4241c17a424c1481cdb50cad1b64552e5d
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    Read-only design-to-runtime validation only. No product, design, test, data,
+    mapping, evidence, provider, branch, lease or remote mutation.
+
+authority_sources:
+  catalogue_and_package:
+    - product-contract/screens/screen_route_catalogue.csv
+    - design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  requirements_and_design_supplements:
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+    - product-contract/operationalization/OPS-REC-015_MVP3_84_ROW_RECONCILIATION.csv
+    - product-contract/operationalization/coordination/worker-outputs/CODEX-PA007-A-MVP3-ROWS-001-028.csv
+    - product-contract/governance/HUMAN_APPROVALS.yaml
+  runtime:
+    - apps/web/src/app/(app)/admin/workflows/page.tsx
+    - apps/web/src/app/(app)/admin/workflows/Controls.tsx
+    - apps/web/src/app/(app)/admin/workflows/WfDeck.tsx
+    - apps/web/src/app/(app)/admin/workflows/actions.ts
+    - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+    - apps/web/src/app/(app)/admin/workflows/sla-actions.ts
+    - apps/web/src/app/(app)/admin/workflows/task-actions.ts
+    - apps/web/src/lib/workflow/validate.ts
+    - apps/web/src/lib/workflow/normalize.ts
+    - apps/web/src/lib/workflow/governed-transition.ts
+    - apps/web/src/lib/workflow/sla.ts
+    - apps/web/src/lib/workflow/tasks.ts
+    - apps/web/src/lib/shell-navigation.ts
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/20260716120000_seco_config_versions_roles_rls.sql
+    - supabase/migrations/20260717010000_mvp2_m2_02_workflow_version_model.sql
+  tests:
+    - apps/web/e2e/mvp2-m2-02-workflow-validator.spec.ts
+    - apps/web/e2e/mvp2-m2-02-transition-guards.spec.ts
+    - apps/web/e2e/mvp2-m2-02-governed-transition.spec.ts
+    - apps/web/e2e/mvp2-m2-02-lifecycles.spec.ts
+    - apps/web/e2e/mvp2-m2-02-notification-model.spec.ts
+    - apps/web/e2e/mvp2-m2-02-outbox-idempotency.spec.ts
+    - apps/web/e2e/mvp2-m2-02-sla-model.spec.ts
+    - apps/web/e2e/mvp2-m2-02-task-model.spec.ts
+    - supabase/tests/mvp2_m2_02_workflow_version_model_probe.sql
+
+registered_design_inventory:
+  primary:
+    design_id: WA-DES-014
+    filename: SAQEEL Admin Workflow Builder.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Workflow Builder.dc.html
+    route: /admin/workflows
+    package: M9
+    personas: [workflow_admin]
+    reference_viewport: 1240x880
+    bytes: 12723
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    classification: EXACT_REGISTERED_ROUTE_VISUAL_AUTHORITY
+  logical_supplement:
+    design_id: CD-051
+    module: M3-01
+    source_module: M2-02
+    source_design_claim: CD-043
+    requirements: [MVP2-REQ-0249, MVP2-REQ-0250]
+    source_prompt:
+      path: /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/03_MVP3_DELIVERY_ROOT/04_EXECUTION/PROMPTS/mvp3_full_parallel_design_build_pack_20260717/DESIGN_PROMPTS/P02_CD-051_M3-01_DESIGN_AUTO_PROMPT.txt
+      bytes: 5352
+      sha256: 519f0169d0ca33aa5ae5b1bb21df8909f6ca43c2247f992e35be3f89dc0cf90d
+    requirement_contract:
+      path: /Users/vikramindla/Desktop/Inspection Documentation/10_REPOSITORY_EXPORTS/mvp2-mvp3-design-packs-20260717/03_MVP3_DELIVERY_ROOT/04_EXECUTION/PROMPTS/mvp3_full_parallel_design_build_pack_20260717/REQUIREMENT_CONTRACTS/CD-051_M3-01_REQUIREMENT_CONTRACT.csv
+      bytes: 3002
+      sha256: e331d882dfcdbb5b323a749a87685c73d8806d3d1aab7b9b1a300af336044f5c
+    claimed_package: CD-051_M3-01_R2_FINAL
+    claimed_renders: CD-051_R2_FINAL/renders/01..06-CD-051_R2.png
+    returned_package_found: false
+    exact_frames_found: false
+    package_sha256_found: false
+    classification: BINDING_LOGICAL_SUPPLEMENT_NOT_INDEPENDENTLY_FRAME_VERIFIABLE
+  secondary:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    route: /admin
+    state_key: workflows
+    bytes: 42071
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    classification: ADMIN_OVERVIEW_CHILD_STATE_ONLY
+    supportable:
+      - Admin navigation placement.
+      - Read-only lifecycle and SLA summary hierarchy.
+    non_authoritative:
+      - Exact route layout or interaction.
+      - SLA values, calendars, escalation or auto-expiry.
+      - Mutation, maker-checker, validation, simulation or version contracts.
+
+screen_and_route_mapping:
+  route_exists: true
+  route: /admin/workflows
+  primary_component: apps/web/src/app/(app)/admin/workflows/page.tsx
+  supporting_components:
+    - apps/web/src/app/(app)/admin/workflows/Controls.tsx
+    - apps/web/src/app/(app)/admin/workflows/WfDeck.tsx
+  screen_catalogue:
+    - screen_id: SCR-ADM-050
+      name: Workflow Library
+      route: /admin/workflows
+      mapping: DIRECT
+      purpose: Manage workflow definitions and active versions.
+    - screen_id: SCR-ADM-051
+      name: Workflow Designer
+      catalogue_route: /admin/workflows/:id
+      implementation_route: /admin/workflows
+      mapping: CONSOLIDATED_LOGICAL
+      purpose: Configure states, transitions, roles, guards, SLA, side effects and simulation.
+  design_mapping_validation: CONFIRMED_WITH_CORRECTION
+  primary_design: WA-DES-014
+  logical_supplement: CD-051
+  secondary_design: WA-DES-015_WORKFLOWS_STATE_ONLY
+  correction: >-
+    WA-DES-014 is the exact registered route visual. CD-051 supplies the two
+    MVP3 logical requirements but cannot be used as an exact frame source until
+    its returned package is retrieved. WA-DES-015 is an Admin overview summary,
+    not route authority.
+  identity_result: EXISTING_IDENTITIES_CONFIRMED_NO_NEW_ID_REQUIRED
+  prohibited:
+    - Inventing another screen or design ID.
+    - Replacing SCR-ADM-050/051 with WA-DES-014, CD-051, CD-043 or M3-01.
+    - Treating /admin as exact authority for the child route.
+
+upstream_identity_warning:
+  claimed_upstream: CD-043_M2-02
+  conflicting_external_material: >-
+    The approved-documentation search also contains CD-043 review/correction
+    material describing SCR-VIR-720 Provider-Neutral Virtual Inspection,
+    unrelated to Workflows.
+  implication: >-
+    The CD-043 label is collision-prone or stale across source packs. Do not
+    consume any CD-043 package as Workflows authority until its M2-02 manifest,
+    route, requirements and hashes prove the correct lineage.
+  decision_required: Reconcile CD-043 identity before linking it as CD-051's accepted predecessor.
+
+wa_des_014_design_truth:
+  shown:
+    - Workflow builder header with Draft v3.
+    - Validate and Publish version controls.
+    - One Inspection lifecycle state lane and exception badges.
+    - Submitted to L2 Review transition with role, maker-checker and guard fields.
+    - SLA table with calendar and breach action.
+    - State inventory, Add state and validation summary.
+    - Light/dark theme toggle.
+  defects_and_unproven_claims:
+    - It hard-codes 48 working hours, 3 working days, 5 working days and Sun-Thu despite DEC-003.
+    - It hard-codes escalation and auto-expiry outcomes without approved values or engine proof.
+    - The English page renders an Arabic-only wordmark and has no full Arabic/RTL state.
+    - Add state, Validate and Publish controls are static design controls without action/result/error contracts.
+    - Publish lacks an explicit Review and Approved lifecycle and distinct-checker hand-off.
+    - The state graph omits many required object families and source lifecycles.
+    - No library/list, effective-date history, scheduled version, rollback, retire or in-flight binding inspection.
+    - No simulation happy/exception run, fixture provenance, replay history or audit evidence.
+    - No loading, empty, error, unauthorized, stale, conflict, provider-unavailable or session-expired state.
+    - At narrow widths the state lane remains min-content and horizontally scrolls.
+    - Only one responsive breakpoint exists; no 412/390/320 task-order evidence.
+    - No complete keyboard, focus, live-region, validation-summary or non-color state contract.
+  design_action: CORRECT
+
+runtime_data_truth:
+  page_reads:
+    config_versions:
+      fields: [id, version_label, status, payload, effective_from, created_at, created_by, approved_by]
+      filter: engine_equals_workflow
+      ordering: effective_from_desc
+    profiles:
+      fields: [user_id, full_name]
+      purpose: Resolve maker and checker display names.
+  page_does_not_read:
+    - row_version
+    - updated_at
+    - scheduled_from
+    - rollback_of
+    - retire_reason
+    - sla_timers
+    - workflow_task_assignments
+    - notification rules or delivery logs
+    - audit_events
+    - simulation fixtures or runs
+    - in-flight inspection workflow-version bindings
+  page_actions_exposed:
+    - proposeWorkflowDraft
+    - saveWorkflowDraft
+    - approvePublishWorkflow
+  server_actions_present_but_not_exposed_on_page:
+    - retireWorkflowVersion
+    - rollbackWorkflowToVersion
+    - applyGovernedTransition
+    - requestSlaActivation
+    - pauseSlaTimer
+    - resumeSlaTimer
+    - reassignTask
+    - setTaskStatus
+    - setTaskActive
+  honest_gap:
+    seam: GAP-02
+    state: Simulation fixtures and persisted replay are not built.
+    current_ui: NotYetBoundary states no run history is shown.
+
+permissions_and_rls_truth:
+  navigation:
+    visible_role: workflow_admin
+    label: Workflow Settings
+  screen_catalogue:
+    SCR-ADM-050: Workflow Admin
+    SCR-ADM-051: Workflow Admin and Approver
+  route_guard:
+    explicit_server_redirect_or_role_guard: false
+    effect: Any authenticated user may reach the route; RLS determines visible records.
+  config_versions_rls:
+    read: all authenticated users
+    insert_roles: [compliance_admin, form_admin, workflow_admin, risk_owner, gis_admin, security_admin]
+    update_roles: [compliance_admin, form_admin, workflow_admin, risk_owner, gis_admin, security_admin]
+    delete_policy: none
+  server_action_authorization:
+    mechanism: RLS plus authenticated session
+    explicit_workflow_admin_check: false
+    consequence: >-
+      Any role in the generic config-writer set can attempt workflow engine
+      inserts and updates, while the page declares workflow_admin only.
+  ui_control_gating:
+    role_aware: false
+    consequence: Read-only authenticated users can see mutation controls that later fail through RLS.
+  decision_required: >-
+    Govern whether Workflows is workflow_admin-only or uses the broader
+    config-writer set, then align navigation, route guard, RLS, server actions,
+    control visibility and zero-disclosure behavior.
+
+workflow_lifecycle_and_maker_checker_truth:
+  required_source_lifecycle:
+    - Draft
+    - Review
+    - Approved
+    - Published
+    - Retired
+    - Rolled Back
+  current_primary_ui_lifecycle:
+    - draft
+    - published
+    - retired through unexposed action
+    - rollback as a new draft through unexposed action
+  review_and_approved_ui_states: absent
+  maker_checker_constraint:
+    expression: approved_by is null or approved_by differs from created_by
+    weakness: It blocks self-approval only when approved_by is populated; it does not require an approver for published status.
+  publish_action:
+    server_path: approvePublishWorkflow
+    positive: Sets approved_by to the current user after deterministic graph validation.
+    negative: Hides publish for the current row maker and reports a distinct-checker message.
+    boundary_gap: Generic direct UPDATE policy permits status changes outside the server action.
+  published_immutability:
+    claimed_by_ui: Published versions are immutable at the database boundary.
+    located_database_guard: none
+    actual_source_boundary: Page and save action filter edits to status draft, but generic RLS allows UPDATE on config_versions.
+    validation: INCORRECT_RUNTIME_CLAIM
+  one_active_version:
+    database_index: engine, object_id, coalesce(scheduled_from, effective_from) where status is published
+    implication: It prevents duplicate effective timestamps, not multiple published versions at different effective times.
+
+concurrency_and_scheduling_truth:
+  row_version:
+    schema_column: present
+    bump_trigger: present
+    save_action_compare_and_set: conditional_when_form_value_present
+    page_selects_row_version: false
+    editor_submits_row_version: false
+    result: CAS_NOT_WIRED_END_TO_END
+    risk: Concurrent draft edits can silently overwrite because the update runs without a row_version predicate.
+  scheduled_activation:
+    schema_column: scheduled_from
+    action_accepts_schedule: true
+    action_behavior:
+      status: published
+      effective_from: now
+      scheduled_from: supplied future value
+    design_gap: No scheduled state or activation preview is visible.
+    contract_risk: >-
+      The action comment says future scheduling is not yet active, but the row
+      is immediately marked published with effective_from now; runtime selection
+      semantics must be proven before design acceptance.
+  stale_state_required: true
+
+workflow_validation_and_simulation_truth:
+  validation:
+    implementation: validateWorkflowPayload
+    checks: VAL-01_THROUGH_VAL-06
+    visible: Validation ledger in WfDeck.
+    publish_block: Failing checks block approvePublishWorkflow.
+  simulation:
+    pure_transition_evaluator: present
+    fixture_store: absent
+    persisted_runs: absent
+    run_history: absent
+    page_claim: Honest NotYetBoundary.
+    mvp3_requirement: MVP2-REQ-0249 requires simulator proof for happy and exception paths before publish.
+    status: PARTIAL_DEPENDENCY_BLOCKED
+  governed_transition:
+    feature_flag: FEATURE_WORKFLOW_TRANSITION
+    default: off
+    writes_operational_status_directly: false
+    outcome: Authorizes, enqueues idempotent side effects, emits semantic event and appends generic audit.
+  task_workspace:
+    feature_flag: FEATURE_TASKS_WORKSPACE
+    default: off
+  sla:
+    automatic_scheduler: absent
+    activation: Blocked when authorized calendar/due date is absent.
+    decision_hold: DEC-003
+
+audit_truth:
+  governed_runtime_transition: Explicitly appends allowed or denied audit through its dependency.
+  task_and_sla_actions: Explicitly append audit_events after successful writes.
+  config_versions_generic_trigger:
+    found: false
+    evidence: The generic audit trigger list in 0002_rbac_audit.sql does not include config_versions.
+  config_version_actions:
+    propose_audit: absent
+    save_audit: absent
+    publish_audit: absent
+    retire_audit: absent
+    rollback_audit: absent
+  implication: >-
+    Workflow definition lifecycle changes are not proven to append an audit
+    record, despite the page's governed-change claims and the M9 audit
+    preservation contract.
+  required_correction: >-
+    Use one canonical server-authorized mutation boundary with append-only audit
+    and denial evidence; do not add a competing audit mechanism.
+
+requirements_coverage_summary:
+  source_scope:
+    range: MVP2-REQ-0025_THROUGH_MVP2-REQ-0043
+    count: 19
+    represented_strongly:
+      - configurable state, transition and guard payload
+      - graph validation
+      - transition role and guard evaluation
+      - idempotent outbox contract
+      - task and SLA domain logic
+      - honest provider/feature-flag holds
+    partial_or_not_route_wired:
+      - full definition lifecycle Review and Approved
+      - all object-family inventory
+      - role/branch/sector/jurisdiction composition UI
+      - evidence/signature/geofence guard composition UI
+      - transition side-effect composition UI
+      - tasks workspace
+      - SLA configuration and authorized calendars
+      - notification template/channel/language/delivery-log management
+      - persisted simulator happy and exception runs
+      - risk scheduled activation correctness
+      - offline sync lifecycle
+  mvp3_extension:
+    - requirement_id: MVP2-REQ-0249
+      status: NEEDS_REVIEW
+      reason: Runtime validation exists, but complete pre-publish simulator UI and persisted proof do not.
+    - requirement_id: MVP2-REQ-0250
+      status: CONTRACT_GAP_FOUND
+      reason: In-flight version intent exists, but published immutability and future activation are not proven at the database/action boundary.
+  web_admin_acceptance:
+    status: PLANNED_NOT_IMPLEMENTED
+    reason: WA-M9 visual, security, responsive/RTL/a11y, regression and evidence rows are not route-certified.
+
+meaningful_design_versus_code_delta:
+  parity:
+    - Exact route and Workflow Settings capability exist.
+    - Versioned workflow records and visible draft/published status exist.
+    - State graph, transition actor/guards/side effects and validation ledger exist.
+    - Maker-versus-checker explanation exists.
+    - Light/dark infrastructure and English/Arabic string infrastructure exist.
+  design_has_code_lacks:
+    - Visual state/transition/guard composer rather than raw JSON.
+    - Visible Add state and transition configuration controls.
+    - SLA table within the route.
+    - Compact sticky inspector layout.
+  code_has_design_lacks:
+    - Real config_versions reads and profile-backed maker/checker names.
+    - Six-check validation ledger and idempotency disclosure.
+    - Honest simulation NotYet boundary.
+    - Explicit neutral load/write errors.
+    - Draft cloning, rollback/retire actions and feature-flagged governed engines.
+  both_need_correction:
+    - Full maker-checker lifecycle and direct-write prevention.
+    - Published immutability.
+    - End-to-end optimistic concurrency.
+    - Scheduled activation.
+    - Workflow definition audit.
+    - Persona/permission boundary.
+    - Simulation proof.
+    - Approved SLA/calendar values.
+    - Responsive, RTL and accessibility state evidence.
+
+required_states:
+  authorization:
+    - WORKFLOW_ADMIN_FULL_CONTROL
+    - DISTINCT_APPROVER_REVIEW
+    - MAKER_SELF_APPROVAL_BLOCKED
+    - BROADER_CONFIG_WRITER_DECISION
+    - READ_ONLY_AUTHENTICATED
+    - UNAUTHORIZED_ZERO_DISCLOSURE
+    - SESSION_EXPIRED
+  data:
+    - LOADING
+    - VERIFIED_EMPTY
+    - CONFIG_SOURCE_ERROR
+    - PROFILE_LOOKUP_DEGRADED
+    - PARTIAL_SOURCE_DEGRADED
+    - STALE_ROW_VERSION_CONFLICT
+    - NOT_FOUND
+  lifecycle:
+    - DRAFT
+    - REVIEW
+    - APPROVED
+    - SCHEDULED
+    - PUBLISHED_IMMUTABLE
+    - RETIRED
+    - ROLLED_BACK_AS_SUCCESSOR_DRAFT
+    - IN_FLIGHT_BOUND_TO_PRIOR_VERSION
+    - FUTURE_PACKAGE_BOUND_TO_NEW_VERSION
+    - CONTROLLED_MIGRATION_HELD
+  validation_and_simulation:
+    - VALIDATION_PASS
+    - VALIDATION_FAIL_WITH_FIX_PATHS
+    - HAPPY_PATH_SIMULATION
+    - EXCEPTION_PATH_SIMULATION
+    - SIMULATION_FIXTURE_MISSING
+    - SIMULATION_PERSISTENCE_UNAVAILABLE
+    - PROVIDER_OR_SIDE_EFFECT_UNAVAILABLE
+  sla_and_notification:
+    - SLA_CALENDAR_UNAPPROVED
+    - SLA_PENDING_ACTIVATION
+    - SLA_PAUSED
+    - SLA_RUNNING_ONLY_AFTER_AUTHORIZED_CALENDAR
+    - NOTIFICATION_PROVIDER_UNAVAILABLE
+    - DELIVERY_LOG_UNAVAILABLE
+  presentation:
+    - ENGLISH_LTR_LIGHT
+    - ENGLISH_LTR_DARK
+    - APPROVED_ARABIC_RTL_LIGHT
+    - APPROVED_ARABIC_RTL_DARK
+    - DESKTOP_1440x900
+    - DESIGN_REFERENCE_1240x880
+    - TABLET_1024x768
+    - TABLET_768x1024
+    - MOBILE_412x915
+    - MOBILE_390x844
+    - MOBILE_320x568
+    - KEYBOARD_FOCUS_COMPLETE
+    - ZOOM_REFLOW_REDUCED_MOTION
+
+responsive_theme_language_accessibility:
+  responsive:
+    design_current: Two-column to one-column at 1100px; state lane horizontally scrolls.
+    required: >-
+      Preserve library, selected version, validation, transition details and one
+      safe action without page-level horizontal overflow at all seven
+      viewports. Replace or explicitly bound the state lane on narrow screens.
+  theme:
+    design_current: Light/dark toggle only.
+    required: Token, contrast, validation, disabled, warning and focus parity.
+  language:
+    design_current: English content with Arabic-only brand text.
+    required: >-
+      Complete English/LTR and approved Arabic/RTL task parity, correct English
+      profile wordmark treatment, domain-approved Arabic, and stable mixed-script
+      IDs/version labels.
+  accessibility:
+    required:
+      - semantic page, library, graph, transition and validation headings
+      - keyboard graph navigation with correct roving tab stop behavior
+      - visible focus on every composer and lifecycle action
+      - live error, validation, stale, publish and provider announcements
+      - labels and descriptions for graph nodes, transitions, guards and side effects
+      - non-color status meaning
+      - maker-checker and immutable consequences before action
+      - zoom, reflow and reduced-motion parity
+  current_code_issue: >-
+    WfDeck gives only the first state tabIndex 0 even after arrow focus moves,
+    so the roving tab stop does not follow the focused/selected state.
+
+p0_stops:
+  - {id: WF-DES-P0-01, criterion: WA-DES-014 remains exact primary visual authority; WA-DES-015 remains secondary overview only.}
+  - {id: WF-DES-P0-02, criterion: SCR-ADM-050 and SCR-ADM-051 remain the only governed screen identities.}
+  - {id: WF-DES-P0-03, criterion: CD-051 returned package and exact frames are retrieved and fingerprinted before using its visual claims.}
+  - {id: WF-DES-P0-04, criterion: CD-043 Workflows lineage is reconciled against the conflicting Virtual CD-043 material.}
+  - {id: WF-DES-P0-05, criterion: Invented SLA values, calendars, escalations and auto-expiry are removed or explicitly fixture-labelled.}
+  - {id: WF-DES-P0-06, criterion: Workflows persona scope aligns across catalogue, navigation, route, UI, server actions and RLS.}
+  - {id: WF-DES-P0-07, criterion: Published config_versions are immutable at the database boundary.}
+  - {id: WF-DES-P0-08, criterion: Publishing requires a distinct authenticated approver through one protected server boundary; direct status update cannot bypass it.}
+  - {id: WF-DES-P0-09, criterion: Workflow definition create/save/publish/retire/rollback changes append canonical audit events.}
+  - {id: WF-DES-P0-10, criterion: row_version is read, submitted and enforced so stale edits cannot overwrite.}
+  - {id: WF-DES-P0-11, criterion: Scheduled activation does not make a future version immediately active and is proven by runtime selection.}
+  - {id: WF-DES-P0-12, criterion: In-flight records remain pinned to their original workflow version; new packages use the governed effective version.}
+  - {id: WF-DES-P0-13, criterion: Review, Approved, Scheduled, Retired and Rolled Back states are exact rather than approximated.}
+  - {id: WF-DES-P0-14, criterion: Validation, simulation and side-effect/provider states cannot imply unavailable success.}
+  - {id: WF-DES-P0-15, criterion: All source errors, empty, unauthorized, stale, conflict and partial-degradation states remain distinguishable.}
+  - {id: WF-DES-P0-16, criterion: No design or runtime claim upgrades 19 source rows, two MVP3 rows or all 478 rows without exact evidence.}
+  - {id: WF-DES-P0-17, criterion: One collision-free writer is named only after P0-01 through P0-16 pass.}
+
+p1_stops:
+  - {id: WF-DES-P1-01, criterion: Workflow Library and consolidated Designer task order are explicit.}
+  - {id: WF-DES-P1-02, criterion: Every object family, lifecycle, guard, role, side effect and version consequence is progressively disclosed.}
+  - {id: WF-DES-P1-03, criterion: Simulation happy/exception paths have truthful fixture, result, audit and replay provenance.}
+  - {id: WF-DES-P1-04, criterion: All seven viewports pass without hidden actions, clipped state graphs or two-dimensional page scroll.}
+  - {id: WF-DES-P1-05, criterion: English/LTR and approved Arabic/RTL have semantic and task-order parity.}
+  - {id: WF-DES-P1-06, criterion: Light/dark modes preserve contrast and non-color status meaning.}
+  - {id: WF-DES-P1-07, criterion: Keyboard, roving focus, visible focus, live announcements, zoom, reflow and reduced motion pass.}
+  - {id: WF-DES-P1-08, criterion: Exact route, screen, design, requirement, acceptance, component, action, table, policy, event, test and evidence links are complete.}
+  - {id: WF-DES-P1-09, criterion: Fixed-viewport visual comparison uses WA-DES-014 at 1240x880 plus governed responsive evidence.}
+
+governance_decisions:
+  - id: WF-DES-DEC-01
+    decision: Confirm WA-DES-014 as primary, CD-051 as logical supplement and WA-DES-015 as secondary overview.
+  - id: WF-DES-DEC-02
+    decision: Retrieve/fingerprint CD-051 R2 and reconcile the CD-043 upstream identity collision.
+  - id: WF-DES-DEC-03
+    decision: Decide workflow_admin-only versus broader config-writer permissions.
+  - id: WF-DES-DEC-04
+    decision: Approve a protected mutation boundary that prevents direct publish and published edits.
+  - id: WF-DES-DEC-05
+    decision: Approve canonical workflow-definition audit events and denial evidence.
+  - id: WF-DES-DEC-06
+    decision: Approve end-to-end row_version concurrency and scheduled activation semantics.
+  - id: WF-DES-DEC-07
+    decision: Resolve DEC-003 calendar/value authority before any SLA numbers appear.
+  - id: WF-DES-DEC-08
+    decision: Define simulator fixture, persisted replay and evidence contracts.
+  - id: WF-DES-DEC-09
+    decision: Define provider/side-effect fallback and notification-delivery truth.
+  - id: WF-DES-DEC-10
+    decision: After independent P0/P1 review, name one bounded design writer; implementation remains separately gated.
+
+collision_safe_design_lease:
+  current_state: NOT_ISSUABLE
+  prerequisites:
+    - Resolve all P0 stops and governance decisions.
+    - Retrieve and register CD-051 package or formally limit its authority to logical requirements.
+    - Recheck every active writer touching WA-DES-014, WA-DES-015, shared Admin shell or workflow evidence.
+    - Sponsor accepts one exact correction scope.
+  proposed_writer_boundary:
+    editable_target: WA-DES-014 only
+    secondary_read_only: WA-DES-015 workflows state
+    logical_read_only: CD-051 after retrieval
+    must_preserve:
+      - all other registered design files and WA-DES-015 states
+      - SCR-ADM-050/051 identities
+      - M9 and 478-row preservation
+      - current fail-closed provider and policy holds
+    prohibited_parallel_writers:
+      - any writer touching SAQEEL Admin Workflow Builder.dc.html
+      - any writer touching WA-DES-015 workflows selector/state
+      - any writer touching CD-051 package or shared Admin shell
+      - any writer touching the same workflow evidence index
+  implementation_boundary: >-
+    A later implementation lease must separately name application, migration,
+    test and evidence files. Design acceptance grants no product-code authority.
+
+reviewer_recommendation:
+  recommendation: RETURN_FOR_CONTRACT_AND_DESIGN_CORRECTION
+  sponsor_business_decision: >-
+    Keep WA-DES-014 as the primary route design, but do not issue a writer yet.
+    First close the published-mutation, maker-checker, audit, concurrency,
+    scheduling, permission and SLA-policy gaps; retrieve CD-051; then correct
+    WA-DES-014 without inventing behavior or values.
+
+safe_follow_on:
+  task_id: M9-ADMIN-FORMS-DESIGN-AUTHORITY-REVIEW-038
+  objective: >-
+    After an orchestrator collision check, read-only validate the registered
+    Admin Form Builder design and governed forms route/components without
+    touching Workflows, Risk, Integration Hub, Planning or Audit.
+  constraints:
+    - Do not start if another active lane owns Admin Forms or its design sources.
+    - No live design, code, tests, data, mappings, branches, leases, main, setup/Inspection or stash mutation.

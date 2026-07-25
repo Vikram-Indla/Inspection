@@ -1,0 +1,195 @@
+schema_version: "1.0"
+certificate_id: KIMI-M11-DISPATCH-VALIDATOR-COVERAGE-CERTIFICATE-065
+status: READ_ONLY_INDEPENDENT_COVERAGE_CERTIFIED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Independently certify that packet 064 covers every declared manifest and
+  lease field exactly once, uses unique mutation IDs, and deterministically
+  blocks every field and cross-field authority failure.
+
+authority:
+  mutation_matrix:
+    packet: KIMI-M11-DISPATCH-VALIDATOR-MUTATION-MATRIX-064
+    sha256: 97c3ec1f69abe7f2f4083b486aa865f4bb766f0afd648e807f6e2f6ef971d1c0
+  example_pack: KIMI-M11-DISPATCH-MANIFEST-DRY-VALIDATOR-EXAMPLES-063
+  conformance_spec: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+
+hard_boundary:
+  - "Read-only independent parsing and this one owned certificate."
+  - "No real manifest, option, identity, owner, worktree, branch or lease."
+  - "No fetch, checkout, merge, push, shared-control edit, implementation, QA, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+manifest_field_coverage:
+  expected: 22
+  observed_rows: 22
+  unique_fields: 22
+  missing_fields: []
+  duplicate_fields: []
+  schema_match: PASS
+  fields:
+    canonical_repository: M064-M-001
+    product_control_ref: M064-M-002
+    product_control_commit: M064-M-003
+    work_queue_path: M064-M-004
+    work_queue_sha256: M064-M-005
+    current_slice_path: M064-M-006
+    current_slice_sha256: M064-M-007
+    coordination_control_ref: M064-M-008
+    coordination_control_commit: M064-M-009
+    lease_registry_path: M064-M-010
+    lease_registry_sha256: M064-M-011
+    task_id: M064-M-012
+    actor: M064-M-013
+    worktree: M064-M-014
+    branch: M064-M-015
+    exact_leased_paths: M064-M-016
+    exact_database_objects: M064-M-017
+    mode: M064-M-018
+    expiry_or_release_condition: M064-M-019
+    independent_reviewer: M064-M-020
+    preservation_floor: M064-M-021
+    requirement_credit: M064-M-022
+
+lease_field_coverage:
+  expected: 16
+  observed_rows: 16
+  unique_fields: 16
+  missing_fields: []
+  duplicate_fields: []
+  schema_match: PASS
+  fields:
+    task_id: M064-L-001
+    named_owner: M064-L-002
+    repository: M064-L-003
+    worktree: M064-L-004
+    branch: M064-L-005
+    exact_application_paths: M064-L-006
+    exact_test_paths: M064-L-007
+    exact_database_objects: M064-L-008
+    migration_allocation_rule: M064-L-009
+    predecessor_commit: M064-L-010
+    baseline_hash: M064-L-011
+    start_time: M064-L-012
+    expiry_or_release_condition: M064-L-013
+    independent_reviewer: M064-L-014
+    prohibited_paths: M064-L-015
+    collision_stop_conditions: M064-L-016
+
+cross_field_coverage:
+  control_ref:
+    expected: 6
+    observed: 6
+    result: PASS
+    covered:
+      - REF_COMMIT_PAIR_MISMATCH
+      - PRODUCT_BLOB_HASH_MISMATCH
+      - COORDINATION_BLOB_HASH_MISMATCH
+      - ABSENCE_INTERPRETED_AS_EMPTY
+      - REPOSITORY_IDENTITY_SPLIT
+      - AUTHORITATIVE_REF_UNAVAILABLE
+  ownership:
+    expected: 6
+    observed: 6
+    result: PASS
+    covered:
+      - IMPLEMENTATION_QA_OWNER_OVERLAP
+      - IMPLEMENTATION_REVIEWER_OVERLAP
+      - QA_REVIEWER_INDEPENDENCE_UNPROVEN
+      - ACTOR_OWNER_MISMATCH
+      - TASK_LEASE_MISMATCH
+      - CONCURRENT_SCOPE_COLLISION
+  preservation:
+    expected: 10
+    observed: 10
+    result: PASS
+    covered:
+      - CR_337_DROPPED
+      - REQUIREMENT_COUNT_REDUCED
+      - TEST_CASE_REMOVED
+      - DUPLICATE_OR_MISSING_TEST_CASE
+      - PROOF_CLUSTER_REMOVED
+      - QA_PATH_REMOVED
+      - QA_PATH_DUPLICATE_OR_MISSING
+      - BLOCKER_SILENTLY_DROPPED
+      - COVERAGE_WAIVER_OR_DELETION
+      - CREDIT_BEFORE_RUNTIME_CERTIFICATION
+  option_specific:
+    expected: 3
+    observed: 3
+    result: PASS
+    covered_options:
+      - EXECUTION_TASK_ABSORBS_M11
+      - M11_CHAIN_OWNS_VIRTUAL
+      - KEEP_BOTH_BLOCKED
+
+global_row_integrity:
+  expected_rows: 63
+  observed_rows: 63
+  unique_ids: 63
+  duplicate_ids: []
+  missing_declared_rows: []
+  deterministic_BLOCK_rows: 63
+  non_BLOCK_rows: 0
+  result: PASS
+
+disposition_integrity:
+  explicit_RETURN_for_correctable_response_gap: 18
+  explicit_BLOCK_for_authority_or_coverage_violation: 20
+  cross_field_rows_inheriting_dispatch_BLOCK: 25
+  total: 63
+  rule: >-
+    RETURN is only the response-correction route. Every one of the 63 rows has
+    dispatch_result BLOCK, including the 18 correctable gaps and 25 cross-field
+    rows that inherit the hard execution stop.
+  result: PASS
+
+certification:
+  verdict: ACK
+  exact_reason: ACK_COMPLETE_UNIQUE_FAIL_CLOSED_MUTATION_COVERAGE
+  manifest_field_coverage: PASS
+  lease_field_coverage: PASS
+  cross_field_coverage: PASS
+  unique_ID_coverage: PASS
+  deterministic_dispatch_BLOCK_coverage: PASS
+  real_manifests_created: 0
+  real_leases_created: 0
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-DISPATCH-VALIDATOR-REGRESSION-DRIFT-MONITOR-066
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Re-hash packets 058-065 and re-run the field/ID/block counts after any
+    control-ref, schema, decision or lease change, with an immediate synthetic
+    removal/duplication fallback if nothing changed.
+  prohibited:
+    - "No real manifest, option, identity, owner, branch, worktree, lease, fetch, merge, push, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  manifest_fields_expected: 22
+  manifest_fields_unique: 22
+  lease_fields_expected: 16
+  lease_fields_unique: 16
+  cross_field_rows_expected: 25
+  cross_field_rows_observed: 25
+  total_rows_expected: 63
+  total_rows_observed: 63
+  unique_IDs_observed: 63
+  deterministic_BLOCKs_observed: 63
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

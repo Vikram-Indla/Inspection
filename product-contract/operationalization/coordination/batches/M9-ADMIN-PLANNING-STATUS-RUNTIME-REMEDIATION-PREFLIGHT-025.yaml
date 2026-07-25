@@ -1,0 +1,248 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-STATUS-RUNTIME-REMEDIATION-PREFLIGHT-025
+title: Collision-safe Planning Status authority remediation preflight
+status: PREFLIGHT_READY_ARCHITECTURE_DESIGN_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-PLANNING-STATUS-RUNTIME-PERMISSION-MAPPING-024
+  design_dependency: M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047
+  route: /admin/planning/status
+  package: M9
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  requirements:
+    - [MVP1-M02-015, CR-067, WA-AC-0067]
+    - [MVP1-M02-016, CR-068, WA-AC-0068]
+    - [MVP1-M02-008, CR-060, WA-AC-0060]
+    - [MVP1-M02-009, CR-061, WA-AC-0061]
+    - [MVP1-M02-010, CR-062, WA-AC-0062]
+    - [MVP1-M02-014, CR-066, WA-AC-0066]
+    - REQ-R0C-00204
+    - REQ-R0C-00205
+    - REQ-R0C-00206
+    - REQ-R0C-00207
+    - REQ-R0C-01452
+    - STM-PLAN-001
+    - STM-PLAN-002
+    - STM-VIS-001
+    - STM-VIS-002
+    - STM-VIS-003
+  web_admin_acceptance:
+    - WA-M9-AC-001 through WA-M9-AC-006
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+architecture_decision:
+  id: ST-DEC-001
+  question: What is the one executable and inspectable Planning transition authority?
+  permitted_options:
+    - id: CONFIG_DRIVEN_RUNTIME
+      meaning: >-
+        A governed effective config version is resolved and executed by every
+        Planning transition through one non-bypassable engine.
+      obligations:
+        - exact Planning object/scope identity
+        - maker-checker and immutable published versions
+        - effective-time resolution and in-flight version binding
+        - deterministic validation and transition execution
+        - migration from existing RPC/action guards without behavioral loss
+    - id: VERIFIED_COMPILED_PROJECTION
+      meaning: >-
+        Existing canonical RPC, trigger, enum and action contracts remain the
+        executable authority; a generated projection truthfully describes the
+        deployed transition graph and its evidence.
+      obligations:
+        - machine-readable source inventory and version fingerprint
+        - proof projection matches every runtime guard
+        - explicit unmodeled/degraded states
+        - no claim that editing config_versions changes runtime
+  prohibited_option: >-
+    Keep displaying arbitrary config_versions or a static fallback while real
+    enforcement remains dispersed and call it authoritative.
+
+supporting_decisions:
+  - id: ST-DEC-002
+    question: Which persona may view operational rules, unpublished detail and capability assignments?
+  - id: ST-DEC-003
+    question: How are Visit Plan, Visit, operational and execution states separated in the status model?
+  - id: ST-DEC-004
+    question: Which consequences must commit atomically with each transition and which may use a durable outbox?
+  - id: ST-DEC-005
+    question: How are old in-flight objects bound when a new rule version activates?
+
+proposed_lease_sequence:
+  - lease_id: ST-LEASE-CONTRACT-001
+    order: 1
+    owner: ONE_TRANSITION_CONTRACT_OWNER
+    purpose: Decide ST-DEC-001..005 and produce the exact aggregate/transition/consequence matrix.
+    artifacts_only:
+      - executable authority decision
+      - aggregate state taxonomy
+      - current-to-target transition matrix
+      - consumer and consequence inventory
+      - version binding and rollback contract
+    do_not_touch: [product code, database, tests, data, design]
+  - lease_id: ST-LEASE-DB-001
+    order: 2
+    owner: ONE_DATABASE_WORKFLOW_ENGINEER
+    purpose: Add the selected non-bypassable transition/effective-version boundary.
+    proposed_paths:
+      - one new forward-only migration
+      - one new authenticated transition-negative probe
+    forbidden_overlap:
+      - existing migrations
+      - Workflow remediation migration
+      - Audit replay remediation
+      - Planning expiry ownership
+      - remote Supabase apply
+    entry_criteria:
+      - ST-DEC-001..005 approved.
+      - Workflow packet 020 prerequisites reconciled if CONFIG_DRIVEN_RUNTIME is selected.
+      - Migration name, database owner and rollback-forward plan recorded.
+    exit_criteria:
+      - Every invalid state pair is rejected through REST and RPC paths.
+      - Every valid transition applies its mandatory audit/lifecycle/consequence contract.
+      - Effective version and in-flight binding are deterministic.
+      - No published transition definition is mutable.
+  - lease_id: ST-LEASE-INTEGRATION-001
+    order: 3
+    owner: ONE_CROSS_MODULE_INTEGRATION_ENGINEER
+    purpose: Converge publish, Visit actions and expiry on the selected authority.
+    proposed_scope:
+      - Planning bulk and single publish RPC adapters
+      - Visit return, republish and cancel adapters
+      - Expiry engine adapter
+      - notification and semantic lifecycle outbox
+    collision_rule: >-
+      File-level owners for Planning, Visits, Field, Operations, Workflow,
+      Notifications and Audit must consent before any shared path is leased.
+    exit_criteria:
+      - No direct state mutation bypass remains.
+      - Current accepted guards and failure codes remain preserved.
+      - State, audit and required consequences cannot partially commit.
+  - lease_id: ST-LEASE-PROJECTION-001
+    order: 4
+    owner: ONE_READ_MODEL_ENGINEER
+    purpose: Build a bounded verified status-rules projection.
+    proposed_paths:
+      - new server-side projection/resolver module
+      - route-local types and adapters
+    exit_criteria:
+      - Exact aggregate/object/scope and effective version are returned.
+      - Projection exposes source fingerprint, verification state and gaps.
+      - Provider/source failure returns unavailable, never fabricated rules.
+  - lease_id: ST-LEASE-UI-001
+    order: 5
+    owner: ONE_M9_WEB_ENGINEER
+    purpose: Implement accepted Design 047 against the verified projection.
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/planning/status/page.tsx
+      - optional route-local components and layout
+    entry_criteria:
+      - Stable accepted Design 047 revision.
+      - Projection contract frozen.
+    exit_criteria:
+      - Visit Plan, Visit and operational/execution state sets are visibly separated.
+      - Live, future, retired, unavailable, partial and mismatch states are explicit.
+      - Capability effects come from governed data.
+      - Route authorization matches ST-DEC-002.
+  - lease_id: ST-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    purpose: Certify transition enforcement, projection parity and browser evidence.
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-planning-status-runtime.spec.ts
+      - new supabase/tests/m9_planning_status_transition_probe.sql
+      - external evidence under approved INSPECTION_DOCS_ROOT
+
+fixture_plan:
+  personas:
+    - planner
+    - ops
+    - workflow_admin
+    - security_admin
+    - reviewer
+    - leadership
+    - inspector
+    - unauthorized_authenticated_user
+    - anonymous
+  records:
+    - one Visit Plan in each valid lifecycle state
+    - one Visit in draft, published, returned, cancelled and expired
+    - one Visit whose inspection has started
+    - one in-flight Visit bound to prior rules
+    - one future Visit eligible for successor rules
+    - one transition with notification failure
+    - one transition with semantic event failure
+  seeder_rule: Isolated seed_batch_id and cleanup manifest; separate data lease required.
+
+focused_test_matrix:
+  p0:
+    - id: ST-TST-001
+      proof: Page shows the exact deployed Planning authority and source fingerprint, never another workflow.
+    - id: ST-TST-002
+      proof: Source unavailable returns an unavailable state and no static lifecycle.
+    - id: ST-TST-003
+      proof: Displayed state and transition set equals CR-067/STM contracts and the executable engine.
+    - id: ST-TST-004
+      proof: Every invalid transition pair fails through authenticated REST and RPC entry points.
+    - id: ST-TST-005
+      proof: Cancelled and Expired are final; Returned is allowed only before execution.
+    - id: ST-TST-006
+      proof: Draft→Validated→Published publish remains atomic with assignments, packages, notifications and audit.
+    - id: ST-TST-007
+      proof: Return, republish, cancel and expiry cannot commit without mandatory lifecycle/audit consequences.
+    - id: ST-TST-008
+      proof: New rule activation does not change an in-flight object's bound transition path.
+    - id: ST-TST-009
+      proof: Unauthorized personas cannot mutate or inspect restricted transition configuration.
+  p1:
+    - id: ST-TST-010
+      proof: Visit Plan, Visit, operational and execution states remain distinct.
+    - id: ST-TST-011
+      proof: Capability labels and effects equal the live permissions contract.
+    - id: ST-TST-012
+      proof: Legacy and normalized payloads are either losslessly adapted or fail explicitly.
+    - id: ST-TST-013
+      proof: EN/AR, LTR/RTL, light/dark, responsive and keyboard/a11y evidence passes.
+
+protected_regression:
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - apps/web/e2e/cd-027-visit-detail.spec.ts
+  - apps/web/e2e/cd-045-downstream-contract.spec.ts
+  - apps/web/e2e/cd-020-planning-home.spec.ts
+  - apps/web/e2e/cd-021-bulk-targeting.spec.ts
+  - apps/web/e2e/cd-022-identity-lens.spec.ts
+  - apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
+  - apps/web/e2e/cd-026-visit-management.spec.ts
+  - apps/web/e2e/execution-crossmodule-contract.spec.ts
+  - apps/web/e2e/mvp2-m2-02-lifecycles.spec.ts
+  - apps/web/e2e/mvp2-m2-02-governed-transition.spec.ts
+
+collision_register:
+  hotspots:
+    - config_versions policies, version resolver and Workflow actions
+    - visits and visit_plans RLS/triggers
+    - publish_bulk_plan and publish_single_visit
+    - Visit detail and bulk actions
+    - Planning expiry engine
+    - visit_lifecycle_events and audit_events
+    - notification outbox/provider seams
+    - shared shell/navigation
+  active_peer_packets:
+    - M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047
+    - KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+  touched_by_this_lane: false
+  rule: Recheck every path immediately before lease; one owner per file and migration.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the executable-authority and supporting decisions before any code
+    change. Then lease database enforcement, cross-module convergence,
+    verified projection, accepted UI and independent certification separately.
+    Do not authorize a page-only correction and call Planning statuses governed.

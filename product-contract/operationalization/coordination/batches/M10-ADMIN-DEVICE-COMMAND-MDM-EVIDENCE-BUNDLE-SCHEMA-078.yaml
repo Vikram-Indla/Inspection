@@ -1,0 +1,536 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-BUNDLE-SCHEMA-078
+title: Trusted Devices cross-runtime evidence bundle schema
+status: SCHEMA_COMPLETE_NO_EVIDENCE_CREATED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_FUTURE_EVIDENCE_DEFINITION
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  tests_executed: 0
+  evidence_created: 0
+  outcomes_certified: 0
+  reason: >-
+    The schema names future evidence obligations only. No runtime, provider,
+    device, design, data or test evidence is produced or accepted here.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-BUNDLE-SCHEMA-078
+  source_task: DEV-PRE-QA1-02
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+    - M10-ADMIN-DEVICE-COMMAND-MDM-PACKAGE-OFFLINE-CALL-PATH-INVENTORY-076
+    - M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077
+  route: /admin/devices
+  field_routes: ["/field/[visitId]", "/field/inspection/[id]", /field/settings]
+  future_cases: 30
+  do_not_touch:
+    - application, database, offline engine, provider, seed, test and evidence files
+    - live Claude Design, design authority and acceptance records
+    - governance decisions, current slice controls, branches and leases
+    - main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Schema definition only. No evidence directory, index, binary, test output,
+    source, design, provider or database object is changed.
+
+storage_contract:
+  binary_root: ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/m3-06-device-package
+  approved_local_root: /Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/m3-06-device-package
+  git_content:
+    - lightweight machine-readable evidence index
+    - hashes, source bindings, verdicts and external relative paths
+  external_only:
+    - screenshots
+    - videos
+    - Playwright traces
+    - HAR/network captures
+    - console logs containing runtime context
+    - database exports
+    - IndexedDB exports
+    - raw and normalized provider receipts
+    - device observations
+    - accessibility reports
+    - packaged archives
+  prohibited_in_git:
+    - credentials, tokens, cookies, environment files or private keys
+    - binary evidence or provider payload archives
+    - database dumps and device backups
+  run_root_pattern: ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/m3-06-device-package/<run_id>
+  run_id_pattern: M3-06-YYYYMMDDTHHMMSSZ-<short_commit>
+
+bundle_tree:
+  - manifest.yaml
+  - bindings/source.yaml
+  - bindings/requirements.yaml
+  - bindings/design.yaml
+  - bindings/environment.yaml
+  - bindings/personas-devices-provider.yaml
+  - cases/<case_id>/case-result.yaml
+  - cases/<case_id>/database/
+  - cases/<case_id>/audit/
+  - cases/<case_id>/network/
+  - cases/<case_id>/console/
+  - cases/<case_id>/admin-browser/
+  - cases/<case_id>/field-browser/
+  - cases/<case_id>/indexeddb/
+  - cases/<case_id>/provider/
+  - cases/<case_id>/device/
+  - cases/<case_id>/i18n-responsive-a11y/
+  - cases/<case_id>/rollback/
+  - run-summary.yaml
+  - sha256sums.txt
+
+source_revision_binding:
+  required:
+    repository_top_level: /Users/vikramindla/Developer/Inspection
+    git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+    branch: exact
+    commit_sha: full_40_hex
+    working_tree_state: clean_required_for_certification
+    implementation_lease_id: exact
+    reviewer_identity: exact
+    migration_files:
+      value: ordered path plus SHA-256 for every applied migration
+      database_evidence: applied migration/version query
+    test_files:
+      value: path plus SHA-256 for every executed spec/probe/helper
+    runtime_files:
+      value: path plus SHA-256 for every Devices, package, Field and offline file in scope
+    dependency_lock_sha256: exact
+    build_id: exact
+  rejection:
+    - dirty or unknown source state
+    - shortened/ambiguous commit
+    - migration set not proven equal to test database
+    - generated or executed test differs from recorded hash
+
+requirement_binding:
+  required_ids:
+    - MVP2-REQ-0176
+    - MVP2-REQ-0184
+    - MVP2-REQ-0186
+    - MVP2-REQ-0244
+    - MVP2-AC-0176
+    - MVP2-AC-0184
+    - MVP2-AC-0186
+    - MVP2-AC-0244
+    - WA-M8-AC-001
+    - WA-M8-AC-002
+    - WA-M8-AC-003
+    - WA-M8-AC-004
+    - WA-M8-AC-005
+    - WA-M8-AC-006
+  required_fields:
+    - authority_file
+    - authority_sha256
+    - exact_row_or_record_identity
+    - test_case_ids
+    - verdict
+    - evidence_artifact_ids
+
+design_revision_binding:
+  required:
+    module_design_id: CD-056
+    stable_design_page_id: exact_non_null
+    stable_design_page_name: exact
+    stable_revision_id: exact_non_null
+    stable_frame_ids: exact_per_state_and_viewport
+    exported_authority_sha256: exact
+    sponsor_acceptance_record: exact_non_null
+    accepted_locales: [en-LTR, ar-RTL]
+    accepted_themes: [light, dark]
+    accepted_viewports: [desktop-governed, 1024, 412, 390, 320]
+    state_slot_ids: DEV-DS-001..048
+  rejection:
+    - latest mutable design URL without stable revision
+    - screenshot without page/frame identity
+    - unreviewed Arabic
+    - visual evidence captured against a different revision
+
+environment_identity_binding:
+  required:
+    supabase_project_ref: exact_non_secret
+    database_version: exact
+    applied_migration_head: exact
+    seed_batch_id: exact
+    seed_manifest_sha256: exact
+    provider_environment_id: exact_non_secret_or_formal_hold
+    provider_contract_version: exact_non_null_for_live_provider_cases
+    provider_auth_key_id: identifier_only_no_secret
+    device_inventory_id: exact_non_production
+    device_os_version: exact
+    application_version: exact
+    browser_name_version: exact
+    operating_system: exact
+    pwa_install_mode: exact
+    timezone: exact
+    locale: exact_per_capture
+    viewport_and_device_scale: exact_per_capture
+    network_profile: connected_offline_interrupted_or_reconnect
+
+identity_binding:
+  persona_record:
+    fields:
+      - test_persona_id
+      - authenticated_user_id
+      - approved_role_and_capabilities
+      - assigned_device_id
+      - assignment_scope
+      - requester_or_approver_role
+    privacy: Use approved non-production identities; redact human PII from presentation artifacts without hiding stable test IDs.
+  device_record:
+    fields:
+      - device_database_id
+      - device_identifier
+      - provider_device_reference
+      - assigned_user_id
+      - trust_state_and_version
+      - app_policy_version
+      - attestation_evidence_id_and_time
+    rule: A browser-generated identifier alone cannot certify a provider-managed device.
+  provider_record:
+    fields:
+      - provider_name_and_environment
+      - endpoint_or_adapter_version
+      - command_id
+      - correlation_id
+      - idempotency_key
+      - authenticated_issuer_or_key_id
+      - raw_receipt_sha256
+      - normalized_receipt_sha256
+    rule: Seeded or hand-written receipt rows are marked fixture_only and cannot support a live verdict.
+
+artifact_manifest_schema:
+  required_fields:
+    - artifact_id
+    - case_id
+    - artifact_type
+    - external_relative_path
+    - mime_type
+    - size_bytes
+    - sha256
+    - captured_at_utc
+    - collector_identity
+    - environment_id
+    - source_commit_sha
+    - design_revision_id
+    - redaction_status
+    - contains_secrets
+    - authority_refs
+    - chain_predecessor_sha256
+  invariants:
+    - sha256 is 64 lowercase hexadecimal characters
+    - contains_secrets must be false in every shareable/indexed artifact
+    - path remains under the approved external run root
+    - timestamps are UTC and monotonic within the case chain
+    - chain_predecessor_sha256 links capture order without rewriting originals
+    - redacted derivatives have distinct hashes and retain the original restricted artifact reference
+    - missing required artifact prevents PASS
+
+artifact_profiles:
+  COMMON:
+    required:
+      - BIND_SOURCE
+      - BIND_REQUIREMENTS
+      - BIND_DESIGN
+      - BIND_ENVIRONMENT
+      - IDENTITY
+      - CASE_RESULT
+      - SHA256_LEDGER
+      - REVIEW_VERDICT
+  DB_ATOMIC:
+    required:
+      - DB_BEFORE
+      - DB_OPERATION_RESULT
+      - DB_AFTER
+      - ZERO_OR_EXPECTED_DELTA
+      - AUDIT_ROWS
+      - TRANSACTION_ID_OR_CORRELATION
+  ADMIN_UI:
+    required:
+      - ADMIN_TRACE
+      - ADMIN_SCREENSHOT_EN_LIGHT
+      - ADMIN_SCREENSHOT_EN_DARK
+      - ADMIN_SCREENSHOT_AR_LIGHT
+      - ADMIN_SCREENSHOT_AR_DARK
+      - ADMIN_CONSOLE
+      - ADMIN_NETWORK
+  FIELD_UI:
+    required:
+      - FIELD_TRACE
+      - FIELD_SCREENSHOT_EN_LIGHT
+      - FIELD_SCREENSHOT_EN_DARK
+      - FIELD_SCREENSHOT_AR_LIGHT
+      - FIELD_SCREENSHOT_AR_DARK
+      - FIELD_CONSOLE
+      - FIELD_NETWORK
+  LOCAL_STORE:
+    required:
+      - INDEXEDDB_BEFORE
+      - INDEXEDDB_AFTER
+      - CACHE_ENVELOPE
+      - OUTBOX_BEFORE
+      - OUTBOX_AFTER
+      - LOCAL_STORE_DELTA
+  NETWORK_DEGRADED:
+    required:
+      - CONNECTED_BASELINE
+      - NETWORK_TRANSITION
+      - OFFLINE_OR_INTERRUPTED_TRACE
+      - RECONNECT_TRACE
+      - RETRY_COUNT_AND_CORRELATION
+  PROVIDER_LIVE:
+    required:
+      - PROVIDER_DISPATCH
+      - PROVIDER_RAW_RECEIPT_RESTRICTED
+      - PROVIDER_RECEIPT_SAFE_VIEW
+      - RECEIPT_AUTHENTICITY_RESULT
+      - RECEIPT_CORRELATION_RESULT
+      - NORMALIZED_IMMUTABLE_RECEIPT
+    rule: Missing genuine non-production receipt produces BLOCKED, never PASS.
+  DEVICE_LIVE:
+    required:
+      - DEVICE_INVENTORY_BEFORE
+      - DEVICE_COMMAND_OBSERVATION
+      - DEVICE_INVENTORY_AFTER
+      - DEVICE_LOCAL_EFFECT
+      - DEVICE_RECEIPT
+    rule: Required for remote-wipe effect/completion and duplicate-delivery certification.
+  I18N_RESP_A11Y:
+    required:
+      - EN_LTR_COPY_ASSERTIONS
+      - AR_RTL_COPY_ASSERTIONS
+      - BIDI_MACHINE_VALUE_ASSERTIONS
+      - DESKTOP_GOVERNED_CAPTURE
+      - VIEWPORT_1024_CAPTURE
+      - VIEWPORT_412_CAPTURE
+      - VIEWPORT_390_CAPTURE
+      - VIEWPORT_320_CAPTURE
+      - KEYBOARD_TRACE
+      - SEMANTIC_TREE
+      - AXE_OR_EQUIVALENT_RESULT
+      - CONTRAST_FORCED_COLORS_REDUCED_MOTION_TOUCH_RESULT
+  ROLLBACK:
+    required:
+      - CLEANUP_PLAN
+      - CLEANUP_RESULT
+      - IMMUTABLE_ROWS_PRESERVED
+      - FIXTURE_RESIDUAL_COUNT
+      - PROVIDER_TEST_DEVICE_RESET_RESULT
+
+case_evidence_matrix:
+  foundation:
+    - case_id: DEV-XRT-FND-01
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: One device/manifest/hash survives download, open, cache, replay and immutable submit end to end.
+    - case_id: DEV-XRT-FND-02
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Unregistered denial at all four operations with zero server delta and retained recoverable work.
+    - case_id: DEV-XRT-FND-03
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Non-compliant app denial bound to exact policy version.
+    - case_id: DEV-XRT-FND-04
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Snapshot, manifest and cache hashes match; mismatch path is blocked.
+    - case_id: DEV-XRT-FND-05
+      profiles: [COMMON, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Two real browser stores remain isolated across session change.
+    - case_id: DEV-XRT-FND-06
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Authority outage shows unknown/held, preserves data and recovers only after fresh read.
+  suspension:
+    - case_id: DEV-XRT-SUS-01
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: One versioned request with no false acknowledgement/effect/completion.
+    - case_id: DEV-XRT-SUS-02
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Authoritative suspension denies new download/open and writes no cache.
+    - case_id: DEV-XRT-SUS-03
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Online cached open rechecks authority and follows approved cache policy.
+    - case_id: DEV-XRT-SUS-04
+      profiles: [COMMON, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Offline cached state is unverified, new execution blocked and local work retained.
+    - case_id: DEV-XRT-SUS-05
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Reconnect replay is denied before mutation and FIFO work remains recoverable.
+    - case_id: DEV-XRT-SUS-06
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Queued submit creates no submission/status change and retains final local snapshot.
+    - case_id: DEV-XRT-SUS-07
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, PROVIDER_LIVE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Genuine accepted receipt remains accepted/not-confirmed and never appears completed.
+  package_expiry:
+    - case_id: DEV-XRT-EXP-01
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Exact invalidation scope and zero out-of-scope effect.
+    - case_id: DEV-XRT-EXP-02
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Invalidated manifest denies download/open with no cache or inspection delta.
+    - case_id: DEV-XRT-EXP-03
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Cached package is labeled local but not current and official use is blocked.
+    - case_id: DEV-XRT-EXP-04
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Offline invalidation applies once on reconnect using approved local-cache rule.
+    - case_id: DEV-XRT-EXP-05
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Replay is held with zero server mutation and approved rescue visibility only.
+    - case_id: DEV-XRT-EXP-06
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Queued submission is denied and retained under approved in-progress policy.
+    - case_id: DEV-XRT-EXP-07
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, PROVIDER_LIVE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Duplicate/late genuine receipt yields one correlation and at most one invalidation effect.
+  remote_wipe:
+    - case_id: DEV-XRT-WIP-01
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: One wipe request remains pending and never claims local destruction.
+    - case_id: DEV-XRT-WIP-02
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, PROVIDER_LIVE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Genuine provider acceptance without device effect remains not-confirmed.
+    - case_id: DEV-XRT-WIP-03
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, PROVIDER_LIVE, DEVICE_LIVE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Real enrolled device applies approved wipe scope once before verified completion.
+    - case_id: DEV-XRT-WIP-04
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Offline device remains wipe-pending; Field fails closed without false destruction.
+    - case_id: DEV-XRT-WIP-05
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, PROVIDER_LIVE, DEVICE_LIVE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Duplicate delivery to reconnecting real device creates exactly one wipe effect.
+    - case_id: DEV-XRT-WIP-06
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, DEVICE_LIVE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Relaunch proves exact approved local-data scope and immutable server preservation.
+    - case_id: DEV-XRT-WIP-07
+      profiles: [COMMON, DB_ATOMIC, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Wipe-pending/wiped denies cached open, sync and submit with zero mutation.
+    - case_id: DEV-XRT-WIP-08
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, PROVIDER_LIVE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Timeout or unverifiable genuine response is quarantined and cannot complete wipe.
+  cross_cutting:
+    - case_id: DEV-XRT-XCT-01
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Concurrent contradictory commands yield one winner, one conflict and at most one dispatch/effect.
+    - case_id: DEV-XRT-XCT-02
+      profiles: [COMMON, DB_ATOMIC, ADMIN_UI, FIELD_UI, LOCAL_STORE, NETWORK_DEGRADED, I18N_RESP_A11Y, ROLLBACK]
+      focal_proof: Forced audit failure atomically rolls back command, state, package effect and dispatch.
+
+browser_capture_contract:
+  all_browser_cases:
+    - Begin recording before navigation or network transition.
+    - Capture the actor/persona indicator, route, source state, action and final state.
+    - Save Playwright trace, screenshot, network log and console log from the same run.
+    - Assert zero uncaught console errors; approved diagnostic warnings are enumerated explicitly.
+    - Machine identifiers use bidi isolation and remain legible in both directions.
+  i18n:
+    - Repeat the focal state in EN/LTR and reviewed AR/RTL.
+    - Record translation authority revision and prove no English fallback in Arabic.
+    - Long reasons, names and identifiers must not clip or reverse semantic order.
+  responsive:
+    - Capture desktop governed viewport, 1024, 412, 390 and 320.
+    - Prove action/evidence access without horizontal page loss or hidden completion state.
+    - Device history may scroll within an accepted container only when the design authority allows it.
+  accessibility:
+    - Keyboard-only action, confirmation, denial, retry and evidence traversal.
+    - Focus capture before/after every error or asynchronous status change.
+    - Screen-reader semantic tree includes status, actor, command stage and recovery.
+    - Run automated accessibility plus manual contrast, forced-colors, reduced-motion and touch-target checks.
+
+network_console_contract:
+  network:
+    - HAR or equivalent records request method, safe URL, status, correlation and duration.
+    - Authorization headers, cookies, tokens and signed secrets are removed before shareable export.
+    - Raw restricted provider receipt remains separate from the redacted network view.
+    - Zero-dispatch cases include provider gateway evidence proving no outbound command.
+  console:
+    - Capture browser console from navigation start through final assertion.
+    - Raw database/provider error text must not appear in user-facing console telemetry without approved redaction.
+    - Expected controlled test diagnostics are listed in case-result.yaml; every other error fails the case.
+
+database_audit_rollback_contract:
+  before_after:
+    - device row/version
+    - command and approval rows
+    - manifest/invalidation rows
+    - package access events
+    - inspection and submission version rows
+    - relevant evidence rows
+    - immutable audit/receipt rows
+  atomicity:
+    - Use one correlation identity across action, database, provider and browser evidence.
+    - Negative cases prove zero unauthorized row/provider/local effect.
+    - Positive cases prove exactly the approved changes and no unrelated delta.
+  rollback:
+    - Cleanup may remove test fixtures only through the approved cleanup plan.
+    - Immutable historical rows are never edited/deleted to make cleanup pass.
+    - Provider test device reset is separately evidenced.
+    - Residual counts and hashes are compared to pre-run baseline.
+
+verdict_schema:
+  allowed: [PASS, FAIL, BLOCKED, NOT_RUN]
+  PASS:
+    - all required profiles present and hash-valid
+    - all assertions pass at the same source/design/environment binding
+    - no prohibited mock or privileged shortcut
+    - rollback/fixture residual proof complete
+  FAIL:
+    - assertion fails or unauthorized/duplicate/silent-loss/false-completion behavior occurs
+  BLOCKED:
+    - authority, provider, device, accepted design or required evidence is unavailable
+    - skipped provider-live case remains BLOCKED
+  NOT_RUN:
+    - execution has not started
+  prohibited:
+    - PARTIAL_PASS
+    - ASSUMED_PASS
+    - SOURCE_ONLY_PASS
+    - MOCKED_PROVIDER_PASS
+
+run_summary_schema:
+  required:
+    - run_id
+    - started_at_utc
+    - completed_at_utc
+    - source_commit_sha
+    - design_revision_id
+    - environment_id
+    - provider_contract_version_or_hold
+    - device_inventory_ids
+    - case_counts_by_verdict
+    - requirement_counts_by_verdict
+    - failed_or_blocked_case_ids
+    - rollback_status
+    - reviewer_recommendation
+    - manifest_sha256
+  completion_rule: >-
+    Module completion is prohibited unless every required case is PASS, every
+    genuine-receipt/device-live obligation is satisfied, rollback is clean and
+    independent review binds the same source/design/environment revisions.
+
+validation:
+  expected_cases: 30
+  expected_groups: 5
+  expected_profiles: 10
+  case_ids_unique: PASS_30_OF_30
+  all_077_cases_mapped: PASS
+  profile_references_resolve: PASS
+  yaml_parse: PASS
+  diff_check: PASS
+
+safe_successor:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-IMPLEMENTATION-LEASE-SPLIT-PREFLIGHT-079
+  mode: READ_ONLY
+  purpose: >-
+    Define a collision-free future lease split across governance, database,
+    provider adapter, Admin, Field/offline, seed and QA using packets 061-078,
+    without granting leases or modifying control files.

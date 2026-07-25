@@ -1,0 +1,196 @@
+packet:
+  id: CODEX-M3-OPERATIONS-SEQUENCE-011-INTERNAL-PREFLIGHT-012
+  title: Internal preflight contradiction and evidence audit of Sequence 011
+  status: BLOCKED
+  classification: INTERNAL_PREFLIGHT_ONLY
+  independent_certification: false
+  activation_authority: false
+  reviewed_packet: CODEX-M3-OPERATIONS-CORRECTED-GOVERNANCE-SEQUENCE-011
+  prior_certification: CODEX-M3-OPERATIONS-PRE-ACTIVATION-CERTIFICATION-010
+  reviewer: Codex orchestration live watch
+  warning: >-
+    This is not the queued independent certification. It may return a draft for
+    correction or block action, but it cannot activate M3 or self-approve a
+    sponsor decision.
+
+evidence_snapshot:
+  repository: /Users/vikramindla/Developer/Inspection
+  worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  head: 9687dbc390e3a85157ce1f43e0173247a662efd8
+  current_slice:
+    task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+    batch_id: WA-P1-M2-BATCH-002
+    status: AWAITING_PRODUCT_OWNER_APPROVAL
+    branch: revamp
+    baseline_sha: cf705db0
+  active_lease_registry:
+    claude_map_correction_row_present: false
+  branch_anchors:
+    map_correction:
+      head: c48f71cc46ce027927224109f7b070ca489f2b15
+      dirty_file_count: 7
+    f0:
+      head: c8bdf6d185d0326454f8d95247cfbaab10f47ae4
+      observed_dirt:
+        - apps/web/node_modules deleted worktree state
+    reconciled_base: missing
+  authority_counts:
+    CR_430_through_CR_448: 19
+    WA_M3_AC_001_through_006: 6
+  DEC_002:
+    status: Open
+    priority: P0
+    includes: GPS accuracy, arrival radius, geofence policy, and telemetry frequency
+  mac:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+
+overall_result:
+  result: BLOCKED
+  reason: >-
+    Sequence 011 remains a safe non-executable draft, but two ownership details
+    require return correction and all activation prerequisites remain absent.
+
+PASS_findings:
+  - id: PREFLIGHT-PASS-001
+    subject: Draft-only boundary
+    evidence: Packet 011 explicitly keeps M3 inactive and prohibits implementation, dispatch, branch, lease, migration, and protected mutations.
+  - id: PREFLIGHT-PASS-002
+    subject: Current slice preservation
+    evidence: Packet 011 preserves M2 as authoritative and does not claim concurrent M3 authority.
+  - id: PREFLIGHT-PASS-003
+    subject: M8 ownership correction
+    evidence:
+      - PACKAGE_MANIFEST.csv assigns /admin/access to M8.
+      - Packet 011 assigns /admin/access and national-grant administration follow-up to M8.
+      - Packet 011 assigns no national-grant role to M9.
+  - id: PREFLIGHT-PASS-004
+    subject: M3 ETA boundary
+    evidence:
+      - PACKAGE_MANIFEST.csv includes /api/routing/eta in M3.
+      - Packet 011 includes apps/web/src/app/api/routing/eta/route.ts as UNCHANGED_READ_ONLY.
+  - id: PREFLIGHT-PASS-005
+    subject: Complete requirement and acceptance binding
+    evidence:
+      - All 19 rows CR-430..CR-448 are listed.
+      - All 6 rows WA-M3-AC-001..006 are listed.
+      - Acceptance remains PLANNED_NOT_IMPLEMENTED.
+  - id: PREFLIGHT-PASS-006
+    subject: F0 shell and navigation
+    evidence: Packet 011 keeps shell-navigation and shared shell outside M3 and requires an F0 follow-up.
+  - id: PREFLIGHT-PASS-007
+    subject: Claude correction dispatch truth
+    evidence:
+      - Packet 011 requires the exact future eight-file registry row.
+      - The active registry currently lacks that row.
+      - Packet 011 blocks dispatch.
+  - id: PREFLIGHT-PASS-008
+    subject: Branch reconciliation
+    evidence: Packet 011 requires one immutable reconciled base before downstream work.
+  - id: PREFLIGHT-PASS-009
+    subject: CR-431 and DEC-002
+    evidence: Packet 011 keeps refresh policy and certification blocked while DEC-002 remains Open P0.
+  - id: PREFLIGHT-PASS-010
+    subject: Sponsor decisions
+    evidence: Packet 011 preserves all nine unapplied sponsor decisions from certification 010.
+
+RETURN_findings:
+  - id: PREFLIGHT-RETURN-001
+    severity: P1
+    subject: Future migration ownership conflicts with PACKAGE_MANIFEST
+    contradiction: >-
+      Every relevant PACKAGE_MANIFEST row states that shared migrations remain
+      F0-owned and require an F0 follow-up. Packet 011 describes the database
+      stack as one database writer inside the M3 future sequence without
+      assigning that writer to F0 or recording approved ownership transfer.
+    required_correction:
+      - Reclassify the database stack as an F0-owned cross-package follow-up.
+      - Keep M3 as semantic consumer and acceptance owner for Operations behavior.
+      - Alternatively require an explicit future change-control decision that transfers exact migration ownership; do not infer transfer.
+      - Preserve the isolated order and per-work-package commits and negative gates.
+    effect: RETURN_PACKET_011_FOR_GOVERNANCE_CORRECTION
+
+  - id: PREFLIGHT-RETURN-002
+    severity: P1
+    subject: Shared capability mirror has no exact owner
+    contradiction: >-
+      Certification 010 required apps/web/src/lib/execution/capabilities.ts to
+      have an explicit exact owner. Packet 011 correctly removes it from M9 but
+      does not assign it to M8, F0, M3, or a separately approved shared follow-up.
+    required_correction:
+      - Keep the file read-only until package ownership is resolved.
+      - Prefer the authoritative route owner M8 only if change control explicitly includes the shared mirror.
+      - Otherwise assign a separate exact shared-infrastructure lease.
+      - Never allow both an M3 and M8 writer.
+    effect: RETURN_PACKET_011_FOR_GOVERNANCE_CORRECTION
+
+  - id: PREFLIGHT-RETURN-003
+    severity: P1
+    subject: Sponsor decision application targets are not explicit
+    contradiction: >-
+      Packet 011 preserves all nine sponsor questions, but the tiered-provenance
+      decision does not name the stale acceptance and prompt files that must be
+      amended or superseded. Without exact targets, the old projected-map rule
+      can remain simultaneously authoritative.
+    required_correction:
+      - Add design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv.
+      - Add design/claude-design-mvp1/prompts/systems/AUTHENTICATED_LIVE_OPERATIONS_MAP.md.
+      - Add the approved M3 design-correction authority record.
+      - Keep all design edits prohibited until sponsor decision application is authorized.
+    effect: RETURN_PACKET_011_FOR_GOVERNANCE_CORRECTION
+
+BLOCKED_findings:
+  - id: PREFLIGHT-BLOCK-001
+    subject: M3 activation
+    reason: Current authoritative slice is M2; no M3 current or concurrent slice exists.
+  - id: PREFLIGHT-BLOCK-002
+    subject: Claude dispatch
+    reason: Exact eight-file lease is absent, dirty preview ownership is unresolved, and the Mac is locked.
+  - id: PREFLIGHT-BLOCK-003
+    subject: Map correction final acceptance
+    reason: Tiered-provenance supersession has not been repository-applied.
+  - id: PREFLIGHT-BLOCK-004
+    subject: Database work
+    reason: F0 migration ownership and nine sponsor decisions are unresolved.
+  - id: PREFLIGHT-BLOCK-005
+    subject: Consumer branches
+    reason: Accepted map correction, accepted F0 dependency, database gates, and one reconciled base are missing.
+  - id: PREFLIGHT-BLOCK-006
+    subject: CR-431 certification
+    reason: DEC-002 telemetry-frequency policy remains Open P0.
+  - id: PREFLIGHT-BLOCK-007
+    subject: Integration
+    reason: No accepted immutable anchors exist for the proposed sequence.
+
+exact_next_allowed_action:
+  - Reissue Sequence 011 as a governance-only draft with migrations explicitly F0-owned.
+  - Mark apps/web/src/lib/execution/capabilities.ts read-only pending exact owner decision.
+  - Add exact tiered-provenance decision application targets.
+  - Do not activate M3, register a lease, dispatch Claude, or create implementation branches.
+  - Keep the true independent certification queued with the root orchestrator.
+  - Continue manual-unlock monitoring without interacting with Claude Design.
+
+independent_certification_queue:
+  status: QUEUED_WITH_ROOT
+  reason_not_run_here: This packet is an internal second-pass preflight and cannot certify its own sequence.
+  target_after_return_correction: Next corrected governance sequence
+  required_method: Inspection Gate Check by an agent that did not author the corrected sequence
+  allowed_results:
+    - PASS
+    - CONDITIONAL PASS
+    - FAIL
+    - BLOCKED
+
+no_change_attestation:
+  product: unchanged
+  tests: unchanged
+  migrations: unchanged
+  data: unchanged
+  design: unchanged
+  branches: unchanged
+  leases: unchanged
+  main: unchanged
+  setup_inspection: unchanged
+  stashes: unchanged
+  claude_design_interaction: none

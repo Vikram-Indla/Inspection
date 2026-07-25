@@ -1,0 +1,378 @@
+schema_version: "1.0"
+packet_id: M8-ADMIN-SECURITY-ACCESS-DESIGN-AUTHORITY-REVIEW-044
+title: Independent Security Access route, design identity and runtime-delta review
+status: RETURN_FOR_MAPPING_AND_IDENTITY_GOVERNANCE_BLOCK_DUE_TO_MISSING_CONTRACT
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    /admin/security-access is a real implemented route, but it has no governed
+    screen identity or exact atomic 478-row mapping. Its current WA-DES-043 and
+    WA-DES-011 mappings are wrong, WA-DES-004 has no route-specific immutable
+    frame identity, and the CD-050 R2 package/frame fingerprint is unavailable.
+
+task_contract:
+  task_id: M8-ADMIN-SECURITY-ACCESS-DESIGN-AUTHORITY-REVIEW-044
+  gate: M8 Admin Identity Roles and Security design authority
+  route: /admin/security-access
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M8
+  module_id: M3-00
+  family_design_id: CD-050
+  direct_requirement_ids:
+    - MVP2-REQ-0192
+    - MVP2-REQ-0241
+    - MVP2-REQ-0256
+  cross_cutting_requirement_ids:
+    - MVP2-REQ-0227
+    - MVP2-REQ-0238
+  acceptance_ids:
+    direct:
+      - MVP2-AC-0192
+      - MVP2-AC-0241
+      - MVP2-AC-0256
+    cross_cutting:
+      - MVP2-AC-0227
+      - MVP2-AC-0238
+    web_admin:
+      - WA-M8-AC-001
+      - WA-M8-AC-002
+      - WA-M8-AC-003
+      - WA-M8-AC-004
+      - WA-M8-AC-005
+      - WA-M8-AC-006
+  engines:
+    - authenticated route and navigation
+    - mvp3_access_reviews RLS
+    - mvp3_evidence_access_grants RLS
+    - user_roles RLS-visible holdings count
+    - mvp3_decide_access_review guarded RPC
+    - access-review lifecycle and row locking
+    - access-review evidence and audit
+  do_not_touch:
+    - live Claude Design, WA-DES-004, WA-DES-043, WA-DES-011 or CD-050
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, seeds, credentials or shared data
+    - frozen design, screen, requirement, route, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 1a2ab6ab
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  unrelated_dirty_paths_preserved:
+    - product-contract/operationalization/coordination/batches/M2-VS-002-WA-DES-045-DESIGN-CORRECTION-DISPATCH-042.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-REMEDIATION-PREFLIGHT-012.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-CONCURRENCY-RLS-ENGINEERING-DESIGN-013.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-USERS-ROLES-DESIGN-AUTHORITY-REVIEW-043.yaml
+  collision_assessment: >-
+    This packet is read-only. It changes no application, design, test, database,
+    evidence, mapping, branch, lease or stash.
+
+route_classification:
+  route_exists: true
+  component_exists: true
+  route_inventory_present: true
+  package_manifest_owner: M8
+  implementation_status_family: M3-00_CD-050
+  screen_catalogue_row: NONE
+  operationalization_classification: ADDITIONAL_ROUTE_NO_GOVERNED_SCREEN_ID
+  verdict: GOVERNED_REAL_ADDITIONAL_ROUTE_WITHOUT_GOVERNED_SCREEN_ID
+  is_invalid_alias: false
+  is_future_only_concept: false
+  is_fully_governed_screen: false
+  business_capability: >-
+    RLS-scoped access certification reviews, retain/revoke decisions with a
+    reason, and read-only purpose-bound evidence-grant lifecycle visibility.
+  prohibited_absorption:
+    - Users and Roles catalogue or grant management
+    - role or permission mutation
+    - evidence-grant creation, extension or revocation
+    - SSO, MFA or external identity configuration
+    - device administration
+    - audit-log administration
+
+authority_and_lineage:
+  exact_screen_identity:
+    status: MISSING
+    rule: No SCR identifier may be invented by this reviewer.
+  exact_atomic_478_row_mapping:
+    status: MISSING
+    invalid_existing_mapping: CR-001..CR-478
+    rule: Family coverage and a preservation envelope are not route-completion evidence.
+  family:
+    design_id: CD-050
+    revision: R2
+    relevance: Security/IAM, access review, evidence access and role containment
+    package_bytes_available: false
+    package_sha256_available: false
+    exact_route_frame_manifest_available: false
+    validation: INSUFFICIENT_EVIDENCE
+  required_lineage: CD-050_R2 -> WA-DES-004_security_state -> governed_screen_identity -> /admin/security-access
+
+registered_design_evidence:
+  nearest:
+    design_id: WA-DES-004
+    filename: SAQEEL Admin Extended.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Extended.dc.html
+    bytes: 21561
+    lines: 229
+    sha256: b2ff11c538430f6f045ba66cf992cbcbc53897c0a62db1db98e30e3c811b19fc
+    state_key: security
+    title: Security posture & access review
+    fingerprint_recomputed: true
+    validation: CONFIRMED_WITH_CORRECTION
+  rejected_primary_mappings:
+    - design_id: WA-DES-043
+      filename: SAQEEL Users Roles.dc.html
+      validation: INCORRECT_MAPPING
+      reason: Users and role/capability grants belong to /admin/access, not access certification.
+    - design_id: WA-DES-011
+      filename: SAQEEL Admin Role Override.dc.html
+      validation: NO_DESIGN_MATCH
+      reason: Role override and second-approver assignment are not the route capability.
+  immutable_revision_evidence:
+    WA_DES_004_file_fingerprint: PRESENT
+    route_specific_frame_revision: MISSING
+    CD_050_R2_package_revision: MISSING
+    historical_screenshot_manifest_entry: PRESENT
+    historical_screenshot_binary_available_for_rehash: false
+    conclusion: BLOCK_DUE_TO_MISSING_CONTRACT
+
+nearest_design_validation:
+  strengths:
+    - Explicit Security & Access selector state exists.
+    - Navigation-is-not-authorization wording matches the database boundary.
+    - Access certification queue is separated from purpose-bound evidence grants.
+    - Active, expired and revoked evidence-grant semantics are represented.
+    - M3-00 label aligns with CD-050 family registration.
+  mandatory_corrections:
+    - Remove hard-coded counts, UUIDs, dates, scopes, purposes and statuses as runtime claims.
+    - Add the real retain/revoke decision, minimum-reason validation and row association.
+    - Do not call the action an independent decision until opener-versus-decider separation is governed.
+    - Distinguish RLS-zero, verified zero, failed read, incomplete result and unauthorized route.
+    - Add stored decision truth, stale review, refreshed result and audit limitation.
+    - Remove Arabic-only wordmark text from the English/LTR shell.
+    - Add full Arabic/RTL, responsive, theme and accessibility evidence.
+  mapping_action: GOVERN_EXISTING_WA_DES_004_SECURITY_STATE_AFTER_IDENTITY_AND_LINEAGE_APPROVAL
+
+runtime_delta_only:
+  sources:
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-PERMISSION-MAPPING-011.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-RUNTIME-REMEDIATION-PREFLIGHT-012.yaml
+    - product-contract/operationalization/coordination/batches/M8-ADMIN-ACCESS-CONCURRENCY-RLS-ENGINEERING-DESIGN-013.yaml
+  use_rule: >-
+    These packets govern adjacent /admin/access roles and permissions. They are
+    design-delta context only and do not certify /admin/security-access.
+  relevant_boundary:
+    - Keep access-certification review distinct from role/permission mutation.
+    - Do not reuse /admin/access Plan A or Plan B as this route's current behavior.
+    - Any future shared access-governance head or maker-checker contract needs separate route impact approval.
+  runtime_certification_claimed: false
+
+real_runtime_mapping:
+  component: apps/web/src/app/(app)/admin/security-access/page.tsx
+  loading_component: apps/web/src/app/(app)/admin/security-access/loading.tsx
+  action_module: apps/web/src/app/(app)/admin/mvp3-actions.ts
+  shared_action_form: apps/web/src/components/Mvp3ActionForm.tsx
+  migration: supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+  reads:
+    - mvp3_access_reviews
+    - mvp3_evidence_access_grants
+    - user_roles exact RLS-visible count
+  mutation:
+    rpc: mvp3_decide_access_review
+    actor: security_admin
+    decisions: [retain, revoke]
+    reason_minimum_trimmed_characters: 8
+    row_lock: true
+    open_state_guard: true
+    subject_self_decision_denied: true
+  current_runtime_gaps:
+    - Route has no exact admission guard equivalent to Security Admin navigation.
+    - Grant-read and role-count failures can appear as zero.
+    - Review-read failure is rendered as an environment-contract warning, not a source-specific state.
+    - Raw RPC error messages may be returned to the client.
+    - Closed review rows omit stored reviewer and reason from the page.
+    - Counts have no as-of, completeness or freshness indicator.
+    - No immutable audit event for the decision was found.
+
+roles_permissions_and_maker_checker:
+  roles:
+    status: CONTEXT_ONLY
+    truth: RLS-visible role holdings count is not effective-permission proof.
+  permissions:
+    status: NOT_OWNED_BY_ROUTE
+    truth: No role/capability/permission grant or revoke belongs here.
+  maker_checker:
+    subject_separation: ENFORCED
+    opener_vs_decider_separation: NOT_ENFORCED
+    full_independent_maker_checker: NOT_PROVEN
+    design_defect: Current runtime and design use "Independent decision" too broadly.
+    required_label: Subject-separated access review unless governance adds opener/checker separation.
+  concurrency:
+    database_row_lock: PRESENT
+    second_successful_decision_prevented: CONTRACTUALLY_EXPECTED
+    expected_version: ABSENT
+    stale_UI_recovery: UNPROVEN
+    design_requirement: Preserve user input, show already-decided truth, and reload without overwrite.
+  audit:
+    stored_row_fields:
+      - reviewed_by
+      - review_reason
+      - reviewed_at
+      - status
+    immutable_event: NOT_PROVEN
+    before_after_event: NOT_PROVEN
+    retrieval_evidence: NOT_PROVEN
+    design_rule: Never claim fully audited completion from stored row columns alone.
+
+provider_and_policy_holds:
+  - id: MVP3-HOLD-003
+    effect: No SSO, MFA, external-identity or tenant readiness claim.
+  - id: MVP3-HOLD-006
+    effect: No retention, purge, legal-hold, backup or restore value may be invented.
+  - id: MVP3-HOLD-008
+    effect: Local implementation/evidence is not production security certification.
+
+language_theme_responsive_accessibility:
+  wordmark:
+    english_ltr: FAIL
+    evidence: WA-DES-004 renders Arabic صقيل صناعي within its English/LTR shell.
+    required: English SAQEEL Industrial identity for EN and approved Arabic identity for AR.
+  locale_direction:
+    english_ltr: PARTIAL
+    arabic_rtl: MISSING
+    mixed_identifiers: UUIDs, roles, scope codes, dates and timestamps must remain LTR-safe.
+  themes:
+    light: PRESENT_BUT_UNCERTIFIED
+    dark: PRESENT_BUT_UNCERTIFIED
+  responsive:
+    status: FAIL_INSUFFICIENT_EVIDENCE
+    source_issue: WA-DES-004 uses a fixed 248px rail and has no explicit narrow-screen breakpoint.
+    required_viewports:
+      - 1440x900
+      - 1200x900
+      - 1024x768
+      - 768x1024
+      - 412x915
+      - 390x844
+      - 320x568
+  accessibility:
+    status: FAIL_INSUFFICIENT_EVIDENCE
+    required:
+      - one h1 and ordered regions/headings
+      - decision/reason labels and exact review-row association
+      - unique action name containing subject and scope
+      - keyboard order and single visible focus
+      - pending/result announcements and focus recovery
+      - non-color status semantics
+      - 44px action targets
+      - 200 percent zoom and 400 percent or 320 CSS-pixel reflow
+      - reduced-motion parity
+
+hard_state_review:
+  partially_present:
+    - populated queue
+    - purpose-bound grants
+    - active grant
+    - expired grant
+    - revoked grant
+  missing_or_unproven:
+    - loading
+    - security-admin full scope
+    - auditor read-only
+    - subject self read-only
+    - unrelated authenticated RLS-empty
+    - unauthorized direct route
+    - session expired
+    - verified zero per source
+    - reviews unavailable
+    - grants unavailable
+    - role count unavailable
+    - multiple sources unavailable
+    - completeness/freshness unknown
+    - open eligible decision
+    - subject self denied
+    - pending retain/revoke
+    - invalid or short reason with preserved input
+    - stale already-decided reload
+    - closed retain/revoke details
+    - immutable audit unavailable
+    - provider or policy held
+
+evidence_verdict:
+  WA_DES_004_file_fingerprint: PASS
+  nearest_design_mapping: CONFIRMED_WITH_CORRECTION
+  WA_DES_043_route_mapping: FAIL
+  WA_DES_011_route_mapping: FAIL
+  CD_050_lineage: BLOCKED_MISSING_PACKAGE_AND_FRAME_FINGERPRINT
+  exact_screen_and_requirement_authority: BLOCKED
+  historical_screenshot_manifest: PRESENT_BINARY_UNAVAILABLE
+  complete_state_matrix: FAIL
+  bilingual_RTL_LTR_matrix: FAIL
+  responsive_matrix: FAIL
+  accessibility_matrix: FAIL
+  runtime_behavior: NOT_CERTIFIED_BY_THIS_REVIEW
+  implementation_completion: NOT_CLAIMED
+
+reviewer_recommendation:
+  decision: RETURN_FOR_MAPPING_CORRECTION
+  design_consumer_status: NON_CONSUMABLE
+  required_governance_actions:
+    - Remove WA-DES-043 and WA-DES-011 as /admin/security-access authorities.
+    - Govern the existing WA-DES-004 security state or allocate a child only through governance.
+    - Assign an exact screen identity without inventing one in this review.
+    - Map exact atomic requirements rather than CR-001..CR-478.
+    - Retrieve and fingerprint CD-050 R2 and its exact Security Access frame.
+    - Decide whether opener-versus-decider separation and immutable audit are mandatory.
+    - Reconcile navigation persona, RLS read personas and Security Admin mutation scope.
+  recommended_action_after_governance: CORRECT_MAPPING_AND_GOVERN_EXISTING_FRAME
+
+implementation_boundary:
+  implementation_authorized: false
+  design_write_authorized: false
+  application_lease_issued: false
+  data_or_seed_lease_issued: false
+  completion_credit_authorized: false
+  rule: Any design correction and runtime remediation require separate non-overlapping leases.
+
+next_non_overlapping_admin_design_review:
+  task_id: M9-ADMIN-WORKFLOWS-DESIGN-AUTHORITY-REVIEW-045
+  status: QUEUED_READ_ONLY
+  route: /admin/workflows
+  design_candidate: WA-DES-014
+  objective: >-
+    Independently validate the governed Workflow Admin route against the
+    registered Workflow Builder design, exact screen/process/requirement
+    authority, immutable configuration versions, workflow guards, provider
+    holds, audit, EN/AR, RTL/LTR, responsive, accessibility, hard states,
+    wordmark and immutable revision evidence.
+  non_overlap:
+    - no WA-DES-004, WA-DES-043, WA-DES-011 or CD-050 write
+    - no Access, Security Access, role, grant or evidence-access ownership
+    - no code, tests, Supabase, mappings, branches, leases or stashes
+    - no runtime certification or completion credit
+
+validation:
+  yaml_parse_required: true
+  WA_DES_004_hash_recomputed: true
+  exact_route_and_screen_catalogue_checked: true
+  runtime_sources_read_only_reconciled: true
+  runtime_tests_run: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  data_or_supabase_mutation: false
+  branch_or_stash_mutation: false

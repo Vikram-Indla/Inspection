@@ -1,0 +1,610 @@
+schema_version: "1.0"
+packet_id: M10-INTEGRATION-HUB-DESIGN-AUTHORITY-REVIEW-057
+title: Independent Integration Trust Console design authority and runtime-evidence review
+status: BLOCK_DUE_TO_MISSING_SCREEN_AUTHORITY_UNGOVERNED_CONFIG_AND_HIDDEN_EVIDENCE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The authenticated route, fail-closed seeded endpoints, row-scoped RLS,
+    append-only API events and prepared-versus-delivered database invariant
+    exist. Certification is blocked because there is no governed screen ID or
+    direct Phase 1 requirement, route access and per-table RLS scopes conflict,
+    unauthorized or differently scoped reads appear as verified empty, the
+    evidence fields required by M3-00 are queried but hidden, configured status
+    does not require an approved contract or closed provider hold, endpoint
+    configuration is directly mutable without maker-checker, audit, immutable
+    version or concurrency control, export receipt is not required or shown,
+    provider/privacy/retention holds remain open, and WA-DES-008-C1 is absent.
+
+task_contract:
+  task_id: M10-INTEGRATION-HUB-DESIGN-AUTHORITY-REVIEW-057
+  gate: M10 Integration Hub design authority
+  route: /admin/integrations
+  channel: ADMIN
+  process_ids: [G2-P00, G2-P12]
+  package_ids: [M10]
+  screen_ids:
+    governed: []
+    missing: INTEGRATION_TRUST_CONSOLE_SCREEN_ID_REQUIRED
+  requirement_ids:
+    phase_1_direct: []
+    transferred_M3_00:
+      - MVP2-REQ-0073
+      - MVP2-REQ-0078
+      - MVP2-REQ-0188
+      - MVP2-REQ-0189
+      - MVP2-REQ-0190
+      - MVP2-REQ-0191
+      - MVP2-REQ-0192
+      - MVP2-REQ-0224
+      - MVP2-REQ-0226
+      - MVP2-REQ-0227
+      - MVP2-REQ-0238
+      - MVP2-REQ-0239
+      - MVP2-REQ-0241
+      - MVP2-REQ-0256
+  acceptance_ids:
+    - WA-M10-AC-001..006
+    - MVP2-AC-0073
+    - MVP2-AC-0078
+    - MVP2-AC-0188
+    - MVP2-AC-0189
+    - MVP2-AC-0190
+    - MVP2-AC-0191
+    - MVP2-AC-0192
+    - MVP2-AC-0224
+    - MVP2-AC-0226
+    - MVP2-AC-0227
+    - MVP2-AC-0238
+    - MVP2-AC-0239
+    - MVP2-AC-0241
+    - MVP2-AC-0256
+  dependencies:
+    - MVP3-HOLD-001
+    - MVP3-HOLD-002
+    - MVP3-HOLD-003
+    - MVP3-HOLD-004
+    - MVP3-HOLD-005
+    - MVP3-HOLD-006
+    - MVP3-HOLD-008
+    - DEC-027
+    - accepted immutable WA-DES-008-C1 revision
+    - exact route entitlement and per-source scope contract
+    - governed endpoint activation lifecycle
+    - evidence-complete event and export presentation
+    - complete EN/AR and RTL/LTR behavior
+    - focused security, degraded, concurrency and visual evidence
+  do_not_touch:
+    - live Claude Design, supplied design exports or accepted design revisions
+    - application, provider, database, seed, test or evidence files
+    - provider credentials, endpoints, Supabase or deployment environment
+    - frozen route, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, provider,
+    database, test, evidence, mapping, branch, lease or stash is changed.
+
+route_and_capability_validation:
+  route:
+    page: apps/web/src/app/(app)/admin/integrations/page.tsx
+    authenticated_AppShell: true
+    business_capability: read-only endpoint, API event and export evidence viewer
+    validation: CONFIRMED_REAL_ROUTE_WITH_REDUCED_CAPABILITY
+  real_capability:
+    - read RLS-visible integration endpoint records
+    - read latest RLS-visible API/rule events
+    - read latest RLS-visible data-sharing export jobs
+    - link to the separately governed Factory Data integration route
+  absent_capability:
+    - endpoint create, edit, submit, approve or publish
+    - credential, certificate or secret administration
+    - provider connectivity or health test
+    - retry, replay, webhook or synchronization
+    - export creation, delivery or receipt verification
+    - aggregate availability, latency, freshness or delivery health
+  route_navigation_roles:
+    - security_admin
+    - workflow_admin
+  direct_route_role_boundary: absent
+  validation: CONFIRMED_WITH_ROUTE_ENTITLEMENT_GAP
+
+governed_screen_and_requirement_mapping:
+  screen_catalogue:
+    exact_route_row_found: false
+    validation: NO_GOVERNED_SCREEN_MATCH
+  design_persona:
+    current: Technical Admin
+    implemented_role: none at route level
+    RLS_roles_differ_by_source: true
+    validation: FICTIONAL_OR_UNRESOLVED_PERSONA
+  broad_route_mapping:
+    current_claim: CR-001..CR-478
+    validation: INCORRECTLY_OVERBROAD
+    correction: >-
+      No Phase 1 customer row directly owns this additive route. The fourteen
+      transferred M3-00 rows are its contextual authority and remain incomplete
+      until their end-to-end runtime, evidence and negative criteria are proven.
+  M3_00_acceptance_rule: >-
+    Runtime result, governing version, actor, timestamp and affected object must
+    be visible; unauthorized, invalid, missing-dependency and retry paths must
+    fail safely without corrupting MVP1 records.
+  current_compliance: FAIL_REQUIRED_EVIDENCE_VISIBILITY_AND_END_TO_END_ACTIONS
+
+design_authority_validation:
+  nearest_existing_design:
+    design_id: WA-DES-008
+    filename: SAQEEL Admin Integrations.dc.html
+    sha256: c5c61acd5b854928b4972fbf6122381a7c0f11dcdb6fbaa018f08fdba954be55
+    viewport: 1160x820
+    proposed_route: /admin/integrations
+    route_map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+    nearest_match: true
+    validation: CONFIRMED_NEAREST_BUT_SEMANTICALLY_UNSAFE
+  predecessor_fabrications:
+    - Twilio connected/live status, OTP timestamp and delivery counts
+    - Resend connected/live status, delivery timestamp and bounce counts
+    - Senaei schedule, partial-sync timestamp and late-source count
+    - inferred 24-hour health not computed by the route
+    - provider cards for names/purposes not returned by registry data
+  predecessor_identity_defect:
+    - Arabic-only wordmark in English shell
+    - unapproved صناعي or Industrial sub-brand
+  information_architecture_correction: >-
+    Use the real registry, event and export evidence structure. Do not recreate
+    fabricated provider-health cards.
+  corrective_successor:
+    design_id: WA-DES-008-C1
+    filename: SAQEEL Admin Integrations - WA-DES-008-C1.dc.html
+    lineage: CORRECTIVE_SUCCESSOR
+    state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+    sponsor_acceptance: pending
+    implementation_lease: pending
+    validation: NO_ACCEPTED_CORRECTIVE_REVISION
+  immutable_revision_rule: >-
+    Preserve WA-DES-008 and its hash. Create WA-DES-008-C1 as a separately
+    identified immutable successor; never overwrite the supplied predecessor.
+
+provider_source_and_hold_truth:
+  seeded_registry:
+    endpoints:
+      - EBDA data exchange
+      - External identity and SSO
+      - Mapbox runtime
+      - Digital signature trust service
+    contract_version: UNAPPROVED
+    status: dependency_blocked
+    validation: HONEST_FAIL_CLOSED_SEED
+  provider_holds:
+    digital_signature: MVP3-HOLD-001 OPEN
+    Mapbox: MVP3-HOLD-002 OPEN
+    external_identity: MVP3-HOLD-003 OPEN
+    EBDA_data_exchange: MVP3-HOLD-004 OPEN
+    notification_channels: MVP3-HOLD-005 OPEN
+    retention_backup: MVP3-HOLD-006 OPEN
+    production_release: MVP3-HOLD-008 OPEN
+  DEC_027:
+    status: OPEN
+    protected_unknowns:
+      - Industry Shared endpoint contracts
+      - source precedence
+      - contact and delegation privacy/masking/retention
+      - activity catalogue authority
+      - one-license/one-plant conflict semantics
+    reviewer_rule: >-
+      Do not register, configure or display Industry Shared, HRSD or MODON as
+      available until the exact contracts and privacy authority are approved.
+  configured_invariant:
+    database_check: status configured requires non-empty base_url
+    approved_contract_required: false
+    provider_hold_closed_required: false
+    contract_version_UNAPPROVED_prohibited_when_configured: false
+    implication: >-
+      A Security Admin can mark a provider configured with any non-empty URL
+      while its contract remains UNAPPROVED and its canonical hold stays open.
+    validation: FAIL_PROVIDER_ACTIVATION_AUTHORITY
+  connection_health:
+    real_probe: absent
+    last_check: absent
+    latency_uptime_or_success_rate: absent
+    status_source: manually mutable registry record
+    validation: CONFIGURATION_STATE_ONLY_NOT_HEALTH
+
+permissions_and_scope_truth:
+  endpoint_registry_RLS:
+    read:
+      - security_admin
+      - workflow_admin
+    write:
+      - security_admin
+  API_event_RLS:
+    read:
+      - security_admin
+      - ops
+      - auditor
+    insert:
+      - security_admin
+      - ops
+      - workflow_admin
+  export_RLS:
+    read:
+      - requesting_user
+      - security_admin
+      - auditor
+      - leadership
+    insert: any authenticated user for self
+  direct_route_consequences:
+    - workflow_admin sees registry but generally no event/export inventory
+    - ops and auditor can see events but no registry
+    - leadership can see exports but no registry
+    - other authenticated users can see their own exports but no registry
+    - all receive the same global console framing
+  false_empty:
+    endpoint_copy: No endpoints are registered. This is a verified empty read.
+    issue: an RLS-hidden registry also returns zero rows without error
+    events_copy: No RLS-visible events
+    exports_copy: No RLS-visible export jobs
+    validation: ENDPOINT_EMPTY_IS_FALSE_GLOBAL_TRUTH_FOR_UNAUTHORIZED_SCOPE
+  required_correction: >-
+    Enforce an exact route persona or explicitly identify each RLS-visible
+    source scope. Never label an RLS-hidden endpoint registry globally empty.
+
+evidence_visibility_review:
+  endpoints:
+    selected_but_hidden:
+      - updated_at
+    displayed:
+      - display_name
+      - endpoint_key
+      - endpoint_kind
+      - contract_version
+      - status
+    missing:
+      - actor
+      - governing approval
+      - hold identity
+      - configuration revision history
+  API_events:
+    selected_but_hidden:
+      - correlation_id
+      - occurred_at
+    not_selected:
+      - endpoint_id
+      - actor_id
+      - object_type
+      - object_id
+      - payload_digest
+      - safe detail
+    displayed:
+      - event_kind
+      - direction
+      - outcome
+    contradiction: copy says outcomes are linked by correlation ID but no correlation ID is visible
+  exports:
+    selected_but_hidden:
+      - artifact_hash
+      - requested_at
+      - completed_at
+    not_selected:
+      - requested_by
+      - endpoint_id
+      - object_scope
+      - receipt
+    displayed:
+      - export_kind
+      - purpose
+      - status
+    contradiction: copy says delivery requires artifact hash and receipt but neither is visible
+  validation: FAIL_M3_00_ACTOR_TIMESTAMP_OBJECT_VERSION_AND_DELIVERY_EVIDENCE
+
+audit_version_concurrency_and_lifecycle:
+  endpoint_configuration:
+    direct_authenticated_update: security_admin
+    maker_checker: absent
+    immutable_revision_history: absent
+    generic_audit_trigger: absent
+    expected_version_or_updated_at_predicate: absent
+    updated_at_automatic_refresh_trigger: absent
+    effect: direct last-writer-wins mutation of contract, status, URL and configuration
+    validation: FAIL_GOVERNED_ADMIN_CONFIGURATION
+  transferred_maker_checker_authority:
+    requirement: MVP2-REQ-0227
+    scope: Admin Studios changes must never silently alter live inspections
+    current_endpoint_path: direct mutable row
+    validation: FAIL
+  API_events:
+    append_only_trigger: present
+    correlation_identity: stored
+    route_visibility: hidden
+    validation: STRONG_STORAGE_WEAK_PRESENTATION
+  exports:
+    authenticated_insert: present
+    authenticated_update_grant: absent
+    canonical_delivery_transition_RPC: absent
+    append_only_trigger: absent
+    delivered_check:
+      artifact_hash_required: true
+      completed_at_required: true
+      non_empty_receipt_required: false
+    audit_trigger: absent
+    implication: >-
+      The schema distinguishes prepared from delivered but provides no governed
+      authenticated delivery transition, audit or receipt invariant.
+    validation: INCOMPLETE_EXPORT_LIFECYCLE
+  route_actions:
+    mutations: none
+    retry_or_replay: none
+    validation: READ_ONLY_NO_END_TO_END_WORKFLOW
+
+degraded_error_and_conflict_states:
+  endpoint_read_error:
+    captured: true
+    result: aggregate schema-unavailable banner
+  event_read_error:
+    captured: false
+    result: false empty
+  export_read_error:
+    captured: false
+    result: false empty
+  partial_source_isolation:
+    healthy_source_remains_rendered: yes
+    failed_source_identified: no
+    validation: FAIL_TRUTHFUL_PARTIAL_DEGRADATION
+  unavailable_provider:
+    dependency_blocked_status: displayed
+    hold reason_and_owner: hidden
+  configured_not_connected:
+    banner_warning: present
+    green_configured_lozenge: present
+    risk: green success semantics can still be read as health
+  stale:
+    timestamps_selected: true
+    timestamps_displayed: false
+    approved_staleness_policy: absent
+  conflict:
+    contradictory registry_and_event_state: not detected or shown
+  retry:
+    no route capability despite M3-00 negative requirement
+
+privacy_retention_and_secret_boundary:
+  secrets_selected_or_displayed: false
+  base_URL_selected_or_displayed: false
+  event_detail_selected_or_displayed: false
+  export_object_scope_or_receipt_displayed: false
+  strengths:
+    - route avoids credential and raw payload disclosure
+    - API event RLS is limited
+    - export jobs are requester/privileged-role scoped
+  unresolved:
+    - MVP3-HOLD-006 retention and backup
+    - DEC-027 personal-data purpose, masking and retention
+    - privacy audit visibility required by MVP2-REQ-0256
+  reviewer_rule: >-
+    Do not add secret, raw payload, personal contact or object-scope detail
+    until exact permissions, masking and retention are approved. Evidence detail
+    must use safe summaries and authorized drill-downs.
+
+localization_RTL_responsive_accessibility_and_wordmark:
+  localization:
+    primary_headings_and_help: translated
+    hardcoded_English:
+      - Factory data integration and import
+      - endpoints count suffix
+      - record-backed display names
+      - endpoint kinds
+      - endpoint statuses
+      - event kinds, directions and outcomes
+      - export kinds, purposes and statuses
+    machine_values_needing_human_labels: true
+    validation: PARTIAL_ARABIC_PARITY
+  bidi:
+    endpoint_keys_versions_hashes_and_correlation_IDs: not consistently isolated
+    machine values in Arabic flow: raw English
+    validation: INSUFFICIENT_RTL_SEMANTIC_EVIDENCE
+  responsive:
+    registry_table_horizontal_wrapper: present
+    shared_grid_reflow: present
+    prior_412px_runtime_evidence: present
+    320px_zoom_and_table_detail: absent
+    validation: PARTIALLY_EVIDENCED
+  accessibility:
+    semantic_registry_table: present
+    row_headers: present
+    section_headings: present
+    Factory_Data_link_keyboard_operable: true
+    event_and_export_structure: generic div rows
+    event_or_export_detail_action: absent
+    correlation_and_full_hash_accessibility: absent
+    dynamic_error_live_region: alert on endpoint error only
+    validation: INCOMPLETE_EVIDENCE_NAVIGATION
+  wordmark:
+    current_route_inherits_authenticated_AppShell: true
+    current_global_identity_decision: DEC-035
+    predecessor_wordmark: incorrect
+    route_specific_current_visual_evidence: partial
+    validation: CURRENT_SOURCE_BOUNDARY_CONFIRMED_PREDECESSOR_REQUIRES_CORRECTION
+
+hard_state_matrix:
+  loading_route: absent
+  error_route: absent
+  configured_record: present_but_not_health
+  dependency_blocked: present_without_hold_detail
+  degraded_record: present_without_evidence_detail
+  disabled_record: present
+  empty_registry: present_but_RLS_ambiguous
+  empty_events: present_RLS_scoped
+  empty_exports: present_RLS_scoped
+  endpoint_schema_unavailable: present
+  event_source_unavailable: absent
+  export_source_unavailable: absent
+  unauthorized_route: absent
+  stale: absent
+  conflict: absent
+  retry: absent
+  export_delivery_evidence: absent
+  provider_hold_owner_and_resolution: absent
+
+test_and_evidence_review:
+  source_contract:
+    file: apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    proves:
+      - tables, grants and RLS source exist
+      - dependency-blocked seeds exist
+      - configured base_URL check exists
+      - event append-only trigger exists
+    does_not_prove:
+      - approved contract before configured
+      - provider hold closure
+      - endpoint audit/version/concurrency
+      - evidence field visibility
+  runtime_regression:
+    file: apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    proves:
+      - shared Admin persona sees four seeded rows
+      - one Arabic RTL 412px route frame
+      - theme toggle
+      - field-only Inspector redirects
+    gaps:
+      - Security, Workflow, Ops, Auditor, Leadership and ordinary Web persona matrix
+      - per-source error isolation
+      - configured versus connected semantic comprehension
+      - provider hold and UNAPPROVED contract negative
+      - event correlation and export receipt evidence
+      - endpoint concurrent update
+      - 320px, keyboard, zoom and full light/dark visual evidence
+  validation: INSUFFICIENT_FOR_M3_00_END_TO_END_CERTIFICATION
+
+priority_findings:
+  - id: INTHUB-P0-01
+    severity: P0
+    finding: No governed screen ID or direct Phase 1 requirement ownership exists.
+    action: BLOCK
+  - id: INTHUB-P0-02
+    severity: P0
+    finding: Configured status permits an UNAPPROVED contract and open provider hold.
+    action: CORRECT
+  - id: INTHUB-P0-03
+    severity: P0
+    finding: Endpoint configuration is directly mutable without maker-checker, audit, immutable revision or conflict control.
+    action: CORRECT
+  - id: INTHUB-P0-04
+    severity: P0
+    finding: M3-00 actor, timestamp, object, correlation, hash and receipt evidence is hidden.
+    action: WIRE
+  - id: INTHUB-P0-05
+    severity: P0
+    finding: RLS-hidden endpoint rows are labelled as a verified global empty registry.
+    action: CORRECT
+  - id: INTHUB-P0-06
+    severity: P0
+    finding: DEC-027 and provider/privacy/retention holds remain open.
+    action: BLOCK
+  - id: INTHUB-P1-01
+    severity: P1
+    finding: Event and export source errors are rendered as empty.
+    action: CORRECT
+  - id: INTHUB-P1-02
+    severity: P1
+    finding: Export delivered state does not require receipt and has no governed transition/audit.
+    action: CORRECT
+  - id: INTHUB-P1-03
+    severity: P1
+    finding: Configured uses a green success treatment despite not being health.
+    action: UPDATE
+  - id: INTHUB-P1-04
+    severity: P1
+    finding: Arabic content falls back to raw English machine/provider values.
+    action: UPDATE
+  - id: INTHUB-P1-05
+    severity: P1
+    finding: WA-DES-008-C1 is not created, immutable or accepted.
+    action: CHANGE DESIGN
+
+reviewer_recommendation:
+  classification: RETURN_FOR_AUTHORIZATION_EVIDENCE_LIFECYCLE_AND_DESIGN_CORRECTION
+  sponsor_decision: DO_NOT_CERTIFY_OR_COUNT_COMPLETE
+  provider_decision: PRESERVE_ALL_OPEN_HOLDS
+  DEC_027_decision: PRESERVE_OPEN_NO_CONTRACT_OR_PRECEDENCE_INVENTION
+  bounded_next_actions:
+    - "Assign a governed screen ID, exact route personas and direct transferred acceptance ownership."
+    - "Require an approved contract and closed provider hold before configured status."
+    - "Move endpoint changes behind a versioned, audited, conflict-safe and maker-checker transition."
+    - "Expose safe actor, timestamp, object, correlation and governing version evidence."
+    - "Require and display authorized export hash, completion and receipt proof."
+    - "Separate global empty, RLS-scoped empty and each provider/source failure."
+    - "Keep provider status distinct from connectivity and health in copy and visual treatment."
+    - "Create and accept immutable WA-DES-008-C1 using registry/event/export evidence, not fabricated health cards."
+    - "Complete human labels, EN/AR, RTL/LTR, 320px, keyboard, zoom and theme evidence."
+    - "Run exact persona, hold, lifecycle, concurrency, degraded and privacy-negative tests."
+
+ownership_boundary:
+  claude_design:
+    - create immutable WA-DES-008-C1 with predecessor lineage
+    - use record-backed registry, events and export evidence
+    - remove fabricated provider health, counts, dates and schedules
+    - design exact RLS scope, hold, unavailable, partial, stale, conflict and receipt states
+    - correct wordmark, EN/AR, RTL/LTR, responsive and accessibility behavior
+    - do not invent providers, contracts, health or credentials
+  claude_code:
+    - governed endpoint lifecycle and safe evidence presentation after lease
+    - no provider enablement, secret display or DEC-027 invention
+  kimi:
+    - independently test persona/RLS matrix, hold bypass, direct config mutation, audit, concurrency and partial-source errors
+    - no overlap with leased implementation files
+  codex:
+    - final requirement, design, provider, privacy, runtime and evidence certification
+    - no implementation write while reviewer
+
+evidence:
+  application:
+    - apps/web/src/app/(app)/admin/integrations/page.tsx
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/components/Shell.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - apps/web/src/lib/i18n.ts
+  database:
+    - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+    - supabase/migrations/20260721020000_plain_language_terminology_ar_strings.sql
+  tests:
+    - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    - apps/web/e2e/factory360-admin-control-plane.spec.ts
+  contract:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/governance/decision_register.csv
+    - product-contract/governance/OPEN_DECISIONS.yaml
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  prior_review:
+    - product-contract/operationalization/coordination/batches/M10-INTEGRATION-HUB-DESIGN-READINESS-017.yaml
+
+next_queue:
+  task_id: M10-ADMIN-OPERATIONS-DESIGN-AUTHORITY-REVIEW-058
+  scope: >-
+    Independently review /admin/operations and its error queue, feature flags,
+    endpoint status and resilience controls against exact transferred
+    requirements, stable Claude Design lineage, permissions, provider and
+    retention holds, maker-checker, audit/version/concurrency, EN/AR,
+    responsive, accessibility and hard/degraded-state contracts.
+  mode: READ_ONLY
+  completion_credit: 0

@@ -1,0 +1,473 @@
+schema_version: "1.0"
+packet_id: M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+
+business_function: >-
+  Prepare one bounded successor design containing the four real Compliance
+  Configuration registries: regulations, packages, inspection items and
+  violation configuration. Replace the current generic /admin ownership with
+  exact route-bound modes and preserve all real lifecycle safeguards.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: fc372832a4ec99309ccaf9b2295c06afaff59dbf
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-DETAIL-SUCCESSOR-016.yaml
+  dirty_path_ownership: "Prior Claude Design lane packet; preserved and not modified."
+  task: M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015
+  process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+  requirement_ids:
+    - "CR-449"
+    - "CR-450"
+    - "CR-451"
+    - "CR-453"
+    - "CR-454"
+    - "CR-458..CR-470"
+    - "CR-473"
+    - "CR-474"
+  acceptance_ids: ["WA-M9-AC-001..006"]
+  screens: ["SCR-ADM-010", "SCR-ADM-020", "SCR-ADM-030", "SCR-ADM-040"]
+  logical_routes:
+    - /admin/regulations
+    - /admin/packages
+    - /admin/items
+    - /admin/violations
+  engines: ["ENG-05", "ENG-07", "ENG-08", "ENG-09", "ENG-10", "ENG-12"]
+  dependencies:
+    - M6-TRACEABILITY-SPLIT-011
+    - M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014
+    - M9-COMPLIANCE-DETAIL-SUCCESSOR-016
+    - SAFE-SUCCESSOR-REVISION-005
+  open_decisions:
+    - id: DEC-001
+      affected_rows: ["CR-471", "CR-472"]
+      treatment: "Item scoring and exclusion controls are absent from this successor."
+    - id: DEC-028
+      affected_rows: ["CR-471", "CR-472"]
+      treatment: "No KPI, score, weight or downstream calculation is represented as settled."
+  do_not_touch:
+    - "The accepted WA-DES-015 predecessor and every other Claude Design file."
+    - "Frozen route, design, requirement and acceptance mapping artifacts."
+    - "Application source, tests, migrations, seeds, Supabase, shared data and providers."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  corrected_traceability: product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+  control_plane_audit: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014.yaml
+  detail_successor_packet: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-DETAIL-SUCCESSOR-016.yaml
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+  design_workspace_start: design/claude-design-mvp1/00_START_HERE.md
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  routes: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screens: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  decisions: product-contract/governance/OPEN_DECISIONS.yaml
+
+immutable_predecessor:
+  logical_id: WA-DES-015
+  revision: BASE_REGISTERED
+  filename: "SAQEEL Admin.dc.html"
+  source_directory: /Users/vikramindla/Attachment dump/export-non-inspector
+  bytes: 42071
+  sha256: "d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3"
+  identity_reverified_on: "2026-07-25"
+  registered_route: /admin
+  state: ACCEPTED_PREDECESSOR_IMMUTABLE
+  exact_ownership_defect: >-
+    The file contains fourteen modes under one generic /admin mapping. Only
+    regulations, packages, items and violation configuration are semantic
+    matches for CR-449..CR-478. The generic route cannot authorize those four
+    route families or any unrelated mode.
+  retain_and_correct_modes:
+    - "Regulations"
+    - "Packages"
+    - "Inspection Items"
+    - "Violation Configuration"
+  remove_from_successor:
+    - "Approval & Configuration overview"
+    - "Risk Configuration"
+    - "Workflow Configuration"
+    - "Notifications"
+    - "Localization"
+    - "Devices"
+    - "GIS Configuration"
+    - "Integrations"
+    - "Users & Roles"
+    - "Audit Trail"
+    - "Committee"
+    - "Planning"
+    - "Operational Enforcement"
+  remove_or_correct_unsafe_content:
+    - "Typed Arabic-only plus ADMIN branding."
+    - "Fixed regulation, package, item, violation, audit and engine counts."
+    - "FS-2019, named authorities, MODON, fixed clauses, users, dates and versions presented as real."
+    - "Package and item score/weight fields, totals and scoring claims."
+    - "Risk models, bands, weights, risk-owner actions and engine values."
+    - "Provider connection, freshness, legal, severity and grace examples presented without record provenance."
+    - "Database trigger/RPC names presented as product truth without current independent proof."
+  no_overwrite_rule: >-
+    Never edit, rename, replace or delete the predecessor. The registered
+    predecessor remains consumed until an exact accepted successor identity
+    and approved mapping amendment are recorded.
+
+proposed_successor:
+  logical_id: WA-DES-015
+  revision: WA-DES-015-C1
+  exact_filename: "SAQEEL Compliance Registries - WA-DES-015-C1.dc.html"
+  initial_state: DRAFT_NON_CONSUMABLE
+  lineage: >-
+    WA-DES-015-C1 is a controlled successor revision of WA-DES-015, not four
+    new logical screen IDs. After acceptance, one mapping amendment must record
+    each exact route-mode association.
+  current_export_inventory_check:
+    checked_on: "2026-07-25"
+    available_export_directory_match: ABSENT
+    limitation: >-
+      Re-list the complete live Claude Design project immediately before any
+      creation. The local export directory is identity evidence, not current
+      cloud-inventory proof.
+  project_page_count_gate:
+    last_verified_before: 104
+    required_before_create: "Current complete cloud project count and filename/URL inventory."
+    required_after_create: "Exactly prior count + 1; only the exact successor filename added."
+  creation_authorization: NOT_GRANTED_BY_THIS_PACKET
+
+route_mode_mapping:
+  - mode: REGULATION_REGISTER
+    exact_route: /admin/regulations
+    screen: SCR-ADM-010
+    requirement_ids: ["CR-449", "CR-458..CR-463"]
+    nearest_detail_successor: WA-DES-002-C1
+    application_components:
+      - apps/web/src/app/(app)/admin/regulations/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/Controls.tsx
+    primary_content:
+      - "Route heading, last-read fact and governed request handoff."
+      - "Search and lifecycle filters with source-bound counts."
+      - "Code, title, issuing authority, status, version and created/effective facts."
+      - "Impact footprint from regulation to clauses and mapped items."
+      - "Draft creation for verified writers and read-only disclosure for others."
+      - "Open dossier action to the exact regulation detail route/mode."
+    preserve_real_behavior:
+      - "Authenticated visibility and independently RLS-gated writer actions."
+      - "Failed register read is unknown/unavailable, never a verified zero."
+      - "Draft-only edit; distinct maker/checker; immutable published version."
+      - "Clause-to-item dependency, effective dates, attachment custody, audit and reasoned deactivation."
+    remove_invented_examples:
+      - "Fixed regulation count, codes, authorities, clauses, dates and version values."
+      - "Any legal source not returned by the selected regulation."
+
+  - mode: PACKAGE_REGISTER
+    exact_route: /admin/packages
+    screen: SCR-ADM-030
+    requirement_ids:
+      - "CR-454..CR-470"
+      - "CR-473"
+      - "CR-475..CR-478"
+    nearest_detail_successor: WA-DES-002-C1
+    application_components:
+      - apps/web/src/app/(app)/admin/packages/page.tsx
+      - apps/web/src/app/(app)/admin/packages/PublishControls.tsx
+      - apps/web/src/app/(app)/admin/packages/ImpactPanel.tsx
+      - apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+    primary_content:
+      - "Package code/title/scope, version lineage and current lifecycle."
+      - "Create draft where the current RLS/RBAC permits."
+      - "Source-backed section, item, action-form and template relationship summaries."
+      - "Impact and definition-diff summaries without row-level leakage."
+      - "Open selected package version in the editor region of the same real route."
+      - "Approve/publish and deactivate only through existing guarded functions."
+    preserve_real_behavior:
+      - "Draft-only editing; frozen published versions; in-flight execution remains pinned."
+      - "Maker-checker publication and mandatory deactivation reason."
+      - "Dependency validation for regulation, item, condition/cycle, evidence, action form, template, violation and penalty mapping."
+      - "Frozen item, violation and template snapshots at publication."
+      - "Partial read and impact-unavailable states remain distinct from zero."
+    decision_boundary:
+      rows: ["CR-471", "CR-472"]
+      rule: "No scored-item count, score status, weight or score-exclusion control."
+    remove_invented_examples:
+      - "Fixed package names, version dates, item/form totals and impact counts."
+      - "Any fixed execution score or scoring claim."
+
+  - mode: ITEM_REGISTER
+    exact_route: /admin/items
+    screen: SCR-ADM-020
+    requirement_ids: ["CR-450", "CR-453", "CR-467", "CR-468", "CR-473"]
+    nearest_detail_successor: WA-DES-002-C1
+    application_components:
+      - apps/web/src/app/(app)/admin/items/page.tsx
+      - apps/web/src/app/(app)/admin/items/Controls.tsx
+    primary_content:
+      - "Search/filter item catalogue with code, title, clause, active state and governed usage."
+      - "Source-bound response values and mappings, evidence rule and required/optional/conditional state."
+      - "Create/edit/deactivate actions only for verified Compliance/Form writers."
+      - "Read-only runtime-preview action."
+      - "Usage and audit evidence or explicit unavailable/permission-limited state."
+    preserve_real_behavior:
+      - "Every item belongs to a regulation clause and may be reused by packages."
+      - "Unique code, governed response/evidence presets and active-state lifecycle."
+      - "Optimistic configuration version check rejects stale edit."
+      - "Edit is blocked until every governed package reference has a frozen item snapshot."
+      - "Archived configuration version before the current row advances."
+      - "Mandatory deactivation reason, usage evidence and RLS role guard."
+    decision_boundary:
+      rows: ["CR-471", "CR-472"]
+      rule: >-
+        Omit Weight, Scoring and Score Exclusion columns, filters, inputs and
+        badges. Do not visually normalize unresolved code fields into an
+        accepted policy.
+    remove_invented_examples:
+      - "FS-014, weight 5, fixed clause, violation, response and evidence values."
+
+  - mode: VIOLATION_REGISTER
+    exact_route: /admin/violations
+    screen: SCR-ADM-040
+    requirement_ids: ["CR-451", "CR-474"]
+    excluded_route_mode: "/admin/violations?mode=penalty"
+    excluded_reason: "Penalty mapping has NO DESIGN MATCH and requires its own authority packet."
+    application_components:
+      - apps/web/src/app/(app)/admin/violations/page.tsx
+      - apps/web/src/app/(app)/admin/violations/Controls.tsx
+    naming_correction: >-
+      Use Violation Configuration or Violation Catalogue. Do not call this
+      Operational Enforcement or Enforcement Library; runtime enforcement is a
+      separate business product.
+    primary_content:
+      - "Code, title, configured level, category, applicability and lifecycle derived from effective dates."
+      - "Corrective action and grace configuration only as source-bound fields allowed by CR-451."
+      - "Regulation-clause anchor, configuration version and trigger trace from inspection-item response mapping."
+      - "Create, publish and deactivate actions only for verified writers."
+      - "Usage, audit and immutable version lineage or explicit unavailable state."
+      - "A clearly blocked handoff to Penalty Mapping design authority; no invented placeholder workflow."
+    preserve_real_behavior:
+      - "Violation code configuration is distinct from runtime violation records."
+      - "Inspector cannot author or override a generated violation."
+      - "Lifecycle is derived from active_from/active_to; do not invent a stored status enum."
+      - "Configuration version, supersession, maker-checker publication, deactivation reason, audit and usage."
+      - "Legal basis belongs to Penalty Mapping, not the violation-code row."
+      - "Read-only roles and failed permission reads remain fail-closed."
+    truth_boundary:
+      - "Severity/level, corrective action and grace are capabilities required by CR-451, but displayed values must come from the current record."
+      - "Do not invent named severity bands, grace days, authority, legal basis, clause or penalty."
+
+bounded_semantic_delta:
+  retain:
+    - "Only the four route modes defined above."
+    - "Approved Web/Admin shell and bilingual identity."
+    - "Truth-over-completion distinction among verified zero, unavailable, denied and not configured."
+    - "Existing route navigation, guarded actions and deep links."
+  remove:
+    - "Generic /admin landing ownership and every unrelated admin mode."
+    - "Committee, Risk, Planning and operational Enforcement content or navigation."
+    - "Penalty mapping UI."
+    - "Scores, weights and exclusion behavior."
+    - "Invented legal/provider/count/person/date/severity/grace values."
+  add:
+    - "Exact route identity in each mode and deterministic mapping metadata."
+    - "Full route-specific state, responsive, EN/AR, accessibility and evidence coverage."
+    - "Clear handoff to the accepted detail successor without duplicating its edit surface."
+
+required_state_matrix:
+  common:
+    - id: LOADING
+      rule: "Preserve route heading/filter geometry and announce progress."
+    - id: AUTHORIZED_WITH_ROWS
+      rule: "Source-backed rows and counts only."
+    - id: AUTHORIZED_VERIFIED_ZERO
+      rule: "Successful read with no rows; explain creation path when permitted."
+    - id: FILTERED_ZERO
+      rule: "Registry has rows but current search/filter has none; offer clear filters."
+    - id: READ_ERROR
+      rule: "Neutral error, count unknown, retry and retained navigation."
+    - id: UNAUTHORIZED
+      rule: "No sensitive row, aggregate or object identity leakage."
+    - id: READ_ONLY
+      rule: "Explain capability and RLS boundary; hide or disable writes consistently."
+    - id: PERMISSION_CHECK_FAILED
+      rule: "Fail closed; writes disabled; retry."
+    - id: STALE_CONFLICT
+      rule: "Reject overwrite, preserve draft input, explain reload/compare."
+    - id: VALIDATION_BLOCKED
+      rule: "Error summary links to fields/dependencies; first summary receives focus."
+    - id: IMMUTABLE
+      rule: "Published/locked version has no edit affordance and explains future-version path."
+    - id: AUDIT_OR_USAGE_UNAVAILABLE
+      rule: "Never represent unavailable evidence as zero."
+  regulation:
+    - "Draft with no clauses."
+    - "Draft with unmapped clauses."
+    - "Invalid effective dates."
+    - "Same maker/checker."
+    - "Attachment/provider failure."
+    - "Missing deactivation reason."
+  package:
+    - "No packages, no draft, and empty draft definition."
+    - "Item bank, template registry or violation choices unavailable."
+    - "Circular condition and each missing dependency class."
+    - "Snapshot freeze failure."
+    - "Impact unavailable versus verified no affected usage."
+    - "Publish RPC failure and same maker/checker."
+  item:
+    - "No items and filtered no match."
+    - "Missing clause or inaccessible governed choices."
+    - "Package usage unavailable."
+    - "Frozen-snapshot prerequisite blocks edit."
+    - "Stale configuration-version write."
+    - "Missing deactivation reason."
+  violation:
+    - "No codes and filtered no match."
+    - "Clause choices or trigger trace unavailable."
+    - "Future, active and deactivated lifecycle."
+    - "Same maker/checker."
+    - "Usage/audit unavailable."
+    - "Penalty design authority missing without implying configuration is complete."
+
+responsive_locale_theme_contract:
+  viewports:
+    - "1440x900 fixed comparison"
+    - "1200x800 desktop"
+    - "1024x768 tablet"
+    - "412x915 mobile"
+    - "390x844 mobile"
+    - "320x568 minimum"
+  variants:
+    - "EN/LTR light"
+    - "EN/LTR dark"
+    - "AR/RTL light"
+    - "AR/RTL dark"
+  shell:
+    - "Approved SAQEEL | صقيل wordmark on expanded dark rail; approved shield when collapsed."
+    - "No typed ADMIN, صناعي or Industrial sub-brand."
+    - "Compact/drawer rail at narrow widths; no clipped or peeking submenu icons."
+  layout:
+    - "Desktop uses bounded rail/content; mode is the real route, not a simulated tab inside /admin."
+    - "1024 keeps filters, primary action and row actions reachable without horizontal page scroll."
+    - "412/390/320 stack controls and convert tables to labelled cards or one bounded accessible scroll region."
+    - "Long Arabic, titles, authorities, legal references, codes and version values wrap within their cell/card."
+    - "Sticky controls never obscure final rows, validation or browser zoom."
+  rtl:
+    - "Mirror navigation, filter order, row actions and directional icons."
+    - "Use bdi dir=ltr for IDs, codes, dates, hashes and versions."
+    - "Arabic headings, filters, state text, errors, validation and announcements have semantic parity."
+  theme:
+    - "Use approved SAQEEL semantic tokens only."
+    - "Every status combines text/glyph/shape; never colour alone."
+    - "All text, focus and state combinations meet required contrast."
+
+accessibility_contract:
+  - "One h1 per route; ordered headings, navigation and main landmarks, plus skip link."
+  - "Search has a visible label or equivalent programmatic name and announces filtered result count."
+  - "Lifecycle filters use fieldset/legend or correct tab/segmented semantics."
+  - "Tables have captions, scoped headers and labelled row actions."
+  - "Card conversion at narrow widths preserves every header as an accessible label."
+  - "All creation, open, publish and deactivate actions are keyboard reachable with visible focus."
+  - "Focus returns predictably after filters, dialogs and mutations."
+  - "Validation summary receives focus and links to each invalid field."
+  - "Loading, success, failure, stale and publish results use suitable live announcements."
+  - "Status never relies only on colour; icons marked decorative when text already supplies meaning."
+  - "200% and 400% zoom preserve content and actions without two-dimensional page scrolling."
+  - "Touch targets and spacing meet the approved component minimum."
+  - "Reduced motion removes nonessential transition without hiding state change."
+
+identity_and_creation_gates:
+  before_create:
+    - "List complete live project inventory and prove exact successor filename absent."
+    - "Record project page count and predecessor URL."
+    - "Export predecessor immediately before creation; require 42,071 bytes and exact SHA-256."
+    - "Stop on any mismatch, conflicting lease or unreviewed P0/P1."
+  create:
+    - "Create exactly one new file under the exact successor filename."
+    - "Populate from exact predecessor bytes and apply only this bounded delta."
+    - "Do not edit or open another design file for writing."
+  after_create:
+    - "Inventory must show exactly one addition and no other delta."
+    - "Export/hash predecessor and successor; predecessor must remain byte-identical."
+    - "Record successor URL, bytes, SHA-256, writer and timestamp."
+    - "Keep successor DRAFT_NON_CONSUMABLE until independent and sponsor acceptance."
+
+comparison_evidence_required:
+  - "Before/after inventory with filename, URL and page count."
+  - "Predecessor and successor byte counts/SHA-256; unchanged predecessor proof."
+  - "Mode scan proving exactly four route modes and no unrelated admin product."
+  - "Route mapping comparison proving /admin generic ownership is removed."
+  - "Text scan proving no score/weight, Risk, Planning, Committee, operational Enforcement, provider or invented legal values."
+  - "Route-by-route preservation checklist against named application components."
+  - "Paired predecessor/successor 1440x900 captures for all four retained modes."
+  - "Every required viewport, locale/direction, theme and state capture."
+  - "Keyboard order, visible focus, error-summary, live-region, zoom and narrow-table evidence."
+  - "Independent Codex ACK/RETURNED/BLOCKED verdict and sponsor decision naming the exact successor hash."
+
+mapping_after_acceptance_only:
+  current_invalid_mapping:
+    logical_id: WA-DES-015
+    route: /admin
+  proposed_exact_mode_mapping:
+    - route: /admin/regulations
+      mode: REGULATION_REGISTER
+    - route: /admin/packages
+      mode: PACKAGE_REGISTER
+    - route: /admin/items
+      mode: ITEM_REGISTER
+    - route: /admin/violations
+      mode: VIOLATION_REGISTER
+  rule: >-
+    Do not amend frozen mappings from this packet. After exact successor
+    acceptance, an approved mapping change records all four route modes and
+    retains the predecessor as rollback authority.
+
+rollback:
+  design: >-
+    Reject WA-DES-015-C1 and keep the immutable predecessor consumed. A rejected
+    successor is never overwritten; any retry receives C2.
+  mapping: "No mapping change occurs before acceptance; rollback is therefore no-op."
+  implementation: >-
+    This packet performs no application change. Any later lease must retain
+    current route/components or a proven feature-flag rollback through
+    certification and sponsor acceptance.
+
+queued_successor:
+  packet: M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+  status: READY_READ_ONLY_AFTER_THIS_REVIEW
+  scope:
+    - /admin/violations
+    - "/admin/violations?mode=penalty"
+  reason: >-
+    Violation configuration has a corrected registry mode, but the one-to-one
+    Penalty Mapping lifecycle still has NO DESIGN MATCH. It requires a separate
+    logical design authority and explicit current-route decision before any
+    design or implementation claim.
+
+recommendation:
+  reviewer_disposition: APPROVE_PACKET_FOR_BOUNDED_DESIGN_WRITE_LEASE
+  design_write_authorized: false
+  mapping_change_authorized: false
+  implementation_authorized: false
+  completion_score_change: 0
+  real_browser_proof_ready: false
+  rationale: >-
+    The successor is now route-bounded, semantically matched and preservation
+    complete. Creation remains gated by current cloud inventory, exact
+    predecessor identity and a separate Codex lease.
+
+stop_conditions:
+  - "The successor filename exists or cannot be created exactly."
+  - "Current cloud inventory or exact predecessor export cannot be independently proven."
+  - "Predecessor bytes/hash differ or any other file changes."
+  - "The successor includes any mode outside the four exact routes."
+  - "Penalty Mapping is implied complete without its own accepted design authority."
+  - "Score/weight, provider, legal, severity, grace, threshold or count values are invented."
+  - "Current maker-checker, RLS/RBAC, audit, versioning, stale-write, snapshot or dependency safeguards are removed or weakened."
+  - "Any required responsive, Arabic/RTL, negative-state or accessibility evidence is absent."
+  - "A P0/P1 remains or sponsor acceptance is missing."

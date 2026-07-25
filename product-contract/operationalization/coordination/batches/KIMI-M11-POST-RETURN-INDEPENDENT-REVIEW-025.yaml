@@ -1,0 +1,32 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+status: QUEUED_SAFE_FOLLOW_ON_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+trigger: "Kimi returns revised source packets and manifests under consolidated packet 022."
+purpose: >-
+  Compare the returned revisions against every OPEN/PARTIAL/CONTRADICTED row in
+  review 024 and decide whether implementation ownership may be proposed.
+
+read_only_boundary:
+  - "No product, database, remote DDL, tests, migrations, data, UI, branch, lease, protected-branch or stash change."
+  - "No implementation lease is issued by this review."
+
+required_inputs:
+  - KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  - KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  - "Returned revised 010/011/013/014/015/017."
+  - "Returned closure, persona, owner/ACL/dependency, policy/trigger, rollout and lease manifests."
+
+review_result_options:
+  - ACK_CORRECTED_PACKETS_READY_FOR_SPONSOR_LEASE_DECISION
+  - RETURN_FOR_CORRECTION
+  - BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+
+dispatch:
+  dispatched: false
+  blocked_by: "022 not dispatched and corrected packets not returned."
+
+validation:
+  yaml_parse: PASS
+  safe_follow_on_boundary_checked: PASS

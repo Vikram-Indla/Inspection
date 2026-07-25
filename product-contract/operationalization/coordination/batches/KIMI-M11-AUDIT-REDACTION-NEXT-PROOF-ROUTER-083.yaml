@@ -1,0 +1,384 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-NEXT-PROOF-ROUTER-083
+status: READ_ONLY_PROOF_ROUTER_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Route each of the twelve open M11 audit-redaction blocker families and five
+  concrete exposure/provider blockers to its next exact admissible proof,
+  authority source, owner boundary, dependency, safe fallback and explicit
+  non-closure rule.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 8a498cc78fe187d88418766bf956c5b4d754a0c8
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+  - KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+  - KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+  - KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+  - KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079
+  - KIMI-M11-AUDIT-REDACTION-BLOCKER-DELTA-WATCH-082
+
+hard_boundary:
+  - "Read-only proof routing plus this one uniquely owned packet."
+  - "Owner boundaries name roles, never allocate real identities."
+  - "No answer selection, implementation, SQL, database, data, seed, test execution, evidence capture, design change, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+  - "No partial proof closes a blocker or grants requirement credit."
+
+admissibility_rules:
+  - rule_id: AR-083-01
+    rule: "Proof must be attributable to the exact current product, coordination, design, environment and lease refs."
+  - rule_id: AR-083-02
+    rule: "Human business/security decisions require explicit human authority; agent synthesis is not consent."
+  - rule_id: AR-083-03
+    rule: "Design proof requires a stable Claude Design page/revision and sponsor acceptance; a prompt or screenshot alone is not authority."
+  - rule_id: AR-083-04
+    rule: "Implementation proof is a bounded diff plus runtime behavior, not a coordination plan."
+  - rule_id: AR-083-05
+    rule: "QA proof is produced by an identity distinct from implementation and includes negative paths."
+  - rule_id: AR-083-06
+    rule: "Database security proof uses the external API boundary used by the app and independently reviewed SQL."
+  - rule_id: AR-083-07
+    rule: "Evidence must be immutable by hash and free of forbidden secrets."
+  - rule_id: AR-083-08
+    rule: "A safe fallback preserves truth and blocks the claim; it never fabricates the missing capability."
+
+blocker_family_routes:
+  - blocker_id: BF-082-01
+    subject: FIVE_SPONSOR_DECISIONS_AND_RECEIPT
+    next_exact_admissible_proof:
+      - "One receipt satisfying all 17 fields in gate 078."
+      - "Exactly one valid choice ID for each SD-077-01 through SD-077-05."
+      - "Canonical payload hash, human authority provenance and all eight preservation acknowledgements."
+      - "Receipt result VALID_DECISIONS_ONLY_POST_GATES_REQUIRED."
+    authority_source: HUMAN_SPONSOR_OR_DOCUMENTED_HUMAN_DELEGATE
+    owner_boundary:
+      producer: HUMAN_AUTHORITY
+      validator: READ_ONLY_GOVERNANCE_REVIEWER
+      implementation_access: NONE
+    dependencies:
+      - KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+      - KIMI-M11-AUDIT-REDACTION-DECISION-RECEIPT-GATE-078
+    safe_fallback: "Keep every answer UNSELECTED and all implementation blocked."
+    non_closure_rule: "A message saying only approved, proceed or all good is incomplete and closes nothing."
+
+  - blocker_id: BF-082-02
+    subject: ACCEPTED_VIRTUAL_TIMELINE_DESIGN_AND_BOUNDS
+    next_exact_admissible_proof:
+      - "Stable Claude Design page ID and revision for the immutable timeline."
+      - "Desktop, responsive, empty, error, loading and unauthorized states."
+      - "Bounded paging/load-more behavior without an invented page size."
+      - "Sponsor signoff tied to that exact revision."
+    authority_source: CLAUDE_DESIGN_OUTPUT_PLUS_HUMAN_SPONSOR_ACCEPTANCE
+    owner_boundary:
+      producer: CLAUDE_DESIGN
+      reviewer: CODEX_INDEPENDENT_MAPPING_REVIEW
+      application_writer: NONE_UNTIL_ACCEPTED
+    dependencies:
+      - "Safe event fields chosen through SD-077-02."
+      - "Timeline design path chosen through SD-077-05."
+    safe_fallback: "Keep the current virtual_sessions.timeline honestly labelled as a limited session timeline; do not claim immutable audit parity."
+    non_closure_rule: "A design prompt, draft, screenshot or unversioned page does not authorize UI wiring."
+
+  - blocker_id: BF-082-03
+    subject: IMPLEMENTATION_IDENTITY_AND_LEASE
+    next_exact_admissible_proof:
+      - "One active lease row with a real implementation identity."
+      - "Exact current repository, worktree, branch, app paths, forward migration path and database objects."
+      - "Protected exclusions, dirty-path disposition and release condition."
+    authority_source: ACTIVE_WORKTREE_LEASES_AFTER_VALID_RECEIPT_AND_COLLISION_REFRESH
+    owner_boundary:
+      role: IMPLEMENTATION_OWNER
+      must_be_distinct_from:
+        - QA_OWNER
+        - DATA_OPERATOR
+        - FINAL_REVIEWER
+    dependencies:
+      - BF-082-01
+      - BF-082-02
+      - "Current ref/collision refresh and migration allocation."
+    safe_fallback: "No product or SQL write."
+    non_closure_rule: "Queue ownership, analysis authorship, sponsor intent or a clean path is not an implementation lease."
+
+  - blocker_id: BF-082-04
+    subject: INDEPENDENT_QA_IDENTITY_AND_LEASE
+    next_exact_admissible_proof:
+      - "One active QA lease row with an identity different from implementation."
+      - "Only the three allocated new test paths and one QA certification path are writable."
+      - "Existing regression tests are execute-only."
+    authority_source: ACTIVE_WORKTREE_LEASES_AFTER_IMPLEMENTATION_BOUNDARY_IS_FIXED
+    owner_boundary:
+      role: INDEPENDENT_QA_OWNER
+      prohibited:
+        - implementation application paths
+        - migration
+        - product repairs
+    dependencies:
+      - BF-082-03
+      - KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+    safe_fallback: "No certification; implementation remains unaccepted."
+    non_closure_rule: "Implementation self-tests or a QA run by the implementer do not satisfy independent QA."
+
+  - blocker_id: BF-082-05
+    subject: CONTROLLED_DATA_IDENTITY_AND_LEASE
+    next_exact_admissible_proof:
+      - "One non-production environment identity and one distinct data-operator identity."
+      - "Fixture-row scope limited to visits, assignments, virtual_sessions and virtual_participants."
+      - "Fixture manifest, immutable generated audit-row list and cleanup disposition."
+      - "Synthetic historical-secret case confined to an isolated transaction/disposable database."
+    authority_source: APPROVED_NON_PRODUCTION_DATA_GOVERNANCE_AND_EXACT_DATA_LEASE
+    owner_boundary:
+      role: CONTROLLED_FIXTURE_OPERATOR
+      repository_write_paths: []
+      prohibited:
+        - production
+        - DDL
+        - audit_events update_or_delete
+        - repository seeder implementation
+    dependencies:
+      - BF-082-03
+      - "Approved test environment."
+    safe_fallback: "Use no shared fixture mutation; QA remains blocked or uses a disposable isolated environment only after authority."
+    non_closure_rule: "Seeder availability or sponsor data approval is not a fixture manifest, cleanup proof or data lease."
+
+  - blocker_id: BF-082-06
+    subject: FINAL_REVIEWER_IDENTITY
+    next_exact_admissible_proof:
+      - "One named reviewer distinct from implementation, QA and data."
+      - "Read-only scope covering diff, database objects, tests, evidence, data cleanup and real browser behavior."
+      - "One explicit approve/return/block verdict with evidence references."
+    authority_source: REVIEW_ASSIGNMENT_AFTER_IMPLEMENTATION_QA_AND_DATA_OUTPUTS_EXIST
+    owner_boundary:
+      role: FINAL_INDEPENDENT_REVIEWER
+      writable_product_test_data_paths: []
+    dependencies:
+      - BF-082-03
+      - BF-082-04
+      - BF-082-05
+    safe_fallback: "No sponsor-review recommendation and no credit."
+    non_closure_rule: "A reviewer who repairs the implementation or QA evidence is not independent for that run."
+
+  - blocker_id: BF-082-07
+    subject: DIRECT_VERIFICATION_RECORD_EXPOSURE
+    next_exact_admissible_proof:
+      - "External API request select=verification_record is denied or the field is unavailable for every currently row-authorized persona."
+      - "The same personas can still read safe participant fields."
+      - "vp_request_otp, vp_verify_otp and vp_otp_status still pass positive and negative behavior."
+      - "No code_hash or raw provider metadata appears in any response."
+    authority_source: ACCEPTED_SD_077_01_PLUS_IMPLEMENTED_FORWARD_SECURITY_BOUNDARY
+    owner_boundary:
+      implementation: LANE_079_IMPLEMENTATION
+      proof: LANE_079_QA
+      fixture: LANE_079_DATA
+      verdict: LANE_079_REVIEW
+    dependencies:
+      - BF-082-01
+      - BF-082-03
+      - BF-082-04
+      - BF-082-05
+    safe_fallback: "Do not wire or expose verification_record in any normal application consumer; keep blocker open."
+    non_closure_rule: "Omitting the field from current TypeScript selects or returning null from an empty fixture is not server-enforced denial."
+
+  - blocker_id: BF-082-08
+    subject: SESSION_AUDIT_RAW_DETAIL_EXPOSURE
+    next_exact_admissible_proof:
+      - "vs_audit_trail returns only id, at, action, object_type, object_id, actor and allowlisted detail."
+      - "Recursive scan finds zero forbidden keys/values for current and historical rows."
+      - "Stable occurred_at/id ordering and accepted bounds are proven."
+      - "Unauthorized and unrelated-session calls return no data."
+    authority_source: ACCEPTED_SD_077_02_PLUS_ACCEPTED_DESIGN_BOUNDS
+    owner_boundary:
+      implementation: LANE_079_IMPLEMENTATION
+      proof: LANE_079_QA
+      reviewer: LANE_079_REVIEW
+    dependencies:
+      - BF-082-01
+      - BF-082-02
+      - BF-082-03
+      - BF-082-04
+    safe_fallback: "Do not connect vs_audit_trail to UI while it returns raw after_state."
+    non_closure_rule: "A passing OTP_SENT existence assertion without recursive redaction and historical tests closes nothing."
+
+  - blocker_id: BF-082-09
+    subject: ADMIN_AUDIT_RAW_M11_EXPOSURE
+    next_exact_admissible_proof:
+      - "/admin/audit receives a server-enforced M11-safe projection."
+      - "DOM, server serialization and network payload contain zero forbidden keys/values."
+      - "M11 filters, stable IDs and chronology work."
+      - "A non-M11 audit fixture proves existing display behavior is unchanged."
+    authority_source: ACCEPTED_SD_077_03_AND_BOUNDED_ADMIN_AUDIT_SCOPE
+    owner_boundary:
+      implementation: LANE_079_IMPLEMENTATION_CONDITIONAL_ADMIN_PATH
+      proof: LANE_079_QA
+      reviewer: LANE_079_REVIEW
+    dependencies:
+      - BF-082-01
+      - BF-082-03
+      - BF-082-04
+      - BF-082-08
+    safe_fallback: "Suppress unsafe M11 detail or keep the route blocked; do not use CSS/client-only hiding."
+    non_closure_rule: "Redacting screenshots while the HTML/network payload remains raw is not closure."
+
+  - blocker_id: BF-082-10
+    subject: VIRTUAL_UI_IMMUTABLE_AUDIT_CONSUMER
+    next_exact_admissible_proof:
+      - "Source shows /virtual/:id calls only the accepted safe audit projection."
+      - "Real browser shows immutable history at the accepted Claude Design revision."
+      - "Empty, error, unauthorized, responsive and bounded paging states pass."
+      - "virtual_sessions.timeline is not mislabelled as the complete immutable audit store."
+    authority_source: ACCEPTED_SD_077_02_AND_SD_077_05_PLUS_STABLE_CLAUDE_DESIGN_REVISION
+    owner_boundary:
+      design: CLAUDE_DESIGN
+      implementation: LANE_079_IMPLEMENTATION
+      proof: LANE_079_QA
+      reviewer: LANE_079_REVIEW
+    dependencies:
+      - BF-082-02
+      - BF-082-08
+    safe_fallback: "Retain current limited timeline label and block immutable-audit parity claims."
+    non_closure_rule: "Claude Design imagery or a source-only component without live data and browser proof is not implementation."
+
+  - blocker_id: BF-082-11
+    subject: THIRTY_FIVE_CASES_AND_SEVEN_EVIDENCE_ROWS
+    next_exact_admissible_proof:
+      - "35/35 matrix cases executed with every P0 pass and requirement-safe P1 disposition."
+      - "Seven evidence rows complete with product/coordination/implementation/migration/test/environment/persona/fixture identities and hashes."
+      - "Zero secret findings, historical audit mutations, regression exclusions, unauthorized rows or QA repairs."
+    authority_source: KIMI_M11_AUDIT_REDACTION_ACCEPTANCE_MATRIX_076_PLUS_INDEPENDENT_QA_LEASE
+    owner_boundary:
+      test_and_evidence: LANE_079_QA
+      fixture_manifest: LANE_079_DATA
+      final_verdict: LANE_079_REVIEW
+    dependencies:
+      - BF-082-04
+      - BF-082-05
+      - BF-082-07
+      - BF-082-08
+      - BF-082-09
+      - BF-082-10
+    safe_fallback: "Retain failed/incomplete evidence and return for correction; no partial credit."
+    non_closure_rule: "34/35, 6/7, a skipped suite or one forbidden-key finding is not near-complete; it is blocked."
+
+  - blocker_id: BF-082-12
+    subject: PROVIDER_LIFECYCLE_CONTRACT
+    next_exact_admissible_proof:
+      - "Human-approved provider integration and callback authenticity contract."
+      - "Stable event schema for join, leave, disconnect and reconnect."
+      - "Server-side idempotency/order/authorization rules."
+      - "Real provider or approved test-environment callback evidence, consumer UI and regression proof."
+    authority_source: HUMAN_PROVIDER_CONTRACT_DECISION_PLUS_APPROVED_INTEGRATION_AUTHORITY
+    owner_boundary:
+      contract: HUMAN_PRODUCT_SECURITY_AUTHORITY
+      design: CLAUDE_DESIGN_AFTER_CONTRACT
+      implementation_QA_data_review: "Separate future lease set; not the audit-redaction lease unless explicitly expanded."
+    dependencies:
+      - "Provider selection and callback contract."
+      - "Separate collision and change-control review."
+    safe_fallback: "Keep provider unavailable/degraded state explicit and generate no fabricated lifecycle events."
+    non_closure_rule: "Static local join/close timeline events do not prove provider leave, disconnect or reconnect."
+
+exposure_provider_routes:
+  - exposure_id: SECRET-082-01
+    linked_blocker_family: BF-082-07
+    next_proof_id: PROOF-DIRECT-QUERY-DENIAL
+    admissible_proof: "Denied external verification_record query plus preserved safe fields/RPCs."
+    safe_fallback: BLOCK_NORMAL_SECRET_READ
+    non_closure_rule: "UI omission is not access denial."
+  - exposure_id: SECRET-082-02
+    linked_blocker_family: BF-082-08
+    next_proof_id: PROOF-SAFE-AUDIT-SEAM
+    admissible_proof: "Allowlisted vs_audit_trail output plus recursive current/historical secret scan."
+    safe_fallback: DO_NOT_WIRE_UNSAFE_SEAM
+    non_closure_rule: "One positive OTP event test is insufficient."
+  - exposure_id: SECRET-082-03
+    linked_blocker_family: BF-082-09
+    next_proof_id: PROOF-ADMIN-SERVER-REDACTION
+    admissible_proof: "Server-redacted M11 Admin payload plus DOM/network and non-M11 regression evidence."
+    safe_fallback: SUPPRESS_OR_BLOCK_M11_DETAIL
+    non_closure_rule: "Visual hiding is not redaction."
+  - exposure_id: SECRET-082-04
+    linked_blocker_family: BF-082-10
+    next_proof_id: PROOF-VIRTUAL-IMMUTABLE-CONSUMER
+    admissible_proof: "Accepted design + real source/data/browser immutable timeline."
+    safe_fallback: HONEST_LIMITED_TIMELINE
+    non_closure_rule: "Design-only or source-only proof is insufficient."
+  - exposure_id: SECRET-082-05
+    linked_blocker_family: BF-082-12
+    next_proof_id: PROOF-PROVIDER-LIFECYCLE-CONTRACT
+    admissible_proof: "Approved provider callback contract plus real events and consumers."
+    safe_fallback: HONEST_PROVIDER_UNAVAILABLE
+    non_closure_rule: "Fabricated or local-only lifecycle events are prohibited."
+
+dependency_frontier:
+  immediately_admissible_without_write:
+    - blocker_id: BF-082-01
+      action: "Obtain explicit human choices and validate receipt."
+    - blocker_id: BF-082-02
+      action: "Obtain versioned Claude Design timeline/bounds and sponsor acceptance."
+    - blocker_id: BF-082-12
+      action: "Obtain provider contract decision without implementing."
+  blocked_until_receipt_and_design:
+    - BF-082-03
+    - BF-082-04
+    - BF-082-05
+    - BF-082-06
+    - BF-082-07
+    - BF-082-08
+    - BF-082-09
+    - BF-082-10
+    - BF-082-11
+  interpretation: >-
+    The next useful real work is authority/design proof. Additional synthetic
+    implementation planning can improve readiness but cannot close a blocker.
+
+router_verdict:
+  routes_defined: 17
+  blocker_family_routes: 12
+  exposure_provider_routes: 5
+  blocker_families_closed: 0
+  exposure_provider_blockers_closed: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-SCHEMAS-084
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define field-exact, non-authorizing artifact schemas for the sponsor
+    receipt, design acceptance, lease manifests, fixture cleanup, 35-case
+    result, seven evidence rows and reviewer verdict so future proofs are
+    machine-checkable on arrival.
+  prohibited:
+    - "No answer selection, real identity, owner, lease, dispatch, code, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  admissibility_rules: 8
+  blocker_family_routes: 12
+  exposure_provider_routes: 5
+  total_routes: 17
+  immediate_nonwrite_routes: 3
+  blocked_until_receipt_and_design: 9
+  blocker_families_closed: 0
+  exposure_provider_blockers_closed: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  commits_created: 0
+  pushes_created: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

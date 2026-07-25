@@ -1,0 +1,500 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-DISPATCH-VALIDATOR-MUTATION-MATRIX-064
+status: READ_ONLY_SYNTHETIC_MUTATION_MATRIX_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Systematically mutate every required M11 dispatch-manifest and lease field,
+  plus cross-field control-ref, ownership and preservation invariants, to prove
+  that every invalid authority attempt deterministically blocks execution.
+
+authority:
+  example_pack: KIMI-M11-DISPATCH-MANIFEST-DRY-VALIDATOR-EXAMPLES-063
+  conformance_spec: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+  visibility_reconciliation: KIMI-M11-SHARED-CONTROL-VISIBILITY-RECONCILIATION-061
+  preservation_audit: KIMI-M11-PRESERVATION-FLOOR-INDEPENDENT-AUDIT-058
+
+non_authoritative_guard:
+  synthetic_only: true
+  real_manifest_created: false
+  real_option_selected: false
+  real_owner_assigned: false
+  real_lease_created: false
+  shared_control_mutated: false
+  dispatch_authorized: false
+  implementation_authorized: false
+  QA_authorized: false
+  requirement_credit: 0
+
+hard_boundary:
+  - "Synthetic validator mutations only; no real identity, worktree, branch, option, manifest or lease."
+  - "No fetch, checkout, branch/worktree creation, merge, push, queue/slice/lease edit, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+result_semantics:
+  execution_gate_result_for_every_mutation: BLOCK
+  explanation: >-
+    Some missing or malformed response fields may be returned to the decision
+    authority for correction under packet 059, but the dispatch execution gate
+    is always BLOCK until a corrected example passes every check.
+  correctable_response_disposition: RETURN
+  authority_or_coverage_violation_disposition: BLOCK
+
+manifest_schema:
+  expected_field_count: 22
+  fields:
+    - canonical_repository
+    - product_control_ref
+    - product_control_commit
+    - work_queue_path
+    - work_queue_sha256
+    - current_slice_path
+    - current_slice_sha256
+    - coordination_control_ref
+    - coordination_control_commit
+    - lease_registry_path
+    - lease_registry_sha256
+    - task_id
+    - actor
+    - worktree
+    - branch
+    - exact_leased_paths
+    - exact_database_objects
+    - mode
+    - expiry_or_release_condition
+    - independent_reviewer
+    - preservation_floor
+    - requirement_credit
+
+manifest_field_mutations:
+  - id: M064-M-001
+    field: canonical_repository
+    mutation: MISSING
+    detector: REQUIRED_FIELD_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-002
+    field: product_control_ref
+    mutation: "refs/heads/stale-product-ref"
+    detector: PRODUCT_CONTROL_REF_NOT_PINNED
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-003
+    field: product_control_commit
+    mutation: WRONG_OR_STALE_COMMIT
+    detector: PRODUCT_CONTROL_COMMIT_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-004
+    field: work_queue_path
+    mutation: MISSING
+    detector: REQUIRED_CONTROL_BLOB_PATH_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-005
+    field: work_queue_sha256
+    mutation: STALE_HASH
+    detector: WORK_QUEUE_HASH_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-006
+    field: current_slice_path
+    mutation: MISSING
+    detector: REQUIRED_CONTROL_BLOB_PATH_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-007
+    field: current_slice_sha256
+    mutation: STALE_HASH
+    detector: CURRENT_SLICE_HASH_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-008
+    field: coordination_control_ref
+    mutation: "refs/heads/untrusted-coordination-ref"
+    detector: COORDINATION_CONTROL_REF_NOT_PINNED
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-009
+    field: coordination_control_commit
+    mutation: WRONG_OR_STALE_COMMIT
+    detector: COORDINATION_CONTROL_COMMIT_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-010
+    field: lease_registry_path
+    mutation: MISSING
+    detector: REQUIRED_LEASE_BLOB_PATH_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-011
+    field: lease_registry_sha256
+    mutation: STALE_HASH
+    detector: LEASE_REGISTRY_HASH_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-012
+    field: task_id
+    mutation: MISSING
+    detector: TASK_ID_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-013
+    field: actor
+    mutation: MISSING
+    detector: ACTOR_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-014
+    field: worktree
+    mutation: MISSING
+    detector: WORKTREE_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-015
+    field: branch
+    mutation: MISSING
+    detector: BRANCH_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-016
+    field: exact_leased_paths
+    mutation: "apps/**"
+    detector: BROAD_OR_NON_EXACT_PATH_SCOPE
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-017
+    field: exact_database_objects
+    mutation: MISSING
+    detector: DATABASE_OBJECT_SCOPE_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-018
+    field: mode
+    mutation: UNKNOWN_OR_ACTIVE_BEFORE_MATERIALIZATION
+    detector: MODE_NOT_ALLOWED_OR_PREMATURE
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-019
+    field: expiry_or_release_condition
+    mutation: MISSING
+    detector: LEASE_RELEASE_BOUNDARY_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-020
+    field: independent_reviewer
+    mutation: MISSING
+    detector: INDEPENDENT_REVIEWER_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-M-021
+    field: preservation_floor
+    mutation: "20/360/17/8/11"
+    detector: PRESERVATION_FLOOR_REDUCED
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-M-022
+    field: requirement_credit
+    mutation: 1
+    detector: PREMATURE_REQUIREMENT_CREDIT
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+
+lease_schema:
+  expected_field_count: 16
+  fields:
+    - task_id
+    - named_owner
+    - repository
+    - worktree
+    - branch
+    - exact_application_paths
+    - exact_test_paths
+    - exact_database_objects
+    - migration_allocation_rule
+    - predecessor_commit
+    - baseline_hash
+    - start_time
+    - expiry_or_release_condition
+    - independent_reviewer
+    - prohibited_paths
+    - collision_stop_conditions
+
+lease_field_mutations:
+  - id: M064-L-001
+    field: task_id
+    mutation: MISSING
+    detector: LEASE_TASK_ID_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-L-002
+    field: named_owner
+    mutation: MISSING
+    detector: LEASE_OWNER_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-L-003
+    field: repository
+    mutation: WRONG_OR_RETIRED_REPOSITORY
+    detector: REPOSITORY_IDENTITY_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-004
+    field: worktree
+    mutation: MISSING
+    detector: LEASE_WORKTREE_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-L-005
+    field: branch
+    mutation: "kimi/execution-module-001"
+    detector: BRANCH_REF_MISSING_OR_UNPROVEN
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-006
+    field: exact_application_paths
+    mutation: "apps/web/**"
+    detector: APPLICATION_SCOPE_BROAD_OR_COLLIDING
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-007
+    field: exact_test_paths
+    mutation: MISSING
+    detector: TEST_SCOPE_NOT_EXPLICIT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-L-008
+    field: exact_database_objects
+    mutation: "public.*"
+    detector: DATABASE_SCOPE_BROAD_OR_COLLIDING
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-009
+    field: migration_allocation_rule
+    mutation: MISSING_OR_PREALLOCATED_COLLIDING_FILENAME
+    detector: MIGRATION_ORDER_UNSAFE
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-010
+    field: predecessor_commit
+    mutation: WRONG_OR_UNRESOLVABLE
+    detector: PREDECESSOR_COMMIT_UNPROVEN
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-011
+    field: baseline_hash
+    mutation: STALE_OR_MISSING
+    detector: BASELINE_HASH_MISMATCH
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-012
+    field: start_time
+    mutation: BEFORE_CHANGE_CONTROL_ACCEPTANCE
+    detector: PREMATURE_LEASE_START
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-013
+    field: expiry_or_release_condition
+    mutation: MISSING
+    detector: LEASE_HAS_NO_RELEASE_BOUNDARY
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-L-014
+    field: independent_reviewer
+    mutation: SAME_AS_NAMED_OWNER
+    detector: REVIEWER_OWNER_OVERLAP
+    dispatch_result: BLOCK
+    response_disposition: BLOCK
+  - id: M064-L-015
+    field: prohibited_paths
+    mutation: EMPTY_OR_MISSING
+    detector: PROHIBITED_SCOPE_NOT_GUARDED
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+  - id: M064-L-016
+    field: collision_stop_conditions
+    mutation: EMPTY_OR_MISSING
+    detector: COLLISION_FAIL_CLOSED_RULES_ABSENT
+    dispatch_result: BLOCK
+    response_disposition: RETURN
+
+control_ref_cross_field_mutations:
+  - id: M064-C-001
+    mutation: "Correct product ref with a commit from another ref."
+    detector: REF_COMMIT_PAIR_MISMATCH
+    dispatch_result: BLOCK
+  - id: M064-C-002
+    mutation: "Correct commit with checkout-local stale queue hash."
+    detector: PRODUCT_BLOB_HASH_MISMATCH
+    dispatch_result: BLOCK
+  - id: M064-C-003
+    mutation: "Correct coordination ref with a lease hash from an older commit."
+    detector: COORDINATION_BLOB_HASH_MISMATCH
+    dispatch_result: BLOCK
+  - id: M064-C-004
+    mutation: "Lease registry missing in worker checkout and treated as empty."
+    detector: ABSENCE_INTERPRETED_AS_EMPTY
+    dispatch_result: BLOCK
+  - id: M064-C-005
+    mutation: "Product and coordination refs resolve from different Git common directories."
+    detector: REPOSITORY_IDENTITY_SPLIT
+    dispatch_result: BLOCK
+  - id: M064-C-006
+    mutation: "One pinned ref cannot resolve locally."
+    detector: AUTHORITATIVE_REF_UNAVAILABLE
+    dispatch_result: BLOCK
+
+ownership_cross_field_mutations:
+  - id: M064-O-001
+    mutation: "implementation_owner == independent_QA_owner"
+    detector: IMPLEMENTATION_QA_OWNER_OVERLAP
+    dispatch_result: BLOCK
+  - id: M064-O-002
+    mutation: "implementation_owner == independent_reviewer"
+    detector: IMPLEMENTATION_REVIEWER_OVERLAP
+    dispatch_result: BLOCK
+  - id: M064-O-003
+    mutation: "independent_QA_owner == independent_reviewer"
+    detector: QA_REVIEWER_INDEPENDENCE_UNPROVEN
+    dispatch_result: BLOCK
+  - id: M064-O-004
+    mutation: "manifest.actor != lease.named_owner"
+    detector: ACTOR_OWNER_MISMATCH
+    dispatch_result: BLOCK
+  - id: M064-O-005
+    mutation: "manifest.task_id != lease.task_id"
+    detector: TASK_LEASE_MISMATCH
+    dispatch_result: BLOCK
+  - id: M064-O-006
+    mutation: "Two active lease rows include the same application path or database object."
+    detector: CONCURRENT_SCOPE_COLLISION
+    dispatch_result: BLOCK
+
+preservation_cross_field_mutations:
+  - id: M064-P-001
+    field: requirement_range
+    mutation: CR-338..CR-356
+    detector: CR_337_DROPPED
+    dispatch_result: BLOCK
+  - id: M064-P-002
+    field: requirement_count
+    mutation: 19
+    detector: REQUIREMENT_COUNT_REDUCED
+    dispatch_result: BLOCK
+  - id: M064-P-003
+    field: test_case_count
+    mutation: 360
+    detector: TEST_CASE_REMOVED
+    dispatch_result: BLOCK
+  - id: M064-P-004
+    field: unique_test_case_count
+    mutation: 360
+    detector: DUPLICATE_OR_MISSING_TEST_CASE
+    dispatch_result: BLOCK
+  - id: M064-P-005
+    field: proof_cluster_count
+    mutation: 17
+    detector: PROOF_CLUSTER_REMOVED
+    dispatch_result: BLOCK
+  - id: M064-P-006
+    field: QA_path_count
+    mutation: 8
+    detector: QA_PATH_REMOVED
+    dispatch_result: BLOCK
+  - id: M064-P-007
+    field: unique_QA_path_count
+    mutation: 8
+    detector: QA_PATH_DUPLICATE_OR_MISSING
+    dispatch_result: BLOCK
+  - id: M064-P-008
+    field: blocker_count
+    mutation: 11
+    detector: BLOCKER_SILENTLY_DROPPED
+    dispatch_result: BLOCK
+  - id: M064-P-009
+    field: waived_or_deleted
+    mutation: 1
+    detector: COVERAGE_WAIVER_OR_DELETION
+    dispatch_result: BLOCK
+  - id: M064-P-010
+    field: requirement_credit
+    mutation: 1
+    detector: CREDIT_BEFORE_RUNTIME_CERTIFICATION
+    dispatch_result: BLOCK
+
+option_specific_mutations:
+  - id: M064-X-001
+    option: EXECUTION_TASK_ABSORBS_M11
+    mutation: "Absorption change control omits explicit M11 supersession/mapping."
+    detector: ABSORPTION_AUTHORITY_UNPROVEN
+    dispatch_result: BLOCK
+  - id: M064-X-002
+    option: M11_CHAIN_OWNS_VIRTUAL
+    mutation: "Execution task is not narrowed away from exact M11 paths/objects."
+    detector: OVERLAPPING_AUTHORITY_REMAINS
+    dispatch_result: BLOCK
+  - id: M064-X-003
+    option: KEEP_BOTH_BLOCKED
+    mutation: "Any non-empty path/object, active owner, active mode or positive credit."
+    detector: BLOCKED_OPTION_ESCALATES_AUTHORITY
+    dispatch_result: BLOCK
+
+matrix_summary:
+  manifest_field_rows: 22
+  lease_field_rows: 16
+  control_ref_cross_field_rows: 6
+  ownership_cross_field_rows: 6
+  preservation_cross_field_rows: 10
+  option_specific_rows: 3
+  total_mutation_rows: 63
+  deterministic_dispatch_blocks: 63
+  non_blocking_mutations: 0
+
+result:
+  verdict: ACK
+  exact_reason: ACK_ALL_63_SYNTHETIC_MUTATIONS_DETERMINISTICALLY_BLOCK_DISPATCH
+  real_manifests_created: 0
+  real_options_selected: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  shared_controls_changed: 0
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-DISPATCH-VALIDATOR-COVERAGE-CERTIFICATE-065
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Independently certify that all 22 manifest fields, all 16 lease fields and
+    all declared cross-field invariants have one unique fail-closed mutation
+    row with no missing or duplicate coverage.
+  prohibited:
+    - "No real manifest, option, identity, owner, worktree, branch, lease, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  manifest_schema_fields: 22
+  manifest_fields_mutated: 22
+  lease_schema_fields: 16
+  lease_fields_mutated: 16
+  control_ref_mutations: 6
+  ownership_mutations: 6
+  preservation_mutations: 10
+  option_mutations: 3
+  total_mutations: 63
+  deterministic_blocks: 63
+  non_blocking_mutations: 0
+  real_manifests_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

@@ -1,0 +1,163 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+status: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+lease_type: READ_ONLY_IMPLEMENTATION_AND_ROLLBACK_SPECIFICATION
+
+business_function: >-
+  Replace broad direct virtual-session and participant mutation permissions
+  with least-privilege, role-scoped policies and governed RPC boundaries.
+
+authority:
+  requirement_ids: [CR-337..CR-356]
+  acceptance_ids:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  permission_contracts:
+    - RBAC-007
+    - RBAC-008
+    - RBAC-009
+    - RBAC-011
+    - RBAC-012
+    - RBAC-014
+  sources:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/domain/rbac_matrix.csv
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0021_fix_broad_rls.sql
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715170000_cd041_verified_transition_guard.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+
+prerequisites:
+  - "Corrected 009r independently reviewed and accepted."
+  - "010 creation boundary accepted or explicitly leased without overlap."
+  - "Fresh SAQEEL session-start and operating-system bootstrap."
+  - "An implementation owner and exclusive file lease recorded before writes."
+
+confirmed_findings_owned:
+  - M11-PERM-002
+  - M11-PERM-003
+finding_routed_elsewhere:
+  M11-PERM-001: KIMI-M11-ATOMIC-FIX-LEASE-010
+  M11-PERM-004: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  M11-PERM-005: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  M11-PERM-006: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  M11-PERM-007: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  M11-PERM-008: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+
+current_defects:
+  participant_dml_bypass: >-
+    vp_rw is a broad FOR ALL policy. Roles that only require visibility,
+    including Reviewer, can directly set or delete joined_at, verified_at and
+    verification_record without the governed OTP and join paths.
+  reviewer_overreach: >-
+    Reviewer is present in mutation allowlists despite CR-348 and CR-353
+    assigning Reviewer audit/history visibility rather than execution mutation.
+  rpc_role_overreach: >-
+    OTP RPC role allowlists are broader than the explicit Inspector action in
+    CR-349 through CR-352. No sponsor authority was found for Reviewer,
+    Planner or Operations to execute the identity-verification action.
+
+required_permission_model:
+  virtual_sessions:
+    select:
+      - "Planner and Operations may read the operational sessions required by RBAC-007 and RBAC-008."
+      - "Reviewer and audit roles may read only the review/audit visibility supported by the contract."
+      - "Inspector may read only an assigned visit/session under RBAC-009."
+    insert: "Owned exclusively by 010's atomic creation RPC and corrected INSERT policy."
+    update_delete:
+      - "Remove broad direct mutation for ordinary authenticated callers."
+      - "Allow changes only through the exact governed RPC/action for the caller role and state."
+      - "Do not grant Reviewer a session execution mutation path."
+  virtual_participants:
+    select:
+      - "Planner and Operations may read participants needed for session management."
+      - "Reviewer may read the audit/review view without mutation authority."
+      - "Inspector may read participants only for an assigned visit/session."
+    insert: "Initial participant creation is owned only by 010's atomic RPC."
+    update_delete:
+      - "Deny ordinary direct UPDATE and DELETE of joined_at, verified_at and verification_record."
+      - "Permit join and verification facts only through governed RPCs with role, row, state and column guards."
+      - "Do not preserve vp_rw FOR ALL as the enforcement mechanism."
+  otp_rpc:
+    - "Require the assigned Inspector for request, verify and status execution under CR-349 through CR-352 and RBAC-009."
+    - "Reviewer remains audit/read-only under CR-348, CR-353 and RBAC-011."
+    - "Do not infer Planner or Operations OTP execution rights from their scheduling/management permissions."
+    - "Representative access remains blocked on DEC-005; do not invent a principal, portal or participant token."
+
+implementation_constraints:
+  - "Use one forward-only migration to drop/replace broad policies and tighten RPC authorization."
+  - "Separate SELECT from INSERT, UPDATE and DELETE policies."
+  - "Enforce the same role and row boundary inside SECURITY DEFINER RPCs."
+  - "Revoke direct execution or table privileges that bypass governed paths."
+  - "Preserve append-only audit triggers and existing valid business rows."
+  - "Fail closed if profile, assignment, role or scope cannot be established."
+  - "Do not change provider behavior, workflow states, list semantics or design."
+
+owned_files_proposed:
+  migration:
+    - "One new forward-only Supabase migration; filename allocated by the implementation owner at lease start."
+  application:
+    - "Only virtual action call sites required to consume stable authorization results."
+  tests:
+    - "One SQL role-and-row permission matrix contract test."
+    - "Corrected M11 negative-path browser specification after 009r acceptance."
+
+test_contract:
+  personas:
+    planner:
+      allow: ["governed session-management read/action explicitly supported by RBAC-007"]
+      deny: ["direct participant verification/join DML", "OTP execution", "begin inspection"]
+    operations:
+      allow: ["governed operational read/action explicitly supported by RBAC-008"]
+      deny: ["direct participant verification/join DML", "OTP execution", "begin inspection"]
+    reviewer:
+      allow: ["contracted review/audit visibility"]
+      deny: ["session mutation", "participant INSERT/UPDATE/DELETE", "OTP request/verify/status mutation", "begin inspection"]
+    assigned_inspector:
+      allow: ["assigned-session read", "governed OTP execution"]
+      deny: ["direct participant mutation", "unassigned-session access"]
+    unassigned_inspector:
+      deny: ["session/participant read", "all mutation", "all governed RPC execution"]
+  invariants:
+    - "Every denied direct DML or RPC attempt leaves session, participant and audit state unchanged."
+    - "Reviewer cannot change joined_at, verified_at or verification_record."
+    - "Assigned Inspector can complete the governed OTP path without acquiring broad table mutation rights."
+    - "No regression to authorized Planner/Operations scheduling and management paths."
+
+rollback_plan:
+  rule: >-
+    Roll back only through a new forward migration or application revert.
+    Never restore a broad FOR ALL policy as an emergency shortcut.
+  trigger: "Any P0 denial bypass, authorized-path regression or audit regression."
+  preserve:
+    - "Existing sessions and participants."
+    - "Append-only audit history."
+    - "010's creation authorization and atomicity."
+
+lease_separation:
+  excludes:
+    - "Session/participant atomic creation and virtual_sessions INSERT policy, owned by 010."
+    - "Join/begin multi-record atomicity, owned by 014."
+    - "Execution-window semantics, owned by 011."
+    - "Audit-secret redaction and neutral errors, owned by 015."
+    - "List-filter semantics and CR-337 sponsor decision."
+    - "Representative login/access, blocked on DEC-005."
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_AND_009R_ACCEPTANCE
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  scope_separation_checked: PASS

@@ -1,0 +1,490 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+status: READ_ONLY_FUTURE_PERSONA_MATRIX_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze the future M11 authorization test matrix across public, anonymous,
+  unrelated authenticated, assigned/unassigned Inspector, Reviewer,
+  Operations, administrative, provider and technical service identities.
+  Cover direct table access, governed RPCs, safe reads, writes, exports, audit
+  visibility and neutral missing/out-of-scope boundaries without inferring
+  authority or using privileged identities as proof of ordinary-user access.
+
+frozen_authority:
+  test_gap_inventory:
+    packet: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+    sha256: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  security_negative_path_review:
+    packet: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
+    sha256: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  ACL_negative_test_spec:
+    packet: KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+    sha256: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  provider_degraded_path_spec:
+    packet: KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+    sha256: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  concurrency_rollback_spec:
+    packet: KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045
+    sha256: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, design, data, seed, branch or stash change."
+  - "No live identity, credential, provider, service key, OTP, person, factory or application record."
+  - "No role, action, provider or administrative authority is invented."
+  - "service_role, owner, superuser and BYPASSRLS results cannot certify ordinary persona authorization."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+authorization_principles:
+  - "Every positive result requires exact frozen action authority plus resource relationship, state and window."
+  - "Broad current RLS, role labels and historical positive tests are not authority."
+  - "PUBLIC and anon have no direct table or governed RPC access."
+  - "Direct INSERT, UPDATE and DELETE are denied to PUBLIC, anon and authenticated after the governed switch."
+  - "Assigned Inspector authority is resource-scoped and action-scoped."
+  - "Unassigned Inspector and unrelated authenticated users receive the neutral resource boundary."
+  - "Reviewer and Auditor are safe view-only where exact authority permits."
+  - "Operations positives remain blocked without exact canonical action authority."
+  - "Administrative application personas cannot read raw participant secret-bearing audit JSON."
+  - "Provider/technical service identities have only an exact future machine contract and cannot browse application data."
+  - "Missing and out-of-scope responses are byte-equivalent at every governed public boundary."
+
+persona_fixtures:
+  - id: FX-PER-PUBLIC
+    class: database_role
+    authority: "None."
+  - id: FX-PER-ANON
+    class: client_role
+    authority: "Anonymous only; no M11 access."
+  - id: FX-PER-AUTHENTICATED-UNRELATED
+    class: ordinary_session
+    authority: "Authenticated user with no M11 role or resource relationship."
+  - id: FX-PER-ASSIGNED-INSPECTOR
+    class: ordinary_session
+    authority: "Exact assigned Inspector relationship for the target visit."
+  - id: FX-PER-UNASSIGNED-INSPECTOR
+    class: ordinary_session
+    authority: "Inspector role without target visit assignment."
+  - id: FX-PER-REVIEWER
+    class: ordinary_session
+    authority: "Safe view-only where frozen authority permits."
+  - id: FX-PER-AUDITOR
+    class: ordinary_session
+    authority: "Safe audit view-only where frozen authority permits."
+  - id: FX-PER-OPERATIONS
+    class: ordinary_session
+    authority: "Blocked for positive M11 actions unless exact frozen authority is cited."
+  - id: FX-PER-PLANNER
+    class: ordinary_session
+    authority: "Only exact planning actions mapped to frozen authority."
+  - id: FX-PER-ADMIN-SECURITY
+    class: ordinary_application_admin
+    authority: "Administrative application scope; never raw participant secret audit."
+  - id: FX-PER-ADMIN-COMPLIANCE
+    class: ordinary_application_admin
+    authority: "Safe compliance evidence only; never raw participant secret audit."
+  - id: FX-PER-ADMIN-LEADERSHIP
+    class: ordinary_application_admin
+    authority: "Safe aggregate/view evidence only; never raw participant secret audit."
+  - id: FX-PER-PROVIDER-ADAPTER
+    class: technical_identity
+    authority: "Future exact delivery callback/adapter contract only; currently unconfigured and blocked."
+  - id: FX-PER-SERVICE-ROLE
+    class: privileged_technical_identity
+    authority: "Fixture/bootstrap capability only under isolated test governance; prohibited as authorization evidence."
+  - id: FX-PER-FUNCTION-OWNER
+    class: privileged_technical_identity
+    authority: "Function execution context only; prohibited as caller evidence."
+
+resource_fixtures:
+  - FX-PER-RESOURCE-IN-SCOPE
+  - FX-PER-RESOURCE-OUT-OF-SCOPE
+  - FX-PER-RESOURCE-MISSING
+  - FX-PER-SESSION-VALID
+  - FX-PER-SESSION-WRONG-STATE
+  - FX-PER-SESSION-CLOSED
+  - FX-PER-PARTICIPANT-SAFE
+  - FX-PER-PARTICIPANT-SECRET-SENTINEL
+  - FX-PER-AUDIT-SAFE-PROJECTION
+  - FX-PER-AUDIT-RAW-PARTICIPANT
+  - FX-PER-EXPORT-SAFE
+  - FX-PER-EXPORT-RAW
+
+surface_contract:
+  DIRECT_TABLE_READ: "SELECT against virtual session, participant and raw audit tables."
+  DIRECT_TABLE_WRITE: "INSERT, UPDATE or DELETE against governed M11 tables."
+  GOVERNED_RPC_READ: "Caller-facing status, room or safe audit RPC."
+  GOVERNED_RPC_WRITE: "Caller-facing creation, window, join, begin, OTP or close RPC."
+  SAFE_AUDIT_VIEW: "Approved projection containing only safe facts."
+  RAW_AUDIT_VIEW: "Raw participant before_state/after_state or secret-bearing JSON."
+  SAFE_EXPORT: "Approved redacted export."
+  RAW_EXPORT: "Raw rows, participant JSON, secret classes or prohibited fields."
+  PROVIDER_CALLBACK: "Future exact provider machine callback."
+
+expected_result_vocabulary:
+  ALLOW: "Exact authorized action succeeds within resource/state/window scope."
+  DENY: "Action denied without resource or internal-policy disclosure."
+  NEUTRAL: "Missing and out-of-scope results have identical status, token and body bytes."
+  SAFE_VIEW_ONLY: "Only approved safe fields returned; no mutation authority."
+  BLOCKED_AUTHORITY: "No positive expectation until exact frozen authority exists."
+  BLOCKED_PROVIDER: "Provider/service path unavailable until exact approved machine contract exists."
+  NOT_VALID_AUTHORIZATION_EVIDENCE: "Privileged technical execution cannot certify an ordinary persona."
+
+matrix_cases:
+  PUBLIC_ANON_UNRELATED:
+    personas: [FX-PER-PUBLIC, FX-PER-ANON, FX-PER-AUTHENTICATED-UNRELATED]
+    cases:
+      - id: M11-046-BASE-001
+        surface: DIRECT_TABLE_READ
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: DENY
+        evidence: [persona_table_command_matrix, row_count_returned]
+      - id: M11-046-BASE-002
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-PARTICIPANT-SAFE]
+        expected: DENY
+        evidence: [persona_table_command_matrix, row_state_before_after, audit_before_after]
+      - id: M11-046-BASE-003
+        surface: GOVERNED_RPC_READ
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [status_pair, token_pair, body_byte_hash_pair]
+      - id: M11-046-BASE-004
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-RESOURCE-MISSING]
+        expected: DENY
+        evidence: [persona_RPC_matrix, state_before_after, event_before_after]
+      - id: M11-046-BASE-005
+        surface: SAFE_EXPORT
+        resources: [FX-PER-EXPORT-SAFE]
+        expected: DENY
+        evidence: [export_attempt_matrix, artifact_created_count]
+      - id: M11-046-BASE-006
+        surface: RAW_EXPORT
+        resources: [FX-PER-EXPORT-RAW]
+        expected: DENY
+        evidence: [export_attempt_matrix, artifact_created_count]
+
+  ASSIGNED_INSPECTOR:
+    personas: [FX-PER-ASSIGNED-INSPECTOR]
+    cases:
+      - id: M11-046-AIN-001
+        surface: GOVERNED_RPC_READ
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-SESSION-VALID]
+        expected: "ALLOW only for exact assigned-Inspector read actions."
+        evidence: [authority_action_matrix, returned_field_manifest]
+      - id: M11-046-AIN-002
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-SESSION-VALID]
+        expected: "ALLOW only for exact assigned-Inspector action/state/window combinations."
+        evidence: [authority_action_state_window_matrix, state_before_after, event_cardinality]
+      - id: M11-046-AIN-003
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [table_command_matrix, row_state_before_after]
+      - id: M11-046-AIN-004
+        surface: RAW_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: DENY
+        evidence: [raw_audit_attempt, prohibited_field_absence]
+      - id: M11-046-AIN-005
+        surface: SAFE_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-SAFE-PROJECTION]
+        expected: "ALLOW only if exact Inspector safe-view authority exists; otherwise DENY."
+        evidence: [authority_citation, returned_field_manifest]
+      - id: M11-046-AIN-006
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [status_pair, token_pair, body_byte_hash_pair, no_mutation_attestation]
+
+  UNASSIGNED_INSPECTOR:
+    personas: [FX-PER-UNASSIGNED-INSPECTOR]
+    cases:
+      - id: M11-046-UIN-001
+        surface: GOVERNED_RPC_READ
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [status_pair, token_pair, body_byte_hash_pair]
+      - id: M11-046-UIN-002
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: DENY
+        evidence: [RPC_action_matrix, state_before_after, provider_attempt_count, event_before_after]
+      - id: M11-046-UIN-003
+        surface: DIRECT_TABLE_READ
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: DENY
+        evidence: [table_read_matrix, row_count_returned]
+      - id: M11-046-UIN-004
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [table_command_matrix, row_state_before_after]
+      - id: M11-046-UIN-005
+        surface: SAFE_EXPORT
+        resources: [FX-PER-EXPORT-SAFE]
+        expected: DENY
+        evidence: [export_attempt, artifact_created_count]
+
+  REVIEWER_AUDITOR:
+    personas: [FX-PER-REVIEWER, FX-PER-AUDITOR]
+    cases:
+      - id: M11-046-REV-001
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [persona_action_matrix, state_before_after, event_before_after]
+      - id: M11-046-REV-002
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [persona_table_command_matrix, row_state_before_after]
+      - id: M11-046-REV-003
+        surface: SAFE_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-SAFE-PROJECTION]
+        expected: SAFE_VIEW_ONLY
+        evidence: [returned_field_manifest, prohibited_field_scan]
+      - id: M11-046-REV-004
+        surface: RAW_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: DENY
+        evidence: [raw_audit_attempt_matrix, prohibited_field_absence]
+      - id: M11-046-REV-005
+        surface: SAFE_EXPORT
+        resources: [FX-PER-EXPORT-SAFE]
+        expected: "ALLOW only where exact export authority exists; output remains redacted."
+        evidence: [authority_citation, export_schema, prohibited_field_scan]
+      - id: M11-046-REV-006
+        surface: RAW_EXPORT
+        resources: [FX-PER-EXPORT-RAW]
+        expected: DENY
+        evidence: [export_attempt_matrix, artifact_created_count]
+
+  PLANNER_OPERATIONS:
+    personas: [FX-PER-PLANNER, FX-PER-OPERATIONS]
+    cases:
+      - id: M11-046-OPS-001
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: >-
+          Planner ALLOW only for exactly cited planning actions; Operations
+          BLOCKED_AUTHORITY unless exact frozen action authority exists.
+        evidence: [persona_action_authority_matrix, action_results]
+      - id: M11-046-OPS-002
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-PARTICIPANT-SAFE]
+        expected: "OTP/join/begin mutation DENY; no broad role-label authority."
+        evidence: [persona_action_matrix, provider_attempt_count, state_before_after]
+      - id: M11-046-OPS-003
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [persona_table_command_matrix, row_state_before_after]
+      - id: M11-046-OPS-004
+        surface: RAW_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: DENY
+        evidence: [raw_audit_attempt_matrix, prohibited_field_absence]
+      - id: M11-046-OPS-005
+        surface: GOVERNED_RPC_READ
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [status_pair, token_pair, body_byte_hash_pair]
+      - id: M11-046-OPS-006
+        surface: SAFE_EXPORT
+        resources: [FX-PER-EXPORT-SAFE]
+        expected: "ALLOW only with exact export authority; otherwise DENY."
+        evidence: [authority_citation, export_attempt_result, prohibited_field_scan]
+
+  APPLICATION_ADMINS:
+    personas: [FX-PER-ADMIN-SECURITY, FX-PER-ADMIN-COMPLIANCE, FX-PER-ADMIN-LEADERSHIP]
+    cases:
+      - id: M11-046-ADM-001
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [admin_action_matrix, state_before_after, event_before_after]
+      - id: M11-046-ADM-002
+        surface: RAW_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: DENY
+        evidence: [admin_raw_audit_matrix, prohibited_field_absence]
+      - id: M11-046-ADM-003
+        surface: SAFE_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-SAFE-PROJECTION]
+        expected: "SAFE_VIEW_ONLY only for exact administrative evidence scope."
+        evidence: [admin_scope_matrix, returned_field_manifest]
+      - id: M11-046-ADM-004
+        surface: RAW_EXPORT
+        resources: [FX-PER-EXPORT-RAW]
+        expected: DENY
+        evidence: [admin_export_matrix, artifact_created_count]
+      - id: M11-046-ADM-005
+        surface: SAFE_EXPORT
+        resources: [FX-PER-EXPORT-SAFE]
+        expected: "ALLOW only with exact export authority and redaction contract."
+        evidence: [authority_citation, export_schema, prohibited_field_scan]
+      - id: M11-046-ADM-006
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: DENY
+        evidence: [admin_table_command_matrix, row_state_before_after]
+
+  PROVIDER_AND_TECHNICAL_IDENTITIES:
+    personas: [FX-PER-PROVIDER-ADAPTER, FX-PER-SERVICE-ROLE, FX-PER-FUNCTION-OWNER]
+    cases:
+      - id: M11-046-SVC-001
+        surface: PROVIDER_CALLBACK
+        resources: [FX-PER-PARTICIPANT-SAFE]
+        expected: BLOCKED_PROVIDER
+        evidence: [provider_contract_state, callback_access_state]
+      - id: M11-046-SVC-002
+        surface: DIRECT_TABLE_READ
+        resources: [FX-PER-RESOURCE-IN-SCOPE, FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: >-
+          Provider adapter denied outside its exact future machine contract.
+          service_role/owner observations are NOT_VALID_AUTHORIZATION_EVIDENCE.
+        evidence: [technical_identity_scope_matrix, evidence_exclusion_attestation]
+      - id: M11-046-SVC-003
+        surface: DIRECT_TABLE_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: >-
+          Provider adapter denied. service_role may bootstrap isolated fixtures
+          only under future test governance and cannot certify application access.
+        evidence: [technical_identity_command_matrix, fixture_bootstrap_attestation]
+      - id: M11-046-SVC-004
+        surface: RAW_AUDIT_VIEW
+        resources: [FX-PER-AUDIT-RAW-PARTICIPANT]
+        expected: >-
+          Provider adapter denied. Privileged technical reads, if needed for
+          isolated redaction evidence, are quarantined and never treated as
+          application visibility.
+        evidence: [technical_identity_scope_matrix, evidence_quarantine_attestation]
+      - id: M11-046-SVC-005
+        surface: SAFE_EXPORT
+        resources: [FX-PER-EXPORT-SAFE]
+        expected: "Provider adapter denied; service/owner cannot generate a user-facing export."
+        evidence: [export_attempt_matrix, artifact_created_count]
+      - id: M11-046-SVC-006
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-IN-SCOPE]
+        expected: "Machine identity cannot impersonate an assigned Inspector or application admin."
+        evidence: [RPC_identity_matrix, state_before_after, event_before_after]
+
+  CROSS_PERSONA_NEUTRALITY:
+    personas:
+      - FX-PER-AUTHENTICATED-UNRELATED
+      - FX-PER-UNASSIGNED-INSPECTOR
+      - FX-PER-REVIEWER
+      - FX-PER-AUDITOR
+      - FX-PER-OPERATIONS
+      - FX-PER-PLANNER
+      - FX-PER-ADMIN-SECURITY
+      - FX-PER-ADMIN-COMPLIANCE
+      - FX-PER-ADMIN-LEADERSHIP
+    cases:
+      - id: M11-046-NEU-001
+        surface: GOVERNED_RPC_READ
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [persona_status_pairs, persona_token_pairs, persona_body_byte_hash_pairs]
+      - id: M11-046-NEU-002
+        surface: GOVERNED_RPC_WRITE
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [persona_status_pairs, persona_token_pairs, persona_body_byte_hash_pairs, no_mutation_attestation]
+      - id: M11-046-NEU-003
+        surface: SAFE_AUDIT_VIEW
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: NEUTRAL
+        evidence: [persona_status_pairs, persona_token_pairs, persona_body_byte_hash_pairs]
+      - id: M11-046-NEU-004
+        surface: SAFE_EXPORT
+        resources: [FX-PER-RESOURCE-MISSING, FX-PER-RESOURCE-OUT-OF-SCOPE]
+        expected: "Same neutral result; no empty artifact versus denied artifact existence oracle."
+        evidence: [export_result_pairs, artifact_created_count_pairs]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - code_commit
+    - migration_chain_hash
+    - fixture_graph_hash
+    - ordinary_or_technical_identity_class
+    - exact_authority_citation_when_positive
+    - result
+    - independent_reviewer
+  required_outputs:
+    - persona_surface_action_resource_matrix
+    - returned_field_manifest
+    - row_state_before_after
+    - audit_and_event_before_after
+    - status_token_body_hash_pairs
+    - export_artifact_count_and_schema
+    - prohibited_field_scan
+    - teardown_result
+  integrity_rules:
+    - "Every ordinary persona test uses an ordinary authenticated session."
+    - "Privileged technical observations are labeled and excluded from authorization evidence."
+    - "No credential, secret, personal data, raw application row or provider payload is released."
+    - "Missing authority yields BLOCKED_AUTHORITY, never an inferred positive."
+    - "A missing redaction scan, teardown or independent signoff invalidates the evidence bundle."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+    TEST-010: supabase/tests/m11_010_creation_atomicity_security.sql
+    TEST-011: supabase/tests/m11_011_window_actions_security.sql
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-014: supabase/tests/m11_014_join_begin_atomicity.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+    TEST-PROVIDER: apps/web/e2e/m11-provider-truth.spec.ts
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "No implementation worker edits a leased QA path."
+    - "Stop on path, migration, signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final persona, action, resource, owner/ACL, policy, trigger, provider and export manifests."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+
+queued_next:
+  packet: KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Safe projection, raw-audit denial, export allowlists, secret-sentinel and evidence quarantine only."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  persona_fixture_count: 15
+  matrix_group_count: 8
+  test_case_count: 45
+  unique_test_case_ids: PASS
+  proposed_test_path_count: 8
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

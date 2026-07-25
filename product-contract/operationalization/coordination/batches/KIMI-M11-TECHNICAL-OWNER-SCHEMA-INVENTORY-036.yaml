@@ -1,0 +1,449 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-TECHNICAL-OWNER-SCHEMA-INVENTORY-036
+status: READ_ONLY_SOURCE_INVENTORY_COMPLETE_LIVE_CATALOG_NOT_QUERIED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Inventory the current source-defined M11 function, policy, trigger,
+  extension, audit-consumer and quiesce surface for the six technical
+  prerequisites in dependency matrix 035. This is migration-source evidence,
+  not a claim about the live database catalog.
+
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  readiness_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  correction_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  dependency_matrix: KIMI-M11-SPONSOR-AUTHORITY-DEPENDENCY-MATRIX-035
+
+hard_boundary:
+  - "No SQL execution, database connection, migration apply, test execution or data access."
+  - "No product/application/test/migration/source modification."
+  - "No dispatch, review 025 execution, branch/worktree change or lease issuance."
+  - "Unknown live owner/schema/grant/catalog facts remain UNKNOWN."
+  - "Zero change to the 478-row completion count."
+
+inspection_basis:
+  repository: /Users/vikramindla/Developer/Inspection
+  branch: docs/saqeel-inspector-inventory
+  method: "Read-only migration, application and test source inspection."
+  live_catalog_queried: false
+  limitation: >-
+    CREATE OR REPLACE FUNCTION does not declare an owner in these migrations.
+    Exact live owners, current proacl/proconfig, installed extension namespace,
+    trigger enablement and policy/grant drift require an isolated catalog query.
+
+source_fingerprints:
+  supabase/migrations/0002_rbac_audit.sql: fae508f192ba2cf454a2ffc37e5ba7c0d51ffb23560fdd2faa26f2181648a7ef
+  supabase/migrations/0005_audit_absolute_immutability.sql: 23741e91ca553d0adbfaf2fedad884f60222e7905c5f3071abd3773f1b115f8c
+  supabase/migrations/0009_virtual_otp.sql: 3efb2ffa59c129e7c311f1ef29cfb12328ec35a84318a653f911a88aa0a3d3a3
+  supabase/migrations/0018_w4_notifications_reviews.sql: 77d8cbc6c151795e0a947f7cc63bcf06593825638b17cf65e93c001307e764f0
+  supabase/migrations/0019_w5_records.sql: 66447c6ba0c540256bc8b41a753d40360b7945d2a498239e16a667e307e69c4f
+  supabase/migrations/0021_fix_broad_rls.sql: cdd075980a4ace0efe873b5965c6143b487251893865ff2377420e2084138295
+  supabase/migrations/0023_fix_otp_rpc_authorization.sql: 7ac8095dd5c32e1aa11520307444f01fb280a9222b11f7abec91122e6c57ce7e
+  supabase/migrations/20260715170000_cd041_verified_transition_guard.sql: 256ed21b0488a70eb952c99daf026b1b0c56eec2ec51204d056e0b5ee4862089
+  supabase/migrations/20260715180000_cd042_otp_status_authorization.sql: 64ff677c469f6579cea43a78673fd5ab2b2f8d59c17338ee5a7e44c629a1c8b0
+  supabase/migrations/20260715190000_cd042_audit_read_seam.sql: 9065f774b9c55761129edcc7f20869d700dea4bd842561e03aaf6dc7e8bcb430
+  supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql: 5457bde29580037014479cc453118ce392bc498273bf26baaafde9a030aac5d8
+  supabase/migrations/20260721170000_execution_virtual_leg.sql: 21c2888e9093438257e994f6f2c600f201f652903ad687309cc9636e7aec829c
+
+six_prerequisite_summary:
+  M11-TECH-OWNER-01:
+    status: UNKNOWN_LIVE_OWNER
+    source_truth:
+      - "No relevant migration contains ALTER FUNCTION ... OWNER TO."
+      - "All function owners therefore depend on the role that originally created each function; source does not identify that role."
+    fail_closed_default: OWNER_ROLE_MUST_BE_CONFIRMED_FROM_ISOLATED_CATALOG
+    source_packet_correction: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  M11-TECH-SCHEMA-01:
+    status: PARTIAL_SOURCE_KNOWN_LIVE_EXTENSION_SCHEMA_UNKNOWN
+    source_truth:
+      - "pgcrypto is created without an explicit schema in 0009."
+      - "OTP functions use unqualified digest() with search_path public, extensions."
+      - "Actual pgcrypto namespace is not proven from source."
+      - "Most M11 functions use unqualified public objects with search_path public."
+    fail_closed_default: NO_MIGRATION_OR_FUNCTION_LEASE
+    source_packet_correction: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  M11-TECH-AUDIT-INVENTORY-01:
+    status: PARTIAL_STATIC_INVENTORY_NOT_RUNTIME_COMPLETE
+    source_truth:
+      - "Direct raw audit readers and writers are identifiable in current app source."
+      - "No runtime query log, role-effective access inventory or external consumer inventory was performed."
+    fail_closed_default: DO_NOT_CONTRACT_RAW_AUDIT_POLICIES
+    source_packet_correction: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  M11-TECH-SAFE-TRIGGER-01:
+    status: ABSENT
+    source_truth:
+      - "virtual_participants uses the global audit_row_change trigger."
+      - "That trigger stores complete old/new row JSON, including verification_record."
+      - "No specialized redacting participant trigger or safe projection precedes OTP."
+    fail_closed_default: OTP_DISABLED
+    source_packet_correction: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  M11-TECH-QUIESCE-01:
+    status: ABSENT
+    source_truth:
+      - "No M11 maintenance switch, server-side mutation gate, in-flight counter, drain assertion or 013→015 no-traffic hook was found."
+      - "Browser offline disabling is local UI behavior, not global quiescence."
+    fail_closed_default: DO_NOT_REQUEST_MAINTENANCE_APPROVAL_OR_RUN_CONTRACT
+    source_packet_correction: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  M11-TECH-PROVIDER-01:
+    status: NOT_CONFIGURED_SOURCE_IS_DEV_ONLY
+    source_truth:
+      - "vp_request_otp generates a code in database, stores its hash and returns dev_code."
+      - "Provider is stored as a DEV-CONSOLE string; no governed external delivery adapter/callback is invoked."
+      - "A notification row or provider label is not delivery proof."
+    fail_closed_default: PROVIDER_NOT_CONFIGURED_AND_RUNTIME_COMPLETION_BLOCKED
+    source_packet_correction: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015, KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+
+current_function_inventory:
+  - identity: public.has_any_role(text[])
+    final_source: supabase/migrations/0002_rbac_audit.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: public
+    dependencies: [public.user_roles, auth.uid]
+    execute_acl: UNKNOWN_SOURCE_DEFAULT_NO_EXACT_REVOKE_REGRANT
+    risk: "Unsafe nested helper for empty-search-path definers."
+    correction_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  - identity: public.is_assigned_inspector(uuid)
+    final_source: supabase/migrations/0002_rbac_audit.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: public
+    dependencies: [public.assignments, auth.uid]
+    execute_acl: UNKNOWN_SOURCE_DEFAULT_NO_EXACT_REVOKE_REGRANT
+    risk: "Unsafe nested helper for empty-search-path definers."
+    correction_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  - identity: public.audit_row_change()
+    final_source: supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: "''"
+    dependencies: [public.audit_events, auth.uid, pg_catalog.to_jsonb]
+    execute_acl: "REVOKE ALL from public, anon, authenticated."
+    risk: "Full before/after serialization captures virtual_participants.verification_record."
+    correction_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  - identity: public.guard_virtual_transition()
+    final_source: supabase/migrations/0018_w4_notifications_reviews.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_INVOKER_DEFAULT
+    search_path: CALLER_DEFAULT_NO_SET_CLAUSE
+    dependencies: [public.virtual_state, pg_catalog.array_position]
+    execute_acl: UNKNOWN_SOURCE_DEFAULT_NO_EXACT_REVOKE
+    risk: "Trigger helper has no hardened search_path or explicit ACL."
+    correction_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  - identity: public.vs_append_event(uuid,text,jsonb)
+    final_source: supabase/migrations/0018_w4_notifications_reviews.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_INVOKER_DEFAULT
+    search_path: CALLER_DEFAULT_NO_SET_CLAUSE
+    dependencies: [public.virtual_sessions, auth.uid]
+    execute_acl: "GRANT EXECUTE to authenticated; no explicit PUBLIC/anon revoke."
+    risk: "Any permitted table writer can choose arbitrary event text/detail; generic append seam remains broad."
+    correction_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015, KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+  - identity: public.vp_request_otp(uuid)
+    final_source: supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: "public, extensions"
+    dependencies:
+      - public.virtual_participants
+      - public.virtual_sessions
+      - public.engine_settings
+      - public.audit_events
+      - public.has_any_role
+      - public.is_assigned_inspector
+      - auth.uid
+      - "digest() in unproven extension namespace"
+    execute_acl: "Inherited authenticated grant from 0009; no exact PUBLIC/anon revoke in final source."
+    risk: "Broad staff persona predicate, no participant row lock, dev_code return and unsafe helper/search path."
+    correction_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  - identity: public.vp_verify_otp(uuid,text)
+    final_source: supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: "public, extensions"
+    dependencies:
+      - public.virtual_participants
+      - public.virtual_sessions
+      - public.engine_settings
+      - public.audit_events
+      - public.has_any_role
+      - public.is_assigned_inspector
+      - auth.uid
+      - "digest() in unproven extension namespace"
+    execute_acl: "Inherited authenticated grant from 0009; no exact PUBLIC/anon revoke in final source."
+    risk: "Broad staff persona predicate, no row lock and concurrent code/counter/event race."
+    correction_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  - identity: public.vp_otp_status(uuid)
+    final_source: supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: public
+    dependencies: [public.virtual_participants, public.virtual_sessions, public.engine_settings, public.has_any_role, public.is_assigned_inspector, auth.uid]
+    execute_acl: "Inherited authenticated grant from 0018; no exact PUBLIC/anon revoke in final source."
+    risk: "Broad staff persona predicate and distinguishable not_found/unauthorized results."
+    correction_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  - identity: public.vs_mark_session_verified(uuid,uuid)
+    final_source: supabase/migrations/20260715170000_cd041_verified_transition_guard.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_INVOKER
+    search_path: public
+    dependencies: [public.virtual_sessions, public.virtual_participants, public.virtual_state, auth.uid]
+    execute_acl: "GRANT EXECUTE to authenticated; no explicit PUBLIC/anon revoke."
+    risk: "Depends on current broad table RLS and does not declare final post-013 callable model."
+    correction_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013]
+  - identity: public.vs_audit_trail(uuid)
+    final_source: supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: public
+    dependencies: [public.virtual_sessions, public.virtual_participants, public.audit_events, public.has_any_role, public.is_assigned_inspector, auth.uid]
+    execute_acl: "GRANT EXECUTE to authenticated; no explicit PUBLIC/anon revoke."
+    risk: "Returns after_state from generic audit, which may include verification_record/code_hash; broad staff predicate."
+    correction_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  - identity: public.set_operational_state(uuid,public.operational_state)
+    final_source: supabase/migrations/20260721170000_execution_virtual_leg.sql
+    owner: UNKNOWN_NOT_DECLARED
+    security_mode: SECURITY_DEFINER
+    search_path: public
+    dependencies: [public.visits, public.visit_preparations, public.is_assigned_inspector, auth.uid]
+    execute_acl: "REVOKE ALL from public; GRANT EXECUTE to authenticated; anon revoke not explicit."
+    risk: "Nested unsafe helper and non-empty search_path; current app has a direct-CAS fallback when RPC fails."
+    correction_packets: [KIMI-M11-BEGIN-ATOMICITY-LEASE-014, KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+
+missing_governed_function_inventory:
+  source_status: ABSENT
+  functions:
+    - "Atomic create-session-plus-participants RPC — packet 010."
+    - "Shared private window guard — packet 011."
+    - "Governed reschedule RPC — packet 011."
+    - "Governed waiting-room-open RPC — packet 011."
+    - "Atomic participant-join RPC — packet 014."
+    - "Atomic begin-remote RPC — packet 014."
+    - "Governed close/cancel RPC — packet 013."
+  current_application_behavior:
+    - "Creation inserts virtual_sessions then virtual_participants separately."
+    - "Reschedule, waiting, join, begin and close use direct table actions and multiple calls."
+    - "Begin may fall back from set_operational_state RPC to a direct visit CAS update."
+  fail_closed_correction: "No source packet may claim final atomic/governed behavior until these definitions are specified and reviewed."
+
+current_policy_inventory:
+  public.virtual_sessions:
+    RLS: ENABLED
+    policies:
+      vs_read:
+        command: SELECT
+        roles: PUBLIC_IMPLICIT
+        using: "ops/reviewer/auditor/compliance_admin/planner OR assigned Inspector."
+      vs_write:
+        command: ALL
+        roles: PUBLIC_IMPLICIT
+        using: "planner/ops OR assigned Inspector."
+        with_check: "true"
+    risks:
+      - "FOR ALL overlaps SELECT and does not express per-command least privilege."
+      - "INSERT WITH CHECK true does not bind the new row to caller authority."
+      - "No explicit TO authenticated."
+    correction_packets: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-PERMISSION-HARDENING-LEASE-013]
+  public.virtual_participants:
+    RLS: ENABLED
+    policies:
+      vp_rw:
+        command: ALL
+        roles: PUBLIC_IMPLICIT
+        using_and_with_check: "ops/reviewer/auditor/compliance_admin/planner OR parent session assigned Inspector."
+    risks:
+      - "Reviewer/Auditor/Planner/Operations receive direct participant mutation."
+      - "One FOR ALL policy replaces explicit per-command policy."
+      - "No explicit TO authenticated."
+    correction_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013]
+  public.audit_events:
+    RLS: ENABLED
+    policies:
+      audit_read:
+        command: SELECT
+        roles: PUBLIC_IMPLICIT
+        using: "auditor/ops/security_admin/leadership/reviewer/planner."
+      audit_read_compliance:
+        command: SELECT
+        roles: PUBLIC_IMPLICIT
+        using: compliance_admin
+    immutability:
+      trigger: trg_audit_immutable
+      timing: BEFORE_UPDATE_OR_DELETE
+      function: public.block_audit_mutation()
+      grants: "UPDATE/DELETE revoked from public, anon and authenticated."
+    risks:
+      - "Two permissive SELECT policies expose raw participant before/after JSON to all listed roles."
+      - "Raw read policies are not replaced by the current safe RPC."
+    correction_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+  table_acl_truth:
+    status: UNKNOWN_FROM_CURRENT_M11_SOURCE
+    reason: "No complete final virtual_sessions/virtual_participants/audit_events PUBLIC/anon/authenticated ACL manifest exists."
+    correction_packets: [KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+
+trigger_order_inventory:
+  public.virtual_sessions:
+    - trigger: trg_guard_virtual
+      timing: BEFORE_UPDATE
+      function: public.guard_virtual_transition()
+      order_truth: "Only identified BEFORE UPDATE M11 trigger."
+    - trigger: trg_audit_virtual_sessions
+      timing: AFTER_INSERT_UPDATE_DELETE
+      function: public.audit_row_change()
+      order_truth: "Runs after the row change and records complete before/after session JSON."
+  public.virtual_participants:
+    - trigger: trg_audit_virtual_participants
+      timing: AFTER_INSERT_UPDATE_DELETE
+      function: public.audit_row_change()
+      order_truth: "Runs inside the participant DML statement before the OTP function's later explicit semantic audit INSERT."
+  OTP_statement_order:
+    request: "Participant UPDATE → generic full-row audit trigger → explicit OTP_SENT audit INSERT."
+    verify_success: "Participant UPDATE → generic full-row audit trigger → explicit OTP_VERIFIED audit INSERT."
+    verify_failure: "Participant UPDATE → generic full-row audit trigger → explicit OTP_FAILED audit INSERT."
+  risk:
+    - "The generic trigger can persist code_hash/verification_record before the semantic OTP event."
+    - "No specialized redacting trigger exists."
+  correction_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+
+extension_and_schema_dependencies:
+  pgcrypto:
+    creation_source: supabase/migrations/0009_virtual_otp.sql
+    statement: "create extension if not exists pgcrypto"
+    explicit_schema: false
+    current_live_schema: UNKNOWN
+    consumers: [public.vp_request_otp, public.vp_verify_otp]
+    call_style: "unqualified digest()"
+  auth:
+    schema: auth
+    consumer: auth.uid
+    qualification: EXPLICIT
+  public_types:
+    - public.virtual_state
+    - public.operational_state
+  unknowns_requiring_catalog:
+    - "pg_extension.extnamespace for pgcrypto."
+    - "pg_proc identity arguments, owner, proconfig, prosecdef and proacl."
+    - "pg_depend nested function/type/extension graph."
+    - "Actual table ACLs and effective grants."
+  correction_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+
+audit_consumer_inventory:
+  status: STATIC_REPOSITORY_INVENTORY_PARTIAL_NOT_RUNTIME_COMPLETE
+  direct_raw_read_consumers:
+    - path: apps/web/src/app/(app)/admin/audit/page.tsx
+      fields: [before_state, after_state, actor, object_type, object_id, action, occurred_at]
+      risk: "Global UI renders raw generic audit rows."
+    - path: apps/web/src/app/(app)/reviews/[id]/page.tsx
+      fields: [id, action, object_type, occurred_at, actor]
+      risk: "Does not request state JSON but depends on raw audit_events SELECT policy."
+    - path: apps/web/src/app/(app)/admin/page.tsx
+      fields: [id_count]
+      risk: "Admin health count depends on raw table access."
+    - path: apps/web/src/app/(app)/dashboard/page.tsx
+      fields: [id, object_type, object_id, action, requirement_refs, occurred_at]
+      risk: "Dashboard timeline depends on raw table access, not participant state JSON."
+    - path: apps/web/src/app/(app)/visits/[id]/page.tsx
+      fields: [id, actor, action, before_state, after_state, occurred_at]
+      risk: "Visit detail renders raw visit-state JSON; must remain safe and functional."
+  direct_insert_consumers:
+    - apps/web/src/app/admin/execution/actions.ts
+    - apps/web/src/app/(app)/admin/workflows/task-actions.ts
+    - apps/web/src/app/(app)/admin/workflows/sla-actions.ts
+    - apps/web/src/app/(app)/admin/workflows/transition-actions.ts
+  M11_safe_RPC_consumers:
+    application: NONE_FOUND
+    tests: [apps/web/e2e/cd-042-audit-read-seam.spec.ts]
+    note: "The current virtual room displays virtual_sessions.timeline, not vs_audit_trail output."
+  inventory_unknowns:
+    - "External/reporting clients outside repository."
+    - "Runtime query paths generated indirectly."
+    - "Role-effective raw access in the live catalog."
+    - "Every global trigger dependency if audit_row_change semantics change."
+  correction_packets: [KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+
+quiesce_hook_inventory:
+  maintenance_switch: ABSENT
+  server_side_M11_mutation_gate: ABSENT
+  OTP_disable_hook: ABSENT
+  in_flight_session_counter: ABSENT
+  drain_to_zero_assertion: ABSENT
+  no_traffic_migration_guard: ABSENT
+  abort_and_roll_forward_rehearsal: ABSENT
+  non_equivalent_features:
+    - "Room.tsx browser offline controls only disable the local UI."
+    - "Execution configuration says virtual enabled but is not an M11 security-contract drain mechanism."
+    - "Existing advisory locks in unrelated planning flows do not quiesce M11."
+  correction_packets: [KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017]
+
+source_packet_correction_map:
+  KIMI-M11-ATOMIC-FIX-LEASE-010:
+    must_correct:
+      - "Replace two-step direct creation with atomic governed RPC."
+      - "Declare exact function owner/security/search_path/dependencies/ACL."
+      - "Close virtual_sessions INSERT authorization."
+  KIMI-M11-EXECUTION-WINDOW-LEASE-011:
+    must_correct:
+      - "Add private shared window guard and governed creation successor/reschedule/waiting RPCs."
+      - "Remove reliance on direct application DML for those actions."
+  KIMI-M11-PERMISSION-HARDENING-LEASE-013:
+    must_correct:
+      - "Add close/verified governed paths, exact per-command policies/table ACLs and assigned-Inspector-only locked OTP."
+      - "Remove broad direct participant mutation and unsafe OTP helpers."
+      - "Record unresolved owner/provider as blockers."
+  KIMI-M11-BEGIN-ATOMICITY-LEASE-014:
+    must_correct:
+      - "Add atomic join/begin and final post-013 privilege model."
+      - "Remove direct multi-step begin and direct-CAS fallback."
+  KIMI-M11-AUDIT-BOUNDARY-LEASE-015:
+    must_correct:
+      - "Install specialized safe participant trigger/projection before OTP."
+      - "Replace raw audit policies without breaking inventoried global consumers."
+      - "Replace exact OTP signatures sequentially and contract generic append authority."
+  KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017:
+    must_correct:
+      - "Own exact catalog manifest, safe helper standard, extension schema proof and sequential ownership."
+      - "Define technical quiesce/drain/no-traffic/abort/roll-forward procedure."
+
+unknowns:
+  - id: UNKNOWN-LIVE-OWNER
+    blocker: "Exact owner and BYPASSRLS effect for every current/future function."
+  - id: UNKNOWN-LIVE-EXTENSION-SCHEMA
+    blocker: "Installed pgcrypto namespace and exact digest identity."
+  - id: UNKNOWN-EFFECTIVE-ACLS
+    blocker: "Final function/table PUBLIC/anon/authenticated grants."
+  - id: UNKNOWN-RUNTIME-AUDIT-CONSUMERS
+    blocker: "Consumers outside static repository inventory."
+  - id: UNKNOWN-LIVE-TRIGGER-POLICY-DRIFT
+    blocker: "Actual enabled triggers and policies may differ from migration source."
+  - id: UNKNOWN-PROVIDER-CONTRACT
+    blocker: "No approved configured delivery adapter/callback."
+
+fail_closed_state:
+  implementation_lease: BLOCKED
+  OTP_runtime_completion: BLOCKED
+  raw_audit_contraction: BLOCKED
+  contract_migrations: BLOCKED
+  review_025: QUEUED_NOT_EXECUTED
+  review_033: QUEUED_SAFE_FOLLOW_ON_NOT_DISPATCHED
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  source_fingerprints_captured: PASS
+  six_prerequisites_mapped: PASS
+  function_inventory_count: 11
+  policy_inventory_mapped: PASS
+  trigger_order_mapped: PASS
+  audit_consumers_mapped: PASS
+  quiesce_hooks_mapped: PASS
+  unknowns_preserved: PASS
+  source_packet_corrections_mapped: PASS
+  non_mutating_boundary_checked: PASS

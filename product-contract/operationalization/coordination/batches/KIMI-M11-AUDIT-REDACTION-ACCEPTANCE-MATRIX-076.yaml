@@ -1,0 +1,747 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-ACCEPTANCE-MATRIX-076
+status: READ_ONLY_ACCEPTANCE_MATRIX_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Convert contract 075 into exact positive, negative, unauthorized,
+  historical, direct-query, Admin Audit, Virtual UI and recursive
+  forbidden-key acceptance cases. The matrix defines proof, not
+  implementation, and preserves every unresolved sponsor decision.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+  - KIMI-M11-IMPLEMENTATION-PATH-OBJECT-COLLISION-REFRESH-074
+  - KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+
+authority:
+  requirements:
+    - CR-343
+    - CR-346
+    - CR-347
+    - CR-348
+    - CR-353
+  requirement_evidence:
+    CR-343: WA-EV-0343
+    CR-346: WA-EV-0346
+    CR-347: WA-EV-0347
+    CR-348: WA-EV-0348
+    CR-353: WA-EV-0353
+  acceptance:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+
+hard_boundary:
+  - "Read-only acceptance planning plus this one uniquely owned packet."
+  - "No code, SQL, database, data, seed, test, evidence, design, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+  - "No invented provider, OTP threshold, retention, page size or break-glass process."
+  - "No test is represented as executed and no requirement credit is granted."
+
+unresolved_sponsor_decisions:
+  - decision_id: SD-075-01
+    question: "Approve verification_record as server-only with no normal direct table read?"
+    blocks:
+      - DQ-076-01
+      - DQ-076-02
+      - DQ-076-03
+      - NEG-076-01
+      - NEG-076-02
+    state: UNRESOLVED
+  - decision_id: SD-075-02
+    question: "Approve the field-exact vs_audit_trail allowlist and OTP business-event treatment?"
+    blocks:
+      - POS-076-03
+      - POS-076-04
+      - POS-076-05
+      - NEG-076-03
+      - DUP-076-01
+      - HIST-076-02
+    state: UNRESOLVED
+  - decision_id: SD-075-03
+    question: "Approve M11-specific redaction in Admin Audit without changing non-M11 event display?"
+    blocks:
+      - ADM-076-01
+      - ADM-076-02
+      - ADM-076-03
+      - ADM-076-04
+    state: UNRESOLVED
+  - decision_id: SD-075-04
+    question: "Approve preservation of historical raw rows with projection-only redaction?"
+    blocks:
+      - HIST-076-01
+      - HIST-076-02
+      - HIST-076-03
+      - IMM-076-01
+    state: UNRESOLVED
+  - decision_id: SD-075-05
+    question: "Authorize design to place the immutable timeline and select its paging interaction?"
+    blocks:
+      - VUI-076-01
+      - VUI-076-02
+      - VUI-076-03
+      - BND-076-01
+    state: UNRESOLVED
+
+forbidden_key_contract:
+  recursive_keys:
+    - verification_record
+    - code_hash
+    - expires_at
+    - last_sent_at
+    - provider
+    - dev_code
+    - otp
+  forbidden_values:
+    - "Any live one-time code."
+    - "Any hash copied from verification_record.code_hash."
+    - "Raw DEV-CONSOLE or unapproved provider identity from verification_record.provider."
+  scan_surfaces:
+    - database API response
+    - server component serialization
+    - browser network response
+    - browser DOM
+    - browser-accessible state
+    - server log fixture output
+    - screenshot
+    - video
+    - text report
+    - JSON evidence
+
+fixtures:
+  - fixture_id: FX-076-A
+    description: >-
+      One in-scope virtual session with assigned inspector, ops/planner access,
+      one factory representative and one inspector participant.
+    required_events:
+      - virtual_sessions INSERT
+      - virtual_participants INSERT
+      - virtual_participants UPDATE for join
+      - OTP_SENT
+      - OTP_FAILED
+      - OTP_VERIFIED
+      - virtual_sessions UPDATE for verified
+      - virtual_sessions UPDATE for begin
+      - virtual_sessions UPDATE for close
+    secret_seed:
+      verification_record:
+        code_hash: SYNTHETIC_NONLIVE_HASH
+        expires_at: SYNTHETIC_TIMESTAMP
+        attempts: 1
+        resends: 1
+        last_sent_at: SYNTHETIC_TIMESTAMP
+        provider: SYNTHETIC_PROVIDER_METADATA
+    rule: "Synthetic values must never be confused with a live OTP or approved provider."
+  - fixture_id: FX-076-B
+    description: "An unrelated virtual session and participant outside the caller's relationship scope."
+  - fixture_id: FX-076-C
+    description: >-
+      A historical audit row whose participant before_state and after_state
+      contain verification_record plus an unknown nested key.
+  - fixture_id: FX-076-D
+    description: "One non-M11 audit event with before/after state used to prove no global-display regression."
+  - fixture_id: FX-076-E
+    description: "An empty in-scope session with no audit rows beyond creation, plus a multi-page synthetic history."
+
+acceptance_cases:
+  positive:
+    - case_id: POS-076-01
+      priority: P0
+      requirement_refs: [CR-346, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: DATABASE_API
+      persona: assigned_inspector
+      fixture: FX-076-A
+      action: "Read id, session_id, display_name, role, joined_at and verified_at for the in-scope participant."
+      expected:
+        - "Safe participant fields are returned."
+        - "Existing row relationship enforcement remains intact."
+      forbidden:
+        - verification_record
+      evidence:
+        - "Reviewed API response."
+        - "Exact query and persona identity."
+      execution_state: NOT_EXECUTED
+    - case_id: POS-076-02
+      priority: P0
+      requirement_refs: [CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-002]
+      layer: DATABASE_API
+      persona: assigned_inspector
+      fixture: FX-076-A
+      action: "Call vp_otp_status for the in-scope representative."
+      expected_fields:
+        - status
+        - verified
+        - attempts_used
+        - attempts_max
+        - resends_used
+        - resends_max
+        - expires_at
+        - locked
+        - has_active_code
+      forbidden:
+        - code_hash
+        - provider
+        - raw verification_record
+      execution_state: NOT_EXECUTED
+    - case_id: POS-076-03
+      priority: P0
+      requirement_refs: [CR-343, CR-346, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: DATABASE_API
+      personas:
+        - assigned_inspector
+        - ops
+        - planner
+        - reviewer
+        - auditor
+        - compliance_admin
+      fixture: FX-076-A
+      action: "Call vs_audit_trail for the in-scope session."
+      expected_top_level_fields:
+        - id
+        - at
+        - action
+        - object_type
+        - object_id
+        - actor
+        - detail
+      expected:
+        - "Only the requested session and its participant objects are present."
+        - "Rows are ordered by occurred_at ascending, then id ascending."
+        - "Every detail key is present in the contract-075 object/action allowlist."
+      blocked_by:
+        - SD-075-02
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: POS-076-04
+      priority: P0
+      requirement_refs: [CR-353]
+      acceptance_refs: [WA-M11-AC-001]
+      layer: DATABASE_API
+      persona: reviewer
+      fixture: FX-076-A
+      action: "Read the OTP_VERIFIED business event through vs_audit_trail."
+      expected_detail:
+        verification_method: otp
+        verified_at: "Top-level participant verified_at or immutable event occurred_at."
+        attempts: "Bounded explicit count when present."
+      forbidden:
+        - provider
+        - code_hash
+        - raw verification_record
+      blocked_by:
+        - SD-075-02
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: POS-076-05
+      priority: P1
+      requirement_refs: [CR-343, CR-346]
+      acceptance_refs: [WA-M11-AC-001]
+      layer: DATABASE_API
+      persona: reviewer
+      fixture: FX-076-A
+      action: "Read session creation, participant join, verification, begin and close facts."
+      expected: "Each immutable event ID is traceable and its business fact is human-interpretable without raw JSON."
+      blocked_by:
+        - SD-075-02
+      execution_state: BLOCKED_SPONSOR_DECISION
+
+  direct_query:
+    - case_id: DQ-076-01
+      priority: P0
+      requirement_refs: [CR-353]
+      acceptance_refs: [WA-M11-AC-002, WA-M11-AC-005]
+      layer: EXTERNAL_DATABASE_API
+      personas:
+        - assigned_inspector
+        - ops
+        - planner
+        - reviewer
+        - auditor
+        - compliance_admin
+      fixture: FX-076-A
+      action: "Request select=verification_record for the in-scope participant through the same API boundary used by the app."
+      expected: "Denied or field unavailable; no verification_record value returned."
+      qualification: "A null value caused only by fixture absence is not sufficient proof."
+      blocked_by:
+        - SD-075-01
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: DQ-076-02
+      priority: P0
+      requirement_refs: [CR-346, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: EXTERNAL_DATABASE_API
+      persona: assigned_inspector
+      fixture: FX-076-A
+      action: "After DQ-076-01, request the safe participant columns."
+      expected: "Safe fields still return; secret protection did not break authorized session operation."
+      blocked_by:
+        - SD-075-01
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: DQ-076-03
+      priority: P0
+      requirement_refs: [CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: DATABASE_FUNCTION
+      persona: assigned_inspector
+      fixture: FX-076-A
+      action: "Execute request, verify and status functions after direct-column protection."
+      expected: "Server-side OTP functions retain required access and existing behavior."
+      forbidden: "Any response containing code_hash or raw provider metadata."
+      blocked_by:
+        - SD-075-01
+      execution_state: BLOCKED_SPONSOR_DECISION
+
+  negative:
+    - case_id: NEG-076-01
+      priority: P0
+      requirement_refs: [CR-353]
+      acceptance_refs: [WA-M11-AC-002, WA-M11-AC-005]
+      layer: STATIC_AND_RUNTIME
+      fixture: FX-076-A
+      action: "Search every normal application query and captured response for direct verification_record selection."
+      expected: "No direct application read exists outside the server-only OTP functions."
+      blocked_by:
+        - SD-075-01
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: NEG-076-02
+      priority: P0
+      requirement_refs: [CR-353]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: DATABASE_API
+      fixture: FX-076-A
+      action: "Request an allowed participant row with an expanded relation or wildcard projection."
+      expected: "Secret field remains unavailable; projection expansion cannot bypass the boundary."
+      blocked_by:
+        - SD-075-01
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: NEG-076-03
+      priority: P0
+      requirement_refs: [CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-002, WA-M11-AC-005]
+      layer: DATABASE_API
+      fixture: FX-076-C
+      action: "Read a participant audit row containing unknown and forbidden nested keys."
+      expected: "Event identity remains; detail contains only explicitly allowlisted keys."
+      blocked_by:
+        - SD-075-02
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: NEG-076-04
+      priority: P0
+      requirement_refs: [CR-347, CR-348]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: PROVIDER_TRUTH
+      fixture: FX-076-A
+      action: "Operate while no provider callback contract exists."
+      expected: "No leave, disconnect or reconnect fact is generated or displayed."
+      blocker: PROVIDER_LIFECYCLE_CONTRACT_MISSING
+      execution_state: BLOCKED_EXTERNAL_CONTRACT
+
+  unauthorized:
+    - case_id: AUTH-076-01
+      priority: P0
+      requirement_refs: [CR-343, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: DATABASE_API
+      persona: anonymous
+      fixture: FX-076-A
+      action: "Read participant, OTP status and session audit."
+      expected: "All requests denied with no data."
+      execution_state: NOT_EXECUTED
+    - case_id: AUTH-076-02
+      priority: P0
+      requirement_refs: [CR-343, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: DATABASE_API
+      persona: unauthenticated
+      fixture: FX-076-A
+      action: "Read participant, OTP status and session audit."
+      expected: "All requests denied with no data."
+      execution_state: NOT_EXECUTED
+    - case_id: AUTH-076-03
+      priority: P0
+      requirement_refs: [CR-343, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: DATABASE_API
+      persona: unassigned_inspector
+      fixture: FX-076-A
+      action: "Read participant, OTP status and session audit."
+      expected: "All requests denied with no data."
+      execution_state: NOT_EXECUTED
+    - case_id: AUTH-076-04
+      priority: P0
+      requirement_refs: [CR-343, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: DATABASE_API
+      persona: unrelated_authenticated_user
+      fixture: FX-076-A
+      action: "Read participant, OTP status and session audit."
+      expected: "All requests denied with no data."
+      execution_state: NOT_EXECUTED
+    - case_id: AUTH-076-05
+      priority: P0
+      requirement_refs: [CR-348]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: DATABASE_API
+      persona: assigned_inspector
+      fixture: FX-076-B
+      action: "Read another inspector's session audit."
+      expected: "Denied with no data."
+      execution_state: NOT_EXECUTED
+
+  historical:
+    - case_id: HIST-076-01
+      priority: P0
+      requirement_refs: [CR-343, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-005, WA-M11-AC-006]
+      layer: DATABASE_IMMUTABILITY
+      fixture: FX-076-C
+      action: "Capture audit row count, IDs and raw row hashes before and after the redaction rollout."
+      expected: "Counts, IDs and hashes are identical."
+      blocked_by:
+        - SD-075-04
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: HIST-076-02
+      priority: P0
+      requirement_refs: [CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: DATABASE_API
+      fixture: FX-076-C
+      action: "Read the legacy secret-bearing event through vs_audit_trail."
+      expected: "Historical event identity is returned; secret and unknown fields are omitted."
+      blocked_by:
+        - SD-075-02
+        - SD-075-04
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: HIST-076-03
+      priority: P1
+      requirement_refs: [CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-006]
+      layer: EVIDENCE_GOVERNANCE
+      fixture: FX-076-C
+      action: "Audit existing reusable M11 evidence for forbidden values and real participant PII."
+      expected: "Unsafe artifacts are excluded from acceptance evidence without deleting immutable source records."
+      blocked_by:
+        - SD-075-04
+      execution_state: BLOCKED_SPONSOR_DECISION
+
+  admin_audit:
+    - case_id: ADM-076-01
+      priority: P0
+      requirement_refs: [CR-343, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: PRODUCT_UI
+      persona: auditor
+      fixture: FX-076-A
+      action: "Open /admin/audit and inspect M11 participant events."
+      expected: "ID, actor, object, action, time and allowlisted business detail are visible."
+      forbidden:
+        - raw before_state
+        - raw after_state
+        - forbidden recursive keys
+      blocked_by:
+        - SD-075-03
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: ADM-076-02
+      priority: P0
+      requirement_refs: [CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-002, WA-M11-AC-005]
+      layer: PRODUCT_UI_AND_NETWORK
+      persona: auditor
+      fixture: FX-076-C
+      action: "Open a historical secret-bearing M11 event."
+      expected: "No forbidden key or value exists in HTML, serialized payload, network body or browser state."
+      blocked_by:
+        - SD-075-03
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: ADM-076-03
+      priority: P0
+      requirement_refs: [CR-343]
+      acceptance_refs: [WA-M11-AC-005]
+      layer: PRODUCT_UI
+      persona: auditor
+      fixture: FX-076-D
+      action: "Open the non-M11 audit event."
+      expected: "Existing non-M11 display, filtering and chronology are unchanged."
+      blocked_by:
+        - SD-075-03
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: ADM-076-04
+      priority: P1
+      requirement_refs: [CR-343, CR-348]
+      acceptance_refs: [WA-M11-AC-001]
+      layer: PRODUCT_UI
+      persona: auditor
+      fixture: FX-076-A
+      action: "Filter by M11 object, action, actor and date, then paginate."
+      expected: "Stable event IDs and order are preserved; business-action counts do not double-count trigger plus explicit OTP rows."
+      blocked_by:
+        - SD-075-03
+      execution_state: BLOCKED_SPONSOR_DECISION
+
+  virtual_UI:
+    - case_id: VUI-076-01
+      priority: P0
+      requirement_refs: [CR-343, CR-346, CR-348, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-006]
+      layer: PRODUCT_UI
+      persona: assigned_inspector
+      fixture: FX-076-A
+      action: "Open /virtual/:id."
+      expected:
+        - "Immutable audit history is sourced from the safe audit projection."
+        - "The parallel virtual_sessions.timeline is not labelled as complete immutable audit history."
+        - "Representative, join and verification business facts are legible."
+      blocked_by:
+        - SD-075-05
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: VUI-076-02
+      priority: P1
+      requirement_refs: [CR-348]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-006]
+      layer: PRODUCT_UI
+      persona: reviewer
+      fixture: FX-076-E
+      action: "Open empty, one-page and multi-page audit histories."
+      expected: "Honest empty state, deterministic order and accessible paging interaction."
+      blocked_by:
+        - SD-075-05
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: VUI-076-03
+      priority: P0
+      requirement_refs: [CR-347, CR-348]
+      acceptance_refs: [WA-M11-AC-002]
+      layer: PRODUCT_UI
+      persona: assigned_inspector
+      fixture: FX-076-A
+      action: "Open the session while provider capability is unavailable."
+      expected: "Provider-unavailable state is explicit; no fabricated disconnect/reconnect history is shown."
+      blocked_by:
+        - SD-075-05
+        - PROVIDER_LIFECYCLE_CONTRACT_MISSING
+      execution_state: BLOCKED_MULTIPLE
+
+  recursive_forbidden_key:
+    - case_id: RFK-076-01
+      priority: P0
+      acceptance_refs: [WA-M11-AC-002, WA-M11-AC-005]
+      layer: DATABASE_API
+      fixture: FX-076-A
+      action: "Recursively scan participant, OTP-status and session-audit JSON."
+      expected: "Zero forbidden recursive keys or values outside the explicitly allowed vp_otp_status expires_at field."
+      execution_state: NOT_EXECUTED
+    - case_id: RFK-076-02
+      priority: P0
+      acceptance_refs: [WA-M11-AC-002, WA-M11-AC-005]
+      layer: PRODUCT_UI_AND_NETWORK
+      fixture: FX-076-A
+      action: "Recursively scan Virtual UI and Admin Audit DOM, hydration data, browser state and network payloads."
+      expected: "Zero forbidden recursive keys or values."
+      execution_state: NOT_EXECUTED
+    - case_id: RFK-076-03
+      priority: P0
+      acceptance_refs: [WA-M11-AC-006]
+      layer: EVIDENCE
+      fixture: FX-076-A
+      action: "Scan screenshots, video frames' associated metadata, console output, text reports and JSON evidence."
+      expected: "Zero live OTPs, code hashes, raw verification records, raw provider metadata or unmasked real participant identities."
+      execution_state: NOT_EXECUTED
+    - case_id: RFK-076-04
+      priority: P0
+      acceptance_refs: [WA-M11-AC-005]
+      layer: SOURCE
+      action: "Inspect application audit consumers for wildcard/raw pass-through and client-side-only filtering."
+      expected: "All M11 read projections are server-enforced explicit allowlists."
+      execution_state: NOT_EXECUTED
+
+  duplicate_and_bounds:
+    - case_id: DUP-076-01
+      priority: P1
+      requirement_refs: [CR-343, CR-353]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: PRESENTATION_AND_COUNTING
+      fixture: FX-076-A
+      action: "Inspect one OTP operation that produced a participant UPDATE and one explicit OTP_* event."
+      expected:
+        - "Both immutable row IDs remain traceable."
+        - "The UI distinguishes row change from business event."
+        - "Business-action count equals one."
+      blocked_by:
+        - SD-075-02
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: BND-076-01
+      priority: P1
+      requirement_refs: [CR-348]
+      acceptance_refs: [WA-M11-AC-001, WA-M11-AC-005]
+      layer: DATABASE_API_AND_UI
+      fixture: FX-076-E
+      action: "Traverse more than one page of audit history."
+      expected:
+        - "No missing or duplicated event IDs."
+        - "Stable occurred_at/id ordering."
+        - "No unbounded single response."
+      blocked_by:
+        - SD-075-05
+      execution_state: BLOCKED_SPONSOR_DECISION
+
+  immutability_and_regression:
+    - case_id: IMM-076-01
+      priority: P0
+      requirement_refs: [CR-343, CR-348]
+      acceptance_refs: [WA-M11-AC-005]
+      layer: DATABASE
+      fixture: FX-076-C
+      action: "Attempt UPDATE and DELETE against the historical audit row."
+      expected: "Both mutations are rejected; read redaction does not weaken append-only enforcement."
+      blocked_by:
+        - SD-075-04
+      execution_state: BLOCKED_SPONSOR_DECISION
+    - case_id: REG-076-01
+      priority: P0
+      acceptance_refs: [WA-M11-AC-005]
+      layer: REGRESSION
+      required_suites:
+        - apps/web/e2e/cd-041-virtual-backend.spec.ts
+        - apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+        - apps/web/e2e/cd-042-audit-read-seam.spec.ts
+        - apps/web/e2e/cd-042-otp-status-authz.spec.ts
+        - apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+        - apps/web/e2e/execution-crossmodule-contract.spec.ts
+        - apps/web/e2e/neutral-error-sweep.spec.ts
+      expected: PASS_WITH_NO_EXCLUSIONS
+      execution_state: NOT_EXECUTED
+
+candidate_test_allocation:
+  new_paths_available_on_origin_main:
+    - apps/web/e2e/m11-audit-consumer-redaction.spec.ts
+    - apps/web/e2e/m11-audit-direct-table-secret-negative.spec.ts
+    - supabase/tests/m11_audit_consumer_redaction_security.sql
+  state: UNALLOCATED_NO_LEASE
+  rule: "Path availability does not authorize creation or assign ownership."
+
+evidence_matrix:
+  - evidence_id: EV-076-01
+    covers:
+      - DQ-076-01
+      - DQ-076-02
+      - DQ-076-03
+    artifact: "Reviewed external API request/response record with forbidden-key scan."
+  - evidence_id: EV-076-02
+    covers:
+      - POS-076-03
+      - POS-076-04
+      - POS-076-05
+      - AUTH-076-01
+      - AUTH-076-02
+      - AUTH-076-03
+      - AUTH-076-04
+      - AUTH-076-05
+    artifact: "Persona matrix with stable session/event IDs and redacted responses."
+  - evidence_id: EV-076-03
+    covers:
+      - HIST-076-01
+      - HIST-076-02
+      - IMM-076-01
+    artifact: "Before/after immutable row count, ID and hash certificate plus redacted projection."
+  - evidence_id: EV-076-04
+    covers:
+      - ADM-076-01
+      - ADM-076-02
+      - ADM-076-03
+      - ADM-076-04
+    artifact: "Admin Audit browser, DOM and network evidence with non-M11 regression comparison."
+  - evidence_id: EV-076-05
+    covers:
+      - VUI-076-01
+      - VUI-076-02
+      - VUI-076-03
+      - BND-076-01
+    artifact: "Virtual UI browser evidence at accepted placement and paging behavior."
+  - evidence_id: EV-076-06
+    covers:
+      - RFK-076-01
+      - RFK-076-02
+      - RFK-076-03
+      - RFK-076-04
+    artifact: "Recursive forbidden-key/value scan manifest across every surface."
+  - evidence_id: EV-076-07
+    covers:
+      - DUP-076-01
+      - REG-076-01
+    artifact: "Duplicate-presentation proof plus no-exclusion regression results."
+
+exit_criteria:
+  redaction_slice:
+    - "All five sponsor decisions are accepted and recorded."
+    - "Exact implementation and independent QA leases exist."
+    - "Every P0 case is PASS with evidence."
+    - "Every P1 case is PASS or has an accepted, requirement-safe disposition."
+    - "No forbidden key or value is found on any scan surface."
+    - "Historical immutable rows are unchanged."
+    - "No protected regression suite is excluded."
+  full_CR_347_CR_348:
+    - "The provider lifecycle callback contract exists."
+    - "Leave, disconnect and reconnect producers and consumers are independently proven."
+    - "Until then, redaction closure cannot close full CR-347 or CR-348."
+
+blocker_summary:
+  unresolved_sponsor_decisions: 5
+  missing_implementation_lease: true
+  missing_QA_lease: true
+  provider_lifecycle_contract_missing: true
+  tests_executed: 0
+  evidence_artifacts_captured: 0
+  blockers_closed: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-SPONSOR-DECISION-PACKET-077
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Produce a concise sponsor-facing five-decision consent packet with exact
+    consequences, bounded implementation surface, test obligations and
+    explicit exclusions.
+  prohibited:
+    - "No code, SQL, database, data, test, evidence, design, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  sponsor_decisions_preserved: 5
+  fixtures: 5
+  positive_cases: 5
+  direct_query_cases: 3
+  negative_cases: 4
+  unauthorized_cases: 5
+  historical_cases: 3
+  admin_audit_cases: 4
+  virtual_UI_cases: 3
+  recursive_forbidden_key_cases: 4
+  duplicate_and_bounds_cases: 2
+  immutability_and_regression_cases: 2
+  total_cases: 35
+  evidence_rows: 7
+  tests_executed: 0
+  evidence_captured: 0
+  leases_created: 0
+  commits_created: 0
+  pushes_created: 0
+  blockers_closed: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

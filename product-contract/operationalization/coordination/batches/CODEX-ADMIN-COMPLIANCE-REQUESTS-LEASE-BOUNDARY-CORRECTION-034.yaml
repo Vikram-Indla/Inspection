@@ -1,0 +1,699 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-BOUNDARY-CORRECTION-034
+title: Compliance Request remediation A-C lease-boundary correction
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: ACK_BOUNDARY_CORRECTION_COMPLETE_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  correction_record: COMPLETE
+  implementation_gate: BLOCKED
+  leases_granted: false
+  migration_paths_generated_or_reserved: false
+  remote_ddl_authority_granted: false
+  shared_data_authority_granted: false
+  provider_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The governance defects returned by packet 033 are corrected at boundary
+    level. A, B and C now have separate future migration slots, fixed probe and
+    evidence paths, mutually exclusive database and application envelopes,
+    exact owner prerequisites, and independent QA. Boundary B now includes an
+    enforceable database lockout contract covering Data API, table-policy,
+    legacy RPC and regulation-document custody bypasses. Boundary C now has a
+    dedicated SQL probe and factual evidence contract. These corrections do not
+    resolve the product-authority decisions for typed snapshots, activation,
+    legacy action exceptions or package mapping, so no implementation lease is
+    grantable. D and E remain blocked exactly as packet 033 requires.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-BOUNDARY-CORRECTION-034
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-DECISION-033
+    source_commit: 5c81303fd376c5288f10073f9601a5d4463f3243
+    source_sha256: 936439125dc3104710a5c6a167cd611ee90ad84a571cb9729165224447896427
+    source_decision: RETURN
+  business_capability: >-
+    Establish safe future ownership boundaries for connecting governed
+    Compliance Configuration Request versions to the Compliance Library and
+    immutable Package snapshots without granting or implementing the work.
+  design_dependency:
+    design_id: WA-DES-019
+    status: SEPARATE_NOT_DECIDED_HERE
+    design_change_authority: false
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: 38d1eb2433d5d8d173c827e0fd6fde8bf2d343a4
+  concurrent_orchestration_files_preserved:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-POST-DECISION-LEASE-TEST-GATE-079.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-CROSS-RUNTIME-ENFORCEMENT-TEST-PLAN-077.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-RECEIPT-READINESS-054I.yaml
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+gate_check:
+  result: BLOCKED
+  gate_position:
+    G8: PASS
+    G10: PASS_HISTORICAL
+    G11: OPEN
+    G12: OPEN
+  permitted_next_action: >-
+    Review this corrected non-granting boundary record, then prepare the
+    unresolved product/database authority questions without implementation.
+  missing_evidence:
+    - Approved typed snapshot contract for every CCR entity kind.
+    - Approved Scheduled/Active and effective-date mechanism.
+    - Approved legacy action and attachment-exception matrix.
+    - Approved CCR-to-package snapshot mapping.
+    - Exact clean owners, bases, branches and generated migration paths.
+    - Local database execution and independent A-C QA.
+    - Clean accepted Field baseline and complete integrated candidate.
+    - Authorized isolated data and real-browser certification.
+
+exact_requirement_scope:
+  customer_rows:
+    - [CR-449, WA-AC-0449]
+    - [CR-450, WA-AC-0450]
+    - [CR-451, WA-AC-0451]
+    - [CR-452, WA-AC-0452]
+    - [CR-458, WA-AC-0458]
+    - [CR-459, WA-AC-0459]
+    - [CR-460, WA-AC-0460]
+    - [CR-463, WA-AC-0463]
+    - [CR-478, WA-AC-0478]
+  authoring_and_cutover:
+    - REQ-R0C-01623
+    - REQ-R0C-01666
+    - REQ-R0C-01684
+    - REQ-R0C-01709
+    - REQ-R0C-01768
+    - REQ-R0C-01903
+    - REQ-R0C-01916
+    - REQ-R0C-02041
+    - REQ-R0C-02131
+    - REQ-R0C-02208..02210
+    - REQ-R0C-02234
+  publication_and_downstream:
+    - REQ-R0C-01803..01805
+    - REQ-R0C-01815
+    - REQ-R0C-01868..01883
+    - REQ-R0C-01885..01886
+    - REQ-R0C-01888..01889
+    - REQ-R0C-01894..01896
+  effective_and_historical:
+    - REQ-R0C-01627
+    - REQ-R0C-01638
+    - REQ-R0C-01655
+    - REQ-R0C-01672..01673
+    - REQ-R0C-01691
+    - REQ-R0C-01694
+    - REQ-R0C-01724..01726
+    - REQ-R0C-01783..01785
+    - REQ-R0C-01900
+    - REQ-R0C-01906
+    - REQ-R0C-01915
+    - REQ-R0C-01919
+    - REQ-R0C-01923
+  quality:
+    - WA-M6-AC-001
+    - WA-M6-AC-002
+    - WA-M6-AC-005
+    - WA-M6-AC-006
+  explicitly_not_owned:
+    - CR-453..CR-457
+    - CR-461..CR-462
+    - CR-464..CR-477
+    - WA-M6-AC-003..004
+
+observed_repository_truth:
+  ccr_engine:
+    migration: supabase/migrations/20260719213000_compliance_configuration_request_engine.sql
+    facts:
+      - Direct authenticated writes to CCR tables are revoked and mutations use guarded RPCs.
+      - CCR mutation RPCs are SECURITY DEFINER, revoke PUBLIC execution and grant authenticated execution.
+      - Existing entity versions use JSON snapshots and do not yet implement the approved typed or effective lifecycle required by A.
+  legacy_compliance:
+    migrations:
+      - supabase/migrations/0002_rbac_audit.sql
+      - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+      - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+    facts:
+      - Regulations, clauses, items, packages, package versions, violations and penalties have direct admin all-operation RLS policies.
+      - Regulation attachment metadata grants authenticated DML subject to admin RLS, and the regulation-documents bucket has direct draft upload/removal policies.
+      - Current routes write Regulations, clauses, attachments, Items, Violations and Penalties directly.
+      - Existing publish_regulation, publish_violation_code and publish_penalty_mapping RPCs remain authenticated mutation entry points.
+  permission_presentation:
+    path: apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+    fact: >-
+      The route reads user_roles without an explicit current-user predicate
+      before deciding whether Create Request is visible.
+  package_publication:
+    migrations:
+      - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+      - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+    route_path: apps/web/src/app/(app)/admin/packages/actions.ts
+    facts:
+      - The application validates live legacy catalogues and assembles item, violation, penalty and template snapshots before calling publish_package_version.
+      - The database publish RPC and existing snapshot tables do not yet require exact CCR request, revision, component, entity-version and publication provenance.
+  candidate_new_paths:
+    status: ABSENT_UNRESERVED
+    paths:
+      - supabase/tests/compliance_request_operational_projection_probe.sql
+      - supabase/tests/compliance_request_authoring_cutover_probe.sql
+      - supabase/tests/compliance_package_snapshot_bridge_probe.sql
+      - apps/web/src/lib/compliance/governed-library.ts
+  remote_database_observation: NOT_PERFORMED
+
+correction_disposition:
+  - return_id: CCR-033-RET-001
+    status: CORRECTED_IN_BOUNDARIES_A_B_C
+    correction: >-
+      Every migration is now a grant-time slot. The future owner must first
+      inspect the installed Supabase CLI help, run `supabase migration new`
+      with the approved logical name only after a lease is granted, and return
+      the generated path to Codex for exact lease amendment before editing it.
+  - return_id: CCR-033-RET-002
+    status: CORRECTED_IN_BOUNDARY_B
+    correction: >-
+      Boundary B now owns explicit privilege, RLS, trigger, legacy-RPC and
+      regulation-document policy enforcement. Application hiding alone cannot
+      pass its exit gate.
+  - return_id: CCR-033-RET-003
+    status: CORRECTED_IN_BOUNDARY_B
+    correction: >-
+      The Compliance Request register is an exact B path and must prove its
+      Create decision from the verified current user's roles only.
+  - return_id: CCR-033-RET-004
+    status: CORRECTED_IN_BOUNDARY_C
+    correction: >-
+      Boundary C owns a dedicated package-bridge SQL probe and factual evidence
+      file that no other boundary may write.
+  - return_id: CCR-033-RET-005
+    status: PRESERVED_BLOCKED_IN_D
+  - return_id: CCR-033-RET-006
+    status: PRESERVED_BLOCKED_IN_E
+
+common_future_lease_controls:
+  no_grant_statement: >-
+    This packet defines possible future envelopes only. Codex lead must issue a
+    separate exact lease after every prerequisite is PASS.
+  generated_migration_protocol:
+    - Confirm the exact accepted predecessor commit and a clean isolated worktree.
+    - Confirm no migration owner holds the logical name or database objects.
+    - Inspect `supabase migration --help` and `supabase migration new --help`.
+    - Run `supabase migration new <approved-logical-name>` only after grant.
+    - Record the CLI-generated path, SHA and owner in the granted lease before SQL editing.
+    - Stop if the generated path collides, the migration graph advanced, or project linkage is ambiguous.
+  owner_separation:
+    lease_issuer: Codex lead
+    product_database_decision_owner: Sponsor or recorded delegated authority
+    implementation_owner_rule: One named implementation owner per boundary
+    independent_qa_rule: >-
+      Each boundary has a reviewer who did not implement or author its focused
+      probe. The reviewer may not modify the implementation under review.
+    integration_owner: Codex lead
+    later_test_author_rule: The E test author implemented none of A-D.
+    later_certifier_rule: The E certifier is distinct from all implementers and test authors.
+  shared_constraints:
+    - No service-role browser or application client.
+    - No production or shared business-data write in A-C implementation work.
+    - No remote DDL without a separate exact project and migration authority.
+    - No Cron, scheduler, notification or external-provider assumption.
+    - No direct status mutation, audit deletion or immutable-history rewrite.
+    - No requirement credit until the complete E certification passes.
+
+corrected_boundaries:
+  - boundary_id: A
+    lease_id: LEASE-CCR-LIFECYCLE-PROJECTION-032A
+    decision: ACK_BOUNDARY_DEFINITION_NOT_GRANTED
+    sequence: 1
+    purpose: >-
+      Add typed immutable CCR versions, approved effective lifecycle truth,
+      optimistic concurrency, operational read projection and append-only audit
+      without changing a Library, Package, Planning or Field consumer.
+    prerequisite_gates:
+      - id: A-G1-TYPED-CONTRACT
+        status: BLOCKED
+        owner_required: product_database_decision_owner
+        requirement: >-
+          Approve exact fields, nullability, validation, identity and dependency
+          shape for Regulation, Inspection Item, Violation and Penalty snapshots.
+      - id: A-G2-EFFECTIVE-LIFECYCLE
+        status: BLOCKED
+        owner_required: product_database_decision_owner
+        requirement: >-
+          Approve Scheduled, Active, successor, deactivation, date-boundary and
+          no-provider activation semantics.
+      - id: A-G3-BACKFILL
+        status: BLOCKED
+        owner_required: product_database_decision_owner
+        requirement: >-
+          Approve the reconciled one-to-one lineage for every existing active
+          head and stable legacy identity.
+      - id: A-G4-OWNERSHIP
+        status: BLOCKED
+        owner_required: Codex lead
+        requirement: >-
+          Assign one migration/probe/evidence implementer and one independent
+          reviewer on a clean exact base.
+      - id: A-G5-LOCAL-DATABASE
+        status: BLOCKED
+        owner_required: implementation owner
+        requirement: Local PostgreSQL execution and discardable fixtures are available.
+    future_path_envelope:
+      generated_migration_slot:
+        logical_name: compliance_request_operational_projection
+        path_pattern: supabase/migrations/<CLI-generated-timestamp>_compliance_request_operational_projection.sql
+        status: NOT_GENERATED_NOT_RESERVED
+      fixed_owned_paths:
+        - supabase/tests/compliance_request_operational_projection_probe.sql
+        - product-contract/evidence/LEASE-CCR-LIFECYCLE-PROJECTION-032A.md
+      database_write_envelope:
+        - CCR lifecycle/projection schema, constraints, triggers, RLS, grants and functions only.
+        - Existing public.compliance_configuration_requests and subordinate CCR objects.
+        - Existing public.compliance_entity_versions, public.compliance_entity_heads and public.compliance_request_publications.
+        - New A-owned lifecycle/projection objects only after exact names pass collision review.
+      read_only_dependencies:
+        - public.regulations
+        - public.inspection_items
+        - public.violation_codes
+        - public.penalty_mappings
+        - public.audit_events
+      prohibited_paths_and_objects:
+        - all application source
+        - all B and C probes or evidence
+        - legacy Compliance grants, policies, mutation functions and storage policies
+        - package, Planning, Field, offline and provider objects
+    implementation_evidence_contract:
+      - Fresh compile and idempotent replay in an isolated local database.
+      - Per-kind malformed, missing and cross-kind snapshot rejection.
+      - Maker-checker, stale revision, future-effective and concurrent transition negatives.
+      - Current-version preservation, immutable publication and append-only audit.
+      - RLS, grants, function privileges and anonymous/denied-persona negatives.
+      - Zero application consumer switch.
+    rollback: >-
+      Discard a failed isolated database. Before any consumer cutover, revert
+      only the A code commit while retaining no shared data. Any later shared
+      correction is forward-only and preserves immutable history.
+
+  - boundary_id: B
+    lease_id: LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B
+    decision: ACK_BOUNDARY_DEFINITION_NOT_GRANTED
+    sequence: 2
+    purpose: >-
+      Route current Compliance Library reads to approved effective A versions
+      and make CCR the exclusive create/modify path at the UI, Data API, table,
+      legacy RPC and attachment-custody boundaries.
+    prerequisite_gates:
+      - id: B-G1-UPSTREAM
+        status: BLOCKED
+        requirement: A is independently accepted on the exact integration base.
+      - id: B-G2-ACTION-MATRIX
+        status: BLOCKED
+        owner_required: product_database_decision_owner
+        requirement: >-
+          Classify create, modify, add clause, attach/remove source file,
+          publish, activate and deactivate separately for every entity kind.
+          The record must name any lifecycle-only exception that remains direct.
+      - id: B-G3-CURRENT-USER-PERMISSION
+        status: BLOCKED
+        owner_required: B implementation owner
+        requirement: >-
+          The request-register Create decision must use only the verified
+          current user's role rows; Reviewer and other read-only roles remain denied.
+      - id: B-G4-OWNERSHIP
+        status: BLOCKED
+        owner_required: Codex lead
+        requirement: >-
+          Regulations, Items, Violations, localization, design, database-policy
+          and storage-policy owners are clear. Assign one B implementation owner
+          and a distinct reviewer.
+    future_path_envelope:
+      generated_migration_slot:
+        logical_name: compliance_request_authoring_cutover
+        path_pattern: supabase/migrations/<CLI-generated-timestamp>_compliance_request_authoring_cutover.sql
+        status: NOT_GENERATED_NOT_RESERVED
+      fixed_owned_paths:
+        - supabase/tests/compliance_request_authoring_cutover_probe.sql
+        - apps/web/src/lib/compliance/governed-library.ts
+        - apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+        - apps/web/src/app/(app)/admin/regulations/page.tsx
+        - apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+        - apps/web/src/app/(app)/admin/regulations/Controls.tsx
+        - apps/web/src/app/(app)/admin/regulations/actions.ts
+        - apps/web/src/app/(app)/admin/items/page.tsx
+        - apps/web/src/app/(app)/admin/items/Controls.tsx
+        - apps/web/src/app/(app)/admin/items/actions.ts
+        - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+        - apps/web/src/app/(app)/admin/violations/page.tsx
+        - apps/web/src/app/(app)/admin/violations/Controls.tsx
+        - apps/web/src/app/(app)/admin/violations/actions.ts
+        - product-contract/evidence/LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B.md
+      database_write_envelope:
+        table_privileges_and_policies_only:
+          - public.regulations
+          - public.regulation_clauses
+          - public.regulation_attachments
+          - public.inspection_items
+          - public.inspection_item_versions
+          - public.violation_codes
+          - public.penalty_mappings
+        legacy_function_execute_and_guard_scope_only:
+          - public.publish_regulation(uuid)
+          - public.publish_violation_code(uuid)
+          - public.publish_penalty_mapping(uuid)
+        storage_scope_only:
+          bucket: regulation-documents
+          policy_operations: [insert, update, delete]
+        no_schema_shape_change: true
+        no_business_row_rewrite: true
+      read_only_dependencies:
+        - A-owned effective operational projection
+        - public.compliance_configuration_requests
+        - public.compliance_entity_versions
+        - public.compliance_entity_heads
+        - public.compliance_request_publications
+        - public.audit_events
+      prohibited_paths_and_objects:
+        - A and C migrations, probes, evidence and owned database objects
+        - package, Planning, Field, offline, shell, navigation, style and design files
+        - storage buckets or policies other than regulation-documents
+        - any role widening or historical-row deletion
+    database_bypass_prevention_contract:
+      direct_table_invariant: >-
+        After cutover, authenticated, anon and PUBLIC have no INSERT, UPDATE or
+        DELETE privilege or permissive write policy on the seven named legacy
+        tables. Historical SELECT remains least-privilege and RLS-scoped.
+      data_api_invariant: >-
+        Direct REST/Data API create, modify and publish attempts fail at the
+        database even for Compliance Admin and Form Admin.
+      legacy_rpc_invariant: >-
+        PUBLIC and anon execution is denied. Authenticated execution of each
+        legacy mutation RPC is revoked unless the approved action matrix names
+        it as a lifecycle-only exception. Any exception must reject business
+        content changes, require an allowed role, enforce maker-checker where
+        applicable, preserve immutable fields and append correlated audit.
+      trigger_invariant: >-
+        Table-level guards reject unapproved legacy writes regardless of the
+        caller path, including direct SQL, Data API and SECURITY DEFINER RPC.
+        The implementation may not trust a client-set session flag as proof of
+        CCR provenance.
+      governed_write_invariant: >-
+        Create and modify business content enter only through the existing
+        guarded CCR request/revision/component/decision/publication flow and
+        exact A version identities. No UI or database path may manufacture a
+        legacy draft outside that lineage.
+      attachment_invariant: >-
+        Regulation source-file upload/removal and metadata mutation follow the
+        approved action matrix. If not explicitly preserved as a lifecycle-only
+        exception, authenticated bucket and metadata writes are denied after
+        cutover. Existing objects, hashes, access control and historical reads
+        are never deleted or weakened.
+      current_user_invariant: >-
+        Role presentation uses auth.uid()-scoped role evidence or an existing
+        verified-current-user helper. An unfiltered user_roles result cannot
+        authorize Create Request.
+    focused_probe_contract:
+      path: supabase/tests/compliance_request_authoring_cutover_probe.sql
+      required_checks:
+        - Catalogue exact table grants, write policies, triggers and function execute privileges.
+        - Deny direct insert, update and delete for Compliance Admin, Form Admin, Reviewer, denied persona, anon and PUBLIC as applicable.
+        - Deny every unapproved legacy publish RPC entry point.
+        - Prove each approved lifecycle-only exception changes only classified fields and appends correlated audit.
+        - Prove historical Library and attachment reads remain RLS-scoped.
+        - Prove no client-controlled flag can bypass table guards.
+        - Execute in a transaction and leave zero fixture or storage residue.
+    implementation_evidence_contract:
+      - Probe output and object catalogue attached to the B factual evidence file.
+      - Library exposes only approved effective A versions and truthful empty/error/degraded states.
+      - Draft, returned, rejected, future, deactivated and unapproved versions are absent from current truth.
+      - Create Request is visible to authorized writers and absent for Reviewer and denied personas.
+      - Direct Data API, SQL, legacy RPC and attachment bypass negatives pass.
+      - Historical legacy reads, audit, usage and source-file custody remain intact.
+    rollback: >-
+      Before final cutover, B may run read-parity without changing write
+      authority. After cutover, rollback may restore the prior read projection
+      only through a reviewed forward change. It may not reopen direct legacy
+      create/modify/publish or weaken attachment custody automatically.
+
+  - boundary_id: C
+    lease_id: LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C
+    decision: ACK_BOUNDARY_DEFINITION_NOT_GRANTED
+    sequence: 3
+    purpose: >-
+      Publish Package versions transactionally from exact approved effective
+      CCR versions and freeze complete immutable component provenance without
+      changing Library authoring or Field consumption.
+    prerequisite_gates:
+      - id: C-G1-UPSTREAM
+        status: BLOCKED
+        requirement: A and B are independently accepted on the exact integration base.
+      - id: C-G2-SNAPSHOT-MAPPING
+        status: BLOCKED
+        owner_required: product_database_decision_owner
+        requirement: >-
+          Approve the exact mapping from typed CCR versions to package item,
+          evidence, template, violation, penalty and dependency snapshot fields.
+      - id: C-G3-PACKAGE-OWNERSHIP
+        status: BLOCKED
+        owner_required: Codex lead
+        requirement: >-
+          Clear all Package route, publication RPC and snapshot-table owners;
+          assign one C implementation owner and a distinct reviewer.
+      - id: C-G4-LOCAL-DATABASE
+        status: BLOCKED
+        owner_required: implementation owner
+        requirement: Local PostgreSQL and isolated rollback fixtures are available.
+    future_path_envelope:
+      generated_migration_slot:
+        logical_name: compliance_package_snapshot_cutover
+        path_pattern: supabase/migrations/<CLI-generated-timestamp>_compliance_package_snapshot_cutover.sql
+        status: NOT_GENERATED_NOT_RESERVED
+      fixed_owned_paths:
+        - supabase/tests/compliance_package_snapshot_bridge_probe.sql
+        - apps/web/src/app/(app)/admin/packages/actions.ts
+        - apps/web/src/app/(app)/admin/packages/page.tsx
+        - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+        - apps/web/src/app/(app)/admin/packages/ImpactPanel.tsx
+        - product-contract/evidence/LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C.md
+      database_write_envelope:
+        package_objects_only:
+          - public.package_versions
+          - public.package_version_item_snapshots
+          - public.package_version_dependency_snapshots
+          - public.publish_package_version(uuid,jsonb)
+          - public.package_version_impact(uuid)
+        new_bridge_objects: >-
+          C-specific provenance snapshot and publication objects only after
+          exact names pass collision and contract review.
+      read_only_dependencies:
+        - A-owned typed effective versions and lifecycle projection
+        - B-owned governed Library projection
+        - public.compliance_configuration_requests
+        - public.compliance_request_revisions
+        - public.compliance_request_components
+        - public.compliance_entity_versions
+        - public.compliance_request_publications
+        - public.audit_events
+      prohibited_paths_and_objects:
+        - A and B migrations, probes, evidence, applications, policies and storage scope
+        - Planning, Field, offline, service-worker, shell and design files
+        - legacy Compliance business-row mutation
+        - old package or snapshot rewrite
+    database_bridge_invariants:
+      source_truth: >-
+        The database re-reads exact approved, effective and immutable CCR
+        request, revision, component, entity-version and publication rows. It
+        does not trust client-supplied live legacy values or unverified JSON.
+      atomicity: >-
+        Package status transition, full item/evidence/template/violation/
+        penalty/dependency snapshot insertion, provenance hashes and audit
+        succeed in one transaction or leave zero new rows.
+      maker_checker: >-
+        Package maker cannot publish; the checker is authorized and distinct.
+      immutability: >-
+        Published, locked, deactivated and historical Package versions and
+        snapshots remain immutable.
+      bypass_prevention: >-
+        The existing publish_package_version entry cannot publish without the
+        governed bridge. It is either replaced by the governed implementation
+        or retained only as a fail-closed compatibility wrapper with identical
+        provenance checks.
+      concurrency: >-
+        Stale version, changed CCR head, duplicate publication and concurrent
+        package publish attempts are rejected before any partial commit.
+    focused_probe_contract:
+      path: supabase/tests/compliance_package_snapshot_bridge_probe.sql
+      required_checks:
+        - Catalogue bridge objects, RLS, grants, triggers and function privileges.
+        - Successful publish stores exact CCR request, revision, component, version, publication and hash provenance.
+        - One invalid or non-effective dependency rolls back package, snapshots, provenance and audit atomically.
+        - Draft, returned, rejected, future, deactivated and stale CCR versions are rejected.
+        - Package maker self-publish, denied persona, anon and PUBLIC are rejected.
+        - Existing publish_package_version cannot bypass the bridge.
+        - Concurrent or stale publish loses without a partial snapshot.
+        - Historical Package versions and snapshots remain byte-equivalent and immutable.
+        - Probe runs in a transaction and leaves zero fixture residue.
+    implementation_evidence_contract:
+      - Dedicated SQL probe transcript and object catalogue.
+      - Factual A/B version-to-Package snapshot lineage with hashes.
+      - Authorized checker success and maker/denied/anonymous negatives.
+      - Atomic rollback, immutability, concurrency and prior-entry-point bypass evidence.
+      - Existing Package empty/error/degraded/history and impact behavior preserved.
+      - Independent C reviewer records PASS_WITH_ZERO_P0_P1.
+    rollback: >-
+      A failed publication rolls back transactionally. A successful published
+      Package is never edited or deleted. Operational rollback selects an
+      approved audited successor or prior effective Package while retaining all
+      Package, CCR, provenance and audit history.
+
+preserved_blocked_boundaries:
+  - boundary_id: D
+    lease_id: LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D
+    decision: BLOCKED_NOT_GRANTED_UNCHANGED
+    blockers:
+      - C is not independently accepted.
+      - Active codex/m3-field-expiry-fix work remains unreconciled.
+      - Complete additional-item, action-template, violation and penalty snapshot scope is unproven.
+      - Online/offline, return, conflict and submission parity is not baselined.
+    source_of_truth: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-DECISION-033
+  - boundary_id: E
+    lease_id: LEASE-CCR-DOWNSTREAM-TEST-DATA-BROWSER-032E
+    decision: BLOCKED_NOT_GRANTED_UNCHANGED
+    blockers:
+      - A-D are not independently accepted on one exact integration commit.
+      - Independent test author, data operator and final certifier are not assigned.
+      - Authorized target-project access and exclusive reversible data lease are absent.
+      - Current protected regression and real-browser baseline is absent.
+    source_of_truth: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-DECISION-033
+
+dependency_and_ownership_order:
+  - Product/database authority approves A typed snapshots, lifecycle and backfill.
+  - Codex lead clears paths and grants A only; A implementation and independent QA complete.
+  - Product/database authority approves B action and attachment matrix.
+  - Codex lead clears paths and grants B only on accepted A; B implementation and independent QA complete.
+  - Product/database authority approves the C snapshot mapping.
+  - Codex lead clears paths and grants C only on accepted A+B; C implementation and independent QA complete.
+  - D remains blocked until C and the Field baseline pass.
+  - E remains blocked until A-D are integrated and independent data/browser authority exists.
+  - Merge, deployment, remote DDL and release remain separate sponsor decisions.
+
+non_overlap_proof:
+  A_writes:
+    migration_domain: CCR lifecycle and projection only
+    probe: supabase/tests/compliance_request_operational_projection_probe.sql
+    evidence: product-contract/evidence/LEASE-CCR-LIFECYCLE-PROJECTION-032A.md
+    application_files: []
+  B_writes:
+    migration_domain: legacy Compliance write lockout and regulation-document policy only
+    probe: supabase/tests/compliance_request_authoring_cutover_probe.sql
+    evidence: product-contract/evidence/LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B.md
+    application_domain: Compliance Request register plus Regulations, Items and Violations Library routes
+  C_writes:
+    migration_domain: Package publication and provenance snapshots only
+    probe: supabase/tests/compliance_package_snapshot_bridge_probe.sql
+    evidence: product-contract/evidence/LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C.md
+    application_domain: Admin Packages only
+  assertion: >-
+    A, B and C share no fixed writable file. Their generated migrations are
+    separate future files and their database write domains are disjoint.
+    Cross-boundary objects are read-only dependencies unless a new returned
+    lease explicitly changes the envelope.
+
+current_ownership_snapshot:
+  observed_on: "2026-07-25"
+  authoritative_product_worktree_clean: true
+  root_checkout_has_unrelated_active_changes: true
+  field_dependency:
+    branch: codex/m3-field-expiry-fix
+    dirty_paths:
+      - apps/web/src/app/(app)/field/[visitId]/page.tsx
+      - apps/web/e2e/ipad-gps-policy.spec.ts
+      - .codex-review/m3-field-expiry-a2-evidence.md
+    effect: D_REMAINS_BLOCKED
+  A_B_C_candidate_fixed_paths_observed_absent:
+    - supabase/tests/compliance_request_operational_projection_probe.sql
+    - supabase/tests/compliance_request_authoring_cutover_probe.sql
+    - supabase/tests/compliance_package_snapshot_bridge_probe.sql
+    - apps/web/src/lib/compliance/governed-library.ts
+  caveat: >-
+    Absence is not ownership. Codex must repeat the complete worktree, dirty
+    path, branch, migration graph and database-owner audit before any grant.
+
+rollback_and_stop_conditions:
+  rollback_order:
+    - Revert C application consumer before any B read rollback.
+    - Revert B Library read routing without reopening legacy writes.
+    - Keep A additive or correct it forward after database review.
+    - Preserve D and E because neither is authorized.
+  immutable_preservation:
+    - Never delete or rewrite CCR revisions, decisions, versions or publications.
+    - Never delete or rewrite Package versions, snapshots, provenance or audit.
+    - Never reset updated_at, updated_by or evidence of a real transition.
+  stop_conditions:
+    - Any worker treats this packet as a granted lease.
+    - A generated migration path is invented, pre-reserved or edited before grant amendment.
+    - Typed fields, lifecycle semantics, direct-action exceptions or package mapping are inferred.
+    - Direct legacy Data API, table, RPC or attachment bypass remains after B.
+    - A, B or C writes another boundary's path or database domain.
+    - Implementer and independent reviewer are the same person or session.
+    - Remote DDL, shared data, service role or provider work is attempted.
+    - RLS, maker-checker, audit, immutability, concurrency or historical truth weakens.
+    - D or E advances before its preserved blockers pass.
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+  mode: READ_ONLY_CONTROL_PLANE
+  scope: >-
+    Prepare, without deciding, the exact sponsor/product/database questions for
+    the A typed per-kind snapshot contract, A Scheduled/Active lifecycle and
+    backfill, B create/modify/lifecycle/attachment action matrix, and C
+    CCR-to-Package snapshot mapping. Cite current source fields and conflicts,
+    present no invented default, grant no lease and change no product, database,
+    data, design, test, branch or release state.
+  safe_because: >-
+    The corrected envelopes are now stable; the remaining blockers are explicit
+    authority choices that must be resolved before any implementation owner can
+    receive a lease.
+
+validation:
+  yaml_parse: PASS
+  recommendation_enum: PASS
+  correction_status: PASS
+  boundaries_A_C_present: PASS
+  D_E_preserved_blocked: PASS
+  no_lease_granted: PASS
+  no_generated_migration_path: PASS
+  database_bypass_contract_present: PASS
+  dedicated_probe_contracts_present: PASS
+  ownership_and_non_overlap_present: PASS
+  rollback_and_evidence_present: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS

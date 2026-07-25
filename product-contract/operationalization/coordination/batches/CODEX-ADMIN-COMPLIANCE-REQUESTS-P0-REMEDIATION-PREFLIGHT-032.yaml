@@ -1,0 +1,642 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-P0-REMEDIATION-PREFLIGHT-032
+title: Compliance Request downstream operationalization remediation preflight
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_PREFLIGHT
+status: ACK_PREFLIGHT_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The smallest safe integration does not make Planning or Field read
+    compliance_entity_heads directly. It makes an approved, effective CCR
+    version the governed Compliance Library source; freezes the exact approved
+    component versions into a newly published immutable package version; keeps
+    Planning selecting only effective published/locked package_versions; and
+    keeps visits, preparations, inspections and Field execution pinned to that
+    exact package version. This preserves the existing operational contract and
+    historical packages. Implementation is blocked until typed CCR snapshots,
+    effective-date/Scheduled activation, exclusive legacy-authoring cutover,
+    atomic package provenance, Field live-library removal, exact database
+    authority and isolated browser data are separately leased and proven. This
+    packet grants no lease, schema authority, data authority or completion
+    credit.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-P0-REMEDIATION-PREFLIGHT-032
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  business_capability: >-
+    Carry approved Compliance Configuration Request versions into the approved
+    Compliance Library, future inspection packages, Planning selection and
+    Field execution without bypassing maker-checker, rewriting immutable
+    history, widening permissions or losing audit and rollback.
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-RUNTIME-TRUTH-031
+    disposition: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+  design_dependency:
+    design_id: WA-DES-019
+    status: SEPARATE_AUTHORITY_NOT_CHANGED_BY_THIS_PACKET
+    excluded_from_every_future_lease_below: true
+  prohibited:
+    - product, database, design, test or shared-data mutation in this packet
+    - branch, PR, lease, stash, main or setup/Inspection mutation
+    - remote DDL, provider configuration, service-role client or deployment
+    - direct CCR-head reads from Planning or Field
+    - rewriting or deleting historical package versions, inspections, decisions, publications or audit rows
+    - claiming the overbroad CR-449..CR-478 range as delivered by this route
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: b69c144b97edaf4039f6e7edf045cc6de80cc309
+  concurrent_unowned_orchestration_files_present: true
+  concurrent_files_touched: false
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/domain/state_transitions.csv
+  inspected_implementation:
+    - supabase/migrations/20260719213000_compliance_configuration_request_engine.sql
+    - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+    - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+    - supabase/migrations/20260721030100_planning_canonical_structures.sql
+    - supabase/migrations/20260723090000_planning_publish_capability_convergence.sql
+    - apps/web/src/lib/admin-configuration.ts
+    - apps/web/src/app/(app)/admin/compliance-requests/actions.ts
+    - apps/web/src/app/(app)/admin/regulations/actions.ts
+    - apps/web/src/app/(app)/admin/items/actions.ts
+    - apps/web/src/app/(app)/admin/violations/actions.ts
+    - apps/web/src/app/(app)/admin/packages/actions.ts
+    - apps/web/src/app/(app)/planning/page.tsx
+    - apps/web/src/app/(app)/planning/single/actions.ts
+    - apps/web/src/app/(app)/planning/bulk/actions.ts
+    - apps/web/src/app/(app)/planning/immediate/actions.ts
+    - apps/web/src/app/(app)/field/[visitId]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+  inspected_tests:
+    - supabase/tests/compliance_request_engine_probe.sql
+    - apps/web/e2e/compliance-request-engine.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+    - apps/web/e2e/cd-008-009-packages.spec.ts
+
+exact_requirement_scope:
+  customer_rows_direct_but_not_creditable_until_end_to_end:
+    - [CR-449, WA-AC-0449, "Approved Regulation reaches Library and future execution on Release Date."]
+    - [CR-450, WA-AC-0450, "Approved Item is reusable in future packages with typed response/evidence semantics."]
+    - [CR-451, WA-AC-0451, "Approved Violation trigger is frozen into future packages and execution."]
+    - [CR-452, WA-AC-0452, "Approved Penalty is frozen and remains informational until approval/enforcement."]
+    - [CR-458, WA-AC-0458, "Published versions are immutable and historical execution remains pinned."]
+    - [CR-459, WA-AC-0459, "Only valid published/effective configuration enters planning and execution."]
+    - [CR-460, WA-AC-0460, "Package publication validates the complete dependency graph."]
+    - [CR-463, WA-AC-0463, "Every governed change and handoff is auditable."]
+    - [CR-478, WA-AC-0478, "Execution uses the locked package version only."]
+  atomic_authoring_and_cutover:
+    - REQ-R0C-01623
+    - REQ-R0C-01666
+    - REQ-R0C-01684
+    - REQ-R0C-01709
+    - REQ-R0C-01768
+    - REQ-R0C-01903
+    - REQ-R0C-01916
+    - REQ-R0C-02041
+    - REQ-R0C-02131
+    - REQ-R0C-02208..02210
+    - REQ-R0C-02234
+  atomic_publication_and_downstream:
+    - REQ-R0C-01803..01805
+    - REQ-R0C-01815
+    - REQ-R0C-01868..01883
+    - REQ-R0C-01885..01886
+    - REQ-R0C-01888..01889
+    - REQ-R0C-01894..01896
+  effective_and_historical_truth:
+    - REQ-R0C-01627
+    - REQ-R0C-01638
+    - REQ-R0C-01655
+    - REQ-R0C-01672..01673
+    - REQ-R0C-01691
+    - REQ-R0C-01694
+    - REQ-R0C-01724..01726
+    - REQ-R0C-01783..01785
+    - REQ-R0C-01900
+    - REQ-R0C-01906
+    - REQ-R0C-01915
+    - REQ-R0C-01919
+    - REQ-R0C-01923
+  web_admin_quality:
+    - WA-M6-AC-001
+    - WA-M6-AC-002
+    - WA-M6-AC-005
+    - WA-M6-AC-006
+  explicitly_not_owned:
+    - CR-453..CR-457
+    - CR-461..CR-462
+    - CR-464..CR-477
+    - WA-M6-AC-003..004
+  implementation_only_non_credit_ids:
+    - CMP-REQ-CCR-001..010
+    - CMP-ACC-CCR-001..030
+
+observed_runtime_chain:
+  current_publication:
+    source_tables:
+      - public.compliance_entity_versions
+      - public.compliance_entity_heads
+      - public.compliance_request_publications
+    source_rpc: public.publish_compliance_request(uuid)
+    compatibility_view: public.compliance_configuration_compatibility
+    operational_consumers_found:
+      - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+    operational_consumers_missing:
+      - Compliance Library registers
+      - Package publication
+      - Planning
+      - Field execution
+  current_library:
+    tables:
+      - public.regulations
+      - public.regulation_clauses
+      - public.regulation_attachments
+      - public.inspection_items
+      - public.inspection_item_versions
+      - public.violation_codes
+      - public.penalty_mappings
+    problem: >-
+      These remain direct authoring and operational sources. Their create,
+      modify and publish actions bypass the CCR-exclusive requirement.
+  current_package:
+    tables:
+      - public.packages
+      - public.package_versions
+      - public.package_version_item_snapshots
+      - public.package_version_dependency_snapshots
+    publish_rpc: public.publish_package_version(uuid,jsonb)
+    application_service: apps/web/src/app/(app)/admin/packages/actions.ts
+    positive_boundary: >-
+      Package publication already validates dependencies, enforces
+      maker-checker, freezes item/violation/template content and preserves
+      immutable prior versions.
+    missing_boundary: >-
+      It reads the legacy current catalogues and stores no referentially enforced
+      provenance to exact compliance_entity_versions.
+  current_planning:
+    tables_and_links:
+      - public.package_versions
+      - public.visits.package_version_id
+      - public.visit_packages
+    rpcs:
+      - public.publish_single_visit
+      - public.publish_bulk_plan
+      - public.create_immediate_visit
+    application_files:
+      - apps/web/src/app/(app)/planning/page.tsx
+      - apps/web/src/app/(app)/planning/single/page.tsx
+      - apps/web/src/app/(app)/planning/single/actions.ts
+      - apps/web/src/app/(app)/planning/bulk/actions.ts
+      - apps/web/src/app/(app)/planning/immediate/page.tsx
+      - apps/web/src/app/(app)/planning/immediate/actions.ts
+    required_disposition: >-
+      Preserve this boundary. Planning must continue to select only effective
+      published/locked package_versions; no direct CCR query is required.
+  current_field:
+    pinned_links:
+      - public.visits.package_version_id
+      - public.visit_packages.package_version_id
+      - public.visit_preparations.package_version_id
+      - public.inspections.package_version_id
+      - public.package_version_item_snapshots
+      - public.package_version_dependency_snapshots
+    positive_boundary: >-
+      The selected package version and its immutable configured snapshots are
+      already the execution contract.
+    p0_exception: >-
+      apps/web/src/app/(app)/field/inspection/[id]/page.tsx also reads all
+      active public.inspection_items for additional-item selection and reads
+      published public.configuration_templates for manual action forms. Those
+      live reads are not pinned to the inspection package and can change an
+      active inspection after planning.
+
+smallest_safe_target:
+  architecture: >-
+    CCR approved/effective version -> governed Compliance Library projection ->
+    package draft references exact eligible component versions -> distinct
+    package checker publishes one immutable package version and frozen
+    compliance snapshots atomically -> existing Planning selects that effective
+    package_version -> visit/preparation/inspection retain the exact package ID
+    -> Field renders only the pinned package definition and its immutable
+    companion snapshots.
+  invariants:
+    - Planning and Field never interpret CCR workflow state.
+    - Draft, returned, rejected, future-not-effective or deactivated CCR versions never enter a package.
+    - Current approved configuration remains operational until its successor effective date.
+    - A failed package publication changes neither active CCR projection nor any package/visit/inspection.
+    - Old package versions and historical visits/inspections are never rewritten.
+    - Regulation, Item, Violation and Penalty create/modify routes cannot bypass CCR after cutover.
+    - Separately authorized activate/deactivate operations remain explicit, audited lifecycle actions.
+    - Package maker and package checker remain distinct even when CCR maker/checker were distinct.
+    - Audit correlation records CCR request/version, package version, visit and inspection lineage.
+    - RLS remains authoritative; application hiding is defense-in-depth only.
+
+future_leases:
+  - lease_id: LEASE-CCR-LIFECYCLE-PROJECTION-032A
+    status: PROPOSED_NOT_GRANTED
+    sequence: 1
+    owner_class: database_lifecycle_owner
+    writable_files:
+      - supabase/migrations/20260725230000_compliance_request_operational_projection.sql
+      - supabase/tests/compliance_request_operational_projection_probe.sql
+    existing_database_objects_in_scope:
+      - public.compliance_configuration_requests
+      - public.compliance_request_revisions
+      - public.compliance_request_components
+      - public.compliance_entity_versions
+      - public.compliance_entity_heads
+      - public.compliance_request_publications
+      - public.compliance_configuration_compatibility
+      - public.publish_compliance_request(uuid)
+      - public.audit_events
+    proposed_database_objects:
+      - public.compliance_entity_lifecycle_events
+      - public.compliance_operational_versions
+      - public.activate_compliance_entity_version(uuid,text)
+      - public.deactivate_compliance_entity_version(uuid,text)
+    required_behavior:
+      - Typed per-kind snapshot validation before submit and again before publication.
+      - Immutable effective date, successor reference and content version at publication.
+      - Scheduled availability for future dates without replacing the current active version early.
+      - Effective-date selection that becomes active automatically without a guessed provider.
+      - Append-only activate/deactivate/supersede events and correlated audit.
+      - Optimistic concurrency on draft revision/update token.
+      - No anonymous grant, no authenticated direct DML, security-invoker reads.
+    stop_conditions:
+      - Canonical field-to-snapshot mapping is incomplete or invented.
+      - Automatic activation requires an unapproved scheduler/provider.
+      - A migration would mutate submitted snapshot content or delete audit/history.
+      - Existing active-head semantics cannot be reconciled without ambiguous backfill.
+    rollback: >-
+      Do not switch any application consumer in this lease. Reverse a failed
+      rollout with a forward migration that removes only unused new read
+      surfaces/grants; never delete versions, lifecycle events or audit rows.
+
+  - lease_id: LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B
+    status: PROPOSED_NOT_GRANTED
+    sequence: 2
+    owner_class: compliance_library_owner
+    depends_on: [LEASE-CCR-LIFECYCLE-PROJECTION-032A]
+    writable_files:
+      - apps/web/src/lib/compliance/governed-library.ts
+      - apps/web/src/app/(app)/admin/regulations/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+      - apps/web/src/app/(app)/admin/regulations/Controls.tsx
+      - apps/web/src/app/(app)/admin/regulations/actions.ts
+      - apps/web/src/app/(app)/admin/items/page.tsx
+      - apps/web/src/app/(app)/admin/items/Controls.tsx
+      - apps/web/src/app/(app)/admin/items/actions.ts
+      - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+      - apps/web/src/app/(app)/admin/violations/page.tsx
+      - apps/web/src/app/(app)/admin/violations/Controls.tsx
+      - apps/web/src/app/(app)/admin/violations/actions.ts
+    required_behavior:
+      - Library reads approved Scheduled/Active governed versions with explicit effective state.
+      - Create and modify hand off to the existing CCR create/workspace route.
+      - Direct create/update/publish actions fail closed after certified cutover.
+      - Direct activate/deactivate remains only where the canonical lifecycle permits it.
+      - Legacy rows remain read-only compatibility and historical lookup surfaces.
+      - Existing attachment custody, usage, audit and unavailable states remain visible.
+    prohibited:
+      - changing shared admin guard, shell, navigation or design
+      - deleting legacy rows or hiding historical lineage
+      - changing Reviewer or writer role definitions
+    rollback: >-
+      Before final cutover, server-read parity may fall back to the legacy
+      compatibility read. After cutover, rollback may restore read routing only;
+      it may not reopen direct create/modify bypass without a separate sponsor
+      decision and audit record.
+
+  - lease_id: LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C
+    status: PROPOSED_NOT_GRANTED
+    sequence: 3
+    owner_class: package_publication_owner
+    depends_on:
+      - LEASE-CCR-LIFECYCLE-PROJECTION-032A
+      - LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B
+    writable_files:
+      - supabase/migrations/20260725232000_compliance_package_snapshot_cutover.sql
+      - apps/web/src/app/(app)/admin/packages/actions.ts
+      - apps/web/src/app/(app)/admin/packages/page.tsx
+      - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+      - apps/web/src/app/(app)/admin/packages/ImpactPanel.tsx
+    existing_database_objects_in_scope:
+      - public.package_versions
+      - public.package_version_item_snapshots
+      - public.package_version_dependency_snapshots
+      - public.publish_package_version(uuid,jsonb)
+      - public.package_version_impact(uuid)
+      - public.audit_events
+    proposed_database_objects:
+      - public.package_version_compliance_snapshots
+      - public.publish_package_version_from_compliance(uuid,jsonb,uuid[])
+    required_behavior:
+      - Resolve only approved operational CCR versions at the package effective date.
+      - Validate full Regulation-Item-Violation-Penalty plus evidence/template dependency closure.
+      - Freeze exact value/dependency snapshots and version IDs in one package publication transaction.
+      - Enforce a distinct package maker/checker and lock the draft row against concurrent publication.
+      - Record snapshot hashes, CCR request/revision/version lineage and package audit correlation.
+      - Leave all old package_versions and companion snapshots unchanged.
+      - Make the old publish RPC a governed wrapper or fail-closed path so it cannot bypass the bridge.
+    stop_conditions:
+      - Any package snapshot is built from a live legacy row instead of an exact effective CCR version.
+      - The proposed snapshot table is mutable or readable outside current authenticated RLS.
+      - One invalid branch can partially change a package or active source pointer.
+      - Existing published/locked package immutability or impact reporting regresses.
+    rollback: >-
+      A failed new publish rolls back transactionally. A published package is
+      never edited or deleted; operational rollback publishes or reselects an
+      explicitly approved successor/previous package according to an authorized
+      effective-date decision and retains both immutable histories.
+
+  - lease_id: LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D
+    status: PROPOSED_NOT_GRANTED
+    sequence: 4
+    owner_class: field_runtime_owner
+    depends_on: [LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C]
+    writable_files:
+      - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+      - apps/web/src/app/(app)/field/inspection/[id]/runtime.ts
+      - apps/web/src/app/(app)/field/inspection/[id]/Workspace.tsx
+    read_only_dependencies:
+      - apps/web/src/app/(app)/field/[visitId]/page.tsx
+      - apps/web/src/app/(app)/field/[visitId]/Startup.tsx
+      - apps/web/src/lib/offline.ts
+    required_behavior:
+      - Configured and additional items come only from the pinned package snapshot.
+      - Manual action-form choices come only from the pinned package template snapshot.
+      - Frozen violation/penalty values win; live catalogue rows cannot alter an active inspection.
+      - Existing offline, evidence, response, review-return and submission behavior is preserved.
+      - A missing snapshot degrades honestly and blocks unsafe creation; it never falls back silently to live configuration.
+    prohibited:
+      - changing the offline queue schema, service worker, PWA manifest or Field navigation
+      - re-versioning any existing visit, preparation, inspection or submission
+    rollback: >-
+      Revert the isolated Field code commit only while the package bridge
+      remains additive. Never restore a silent live-catalogue fallback for an
+      already-started inspection.
+
+  - lease_id: LEASE-CCR-DOWNSTREAM-TEST-DATA-BROWSER-032E
+    status: PROPOSED_NOT_GRANTED
+    sequence: 5
+    owner_class: independent_qa_and_data_owner
+    depends_on:
+      - LEASE-CCR-LIFECYCLE-PROJECTION-032A
+      - LEASE-CCR-LIBRARY-AUTHORING-CUTOVER-032B
+      - LEASE-CCR-PACKAGE-SNAPSHOT-BRIDGE-032C
+      - LEASE-CCR-FIELD-PINNED-CONSUMPTION-032D
+    writable_test_files:
+      - apps/web/e2e/compliance-request-operational-projection.spec.ts
+      - apps/web/e2e/compliance-request-downstream-runtime.spec.ts
+    read_only_protected_tests:
+      - apps/web/e2e/compliance-request-engine.spec.ts
+      - apps/web/e2e/compliance-approval-queue.spec.ts
+      - apps/web/e2e/compliance-library.spec.ts
+      - apps/web/e2e/cd-005-006-regulations.spec.ts
+      - apps/web/e2e/cd-008-009-packages.spec.ts
+      - apps/web/e2e/golden-journey.spec.ts
+      - apps/web/e2e/offline-drill.spec.ts
+    data_scope: >-
+      A separate exclusive non-production data lease must name one deterministic
+      CCR hierarchy, one package, one plan/visit/inspection, Admin maker,
+      Reviewer checker, Package checker and denied personas. Collision check,
+      semantic restoration and immutable retained audit must be defined before
+      any write.
+    prohibited:
+      - using shared data without an exact lease
+      - service-role browser clients
+      - deleting immutable audit, decision, publication or package history
+      - changing protected tests merely to match a defect
+
+dependency_order:
+  - Typed lifecycle/projection and its database proof.
+  - Library read parity, then exclusive create/modify cutover.
+  - Atomic package snapshot/provenance bridge.
+  - Field removal of live configuration fallback.
+  - Planning remains unchanged and is certified through its package-version boundary.
+  - Isolated data journey, protected regression and real-browser acceptance.
+  - Independent review; only then may a sponsor consider cutover or credit.
+
+ownership_collisions:
+  hard_collisions:
+    - >-
+      All migration filenames, altered functions and public grants require one
+      exclusive Supabase owner; 032A and 032C are serial, never concurrent.
+    - >-
+      Regulations, Items and Violations files have recent independent Admin
+      runtime/design lanes. 032B may start only after Codex confirms no active
+      writer owns any listed file.
+    - >-
+      Package files overlap the Admin Packages runtime lane. 032C requires a
+      clean exact lease and cannot assume peer packet 022 ownership.
+    - >-
+      Field inspection files overlap Execution/Field work. 032D requires an
+      explicit field-runtime lease and current-baseline regression inventory.
+    - >-
+      Project iiozvqntawxfwbgffzqu is shared. 032E requires an exclusive data
+      lease and a fresh collision check immediately before writes.
+  intentionally_avoided_shared_files:
+    - apps/web/src/lib/admin-configuration.ts
+    - apps/web/src/components/ShellClient.tsx
+    - apps/web/src/app/astryx.css
+    - product-contract frozen requirement and design files
+    - existing protected test files
+    - Planning application files and RPCs
+    - service worker, manifests and offline engine
+
+evidence_contract:
+  database:
+    - Fresh PostgreSQL compile and idempotent replay.
+    - RLS/grant catalogue proves no anonymous access and no direct authenticated governed DML.
+    - Maker self-review and package self-publish denied.
+    - Stale revision/package publish denied without overwriting.
+    - Future-dated version is Scheduled; current approved version remains operational.
+    - Effective version changes automatically at the exact date boundary without early use.
+    - Invalid/orphan branch changes zero version, head, package and snapshot rows.
+    - Immutable decision, version, publication, snapshot and audit rows reject update/delete.
+    - Direct legacy create/modify/publish bypass is denied after cutover.
+  end_to_end_positive:
+    - Admin maker creates typed Regulation-Item-Violation-Penalty CCR.
+    - Reviewer checker approves valid branch and publication retains exact request/version audit.
+    - Compliance Library shows approved Scheduled/Active truth only.
+    - Distinct package checker publishes one package with exact CCR version provenance.
+    - Planning shows the effective package and publishes one visit using it.
+    - Field startup and workspace retain the exact package/version after refresh and offline replay.
+    - A successor CCR/package affects only future planning; the active/historical inspection remains byte-equivalent.
+    - Penalty remains informational until Inspection Approval and Enforcement.
+  negative_and_degraded:
+    - draft, returned, rejected, future-not-effective and deactivated versions excluded
+    - denied Planner/Inspector/Admin-cross-role routes and RPCs
+    - missing parent, missing evidence/template rule, duplicate active version and stale concurrency
+    - failed package source read is unavailable, never an empty/healthy result
+    - missing frozen Field snapshot blocks unsafe action and never reads live fallback
+    - partial publication failure retains all prior active state
+  audit_lineage:
+    - CCR request number, revision, component and compliance version IDs
+    - package version and frozen snapshot hashes
+    - Planning plan/visit and selected package version
+    - Field preparation/inspection/submission version
+    - actor, role, correlation ID, before/after, timestamp and denied attempts
+  browser_matrix:
+    personas: [compliance_admin_maker, reviewer_checker, form_admin_package_checker, planner, inspector, denied_business_persona, anonymous]
+    routes:
+      - /admin/compliance-requests
+      - /admin/regulations
+      - /admin/items
+      - /admin/violations
+      - /admin/packages
+      - /planning
+      - /field/:visitId
+      - /field/inspection/:id
+    states:
+      - populated
+      - Scheduled
+      - Active
+      - denied
+      - loading
+      - empty
+      - error
+      - degraded
+      - stale_conflict
+      - refresh_persistence
+      - historical_locked
+    dimensions:
+      - English/LTR and Arabic/RTL
+      - light and dark
+      - desktop, tablet, 390px and 320px
+      - keyboard, focus recovery and Axe
+      - console and failed-network review
+  protected_regression:
+    - focused CCR engine and new operational projection
+    - Compliance Library
+    - Packages and package DB probe
+    - Planning single, bulk and immediate package selection
+    - golden journey and offline drill
+    - full protected Web/Admin/Field selection
+    - Web/Admin 478-row structural validator
+
+rollback_rules:
+  semantic_rule: >-
+    Rollback preserves exact business state and every immutable audit/version
+    record. It never deletes or falsifies the real approval/publication journey.
+  pre_cutover: >-
+    New projections and provenance objects stay additive until parity,
+    permissions and browser evidence pass. No consumer switch occurs in 032A.
+  post_cutover: >-
+    Existing package and inspection snapshots remain authoritative. A bad new
+    version is retired or superseded through an authorized audited lifecycle;
+    historical rows are never edited. Reopening legacy create/modify is not an
+    automatic rollback because it would reintroduce the canonical bypass.
+  data_replay: >-
+    Restore the exact pre-test semantic state and remove only expressly
+    reversible fixture rows. Append-only audit, decisions and publication
+    history remain. Stop before writing if isolation or semantic restoration
+    cannot be proven.
+
+blockers:
+  p0:
+    - id: CCR-032-P0-001
+      requirement_ids: [REQ-R0C-01803..01805, REQ-R0C-01868..01883, CR-449, CR-450, CR-451, CR-452]
+      blocker: >-
+        CCR snapshots are arbitrary JSON and have no approved typed mapping to
+        the operational Regulation, Item, Violation and Penalty package schema.
+    - id: CCR-032-P0-002
+      requirement_ids: [REQ-R0C-01627, REQ-R0C-01879..01881, REQ-R0C-01900, REQ-R0C-01906, REQ-R0C-01915, REQ-R0C-01919]
+      blocker: >-
+        Scheduled/effective lifecycle and automatic date-boundary selection do
+        not exist. Connecting current heads now would activate future versions early.
+    - id: CCR-032-P0-003
+      requirement_ids: [REQ-R0C-01623, REQ-R0C-01666, REQ-R0C-01684, REQ-R0C-01709, REQ-R0C-01768, REQ-R0C-01903, REQ-R0C-01916]
+      blocker: >-
+        Direct legacy create/modify/publish actions remain executable and would
+        continue to bypass CCR after a read-only downstream bridge.
+    - id: CCR-032-P0-004
+      requirement_ids: [CR-458, CR-459, CR-460, CR-478]
+      blocker: >-
+        Package publication stores no immutable FK-backed CCR provenance, and
+        Field still reads live item/template catalogues outside its pinned package.
+    - id: CCR-032-P0-005
+      requirement_ids: [WA-M6-AC-002, WA-M6-AC-005]
+      blocker: >-
+        No exclusive DDL/data authority or current live automated end-to-end
+        proof exists for the target project.
+  p1:
+    - id: CCR-032-P1-001
+      requirement_ids: [CR-463, WA-M6-AC-006]
+      blocker: >-
+        The proposed cross-engine audit lineage and immutable snapshot manifest
+        do not yet exist and cannot be credited from source intent.
+    - id: CCR-032-P1-002
+      requirement_ids: [WA-M6-AC-005]
+      blocker: >-
+        The protected approval-queue test remains red on the stale copy
+        assertion recorded in packet 031; it must be corrected under its own
+        exact test lease, not hidden in these product leases.
+
+stop_conditions:
+  - any P0 or P1 above remains at a completion or cutover claim
+  - a future lease overlaps an active Admin, Package, Execution/Field or database owner
+  - design revision or product policy is inferred by an engineering worker
+  - migration or data target is not exact and non-production
+  - package or Field uses a live legacy row after a frozen version is required
+  - permission, maker-checker, audit, concurrency or immutable-history regression
+  - a rollback plan deletes required evidence or reopens an unapproved bypass
+  - protected regression or real-browser evidence is absent
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-LEASE-DECISION-033
+  mode: CONTROL_PLANE_READ_ONLY
+  scope: >-
+    Codex lead reviews 032A..032E against current worker ownership, accepted
+    typed component/effective-date authority, migration namespace and target
+    database access; approves, returns or blocks each lease separately and
+    records the exact serial order. No implementation, DDL or data write.
+  safe_because: >-
+    It is a governance decision packet that resolves ownership and authority
+    before any shared source or database mutation.
+
+validation:
+  yaml_parse: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  orchestration_unowned_files_preserved: PASS
+  recommendation_enum: PASS
+  implementation_gate_blocked: PASS

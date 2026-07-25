@@ -1,0 +1,498 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-REMEDIATION-PREFLIGHT-041
+title: Admin GIS remediation ownership and dependency preflight
+status: PREFLIGHT_DEFINED_IMPLEMENTATION_BLOCKED
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_PREFLIGHT_NO_LEASE
+
+authority:
+  package_ids: [M10]
+  screen_ids:
+    governed: [SCR-ADM-070]
+    missing: [SPATIAL_CANVAS_SCREEN_ID_REQUIRED]
+  routes:
+    - /admin/gis
+    - /admin/gis/spatial
+  exact_primary_478_rows: []
+  contextual_478_requirements:
+    - CR-037
+    - CR-038
+    - CR-046
+    - CR-091
+    - CR-101
+    - CR-117
+    - CR-123
+    - CR-124
+    - CR-129
+    - CR-130
+    - CR-135
+    - CR-136
+    - CR-137
+    - CR-138
+    - CR-140
+    - CR-144
+    - CR-145
+    - CR-150
+    - CR-151
+    - CR-152
+    - CR-153
+    - CR-154
+    - CR-155
+    - CR-156
+    - CR-157
+    - CR-158
+    - CR-159
+    - CR-160
+    - CR-161
+    - CR-162
+    - CR-173
+    - CR-174
+    - CR-414
+    - CR-431
+    - CR-442
+    - CR-443
+  transferred_requirements:
+    - MVP2-REQ-0072
+    - MVP2-REQ-0075
+    - MVP2-REQ-0233
+  acceptance_ids:
+    phase1:
+      - WA-M10-AC-001
+      - WA-M10-AC-002
+      - WA-M10-AC-003
+      - WA-M10-AC-004
+      - WA-M10-AC-005
+      - WA-M10-AC-006
+    transferred:
+      - MVP2-AC-0072
+      - MVP2-AC-0075
+      - MVP2-AC-0233
+    special_component:
+      - SPC-GIS-001
+      - SPC-GIS-002
+      - SPC-GIS-003
+      - SPC-GIS-004
+      - SPC-GIS-005
+      - SPC-GIS-006
+      - SPC-GIS-007
+      - SPC-GIS-008
+  completion_credit: 0
+
+reconciliation:
+  runtime_mapping:
+    packet_id: M10-ADMIN-GIS-RUNTIME-PERMISSION-MAPPING-040
+    status: BLOCK_P0_ROUTE_ENTITLEMENT_RADIUS_AUTHORITY_CONCURRENCY_AND_POLICY
+    findings_preserved:
+      - Direct URL access is not GIS-persona-gated.
+      - Factory, engine-setting, and spatial reads are overbroad.
+      - Planner can update a GIS-owned per-factory radius through the current action and RLS.
+      - Radius updates have no compare-and-swap protection.
+      - Missing GIS policy can become a literal 150-metre editing fallback.
+      - Spatial governance tables have no scoped audit triggers.
+      - Map/list fallback is partial and degraded/network behavior is incomplete.
+  design_review:
+    packet_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+    status: BLOCK_DUE_TO_ROUTE_ENTITLEMENT_POLICY_HOLD_AND_UNSAFE_RADIUS_MUTATION
+    role: Dependency only; no design revision is accepted or modified by this preflight.
+    required_successor: WA-DES-006-C1
+    successor_status: NOT_CREATED_OR_ACCEPTED
+
+unresolved_holds:
+  DEC_002:
+    canonical_status: OPEN
+    covers:
+      - GPS accuracy threshold
+      - arrival radius
+      - geofence policy
+      - telemetry frequency
+    preflight_rule: >
+      Existing seeded and interim values may be preserved for compatibility but
+      cannot be certified, newly published, expanded, or treated as final policy.
+    prohibited:
+      - inventing a radius or threshold
+      - treating literal fallbacks as approved policy
+      - claiming the accepted-interim file closes frozen change control
+  MVP3_HOLD_002:
+    status: OPEN
+    covers:
+      - runtime token
+      - approved map style
+      - geographic authority
+      - offline-pack policy
+    preflight_rule: >
+      Provider-independent list and coordinate behavior may proceed after
+      authority, but production Mapbox, geography, and offline certification remain blocked.
+  MVP3_HOLD_006:
+    status: OPEN_WHERE_MVP2_REQ_0233_DEPENDS_ON_LEGAL_OR_RETENTION_POLICY
+  design:
+    status: WA-DES-006-C1_NOT_ACCEPTED
+    preflight_rule: No UI parity or completion claim can be made.
+
+decisions_required_before_any_implementation_lease:
+  - id: GIS-DEC-041-01
+    question: Which exact personas may access /admin/gis and /admin/gis/spatial by direct URL?
+    current_conflict: Screen catalogue names GIS Admin and Technical Admin; runtime role keys and spatial RLS also include other Admin personas.
+  - id: GIS-DEC-041-02
+    question: May Planner change per-factory geofence radius, or is GIS Admin the exclusive owner?
+    current_conflict: Current factories RLS permits Planner while the screen, field dictionary, and route state GIS ownership.
+  - id: GIS-DEC-041-03
+    question: Is a per-factory radius a direct audited operational setting or a versioned submit/review/publish policy?
+    current_conflict: Current code saves directly; predecessor design claims publish; no accepted maker-checker contract exists.
+  - id: GIS-DEC-041-04
+    question: What compare-and-swap input and user-visible conflict resolution are required?
+    current_conflict: Current action filters only by factory ID.
+  - id: GIS-DEC-041-05
+    question: What reduced GIS policy and coordinate projection may each consumer persona read?
+    current_conflict: Current table policies expose full rows to every authenticated identity.
+  - id: GIS-DEC-041-06
+    question: How must missing or unresolved DEC-002 settings behave?
+    current_conflict: Current canvas falls back to 150 while the canonical decision remains open.
+  - id: GIS-DEC-041-07
+    question: Which spatial tables and mutations are MVP-authorized, and what immutable audit/version behavior applies?
+    current_conflict: Companion route can create layers, but it has no screen identity or table audit.
+  - id: GIS-DEC-041-08
+    question: Which Mapbox, style, geographic-authority, and offline-pack evidence closes each part of MVP3-HOLD-002?
+    current_conflict: Provider selection and partial live evidence do not close the release hold.
+
+future_lease_model:
+  disclaimer: >
+    These are proposed mutually exclusive ownership envelopes, not granted
+    leases. No implementation, data, test, or design mutation is authorized.
+  leases:
+    - lease_id: GIS-AUTH-ROUTE-READ-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Enforce direct-route entitlement and least-privilege GIS reads.
+      proposed_owner_scope:
+        - route-level persona guard for /admin/gis
+        - route-level persona guard for /admin/gis/spatial
+        - reduced settings projection
+        - precise-coordinate visibility boundary
+      future_paths:
+        exclusive:
+          - apps/web/src/app/(app)/admin/gis/page.tsx
+          - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+          - apps/web/src/lib/<approved-gis-authorization>.ts
+        shared_followup_required:
+          - apps/web/src/app/(app)/layout.tsx
+          - apps/web/src/lib/shell-navigation.ts
+      dependencies:
+        - GIS-DEC-041-01
+        - GIS-DEC-041-05
+      stop_conditions:
+        - Technical Admin has no mapped canonical role key.
+        - A shared shell edit would collide with F0 ownership.
+        - Authorization relies only on hidden navigation or client rendering.
+
+    - lease_id: GIS-DB-RLS-AUDIT-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Align RLS, reduced reads, precise-location visibility, CAS, and spatial audit.
+      proposed_owner_scope:
+        - factory radius mutation boundary
+        - engine-setting reduced-read boundary
+        - spatial-table read/write roles
+        - location_visibility_matrix enforcement
+        - radius CAS or approved equivalent
+        - audit coverage for authorized spatial mutations
+      future_paths:
+        exclusive:
+          - supabase/migrations/<approved-gis-permission-and-audit-remediation>.sql
+          - supabase/tests/<approved-gis-permission-and-audit-spec>.sql
+      dependencies:
+        - GIS-DEC-041-01
+        - GIS-DEC-041-02
+        - GIS-DEC-041-03
+        - GIS-DEC-041-04
+        - GIS-DEC-041-05
+        - GIS-DEC-041-07
+      invariants:
+        - No direct authenticated write may bypass the approved capability.
+        - No previously required consumer loses its approved reduced access.
+        - Audit remains append-only.
+        - Submitted or historical geo evidence is never rewritten.
+      stop_conditions:
+        - A migration weakens an accepted Field, Planning, Factory 360, or Operations consumer.
+        - A role or column boundary is inferred rather than approved.
+        - Forward-only rollback and compatibility are not specified.
+
+    - lease_id: GIS-RADIUS-CONFIG-ACTION-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Implement the approved radius/config capability and stale-write behavior.
+      proposed_owner_scope:
+        - explicit current-user capability check
+        - validated radius input with no invented maximum
+        - expected current value/version
+        - conflict result and safe refresh/retry behavior
+        - approved reason and policy-version context
+      future_paths:
+        exclusive:
+          - apps/web/src/app/(app)/admin/gis/actions.ts
+          - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+      dependencies:
+        - GIS-AUTH-ROUTE-READ-041
+        - GIS-DB-RLS-AUDIT-041
+        - GIS-DEC-041-02
+        - GIS-DEC-041-03
+        - GIS-DEC-041-04
+        - DEC-002 disposition or approved unresolved-state contract
+      stop_conditions:
+        - Action capability and database policy disagree.
+        - The implementation adds maker-checker or direct publish without approval.
+        - Missing policy silently resolves to a numeric fallback.
+
+    - lease_id: GIS-POLICY-PROVIDER-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Record approved policy semantics and provider-hold closure evidence.
+      proposed_owner_scope:
+        - formal DEC-002 disposition through change control
+        - Mapbox/style/geographic/offline evidence mapped to individual hold clauses
+        - explicit unresolved, unavailable, and degraded states
+      future_paths:
+        exclusive:
+          - approved governance decision artifacts
+          - approved provider evidence manifest
+      dependencies:
+        - sponsor and named-owner decisions
+        - controlled environment authority
+      stop_conditions:
+        - Credentials would be committed or exposed.
+        - A partial provider check is promoted to production/offline certification.
+        - Existing interim numbers are silently copied into frozen authority.
+
+    - lease_id: GIS-SPATIAL-AUDIT-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Govern only approved spatial layer and working-location capabilities.
+      proposed_owner_scope:
+        - screen identity and route authority
+        - explicit action capability
+        - table audit/version contract
+        - deterministic duplicate/stale-layer behavior
+      future_paths:
+        exclusive:
+          - apps/web/src/app/(app)/admin/gis/spatial/
+          - approved spatial database migration and SQL tests
+      dependencies:
+        - SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+        - GIS-DEC-041-01
+        - GIS-DEC-041-07
+        - scoped MVP3-HOLD-002 disposition
+      stop_conditions:
+        - Feature flag is treated as authorization.
+        - Official factory coordinates are overwritten.
+        - Offline packs or legal boundaries are claimed without authority.
+
+    - lease_id: GIS-MAP-LIST-FALLBACK-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Preserve synchronized list behavior and make map degradation deterministic.
+      proposed_owner_scope:
+        - token, authorization, style, tile, and network failure states
+        - list-first recovery and retry/escalation
+        - partial engine versus factory source isolation
+        - popup theming and bounded governed detail
+        - map/list selection synchronization
+      future_paths:
+        exclusive:
+          - apps/web/src/components/GeoMap.tsx
+          - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+          - apps/web/src/app/(app)/admin/gis/page.tsx
+        shared_component_consumers_requiring_regression:
+          - /operations
+          - /operations/live
+          - /visits/map
+          - /field map surfaces
+          - Factory 360 map surfaces
+      dependencies:
+        - accepted WA-DES-006-C1
+        - GIS-POLICY-PROVIDER-041 for any provider-certification claim
+      invariants:
+        - List and coordinate evidence remain available when the map fails.
+        - Map rendering never becomes geofence decision authority.
+        - Provider attribution remains present.
+      stop_conditions:
+        - Shared GeoMap changes lack cross-route regression ownership.
+        - Failure handling removes or masks non-map evidence.
+        - A fallback map is presented as live provider data.
+
+    - lease_id: GIS-I18N-RESPONSIVE-A11Y-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Deliver accepted EN/AR, RTL/LTR, narrow reflow, keyboard, and assistive behavior.
+      proposed_owner_scope:
+        - complete GIS translation keys
+        - bilingual status and validation messages
+        - 320 through desktop reflow
+        - semantic table/list selection
+        - keyboard-equivalent marker selection
+        - focus, live status, reduced motion, contrast, and zoom
+      future_paths:
+        exclusive:
+          - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+          - apps/web/src/app/(app)/admin/gis/page.tsx
+          - apps/web/src/components/GeoMap.tsx
+        shared_followup_required:
+          - approved i18n source or migration
+          - shared design-system tokens only through F0 ownership
+      dependencies:
+        - accepted WA-DES-006-C1
+        - no active GIS-MAP-LIST-FALLBACK-041 write lease on overlapping files
+      stop_conditions:
+        - Arabic text is invented without approved content authority.
+        - Semantic behavior is replaced by click-only table rows.
+        - Shared tokens are edited outside F0.
+
+    - lease_id: GIS-ISOLATED-FIXTURES-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Provide deterministic, removable GIS evidence data.
+      proposed_owner_scope:
+        - dedicated GIS Admin and unauthorized personas
+        - located, unlocated, and privacy-sensitive factories
+        - current and stale radius versions
+        - layer conflict fixtures
+        - policy-unresolved and provider-degraded states
+      future_paths:
+        exclusive:
+          - apps/web/e2e/fixtures/<approved-gis-fixture>.ts
+          - apps/web/scripts/<approved-gis-seed>.mjs
+          - approved seed ledger entry
+      dependencies:
+        - approved test identities
+        - approved radius and policy semantics
+        - approved controlled data target
+      invariants:
+        - Unique deterministic namespace.
+        - No shared pre-production count dependency.
+        - Cleanup or idempotent replacement is defined.
+        - No fabricated provider-success or policy approval.
+      stop_conditions:
+        - Fixture uses production identities or shared business records.
+        - Seeder bypasses an approved RPC or audit path.
+        - Test cleanup can remove non-test records.
+
+    - lease_id: GIS-TEST-BROWSER-EVIDENCE-041
+      status: BLOCKED_NOT_GRANTED
+      purpose: Certify permissions, concurrency, fallback, localization, accessibility, and visual parity.
+      proposed_owner_scope:
+        - SQL/RLS negatives
+        - route/action capability cases
+        - CAS and concurrent update cases
+        - map/list and degraded-source cases
+        - EN/AR responsive and accessibility cases
+        - browser screenshots, video, traces, and evidence manifest
+      future_paths:
+        exclusive:
+          - apps/web/e2e/<approved-admin-gis-runtime-spec>.spec.ts
+          - apps/web/e2e/<approved-admin-gis-visual-spec>.spec.ts
+          - product-contract/evidence/<approved-admin-gis-evidence-root>/
+      dependencies:
+        - all applicable implementation leases completed and released
+        - GIS-ISOLATED-FIXTURES-041
+        - accepted WA-DES-006-C1
+        - exact hold-closure boundary recorded
+      stop_conditions:
+        - Source-text assertions are offered as runtime permission proof.
+        - Tests create timestamped shared rows without cleanup.
+        - Missing token is presented as live Mapbox certification.
+
+collision_matrix:
+  overlapping_paths:
+    - path: apps/web/src/app/(app)/admin/gis/page.tsx
+      proposed_owners:
+        - GIS-AUTH-ROUTE-READ-041
+        - GIS-MAP-LIST-FALLBACK-041
+        - GIS-I18N-RESPONSIVE-A11Y-041
+      rule: Sequential leases only; AUTH first, then map/fallback, then localization/accessibility.
+    - path: apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+      proposed_owners:
+        - GIS-RADIUS-CONFIG-ACTION-041
+        - GIS-MAP-LIST-FALLBACK-041
+        - GIS-I18N-RESPONSIVE-A11Y-041
+      rule: Radius action first, then map/list, then localization/accessibility.
+    - path: apps/web/src/components/GeoMap.tsx
+      proposed_owners:
+        - GIS-MAP-LIST-FALLBACK-041
+        - GIS-I18N-RESPONSIVE-A11Y-041
+      rule: One shared-component owner; cross-route regression required before release.
+    - path: supabase/migrations
+      proposed_owners:
+        - GIS-DB-RLS-AUDIT-041
+        - GIS-SPATIAL-AUDIT-041
+      rule: One additive migration lease at a time or a single coordinated migration owner.
+  non_overlapping_parallel_work:
+    - Policy/provider evidence research may run read-only while route decisions are pending.
+    - Isolated fixture design may run read-only but cannot create data before semantics are approved.
+    - Consumer/test inventory may run read-only without touching implementation files.
+    - Claude Design may prepare WA-DES-006-C1 without modifying the application repository.
+
+dependency_order:
+  - stage: 1
+    name: AUTHORITY
+    requires:
+      - GIS-DEC-041-01 through GIS-DEC-041-08
+      - accepted WA-DES-006-C1 for UI work
+      - explicit hold-disposition boundaries
+  - stage: 2
+    name: DATABASE_AND_PERMISSION
+    future_leases:
+      - GIS-DB-RLS-AUDIT-041
+      - GIS-AUTH-ROUTE-READ-041
+  - stage: 3
+    name: MUTATION_AND_SPATIAL
+    future_leases:
+      - GIS-RADIUS-CONFIG-ACTION-041
+      - GIS-SPATIAL-AUDIT-041
+  - stage: 4
+    name: MAP_AND_PRESENTATION
+    future_leases:
+      - GIS-MAP-LIST-FALLBACK-041
+      - GIS-I18N-RESPONSIVE-A11Y-041
+  - stage: 5
+    name: FIXTURES_AND_CERTIFICATION
+    future_leases:
+      - GIS-ISOLATED-FIXTURES-041
+      - GIS-TEST-BROWSER-EVIDENCE-041
+
+release_evidence_requirements:
+  permissions:
+    - Anonymous and every unauthorized authenticated persona denied before GIS data disclosure.
+    - Page, action, and RLS capability results agree.
+    - Reduced and precise-location reads match the approved persona matrix.
+  mutation:
+    - Authorized radius save persists, audits, and displays the governing context.
+    - Planner behavior matches the explicit authority decision.
+    - Stale concurrent save fails without overwriting the accepted value.
+  policy:
+    - Missing DEC-002 settings render unresolved, not a certified number.
+    - Any final value points to an approved decision/version.
+  spatial:
+    - Authorized layer/location mutation is audited and unauthorized mutation fails.
+    - Official coordinates remain immutable outside the approved GIS correction workflow.
+  provider_and_fallback:
+    - Mapbox token/style/tile/network failures preserve list and coordinate evidence.
+    - Each closed MVP3-HOLD-002 clause has controlled runtime evidence.
+    - Offline and geographic-authority claims remain absent until separately approved.
+  EN_AR_and_accessibility:
+    - EN/LTR and AR/RTL pass light/dark at 1440, 1200, 1024, 768, 412 or 390, and 320 widths.
+    - Map and list have equivalent keyboard selection and visible focus.
+    - Screen reader, live status, contrast, zoom, and reduced-motion checks pass.
+  browser:
+    - Accepted WA-DES-006-C1 reference and actual implementation are shown side by side.
+    - Runtime screenshots are backed by assertions, fixture manifest, trace, and evidence index.
+
+preflight_verdict:
+  implementation_lease_ready: false
+  classification: BLOCKED_PENDING_AUTHORITY_POLICY_PROVIDER_AND_DESIGN
+  safe_next_action: Run the queued read-only GIS consumer and test inventory.
+  prohibited_next_action: Grant, imply, or begin any future implementation lease.
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-CONSUMER-TEST-INVENTORY-042
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Inventory every downstream consumer of engine_settings.gis, factory
+    coordinates, per-factory radius, GIS version, Mapbox renderer, spatial
+    tables, visibility matrix, and map-provider adapter; map current tests,
+    mocks, runtime evidence, breakage risk, and collision-safe certification order.
+  boundaries:
+    - Separate provider selection from production/offline certification.
+    - Preserve Field, Planning, Factory 360, Operations, geo-event, override, and audit behavior.
+    - Do not create tests, fixtures, data, code, design, leases, branches, or stashes.

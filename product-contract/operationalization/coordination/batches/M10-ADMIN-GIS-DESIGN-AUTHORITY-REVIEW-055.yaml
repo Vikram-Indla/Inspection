@@ -1,0 +1,566 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+title: Independent Admin GIS and geofence design authority review
+status: BLOCK_DUE_TO_ROUTE_ENTITLEMENT_POLICY_HOLD_AND_UNSAFE_RADIUS_MUTATION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    SCR-ADM-070, its real authenticated route, Mapbox renderer, synchronized
+    registry and per-factory radius action exist. Certification is nevertheless
+    blocked because direct-route entitlement is not enforced, all authenticated
+    users can read the GIS registry and engine settings, planner can mutate the
+    geofence radius despite the GIS Admin screen contract, concurrent edits can
+    silently overwrite, DEC-002 remains open, MVP3-HOLD-002 remains open, the
+    majority of Arabic strings and mobile/keyboard behavior are not delivered,
+    and the corrective WA-DES-006-C1 revision has not been created or accepted.
+
+task_contract:
+  task_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+  gate: M10 Admin GIS design authority
+  routes:
+    - /admin/gis
+    - /admin/gis/spatial
+  channel: ADMIN
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03, G2-P06A, G2-P12]
+  package_ids: [M10]
+  screen_ids:
+    governed: [SCR-ADM-070]
+    companion_route_identity: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+  engine_ids: [ENG-06, ENG-08, ENG-11, ENG-12]
+  requirement_ids:
+    exact_primary_in_478: []
+    contextual_location_authority: [CR-037, CR-038, CR-046, CR-117, CR-154, CR-157, CR-414]
+    contextual_map_and_navigation: [CR-091, CR-101, CR-129, CR-130, CR-137, CR-138, CR-431]
+    contextual_gps_and_geofence: [CR-123, CR-124, CR-135, CR-136, CR-140, CR-144, CR-145, CR-150, CR-151, CR-152, CR-153, CR-154, CR-155, CR-156, CR-157, CR-158, CR-159, CR-160, CR-161, CR-162]
+    contextual_override_and_audit: [CR-160, CR-161, CR-173, CR-174, CR-442, CR-443]
+    transferred_gis: [MVP2-REQ-0072, MVP2-REQ-0075, MVP2-REQ-0233]
+  acceptance_ids:
+    phase_1: [WA-M10-AC-001..006]
+    special_component: [SPC-GIS-001..008]
+    transferred_gis: [MVP2-AC-0072, MVP2-AC-0075, MVP2-AC-0233]
+  dependencies:
+    - DEC-002
+    - MVP3-HOLD-002
+    - accepted immutable WA-DES-006-C1 revision
+    - exact direct-route entitlement contract
+    - capability-aligned RLS and mutation boundary
+    - stale-write protection and scoped audit
+    - complete EN/AR and RTL/LTR behavior
+    - focused functional, security, degraded and visual evidence
+  do_not_touch:
+    - live Claude Design, supplied design exports or accepted design revisions
+    - application, provider, database, seed, test or evidence files
+    - Mapbox credentials, deployment environment or Supabase
+    - frozen route, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, provider,
+    database, test, evidence, mapping, branch, lease or stash is changed.
+
+route_and_capability_validation:
+  main:
+    route: /admin/gis
+    page: apps/web/src/app/(app)/admin/gis/page.tsx
+    component: apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    action: apps/web/src/app/(app)/admin/gis/actions.ts
+    loading: apps/web/src/app/(app)/admin/gis/loading.tsx
+    screen: SCR-ADM-070
+    business_capability: GIS and per-factory geofence administration
+    validation: CONFIRMED_REAL_ROUTE_AND_COMPONENT
+  spatial:
+    route: /admin/gis/spatial
+    page: apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    action: apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+    feature_flag: FEATURE_SPATIAL_CANVAS
+    default: off
+    state: PROVIDER_AND_POLICY_HELD_COMPANION_ROUTE
+    validation: CONFIRMED_WITH_HOLD
+  authenticated_shell:
+    route_group: apps/web/src/app/(app)
+    AppShell_inherited: true
+    anonymous_redirect: true
+    channel_guard: true
+    validation: CONFIRMED
+  route_entitlement:
+    navigation_visibility: gis_admin only
+    direct_route_role_guard: absent
+    factories_read_RLS: any authenticated user
+    engine_settings_read_RLS: any authenticated user
+    exposed_on_direct_URL:
+      - factory identifiers, names, cities and regions
+      - official coordinates
+      - risk bands and scores
+      - per-factory geofence radii
+      - GIS policy values and version label
+    validation: FAIL_ADMIN_ROUTE_ENTITLEMENT_AND_LEAST_PRIVILEGE
+
+governed_screen_and_requirement_mapping:
+  governed_screen:
+    id: SCR-ADM-070
+    name: GIS & Geofence Settings
+    personas: GIS Admin; Technical Admin
+    purpose: >-
+      Manage factory coordinates, geofence rules, arrival thresholds and
+      override policy.
+    validation: CONFIRMED_WITH_IMPLEMENTATION_CORRECTION
+  implementation_scope:
+    delivered:
+      - official-coordinate display
+      - per-factory radius preview and direct save
+      - read-only engine defaults
+      - map/list selection
+      - search, region and risk-band filters
+    not_delivered_on_main_route:
+      - official-coordinate correction workflow
+      - threshold authoring
+      - override-policy governance
+      - polygon geometry
+      - publish/version lifecycle
+      - source comparison and correction provenance
+  broad_mapping:
+    current_claim: CR-001..CR-478
+    validation: INCORRECTLY_OVERBROAD
+    correction: >-
+      No dedicated primary Admin GIS row exists in the 478 baseline. The listed
+      CRs are contextual consumer requirements owned by Planning, Field,
+      Operations or Factory 360 and cannot be counted complete from this route.
+  transferred_requirements:
+    MVP2_REQ_0072:
+      status: NEEDS_REVIEW
+      gap: official/verified pins, offline packs and privacy governance incomplete
+    MVP2_REQ_0075:
+      status: CONTEXTUAL_CROSS_CHANNEL
+    MVP2_REQ_0233:
+      status: NEEDS_REVIEW
+      gap: snapshots, offline maps, privacy/retention and legal-evidence status held
+
+design_authority_validation:
+  nearest_existing_design:
+    design_id: WA-DES-006
+    filename: SAQEEL Admin Geofence.dc.html
+    sha256: 39c768e8e3dbe588cc8424306d7eab1c387fd51392bb76d6a78afd8e3bdaf956
+    viewport: 1200x840
+    route: /admin/gis
+    route_map_status: REQUIRES_PRODUCT_OWNER_APPROVAL
+    nearest_match: true
+    validation: CONFIRMED_NEAREST_BUT_NOT_IMPLEMENTATION_READY
+  predecessor_design_only_claims:
+    - editable official latitude and longitude
+    - mandatory coordinate-change reason
+    - revert to source
+    - save and publish lifecycle
+    - source-versus-current comparison
+    - last observed arrival pin
+    - fabricated editor, timestamp and fixed policy values
+  code_only_capability_missing_from_predecessor:
+    - search and filters
+    - linked semantic registry table
+    - located and unlocated counts
+    - live risk legend
+    - Mapbox unavailable state
+    - empty and source-read error states
+  predecessor_identity_defect:
+    - Arabic-only wordmark in English shell
+    - unapproved صناعي or Industrial sub-brand
+  corrective_successor:
+    design_id: WA-DES-006-C1
+    filename: SAQEEL Admin Geofence - WA-DES-006-C1.dc.html
+    lineage: CORRECTIVE_SUCCESSOR
+    state: DRAFT_NON_CONSUMABLE_NOT_CREATED
+    sponsor_acceptance: pending
+    implementation_lease: pending
+    validation: NO_ACCEPTED_CORRECTIVE_REVISION
+  immutable_revision_rule: >-
+    Preserve WA-DES-006 and its hash. Create WA-DES-006-C1 as a separately
+    identified immutable successor; never overwrite the supplied predecessor.
+
+decision_and_provider_truth:
+  DEC_002:
+    canonical_status: OPEN
+    subject:
+      - GPS accuracy threshold
+      - arrival radius
+      - geofence policy
+      - telemetry frequency
+    safe_interim_rule: keep configurable and block publish until approved
+    seeded_values_exist: true
+    seeded_values_are_final_policy: false
+    code_fallbacks_exist: true
+    reviewer_rule: >-
+      Preserve seeded/runtime compatibility but do not certify, publish or
+      visually bless a numeric value as final policy while DEC-002 remains open.
+  map_provider:
+    decision: DEC-008 resolved to Mapbox GL JS and Mapbox Directions
+    shared_renderer: apps/web/src/components/GeoMap.tsx
+    client_token: NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+    server_token: MAPBOX_ACCESS_TOKEN
+    KSA_bounds: true
+    geodesic_metre_rings: true
+    attribution_control: true
+    EN_AR_map_language: source-supported
+    light_dark_basemap: source-supported
+  provider_hold:
+    id: MVP3-HOLD-002
+    status: OPEN
+    unresolved:
+      - runtime token
+      - approved map style
+      - geographic authority
+      - offline-pack policy
+    allowed_fallback: non-map evidence and coordinate records remain available
+    prohibited_claim: production-certified or offline-capable map
+  runtime_certification:
+    actual_tile_and_label_call_evidence: absent
+    Directions_runtime_evidence: absent
+    validation: PROVIDER_SELECTED_BUT_PRODUCTION_CERTIFICATION_HELD
+
+map_and_degraded_state_review:
+  strengths:
+    - missing client token renders an explicit unavailable state
+    - factory list, filters and radius form remain outside the map renderer
+    - required compact Mapbox attribution is installed
+    - KSA max bounds prevent geographic drift
+    - fence rings are geodesic rather than pixel circles
+    - map theme observes application theme
+  gaps:
+    - only selected Mapbox authorization/style errors trigger failed state
+    - general tile/network degradation may leave a blank or partial canvas
+    - provider-unavailable copy says only not configured and gives no retry/escalation
+    - main page combines engine and factory errors into one fatal state
+    - a failure in either source hides the healthy source instead of isolating it
+    - popup uses provider default styling with no SAQEEL light/dark text override
+    - popup content is a flat label rather than the governed detail required by the design
+  observed_sponsor_defect:
+    description: light-mode popup text has insufficient contrast against the white popup
+    source_corroboration: no mapboxgl-popup theme override found in application styles
+    validation: CONFIRMED_WITH_SOURCE_AND_SPONSOR_RUNTIME_OBSERVATION
+
+geofence_policy_and_runtime_truth:
+  policy_display:
+    source: engine_settings.gis
+    version_label_displayed: true
+    missing_setting_behavior:
+      page_rows: can render undefined or blank values
+      studio_default_radius: silently falls back to 150 metres
+      validation: FAIL_POLICY_UNRESOLVED_STATE
+  per_factory_radius:
+    source: factories.geofence_radius_m
+    fallback: engine default then 150
+    preview: live geodesic ring
+    save_validation: positive finite number rounded to integer
+    accepted_upper_bound_contract: not found
+    reviewer_rule: do not invent a maximum
+  downstream_consumers:
+    arrival_and_checkin: present
+    field_startup: present
+    operations_and_geo_events: present
+    config_version_stamping: present in execution path
+    validation: PARTIALLY_WIRED_WITH_UNRESOLVED_EFFECTIVE_SOURCE
+  official_coordinates:
+    main_route_editable: false
+    field_overwrite: prohibited
+    predecessor_design_edit_action: unsupported and unsafe
+    validation: CURRENT_CODE_SAFER_THAN_PREDECESSOR
+
+permissions_mutation_audit_and_concurrency:
+  intended_route_persona: gis_admin
+  main_action:
+    authentication: verified user required
+    explicit_role_or_capability_check: absent
+    database_policy: factories_update
+    database_allowed_roles:
+      - gis_admin
+      - planner
+    affected_row_check: present
+    implication: >-
+      Planner can invoke the direct server action and change the geofence radius,
+      although the route and action are represented as GIS Admin ownership.
+    validation: FAIL_CAPABILITY_RLS_ALIGNMENT
+  radius_audit:
+    generic_factories_trigger: present
+    actor_before_after_timestamp: present
+    scoped_reason: absent
+    GIS_policy_version: absent from factory row change
+    validation: GENERIC_AUDIT_PRESENT_BUT_GOVERNANCE_CONTEXT_INCOMPLETE
+  radius_versioning:
+    immutable_versions: absent
+    expected_current_value_or_version: absent
+    compare_or_rollback: absent
+    stale_conflict: absent
+    failure_mode: two editors silently overwrite the same radius
+    validation: FAIL_CONCURRENCY_AND_VERSION_CONTRACT
+  maker_checker:
+    explicit_applicable_contract_for_direct_radius_edit: not found
+    predecessor_save_and_publish_claim: unsupported
+    reviewer_position: >-
+      Do not invent maker-checker or a publish action. Governance must first
+      decide whether a per-factory radius is direct audited operational
+      configuration or a submitted policy version. Until then, block design
+      claims of publication and require at minimum lawful authorization, audit
+      context and stale-write protection.
+  spatial_layer_create:
+    allowed_RLS_roles:
+      - gis_admin
+      - security_admin
+      - compliance_admin
+    explicit_action_capability_check: absent
+    audit_trigger_found: false
+    immutable_version: absent
+    provider_hold_enforced: feature flag defaults off, not a database guard
+    validation: HELD_AND_NOT_GOVERNANCE_COMPLETE
+
+localization_RTL_responsive_and_accessibility:
+  localization:
+    main_page_uses_translation_lookup: true
+    Arabic_rows_found_for_main_GIS_keys:
+      - gis.title
+      - gis.empty.body
+    remaining_main_GIS_keys_with_proven_Arabic_rows: none found
+    outcome: English fallback appears through most of AR/RTL route
+    map_aria_label: hardcoded English default
+    spatial_hardcoded_English:
+      - active
+      - inactive
+      - server action errors
+    validation: FAIL_ARABIC_CONTENT_PARITY
+  bidi:
+    coordinates_and_numbers_use_LTR_isolation: mostly
+    mixed factory identifiers: not consistently isolated
+    source evidence: insufficient
+    validation: INSUFFICIENT_RTL_EVIDENCE
+  responsive:
+    map_panel_min_inline_size_px: 420
+    required_small_viewports_px: [412, 390, 320]
+    fixed_map_height_px: 560
+    implication: >-
+      The main map panel cannot shrink to 390 or 320 pixels and is likely to
+      force horizontal overflow inside the shell.
+    validation: FAIL_SOURCE_LEVEL_SMALL_VIEWPORT_REFLOW
+  keyboard:
+    table_rows_have_click_handler: true
+    table_rows_focusable: false
+    button_or_link_semantics: false
+    Mapbox_canvas_marker_keyboard_equivalence: absent
+    search_Enter_selects_first_result: true
+    validation: FAIL_KEYBOARD_EQUIVALENCE
+  screen_reader:
+    selected_row_aria_selected: present
+    selected_factory_announcement: absent
+    result_count_live_region: absent
+    radius_saved_live_status: absent
+    map_controls_unique_localized_names: unproven
+    validation: FAIL_WORKFLOW_ACCESSIBILITY_EVIDENCE
+  motion:
+    map_selection_uses_flyTo_duration_ms: 600
+    prefers_reduced_motion_handling: absent
+    validation: FAIL_REDUCED_MOTION
+  wordmark:
+    current_route_inherits_authenticated_AppShell: true
+    current_global_identity_decision: DEC-035
+    predecessor_wordmark: incorrect
+    route_specific_current_visual_evidence: insufficient
+    validation: CURRENT_SOURCE_BOUNDARY_CONFIRMED_PREDECESSOR_REQUIRES_CORRECTION
+
+hard_state_matrix:
+  loading: PRESENT
+  no_factories: PRESENT
+  no_filter_results: PRESENT_WITHOUT_CLEAR_FILTER_ACTION
+  no_coordinates: PRESENT_IN_TABLE
+  provider_unavailable: PRESENT_LIMITED
+  one_source_failure: ABSENT
+  provider_degraded_or_retry: ABSENT
+  unauthorized_route: ABSENT
+  validation_error: PRESENT
+  write_error: PRESENT
+  saved: PRESENT_BUT_NOT_FACTORY_OR_RADIUS_SPECIFIC
+  stale_conflict: ABSENT
+  policy_unresolved: ABSENT
+  audit_history: ABSENT
+  offline_pack_held: SPATIAL_ROUTE_COPY_ONLY
+  error_boundary: ABSENT
+
+test_and_evidence_review:
+  current_tests:
+    mapbox_provider:
+      file: apps/web/e2e/mapbox-provider.spec.ts
+      kind: source-text contract
+      proves: Mapbox source boundary and no committed token
+    GPS_policy:
+      file: apps/web/e2e/ipad-gps-policy.spec.ts
+      kind: source-text contract
+      issue: calls seeded values sponsor-approved while canonical DEC-002 remains open
+    spatial_live_and_RLS:
+      files:
+        - apps/web/e2e/mvp2-modules-live.spec.ts
+        - apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+      scope: held companion route only
+  missing_runtime_proof:
+    - gis_admin direct-route access and all unauthorized direct-route denials
+    - planner direct-action denial or formally accepted authority
+    - map and keyboard-list selection equivalence
+    - radius save, refresh persistence and exact generic audit row
+    - invalid radius and stale concurrent-write behavior
+    - missing DEC-002 setting without fallback authority
+    - missing token and network/style degradation while list remains usable
+    - independent engine-source and factory-source failure isolation
+    - popup contrast in light and dark
+    - EN/LTR and AR/RTL content parity
+    - 1440, 1200, 1024, 768, 412 or 390, and 320 layouts
+    - keyboard, focus, screen reader and reduced motion
+    - accepted WA-DES-006-C1 visual diff
+  validation: INSUFFICIENT_EVIDENCE
+
+priority_findings:
+  - id: GISADM-P0-01
+    severity: P0
+    finding: Direct URL access is not restricted to the governed GIS Admin personas.
+    action: CORRECT
+  - id: GISADM-P0-02
+    severity: P0
+    finding: Planner can mutate per-factory geofence radius through RLS despite GIS Admin ownership.
+    action: CORRECT
+  - id: GISADM-P0-03
+    severity: P0
+    finding: Concurrent radius changes silently overwrite because no expected version/value is checked.
+    action: CORRECT
+  - id: GISADM-P0-04
+    severity: P0
+    finding: DEC-002 is open, but missing settings silently become numeric fallback authority.
+    action: BLOCK
+  - id: GISADM-P0-05
+    severity: P0
+    finding: MVP3-HOLD-002 remains open for runtime token, style, geographic authority and offline policy.
+    action: BLOCK
+  - id: GISADM-P1-01
+    severity: P1
+    finding: The existing WA-DES-006 contains unsupported coordinate edit, source-revert and publish behavior.
+    action: CHANGE DESIGN
+  - id: GISADM-P1-02
+    severity: P1
+    finding: Most Arabic GIS content has no proven translation row and falls back to English.
+    action: UPDATE
+  - id: GISADM-P1-03
+    severity: P1
+    finding: Clickable table rows and canvas markers have no keyboard-equivalent selection semantics.
+    action: CORRECT
+  - id: GISADM-P1-04
+    severity: P1
+    finding: A 420px minimum map panel cannot reflow safely at 390px or 320px.
+    action: CORRECT
+  - id: GISADM-P1-05
+    severity: P1
+    finding: Partial source failure hides all otherwise healthy GIS content.
+    action: CORRECT
+  - id: GISADM-P1-06
+    severity: P1
+    finding: Mapbox popup contrast and governed detail are not integrated with SAQEEL themes.
+    action: CORRECT
+  - id: GISADM-P1-07
+    severity: P1
+    finding: WA-DES-006-C1 is not created, immutable or accepted.
+    action: BLOCK
+
+reviewer_recommendation:
+  classification: RETURN_FOR_ROUTE_AUTHORIZATION_POLICY_AND_DESIGN_CORRECTION
+  sponsor_decision: DO_NOT_CERTIFY_OR_COUNT_COMPLETE
+  provider_decision: PRESERVE_MVP3_HOLD_002
+  DEC_002_decision: PRESERVE_OPEN_NO_VALUE_INVENTION
+  maker_checker_decision: APPLICABILITY_REQUIRES_GOVERNED_DECISION
+  bounded_next_actions:
+    - "Enforce GIS route entitlement rather than relying on hidden navigation."
+    - "Reconcile planner and GIS Admin geofence-radius authority at both action and RLS boundaries."
+    - "Add affected-version/value conflict detection before saving a radius."
+    - "Keep generic factory audit and add the governed reason/version context only if the approved contract requires it."
+    - "Represent missing DEC-002 policy as unresolved; do not silently certify fallback values."
+    - "Keep Mapbox and offline claims held until MVP3-HOLD-002 evidence is complete."
+    - "Create and accept immutable WA-DES-006-C1 without coordinate edit, source revert or fabricated publish."
+    - "Complete Arabic content, semantic keyboard selection, narrow reflow, reduced motion and themed popup behavior."
+    - "Isolate settings and factory provider failures so healthy non-map evidence remains usable."
+    - "Run full security, functional, negative, concurrent, degraded, EN/AR, RTL/LTR, responsive, accessibility and visual evidence."
+
+ownership_boundary:
+  claude_design:
+    - create immutable WA-DES-006-C1 with predecessor lineage
+    - preserve official-coordinate read-only behavior
+    - remove unsupported source-revert and publish actions
+    - design policy-unresolved, unauthorized, provider-degraded, partial, conflict and audit states
+    - correct popup, wordmark, EN/AR, RTL/LTR, narrow and accessibility behavior
+    - do not invent DEC-002 values or overwrite WA-DES-006
+  claude_code:
+    - route entitlement, capability/RLS alignment and stale-write protection after lease
+    - bounded runtime and translation correction without provider or policy invention
+  kimi:
+    - independently test direct-route authorization, planner write path, audit, stale conflict and provider degradation
+    - no overlap with leased implementation files
+  codex:
+    - final requirement, design, runtime, provider-hold and evidence certification
+    - no implementation write while reviewer
+
+evidence:
+  application:
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/components/Shell.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - apps/web/src/app/(app)/admin/gis/page.tsx
+    - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    - apps/web/src/app/(app)/admin/gis/actions.ts
+    - apps/web/src/app/(app)/admin/gis/loading.tsx
+    - apps/web/src/components/GeoMap.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/CreateLayer.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+  database:
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0011_factory360_gis_ksa_seed.sql
+    - supabase/migrations/20260716210000_remaining_requirements_backend.sql
+    - supabase/migrations/0027_cd023_immediate_visit_atomic.sql
+    - supabase/migrations/20260717220000_mvp2_m2_06_spatial_gis.sql
+    - supabase/migrations/20260721020000_plain_language_terminology_ar_strings.sql
+  tests:
+    - apps/web/e2e/mapbox-provider.spec.ts
+    - apps/web/e2e/ipad-gps-policy.spec.ts
+    - apps/web/e2e/mvp2-modules-live.spec.ts
+    - apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  contract:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/governance/decision_register.csv
+    - product-contract/governance/OPEN_DECISIONS.yaml
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md
+    - design/claude-design-mvp1/prompts/systems/GIS_GEOFENCE_AND_ROUTE_DESIGN.md
+    - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  prior_review:
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-DESIGN-READINESS-015.yaml
+
+next_queue:
+  task_id: M10-FACTORY-DATA-INTEGRATION-DESIGN-AUTHORITY-REVIEW-056
+  scope: >-
+    Independently review /admin/integrations/factory-data and its sync, import,
+    validation, rejection, reconciliation, source provenance, authorization,
+    audit/version/concurrency, provider, EN/AR, responsive, accessibility and
+    hard-state contracts against exact requirements and stable Claude Design
+    lineage.
+  mode: READ_ONLY
+  completion_credit: 0

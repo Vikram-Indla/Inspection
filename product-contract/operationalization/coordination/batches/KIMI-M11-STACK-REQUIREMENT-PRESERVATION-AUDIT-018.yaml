@@ -1,0 +1,425 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-STACK-REQUIREMENT-PRESERVATION-AUDIT-018
+status: PRESERVATION_CONTRACT_DEFINED_NOT_EXECUTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+stack_under_review:
+  - KIMI-M11-ATOMIC-FIX-LEASE-010
+  - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+dependency_plan: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+acceptance_matrix: KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+
+review_question: >-
+  Can the complete remediation stack close confirmed atomicity, authorization,
+  workflow and audit defects without weakening any existing contract-valid
+  scheduling, OTP, joining, audit, notification, RLS, maker-checker or Inspector
+  behavior?
+
+review_result:
+  verdict: CONDITIONALLY_PRESERVABLE_REQUIRES_EXECUTED_GATES
+  statement: >-
+    The packet boundaries can preserve the valid behavior listed below if the
+    ordered stack and exact regression gates in this audit pass. No packet-local
+    source review is sufficient. Existing behavior that exceeds canonical role
+    authority is an intentional security correction, not a protected regression.
+  accepted_requirements_added: 0
+
+authority:
+  requirements:
+    - CR-338
+    - CR-339
+    - CR-340
+    - CR-341
+    - CR-342
+    - CR-343
+    - CR-344
+    - CR-345
+    - CR-346
+    - CR-347
+    - CR-348
+    - CR-349
+    - CR-350
+    - CR-351
+    - CR-352
+    - CR-353
+    - CR-354
+    - CR-355
+    - CR-356
+  acceptance:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  rbac:
+    - RBAC-007
+    - RBAC-008
+    - RBAC-009
+    - RBAC-011
+    - RBAC-012
+    - RBAC-014
+  sources:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/domain/state_transitions.csv
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - apps/web/src/lib/notify.ts
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715170000_cd041_verified_transition_guard.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+
+preservation_ledger:
+  scheduling:
+    requirement_ids: [CR-338, CR-339, CR-340, CR-343]
+    valid_behavior_to_preserve:
+      - "Only authenticated contract-authorized actors schedule a published virtual visit."
+      - "Representative name remains mandatory and binds the representative participant."
+      - "Assigned Inspector participant is retained when an assignment exists."
+      - "Existing-session uniqueness and deterministic retry/conflict behavior remain."
+      - "The scheduled timeline/audit fact is created before meeting connection."
+      - "Workflow status remains unchanged during virtual-session initialization."
+      - "Plausible-date validation remains additive to the new canonical visit-window guard."
+    remediation_effect:
+      "010": "Moves session and initial participants into one authorized transaction."
+      "011": "Adds appointment/live-window validation without changing advance scheduling."
+      "013": "Removes direct creation/mutation bypasses after the governed RPC exists."
+      "014": "No scheduling ownership."
+      "015": "Redacts audit reads without deleting source creation evidence."
+    regression_gate_ids:
+      - M11-PRES-SCH-001
+      - M11-PRES-SCH-002
+      - M11-PRES-SCH-003
+      - M11-PRES-SCH-004
+
+  reschedule_and_cancel:
+    requirement_ids: [CR-341, CR-342, CR-343]
+    valid_behavior_to_preserve:
+      - "Reschedule is limited to scheduled/waiting and loses a concurrent join race."
+      - "Reschedule uses the accepted visit window after 011."
+      - "Close/cancel requires a non-empty reason; comments and reason remain audited."
+      - "A closed session remains immutable and cannot transition backward."
+    remediation_effect:
+      "011": "Adds the same canonical window guard to reschedule/execution boundaries."
+      "013": "Keeps only governed role/state mutations."
+      "015": "Preserves safe reason/timeline visibility without raw whole-row output."
+    regression_gate_ids:
+      - M11-PRES-RSC-001
+      - M11-PRES-RSC-002
+      - M11-PRES-CAN-001
+      - M11-PRES-CAN-002
+
+  otp_and_verification:
+    requirement_ids: [CR-349, CR-350, CR-351, CR-352, CR-353, CR-354]
+    valid_behavior_to_preserve:
+      - "Assigned Inspector can request, inspect governed status and verify a representative."
+      - "Accepted OTP engine settings remain source-backed and unchanged."
+      - "Cooldown, expiry, attempts, resend limits and provider settings are not redefined by remediation."
+      - "Verification succeeds only through the governed RPC and advances the canonical operational state atomically."
+      - "Failed verification cannot start inspection."
+      - "Verification time, method and representative facts remain available as safe Reviewer audit evidence."
+      - "No OTP code, code_hash, dev_code or raw verification_record reaches the client."
+    remediation_effect:
+      "013": "Restricts execution to the contract-authorized Inspector path and removes direct verification-column DML."
+      "014": "Retains verification/readiness as begin preconditions."
+      "015": "Preserves the safe verification business fact while redacting secrets."
+    intentional_security_correction:
+      current_behavior: >-
+        Existing cd-042 status proof treats Planner as an authorized staff
+        caller. RBAC-007 authorizes planning actions but not representative
+        identity verification; CR-349 through CR-352 assign the action to
+        Inspector.
+      disposition: >-
+        Planner/Operations/Reviewer OTP execution or status access is not
+        protected as valid behavior without new sponsor authority. The old
+        planner-positive test must be replaced by assigned-Inspector positive
+        proof, not silently retained or counted as a regression.
+    regression_gate_ids:
+      - M11-PRES-OTP-001
+      - M11-PRES-OTP-002
+      - M11-PRES-OTP-003
+      - M11-PRES-OTP-004
+      - M11-PRES-OTP-005
+
+  participant_join_and_waiting:
+    requirement_ids: [CR-344, CR-345, CR-346]
+    valid_behavior_to_preserve:
+      - "Assigned Inspector can open the waiting room in the canonical state."
+      - "Inspection cannot begin before the representative is joined and verified."
+      - "Inspector and representative join timestamps remain persisted and auditable."
+      - "A repeated join is idempotent and cannot duplicate the semantic join fact."
+      - "Meeting-provider identity remains transparent to the business surface."
+    remediation_effect:
+      "011": "Adds authoritative live-window enforcement."
+      "014": "Makes participant join, session advance and event one transaction."
+      "013": "Removes direct joined_at mutation while retaining the governed join RPC."
+      "015": "Allows the existing join fact only from the governed writer."
+    regression_gate_ids:
+      - M11-PRES-JOIN-001
+      - M11-PRES-JOIN-002
+      - M11-PRES-JOIN-003
+      - M11-PRES-JOIN-004
+
+  audit_and_timeline:
+    requirement_ids: [CR-339, CR-343, CR-346, CR-347, CR-348, CR-353]
+    valid_behavior_to_preserve:
+      - "Immutable source audit rows remain append-only and are never rewritten by redaction."
+      - "Authorized Reviewer/audit personas retain session-scoped safe history."
+      - "Creation, state, join, verification, close and begin facts remain correlated to actor/object/time."
+      - "Rolled-back or denied operations never appear as successful semantic events."
+      - "Closed-session immutability remains enforced."
+    remediation_effect:
+      "010": "Preserves trigger-generated creation audit inside the transaction."
+      "014": "Writes join/begin semantic facts inside their transaction."
+      "013": "Prevents direct DML from forging verification/join facts."
+      "015": "Uses an explicit safe projection and rejects arbitrary event append."
+    not_yet_proven:
+      - "Provider-originated leave, disconnect and reconnect event ingestion for CR-347/CR-348."
+      - "Complete meeting audit cannot be certified until the provider event contract exists."
+    regression_gate_ids:
+      - M11-PRES-AUD-001
+      - M11-PRES-AUD-002
+      - M11-PRES-AUD-003
+      - M11-PRES-AUD-004
+      - M11-PRES-AUD-005
+
+  notifications:
+    requirement_ids: [CR-338, CR-350]
+    valid_behavior_to_preserve:
+      - "Scheduling notification is attempted only after the core creation transaction commits."
+      - "Reschedule and close notifications retain truthful post-mutation behavior."
+      - "Inspector notification recipient remains the assigned Inspector."
+      - "Factory representative SMS remains honestly not_configured when no adapter/credential exists."
+      - "Notification failure never rolls back a valid core transaction or claims delivery."
+      - "No remediation invents a provider response."
+    remediation_effect:
+      "010": "Keeps scheduling notifications post-commit and reports degradation."
+      "011": "Does not alter notification provider semantics."
+      "014": "Keeps join/begin success separate from post-commit notification degradation."
+      "013": "No notification ownership."
+      "015": "Prevents secrets/raw errors from entering rendered evidence or logs."
+    regression_gate_ids:
+      - M11-PRES-NTF-001
+      - M11-PRES-NTF-002
+      - M11-PRES-NTF-003
+      - M11-PRES-NTF-004
+
+  rls_and_role_scope:
+    requirement_ids: [CR-338, CR-348, CR-349, CR-350, CR-351, CR-352, CR-353, CR-355]
+    valid_behavior_to_preserve:
+      - "Planner/Operations retain only canonical scheduling/management scope."
+      - "Assigned Inspector retains own-session execution scope."
+      - "Unassigned Inspector retains no access to another visit/session."
+      - "Reviewer retains audit/review visibility without execution mutation."
+      - "Auditor remains view-only."
+      - "All proof uses ordinary authenticated persona sessions and RLS."
+    remediation_effect:
+      "010": "Corrects creation authorization."
+      "014": "Enforces Inspector-only join/begin authority."
+      "013": "Separates SELECT from governed mutation and closes broad FOR ALL bypasses."
+      "015": "Makes missing and out-of-scope resource responses neutral."
+    regression_gate_ids:
+      - M11-PRES-RLS-001
+      - M11-PRES-RLS-002
+      - M11-PRES-RLS-003
+      - M11-PRES-RLS-004
+      - M11-PRES-RLS-005
+
+  inspector_execution_handoff:
+    requirement_ids: [CR-354, CR-355, CR-356]
+    valid_behavior_to_preserve:
+      - "Verification updates operational state while workflow status remains unchanged."
+      - "Only assigned Inspector can begin execution."
+      - "Confirmed readiness and frozen package remain mandatory."
+      - "The Ready-created inspection row is reused; no parallel inspection is created."
+      - "Visit enters executing through canonical set_operational_state authority."
+      - "Inspection, visit, virtual session and begin event commit together."
+      - "Redirect occurs only after commit to the common field execution engine."
+      - "No virtual-specific execution fork exists after handoff."
+    remediation_effect:
+      "011": "Adds database-time window enforcement."
+      "014": "Removes tolerant/direct CAS fallback and makes begin atomic."
+      "013": "Closes non-Inspector direct mutation."
+      "015": "Preserves safe begin audit without changing execution."
+    regression_gate_ids:
+      - M11-PRES-INS-001
+      - M11-PRES-INS-002
+      - M11-PRES-INS-003
+      - M11-PRES-INS-004
+      - M11-PRES-INS-005
+
+  maker_checker_and_adjacent_engines:
+    requirement_ids: []
+    protected_contracts:
+      - "Request creator cannot review/approve/publish the same request."
+      - "Submitted revisions and published versions remain immutable."
+      - "Review decisions/comments remain append-only and audited."
+      - "Publication remains transactional and rejects orphan branches."
+      - "M11 migrations do not alter compliance, review, maker-checker or publication tables/policies/functions."
+    rationale: >-
+      WA-M11-AC-005 requires protected backend, workflow, audit, version and
+      maker-checker regression even though these are adjacent contracts rather
+      than CR-338 through CR-356.
+    regression_gate_ids:
+      - M11-PRES-MKC-001
+      - M11-PRES-MKC-002
+      - M11-PRES-MKC-003
+
+exact_regression_gates:
+  - id: M11-PRES-SCH-001
+    proof: "Authorized Planner, Operations and assigned Inspector each create one complete isolated session graph through the governed RPC."
+  - id: M11-PRES-SCH-002
+    proof: "Non-virtual, unpublished, missing representative, missing assignment where required, duplicate and invalid-date fixtures fail with zero partial rows/audit."
+  - id: M11-PRES-SCH-003
+    proof: "Appointment at both inclusive boundaries succeeds; before/after fails; advance scheduling remains possible before the live window."
+  - id: M11-PRES-SCH-004
+    proof: "Scheduled timeline/audit fact exists once and workflow status is unchanged."
+  - id: M11-PRES-RSC-001
+    proof: "Reschedule before join succeeds; concurrent join wins safely; post-join reschedule fails."
+  - id: M11-PRES-RSC-002
+    proof: "Reschedule preserves truthful Inspector/factory notification outcomes."
+  - id: M11-PRES-CAN-001
+    proof: "Close/cancel rejects blank reason and preserves reason/comments in safe immutable history."
+  - id: M11-PRES-CAN-002
+    proof: "Closed session rejects every backward/edit mutation and keeps its prior audit."
+  - id: M11-PRES-OTP-001
+    proof: "Assigned Inspector request/status/verify happy path succeeds using separate isolated participant fixtures."
+  - id: M11-PRES-OTP-002
+    proof: "Accepted engine settings checksum is unchanged; cooldown/expiry/attempt behavior still reads the source-backed settings row."
+  - id: M11-PRES-OTP-003
+    proof: "Invalid/expired/reused code cannot verify or begin and produces no false success event."
+  - id: M11-PRES-OTP-004
+    proof: "Verified transition and its semantic fact are atomic and idempotent."
+  - id: M11-PRES-OTP-005
+    proof: "Reviewer sees safe verification time/method/representative evidence but cannot mutate it."
+  - id: M11-PRES-JOIN-001
+    proof: "Assigned Inspector opens waiting only from scheduled and only inside the canonical live window."
+  - id: M11-PRES-JOIN-002
+    proof: "Join atomically persists participant time, advances state and records one event."
+  - id: M11-PRES-JOIN-003
+    proof: "Repeated/concurrent join returns deterministic state without duplicate event."
+  - id: M11-PRES-JOIN-004
+    proof: "Begin remains blocked while representative join/verification/readiness is incomplete."
+  - id: M11-PRES-AUD-001
+    proof: "Immutable audit source before/after checksums and row counts remain unchanged by redaction."
+  - id: M11-PRES-AUD-002
+    proof: "Authorized session audit returns safe creation/state/join/verification/close/begin facts."
+  - id: M11-PRES-AUD-003
+    proof: "Denied and rolled-back operations create no semantic success fact."
+  - id: M11-PRES-AUD-004
+    proof: "Secret sentinels are absent from RPC JSON, server response, DOM, console, logs and evidence."
+  - id: M11-PRES-AUD-005
+    proof: "Arbitrary append is denied while governed existing event names continue once."
+  - id: M11-PRES-NTF-001
+    proof: "Core scheduling commit survives isolated notification failure and returns explicit degradation."
+  - id: M11-PRES-NTF-002
+    proof: "A failed core transaction creates no scheduling notification."
+  - id: M11-PRES-NTF-003
+    proof: "Missing provider/credential stores or reports not_configured; no delivered/sent claim appears."
+  - id: M11-PRES-NTF-004
+    proof: "Reschedule/close preserve existing recipient, payload correlation and truthful post-commit behavior."
+  - id: M11-PRES-RLS-001
+    proof: "Ordinary Planner/Operations sessions retain canonical management paths but cannot OTP-verify, join or begin."
+  - id: M11-PRES-RLS-002
+    proof: "Assigned Inspector retains owned scheduling/OTP/join/begin paths with no direct governed-column DML."
+  - id: M11-PRES-RLS-003
+    proof: "Reviewer/Auditor retain safe read/audit scope and no mutation."
+  - id: M11-PRES-RLS-004
+    proof: "Unassigned Inspector missing/out-of-scope pairs are neutral and mutate nothing."
+  - id: M11-PRES-RLS-005
+    proof: "Catalog scan finds no service_role, BYPASSRLS, broad FOR ALL restoration or anonymous grant."
+  - id: M11-PRES-INS-001
+    proof: "Only assigned Inspector begins; Planner/Operations/Reviewer/unassigned paths leave all records unchanged."
+  - id: M11-PRES-INS-002
+    proof: "Begin requires verified state, confirmed readiness and the canonical window."
+  - id: M11-PRES-INS-003
+    proof: "Ready-created inspection is reused and its frozen package is unchanged."
+  - id: M11-PRES-INS-004
+    proof: "Inspection/visit/session/begin-event transition is atomic under forced failure and concurrency."
+  - id: M11-PRES-INS-005
+    proof: "Post-commit redirect reaches the existing common field execution route and submission flow."
+  - id: M11-PRES-MKC-001
+    proof: "compliance-request-engine maker-checker, immutability, append-only decision and transactional publication tests pass unchanged."
+  - id: M11-PRES-MKC-002
+    proof: "compliance-approval-queue creator exclusion, database authority and no-direct-decision-write tests pass unchanged."
+  - id: M11-PRES-MKC-003
+    proof: "Migration-diff/catalog allowlist proves zero M11 change to adjacent compliance/review/version/publication objects."
+
+existing_regression_suites_to_preserve_or_correct:
+  preserve:
+    - apps/web/e2e/cd-041-virtual-backend.spec.ts
+    - apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+    - apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    - apps/web/e2e/execution-crossmodule-contract.spec.ts
+    - apps/web/e2e/execution-journey-contract.spec.ts
+    - apps/web/e2e/compliance-request-engine.spec.ts
+    - apps/web/e2e/compliance-approval-queue.spec.ts
+  correct_under_009r:
+    - file: apps/web/e2e/cd-042-otp-status-authz.spec.ts
+      reason: >-
+        Replace Planner positive-control expectation with assigned Inspector
+        unless sponsor authority explicitly expands read-only OTP status.
+    - file: apps/web/e2e/cd-041-virtual-backend.spec.ts
+      reason: >-
+        Its wide-random future-window fixture cannot prove CR-337 and must not
+        bypass 011's canonical window; keep only valid backend assertions with
+        deterministic in-window fixtures.
+
+unresolved_dependencies:
+  - id: DEP-M11-009R
+    severity: P0
+    effect: "No implementation or certification dispatch until corrected 009r is reviewed and accepted."
+  - id: DEP-M11-CR337
+    severity: P0_FOR_LIST_ONLY
+    effect: "Today/confirmed/timezone list semantics remain isolated and block only the future CR-337 list lease."
+  - id: DEP-M11-DEC005
+    severity: P0_FOR_FACTORY_FACING_ACCESS
+    effect: "Factory representative principal/join/verify access remains blocked; no credential or portal may be invented."
+  - id: DEP-M11-PROVIDER-EVENTS
+    severity: P0_FOR_CR347_CR348_COMPLETENESS
+    effect: "Configured provider and trusted disconnect/reconnect/leave event source are unproven."
+  - id: DEP-M11-NOTIFICATION-PROVIDERS
+    severity: P1_EXTERNAL_DELIVERY
+    effect: "SMS/provider delivery remains not_configured where credentials/adapters are absent; stored/queued truth may be tested, delivery may not be claimed."
+  - id: DEP-M11-ISOLATED-RUNTIME
+    severity: P0
+    effect: "Fresh isolated database, ordinary persona auth and controlled transaction-local failure/concurrency harness are required."
+  - id: DEP-M11-MIGRATION-STACK
+    severity: P0
+    effect: "010→011→014→013→015 ordered migration and application stack must apply and pass as one promotion unit."
+
+independent_review_gate:
+  pass_only_if:
+    - "Every exact regression gate above has executed evidence and a reviewer verdict."
+    - "All 28 matrix-016 cases pass on the integrated stack."
+    - "Existing suites marked preserve pass unchanged; corrected suites carry the accepted 009r rationale."
+    - "No valid authorized path is lost and no overbroad current behavior is mislabeled as valid."
+    - "No adjacent maker-checker/version/publication object changes."
+    - "All unresolved dependencies remain blocked and truthfully surfaced."
+  fail_if:
+    - "Any valid scheduling, OTP, join, audit, notification, RLS or Inspector path regresses."
+    - "Any remediation restores sequential partial writes, direct workflow mutation or broad RLS."
+    - "Any secret/provider/database error reaches a client/evidence surface."
+    - "Any maker-checker, immutability, audit or publication regression fails."
+  current_verdict: NOT_EXECUTED_NOT_ACCEPTED
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_AND_009R_ACCEPTANCE
+  kimi_status: COMPLETED
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  requirement_coverage_checked: PASS
+  preservation_scope_checked: PASS
+  exact_regression_gates_checked: PASS
+  unresolved_dependencies_checked: PASS
+  CR_337_DEC_005_separation_checked: PASS

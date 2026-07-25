@@ -1,0 +1,434 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045
+status: READ_ONLY_FUTURE_CONCURRENCY_TEST_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze the exact future M11 concurrency, rollback, quiesce, immutable-audit,
+  partial-failure and recovery tests required by the security and test-gap
+  authorities. This is a specification only and does not choose SQL mechanics,
+  run transactions, create fixtures or issue leases.
+
+frozen_authority:
+  test_gap_inventory:
+    packet: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+    sha256: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  security_negative_path_review:
+    packet: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
+    sha256: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  ACL_negative_test_spec:
+    packet: KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+    sha256: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  provider_degraded_path_spec:
+    packet: KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+    sha256: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, design, data, seed, branch or stash change."
+  - "No live transaction, lock, provider call, traffic drain, migration apply or recovery execution."
+  - "No timeout, lock-wait duration, retry count, backoff, provider value, OTP rule or recovery threshold is invented."
+  - "All fixtures and synchronization points are symbolic contracts."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+concurrency_invariants:
+  deterministic_lock_order:
+    - visit
+    - session
+    - participants_by_UUID
+    - inspection
+  rules:
+    - "Every governed transition locks only the rows required by its final reviewed contract."
+    - "No caller obtains the same row set in a conflicting order."
+    - "CAS or revision guards reject stale callers without a fallback direct write."
+    - "One logical request cannot create duplicate authoritative state or semantic events."
+    - "A failed transaction leaves no state, counter, timeline, provider-attempt, audit or event residue."
+    - "Generic safe row facts and semantic events remain distinct."
+    - "Immutable historical audit rows are never updated or deleted."
+    - "After contraction, recovery is roll-forward and fail-closed without privilege widening."
+
+symbolic_fixtures:
+  personas:
+    - id: FX-CON-ASSIGNED-INSPECTOR-A
+      shape: "Ordinary assigned Inspector session A."
+    - id: FX-CON-ASSIGNED-INSPECTOR-B
+      shape: "Second ordinary assigned Inspector session for the same authorized resource where the final contract permits it."
+    - id: FX-CON-UNASSIGNED-INSPECTOR
+      shape: "Ordinary Inspector with no relationship to the resource."
+    - id: FX-CON-PLANNER
+      shape: "Ordinary Planner; only exact frozen-authority actions may be positive."
+    - id: FX-CON-OPERATIONS
+      shape: "Ordinary Operations persona; no inferred authority."
+    - id: FX-CON-REVIEWER
+      shape: "Ordinary Reviewer; safe view only."
+  resources:
+    - FX-CON-VISIT-PLANNED
+    - FX-CON-VISIT-IN-PROGRESS
+    - FX-CON-VISIT-CLOSED
+    - FX-CON-SESSION-ELIGIBLE
+    - FX-CON-SESSION-WAITING
+    - FX-CON-SESSION-VERIFIED
+    - FX-CON-SESSION-CLOSED
+    - FX-CON-PARTICIPANT-ELIGIBLE
+    - FX-CON-INSPECTION-ELIGIBLE
+    - FX-CON-HISTORICAL-AUDIT-SET
+  synchronization:
+    - FX-CON-BARRIER-BEFORE-FIRST-LOCK
+    - FX-CON-BARRIER-AFTER-LOCK-BEFORE-WRITE
+    - FX-CON-BARRIER-AFTER-WRITE-BEFORE-EVENT
+    - FX-CON-BARRIER-AFTER-EVENT-BEFORE-COMMIT
+    - FX-CON-FORCED-ROLLBACK
+    - FX-CON-STALE-REVISION
+    - FX-CON-SAME-IDEMPOTENCY-KEY
+    - FX-CON-DIFFERENT-IDEMPOTENCY-KEY
+  rollout:
+    - FX-CON-EXPANSION-COMPLETE
+    - FX-CON-APPLICATION-SWITCHED-OTP-DISABLED
+    - FX-CON-QUIESCE-GATE-CLOSED
+    - FX-CON-IN-FLIGHT-NONZERO
+    - FX-CON-IN-FLIGHT-ZERO
+    - FX-CON-013-CONTRACT-COMPLETE
+    - FX-CON-015-SUCCESSOR-COMPLETE
+    - FX-CON-CERTIFICATION-FAILED
+    - FX-CON-CERTIFICATION-PASSED
+  provider:
+    - FX-CON-PROVIDER-NOT-CONFIGURED
+    - FX-CON-PROVIDER-INDETERMINATE
+    - FX-CON-PROVIDER-REJECTED
+
+expected_result_vocabulary:
+  ONE_WINNER: "Exactly one transaction commits the authoritative transition."
+  STALE_DENIED: "Stale or losing caller receives the governed non-success result without a fallback write."
+  IDEMPOTENT_REPLAY: "Replay returns the authoritative prior outcome without another side effect."
+  ROLLBACK_CLEAN: "No state, counter, timeline, provider-attempt, audit or event residue remains."
+  QUIESCED: "New M11 mutations are denied and the in-flight count reaches the required zero state before contraction."
+  ONE_SEMANTIC_EVENT: "One committed transition produces exactly one semantic event."
+  AUDIT_IMMUTABLE: "Historical audit count and checksums are unchanged."
+  FAIL_CLOSED: "Feature remains unavailable without widening grants, restoring direct DML or exposing secrets."
+
+test_groups:
+  CAS_AND_REVISION_RACES:
+    cases:
+      - id: M11-045-CAS-001
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-VISIT-PLANNED, FX-CON-STALE-REVISION]
+        action: "Coordinate two begin calls reading the same original revision."
+        expected: [ONE_WINNER, STALE_DENIED]
+        evidence: [transaction_timeline, revision_before_after, final_visit_state, fallback_write_count, semantic_event_count]
+      - id: M11-045-CAS-002
+        personas: [FX-CON-PLANNER, FX-CON-ASSIGNED-INSPECTOR-A]
+        fixtures: [FX-CON-SESSION-WAITING, FX-CON-STALE-REVISION]
+        action: "Coordinate authorized reschedule against join/begin."
+        expected: "One final contract-valid outcome; stale caller denied; no torn window/session/participant graph."
+        evidence: [transaction_timeline, lock_sequence, final_resource_graph, semantic_event_count]
+      - id: M11-045-CAS-003
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-VISIT-IN-PROGRESS, FX-CON-STALE-REVISION]
+        action: "Submit stale close after another committed transition."
+        expected: STALE_DENIED
+        evidence: [revision_pair, final_state, fallback_write_count, audit_before_after]
+      - id: M11-045-CAS-004
+        persona: FX-CON-UNASSIGNED-INSPECTOR
+        fixtures: [FX-CON-VISIT-PLANNED, FX-CON-STALE-REVISION]
+        action: "Attempt stale CAS on an out-of-scope resource."
+        expected: "Neutral denial occurs before any write or lock-dependent disclosure."
+        evidence: [normalized_result, state_before_after, audit_before_after]
+
+  IDEMPOTENCY_AND_DUPLICATES:
+    cases:
+      - id: M11-045-IDM-001
+        persona: FX-CON-PLANNER
+        fixtures: [FX-CON-VISIT-PLANNED, FX-CON-SAME-IDEMPOTENCY-KEY]
+        action: "Replay exact atomic session-creation request."
+        expected: IDEMPOTENT_REPLAY
+        evidence: [logical_request_hash, session_count, participant_count, semantic_event_count]
+      - id: M11-045-IDM-002
+        persona: FX-CON-PLANNER
+        fixtures: [FX-CON-VISIT-PLANNED, FX-CON-DIFFERENT-IDEMPOTENCY-KEY]
+        action: "Submit logically duplicate creation under a different key."
+        expected: "Final uniqueness/authority contract prevents duplicate authoritative session graph."
+        evidence: [logical_request_correlation, session_count, participant_count, normalized_result]
+      - id: M11-045-IDM-003
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-PARTICIPANT-ELIGIBLE, FX-CON-SAME-IDEMPOTENCY-KEY, FX-CON-PROVIDER-INDETERMINATE]
+        action: "Replay an indeterminate provider request."
+        expected: IDEMPOTENT_REPLAY
+        evidence: [provider_attempt_count, counter_state, participant_state, semantic_event_count]
+      - id: M11-045-IDM-004
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-PARTICIPANT-ELIGIBLE, FX-CON-SAME-IDEMPOTENCY-KEY]
+        action: "Coordinate concurrent identical provider requests."
+        expected: ONE_WINNER
+        evidence: [transaction_timeline, participant_row_lock, provider_attempt_count, counter_state, event_count]
+      - id: M11-045-IDM-005
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-SESSION-VERIFIED, FX-CON-SAME-IDEMPOTENCY-KEY]
+        action: "Replay completed begin."
+        expected: "No second transition, visit write, timeline entry or semantic event."
+        evidence: [state_before_after, visit_write_count, timeline_count, semantic_event_count]
+
+  BEGIN_CLOSE_AND_STATE_RACES:
+    cases:
+      - id: M11-045-RAC-001
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-SESSION-VERIFIED, FX-CON-BARRIER-AFTER-LOCK-BEFORE-WRITE]
+        action: "Coordinate begin versus begin."
+        expected: [ONE_WINNER, STALE_DENIED]
+        evidence: [lock_sequence, transaction_timeline, final_session_state, final_visit_state, event_count]
+      - id: M11-045-RAC-002
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-SESSION-VERIFIED, FX-CON-BARRIER-AFTER-LOCK-BEFORE-WRITE]
+        action: "Coordinate begin versus close/cancel."
+        expected: "One canonical state path commits; no impossible begin-and-close combination."
+        evidence: [lock_sequence, transaction_timeline, final_resource_graph, event_types]
+      - id: M11-045-RAC-003
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-SESSION-CLOSED, FX-CON-BARRIER-BEFORE-FIRST-LOCK]
+        action: "Coordinate two close calls."
+        expected: "At most one close transition and one close semantic event."
+        evidence: [transaction_timeline, final_state, close_event_count]
+      - id: M11-045-RAC-004
+        personas: [FX-CON-PLANNER, FX-CON-ASSIGNED-INSPECTOR-A]
+        fixtures: [FX-CON-SESSION-WAITING, FX-CON-BARRIER-BEFORE-FIRST-LOCK]
+        action: "Coordinate reschedule versus waiting-room open."
+        expected: "One contract-valid window/state result; no lost update."
+        evidence: [authority_citations, lock_sequence, window_before_after, state_before_after]
+      - id: M11-045-RAC-005
+        persona: FX-CON-OPERATIONS
+        fixtures: [FX-CON-SESSION-ELIGIBLE, FX-CON-BARRIER-BEFORE-FIRST-LOCK]
+        action: "Attempt concurrent mutation without exact frozen authority."
+        expected: "Denied before acquiring mutation authority; no interference with authorized caller."
+        evidence: [authority_result, transaction_timeline, state_before_after]
+
+  PROVIDER_ATTEMPT_RACES:
+    cases:
+      - id: M11-045-PRO-001
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-PROVIDER-NOT-CONFIGURED, FX-CON-SAME-IDEMPOTENCY-KEY]
+        action: "Coordinate duplicate request while no provider is configured."
+        expected: "Both remain fail-closed; zero provider attempts; zero delivered events; no secret output."
+        evidence: [provider_attempt_count, event_count, response_field_scan]
+      - id: M11-045-PRO-002
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-PROVIDER-INDETERMINATE, FX-CON-SAME-IDEMPOTENCY-KEY]
+        action: "Coordinate retry during indeterminate provider outcome."
+        expected: "At most one authoritative attempt effect and no delivered claim."
+        evidence: [logical_request_hash, provider_attempt_count, state, event_count]
+      - id: M11-045-PRO-003
+        personas: [FX-CON-ASSIGNED-INSPECTOR-A, FX-CON-ASSIGNED-INSPECTOR-B]
+        fixtures: [FX-CON-PROVIDER-REJECTED, FX-CON-DIFFERENT-IDEMPOTENCY-KEY]
+        action: "Coordinate logically duplicate rejected requests."
+        expected: "No false success, counter inflation or duplicate semantic failure fact."
+        evidence: [provider_attempt_count, counter_before_after, semantic_event_count]
+
+  FORCED_ROLLBACK_AND_PARTIAL_FAILURE:
+    cases:
+      - id: M11-045-RBK-001
+        persona: FX-CON-PLANNER
+        fixtures: [FX-CON-VISIT-PLANNED, FX-CON-BARRIER-AFTER-WRITE-BEFORE-EVENT, FX-CON-FORCED-ROLLBACK]
+        action: "Force rollback after session/participant writes but before semantic event."
+        expected: ROLLBACK_CLEAN
+        evidence: [session_before_after, participant_before_after, audit_before_after, event_before_after]
+      - id: M11-045-RBK-002
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-SESSION-VERIFIED, FX-CON-BARRIER-AFTER-WRITE-BEFORE-EVENT, FX-CON-FORCED-ROLLBACK]
+        action: "Force rollback after candidate begin state writes."
+        expected: ROLLBACK_CLEAN
+        evidence: [visit_before_after, session_before_after, inspection_before_after, audit_before_after, event_before_after]
+      - id: M11-045-RBK-003
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-PARTICIPANT-ELIGIBLE, FX-CON-BARRIER-AFTER-EVENT-BEFORE-COMMIT, FX-CON-FORCED-ROLLBACK]
+        action: "Force rollback after candidate OTP semantic event."
+        expected: ROLLBACK_CLEAN
+        evidence: [participant_before_after, counter_before_after, audit_before_after, event_before_after]
+      - id: M11-045-RBK-004
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-VISIT-IN-PROGRESS, FX-CON-BARRIER-AFTER-WRITE-BEFORE-EVENT, FX-CON-FORCED-ROLLBACK]
+        action: "Force rollback during close/cancel."
+        expected: ROLLBACK_CLEAN
+        evidence: [resource_graph_before_after, audit_before_after, event_before_after]
+      - id: M11-045-RBK-005
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-PROVIDER-INDETERMINATE, FX-CON-BARRIER-AFTER-EVENT-BEFORE-COMMIT, FX-CON-FORCED-ROLLBACK]
+        action: "Force local rollback around a provider-attempt result."
+        expected: >-
+          Local state remains fail-closed and reconciliation uses the future
+          idempotency contract; no delivered fact is fabricated.
+        evidence: [local_state_before_after, provider_outcome_class, reconciliation_result, event_count]
+
+  EVENT_CARDINALITY_AND_CORRELATION:
+    cases:
+      - id: M11-045-EVT-001
+        persona: FX-CON-PLANNER
+        fixtures: [FX-CON-VISIT-PLANNED]
+        action: "Commit one atomic creation."
+        expected: "One authoritative session graph and one creation semantic fact."
+        evidence: [session_count, participant_count, semantic_event_count, correlation_ids]
+      - id: M11-045-EVT-002
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-SESSION-VERIFIED]
+        action: "Commit one begin."
+        expected: ONE_SEMANTIC_EVENT
+        evidence: [state_transition, timeline_count, semantic_event_count, safe_generic_fact_count]
+      - id: M11-045-EVT-003
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-PARTICIPANT-ELIGIBLE]
+        action: "Commit one authorized provider attempt/OTP transition under the final provider state."
+        expected: "Exactly the semantic fact permitted by the provider outcome; never duplicate or false delivered facts."
+        evidence: [provider_outcome_class, semantic_event_types, event_count, correlation_ids]
+      - id: M11-045-EVT-004
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-VISIT-IN-PROGRESS]
+        action: "Commit one close."
+        expected: ONE_SEMANTIC_EVENT
+        evidence: [state_transition, semantic_event_count, safe_generic_fact_count]
+      - id: M11-045-EVT-005
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-FORCED-ROLLBACK]
+        action: "Rollback each governed transition."
+        expected: "Zero committed semantic event and zero orphan safe generic fact."
+        evidence: [transition_matrix, semantic_event_count, safe_generic_fact_count]
+
+  IMMUTABLE_AUDIT:
+    cases:
+      - id: M11-045-AUD-001
+        persona: FX-CON-REVIEWER
+        fixtures: [FX-CON-HISTORICAL-AUDIT-SET]
+        action: "Run every concurrency and rollback case, then compare historical audit."
+        expected: AUDIT_IMMUTABLE
+        evidence: [historical_row_count_before_after, historical_checksum_before_after]
+      - id: M11-045-AUD-002
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-HISTORICAL-AUDIT-SET, FX-CON-FORCED-ROLLBACK]
+        action: "Attempt UPDATE and DELETE against historical audit through ordinary session paths."
+        expected: "Denied; count and checksums unchanged."
+        evidence: [mutation_denial, historical_row_count_before_after, historical_checksum_before_after]
+      - id: M11-045-AUD-003
+        persona: FX-CON-REVIEWER
+        fixtures: [FX-CON-HISTORICAL-AUDIT-SET]
+        action: "Read approved safe projection during concurrent mutations."
+        expected: "Only committed safe facts appear; no dirty/uncommitted or secret-bearing state."
+        evidence: [safe_projection_snapshots, transaction_correlation, prohibited_field_scan]
+
+  QUIESCE_DRAIN_CONTRACT_AND_RECOVERY:
+    cases:
+      - id: M11-045-QUI-001
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-EXPANSION-COMPLETE, FX-CON-APPLICATION-SWITCHED-OTP-DISABLED, FX-CON-QUIESCE-GATE-CLOSED]
+        action: "Attempt a new M11 mutation after quiesce closes."
+        expected: QUIESCED
+        evidence: [quiesce_state, normalized_result, new_mutation_count]
+      - id: M11-045-QUI-002
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-QUIESCE-GATE-CLOSED, FX-CON-IN-FLIGHT-NONZERO]
+        action: "Attempt to enter contract phase."
+        expected: "Contract blocked until in-flight count is zero."
+        evidence: [in_flight_count, contract_start_attestation]
+      - id: M11-045-QUI-003
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-QUIESCE-GATE-CLOSED, FX-CON-IN-FLIGHT-ZERO, FX-CON-013-CONTRACT-COMPLETE, FX-CON-015-SUCCESSOR-COMPLETE]
+        action: "Rehearse uninterrupted 013 then 015 contract boundary."
+        expected: "No M11 traffic between contract steps; safe trigger/projection already installed; no interim unsafe OTP window."
+        evidence: [phase_timeline, no_traffic_attestation, trigger_presence, function_signature_sequence]
+      - id: M11-045-REC-001
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-015-SUCCESSOR-COMPLETE, FX-CON-CERTIFICATION-FAILED]
+        action: "Exercise post-contract failed certification."
+        expected: FAIL_CLOSED
+        evidence: [feature_state, grant_manifest, direct_DML_denial, recovery_plan]
+      - id: M11-045-REC-002
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-015-SUCCESSOR-COMPLETE, FX-CON-CERTIFICATION-PASSED]
+        action: "Release quiesce after successful certification."
+        expected: "Only final governed paths become available; no legacy function, broad grant or direct DML returns."
+        evidence: [final_function_manifest, grant_manifest, policy_manifest, application_path_manifest]
+      - id: M11-045-REC-003
+        persona: FX-CON-ASSIGNED-INSPECTOR-A
+        fixtures: [FX-CON-013-CONTRACT-COMPLETE, FX-CON-CERTIFICATION-FAILED]
+        action: "Attempt rollback by restoring old OTP signatures, broad grants or direct DML."
+        expected: "Prohibited; recovery is roll-forward and fail-closed."
+        evidence: [prohibited_recovery_scan, final_grant_manifest, final_function_manifest]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - code_commit
+    - migration_chain_hash
+    - fixture_graph_hash
+    - ordinary_persona
+    - transaction_correlation_ids
+    - synchronization_barriers
+    - result
+    - independent_reviewer
+  required_outputs:
+    - ordered_transaction_timeline
+    - ordered_lock_manifest
+    - row_and_revision_before_after
+    - final_resource_graph
+    - provider_attempt_count_when_applicable
+    - audit_and_semantic_event_cardinality
+    - historical_audit_checksums
+    - rollback_or_recovery_result
+    - teardown_result
+  integrity_rules:
+    - "Every coordinated caller has a stable opaque correlation ID."
+    - "Evidence distinguishes attempted, committed, rolled-back and reconciled work."
+    - "No secret, personal data, raw application row or provider payload is released."
+    - "A missing timeline, checksum, teardown or reviewer signoff invalidates the run."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-010: supabase/tests/m11_010_creation_atomicity_security.sql
+    TEST-011: supabase/tests/m11_011_window_actions_security.sql
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-014: supabase/tests/m11_014_join_begin_atomicity.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-ROLLOUT: apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "QA owner cannot edit implementation files; implementation owner cannot edit leased QA paths."
+    - "Record predecessor commit, migration-chain checksum and exact function/policy/trigger ownership."
+    - "Stop on path, migration filename, function signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final RPC, owner/ACL, policy, trigger, provider, quiesce and application manifests."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+
+queued_next:
+  packet: KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Ordinary-session persona and resource-relationship matrix only; no authority inference."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  deterministic_lock_order_present: PASS
+  test_group_count: 8
+  test_case_count: 36
+  unique_test_case_ids: PASS
+  proposed_test_path_count: 7
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

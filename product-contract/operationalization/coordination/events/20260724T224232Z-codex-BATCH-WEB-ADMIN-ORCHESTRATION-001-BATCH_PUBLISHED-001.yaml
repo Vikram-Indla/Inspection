@@ -1,0 +1,23 @@
+schema_version: "1.0"
+event: BATCH_PUBLISHED
+event_id: "20260724T224232Z-codex-BATCH-WEB-ADMIN-ORCHESTRATION-001-BATCH_PUBLISHED-001"
+timestamp_utc: "2026-07-24T22:42:32Z"
+actor: "Codex lead"
+recipient: "Codex, Claude Code, Claude Design, ChatGPT and Kimi"
+batch_id: BATCH-WEB-ADMIN-ORCHESTRATION-001
+reason: >-
+  Record the verified access boundary, non-overlapping initial lanes and
+  mandatory actor-handoff protocol outside product-code worktrees.
+verified_access:
+  claude_design: "Live project 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61 and history readable."
+  kimi: "Canonical repository, branch, HEAD and exactly 478 requirement rows verified; Claude Design browser bridge unavailable."
+  chatgpt: "Editable chat 6a6324f3-37f0-83eb-ab62-dbc6054e89aa verified and handshake sent."
+  claude_code: "M3 design-only session local_f90cfcda-7e60-448f-a130-7280d6528341 verified and handoff requested."
+instructions:
+  - "No actor may begin product implementation from this event."
+  - "Kimi receives revision-stamped design evidence in its packet; connector troubleshooting is not a delivery dependency."
+  - "Only Codex may issue a later application-code write lease."
+  - "Every worker must return the actor handoff before ACK or RETURNED."
+product_changes_authorized: false
+design_changes_authorized: false
+merge_or_deploy_authorized: false

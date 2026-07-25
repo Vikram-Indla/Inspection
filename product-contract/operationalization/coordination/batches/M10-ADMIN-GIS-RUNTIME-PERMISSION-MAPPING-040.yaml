@@ -1,0 +1,515 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-RUNTIME-PERMISSION-MAPPING-040
+title: Admin GIS runtime, permission and evidence mapping
+status: BLOCK_P0_ROUTE_ENTITLEMENT_RADIUS_AUTHORITY_CONCURRENCY_AND_POLICY
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_RUNTIME_PERMISSION_MAPPING
+
+scope:
+  routes:
+    - /admin/gis
+    - /admin/gis/spatial
+  primary_route_files:
+    - apps/web/src/app/(app)/admin/gis/page.tsx
+    - apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    - apps/web/src/app/(app)/admin/gis/actions.ts
+    - apps/web/src/components/GeoMap.tsx
+  companion_route_files:
+    - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/CreateLayer.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+  screen_ids:
+    primary: [SCR-ADM-070]
+    companion: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+  engines: [ENG-06, ENG-08, ENG-11, ENG-12]
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03, G2-P06A, G2-P12]
+  package_ids: [M10]
+  do_not_touch:
+    - product application, provider, database, seed, test, design or evidence files
+    - live Claude Design or accepted design revisions
+    - DEC-002 values, Mapbox credentials, provider environment or Supabase
+    - Field, iPad, main, setup/Inspection, branches, leases or stashes
+    - peer-owned untracked packets
+
+canonical_authority:
+  exact_primary_in_478:
+    requirement_ids: []
+    finding: No dedicated Admin GIS requirement row exists in the 478-row MVP1 baseline.
+    count_rule: The Admin route cannot claim completion of contextual consumer requirements.
+  contextual_478_requirements:
+    location_authority:
+      - { requirement_id: CR-037, acceptance_id: WA-AC-0037, owner_route: "/planning/**;/visits/**" }
+      - { requirement_id: CR-038, acceptance_id: WA-AC-0038, owner_route: "/planning/**;/visits/**" }
+      - { requirement_id: CR-046, acceptance_id: WA-AC-0046, owner_route: "/planning/**;/visits/**" }
+      - { requirement_id: CR-117, acceptance_id: WA-AC-0117, owner_route: "/field/**" }
+      - { requirement_id: CR-154, acceptance_id: WA-AC-0154, owner_route: "/field/**" }
+      - { requirement_id: CR-157, acceptance_id: WA-AC-0157, owner_route: "/field/**" }
+      - { requirement_id: CR-414, acceptance_id: WA-AC-0414, owner_route: "/factories/**" }
+    map_and_navigation:
+      - { requirement_id: CR-091, acceptance_id: WA-AC-0091, owner_route: "/planning/**;/visits/**" }
+      - { requirement_id: CR-101, acceptance_id: WA-AC-0101, owner_route: "/field/**" }
+      - { requirement_id: CR-129, acceptance_id: WA-AC-0129, owner_route: "/field/**" }
+      - { requirement_id: CR-130, acceptance_id: WA-AC-0130, owner_route: "/field/**" }
+      - { requirement_id: CR-137, acceptance_id: WA-AC-0137, owner_route: "/field/**" }
+      - { requirement_id: CR-138, acceptance_id: WA-AC-0138, owner_route: "/field/**" }
+      - { requirement_id: CR-431, acceptance_id: WA-AC-0431, owner_route: "/operations/**" }
+    gps_geofence_and_arrival:
+      - { requirement_id: CR-123, acceptance_id: WA-AC-0123, owner_route: "/field/**" }
+      - { requirement_id: CR-124, acceptance_id: WA-AC-0124, owner_route: "/field/**" }
+      - { requirement_id: CR-135, acceptance_id: WA-AC-0135, owner_route: "/field/**" }
+      - { requirement_id: CR-136, acceptance_id: WA-AC-0136, owner_route: "/field/**" }
+      - { requirement_id: CR-140, acceptance_id: WA-AC-0140, owner_route: "/field/**" }
+      - { requirement_id: CR-144, acceptance_id: WA-AC-0144, owner_route: "/field/**" }
+      - { requirement_id: CR-145, acceptance_id: WA-AC-0145, owner_route: "/field/**" }
+      - { requirement_id: CR-150, acceptance_id: WA-AC-0150, owner_route: "/field/**" }
+      - { requirement_id: CR-151, acceptance_id: WA-AC-0151, owner_route: "/field/**" }
+      - { requirement_id: CR-152, acceptance_id: WA-AC-0152, owner_route: "/field/**" }
+      - { requirement_id: CR-153, acceptance_id: WA-AC-0153, owner_route: "/field/**" }
+      - { requirement_id: CR-155, acceptance_id: WA-AC-0155, owner_route: "/field/**" }
+      - { requirement_id: CR-156, acceptance_id: WA-AC-0156, owner_route: "/field/**" }
+      - { requirement_id: CR-158, acceptance_id: WA-AC-0158, owner_route: "/field/**" }
+      - { requirement_id: CR-159, acceptance_id: WA-AC-0159, owner_route: "/field/**" }
+      - { requirement_id: CR-160, acceptance_id: WA-AC-0160, owner_route: "/field/**" }
+      - { requirement_id: CR-161, acceptance_id: WA-AC-0161, owner_route: "/field/**" }
+      - { requirement_id: CR-162, acceptance_id: WA-AC-0162, owner_route: "/field/**" }
+      - { requirement_id: CR-173, acceptance_id: WA-AC-0173, owner_route: "/field/**" }
+      - { requirement_id: CR-174, acceptance_id: WA-AC-0174, owner_route: "/field/**" }
+      - { requirement_id: CR-442, acceptance_id: WA-AC-0442, owner_route: "/operations/**" }
+      - { requirement_id: CR-443, acceptance_id: WA-AC-0443, owner_route: "/operations/**" }
+  transferred_primary:
+    - requirement_id: MVP2-REQ-0072
+      acceptance_id: MVP2-AC-0072
+      authority: GIS Admin governs official and verified pins, geofence rules, map layers, offline packs, and privacy policy.
+      current_status: NEEDS_REVIEW
+    - requirement_id: MVP2-REQ-0075
+      acceptance_id: MVP2-AC-0075
+      authority: Field GIS route, geofence, pin provenance, offline map, check-in proof, and geotagged evidence.
+      current_status: CONTEXTUAL_CROSS_CHANNEL
+    - requirement_id: MVP2-REQ-0233
+      acceptance_id: MVP2-AC-0233
+      authority: GIS legal-evidence governance, snapshots, accuracy thresholds, exception workflow, and offline maps.
+      current_status: NEEDS_REVIEW
+  phase1_package_acceptance:
+    - WA-M10-AC-001
+    - WA-M10-AC-002
+    - WA-M10-AC-003
+    - WA-M10-AC-004
+    - WA-M10-AC-005
+    - WA-M10-AC-006
+  special_component_acceptance:
+    - SPC-GIS-001
+    - SPC-GIS-002
+    - SPC-GIS-003
+    - SPC-GIS-004
+    - SPC-GIS-005
+    - SPC-GIS-006
+    - SPC-GIS-007
+    - SPC-GIS-008
+
+design_dependency:
+  packet_id: M10-ADMIN-GIS-DESIGN-AUTHORITY-REVIEW-055
+  status: BLOCK_DUE_TO_ROUTE_ENTITLEMENT_POLICY_HOLD_AND_UNSAFE_RADIUS_MUTATION
+  use: Dependency and independent comparison only; this packet does not certify or alter the design.
+  required_successor: WA-DES-006-C1
+  successor_status: NOT_CREATED_OR_ACCEPTED
+
+runtime_route_mapping:
+  - route: /admin/gis
+    screen: SCR-ADM-070
+    route_group: authenticated_app
+    anonymous_behavior: Authenticated shell redirects to login.
+    navigation_entitlement: Visible only to gis_admin.
+    direct_route_entitlement: ABSENT
+    source_reads:
+      - engine_settings row where engine equals gis
+      - every factories row with identity, location, risk, and geofence fields allowed by RLS
+    mutations:
+      - direct update of factories.geofence_radius_m
+    verdict: REAL_ROUTE_P0_PERMISSION_AND_POLICY_FAILURE
+  - route: /admin/gis/spatial
+    screen: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+    route_group: authenticated_app
+    feature_flag: FEATURE_SPATIAL_CANVAS
+    default: off
+    direct_route_entitlement: ABSENT
+    source_reads:
+      - gis_layers
+      - factory_locations
+    mutations:
+      - direct insert into gis_layers
+    verdict: HELD_COMPANION_ROUTE_WITH_MISSING_IDENTITY_AND_GOVERNANCE
+
+direct_route_entitlement:
+  shell_guard:
+    source: apps/web/src/app/(app)/layout.tsx
+    behavior: Redirects field-only personas away from web routes.
+    limitation: Does not enforce gis_admin or Technical Admin entitlement for /admin/gis.
+  navigation_filter:
+    source: apps/web/src/lib/shell-navigation.ts
+    behavior: Hides the Map Settings navigation item unless gis_admin is present.
+    limitation: Hidden navigation is not authorization.
+  direct_url_result:
+    authenticated_non_field_user: Route executes and relies on table RLS.
+    disclosed_data:
+      - factory IDs, codes, names, city and region
+      - official coordinates
+      - risk bands and scores
+      - factory geofence radii
+      - GIS engine settings and version label
+    verdict: FAIL_P0
+
+permission_and_capability_matrix:
+  - resource: factories
+    operation: select
+    database_policy: factories_read
+    permitted_roles: every authenticated identity
+    route_intent: GIS Admin and Technical Admin
+    alignment: OVERBROAD_READ
+  - resource: factories
+    operation: update
+    database_policy: factories_update
+    permitted_roles: [gis_admin, planner]
+    action_check: authenticated user only
+    column_scope: Any column allowed by the table update policy, though the action currently sends only geofence_radius_m.
+    route_intent: GIS Admin administration
+    alignment: P0_PLANNER_CAN_INVOKE_DIRECT_ACTION
+  - resource: engine_settings
+    operation: select
+    database_policy: engine_read
+    permitted_roles: every authenticated identity
+    route_intent: Admin policy display
+    alignment: OVERBROAD_FULL_SETTING_READ
+  - resource: engine_settings
+    operation: update
+    database_policy: engine_write
+    permitted_roles: [risk_owner, gis_admin, compliance_admin, workflow_admin, security_admin]
+    route_mutation: None on /admin/gis
+    alignment: BROADER_THAN_SINGLE_ENGINE_OWNERSHIP
+  - resource: gis_layers
+    operation: select
+    database_policy: gis_layers_read
+    permitted_roles: every authenticated identity
+    route_intent: GIS Admin companion route
+    alignment: OVERBROAD_READ
+  - resource: gis_layers
+    operation: insert_or_update
+    database_policy: gis_layers_write_and_update
+    permitted_roles: [gis_admin, security_admin, compliance_admin]
+    action_check: authenticated user plus feature flag only
+    alignment: RLS_GOVERNS_BUT_NO_EXPLICIT_ACTION_CAPABILITY
+  - resource: factory_locations
+    operation: select
+    database_policy: factory_locations_read
+    permitted_roles: every authenticated identity
+    route_intent: GIS Admin companion route
+    alignment: OVERBROAD_PRECISE_LOCATION_READ
+  - resource: factory_locations
+    operation: insert_or_update
+    database_policy: factory_locations_write_and_update
+    permitted_roles: [gis_admin, security_admin, compliance_admin]
+    route_mutation: No current UI mutation found.
+    alignment: BROADER_THAN_GIS_ADMIN
+  - resource: location_visibility_matrix
+    operation: select
+    database_policy: location_visibility_matrix_read
+    permitted_roles: every authenticated identity
+    runtime_enforcement: canViewPrecise helper exists but /admin/gis does not use the matrix.
+    alignment: PRIVACY_MATRIX_NOT_APPLIED_TO_ROUTE_QUERY
+  - resource: audit_events
+    operation: select
+    database_policy: audit_read
+    permitted_roles: [auditor, ops, security_admin, leadership, reviewer, planner]
+    gis_admin_included: false
+    implication: GIS Admin cannot inspect the generic radius audit from the GIS route.
+    alignment: GOVERNANCE_VISIBILITY_GAP
+
+radius_and_configuration_authority:
+  engine_source:
+    table: engine_settings
+    engine: gis
+    fields_used:
+      - gps_accuracy_checkin_max_m
+      - arrival_detection_radius_m
+      - geofence_default_radius_m
+      - telemetry_interval_s
+      - route_deviation
+      - retention
+    route_behavior: Read-only display.
+  factory_override:
+    table_column: factories.geofence_radius_m
+    route_behavior: Direct positive finite numeric save, rounded to integer.
+    maximum_or_range_contract: NOT_FOUND
+    reason_required: false
+    policy_version_stamped_on_change: false
+    expected_current_value_or_version: false
+    immutable_version_history: false
+  fallback_chain:
+    selected_factory: factory radius, then engine default, then literal 150
+    missing_policy_UI: Can render undefined values while the canvas uses 150.
+    verdict: FAIL_P0_UNRESOLVED_POLICY_CAN_MASQUERADE_AS_AUTHORITY
+
+decision_and_provider_holds:
+  DEC_002:
+    canonical_record:
+      source: product-contract/governance/decision_register.csv
+      status: OPEN
+      subject: GPS accuracy, arrival radius, geofence policy, and telemetry frequency.
+      guardrail: Keep values configurable and block publish until approved.
+    accepted_interim_record:
+      source: product-contract/governance/DECISIONS_ACCEPTED_2026-07-11.yaml
+      status: ACCEPTED_INTERIM_PENDING_FROZEN_REGISTER_CHANGE_CONTROL
+      implication: Existing numeric compatibility does not close the canonical decision.
+    phase1_record:
+      source: product-contract/web-admin-phase1/OPEN_DECISIONS_AND_BLOCKERS.yaml
+      status: OPEN_BUSINESS_DECISION
+    reviewer_rule: Preserve existing data but do not certify numeric values, publish policy, or invent missing thresholds.
+  DEC_008:
+    status: Mapbox selected for shared authenticated rendering and Directions.
+    evidence_boundary: Provider choice is resolved; production and offline certification are not.
+  MVP3_HOLD_002:
+    status: OPEN
+    unresolved:
+      - runtime token
+      - approved map style
+      - geographic authority
+      - offline-pack policy
+    allowed_fallback: Non-map evidence, factory list, and coordinate records remain usable.
+  MVP3_HOLD_006:
+    status: OPEN_FOR_LEGAL_RETENTION_PORTION_OF_MVP2_REQ_0233
+  verdict: PROVIDER_SELECTED_BUT_GIS_GOVERNANCE_AND_RELEASE_CERTIFICATION_HELD
+
+concurrency_and_CAS:
+  radius_update:
+    current_filter: factory id only
+    expected_value_filter: absent
+    version_filter: absent
+    row_lock_or_RPC: absent
+    result: Last writer silently wins.
+    severity: P0
+  gis_layer_create:
+    uniqueness: database unique layer_key
+    friendly_conflict_contract: absent
+    update_CAS: absent
+    severity: P1
+  engine_settings:
+    route_write: none
+    existing_version_label: displayed only
+    compare_and_swap: not used by this route
+  verdict: FAIL_STALE_WRITE_PROTECTION
+
+map_and_list_fallback:
+  map_renderer:
+    source: apps/web/src/components/GeoMap.tsx
+    provider: Mapbox GL JS
+    KSA_bounds: present
+    geodesic_radius_ring: present
+    attribution: present
+    theme_and_locale_hooks: present
+  synchronized_list:
+    source: apps/web/src/app/(app)/admin/gis/GisStudio.tsx
+    present: true
+    search_and_filters: true
+    located_and_unlocated_rows: true
+    keyboard_equivalence: false
+  token_absent_or_selected_provider_error:
+    map_state: Explicit bilingual Mapbox unavailable state.
+    list_state: Remains rendered and usable.
+    radius_form_state: Remains rendered.
+  general_network_or_tile_failure:
+    detection: Only selected authorization/style messages mark the renderer failed.
+    risk: Blank or partial map can remain without recovery guidance.
+  one_source_failure:
+    current: An engine_settings or factories error hides the entire healthy main content.
+    required: Isolate settings, map, and registry failures.
+  popup:
+    content: Flat provider popup label.
+    theme_override: absent in application styles.
+    observed_risk: Light/dark contrast and governed detail incomplete.
+  verdict: PARTIAL_PASS_LIST_SURVIVES_TOKEN_FAILURE_BUT_DEGRADED_AND_ACCESSIBILITY_CONTRACTS_FAIL
+
+audit_mapping:
+  factory_radius:
+    trigger: trg_audit_factories via audit_row_change
+    fields: actor, object type/id, action, before state, after state, timestamp.
+    strengths:
+      - append-only audit event
+      - before and after radius are recoverable
+    gaps:
+      - no required reason
+      - no GIS policy/version context on the mutation
+      - no conflict/rejection evidence
+      - GIS Admin cannot read audit_events under current audit_read roles
+  engine_settings:
+    trigger: trg_audit_engine_settings
+    route_mutation: none
+  spatial_tables:
+    audit_triggers_found: false
+    affected:
+      - gis_layers
+      - factory_locations
+      - location_visibility_matrix
+      - map_packs
+      - route_snapshots
+    severity: P0_FOR_GOVERNED_LAYER_OR_LOCATION_MUTATION
+  verdict: GENERIC_RADIUS_AUDIT_PARTIAL_SPATIAL_GOVERNANCE_AUDIT_ABSENT
+
+test_inventory:
+  source_contracts:
+    - file: apps/web/e2e/mapbox-provider.spec.ts
+      proves: Source imports Mapbox and no token is committed.
+      does_not_prove: Admin route entitlement, rendered tiles, radius persistence, RLS, or fallback interaction.
+    - file: apps/web/e2e/ipad-gps-policy.spec.ts
+      proves: Seeded numbers and downstream source fallbacks are present.
+      defect: Calls values sponsor-approved while the canonical DEC-002 and Phase 1 blocker records remain open.
+    - file: apps/web/e2e/mvp2-m2-06-spatial.spec.ts
+      proves: Pure distance, accuracy, geofence, and visibility-matrix helpers.
+      does_not_prove: The Admin route applies the visibility matrix or live policy.
+  runtime_tests:
+    - file: apps/web/e2e/mvp2-mapbox-live.spec.ts
+      proves: Directions returned a route and an Operations map avoided token-unavailable state in one environment.
+      does_not_prove: /admin/gis tiles, style, language, fallback, or production certification.
+    - file: apps/web/e2e/mvp2-modules-live.spec.ts
+      proves: Admin persona can create a GIS layer when the companion feature is enabled.
+      gap: Uses timestamp-named shared data with no cleanup and does not prove audit or versioning.
+    - file: apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+      proves: Inspector GIS layer creation fails through RLS.
+      gap: Inspector is still allowed to open/read the route and precise GIS tables.
+  missing:
+    - direct /admin/gis denial for planner, inspector, operations, reviewer, auditor, leadership, and unrelated Admin roles
+    - current-user capability enforcement before reads and actions
+    - planner direct radius-action denial or approved authority
+    - exact column-level or RPC mutation boundary
+    - radius save, refresh persistence, reason/version audit, and stale-write conflict
+    - missing DEC-002 values without literal fallback authority
+    - independent engine and factories failure isolation
+    - Mapbox token, authorization, style, tile, network, and retry states on /admin/gis
+    - synchronized map/list keyboard selection and screen-reader announcements
+    - precise-location visibility-matrix enforcement
+    - spatial table audit and concurrent layer conflict
+    - complete EN/AR, RTL/LTR, light/dark, responsive, reduced-motion, and accessibility evidence
+    - accepted WA-DES-006-C1 runtime visual comparison
+
+browser_evidence_readiness:
+  current: NOT_READY_FOR_CERTIFICATION
+  safe_read_only_cases_now:
+    - anonymous redirect
+    - authenticated GIS Admin route load without mutation
+    - token-unavailable list preservation
+    - empty and no-coordinate registry states using isolated fixtures when authorized
+  blocked_cases:
+    - radius write and stale-write evidence until authority and CAS semantics are approved
+    - policy values and publication until DEC-002 is formally dispositioned
+    - production Mapbox, approved style, geographic authority, and offline claims until MVP3-HOLD-002 closes
+    - design visual parity until WA-DES-006-C1 is created and accepted
+  required_viewports:
+    - 1440x1024
+    - 1200x840
+    - 1024x768
+    - 768x1024
+    - 412x915
+    - 390x844
+    - 320x800
+  required_variants:
+    - EN/LTR light
+    - EN/LTR dark
+    - AR/RTL light
+    - AR/RTL dark
+  required_states:
+    - authorized
+    - unauthorized
+    - loading
+    - empty
+    - no coordinates
+    - no filter results
+    - validation error
+    - write error
+    - saved
+    - stale conflict
+    - policy unresolved
+    - provider unavailable
+    - provider degraded
+    - partial source failure
+    - audit history
+
+priority_findings:
+  - id: GISRT-P0-01
+    finding: Authenticated direct-route access is not restricted to GIS Admin or Technical Admin.
+    action: CORRECT
+  - id: GISRT-P0-02
+    finding: Full factory coordinates and GIS engine settings are readable by every authenticated identity.
+    action: CORRECT
+  - id: GISRT-P0-03
+    finding: Planner can invoke the per-factory radius action and RLS permits the update.
+    action: CORRECT_OR_FORMALLY_CHANGE_AUTHORITY
+  - id: GISRT-P0-04
+    finding: Radius update has no expected value/version and silently overwrites concurrent changes.
+    action: CORRECT
+  - id: GISRT-P0-05
+    finding: Missing DEC-002 policy silently falls back to 150 metres in the editing canvas.
+    action: BLOCK
+  - id: GISRT-P0-06
+    finding: GIS layer and working-location tables have no scoped audit trigger.
+    action: CORRECT_BEFORE_GOVERNED_MUTATION
+  - id: GISRT-P0-07
+    finding: MVP3-HOLD-002 blocks production map, geographic-authority, and offline-pack certification.
+    action: BLOCK_PROVIDER_CLAIMS
+  - id: GISRT-P1-01
+    finding: The synchronized list exists but row and marker selection lack keyboard equivalence.
+    action: CORRECT
+  - id: GISRT-P1-02
+    finding: One source failure hides healthy settings, registry, and non-map evidence.
+    action: CORRECT
+  - id: GISRT-P1-03
+    finding: General tile/network degradation lacks deterministic fallback and recovery.
+    action: CORRECT
+  - id: GISRT-P1-04
+    finding: Current tests overstate DEC-002 approval and do not prove Admin runtime permission boundaries.
+    action: CORRECT_TEST_CLAIMS
+  - id: GISRT-P1-05
+    finding: Companion Spatial Canvas has no governed screen identity and remains feature/provider held.
+    action: BLOCK
+
+verdict:
+  classification: BLOCK_DUE_TO_PERMISSION_POLICY_CONCURRENCY_AND_PROVIDER_HOLDS
+  requirement_rows_completed: 0
+  screens_certified: 0
+  implementation_ready: false
+  sponsor_message: >
+    The GIS screen is real and has useful Mapbox, list, filtering, and radius
+    behavior, but it is not safe to certify. Direct URL access is overbroad,
+    precise GIS data is broadly readable, Planner can change the GIS-owned
+    radius, concurrent changes overwrite silently, policy fallbacks can be
+    mistaken for approved DEC-002 values, and provider/offline authority remains held.
+
+remediation_order:
+  - Resolve exact route personas and planner-versus-GIS radius authority.
+  - Formally disposition DEC-002 or preserve policy-unresolved behavior.
+  - Define least-privilege reduced GIS reads and precise-location visibility.
+  - Define direct audited radius update versus governed version/publish lifecycle.
+  - Define stale-write compare-and-swap behavior and audit context.
+  - Align route and server-action capability checks with RLS.
+  - Add spatial-table audit before enabling governed mutation.
+  - Preserve synchronized list while fixing degraded map and partial-source behavior.
+  - Close only the exact Mapbox/style/geographic/offline parts of MVP3-HOLD-002 that receive evidence.
+  - Run isolated security, runtime, concurrency, EN/AR, responsive, accessibility, and browser evidence.
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-REMEDIATION-PREFLIGHT-041
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Convert this runtime map and the design dependency into a bounded,
+    collision-safe preflight with explicit AUTH, DB, GIS_ACTION, MAP_FALLBACK,
+    I18N_A11Y, SEED, TEST, and EVIDENCE ownership, while keeping policy and
+    provider-dependent work blocked.
+  required_inputs:
+    - sponsor decision on exact /admin/gis personas
+    - sponsor decision on Planner versus GIS Admin radius authority
+    - DEC-002 formal disposition or explicit unresolved-state contract
+    - approved CAS and radius audit semantics
+    - accepted WA-DES-006-C1 for UI work
+    - scoped disposition of MVP3-HOLD-002
+  constraints:
+    - Do not create tests, fixtures, migrations, code, data, leases, or design.
+    - Do not invent numeric limits, legal status, provider proof, or offline behavior.

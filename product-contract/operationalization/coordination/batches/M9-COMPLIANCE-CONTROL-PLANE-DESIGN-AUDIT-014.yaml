@@ -1,0 +1,411 @@
+schema_version: "1.0"
+packet_id: M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: c6ff6b07caeedf4ae572a1f8fc0dbb580afd7054
+  task: M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014
+  requirements: ["CR-449..CR-478"]
+  acceptance: ["WA-M6-AC-001..006", "WA-M9-AC-001..006"]
+  screens:
+    - SCR-ADM-010
+    - SCR-ADM-011
+    - SCR-ADM-020
+    - SCR-ADM-030
+    - SCR-ADM-031
+    - SCR-ADM-040
+    - SCR-ADM-041
+  engines: ["ENG-05", "ENG-07", "ENG-08", "ENG-09", "ENG-10", "ENG-12"]
+  do_not_touch:
+    - "Claude Design files and registered mappings."
+    - "Application source, tests, migrations, seed data, Supabase and providers."
+    - "main, setup/Inspection and every existing stash."
+
+authority:
+  requirements: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  open_decisions: product-contract/governance/OPEN_DECISIONS.yaml
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+
+candidate_design_identity:
+  source_directory: /Users/vikramindla/Attachment dump/export-non-inspector
+  files:
+    - logical_id: WA-DES-002
+      filename: "SAQEEL Admin Detail.dc.html"
+      bytes: 27541
+      sha256: "65b98dfc952d2737260c5c49f432c74cdb85a18f1fdec3e0f2af29ac9dea957d"
+      registered_sha_match: true
+    - logical_id: WA-DES-005
+      filename: "SAQEEL Admin Form Builder.dc.html"
+      bytes: 14334
+      sha256: "9f33c90405b4b134756848ebe4a6c7fc5a4df29e0a411d4cbb369d1e6583b5f0"
+      registered_sha_match: true
+    - logical_id: WA-DES-015
+      filename: "SAQEEL Admin.dc.html"
+      bytes: 42071
+      sha256: "d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3"
+      registered_sha_match: true
+  identity_limit: >-
+    The exact registered exports are proven. No successor, cloud etag or
+    accepted route remap is implied.
+
+precise_requirement_route_design_map:
+  - requirements: ["CR-449", "CR-458..CR-463"]
+    capability: "Regulation record, clause hierarchy, draft/publish/deactivate, versioning and audit"
+    routes: ["/admin/regulations", "/admin/regulations/:id"]
+    components:
+      - apps/web/src/app/(app)/admin/regulations/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/[id]/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+      - apps/web/src/app/(app)/admin/regulations/Controls.tsx
+    permissions: "RBAC-001; Compliance Admin; maker-checker; published versions immutable."
+    candidate_designs:
+      registry: WA-DES-015
+      detail: WA-DES-002
+    validation:
+      registry: CONFIRMED_WITH_CORRECTION
+      detail: CONFIRMED_WITH_CORRECTION
+  - requirements: ["CR-450", "CR-453", "CR-464..CR-473"]
+    capability: "Item catalogue, response/evidence/scoring rules, sections, order, conditions and runtime preview"
+    routes: ["/admin/items", "/admin/items/:id/runtime-preview"]
+    components:
+      - apps/web/src/app/(app)/admin/items/page.tsx
+      - apps/web/src/app/(app)/admin/items/[id]/runtime-preview/page.tsx
+      - apps/web/src/app/(app)/admin/items/Controls.tsx
+    permissions: "RBAC-001/RBAC-002; Compliance/Form Admin writes; published package snapshots remain frozen."
+    candidate_designs:
+      registry: WA-DES-015
+      detail_preview: WA-DES-002
+    validation:
+      registry: CONFIRMED_WITH_CORRECTION
+      detail_preview: CONFIRMED_WITH_CORRECTION
+    decision_boundary: "Score inputs CR-471/472 remain blocked by DEC-001 and DEC-028."
+  - requirements: ["CR-454..CR-457", "CR-464..CR-470", "CR-473", "CR-475..CR-478"]
+    capability: "Package library/version editor, form designer, templates, action forms, validation, preview, publish and runtime locking"
+    routes: ["/admin/packages", "/admin/packages/:id/designer"]
+    components:
+      - apps/web/src/app/(app)/admin/packages/page.tsx
+      - apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+      - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+      - apps/web/src/app/(app)/admin/packages/PublishControls.tsx
+      - apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+    candidate_designs:
+      library_editor: WA-DES-002
+      designer: WA-DES-005
+    validation:
+      library_editor: CONFIRMED_WITH_CORRECTION
+      designer: NO_CODE_MATCH
+    code_gap: >-
+      No apps/web/src/app/(app)/admin/packages/[id]/designer route/component
+      exists. The registered WA-DES-005 row explicitly says NEW_ROUTE_REQUIRED.
+  - requirements: ["CR-451", "CR-452", "CR-474"]
+    capability: "Violation catalogue, legal anchor, trigger and one-to-one penalty mapping"
+    routes: ["/admin/violations", "/admin/violations?mode=penalty"]
+    components:
+      - apps/web/src/app/(app)/admin/violations/page.tsx
+      - apps/web/src/app/(app)/admin/violations/Controls.tsx
+    candidate_designs:
+      violation_registry: WA-DES-015
+      penalty_mapping: NONE
+    validation:
+      violation_registry: CONFIRMED_WITH_CORRECTION
+      penalty_mapping: NO_DESIGN_MATCH
+    route_note: >-
+      SCR-ADM-041 names /admin/penalties, but implementation uses the governed
+      /admin/violations?mode=penalty logical mode. This route decision must be
+      explicit before successor acceptance.
+
+registered_mapping_corrections:
+  - logical_id: WA-DES-015
+    registered_route: /admin
+    observed_design_modes:
+      - "Compliance overview"
+      - "Regulation registry"
+      - "Package registry"
+      - "Item registry"
+      - "Violation registry"
+    validation: CONFIRMED_WITH_CORRECTION
+    correction: >-
+      These modes are the nearest designs for four real route families, but the
+      register maps WA-DES-015 only to /admin. They cannot become route authority
+      until an approved mapping split records exact logical ownership.
+  - logical_id: WA-DES-002
+    registered_routes:
+      - "/admin/regulations/:id"
+      - /admin/packages
+      - "/admin/items/:id/runtime-preview"
+      - /admin/risk
+      - "/planning/plans/:id"
+    validation: CONFIRMED_WITH_CORRECTION
+    correction: >-
+      Regulation detail, package editor and item preview are meaningful matches.
+      Risk and Planning are unrelated modes and introduce unresolved policy
+      values. A Compliance successor must remove those modes instead of
+      preserving convenience bundling.
+  - logical_id: WA-DES-005
+    registered_route: "/admin/packages/:id/designer"
+    validation: NO_CODE_MATCH
+    correction: >-
+      The form-builder concept is the nearest design for SCR-ADM-031, but the
+      application route does not exist. Design acceptance cannot be converted
+      into a completion or wiring claim.
+
+existing_code_behavior_to_preserve:
+  regulations:
+    - "Draft-only edit; distinct maker/checker publication RPC."
+    - "Every clause must map to an inspection item before publish."
+    - "Effective-date ordering, immutable published version and mandatory deactivation reason."
+    - "Attachment upload is non-overwriting and compensates metadata failure by removing the just-uploaded object."
+    - "Configuration audit and neutral provider errors."
+  items:
+    - "Regulation-clause ownership, unique item codes and governed response/evidence presets."
+    - "Optimistic version check and stale-edit rejection."
+    - "Edits blocked until every governed package reference has a frozen item snapshot."
+    - "Mandatory deactivation reason, usage evidence and RLS role guard."
+  packages:
+    - "Draft-only editor; prior versions remain immutable and in-flight execution remains pinned."
+    - "Publish-impact aggregate without leaking row-level objects."
+    - "Dependency validation covers active regulation, item relationship, conditions/cycles, evidence rules, action forms, templates, violations and penalty mapping."
+    - "Publish freezes item, violation and template semantics into the version snapshot."
+    - "Maker-checker publication RPC and reasoned deactivation."
+  violations_penalties:
+    - "Violation code is configuration, distinct from runtime violation; inspector cannot author/override it."
+    - "Legal-clause anchor, version, effective dates, usage trace, audit and maker-checker publication."
+    - "One violation to one penalty mapping; legal basis required and never inferred."
+    - "Penalty range/repeat values come only from governed presets; optional template reference is immutable."
+    - "Current logical penalty route remains /admin/violations?mode=penalty until an approved route change."
+
+meaningful_design_code_delta:
+  WA_DES_015:
+    strengths:
+      - "Shows regulation, package, item and violation registries with version/freeze language."
+      - "Separates unavailable reads from verified zero."
+    gaps:
+      - "Mostly static summary rows; does not expose complete create/edit/validate/publish/deactivate flows or route-specific errors."
+      - "Violation mode omits configuration version history, usage/audit, deactivation and penalty mapping."
+      - "Package mode omits the full dependency blocker list and template registry."
+      - "Item mode omits stale-edit, frozen-snapshot and deactivation behavior."
+  WA_DES_002:
+    strengths:
+      - "Provides detailed regulation lineage, package version impact and item runtime preview."
+    gaps:
+      - "No complete negative-state, stale/conflict or unauthorized-state controls."
+      - "No route-level list/detail navigation contract."
+      - "Risk and Planning modes create unrelated authority and policy conflicts."
+  WA_DES_005:
+    strengths:
+      - "Three-zone builder, bilingual item fields, runtime preview and maker-checker concept."
+    gaps:
+      - "No implemented route."
+      - "No section creation/reordering interactions, condition expression editor, circular dependency error, response-level evidence rule, template/action-form registry, save conflict or publish blocker summary."
+      - "Preview is an isolated Arabic sample rather than complete EN/LTR and AR/RTL parity."
+  penalty:
+    gap: >-
+      There is no exact design for violation-to-penalty mapping, legal basis,
+      mapping version, effective lifecycle, range/repeat preset, optional amount,
+      timing, immutable template and maker-checker publication.
+
+p0_risks:
+  - id: M9-DES-P0-001
+    finding: >-
+      WA-DES-015 contains the missing registry designs but is registered only
+      to /admin. WA-DES-002 is overloaded across Compliance, Risk and Planning.
+      Route/design ownership is not deterministic.
+    action: RETURN_FOR_MAPPING_CORRECTION
+  - id: M9-DES-P0-002
+    finding: >-
+      SCR-ADM-031 /admin/packages/:id/designer has a design but no code route;
+      SCR-ADM-041 penalty mapping has code but no exact design. Neither can be
+      called complete.
+    action: BLOCK_DUE_TO_MISSING_ROUTE_AND_DESIGN
+  - id: M9-POLICY-P0-003
+    finding: >-
+      WA-DES-002 shows item score weight 5 and risk bands/weights; WA-DES-005
+      shows weight 0.15. WA-DES-015 shows item weights. CR-471/472 are explicitly
+      blocked by DEC-001/DEC-028.
+    action: BLOCK_DUE_TO_MISSING_CONTRACT
+  - id: M9-LEGAL-P0-004
+    finding: >-
+      The designs present concrete authorities, clauses, provider names,
+      severity, grace periods and legal/configuration counts as if authoritative
+      without per-value provenance. Examples include MODON, Critical,
+      seven-day grace and specific clause/penalty relationships.
+    action: CHANGE_DESIGN_TO_GOVERNED_OR_NOT_AVAILABLE_VALUES
+  - id: M9-CODE-P0-005
+    finding: >-
+      apps/web/src/app/(app)/admin/items/actions.ts accepts score_weight even
+      though the governing risk/health scoring decisions remain open. Design
+      must not normalize this unresolved implementation contract.
+    action: BLOCK_DUE_TO_OPEN_DECISION
+  - id: M9-REGRESSION-P0-006
+    finding: >-
+      Literal design replication would remove current stale-write, immutable
+      snapshot, dependency validation, audit/usage, legal-basis and maker-checker
+      safeguards that the designs do not show.
+    action: PRESERVE_CODE_BEHAVIOR_AND_CORRECT_DESIGN
+
+p1_risks:
+  - id: M9-DES-P1-001
+    finding: >-
+      WA-DES-002/015 use fixed 256px rails and WA-DES-005 a fixed 248px rail.
+      One 1180px builder collapse is not proof of 1024, 412, 390 and 320 layouts.
+  - id: M9-DES-P1-002
+    finding: >-
+      English screens use typed Arabic-only or Arabic-plus-ADMIN/صناعي branding,
+      not the approved bilingual SAQEEL | صقيل asset.
+  - id: M9-DES-P1-003
+    finding: >-
+      Arabic item snippets and one RTL preview do not constitute complete
+      AR/RTL route variants, mirrored navigation or localized validation.
+  - id: M9-DES-P1-004
+    finding: >-
+      Loading, empty, unauthorized, provider error, stale/conflict, validation
+      blocker, publish failure, immutable lock and no-data states are not
+      independently selectable across the required routes.
+  - id: M9-DES-P1-005
+    finding: >-
+      Keyboard reordering, focus restoration, error-summary navigation,
+      table/card alternatives, live announcements and narrow sticky behavior
+      are unevidenced.
+
+safe_successor_packets:
+  - packet: M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015
+    depends_on: M6-TRACEABILITY-SPLIT-011
+    logical_id: WA-DES-015
+    predecessor:
+      filename: "SAQEEL Admin.dc.html"
+      bytes: 42071
+      sha256: "d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3"
+    proposed_successor:
+      revision: WA-DES-015-C1
+      filename: "SAQEEL Compliance Registries - WA-DES-015-C1.dc.html"
+      status: DRAFT_NON_CONSUMABLE
+    bounded_delta:
+      - "Retain only Compliance overview, regulation, package, item and violation registry modes."
+      - "Use source-bound or Not Available facts; remove invented policy/provider/legal values."
+      - "Add route-specific loading, empty, unauthorized, error, stale and immutable states."
+      - "Add exact mapping to the four registry routes only after governance approval."
+  - packet: M9-COMPLIANCE-DETAIL-SUCCESSOR-016
+    depends_on: M6-TRACEABILITY-SPLIT-011
+    logical_id: WA-DES-002
+    predecessor:
+      filename: "SAQEEL Admin Detail.dc.html"
+      bytes: 27541
+      sha256: "65b98dfc952d2737260c5c49f432c74cdb85a18f1fdec3e0f2af29ac9dea957d"
+    proposed_successor:
+      revision: WA-DES-002-C1
+      filename: "SAQEEL Compliance Detail - WA-DES-002-C1.dc.html"
+      status: DRAFT_NON_CONSUMABLE
+    bounded_delta:
+      - "Retain regulation detail, package version editor and item runtime preview only."
+      - "Remove Risk and Planning modes and every unresolved score/weight/band."
+      - "Add all preserved lifecycle, stale, audit, attachment, dependency and immutable-snapshot states."
+  - packet: M9-PACKAGE-DESIGNER-SUCCESSOR-017
+    depends_on: M6-TRACEABILITY-SPLIT-011
+    logical_id: WA-DES-005
+    predecessor:
+      filename: "SAQEEL Admin Form Builder.dc.html"
+      bytes: 14334
+      sha256: "9f33c90405b4b134756848ebe4a6c7fc5a4df29e0a411d4cbb369d1e6583b5f0"
+    proposed_successor:
+      revision: WA-DES-005-C1
+      filename: "SAQEEL Package Designer - WA-DES-005-C1.dc.html"
+      status: DRAFT_NON_CONSUMABLE
+    bounded_delta:
+      - "Remove unapproved weight values."
+      - "Complete section/order, response, condition, evidence, action-form, template, preview and publish-validation interactions."
+      - "Add missing dependency, cycle, stale-save, unauthorized, provider and immutable states."
+    implementation_gate: "No code begins until the route receives accepted design and a separate exclusive lease."
+  - packet: M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+    depends_on: M6-TRACEABILITY-SPLIT-011
+    mode: NEW_LOGICAL_DESIGN_ID_REQUIRES_GOVERNANCE
+    routes: ["/admin/violations", "/admin/violations?mode=penalty"]
+    purpose: >-
+      Create route-specific authority for violation configuration and penalty
+      mapping without importing the operational Enforcement design. Preserve
+      legal basis, one-to-one mapping, immutable template, version/effective
+      lifecycle, audit/usage and maker-checker behavior.
+    status: BLOCKED_UNTIL_LOGICAL_ID_AND_ROUTE_DECISION
+
+common_successor_acceptance:
+  - "Exact predecessor hashes unchanged and successors created under unused filenames."
+  - "Approved bilingual identity; complete EN/LTR and AR/RTL."
+  - "Distinct 1440/1280, 1024, 412, 390 and 320 responsive states."
+  - "Light/dark, keyboard, focus, announcements, table/card alternatives and 200 percent zoom."
+  - "No policy, legal, provider, threshold, weight, score, SLA or grace value without governed provenance."
+  - "Every required negative state independently selectable and evidenced."
+  - "DRAFT_NON_CONSUMABLE until export fingerprint, independent comparison and sponsor acceptance."
+
+recommended_sponsor_decision:
+  recommendation: RETURN_FOR_MAPPING_AND_DESIGN_CORRECTION
+  summary: >-
+    Approve only the traceability split and safe-successor preparation. Do not
+    authorize implementation of the missing package designer or consume any
+    candidate design until the unresolved scoring/legal values are removed and
+    the route-specific design gaps are closed.
+
+status_board:
+  Design:
+    status: RED
+    owner: Claude Design
+    date: "2026-07-25"
+    revision: "WA-DES-002/005/015 registered predecessors"
+    blocker: "M9-DES-P0-001..004"
+    next_action: M6-TRACEABILITY-SPLIT-011
+  Frontend:
+    status: AMBER
+    owner: Claude Code
+    date: "2026-07-25"
+    revision: "Existing registry/detail/package/violation routes"
+    blocker: "Package designer route absent; unresolved item scoring field"
+    next_action: "Preservation review after corrected authority"
+  Service_Wiring:
+    status: AMBER
+    owner: Claude Code
+    date: "2026-07-25"
+    revision: "Current RPC/RLS/audit/version implementation"
+    blocker: "No current design authority for complete dependency and penalty workflows"
+    next_action: "Independent negative-path and atomic publication audit"
+  QA:
+    status: RED
+    owner: Codex reviewer
+    date: "2026-07-25"
+    revision: "WA-M6/WA-M9 acceptance not design-evidenced"
+    blocker: "M9-DES-P1-001..005 and missing route/design"
+    next_action: "Build evidence matrix from accepted successors"
+  Sponsor:
+    status: RED
+    owner: Sponsor
+    date: "2026-07-25"
+    revision: "No implementation consent packet"
+    blocker: "Six P0 and five P1 findings"
+    next_action: "Mapping correction and successor preparation only"
+
+queued_next_task:
+  packet: M6-TRACEABILITY-SPLIT-011
+  status: QUEUED_READ_ONLY
+  purpose: >-
+    Reconcile M6 and M9 ownership so every CR-449..CR-478 row has one semantic
+    route/design owner and Committee, operational Enforcement and Risk are
+    removed from M6 completion accounting without deleting those products.
+  boundary: "Governance/mapping proposal only; no frozen mapping, design or product write."
+
+stop_conditions:
+  - "Do not overwrite registered predecessors."
+  - "Do not implement /admin/packages/:id/designer from an unaccepted design."
+  - "Do not invent or preserve unresolved score weights, bands, legal actions, provider names or policy values."
+  - "Do not weaken maker-checker, audit, immutable snapshots, versioning, dependency validation or RLS/RBAC."
+  - "Do not advance with any unresolved P0/P1."

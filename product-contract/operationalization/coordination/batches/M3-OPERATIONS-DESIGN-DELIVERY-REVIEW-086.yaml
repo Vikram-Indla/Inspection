@@ -1,0 +1,167 @@
+schema_version: "1.0"
+packet_id: M3-OPERATIONS-DESIGN-DELIVERY-REVIEW-086
+title: M3 Operations design delivery and runtime delta review
+status: ACTIVE_PARTIAL_NOT_ACCEPTED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: DESIGN_AND_RUNTIME_READ_ONLY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  design_revisions_accepted: 0
+  implementation_leases_granted: 0
+  reason: >-
+    Visible design candidates and a dirty preview branch were reviewed, but no
+    immutable identity exists for the currently visible C3 design content and
+    the active repository slice remains M2 awaiting Product Owner approval.
+
+scope:
+  module: M3 Operations
+  requirements: ["CR-430..CR-448"]
+  acceptance: ["WA-M3-AC-001..006"]
+  routes: ["/operations", "/operations/live"]
+  design_project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
+  design_surfaces:
+    - logical_id: WA-DES-033
+      visible_revision: WA-DES-033-C3
+      file: "SAQEEL M3 Operations Center - WA-DES-033-C3.dc.html"
+    - logical_id: WA-DES-034
+      visible_revision: WA-DES-034-C3
+      file: "SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+  do_not_touch:
+    - application code, tests, Supabase, providers, data and policies
+    - main, setup/Inspection, stashes and current slice controls
+    - M2 and every non-M3 design/status lane
+
+repository_and_runtime:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  runtime_worktree: /Users/vikramindla/Developer/Inspection-codex-m3-preview
+  runtime_branch: codex/m3-browser-preview
+  runtime_head: f452fb8f
+  runtime_state: DIRTY_NINE_FILES
+  runtime_port: 3013
+  active_repository_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict: >-
+    CURRENT_SLICE says not to start another batch. Read-only comparison and an
+    honest amber status update were completed; no M3 application or contract
+    mutation was performed by this reviewer.
+
+design_identity:
+  visible_revision_pair: ["WA-DES-033-C3", "WA-DES-034-C3"]
+  current_visible_live_content:
+    operations_center: >-
+      Premium bilingual shell; Operations Map and National Performance views;
+      five KPI positions; scoped map/list, drill/detail and hard-state controls.
+    operations_live: >-
+      Premium bilingual shell; Active/On the way/Arrived summaries; map and
+      accessible list; three mutually exclusive location-provenance treatments;
+      loading, RLS-empty, error, provider failure, no-position and unauthorized
+      controls; standard/wallboard and motion/reduced-motion modes.
+  registered_operations_live_export:
+    bytes: 21270
+    sha256: ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279
+    content_state: OLDER_PROJECTED_ROUTE_PREDECESSOR
+  immutable_platform_revision_token: NOT_EXPOSED
+  current_visible_export_sha256: NOT_AVAILABLE
+  stable_consumable_revision: NONE
+  disposition: >-
+    C3 is the exact visible revision label, but it is not a stable consumable
+    design authority until the currently visible bytes are exported, hashed and
+    bound to accepted lineage without overwriting an accepted predecessor.
+
+runtime_findings:
+  - id: M3-RUN-P1-001
+    finding: Shared shell renders typed locale-specific SAQEEL Industrial or صقيل صناعي.
+    required_correction: >-
+      Use the approved bilingual SAQEEL | صقيل dark-surface wordmark in the
+      expanded rail and the approved shield in collapsed mode. Do not generate
+      Industrial or صناعي as a sub-brand.
+  - id: M3-RUN-P1-002
+    finding: Live Operations uses one global "Projected route — not live GPS" disclosure.
+    required_correction: >-
+      Bind exactly one provenance state per entity: last recorded GPS with
+      source/time/accuracy when present; assignment/schedule projection with
+      coordinate source and scheduled time; or location unavailable with a
+      specific reason. Draw no route, trail or ETA.
+  - id: M3-RUN-P1-003
+    finding: Active-inspector rows display impossible future Since dates.
+    required_correction: >-
+      Use the source-backed operational-state-entered event time, not visit
+      window_start. Reject invalid, contradictory or future timestamps and
+      show an explicit unavailable/invalid-data treatment without inventing a
+      tolerance or threshold.
+  - id: M3-RUN-P1-004
+    finding: English UI displays Arabic-only names without a locale-safe treatment.
+    required_correction: >-
+      Use a source-backed locale-specific display name when present. Otherwise
+      retain the official name inside automatic bidirectional isolation; never
+      invent transliteration or replace the person identity.
+  - id: M3-RUN-P1-005
+    finding: Active-inspector list is fixture-heavy and factory-first.
+    required_correction: >-
+      Make the inspector the primary line, factory/region secondary, and
+      canonical state plus valid state-entered time/provenance tertiary.
+      Preserve governed scope/filtering and use bounded paging or virtualization
+      based on the existing query contract rather than an arbitrary UI cap.
+  - id: M3-RUN-P1-006
+    finding: Dirty preview adds selection detail but retains global projected disclosure and invalid time source.
+    required_correction: >-
+      Selection must expose source-backed inspector, factory, region, canonical
+      operational state, valid state-entered time, visit reference and that
+      entity's provenance metadata; keep map/list selection synchronized,
+      dismissible, keyboard reachable and announced.
+  - id: M3-RUN-P1-007
+    finding: Runtime hard-state implementation is incomplete relative to the visible design matrix.
+    required_correction: >-
+      Keep normal, loading, RLS-empty, query error, tile/provider failure, no
+      positions and direct-route unauthorized states distinct. Provider failure
+      withdraws the basemap but retains non-map context; no pseudo-map.
+
+concrete_implementation_delta:
+  operations_center:
+    - Preserve the five-card contract and both decision-blocked values as unavailable, never zero.
+    - Preserve Operations Map and National Performance as primary scoped views.
+    - Preserve synchronized map/list selection and bounded detail hierarchy.
+    - Keep 1024, 412, 390 and 320 layouts free of clipping and horizontal page overflow.
+    - Do not change formulas, alert taxonomy, SLA, roles, providers or backend contracts.
+  operations_live:
+    - Replace the global projected disclosure with the per-entity provenance union.
+    - Remove every route/path/trail/navigation/ETA implication.
+    - Correct the inspector-first list and selected-detail information hierarchy.
+    - Correct time semantics and fail closed on invalid/future values.
+    - Correct locale-safe person-name rendering without invented transliteration.
+    - Preserve map/list synchronization, keyboard/focus, reduced motion and wallboard behavior.
+    - Preserve all seven hard states across EN/LTR, AR/RTL, light/dark and registered widths.
+  shared_shell_dependency:
+    - Replace typed/generated wordmark content with the approved bilingual asset.
+    - Keep logical RTL layout while the canonical identity asset remains unchanged.
+
+status_board_update:
+  file: "SAQEEL PWA-Inspector Journey Mindmap.dc.html"
+  tab: Web/Admin Delivery
+  module: M3 Operations Center
+  lane: Design
+  status: ACTIVE_PARTIAL_NOT_ACCEPTED
+  owner_date: "Design · 2026-07-25"
+  other_lanes_changed: 0
+  files_or_pages_created: 0
+  correction_followup: DISPATCHED
+
+reviewer_recommendation: RETURN_FOR_MAPPING_AND_DELTA_CORRECTION
+blockers:
+  - Current visible C3 bytes lack an immutable revision token and export hash.
+  - Registered C3 export is the older projected-route predecessor.
+  - Active repository slice remains M2 awaiting Product Owner approval.
+  - Runtime P1 name, time, hierarchy, provenance and brand corrections remain open.
+  - Full browser matrix and protected regression evidence remain open.
+
+safe_successor:
+  task_id: M3-OPERATIONS-DESIGN-IDENTITY-AND-RUNTIME-DELTA-RECHECK-087
+  mode: READ_ONLY
+  purpose: >-
+    Re-export/fingerprint the currently visible C3 pair, verify the status-board
+    correction, and recheck the exact seven runtime deltas after the active M3
+    writer returns a clean, tested candidate and the M2 slice conflict is resolved.

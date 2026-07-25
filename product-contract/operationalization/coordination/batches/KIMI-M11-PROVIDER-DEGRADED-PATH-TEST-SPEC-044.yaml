@@ -1,0 +1,394 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+status: READ_ONLY_FUTURE_PROVIDER_TEST_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze the exact future provider degraded-path tests required to prove that
+  M11 remains truthful, neutral, idempotent, auditable and fail-closed when no
+  approved provider is configured or delivery is unavailable, rejected,
+  indeterminate, delayed or partial. This is a specification only.
+
+frozen_authority:
+  test_gap_inventory:
+    packet: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+    sha256: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  security_negative_path_review:
+    packet: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
+    sha256: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  ACL_negative_test_spec:
+    packet: KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043
+    sha256: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, design, data, seed, branch or stash change."
+  - "No provider call, network request, secret, credential, OTP, phone number, email address or delivery receipt."
+  - "No provider name, timeout duration, retry count, backoff, cooldown, expiry, attempt limit or escalation value is invented."
+  - "No provider-success or runtime-completion claim while provider authority/configuration is absent."
+  - "All fixtures are symbolic state classes; none is a realistic provider response or application record."
+  - "No lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+authority_truth:
+  current_provider_state: NOT_CONFIGURED_SOURCE_IS_DEV_ONLY
+  prohibited_current_behavior:
+    - "Database-generated code returned as dev_code."
+    - "DEV-CONSOLE label treated as provider delivery."
+    - "Notification row, audit row or queued status treated as delivery proof."
+    - "Permanent test secret seam or application-accessible injected code."
+  required_runtime_truth:
+    - "CR-350/CR-351 runtime completion remains BLOCKED without an approved configured provider."
+    - "Removal of dev_code cannot be replaced by an invented provider or secret-return path."
+    - "Only a separately authorized transaction-local isolated OTP injection may prove engine behavior."
+    - "A provider transport result does not by itself prove recipient delivery unless the approved provider contract defines that evidence."
+
+symbolic_fixtures:
+  personas:
+    - id: FX-PRO-ASSIGNED-INSPECTOR
+      shape: "Ordinary authenticated Inspector assigned to the exact visit."
+    - id: FX-PRO-UNASSIGNED-INSPECTOR
+      shape: "Ordinary authenticated Inspector without resource relationship."
+    - id: FX-PRO-REVIEWER
+      shape: "Ordinary authenticated Reviewer; no OTP mutation authority."
+    - id: FX-PRO-AUDITOR
+      shape: "Ordinary authenticated Auditor; safe audit only."
+    - id: FX-PRO-PLANNER
+      shape: "Ordinary authenticated Planner; no inferred OTP authority."
+    - id: FX-PRO-OPERATIONS
+      shape: "Ordinary authenticated Operations; no inferred OTP authority."
+    - id: FX-PRO-ANON
+      shape: "Anonymous client."
+  resources:
+    - FX-PRO-RESOURCE-IN-SCOPE
+    - FX-PRO-RESOURCE-OUT-OF-SCOPE
+    - FX-PRO-RESOURCE-MISSING
+    - FX-PRO-PARTICIPANT-ELIGIBLE
+    - FX-PRO-PARTICIPANT-WRONG-STATE
+  provider_states:
+    - id: FX-PROVIDER-NOT-CONFIGURED
+      meaning: "No approved adapter/configuration exists."
+    - id: FX-PROVIDER-UNAVAILABLE
+      meaning: "Approved adapter cannot accept the request."
+    - id: FX-PROVIDER-REJECTED
+      meaning: "Approved adapter returns a governed rejection class."
+    - id: FX-PROVIDER-TIMEOUT-INDETERMINATE
+      meaning: "Caller cannot determine whether the provider accepted the request."
+    - id: FX-PROVIDER-PARTIAL
+      meaning: "Provider processing begins but approved delivery evidence is absent."
+    - id: FX-PROVIDER-ACCEPTED-NOT-DELIVERED
+      meaning: "Transport acceptance exists but recipient delivery is not proven."
+    - id: FX-PROVIDER-DELIVERED
+      meaning: "Reserved for a future approved provider contract and evidence; currently blocked."
+  controls:
+    - FX-PRO-REPEATED-SAME-IDEMPOTENCY-KEY
+    - FX-PRO-REPEATED-DIFFERENT-IDEMPOTENCY-KEY
+    - FX-PRO-CONCURRENT-SAME-IDEMPOTENCY-KEY
+    - FX-PRO-CONCURRENT-DIFFERENT-IDEMPOTENCY-KEY
+    - FX-PRO-TRANSACTION-LOCAL-ENGINE-INJECTION
+    - FX-PRO-FORCED-ROLLBACK
+    - FX-PRO-SECRET-SENTINEL
+
+expected_result_vocabulary:
+  BLOCKED_PROVIDER_NOT_CONFIGURED: "No request is represented as delivered or completed; no secret-bearing output."
+  PROVIDER_ATTEMPT_FAILED: "Governed failure state with no success event and no resource disclosure."
+  PROVIDER_OUTCOME_INDETERMINATE: "State remains non-delivered until approved evidence resolves it; retry is idempotent."
+  PROVIDER_ACCEPTED_NOT_DELIVERED: "Transport acceptance is not promoted to delivered."
+  DENY: "Caller is rejected without resource-existence or provider-detail disclosure."
+  NEUTRAL: "Missing and out-of-scope responses are byte-equivalent at the governed boundary."
+  ONE_ATTEMPT_EFFECT: "Repeated/concurrent identical request produces at most one authoritative attempt effect."
+  ROLLBACK_CLEAN: "No participant, counter, event, delivery or audit residue from the failed transaction."
+  BLOCKED_NOT_RUN: "Future positive provider proof is intentionally unavailable."
+
+test_groups:
+  PROVIDER_NOT_CONFIGURED:
+    cases:
+      - id: M11-044-NCF-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-RESOURCE-IN-SCOPE, FX-PROVIDER-NOT-CONFIGURED]
+        action: "Request OTP through the future governed application boundary."
+        expected: BLOCKED_PROVIDER_NOT_CONFIGURED
+        assertions:
+          - "No provider call is attempted."
+          - "No delivered, sent or completion status is emitted."
+          - "No dev_code, plaintext code, reusable secret or secret derivative is returned."
+          - "Participant state remains at the approved pre-delivery state."
+        evidence: [provider_configuration_attestation, response_field_manifest, state_before_after, event_before_after]
+      - id: M11-044-NCF-002
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-NOT-CONFIGURED, FX-PRO-SECRET-SENTINEL]
+        action: "Scan database-facing result, RPC JSON, browser DOM, logs, audit and exported evidence."
+        expected: "No prohibited secret class and no false delivery representation."
+        evidence: [result_scan, RPC_scan, DOM_scan, log_scan, audit_scan, export_scan]
+      - id: M11-044-NCF-003
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-NOT-CONFIGURED, FX-PRO-TRANSACTION-LOCAL-ENGINE-INJECTION]
+        action: "Prove engine-only verify behavior inside an authorized isolated transaction."
+        expected: "Engine result can be assessed without exposing or persisting an application-accessible injection seam."
+        evidence: [isolation_attestation, ordinary_persona_denial, teardown_result]
+
+  PROVIDER_UNAVAILABLE_OR_REJECTED:
+    cases:
+      - id: M11-044-UNV-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-UNAVAILABLE, FX-PRO-PARTICIPANT-ELIGIBLE]
+        action: "Attempt provider-backed request."
+        expected: PROVIDER_ATTEMPT_FAILED
+        assertions:
+          - "No delivered or sent semantic event."
+          - "No active verification secret remains unless the approved future contract explicitly requires a safe retry state."
+          - "No raw provider error reaches the client."
+        evidence: [normalized_result, participant_state_before_after, semantic_event_count, forbidden_text_scan]
+      - id: M11-044-REJ-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-REJECTED, FX-PRO-PARTICIPANT-ELIGIBLE]
+        action: "Attempt provider-backed request."
+        expected: PROVIDER_ATTEMPT_FAILED
+        assertions:
+          - "Provider rejection is not represented as recipient failure unless the approved contract defines that class."
+          - "No delivery success state or event."
+          - "Client response uses governed neutral copy."
+        evidence: [provider_outcome_class, normalized_result, event_count, state_before_after]
+      - id: M11-044-UNV-002
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-UNAVAILABLE, FX-PRO-FORCED-ROLLBACK]
+        action: "Force failure after local preparation but before committed provider-attempt state."
+        expected: ROLLBACK_CLEAN
+        evidence: [participant_before_after, counter_before_after, audit_before_after, event_before_after]
+
+  TIMEOUT_AND_INDETERMINATE:
+    cases:
+      - id: M11-044-TMO-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-TIMEOUT-INDETERMINATE, FX-PRO-PARTICIPANT-ELIGIBLE]
+        action: "Exercise an indeterminate provider outcome without assuming failure or delivery."
+        expected: PROVIDER_OUTCOME_INDETERMINATE
+        assertions:
+          - "No delivered status is asserted."
+          - "No second side effect is created by safe status reconciliation."
+          - "Client does not receive provider internals or resource-existence details."
+        evidence: [provider_outcome_state, reconciliation_result, event_count, client_error_schema]
+      - id: M11-044-TMO-002
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-TIMEOUT-INDETERMINATE, FX-PRO-REPEATED-SAME-IDEMPOTENCY-KEY]
+        action: "Repeat the exact request after indeterminate outcome."
+        expected: ONE_ATTEMPT_EFFECT
+        evidence: [idempotency_key_hash, provider_attempt_count, participant_state, semantic_event_count]
+      - id: M11-044-TMO-003
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-TIMEOUT-INDETERMINATE, FX-PRO-REPEATED-DIFFERENT-IDEMPOTENCY-KEY]
+        action: "Submit a logically duplicate request under a different key."
+        expected: "Final governed duplicate/cooldown policy applies without an invented value or duplicate delivery claim."
+        evidence: [logical_request_correlation, provider_attempt_count, normalized_result, semantic_event_count]
+
+  PARTIAL_AND_ACCEPTED_NOT_DELIVERED:
+    cases:
+      - id: M11-044-PAR-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-PARTIAL, FX-PRO-PARTICIPANT-ELIGIBLE]
+        action: "Exercise partial provider processing without approved delivery evidence."
+        expected: PROVIDER_ACCEPTED_NOT_DELIVERED
+        assertions:
+          - "No sent/delivered semantic event."
+          - "No participant state claims completed delivery."
+          - "Recovery/reconciliation remains possible under the approved future contract."
+        evidence: [provider_outcome_class, participant_state, event_count, recovery_state]
+      - id: M11-044-ACC-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-ACCEPTED-NOT-DELIVERED, FX-PRO-PARTICIPANT-ELIGIBLE]
+        action: "Record transport acceptance without recipient-delivery evidence."
+        expected: PROVIDER_ACCEPTED_NOT_DELIVERED
+        evidence: [transport_acceptance_attestation, delivery_evidence_absence, participant_state, event_count]
+      - id: M11-044-DEL-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-DELIVERED, FX-PRO-PARTICIPANT-ELIGIBLE]
+        action: "Prove successful delivery."
+        expected: BLOCKED_NOT_RUN
+        evidence: [future_provider_authority, future_delivery_evidence_contract]
+
+  RETRY_IDEMPOTENCY_AND_CONCURRENCY:
+    cases:
+      - id: M11-044-IDM-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-REPEATED-SAME-IDEMPOTENCY-KEY, FX-PROVIDER-UNAVAILABLE]
+        action: "Repeat the same failed logical request sequentially."
+        expected: ONE_ATTEMPT_EFFECT
+        evidence: [request_correlation, provider_attempt_count, counter_state, event_count]
+      - id: M11-044-IDM-002
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-CONCURRENT-SAME-IDEMPOTENCY-KEY, FX-PROVIDER-TIMEOUT-INDETERMINATE]
+        action: "Coordinate two concurrent identical requests."
+        expected: ONE_ATTEMPT_EFFECT
+        evidence: [transaction_timeline, participant_row_lock, provider_attempt_count, final_state, event_count]
+      - id: M11-044-IDM-003
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-CONCURRENT-DIFFERENT-IDEMPOTENCY-KEY, FX-PROVIDER-UNAVAILABLE]
+        action: "Coordinate logically duplicate requests with different keys."
+        expected: "Final guarded state and locking contract prevents duplicate authoritative delivery effects."
+        evidence: [transaction_timeline, participant_row_lock, provider_attempt_count, final_state, event_count]
+      - id: M11-044-IDM-004
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-REPEATED-SAME-IDEMPOTENCY-KEY, FX-PROVIDER-REJECTED]
+        action: "Replay an already rejected request."
+        expected: "No false success, no counter inflation and no duplicate semantic failure fact."
+        evidence: [replay_result, counter_before_after, semantic_event_count]
+
+  FALSE_SUCCESS_PREVENTION:
+    cases:
+      - id: M11-044-FSP-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-NOT-CONFIGURED, FX-PRO-RESOURCE-IN-SCOPE]
+        action: "Inspect UI and API response after request."
+        expected: "No success banner, delivered label, sent timestamp or completion navigation."
+        evidence: [API_schema, DOM_text_scan, route_result, screenshot]
+      - id: M11-044-FSP-002
+        persona: FX-PRO-AUDITOR
+        fixtures: [FX-PROVIDER-UNAVAILABLE, FX-PRO-RESOURCE-IN-SCOPE]
+        action: "Read approved safe audit projection."
+        expected: "Safe provider-attempt fact only if defined by the future contract; never a delivered fact."
+        evidence: [safe_projection_result, event_type_manifest, prohibited_field_scan]
+      - id: M11-044-FSP-003
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-PARTIAL, FX-PRO-SECRET-SENTINEL]
+        action: "Scan all persistence and application surfaces."
+        expected: "No secret sentinel and no success representation."
+        evidence: [storage_scan, audit_scan, RPC_scan, DOM_scan, log_scan, export_scan]
+
+  PERSONA_AND_NEUTRAL_BOUNDARY:
+    cases:
+      - id: M11-044-AUT-001
+        personas: [FX-PRO-UNASSIGNED-INSPECTOR, FX-PRO-REVIEWER, FX-PRO-AUDITOR, FX-PRO-PLANNER, FX-PRO-OPERATIONS, FX-PRO-ANON]
+        fixtures: [FX-PRO-RESOURCE-IN-SCOPE, FX-PROVIDER-UNAVAILABLE]
+        action: "Attempt provider-backed OTP mutation."
+        expected: DENY
+        assertions:
+          - "No provider attempt."
+          - "No participant, counter, audit or event mutation."
+          - "No provider-state disclosure."
+        evidence: [persona_attempt_matrix, provider_attempt_count, state_before_after, audit_before_after]
+      - id: M11-044-NEU-001
+        persona: FX-PRO-UNASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-RESOURCE-MISSING, FX-PRO-RESOURCE-OUT-OF-SCOPE, FX-PROVIDER-UNAVAILABLE]
+        action: "Compare governed request responses for missing and out-of-scope resources."
+        expected: NEUTRAL
+        evidence: [status_pair, body_byte_hash_pair, token_pair, timing_class]
+      - id: M11-044-NEU-002
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-RESOURCE-MISSING, FX-PRO-RESOURCE-OUT-OF-SCOPE, FX-PROVIDER-REJECTED]
+        action: "Ensure provider failure cannot override the resource-neutral boundary."
+        expected: NEUTRAL
+        evidence: [status_pair, body_byte_hash_pair, provider_attempt_count]
+      - id: M11-044-NEU-003
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-PARTICIPANT-WRONG-STATE, FX-PROVIDER-UNAVAILABLE]
+        action: "Attempt request from a disallowed participant/session state."
+        expected: "Governed state denial occurs before provider invocation."
+        evidence: [guard_result, provider_attempt_count, state_before_after]
+
+  AUDIT_AND_EVENT_CARDINALITY:
+    cases:
+      - id: M11-044-AUD-001
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-UNAVAILABLE, FX-PRO-SECRET-SENTINEL]
+        action: "Inspect safe audit and semantic event output for a failed provider attempt."
+        expected: "No secret material; no delivered event; no duplicate semantic failure fact."
+        evidence: [raw_secret_absence_attestation, safe_projection, semantic_event_count]
+      - id: M11-044-AUD-002
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PROVIDER-TIMEOUT-INDETERMINATE, FX-PRO-REPEATED-SAME-IDEMPOTENCY-KEY]
+        action: "Reconcile and retry an indeterminate outcome."
+        expected: "At most one authoritative attempt fact and no delivered fact without evidence."
+        evidence: [attempt_fact_count, delivered_fact_count, correlation_manifest]
+      - id: M11-044-AUD-003
+        persona: FX-PRO-ASSIGNED-INSPECTOR
+        fixtures: [FX-PRO-FORCED-ROLLBACK, FX-PROVIDER-REJECTED]
+        action: "Force rollback after candidate audit/event generation."
+        expected: ROLLBACK_CLEAN
+        evidence: [audit_before_after, event_before_after, participant_before_after]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - code_commit
+    - migration_chain_hash
+    - fixture_graph_hash
+    - ordinary_persona
+    - provider_state_class
+    - logical_request_correlation_hash
+    - result
+    - independent_reviewer
+  required_outputs:
+    - normalized_client_result
+    - provider_attempt_count
+    - participant_and_counter_before_after
+    - safe_audit_and_semantic_event_cardinality
+    - prohibited_secret_and_false_success_scan
+    - rollback_or_teardown_result
+  redaction:
+    - "No provider payload, URL, credential, token, recipient, OTP, personal data or raw application row."
+    - "No realistic error body or provider identifier."
+    - "No secret value or value-derived hash."
+    - "Any prohibited field quarantines the entire evidence bundle."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-PROVIDER: apps/web/e2e/m11-provider-truth.spec.ts
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+  ownership_boundaries:
+    TEST-PROVIDER: "Provider state, false-success, browser/API degradation and approved future delivery proof."
+    TEST-013: "Provider-facing OTP engine, permission, row-lock and idempotency database proof."
+    TEST-015: "Safe audit, secret-sentinel, neutral boundary and event-cardinality proof."
+    TEST-BROWSER: "Ordinary-persona UI neutrality, forbidden copy and regression proof."
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "No implementation worker edits a leased QA path."
+    - "Stop on path, migration, signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  provider_success_test: BLOCKED_NOT_RUN
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final provider state model, function signatures, owner/ACL, policy, trigger and application manifests."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+  required_before_provider_success_case:
+    - "Approved provider authority and configuration."
+    - "Approved delivery-evidence contract."
+    - "No secret-bearing application seam."
+
+queued_next:
+  packet: KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Deterministic lock order, coordinated races, forced rollback, quiesce and event cardinality only."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  provider_state_classes: 7
+  test_group_count: 8
+  test_case_count: 26
+  unique_test_case_ids: PASS
+  actual_test_files_created_or_edited: 0
+  proposed_test_paths: 4
+  proposed_test_paths_unique: PASS
+  leases_issued: 0
+  provider_success_claimed: false
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

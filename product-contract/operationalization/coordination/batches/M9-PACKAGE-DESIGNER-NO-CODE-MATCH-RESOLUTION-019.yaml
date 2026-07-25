@@ -1,0 +1,451 @@
+schema_version: "1.0"
+packet_id: M9-PACKAGE-DESIGNER-NO-CODE-MATCH-RESOLUTION-019
+status: REVIEWER_READY_READ_ONLY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+
+business_function: >-
+  Resolve whether Package & Form Designer requires a new application route or
+  can be governed as the existing inline designer within /admin/packages.
+  Preserve all package-authoring behavior and prevent an unnecessary competing
+  route, design or implementation.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: f6ef621e5fcf0872f5eb4e1c83f24b025707122d
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018.yaml
+  dirty_path_ownership: "Prior Claude Design lane packet; preserved and not modified."
+  task: M9-PACKAGE-DESIGNER-NO-CODE-MATCH-RESOLUTION-019
+  process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+  requirement_ids:
+    primary:
+      - "CR-454..CR-457"
+      - "CR-464..CR-470"
+      - "CR-473"
+      - "CR-475..CR-478"
+    blocked:
+      - "CR-471"
+      - "CR-472"
+    blocked_decisions: ["DEC-001", "DEC-028"]
+  acceptance_ids: ["WA-M9-AC-001..006"]
+  screens: ["SCR-ADM-030", "SCR-ADM-031"]
+  implemented_route: /admin/packages
+  absent_route: "/admin/packages/:id/designer"
+  engines: ["ENG-05", "ENG-07", "ENG-08", "ENG-09", "ENG-10", "ENG-12"]
+  dependencies:
+    - M6-TRACEABILITY-SPLIT-011
+    - M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014
+    - M9-COMPLIANCE-DETAIL-SUCCESSOR-016
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "WA-DES-005, WA-DES-002 and every Claude Design file."
+    - "Frozen route, screen, design, requirement and acceptance artifacts."
+    - "Application source, tests, migrations, seeds, Supabase and shared data."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  corrected_traceability: product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+  control_plane_audit: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-CONTROL-PLANE-DESIGN-AUDIT-014.yaml
+  detail_successor: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-DETAIL-SUCCESSOR-016.yaml
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+  route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  current_implementation:
+    - apps/web/src/app/(app)/admin/packages/page.tsx
+    - apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+    - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+    - apps/web/src/app/(app)/admin/packages/PublishControls.tsx
+    - apps/web/src/app/(app)/admin/packages/ImpactPanel.tsx
+    - apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+    - apps/web/src/app/(app)/admin/packages/actions.ts
+  current_tests:
+    - apps/web/e2e/cd-008-009-packages.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+
+design_identity:
+  logical_id: WA-DES-005
+  predecessor:
+    filename: "SAQEEL Admin Form Builder.dc.html"
+    bytes: 14334
+    sha256: "9f33c90405b4b134756848ebe4a6c7fc5a4df29e0a411d4cbb369d1e6583b5f0"
+    identity_reverified_on: "2026-07-25"
+    state: ACCEPTED_PREDECESSOR_IMMUTABLE
+  registered_mapping:
+    route: "/admin/packages/:id/designer"
+    strategy: NEW_ROUTE_REQUIRED
+    component: NONE
+  proposed_corrected_lineage:
+    revision: WA-DES-005-C1
+    filename: "SAQEEL Package Designer - WA-DES-005-C1.dc.html"
+    initial_state: DRAFT_NON_CONSUMABLE
+    role: EMBEDDED_COMPONENT_AUTHORITY
+    route: /admin/packages
+    component: apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+    creation_authorization: NOT_GRANTED_BY_THIS_PACKET
+  no_overwrite_rule: "The predecessor remains immutable and consumed until exact successor acceptance."
+
+independent_capability_result:
+  route_exists: true
+  dedicated_route_exists: false
+  component_exists: true
+  component_is_real_business_capability: true
+  component_is_wired: true
+  evidence:
+    - "DraftEditor is rendered only for draft package versions and verified writers."
+    - "It creates and reorders bilingual sections and items."
+    - "It configures required, optional and conditional item relationships."
+    - "It configures response evidence, violation and action-form references."
+    - "It creates action forms and binds governed template versions."
+    - "It renders a read-only runtime preview."
+    - "It validates bilingual/duplicate structure client-side and full dependencies server-side."
+    - "It saves through saveDraftDefinition and publishes through the guarded package RPC."
+    - "Published item, violation and template semantics are frozen into the package version."
+  conclusion: >-
+    The canonical business capability is materially present inline at
+    /admin/packages. A new route is not required to deliver the capability and
+    would duplicate lifecycle context, permissions and data unless separately
+    justified by approved information architecture.
+
+screen_and_route_resolution:
+  SCR_ADM_030:
+    name: Inspection Package Library
+    route: /admin/packages
+    authority: WA-DES-002-C1
+    role: "Package list, version lifecycle, impact, preview, publish and deactivation."
+  SCR_ADM_031:
+    name: Package & Form Designer
+    current_catalogue_route: "/admin/packages/:id/designer"
+    proposed_mvp1_route: /admin/packages
+    authority: WA-DES-005-C1
+    role: "Embedded draft-designer component within the selected package-version panel."
+  overlap_rule: >-
+    WA-DES-002-C1 and WA-DES-005-C1 may share /admin/packages only as
+    complementary authorities. WA-DES-002-C1 governs the page and lifecycle;
+    WA-DES-005-C1 governs the embedded DraftEditor region. Neither may replace
+    or duplicate the other.
+  route_change_required: true
+  route_change_kind: GOVERNANCE_MAPPING_CORRECTION
+  application_route_build_required: false
+  decision_required: >-
+    Sponsor/governance must approve SCR-ADM-031 as an embedded mode of
+    /admin/packages and amend the frozen design/route mapping. Until then
+    WA-DES-005 remains NO CODE MATCH even though its business capability exists.
+
+canonical_capability_mapping:
+  - requirement_ids: ["CR-454", "CR-455"]
+    behavior:
+      - "Create a versioned package and attach reusable inspection items."
+      - "Assign items to ordered sections and configure required/optional behavior."
+  - requirement_ids: ["CR-456", "CR-457", "CR-475"]
+    behavior:
+      - "Reference an active governed template version."
+      - "Configure an action-form trigger and mandatory/blocking state."
+  - requirement_ids: ["CR-458", "CR-459"]
+    behavior:
+      - "Draft/publish lifecycle; published definitions and historical use remain immutable."
+  - requirement_ids: ["CR-460", "CR-477"]
+    behavior:
+      - "Validate all required dependencies and expose clear blockers before publication."
+  - requirement_ids: ["CR-461"]
+    behavior:
+      - "Show source-backed impact on packages, active visits and future execution."
+  - requirement_ids: ["CR-462", "CR-463"]
+    behavior:
+      - "Reasoned deactivation and immutable configuration audit."
+  - requirement_ids: ["CR-464", "CR-465"]
+    behavior:
+      - "Create bilingual sections and configure section/item order."
+  - requirement_ids: ["CR-466", "CR-469", "CR-470"]
+    behavior:
+      - "Required/optional/conditional visibility and conditional-mandatory behavior."
+  - requirement_ids: ["CR-467", "CR-468"]
+    behavior:
+      - "Consume/configure response outcome mapping within the governed item/package relationship."
+  - requirement_ids: ["CR-473"]
+    behavior:
+      - "Configure response-based evidence without weakening the item base rule."
+  - requirement_ids: ["CR-476"]
+    behavior:
+      - "Read-only preview; preview never publishes or simulates a live inspection."
+  - requirement_ids: ["CR-478"]
+    behavior:
+      - "Execution remains pinned to the selected frozen package version."
+
+permissions_and_ownership:
+  read: "Authenticated roles allowed by current route and RLS."
+  write:
+    roles: ["Compliance Admin", "Form Admin"]
+    rule: "Route visibility is not write authority; server guard and RLS remain decisive."
+  maker_checker:
+    rule: "The approver must differ from the creator; publication remains a separate guarded action."
+  system:
+    - "No inspector authoring or override."
+    - "Published/locked versions are never edited."
+  data_ownership:
+    page_and_lifecycle: apps/web/src/app/(app)/admin/packages/page.tsx
+    embedded_designer: apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+    write_functions: apps/web/src/app/(app)/admin/packages/actions.ts
+
+existing_behavior_to_preserve:
+  versioning:
+    - "New draft clones the latest definition while prior versions remain immutable."
+    - "Save updates only a row still in draft status."
+    - "Publication and deactivation are separate guarded operations."
+    - "In-flight inspections remain pinned to their prior published version."
+  authoring:
+    - "Bilingual section names and unique section keys."
+    - "Section and item ordering with keyboard-operable buttons."
+    - "One item relationship per section and duplicate-item detection."
+    - "Required/optional/conditional and mandatory-when-visible rules."
+    - "Evidence override, response mapping, violation and action-form reference."
+    - "Action-form definition, blocking state and immutable template-version reference."
+    - "Unsaved/no-op state and read-only preview."
+  dependency_validation:
+    - "Sections array and bilingual titles."
+    - "Active item and active published regulation relationship."
+    - "Condition target and circular dependency rejection."
+    - "Evidence-rule shape."
+    - "Action-form key and referenced action-form existence."
+    - "Active violation and one-to-one penalty mapping."
+    - "Active governed template version."
+  publication:
+    - "Complete blocker list before publication."
+    - "Item, violation and template snapshots frozen into the published definition."
+    - "Maker-checker publication through the existing RPC."
+    - "Neutral failure message on snapshot or publish error."
+  impact_and_audit:
+    - "Aggregate active pinned impact without unauthorized row leakage."
+    - "Configuration changes remain audited where the current database proves it."
+    - "Unavailable impact/audit is never represented as zero."
+  stale_and_conflict:
+    - "Non-draft writes are rejected."
+    - "Do not claim concurrent-edit version-token protection unless independently proven."
+    - "Successor design must expose a conflict recovery state and retain user input."
+
+design_predecessor_corrections:
+  remove:
+    - "Risk Settings and unrelated admin navigation."
+    - "Typed Arabic-only صناعي branding."
+    - "Weight 0.15, scored validation and every score/weight control."
+    - "Fixed package/item/violation values presented as real."
+    - "Penalty, legal, severity, grace, provider or policy values not returned by a governed source."
+    - "Self-assessment behavior not proven as part of the selected package contract."
+  correct:
+    - "Form Builder becomes Package Designer embedded within /admin/packages."
+    - "Preview is read-only configuration preview, not a live Inspector or simulated score."
+    - "Response, violation and action-form choices come only from current governed records."
+    - "Maker-checker state uses current actor/record evidence rather than green illustrative checks."
+    - "Validation lists every real dependency class and links to the failing editor location."
+  add:
+    - "Complete empty, read-error, permission, conflict, validation and immutable states."
+    - "Full responsive, EN/AR, RTL, keyboard and zoom behavior."
+    - "Clear distinction among page authority, embedded component authority and runtime preview."
+
+open_decision_boundary:
+  requirements: ["CR-471", "CR-472"]
+  decisions: ["DEC-001", "DEC-028"]
+  required_treatment:
+    - "Remove scoring toggle, score weight input and score-exclusion presentation from WA-DES-005-C1."
+    - "Do not design a replacement formula or imply the underlying application fields are approved."
+    - "A later approved policy receives separate design and implementation change control."
+
+required_state_matrix:
+  page_and_access:
+    - id: LOADING
+      rule: "Package/version context and route heading remain identifiable."
+    - id: READ_ERROR
+      rule: "Package, item bank, template or violation read failure is isolated and neutral."
+    - id: AUTHORIZED_READ_ONLY
+      rule: "No designer controls; explain RLS role boundary."
+    - id: PERMISSION_CHECK_FAILED
+      rule: "Fail closed; writes disabled; retry."
+    - id: PACKAGE_NOT_FOUND
+      rule: "Distinct from read failure and denied scope."
+  version:
+    - "No packages."
+    - "Package with no draft."
+    - "Empty draft definition."
+    - "Published/locked immutable version."
+    - "Deactivated version and mandatory reason."
+    - "Concurrent/non-draft save conflict with retained unsaved input."
+  authoring:
+    - "No sections and add-first-section guidance."
+    - "Blank or missing bilingual section title."
+    - "Duplicate item."
+    - "Empty item bank or item bank unavailable."
+    - "No selected section/item."
+    - "Missing condition target and circular condition."
+    - "Invalid evidence rule."
+    - "Missing action-form key, trigger target or template."
+    - "Referenced violation or penalty dependency unavailable."
+    - "Unsaved changes, save pending, save success and save failure."
+  preview:
+    - "Read-only preview with no configured items."
+    - "Conditional item inactive/active."
+    - "Missing response/evidence/guidance shown as Not configured."
+    - "No live input, submit, score or Inspector mutation."
+  publish:
+    - "Complete dependency blocker summary."
+    - "Same maker/checker."
+    - "Snapshot-freeze failure."
+    - "Publish RPC failure."
+    - "Successful immutable publication and retained prior version."
+    - "Impact unavailable versus verified no affected execution."
+
+responsive_locale_theme_contract:
+  viewports:
+    - "1440x900 page comparison"
+    - "1280x900 designer comparison"
+    - "1024x768 tablet"
+    - "412x915 mobile"
+    - "390x844 mobile"
+    - "320x568 minimum"
+  variants:
+    - "EN/LTR light"
+    - "EN/LTR dark"
+    - "AR/RTL light"
+    - "AR/RTL dark"
+  shell:
+    - "Approved SAQEEL | صقيل wordmark and shield only."
+    - "No صناعي, Industrial or ADMIN sub-brand."
+    - "Narrow navigation uses the approved compact/drawer pattern with no peeking icons."
+  layout:
+    - "Desktop: bounded structure, editor canvas and preview panes inside the selected draft version."
+    - "1024: panes become a deterministic stepper or vertical sequence without losing package context."
+    - "412/390/320: Structure, Item Rules, Action Forms and Preview are one accessible sequence; primary save remains reachable."
+    - "No page-wide horizontal scrolling; long codes and JSON-like condition values are bounded."
+    - "Sticky actions never hide validation, the final form or browser zoom."
+    - "Long Arabic titles, guidance and template names wrap."
+  rtl:
+    - "Mirror pane/step order and directional/reorder icons."
+    - "Keep IDs, codes, versions, dates and condition syntax in bdi dir=ltr."
+    - "Arabic fields, preview, validation, errors and announcements have semantic parity."
+  theme:
+    - "Approved SAQEEL semantic tokens only."
+    - "Status uses word plus glyph/shape, never colour alone."
+    - "Focus, disabled, error, warning and preview surfaces meet contrast."
+
+accessibility_contract:
+  - "One h1 for the package page and a labelled h2/h3 region for the embedded designer."
+  - "Landmarks and skip links preserve page/designer orientation."
+  - "Structure selection uses list/tree semantics appropriate to actual interaction."
+  - "Reorder actions are keyboard-operable, announce position and never require drag."
+  - "Each editor input has a persistent label, description and linked error."
+  - "Validation summary receives focus and links to the exact section/item/form."
+  - "Unsaved, saving, saved, conflict and publish results use suitable live announcements."
+  - "Focus returns to the changed structure item or meaningful result after action."
+  - "Preview is labelled read-only and its inert controls are not misleadingly focusable."
+  - "1024 and narrow step sequence has deterministic keyboard order."
+  - "200% and 400% zoom preserve all fields/actions without two-dimensional page scrolling."
+  - "Touch targets meet the approved minimum and reduced motion preserves state changes."
+
+evidence_required_before_acceptance:
+  mapping:
+    - "Approved SCR-ADM-031 mapping correction to /admin/packages embedded mode."
+    - "WA-DES-002-C1 page authority and WA-DES-005-C1 component authority have no overlap conflict."
+  identity:
+    - "Complete before/after cloud inventory and page count."
+    - "Predecessor and successor filename, URL, byte count and SHA-256."
+    - "Proof predecessor remains byte-identical."
+  semantic:
+    - "Requirement/component preservation matrix."
+    - "Text scan proving no score/weight, Risk Settings, invented provider/legal/severity/grace or fixed record values."
+    - "Proof no dedicated route or redirect was added."
+  design:
+    - "All required viewport, locale/direction, theme and state captures."
+    - "Keyboard reorder, error-summary, focus, live-region and zoom evidence."
+  implementation:
+    - "Current route/component, role, save, validation, snapshot, maker-checker and immutable behavior at the reviewed commit."
+    - "Positive and negative runtime/browser evidence; code existence alone is insufficient."
+  acceptance:
+    - "Independent Codex ACK/RETURNED/BLOCKED verdict."
+    - "Sponsor acceptance naming the exact successor and mapping revision."
+
+safe_design_code_ownership_boundary:
+  Claude_Design:
+    owns:
+      - "A separately leased WA-DES-005-C1 successor after mapping approval."
+      - "Designer component states, responsive/RTL/a11y design and comparison evidence."
+    prohibited:
+      - "Application route, source, backend or mapping edits."
+  Codex_lead:
+    owns:
+      - "Mapping-change review, write leases, final acceptance and browser proof."
+      - "Conflict resolution between WA-DES-002-C1 and WA-DES-005-C1."
+  Claude_Code:
+    owns_after_separate_lease:
+      - "Only bounded corrections to existing inline package components after accepted design."
+    prohibited:
+      - "Creating /admin/packages/:id/designer without explicit route approval."
+      - "Editing leased files owned by another worker."
+  reviewer:
+    owns:
+      - "Independent requirement, security, negative-path and regression review."
+    prohibited:
+      - "Any leased implementation file."
+
+action_recommendation:
+  primary: CORRECT
+  explanation: >-
+    Correct WA-DES-005 into an embedded component authority for the existing
+    /admin/packages DraftEditor. Correct frozen screen/design route mapping only
+    through approved governance.
+  BUILD:
+    decision: BLOCK
+    reason: "A new dedicated route is not required by the business capability and is not authorized."
+  CORRECT:
+    decision: RECOMMENDED_AFTER_MAPPING_APPROVAL
+    scope: "WA-DES-005-C1 visual/state correction and exact embedded component mapping."
+  WIRE:
+    decision: EXISTING_WIRING_REQUIRES_CURRENT_RUNTIME_CERTIFICATION
+    scope: "Do not claim completion until route, services, roles, negatives, snapshots and audit are proven at the current commit."
+  BLOCK:
+    decision: ACTIVE_FOR_ROUTE_BUILD_AND_COMPLETION
+    reason: "Frozen mapping conflict, unaccepted successor and missing current browser/evidence certification."
+  completion_score_change: 0
+
+safe_successor_queue:
+  - priority: 1
+    packet: M9-PACKAGE-DESIGNER-INLINE-SUCCESSOR-020
+    status: READY_READ_ONLY_AFTER_MAPPING_DECISION
+    logical_id: WA-DES-005
+    revision: WA-DES-005-C1
+    route: /admin/packages
+    component: apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+    scope: "Prepare the exact bounded design-write lease and comparison matrix; no design write before Codex approval."
+  - priority: 2
+    packet: M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+    status: READY_AFTER_DOMAIN_DESIGN_OWNERSHIP
+    logical_id: WA-DES-019
+    scope: "Maker-checker request envelope and approvals after domain-screen ownership is accepted."
+
+rollback:
+  design: >-
+    Reject WA-DES-005-C1 and keep the predecessor non-consumed for this route.
+    WA-DES-002/current implementation remain unchanged.
+  mapping: "Do not alter frozen mapping before approval; rollback is no-op."
+  implementation: >-
+    No application work occurs here. Any later correction lease must preserve
+    the current inline implementation or a proven component-level rollback.
+
+stop_conditions:
+  - "A new route, redirect, alias, query mode or component is invented."
+  - "WA-DES-002 and WA-DES-005 become competing whole-page authorities."
+  - "Score/weight, provider, legal, severity, grace, threshold or policy values are invented."
+  - "Any current permission, maker-checker, audit, version, snapshot, stale/conflict or dependency behavior is removed or weakened."
+  - "Frozen mapping changes without approved change control."
+  - "Design creation or implementation begins before acceptance and a separate lease."
+  - "Any P0/P1 state, responsive, Arabic/RTL or accessibility evidence is missing."

@@ -1,0 +1,508 @@
+schema_version: "1.0"
+packet_id: M10-VIRTUAL-NO-CODE-MATCH-022
+status: REVIEWER_READY_READ_ONLY_CONFIRMED_NO_CODE_MATCH_PROVIDER_AND_M11_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+mapping_writes_performed: false
+application_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Determine whether WA-DES-013, the registered Premium Virtual administration
+  design, maps to the real Virtual Inspection implementation. Preserve
+  WA-DES-044 ownership of /virtual and /virtual/:id, provider-unavailable truth,
+  OTP and audit boundaries, exact M11 roles and every open P0/P1. Prevent a
+  fictional Twilio entitlement/configuration screen from being treated as
+  implemented or as authority for the real inspector journey.
+
+lock_safe_boundary:
+  state: MAC_LOCKED_OR_UI_UNAVAILABLE
+  allowed:
+    - "Read canonical requirements, decisions, design exports, routes, source, migrations, tests and M11 audit packets."
+    - "Create and validate this owned no-code-match packet."
+  prohibited:
+    - "Desktop, browser, Computer Use or live Claude Design."
+    - "Design, mapping, application, test, migration, data, seed, provider or credential mutation."
+    - "main, setup/Inspection and stash mutation."
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 6e22f95db938cec9b747c402f141e53e0cd7e936
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-REDUCED-PROJECTION-SPEC-005.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-STACK-REQUIREMENT-PRESERVATION-AUDIT-018.yaml
+    - product-contract/operationalization/coordination/batches/M10-SENAEI-NO-CODE-MATCH-021.yaml
+  dirty_path_ownership: "Other active/preceding lanes; preserved and not modified."
+  task: M10-VIRTUAL-NO-CODE-MATCH-022
+  process_ids: ["G2-P00", "G2-P06B", "G2-P07"]
+  screen_ids:
+    admin_virtual: NONE
+    real_virtual: ["SCR-VIR-700", "SCR-VIR-710", "SCR-VIR-720"]
+  requirement_ids:
+    admin_virtual_direct: NONE
+    real_virtual: ["CR-337..CR-356"]
+  acceptance_ids:
+    admin_design_family: ["WA-M10-AC-001..006"]
+    real_virtual: ["WA-M11-AC-001..006", "WA-AC-0337..0356"]
+  dependencies:
+    - WAP1-DEC-003
+    - DEC-005
+    - DEC-006
+    - DEC-007
+    - M11-CR337-LIST-SEMANTIC-DECISION-001
+    - KIMI-M11-PERMISSION-AUDIT-012
+    - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    - KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
+    - KIMI-M11-STACK-REQUIREMENT-PRESERVATION-AUDIT-018
+  do_not_touch:
+    - "WA-DES-013, WA-DES-044, every other design and every frozen mapping/requirement artifact."
+    - "Virtual, Field, notification, provider, application and test code."
+    - "M11 migrations, shared data, seeds, credentials and environment configuration."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  rbac: product-contract/domain/rbac_matrix.csv
+  decisions:
+    - product-contract/governance/OPEN_DECISIONS.yaml
+    - product-contract/governance/decision_register.csv
+    - product-contract/web-admin-phase1/OPEN_DECISIONS_AND_BLOCKERS.yaml
+  external_contract_register: product-contract/seeding-discovery/EXTERNAL_SOURCE_CONTRACT_REGISTER.csv
+  provider_fixture_register: product-contract/seeding-discovery/FRONTEND_MOCK_AND_FIXTURE_REGISTER.csv
+  implementation:
+    - apps/web/src/app/(app)/virtual/page.tsx
+    - apps/web/src/app/(app)/virtual/ScheduleForm.tsx
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/page.tsx
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/lib/providers/video.ts
+  tests:
+    - apps/web/e2e/cd-041-virtual-backend.spec.ts
+    - apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+    - apps/web/e2e/cd-042-otp-status-authz.spec.ts
+    - apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+    - apps/web/e2e/execution-crossmodule-contract.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  m11_independent_findings:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-PERMISSION-AUDIT-012.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-STACK-REQUIREMENT-PRESERVATION-AUDIT-018.yaml
+  disputed_predecessor:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Virtual Premium.dc.html"
+    logical_id: WA-DES-013
+    bytes: 9732
+    sha256: "c9c92409ac52cac2774f9fd5553a1a3a0c689d5f5c04c462ca4a3b0875f2434c"
+    viewport: "1200x860"
+  real_route_predecessor:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Virtual.dc.html"
+    logical_id: WA-DES-044
+    bytes: 15594
+    sha256: "8b7130d61c7ba550a385c26f590fc963363b3f9a40487c438294ac680e01a199"
+
+independent_mapping_result:
+  disputed_design:
+    logical_id: WA-DES-013
+    proposed_route: /admin/virtual
+    route_exists: false
+    component_exists: false
+    registered_screen: NONE
+    claude_code_classification: NEW_ROUTE_REQUIRED
+    codex_validation: NO_CODE_MATCH
+    final: CONFIRMED_NO_CODE_MATCH
+  real_route_family:
+    - route: /virtual
+      component: apps/web/src/app/(app)/virtual/page.tsx
+      design_authority: WA-DES-044
+      registered_screen: SCR-VIR-700
+      channel: BUSINESS_WEB
+      capability: "RLS-visible session list plus scheduling of eligible published virtual visits."
+      validation: CONFIRMED_WITH_CORRECTION
+    - route: /virtual/:id
+      component: apps/web/src/app/(app)/virtual/[id]/page.tsx
+      interactive_component: apps/web/src/app/(app)/virtual/[id]/Room.tsx
+      design_authority: WA-DES-044
+      registered_screens: ["SCR-VIR-700", "SCR-VIR-710", "SCR-VIR-720"]
+      channel: BUSINESS_WEB
+      capability: "Waiting room, participant join, OTP verification, guarded state path, cancellation, timeline and handoff to common execution."
+      validation: CONFIRMED_WITH_CORRECTION
+  conclusion: >-
+    WA-DES-013 is not the nearest design for either real Virtual route.
+    WA-DES-044 already owns both. Reassigning WA-DES-013 would create competing
+    authority and would replace a provider-pending execution journey with an
+    unsupported premium-provider administration concept.
+  recommended_action: BLOCK
+
+mapping_and_requirement_corrections:
+  wa_des_013:
+    current_requirement_claim: CR-001..CR-478
+    verdict: INCORRECTLY_OVERBROAD
+    direct_requirement_ownership: NONE
+    persona_claim: Technical Admin
+    persona_verdict: FICTIONAL_ROLE
+    rule: >-
+      No source requirement establishes a Premium Video administration screen,
+      entitlement, seat, room-region, recording or provider-health control plane.
+  wa_des_044:
+    exact_requirement_ownership: ["CR-337..CR-356"]
+    exact_route_ownership: ["/virtual", "/virtual/:id"]
+    rule: "Preserve this mapping; correct its design/runtime evidence without adding WA-DES-013."
+  cross_channel_role_truth:
+    planner: "Scheduling/management scope only; current implementation has audited overreach that must be remediated."
+    operations: "Operational management scope only; cannot become virtual inspection executor."
+    assigned_inspector: "Own-session execution scope."
+    reviewer: "Safe audit/review visibility; no execution mutation."
+    auditor: "View-only audit scope."
+    factory_representative: "Own appointment/session under RBAC-014, but principal/token boundary remains blocked by DEC-005."
+  mapping_write_boundary: "No frozen design, route, persona, screen or requirement map change is authorized here."
+
+real_runtime_capability:
+  list:
+    reads:
+      - virtual_sessions
+      - visits
+      - virtual_participants
+      - visit_preparations
+    current_behavior:
+      - "Lists RLS-visible sessions with factory, appointment and state."
+      - "Finds published virtual visits without a session."
+      - "Shows readiness hint when preparation schema is available."
+      - "Offers session scheduling with participant binding and truthful notification degradation."
+    unresolved:
+      - "CR-337 'today' boundary and 'confirmed' predicate have no accepted definition."
+      - "Current query does not implement a today/confirmed filter."
+  room:
+    reads:
+      - virtual_sessions
+      - virtual_participants
+      - visits
+      - inspections
+      - visit_preparations
+    mutations:
+      - "Schedule and reschedule."
+      - "Open waiting room."
+      - "Record participant join."
+      - "Request/verify OTP and mark session verified."
+      - "Close/cancel with reason."
+      - "Begin remote inspection and redirect to the common Field execution route."
+    truth:
+      - "OTP generation/verification RPCs are real database behavior."
+      - "Session state/timeline/closed immutability and stale revision boundaries exist."
+      - "Real media connection is absent."
+      - "Default video provider mode is off."
+      - "Opt-in staging provider is deterministic and always labelled SIMULATED VIDEO SESSION."
+
+provider_and_policy_truth:
+  video:
+    decision: WAP1-DEC-003
+    contract_status: EXTERNAL_CONTRACT_BLOCKED
+    vendor_selected: false
+    real_adapter_exists: false
+    default_mode: "off"
+    allowed_modes: ["off", "stub"]
+    staging_provider: StagingVideoProvider
+    staging_evidence_rule: "Valid only as explicitly simulated non-production state evidence; never release/live-provider proof."
+    supported_simulated_states:
+      - waiting_room
+      - connecting
+      - connected
+      - degraded
+      - reconnecting
+      - provider_unavailable
+      - ended
+    missing_release_contracts:
+      - "Selected vendor and commercial/entitlement authority."
+      - "Authentication, room-token and participant identity contract."
+      - "Room, region and media topology."
+      - "Provider event ingestion for join/leave/disconnect/reconnect/end."
+      - "Availability, retry and incident behavior."
+      - "Recording, consent, storage, retention, deletion, access and legal policy."
+      - "Real test environment, credentials and evidence."
+  otp:
+    decision: DEC-007
+    code_generation_and_verification: REAL_DATABASE_RPC
+    release_delivery: BLOCKED
+    provider_truth: "Accepted primary value names Unifonic but no Unifonic adapter/credentials exist; Twilio SMS is fallback-only and unconfigured."
+    rule: "DEV/staging code display or notification stub is not proof that an OTP was externally delivered."
+  evidence:
+    decision: DEC-006
+    status: OPEN
+    rule: "Do not invent recording limits, storage, retention, malware, redaction or consent policy."
+  factory_facing_identity:
+    decision: DEC-005
+    status: OPEN
+    rule: "Do not invent a factory-representative login, participant token or portal."
+
+wa_des_013_design_delta:
+  preserved_principles:
+    - "OTP verification remains required before execution."
+    - "Provider unavailability must not erase session state or audit."
+    - "Fallback must remain explicit and no session success may be fabricated."
+  design_only_not_implemented:
+    - "Dedicated /admin/virtual route and component."
+    - "Premium entitlement and seat accounting."
+    - "Twilio Video connection or Twilio room configuration."
+    - "Room type, provider region, recording, maximum duration and screen-share controls."
+    - "Recording consent configuration and governed video-evidence storage."
+    - "Session preview backed by a real provider."
+    - "System Connections route from this screen."
+    - "Provider health, rooms-today and average-join metrics."
+  fabricated_or_unapproved:
+    - "Active Premium tier."
+    - "Twilio connected and operational."
+    - "12 of 25 seats."
+    - "ME Riyadh edge."
+    - "Recording on."
+    - "45-minute maximum."
+    - "Twilio room ready and OTP verified."
+    - "Seven rooms today and 4.2-second average join."
+  identity_defect: "Arabic-only صقيل صناعي appears in the English shell."
+  critical_confusion: >-
+    The design calls Twilio a video provider. The real Twilio adapter is SMS
+    fallback-only and does not implement Twilio Video.
+
+m11_permission_audit_truth:
+  status: OPEN_P0_P1_REMEDIATION_NOT_EXECUTED
+  remediation_packets:
+    permission_hardening: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+    begin_atomicity: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+    audit_boundary: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+    preservation_contract: PRESERVATION_CONTRACT_DEFINED_NOT_EXECUTED
+  confirmed_open_findings:
+    - id: M11-PERM-001
+      priority: P0
+      finding: "virtual_sessions INSERT policy permits an overbroad authenticated create attempt."
+    - id: M11-PERM-002
+      priority: P0
+      finding: "Direct participant DML can bypass governed join/OTP semantics."
+    - id: M11-PERM-003
+      priority: P0
+      finding: "Reviewer mutation exceeds audit-only requirement authority."
+    - id: M11-PERM-004
+      priority: P0
+      finding: "Non-inspector begin and multi-record partial-state paths exist."
+    - id: M11-PERM-005
+      priority: P0
+      finding: "Audit read seam can expose OTP verification internals/code hash."
+    - id: M11-PERM-006
+      priority: P1
+      finding: "Arbitrary timeline-event append permits forgeable semantic claims."
+    - id: M11-PERM-007
+      priority: P0
+      finding: "Join can partially succeed and return false confirmation."
+    - id: M11-PERM-008
+      priority: P1
+      finding: "RPC errors can reveal existing versus missing out-of-scope identifiers."
+  completion_effect: >-
+    WA-DES-044 is the correct mapping, but the real Virtual module cannot be
+    declared complete or sponsor-green while these findings remain open.
+
+requirement_status_by_family:
+  list_and_initialization:
+    ids: ["CR-337..CR-343"]
+    state: PARTIAL_BLOCKED
+    blockers:
+      - "CR-337 today/confirmed semantics awaiting sponsor decision."
+      - "Scheduling authorization/atomicity and semantic-event integrity remediation not executed."
+  media_and_attendance:
+    ids: ["CR-344..CR-348"]
+    state: PARTIAL_EXTERNAL_AND_SECURITY_BLOCKED
+    blockers:
+      - "No selected/configured real video provider."
+      - "No durable provider leave/disconnect/reconnect event ingestion."
+      - "Join atomicity and safe audit remediation not executed."
+  verification:
+    ids: ["CR-349..CR-354"]
+    state: PARTIAL_SECURITY_AND_DELIVERY_BLOCKED
+    blockers:
+      - "OTP verification database behavior exists."
+      - "External OTP delivery remains unconfigured."
+      - "Permission bypass and audit-secret findings remain open."
+      - "Factory representative principal boundary remains unresolved."
+  execution_handoff:
+    ids: ["CR-355", "CR-356"]
+    state: PARTIAL_P0_BLOCKED
+    blockers:
+      - "Only assigned Inspector may begin by requirement."
+      - "Atomic inspection/visit/session/event transition remediation is not executed."
+
+required_state_and_error_evidence:
+  - LIST_LOADING
+  - LIST_EMPTY_AUTHORIZED
+  - LIST_RLS_HIDDEN
+  - LIST_READ_ERROR
+  - LIST_TODAY_CONFIRMED_AFTER_DECISION
+  - SCHEDULE_VALID
+  - SCHEDULE_INVALID_DATE
+  - SCHEDULE_INELIGIBLE_VISIT
+  - SCHEDULE_DUPLICATE
+  - SCHEDULE_UNAUTHORIZED_ZERO_PARTIAL_ROWS
+  - SCHEDULE_NOTIFICATION_DEGRADED
+  - ROOM_NOT_FOUND_OR_OUT_OF_SCOPE_NEUTRAL
+  - PROVIDER_PENDING
+  - PROVIDER_UNAVAILABLE
+  - SIMULATED_PROVIDER_EXPLICIT
+  - CAMERA_OR_MIC_DENIED
+  - MEDIA_DEGRADED_AND_RECONNECTING
+  - WAITING_FOR_REPRESENTATIVE
+  - JOIN_SUCCESS_ATOMIC
+  - JOIN_CONCURRENT_OR_REPEAT
+  - OTP_NOT_CONFIGURED_DELIVERY
+  - OTP_SENT_WITH_TRUTHFUL_DELIVERY_STATE
+  - OTP_INVALID
+  - OTP_EXPIRED
+  - OTP_LOCKED
+  - OTP_RESEND_EXHAUSTED
+  - OTP_VERIFIED_ATOMIC
+  - BEGIN_BLOCKED_UNVERIFIED
+  - BEGIN_BLOCKED_UNREADY
+  - BEGIN_BLOCKED_OUTSIDE_WINDOW
+  - BEGIN_UNAUTHORIZED_ZERO_MUTATION
+  - BEGIN_SUCCESS_ATOMIC_REDIRECT
+  - CLOSE_REASON_REQUIRED
+  - CLOSED_IMMUTABLE
+  - STALE_CONFLICT
+  - OFFLINE_NO_QUEUE
+  - PARTIAL_RELATED_SOURCE_ERROR
+  - SAFE_AUDIT_REDACTED
+
+responsive_bidi_theme_accessibility:
+  viewports: ["1440x900", "1200x900", "1024x768", "768x1024", "412x915", "390x844", "320x568"]
+  locales:
+    - "EN/LTR."
+    - "AR/RTL with session IDs, dates, OTP/error codes and provider identifiers isolated LTR."
+  themes: ["Light", "Dark"]
+  requirements:
+    - "One h1 and ordered headings."
+    - "List table becomes a labelled scroll region or cards without losing appointment/state/open action."
+    - "Room evidence chain and single next action remain readable at narrow widths."
+    - "No sticky side panel, provider preview or form clips the shell."
+    - "44px controls, visible focus and full keyboard operation."
+    - "OTP controls have persistent labels, associated errors and non-colour status."
+    - "Timeline is semantic, ordered and safe for assistive technology."
+    - "Offline, stale, immutable and provider states use live-region semantics where appropriate."
+    - "No English screen uses Arabic-only branding."
+
+test_and_evidence_assessment:
+  currently_proven:
+    - "Source-level schema, RPC and guard expectations."
+    - "Assigned-inspector OTP verification opens the execution gate."
+    - "Unverified begin is blocked."
+    - "Verified begin redirects to the common Field engine."
+    - "Reviewer is denied by the verified-transition RPC."
+    - "Closed session immutability."
+    - "Stale concurrent close is refused."
+    - "Offline disables begin/close and queues nothing."
+    - "Simulation is explicitly labelled and provider default is off."
+  not_proven_or_currently_failing_by_audit:
+    - "Real video join or provider lifecycle."
+    - "CR-337 today/confirmed list."
+    - "Complete role/action/RPC/RLS matrix."
+    - "Atomic schedule, join and begin across forced failure/concurrency."
+    - "Reviewer/Auditor read-only boundary across all direct DML/RPC paths."
+    - "OTP hash and raw verification-record redaction."
+    - "Arbitrary timeline event rejection."
+    - "Neutral missing versus out-of-scope errors."
+    - "External factory-representative own-session access."
+    - "Real OTP delivery."
+    - "Provider leave/disconnect/reconnect durable audit."
+    - "Full EN/AR RTL, light/dark, desktop/tablet/mobile, keyboard, zoom and accessibility."
+  browser_proof_ready: false
+  reason: "This packet is read-only and P0 remediation/provider/decision blockers remain."
+
+route_ownership_decision:
+  wa_des_013_state: ORPHANED_ADMIN_DESIGN_NON_CONSUMABLE
+  preferred_sponsor_option: RETIRE_ADMIN_ROUTE_CLAIM
+  treatment:
+    - "Keep WA-DES-044 as sole /virtual and /virtual/:id authority."
+    - "Keep WA-DES-013 as revision-stamped reference only."
+    - "Do not copy premium-provider cards or controls into the real room."
+    - "Do not create /admin/virtual without a separate approved business requirement and provider administration contract."
+  future_corrective_successor:
+    logical_id: WA-DES-013
+    proposed_revision: WA-DES-013-C1
+    filename: "SAQEEL Admin Virtual Provider - WA-DES-013-C1.dc.html"
+    creation_authorized: false
+    prerequisite: >-
+      Selected video provider, entitlement/configuration authority, roles,
+      maker-checker, recording/evidence policy, provider events, secret custody,
+      health definitions, route/component task and negative-test contract.
+  no_new_design_id_invented: true
+
+do_not_build:
+  - "No /admin/virtual route or Premium Video control plane."
+  - "No Twilio Video adapter, entitlement, seat, room, region, recording, duration or screen-share setting."
+  - "No provider-health metric or successful live media claim."
+  - "No recording/consent/retention behavior while DEC-006 is open."
+  - "No factory-representative identity route while DEC-005 is open."
+  - "No external OTP-delivered claim while DEC-007/provider wiring is open."
+  - "No completion claim while M11 P0/P1 remediation remains unexecuted."
+  - "No design, mapping, application, test, migration, provider, credential, data, branch or stash mutation."
+
+risks:
+  - id: VIR-022-R01
+    severity: CRITICAL
+    risk: "Twilio Video and premium entitlement are represented as connected without any real adapter or contract."
+  - id: VIR-022-R02
+    severity: CRITICAL
+    risk: "WA-DES-013 replaces or competes with WA-DES-044 on the real Virtual routes."
+  - id: VIR-022-R03
+    severity: CRITICAL
+    risk: "Open M11 permission/atomicity/audit P0s are hidden by visual parity."
+  - id: VIR-022-R04
+    severity: CRITICAL
+    risk: "Simulated media or DEV OTP is reported as real provider delivery."
+  - id: VIR-022-R05
+    severity: HIGH
+    risk: "Recording consent/storage/retention is invented before policy and provider contracts."
+  - id: VIR-022-R06
+    severity: HIGH
+    risk: "Technical Admin broadens or replaces exact role/RLS boundaries."
+  - id: VIR-022-R07
+    severity: HIGH
+    risk: "Reviewer gains execution mutation because audit visibility is mistaken for authority."
+  - id: VIR-022-R08
+    severity: HIGH
+    risk: "Provider failure or RLS denial appears as empty, connected or healthy."
+
+reviewer_recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+recommended_sponsor_decision:
+  immediate:
+    - "Retire WA-DES-013's /admin/virtual route claim as non-consumable."
+    - "Preserve WA-DES-044 as the sole real Virtual route design authority."
+    - "Keep the real provider mode off for release-completion claims."
+    - "Execute and independently certify the M11 permission, atomicity and audit remediation stack."
+  separate_decisions:
+    - "Resolve CR-337 today/confirmed semantics."
+    - "Resolve factory-representative identity boundary."
+    - "Select/contract the video and OTP providers."
+    - "Approve recording/evidence policy before any recording control."
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-ADMIN-DESIGN-MAPPING-CLOSEOUT-023
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  objective: >-
+    Consolidate the seven registered M10 admin designs and the two uncovered
+    real routes into one sponsor decision matrix: confirmed mappings,
+    corrections, orphaned designs, no-design matches, provider/policy holds,
+    acceptance blockers and exact next design leases.
+  non_overlap:
+    - "No M11 Virtual implementation, provider, permission, audit or test work."
+    - "No design, application, mapping, requirement, data, main, setup or stash mutation."

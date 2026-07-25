@@ -1,0 +1,397 @@
+schema_version: "1.0"
+packet_id: CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002
+status: READY_FOR_SPONSOR_GOVERNANCE_DECISION
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+review_recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+
+purpose: >-
+  Reconcile the Operations Center persona, route, capability, row-level
+  security and geographic-scope contracts without changing application code,
+  tests, data, design, migrations or the active Claude map-provenance lease.
+
+scope_boundary:
+  read_only: true
+  application_code_changed: false
+  tests_changed: false
+  data_or_seed_changed: false
+  migration_or_rls_changed: false
+  design_changed: false
+  claude_return_lease_changed: false
+  protected_lease: >-
+    CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001 remains the exact
+    eight-file correction lease and is ready for immediate dispatch after the
+    Mac is manually unlocked.
+
+authoritative_sources:
+  requirements:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/domain/personas.yaml
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/screens/screen_route_catalogue.csv
+  discovered_current_state:
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - apps/web/src/lib/shell-navigation.ts
+    - apps/web/src/app/(app)/operations/page.tsx
+    - apps/web/src/app/(app)/operations/live/page.tsx
+    - apps/web/src/app/(app)/operations/actions.ts
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0008_visibility_widen.sql
+    - supabase/migrations/0012_admin_dossier_visibility.sql
+    - supabase/migrations/20260716161605_ipad_geo_override_approval_workflow.sql
+    - supabase/migrations/20260721093000_execution_canonical_contracts.sql
+    - supabase/migrations/20260721140000_execution_journey_cancellation.sql
+  accepted_design:
+    - >-
+      design/claude-design-mvp1/outputs/m3-operations/
+      00_M3_OPERATIONS_DESIGN_CORRECTION_PACKAGE.md
+    - >-
+      design/claude-design-mvp1/outputs/m3-operations/
+      13_CLAUDE-M3-MAP-PROVENANCE-CORRECTION-008.md
+
+requirement_contract:
+  CR-430:
+    personas:
+      - Supervisor
+      - Operations Manager
+      - Executive
+    rule: >-
+      Operations Center is monitoring-only unless the user has supervisor
+      permissions.
+  CR-433:
+    persona:
+      - Supervisor
+    rule: >-
+      Inspector location is visible only during active journey/execution and
+      based on policy.
+  CR-439:
+    personas:
+      - Supervisor
+      - Executive
+    rule: Users see only authorized regions.
+  CR-447:
+    persona:
+      - All Ops Users
+    rule: >-
+      Apply role, region, branch and permission restrictions; unauthorized
+      inspectors, factories and regions must be invisible.
+  RBAC-008:
+    platform_role: Operations User
+    allowed_actions:
+      - View
+      - Reassign
+      - Resolve exception
+      - Approve override per policy
+    data_scope: Region/branch or all assigned scope
+  RBAC-013:
+    platform_role: Leadership User
+    allowed_actions:
+      - View aggregated KPIs/profile
+    data_scope: Authorized geography/organization
+    restriction: Sensitive details may be masked.
+  persona_mapping_proven:
+    ops: Operations Officer / Operations User
+    leadership: Leadership User / Executive
+    planner: Planner
+    reviewer: Level 2 Reviewer
+    inspector: Inspector
+  persona_mapping_not_proven:
+    - >-
+      No separate repository role key exists for Supervisor or Operations
+      Manager. Current guarded write paths treat ops as the operational
+      supervisor/manager role.
+
+capability_contract:
+  source: supabase/migrations/20260721093000_execution_canonical_contracts.sql
+  operations.view:
+    granted_to:
+      - ops
+      - planner
+      - leadership
+    not_granted_to:
+      - reviewer
+      - auditor
+      - inspector
+      - factory_rep
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - risk_owner
+      - gis_admin
+      - security_admin
+  operations.resolve_exception:
+    granted_to:
+      - ops
+  operations.approve_active_cancel:
+    granted_to:
+      - ops
+  interpretation: >-
+    This is the strongest existing application capability contract. It proves
+    an intended read cohort of ops, planner and leadership, and a narrower ops
+    write cohort. It conflicts with the older persona wording unless planner
+    visibility is an approved additive interpretation and leadership's
+    location/detail projection is explicitly bounded.
+
+route_and_navigation_findings:
+  navigation_definition:
+    fact: >-
+      The Operations Center navigation item lists the broad businessRoles
+      collection, which includes planner, reviewer, ops, leadership and all
+      admin roles while excluding only inspector from the web-channel list.
+  enablement_logic:
+    fact: >-
+      buildShellNavigation marks every business-visibility item enabled through
+      `item.visibility === "business" || allowed`. Therefore item role
+      membership does not act as an authorization check.
+    consequence: >-
+      Any authenticated account that is not field-only receives an enabled
+      Operations Center item, including reviewer, auditor, factory_rep, an
+      admin-only account and an account with zero role rows.
+  field_only_exception:
+    fact: >-
+      An inspector-only account is removed from web-only destinations by
+      isFieldOnlyPersona and is denied by the new Operations direct-route
+      guard before protected Operations data reads.
+    validation: CONFIRMED
+  current_route_guard:
+    source_state: >-
+      The current Claude implementation worktree guards /operations and
+      /operations/live before protected Operations data reads.
+    mechanism: >-
+      It reads user_roles, calls buildShellNavigation, finds /operations and
+      accepts the route when the navigation item reports enabled.
+    positive: >-
+      The explicit unauthorized frame and before-data-read placement satisfy
+      the design's structural direct-route requirement for a truly denied
+      actor.
+    defect: >-
+      Navigation enablement is not the operations.view capability and is too
+      broad to prove CR-430 or CR-447 authorization.
+  route_inventory_conflict:
+    operations:
+      discovered_personas:
+        - inspector
+        - ops
+        - reviewer
+    operations_live:
+      discovered_personas:
+        - inspector
+        - ops
+    finding: >-
+      These fields are labelled CURRENT_IMPLEMENTATION_EVIDENCE_ONLY and
+      conflict with the requirement personas, capability grants and current
+      navigation behavior. They cannot decide the authorization contract.
+
+row_level_security_findings:
+  factories:
+    current_rule: Every authenticated user may select every factory.
+    implication: >-
+      A route-authorized factory_rep, role-less account or unrelated admin can
+      receive the national factory list and official coordinates.
+  visits:
+    current_rule: >-
+      Broad SELECT includes planner, ops, reviewer, auditor, leadership and
+      compliance_admin, plus an inspector's own assigned visits; later planning
+      capability policies are additive.
+    implication: >-
+      Visit visibility is not limited to the CR-430 Operations cohort and has
+      no region/branch predicate.
+  geo_events:
+    current_rule: >-
+      Broad SELECT includes ops, auditor, reviewer, planner and leadership,
+      plus an inspector's own assigned visits.
+    implication: >-
+      Raw recorded position evidence is readable by planner, reviewer, auditor
+      and leadership independently of CR-433's Supervisor-only wording and
+      RBAC-013's aggregate/masking boundary.
+  profiles:
+    current_rule: >-
+      Profile SELECT is self, security_admin, ops or planner. This may hide
+      inspector names from some other broad readers, but it does not revoke
+      their visit, factory or geo-event visibility.
+  geography:
+    profile_fields_exist:
+      - profiles.region
+      - profiles.org_scope
+    operations_enforcement: NOT_IMPLEMENTED
+    evidence: >-
+      /operations applies user-selected region/city query filters after broad
+      RLS reads and builds filter options from all RLS-visible factories.
+      /operations/live is a national view. No reviewed factories, visits or
+      geo_events SELECT policy binds rows to profiles.region or org_scope.
+    implication: >-
+      The region control is a presentation filter, not an authorization
+      boundary. CR-439 and the geography portion of CR-447 are not proven.
+
+persona_matrix:
+  - role: inspector_only
+    navigation_or_route: DENIED_BEFORE_OPERATIONS_READS
+    operations_view_capability: false
+    underlying_rls: Own assigned visits and geo events; all factories
+    validation: CONFIRMED
+  - role: ops
+    navigation_or_route: ALLOWED
+    operations_view_capability: true
+    underlying_rls: Broad visits, geo events and factories
+    writes: >-
+      resolve/active-cancellation capabilities and geo-override decision
+      authority are ops-scoped.
+    validation: CONFIRMED_WITH_MISSING_GEOGRAPHIC_SCOPE
+  - role: planner
+    navigation_or_route: ALLOWED
+    operations_view_capability: true
+    underlying_rls: Broad visits, geo events and factories
+    validation: >-
+      CAPABILITY_CONFIRMED_BUT_REQUIREMENT_PERSONA_CONFLICT
+  - role: leadership
+    navigation_or_route: ALLOWED
+    operations_view_capability: true
+    underlying_rls: Broad visits, geo events and factories
+    validation: >-
+      SUMMARY_VIEW_CONFIRMED_IN_PRINCIPLE_BUT_RAW_LOCATION_AND_GEOGRAPHY_CONFLICT
+  - role: reviewer
+    navigation_or_route: ALLOWED_BY_GENERIC_BUSINESS_ENABLEMENT
+    operations_view_capability: false
+    underlying_rls: Broad visits, geo events and factories
+    validation: INCORRECT_ROUTE_AUTHORIZATION
+  - role: auditor
+    navigation_or_route: ALLOWED_BY_GENERIC_BUSINESS_ENABLEMENT
+    operations_view_capability: false
+    underlying_rls: Broad visits, geo events and factories
+    validation: INCORRECT_ROUTE_AUTHORIZATION
+  - role: compliance_admin
+    navigation_or_route: ALLOWED_BY_GENERIC_BUSINESS_ENABLEMENT
+    operations_view_capability: false
+    underlying_rls: Broad visits and factories; no broad geo-event policy
+    validation: INCORRECT_PARTIAL_ROUTE_AUTHORIZATION
+  - role: other_admin_only
+    navigation_or_route: ALLOWED_BY_GENERIC_BUSINESS_ENABLEMENT
+    operations_view_capability: false
+    underlying_rls: At least all factories; table-specific results vary
+    validation: INCORRECT_PARTIAL_ROUTE_AUTHORIZATION
+  - role: factory_rep_or_zero_roles
+    navigation_or_route: ALLOWED_BY_GENERIC_BUSINESS_ENABLEMENT
+    operations_view_capability: false
+    underlying_rls: All factories; other Operations rows may be empty
+    validation: INCORRECT_PARTIAL_ROUTE_AUTHORIZATION
+  - role: inspector_plus_non_operations_role
+    navigation_or_route: >-
+      ALLOWED because the account is no longer field-only, even when the second
+      role has no operations.view grant.
+    operations_view_capability: false_unless_second_role_is_planner_ops_or_leadership
+    underlying_rls: Own assignments and geo events plus all factories
+    validation: INCORRECT_ROUTE_AUTHORIZATION
+
+write_authority_findings:
+  proven:
+    - >-
+      decide_active_cancellation is guarded by
+      operations.approve_active_cancel, granted to ops.
+    - >-
+      decide_geo_override rejects callers without the ops role and enforces
+      requester/decider separation.
+    - >-
+      Planner and leadership may read cancellation rows under current RLS but
+      the decision RPC rejects them.
+  unresolved_or_inconsistent:
+    - >-
+      The Operations UI does not consistently use capability facts to hide or
+      disable every write control for monitoring-only personas.
+    - >-
+      action_forms actions_rw admits ops/reviewer/auditor for row visibility
+      but its WITH CHECK remains assigned-inspector based; the Operations
+      update path is not a clean implementation of
+      operations.resolve_exception.
+  conclusion: >-
+    Database guards prevent several unauthorized writes, but the complete
+    CR-430 monitoring-only versus supervisor-control presentation and action
+    contract is not certified.
+
+conflicts_requiring_governance:
+  - conflict_id: OPS-AUTH-C01
+    issue: >-
+      CR-430 omits Planner while the versioned capability contract explicitly
+      grants planner operations.view.
+  - conflict_id: OPS-AUTH-C02
+    issue: >-
+      CR-433 names Supervisor for inspector-location monitoring, while planner,
+      reviewer, auditor and leadership can read geo_events under current RLS.
+  - conflict_id: OPS-AUTH-C03
+    issue: >-
+      RBAC-013 limits Leadership to aggregate/masked information, while the
+      current route and RLS can expose visit-level and precise position rows.
+  - conflict_id: OPS-AUTH-C04
+    issue: >-
+      CR-439/447 and RBAC-008 require authorized geography, but no Operations
+      query or reviewed RLS policy binds factories, visits or geo_events to the
+      user's region/branch/organization.
+  - conflict_id: OPS-AUTH-C05
+    issue: >-
+      The accepted direct-route design equates route authorization with nav
+      visibility, but current business-nav enablement is presentation-wide and
+      cannot serve as an authorization source.
+
+minimal_sponsor_governance_decision:
+  decision_needed: APPROVE_OR_REVISE_OPERATIONS_ACCESS_MODEL_V1
+  recommended_model:
+    route_read_gate: Existing operations.view capability
+    full_operational_monitoring:
+      - ops
+    planner_projection: >-
+      Keep the existing planner operations.view grant only as a monitoring-only
+      operational planning projection; no supervisor decisions and no precise
+      inspector GPS or identity unless separately approved.
+    leadership_projection: >-
+      Keep leadership operations.view as an aggregate/masked Executive
+      projection; no precise inspector GPS or identity.
+    all_other_roles: >-
+      Deny /operations/** unless a separately governed operations.view grant
+      exists. Navigation and direct-route behavior must use the same capability
+      fact.
+    write_gate:
+      resolve_exception: operations.resolve_exception
+      approve_active_cancel: operations.approve_active_cancel
+      decide_geo_override: >-
+        ops until the role check is deliberately migrated to an approved
+        capability contract.
+    geographic_scope: >-
+      Bind every Operations read to an authoritative server-side scope. Use
+      profiles.region/org_scope only after their null and national-scope
+      semantics are approved. A null scope must fail closed; national access
+      requires an explicit all-regions grant rather than being inferred.
+    location_scope: >-
+      Precise recorded inspector position is Supervisor/Operations only.
+      Planner and Leadership receive an approved reduced projection; Reviewer,
+      Auditor, Admin and Factory Representative receive none through the
+      Operations routes without an explicit grant.
+  exact_sponsor_answer_that_unblocks_contract: >-
+    Approve Operations Access Model V1: use operations.view for route access;
+    ops receives full operational monitoring and separately capability-gated
+    actions; planner receives monitoring-only planning context without precise
+    inspector identity/GPS; leadership receives aggregate/masked monitoring
+    without precise inspector identity/GPS; all other roles are denied unless
+    explicitly granted; all reads are server-scoped to authorized
+    region/organization, null scope fails closed, and national access requires
+    an explicit all-regions grant.
+  if_not_approved: >-
+    Sponsor must specify which named role(s) may access /operations/**, which
+    may see precise inspector identity/GPS, and whether a null profile scope
+    means national access or misconfiguration. Implementation must remain
+    blocked until those three answers are explicit.
+
+future_minimal_implementation_boundary_not_authorized_here:
+  - "Use operations.view, not navigation enablement, for both route guards."
+  - "Make the Operations nav item use the same capability result."
+  - "Project or suppress identity and precise GPS by approved persona tier."
+  - "Enforce region/organization scope server-side before rows reach components."
+  - "Capability-gate every write control and retain the database guard."
+  - "Test ops, planner, leadership, reviewer, auditor, admin, factory_rep, role-less and mixed-role actors."
+  - "Test same-region, cross-region, null-scope and explicit national-scope cases."
+  - "Do not weaken existing RLS or add broad fallback access."
+
+stop_condition:
+  audit_complete: true
+  product_change_authorized: false
+  next_action: SPONSOR_GOVERNANCE_DECISION
+  claude_map_return_status: READY_TO_DISPATCH_AFTER_MANUAL_MAC_UNLOCK

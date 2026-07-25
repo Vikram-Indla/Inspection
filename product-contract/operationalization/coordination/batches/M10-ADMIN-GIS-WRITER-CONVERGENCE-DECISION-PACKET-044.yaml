@@ -1,0 +1,352 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-WRITER-CONVERGENCE-DECISION-PACKET-044
+title: Sponsor decision packet for GIS configuration writer convergence
+status: AWAITING_SPONSOR_POLICY_AND_AUTHORITY_CHOICES
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_DECISION_PACKET
+
+purpose: >
+  Give the sponsor bounded business choices for resolving the current GIS
+  configuration collision. This packet records no choice, grants no lease,
+  changes no authority and authorizes no implementation.
+
+authority:
+  governed_screen: SCR-ADM-070
+  companion_screen: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+  exact_primary_478_requirements: []
+  transferred_requirements:
+    - MVP2-REQ-0072 / MVP2-AC-0072
+    - MVP2-REQ-0075 / MVP2-AC-0075
+    - MVP2-REQ-0233 / MVP2-AC-0233
+  phase1_acceptance:
+    - WA-M10-AC-001..006
+  special_map_acceptance:
+    - SPC-GIS-001..008
+  unresolved:
+    - DEC-002
+    - MVP3-HOLD-002
+    - MVP3-HOLD-006 where legal or retention status is required
+    - WA-DES-006-C1
+
+evidence_basis:
+  - packet_id: M10-ADMIN-GIS-RUNTIME-PERMISSION-MAPPING-040
+    verdict: BLOCK_P0_ROUTE_ENTITLEMENT_RADIUS_AUTHORITY_CONCURRENCY_AND_POLICY
+  - packet_id: M10-ADMIN-GIS-REMEDIATION-PREFLIGHT-041
+    verdict: PREFLIGHT_DEFINED_IMPLEMENTATION_BLOCKED
+  - packet_id: M10-ADMIN-GIS-CONSUMER-TEST-INVENTORY-042
+    verdict: BLOCK_CONSUMER_LINEAGE_AND_TEST_EVIDENCE_INCOMPLETE
+  - packet_id: M10-ADMIN-GIS-CONFIG-WRITER-COLLISION-AUDIT-043
+    verdict: BLOCK_CONFIRMED_WRITER_AUTHORITY_CAS_AUDIT_AND_LINEAGE_FAILURES
+
+business_problem:
+  current_writers:
+    - route: /admin/gis
+      business_effect: Changes one factory's geofence radius.
+      current_actors: GIS Admin or Planner through database policy.
+    - route: /admin/execution
+      business_effect: Changes shared arrival, geofence, accuracy and telemetry rules for every inheriting consumer.
+      current_actors: Six Admin roles receive the UI capability, but only five match database update policy.
+    - route: /admin/gis/spatial
+      business_effect: Creates a GIS layer.
+      current_actors: GIS Admin, Security Admin or Compliance Admin through database policy.
+  sponsor_risk:
+    - Different screens and role models control one GIS operating policy.
+    - Simultaneous changes can silently replace each other.
+    - A user can be told a change succeeded when database policy changed no row.
+    - The intended scoped audit write fails without failing the business change.
+    - Field records can stamp a hard-coded policy version different from the server's effective version.
+    - Open Field and Operations screens can continue using old settings after an Admin change.
+
+decision_01_authoritative_writer:
+  question: Which screen is the single business authority for shared GIS rules?
+  choice_required: ONE
+  options:
+    - option_id: GIS-WRITER-A
+      label: Map Settings is the sole GIS authority
+      business_meaning:
+        - SCR-ADM-070 owns shared GIS rules and per-factory exceptions.
+        - /admin/execution may show a read-only summary and link to Map Settings.
+        - Spatial capability remains separately held until it receives a screen identity and approval.
+      implications:
+        - Clearest ownership and audit story.
+        - Requires moving or retiring the shared GIS editor in /admin/execution without losing functionality.
+        - Requires an accepted WA-DES-006-C1 covering the governed controls.
+    - option_id: GIS-WRITER-B
+      label: Split authority with one governance service
+      business_meaning:
+        - /admin/execution owns shared execution-facing GIS rules.
+        - /admin/gis owns factory-specific radius exceptions, map evidence and spatial governance.
+        - Both screens use the same approved GIS capability, version, conflict and audit service.
+      implications:
+        - Preserves existing screen specialization.
+        - Requires a precise boundary so the two screens cannot edit the same field.
+        - Has higher operational and testing complexity.
+    - option_id: GIS-WRITER-C
+      label: Map Settings owns policy; Execution proposes changes
+      business_meaning:
+        - /admin/execution can prepare a proposed shared-rule change.
+        - GIS governance approves and activates it through SCR-ADM-070.
+      implications:
+        - Introduces maker-checker and a new proposal lifecycle.
+        - May only be chosen if the sponsor explicitly requires this workflow.
+        - Must not be inferred from the predecessor design.
+  inadmissible_current_state:
+    - Both screens write independently with different roles and no shared conflict guard.
+
+decision_02_role_boundary:
+  question: Who may view and change GIS policy and factory radii?
+  choice_required: One read model plus one write model.
+  read_options:
+    - option_id: GIS-READ-A
+      label: GIS administrators see full policy and precise coordinates
+      other_personas: Receive only the reduced settings and coordinates needed for their approved task.
+    - option_id: GIS-READ-B
+      label: GIS and named technical administrators see full policy
+      dependency: Technical Admin must map to an existing approved role or capability; no new role may be invented.
+  write_options:
+    - option_id: GIS-WRITE-A
+      label: GIS Admin only
+      effect: Planner and unrelated Admin roles cannot change policy or radius.
+    - option_id: GIS-WRITE-B
+      label: GIS Admin plus named delegated operators
+      effect: Delegation uses an approved GIS-specific capability that matches page, action and database policy.
+      sponsor_must_name:
+        - Whether Planner is a delegated radius operator.
+        - Whether Compliance, Security or Workflow Admin may change shared GIS rules.
+        - Whether delegation is permanent role mapping or revocable user grant.
+  inadmissible_current_state:
+    - Hidden navigation as authorization.
+    - Capability allows the action while RLS silently filters the row.
+    - All authenticated identities read full settings and precise coordinates.
+
+decision_03_factory_radius_governance:
+  question: What kind of business object is a per-factory geofence radius?
+  choice_required: ONE
+  options:
+    - option_id: GIS-RADIUS-A
+      label: Direct audited operational setting
+      business_meaning:
+        - An authorized operator changes the value immediately.
+        - A reason, actor, old value, new value, timestamp and governing shared-policy version are recorded atomically.
+        - A stale screen must refresh before retrying.
+    - option_id: GIS-RADIUS-B
+      label: Versioned approval-controlled exception
+      business_meaning:
+        - Change is drafted, reviewed and activated by an independent authority.
+        - Effective time and rollback/history semantics must be approved.
+      implication: Adds workflow and maker-checker scope not present in the accepted runtime.
+  inadmissible_current_state:
+    - Immediate unreasoned write with no version or conflict check.
+
+decision_04_conflict_protection:
+  question: What should happen when two users edit the same setting?
+  choice_required: ONE
+  options:
+    - option_id: GIS-CONFLICT-A
+      label: Reject stale save and show comparison
+      business_meaning:
+        - Save includes the version/value originally loaded.
+        - If current data changed, nothing is overwritten.
+        - User sees their proposal beside the current accepted value and chooses whether to refresh and reapply.
+    - option_id: GIS-CONFLICT-B
+      label: Field-level merge with conflict rejection
+      business_meaning:
+        - Independent fields may merge only when their loaded values are unchanged.
+        - Any same-field conflict is rejected and shown.
+      implication: More complex and requires exact field ownership.
+  required_for_both:
+    - Zero affected rows is an error, never success.
+    - No automatic last-writer-wins behavior.
+    - No silent client overwrite after refresh.
+
+decision_05_audit_truth:
+  question: What is the one authoritative audit outcome for a GIS change?
+  choice_required: ONE
+  options:
+    - option_id: GIS-AUDIT-A
+      label: One scoped GIS change event
+      business_meaning:
+        - The authorized update and a single human-readable GIS audit event commit together.
+        - If audit fails, the change fails.
+        - Generic trigger duplication is removed or suppressed for this governed boundary.
+    - option_id: GIS-AUDIT-B
+      label: Correlated technical and business events
+      business_meaning:
+        - Generic row history and a scoped GIS decision event both remain.
+        - They share one correlation ID and are written atomically.
+        - Evidence explains why two records exist.
+  required_fields:
+    - actor
+    - authority or capability
+    - factory or shared-policy object
+    - reason when applicable
+    - before value
+    - after value
+    - source version
+    - resulting version
+    - timestamp
+    - requirement references
+  inadmissible_current_state:
+    - Log audit failure and still tell the user the change succeeded.
+    - Claim source code contains an audit insert as proof the database accepted it.
+
+decision_06_policy_version_lineage:
+  question: Which GIS policy version governs a journey when policy changes during or after preparation?
+  choice_required: ONE online model plus one offline model.
+  online_options:
+    - option_id: GIS-LINEAGE-A
+      label: Pin policy at journey start
+      business_meaning:
+        - One resolved policy version governs the journey until it ends.
+        - Admin changes apply only to journeys started afterward unless an explicit emergency process exists.
+    - option_id: GIS-LINEAGE-B
+      label: Resolve policy at each governed action
+      business_meaning:
+        - Check-in and arrival use the currently effective server policy.
+        - If it differs from the page's loaded policy, the user must be informed and reconfirm under the new rule.
+    - option_id: GIS-LINEAGE-C
+      label: Pin at visit publication
+      business_meaning:
+        - The visit carries its governing GIS policy from publication through execution.
+        - Later policy changes do not alter already-published visits unless formally re-versioned.
+      implication: Broadest planning and visit-version impact.
+  offline_options:
+    - option_id: GIS-OFFLINE-A
+      label: Preserve capture-time policy and reconcile explicitly
+      business_meaning:
+        - Offline event stores the real capture-time policy version.
+        - Replay preserves that fact and records the server's current version separately when different.
+    - option_id: GIS-OFFLINE-B
+      label: Block policy-sensitive offline completion after policy expiry
+      business_meaning:
+        - Evidence remains queued, but the final state change waits for policy refresh and user confirmation.
+      implication: Stricter and may reduce field continuity.
+  required_for_all:
+    - Remove hard-coded GIS version claims.
+    - Visit Detail distinguishes capture-time policy from current policy.
+    - Server is authoritative for the accepted transition.
+
+decision_07_open_client_refresh:
+  question: How quickly must an already-open screen learn that GIS policy changed?
+  choice_required: ONE
+  options:
+    - option_id: GIS-REFRESH-A
+      label: Revalidate before every policy-sensitive action
+      effect: Open screen may remain visually stale, but save, check-in and arrival fetch current version before acting.
+    - option_id: GIS-REFRESH-B
+      label: Push or poll version changes
+      effect: Open Field, Operations and Admin screens display a policy-changed notice and refresh/reconfirm.
+    - option_id: GIS-REFRESH-C
+      label: Session pin
+      effect: Open journey remains on its pinned version under decision GIS-LINEAGE-A.
+  required_for_all:
+    - /admin/gis and /admin/execution cannot show different accepted versions after a successful change.
+    - Consumer cache and refresh expectations are testable and visible.
+
+decision_08_spatial_and_provider_boundary:
+  question: What remains outside the writer-convergence implementation?
+  choices_are_independent_holds:
+    - item: Spatial Canvas
+      current: Feature-held and missing a governed screen identity.
+      required_decision: Approve exact layer/location capabilities and audit before enabling mutation.
+    - item: Mapbox runtime/style/geography/offline
+      current: MVP3-HOLD-002 open.
+      required_decision: Close each clause only with its own controlled evidence.
+    - item: Legal evidence and retention
+      current: Relevant MVP3-HOLD-006 portions open.
+      required_decision: No legal-evidence claim until formally approved.
+  invariant: These holds do not justify leaving writer permission, CAS or audit defects unresolved.
+
+decision_capture_template:
+  sponsor_must_record:
+    authoritative_writer: PENDING
+    read_model: PENDING
+    write_model: PENDING
+    named_delegated_roles_or_capabilities: PENDING
+    factory_radius_governance: PENDING
+    conflict_protection: PENDING
+    audit_truth: PENDING
+    online_policy_lineage: PENDING
+    offline_policy_lineage: PENDING
+    open_client_refresh: PENDING
+    spatial_scope: PENDING
+    provider_hold_clauses_closed: NONE
+  no_default_selection: true
+
+migration_sequence_after_recorded_decisions:
+  - order: 1
+    stage: Contract and evidence baseline
+    outcome:
+      - Record selected choices through approved change control.
+      - Accept WA-DES-006-C1 for affected UI states.
+      - Freeze exact personas, fields, version semantics and negative paths.
+  - order: 2
+    stage: Characterization tests
+    outcome:
+      - Protect current server confirm_arrival and downstream Field/Operations behavior.
+      - Reproduce false success, lost update, audit failure and lineage divergence before remediation.
+  - order: 3
+    stage: Database authority
+    outcome:
+      - Align reduced reads, write capability, CAS and atomic audit.
+      - Preserve historical events and existing consumers.
+  - order: 4
+    stage: Authoritative writer
+    outcome:
+      - Implement only the selected writer model.
+      - Retire, link or make read-only the non-authoritative editor.
+  - order: 5
+    stage: Consumer lineage and refresh
+    outcome:
+      - Remove hard-coded version lineage.
+      - Apply selected online/offline and open-client semantics.
+  - order: 6
+    stage: Map, locale and accessibility
+    outcome:
+      - Preserve list fallback and complete accepted EN/AR, responsive and accessibility states.
+      - Keep provider-dependent claims within the exact closed hold clauses.
+  - order: 7
+    stage: Isolated certification
+    outcome:
+      - Run RLS, concurrency, audit, offline, browser, EN/AR and regression evidence.
+      - Sponsor reviews the real application and evidence before completion credit.
+
+implementation_lease_gate:
+  lease_granted: false
+  all_future_ownership_envelopes: UNGRANTED
+  blockers:
+    - Decisions 01 through 08 are not recorded.
+    - DEC-002 remains open.
+    - WA-DES-006-C1 is not accepted.
+    - Provider and legal holds remain open.
+    - Exact fixture and evidence contract is not approved.
+  rule: A future lease may cover only the files and decision branch explicitly approved by the sponsor.
+
+review_recommendation:
+  ACK:
+    - Accept this packet as a truthful statement of the choices and migration dependencies.
+    - Preserve server confirm_arrival and existing immutable geo evidence during any future convergence.
+  RETURN:
+    - Return any proposal that silently chooses a role, numeric policy value, maker-checker workflow or provider status.
+    - Return any proposal that treats /admin/gis and /admin/execution as independent writers.
+    - Return any proposal that claims audit success without atomic runtime proof.
+  BLOCK:
+    - Block implementation and lease assignment until the sponsor records the bounded choices.
+  current_recommendation: ACK_PACKET_BLOCK_IMPLEMENTATION
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-SPONSOR-CONSENT-READINESS-045
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Verify that every required choice in packet 044 has an explicit sponsor
+    answer, map each answer to canonical authority and unresolved holds, detect
+    contradictions or missing implications, and return a consent-readiness
+    verdict without granting leases or proposing implementation files.
+  non_overlap:
+    - decision completeness review only
+    - no code, data, design, test, evidence, authority, branch or lease mutation

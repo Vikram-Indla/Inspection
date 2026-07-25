@@ -1,0 +1,151 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+status: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+lease_type: READ_ONLY_IMPLEMENTATION_AND_ROLLBACK_SPECIFICATION
+
+business_function: >-
+  Enforce CR-338's planned execution window on the server/database so a virtual
+  inspection cannot begin outside its visit window and a client clock cannot
+  bypass the rule.
+
+authority:
+  requirement_ids: [CR-338]
+  acceptance_ids:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  requirement_source: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance_source: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  evidence_ids:
+    - WA-EV-0338
+    - WA-M11-EV-001
+    - WA-M11-EV-002
+    - WA-M11-EV-005
+
+prerequisites:
+  - "Corrected 009r accepted."
+  - "010 completed and independently accepted, or explicitly proven file-disjoint before concurrent work."
+  - "Fresh SAQEEL session-start and operating-system bootstrap."
+  - "Exclusive application/migration/test file lease recorded."
+
+current_defect:
+  classification: CONFIRMED_P0_WORKFLOW_RULE_DEFECT
+  evidence:
+    - "apps/web/src/app/(app)/virtual/actions.ts:30-32 does not select visit.window_start or visit.window_end."
+    - "scheduleSession validates a plausible appointment but does not prove appointment_at lies within the visit window."
+    - "apps/web/src/app/(app)/virtual/[id]/actions.ts:85-96 opens the waiting room without a window check."
+    - "apps/web/src/app/(app)/virtual/[id]/actions.ts:100-117 records a join without a window check."
+    - "apps/web/src/app/(app)/virtual/[id]/actions.ts:150-168 begins remote execution without selecting or checking the visit window."
+    - "Room.tsx:195-197 labels lateness as a client-clock hint and confirms no server guard exists."
+  business_effect: >-
+    Appointment creation and execution-state mutations can proceed without the
+    canonical planned-window rule required by CR-338.
+
+canonical_window_semantics:
+  appointment_validation: >-
+    The stored appointment_at must lie inside the visit's stored
+    [window_start, window_end] interval.
+  execution_validation: >-
+    The server/database time at the governed execution transition must lie
+    inside [window_start, window_end].
+  boundary: INCLUSIVE
+  boundary_evidence: >-
+    The canonical repository's existing server-side execution-window guard uses
+    now() < window_start OR now() > window_end as the rejection predicate.
+  prohibited_inference:
+    - "No grace period."
+    - "No early-entry allowance."
+    - "No late tolerance."
+    - "No provider-dependent timing."
+    - "No client-clock authority."
+
+required_solution_shape:
+  shared_authority:
+    - "Create one canonical database predicate/guard for visit-window containment."
+    - "Use database now() for live transition checks and timestamptz values for stored windows."
+    - "Return one stable outside-window failure token that the application maps to a clear neutral message."
+    - "Fail closed if the visit or its window cannot be loaded."
+  scheduling:
+    - "Validate appointment_at against the visit window inside the governed creation RPC/path."
+    - "Do not require the act of scheduling to occur inside the window; scheduling must remain possible in advance."
+  execution_transitions:
+    - "Enforce the live window before scheduled→waiting."
+    - "Enforce the live window before recording a participant join that advances session execution state."
+    - "Enforce the live window before verified→in_progress/beginRemote."
+    - "Preserve existing state, readiness, verification, stale-revision, RLS and audit guards; window validation is additive."
+    - "Place authoritative checks in database-governed mutation paths so direct clients cannot bypass them."
+  user_experience:
+    - "Outside-window attempts make no mutation and surface the stored visit window."
+    - "Early and late states must be derived from server truth for enforcement; client hints may remain informational."
+    - "No video-provider behavior is added or changed."
+  prohibited:
+    - "Hard-coded minutes, thresholds or tolerances."
+    - "Client-only disabling as the security/workflow control."
+    - "Direct workflow-status mutation outside the governed transition."
+    - "Atomic-session creation or /virtual list-filter changes."
+
+owned_files_proposed:
+  application:
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - apps/web/src/app/(app)/virtual/[id]/page.tsx
+  migration:
+    - "One new forward-only migration containing the shared window guard and governed mutation integration."
+  tests:
+    - "One SQL contract test for inclusive boundaries, early/late denial, authorization and no mutation."
+    - "One M11 Playwright behavior spec for early, on-window and late application states."
+    - "Regression coverage for existing readiness, OTP verification, stale revision and state-machine gates."
+
+test_contract:
+  appointment:
+    - "Appointment exactly at window_start is accepted."
+    - "Appointment exactly at window_end is accepted."
+    - "Appointment before window_start is rejected with no row/audit mutation."
+    - "Appointment after window_end is rejected with no row/audit mutation."
+  live_transition:
+    - "At window_start, the governed transition is accepted."
+    - "At window_end, the governed transition is accepted."
+    - "Before window_start, waiting/open, join-state advance and begin are rejected with no state, participant, timeline or audit mutation."
+    - "After window_end, the same mutations are rejected with no state, participant, timeline or audit mutation."
+  coexistence:
+    - "Within-window request still fails when verification, readiness, RLS or stale-revision guards fail."
+    - "Outside-window request cannot bypass another guard by choosing a different client action."
+  evidence:
+    - "Capture route, persona, visit/session IDs, stored window, authoritative server result and audit-row absence/presence without secrets."
+
+rollback_plan:
+  rule: >-
+    Roll back through a forward-only migration/application revert that restores
+    the preceding governed functions while retaining all business rows and
+    audit events. Do not relax RLS or delete history.
+  trigger: "Any P0 boundary, authorization, transition, readiness, audit or regression failure."
+
+acceptance_gate:
+  pass_only_if:
+    - "Inclusive boundary tests pass using controlled database time or transaction-safe fixtures."
+    - "Early and late attempts prove zero mutation and zero audit."
+    - "Existing M11 state, readiness, verification, RLS and stale guards still pass."
+    - "Browser evidence shows clear early/on-window/late truth without client authority."
+  completion_claim: >-
+    Do not mark CR-338 accepted until all P0 runtime, negative, audit and
+    regression evidence passes independent review.
+
+lease_separation:
+  excluded_packets:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-SESSION-LIST-FILTER-LEASE-TBD
+  rule: "Execution-window enforcement is the only product defect owned by 011."
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_009R_ACCEPTANCE_AND_010_ORDER
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  scope_separation_checked: PASS

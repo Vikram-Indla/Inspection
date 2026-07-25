@@ -1,0 +1,460 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-OPERATIONS-DESIGN-AUTHORITY-REVIEW-058
+title: Independent Admin Platform Operations design authority and runtime-delta review
+status: BLOCK_DUE_TO_UNRESOLVED_DESIGN_LINEAGE_ROUTE_AUTHORITY_AND_FALSE_OPERATIONAL_TRUTH
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The route, bounded error read, retry-request RPC, feature-flag version
+    storage and maker-checker publication RPC exist. Certification is blocked
+    because the frozen route map points to the wrong design, the corrected
+    WA-DES-004 Operations state is not yet governed as a stable route revision
+    under CD-050, the route has no specific admission guard or screen ID,
+    unauthorized actions are rendered, two source failures become trustworthy
+    zero, the error list is presented without bounded-completeness disclosure,
+    required actor/time/object/version/audit evidence is hidden or absent, raw
+    RPC errors reach the UI, and focused bilingual, responsive, negative and
+    action-persistence evidence is missing.
+
+task_contract:
+  task_id: M10-ADMIN-OPERATIONS-DESIGN-AUTHORITY-REVIEW-058
+  gate: M10 Admin Platform Operations design authority
+  route: /admin/operations
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_ids: [M10]
+  module_id: M3-00
+  module_design_id: CD-050
+  screen_ids:
+    governed: []
+    missing: PLATFORM_OPERATIONS_SCREEN_ID_REQUIRED
+  requirement_ids:
+    phase_1_direct: []
+    direct: [MVP2-REQ-0078]
+    cross_cutting: [MVP2-REQ-0227, MVP2-REQ-0238, MVP2-REQ-0241, MVP2-REQ-0256]
+    contextual:
+      - MVP2-REQ-0073
+      - MVP2-REQ-0188
+      - MVP2-REQ-0189
+      - MVP2-REQ-0190
+      - MVP2-REQ-0191
+      - MVP2-REQ-0192
+      - MVP2-REQ-0224
+      - MVP2-REQ-0226
+      - MVP2-REQ-0239
+  acceptance_ids:
+    - WA-M10-AC-001..006
+    - MVP2-AC-0078
+    - MVP2-AC-0227
+    - MVP2-AC-0238
+    - MVP2-AC-0241
+    - MVP2-AC-0256
+  dependencies:
+    - WA-DES-004_operations_frame_route_binding_decision
+    - WA-DES-020_mapping_removal_and_orphan_disposition
+    - CD-050_M3-00_R2_package_identity_and_fingerprint_verification
+    - WA-DES-004_to_CD-050_lineage_registration
+    - exact_screen_identity_and_requirement_ownership_decision
+    - route_navigation_RLS_RPC_persona_reconciliation
+    - MVP3-HOLD-004
+    - MVP3-HOLD-005
+    - MVP3-HOLD-006
+    - MVP3-HOLD-008
+    - focused_runtime_and_design_evidence
+  do_not_touch:
+    - live Claude Design, supplied exports, accepted revisions or CD-050
+    - application, provider, database, seed, test or evidence files
+    - frozen route, design, screen, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, provider,
+    database, seed, test, evidence, mapping, branch, lease or stash is changed.
+
+route_and_capability_validation:
+  route:
+    page: apps/web/src/app/(app)/admin/operations/page.tsx
+    loading_boundary: apps/web/src/app/(app)/admin/operations/loading.tsx
+    authenticated_AppShell: true
+    route_specific_error_boundary: false
+    validation: CONFIRMED_REAL_ROUTE_WITH_GOVERNANCE_GAPS
+  real_capability:
+    - count RLS-visible integration endpoint records and configured statuses
+    - list at most fifty recent RLS-visible error-queue records
+    - request retry for failed or dependency-blocked records
+    - list RLS-visible feature-flag versions
+    - publish a draft flag through the independent-checker RPC
+    - disclose that retention, backup target and restore objectives remain held
+  absent_capability:
+    - endpoint connectivity, uptime, latency or service-health probe
+    - retry worker execution, delivery receipt, resolution or dead-letter control
+    - feature-flag create, edit, retire, rollback or runtime-consumer evidence
+    - backup, restore, purge, retention or legal-hold execution
+    - complete operations monitoring, environment configuration or audit timeline
+  route_navigation_roles: [security_admin, workflow_admin]
+  direct_route_role_boundary: absent
+  validation: CONFIRMED_WITH_ROUTE_ROLE_AND_EVIDENCE_GAPS
+
+governed_screen_and_requirement_mapping:
+  exact_screen_catalogue_match: false
+  current_route_inventory_requirement_claim: CR-001..CR-478
+  current_claim_validation: INCORRECTLY_OVERBROAD
+  correction: >-
+    No Phase 1 customer row directly owns this additive route. MVP2-REQ-0078 is
+    the direct transferred requirement; the named cross-cutting and contextual
+    rows are not screen-completion claims. The route receives 0/478 credit.
+  direct_acceptance_truth: >-
+    Platform Operations requires environment configuration, monitoring, error
+    queues, feature toggles, backups and retention, plus visible result,
+    governing version, actor, timestamp and object, and safe negative/retry
+    behavior. The current route implements only a subset.
+  validation: INCOMPLETE_REQUIREMENT_AND_ACCEPTANCE_PROOF
+
+design_authority_validation:
+  frozen_mapping:
+    design_id: WA-DES-020
+    filename: SAQEEL Control Panel.dc.html
+    sha256: 387114f67318fc3d8d0022b72f711a4b952dce588a66ba5875fd8a5d675125d2
+    proposed_route: /admin/operations
+    validation: INCORRECT_MAPPING
+    reason:
+      - It is an Administration navigation catalogue.
+      - Its System Operations card is a link, not the operations control plane.
+      - It has no error queue, flag lifecycle, endpoint evidence or governed action.
+    required_disposition: REMOVE_FROM_ROUTE_AND_ORPHAN_PENDING_CATALOGUE_DECISION
+  corrected_nearest_design:
+    design_id: WA-DES-004
+    filename: SAQEEL Admin Extended.dc.html
+    sha256: b2ff11c538430f6f045ba66cf992cbcbc53897c0a62db1db98e30e3c811b19fc
+    state_key: operations
+    selector_label: Platform Ops
+    title: Platform operations & resilience
+    module_label: M3-00
+    nearest_match: true
+    validation: CONFIRMED_NEAREST_WITH_UNRESOLVED_ROUTE_AUTHORITY
+    semantic_match:
+      - endpoint-contract/configured distinction
+      - open-error count with no-throughput disclaimer
+      - feature-flag version count and maker-checker framing
+      - error queue, retry request and flag publication controls
+      - retention, backup and restore policy holds
+    fixture_values_not_runtime_truth:
+      - endpoint, error and published-flag counts
+      - sample sources, operations, statuses, error codes and attempts
+      - sample flag keys, versions, makers and checkers
+  module_family_authority:
+    design_id: CD-050
+    accepted_family_revision: R2
+    package_dc_html_present: false
+    exact_frame_manifest_present: false
+    package_sha256_present: false
+    required_lineage: CD-050_R2 -> WA-DES-004_operations_state -> /admin/operations
+    validation: INSUFFICIENT_STABLE_REVISION_EVIDENCE
+  required_governance_action: >-
+    Bind a stable fingerprinted WA-DES-004 Operations state as the route
+    expression of CD-050 R2, remove WA-DES-020 from the route, allocate the
+    screen identity and record exact requirement ownership before any design or
+    application implementation lease.
+
+permissions_and_action_visibility:
+  source_visibility:
+    error_queue: [ops, security_admin, auditor]
+    integration_endpoints: [security_admin, workflow_admin]
+    feature_flags: ALL_AUTHENTICATED_UNDER_CURRENT_RLS
+  action_authority:
+    request_retry: [ops, security_admin]
+    publish_feature_flag: [security_admin]
+    publish_separation_of_duties: Maker cannot approve own draft.
+  defects:
+    - >-
+      Any authenticated user can reach the route and see RLS-visible feature
+      flags because there is no route-specific admission boundary.
+    - >-
+      Every user who can read a retryable row, including auditor, is shown the
+      retry control although auditor lacks RPC authority.
+    - >-
+      Every authenticated user is shown Approve and publish for draft flags,
+      although only security_admin may invoke the RPC.
+    - >-
+      The draft maker is shown the same publish control even though self-approval
+      is explicitly denied; created_by is selected but ignored.
+    - >-
+      Navigation exposes the route only to security_admin and workflow_admin,
+      while ops has retry authority but no navigation entry.
+  design_implication: >-
+    Route admission, navigation visibility, per-source RLS scope, action
+    permission and maker-checker eligibility must be distinct. Hide or disable
+    actions with an explicit reason before submission; never use a failed RPC as
+    the normal permission-discovery flow.
+  validation: FAIL_ACTION_AUTHORITY_AND_PERSONA_TRUTH
+
+source_truth_and_completeness:
+  error_queue:
+    query_error_captured: true
+    bounded_limit: 50
+    total_count_requested: false
+    sort: newest_first
+    defect: >-
+      The card counts only the returned fifty rows but is labelled Open error
+      records without saying the count is a bounded prefix or that completeness
+      is unknown.
+  feature_flags:
+    query_error_captured: false
+    failure_result: empty_list_and_zero_published
+    defect: Failed or unauthorized reads are indistinguishable from verified zero.
+  integration_endpoints:
+    query_error_captured: false
+    failure_result: zero_endpoint_contracts_and_zero_configured
+    defect: Failed or RLS-empty reads are indistinguishable from verified zero.
+  aggregate_schema_banner:
+    trigger: error_queue_error_only
+    copy: MVP3 database contract is not applied in this environment.
+    defect: >-
+      It attributes every error-queue failure to missing schema even when the
+      cause could be permission, provider, network or another dependency.
+  truthful_preservation:
+    - configured is not called health
+    - open-error count is not called throughput
+    - no purge, successful restore or backup claim is enabled
+  validation: FAIL_PARTIAL_SOURCE_AND_BOUNDED_COUNT_TRUTH
+
+workflow_data_audit_and_conflict:
+  retry_request:
+    database_guard:
+      - security-definer role check for ops or security_admin
+      - atomic status predicate failed or dependency_blocked
+      - row mutation to retry_requested
+      - attempt count increment and next_attempt_at/update timestamp
+    positive_truth: UI correctly says delivery awaits a receipt.
+    missing:
+      - reason or operator intent
+      - visible idempotency key and correlation identity
+      - visible requested_at/updated_at and actor
+      - immutable audit event
+      - retry worker receipt, outcome or resolution
+      - dependency-resolution proof before retrying dependency_blocked
+    validation: BOUNDED_REQUEST_EXISTS_END_TO_END_RETRY_UNPROVEN
+  feature_flag_publication:
+    database_guard:
+      - security_admin role check
+      - row lock
+      - draft-only state predicate
+      - maker cannot self-approve
+      - approved_by and published_at recorded
+    missing:
+      - visible maker, checker, created and published timestamps
+      - immutable publication audit event
+      - published-version immutability trigger
+      - one-active-version invariant or explicit multi-version runtime semantics
+      - confirmation and visible impact/affected consumers
+      - runtime-consumer proof that publication changed the intended behavior
+      - stale expected-version token beyond the draft-state predicate
+    validation: MAKER_CHECKER_TRANSITION_EXISTS_GOVERNED_LIFECYCLE_INCOMPLETE
+  raw_server_errors:
+    behavior: RPC error.message is returned directly into the page.
+    risk: internal database, provider or policy detail can leak and is not localized.
+    validation: FAIL_SAFE_ERROR_CONTRACT
+  generic_audit_trigger_for_queue_or_flags: absent
+  validation: FAIL_ACTOR_TIMESTAMP_OBJECT_VERSION_AUDIT_AND_RECEIPT_EVIDENCE
+
+localization_responsive_theme_and_accessibility:
+  localization:
+    route_labels: English fallback with Arabic in-memory strings
+    raw_machine_values:
+      - source
+      - operation
+      - status
+      - last_error_code
+      - flag_key
+      - description
+    action_messages: hard-coded English
+    code_direction_isolation: not proven
+    validation: PARTIAL_NOT_EQUIVALENT_ARABIC_OPERATIONAL_FLOW
+  responsive:
+    structural_support: shared grid and horizontally wrapped tables
+    focused_operations_viewports_proven: false
+    required: [1440x900, 1200x900, 1024x768, 768x1024, 412x915, 390x844, 320x568]
+    risks:
+      - wide tables require horizontal scrolling with action context detached
+      - long safe codes, keys and descriptions may overflow
+      - no route-specific narrow-shell evidence
+    validation: INSUFFICIENT_EVIDENCE
+  themes:
+    token_usage: mostly shared tokens
+    light_and_dark_runtime_evidence: absent
+    validation: INSUFFICIENT_EVIDENCE
+  accessibility:
+    strengths:
+      - semantic tables and scoped headers
+      - pending button disable
+      - action message uses role status or alert
+      - status is textual, not color-only
+    gaps:
+      - repeated action names omit row identity
+      - no publish confirmation or impact explanation
+      - no proven focus placement after server action/revalidation
+      - no table alternative or card reflow evidence
+      - no keyboard, zoom, reduced-motion or screen-reader evidence
+    validation: PARTIAL_IMPLEMENTATION_NO_ACCEPTANCE_EVIDENCE
+
+design_versus_code_delta:
+  parity:
+    - route title and M3-00/CD-050 family marker
+    - three high-level summary concepts
+    - error queue and feature-flag tables
+    - retry-request and independent publication concepts
+    - retention/backup/restore held-policy disclosure
+  design_contains_but_code_hides:
+    - maker and checker identities
+    - explicit per-record governance context
+    - route-appropriate Operations information architecture from WA-DES-004
+  code_contains_but_design_must_preserve:
+    - RLS-specific partial personas
+    - exact retryable statuses
+    - atomic server-side role and state guards
+    - delivery-not-claimed success language
+  unresolved_in_both:
+    - stable governed route/frame identity and CD-050 fingerprint
+    - route admission/persona contract
+    - per-source unavailable and scoped-empty states
+    - bounded-list completeness and as-of provenance
+    - actor/time/object/version/audit/receipt evidence
+    - stale/conflict and persistence proof
+    - complete EN/AR, responsive, theme and accessibility evidence
+
+required_design_states:
+  access:
+    - SECURITY_ADMIN_FULL_SCOPE
+    - WORKFLOW_ADMIN_ENDPOINTS_AND_FLAGS_PARTIAL
+    - OPS_ERRORS_AND_FLAGS_PARTIAL
+    - AUDITOR_ERRORS_AND_FLAGS_READ_ONLY
+    - OTHER_AUTHENTICATED_DENIED_OR_EXPLICITLY_SCOPED
+    - SESSION_EXPIRED
+  sources:
+    - LOADING
+    - POPULATED_ALL_VISIBLE_SOURCES
+    - VERIFIED_ZERO_PER_SOURCE
+    - ERROR_QUEUE_UNAVAILABLE
+    - FLAGS_UNAVAILABLE
+    - ENDPOINTS_UNAVAILABLE
+    - MULTIPLE_SOURCES_UNAVAILABLE
+    - ERROR_QUEUE_BOUNDED_COMPLETENESS_UNKNOWN
+  retry:
+    - ELIGIBLE
+    - PENDING
+    - REQUESTED_AWAITING_RECEIPT
+    - DEPENDENCY_BLOCKED
+    - DENIED_NO_CHANGE
+    - INELIGIBLE
+    - FAILED_NEUTRAL
+    - STALE_OR_CONFLICT
+  feature_flags:
+    - DRAFT_MAKER_NO_SELF_APPROVAL
+    - DRAFT_INDEPENDENT_CHECKER
+    - PUBLISH_PENDING
+    - PUBLISHED_WITH_EVIDENCE
+    - SELF_APPROVAL_DENIED
+    - PUBLISH_DENIED
+    - PUBLISH_FAILED_NEUTRAL
+    - PUBLISH_STALE_OR_CONFLICT
+  policy:
+    - PROVIDER_HELD
+    - RETENTION_AND_BACKUP_HELD
+    - PRODUCTION_RELEASE_HELD
+
+test_and_evidence_assessment:
+  current_proof:
+    - source-level schema, RLS and RPC contract assertions
+    - route-open smoke coverage
+    - shared design-system grid, table and action primitives
+  missing:
+    - exact permitted and denied persona matrix
+    - self-approval denial and hidden-action behavior
+    - retry/publish pending, success, failure and persistence
+    - per-source failure isolation and bounded-list disclosure
+    - neutralized raw-error behavior
+    - actor/time/object/version/audit and receipt presentation
+    - stale or concurrent action rejection
+    - full English/Arabic, LTR/RTL, light/dark and required viewport evidence
+    - keyboard, focus, screen reader, zoom and reflow evidence
+    - exact accepted design-frame fingerprint and side-by-side runtime comparison
+  completion_rule: >-
+    No route, screen, requirement or design receives completion credit until
+    every P0/P1 criterion has stable design authority, runtime behavior, safe
+    negative paths, tests and named evidence.
+
+risk_register:
+  - id: OPS-058-RISK-001
+    severity: CRITICAL
+    risk: Wrong WA-DES-020 catalogue remains the frozen route mapping.
+  - id: OPS-058-RISK-002
+    severity: CRITICAL
+    risk: Failed or RLS-hidden sources are represented as trusted zero.
+  - id: OPS-058-RISK-003
+    severity: CRITICAL
+    risk: Unauthorized or self-ineligible governed actions are offered to users.
+  - id: OPS-058-RISK-004
+    severity: HIGH
+    risk: Bounded fifty-row error prefix is presented as the full open count.
+  - id: OPS-058-RISK-005
+    severity: HIGH
+    risk: Raw RPC errors expose internal detail and bypass localized safe copy.
+  - id: OPS-058-RISK-006
+    severity: HIGH
+    risk: Retry requested or flag publication is treated as end-to-end operational completion without audit or receipt.
+  - id: OPS-058-RISK-007
+    severity: HIGH
+    risk: Fixture counts or provider-policy assumptions become runtime claims.
+
+p0_disposition:
+  - {id: OP-DES-P0-01, result: PASS, evidence: No new design or screen identity was invented.}
+  - {id: OP-DES-P0-02, result: PASS_REVIEW_ONLY, evidence: WA-DES-004 Operations is confirmed as nearest; frozen map remains uncorrected.}
+  - {id: OP-DES-P0-03, result: FAIL, evidence: CD-050 R2 package/frame fingerprint is absent.}
+  - {id: OP-DES-P0-04, result: FAIL, evidence: WA-DES-020 remains mapped to this route.}
+  - {id: OP-DES-P0-05, result: PASS_REVIEW_ONLY, evidence: Fixture values are identified as non-runtime truth.}
+  - {id: OP-DES-P0-06, result: PASS_REVIEW_ONLY, evidence: Exact direct/cross-cutting/contextual rows are bounded; no completion is awarded.}
+  - {id: OP-DES-P0-07, result: PASS, evidence: Route capability is bounded from adjacent admin control planes.}
+  - {id: OP-DES-P0-08, result: PASS, evidence: Endpoint configuration is not called health.}
+  - {id: OP-DES-P0-09, result: PASS, evidence: Retry success copy explicitly awaits a receipt.}
+  - {id: OP-DES-P0-10, result: FAIL, evidence: Maker/checker eligibility and evidence are not represented; published immutability is unproven.}
+  - {id: OP-DES-P0-11, result: FAIL, evidence: Route, navigation, source and action authorities conflict and are not rendered separately.}
+  - {id: OP-DES-P0-12, result: FAIL, evidence: Raw RPC error.message reaches the UI.}
+  - {id: OP-DES-P0-13, result: FAIL, evidence: Two failed or hidden sources collapse to zero and the error count is bounded without disclosure.}
+  - {id: OP-DES-P0-14, result: FAIL, evidence: Denied, stale/conflict, audit, persistence and receipt truth is missing.}
+  - {id: OP-DES-P0-15, result: PASS, evidence: Retention, backup, restore and provider claims remain held.}
+  - {id: OP-DES-P0-16, result: PASS, evidence: This review awards no runtime implementation completion.}
+
+recommendation:
+  reviewer_recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+  secondary_action: RETURN_FOR_MAPPING_CORRECTION
+  sponsor_business_decision: >-
+    Do not approve Operations implementation or completion. First approve the
+    corrected WA-DES-004 Operations under CD-050 lineage, remove WA-DES-020
+    from the route, allocate the screen identity, reconcile route/RLS/RPC roles
+    and require per-source, bounded-count, action-evidence and safe-error states.
+    Then assign exactly one bounded design writer; application consent remains
+    a separate later decision.
+
+safe_follow_on:
+  task_id: M10-ADMIN-SECURITY-ACCESS-DESIGN-AUTHORITY-REVIEW-059
+  objective: >-
+    Independently validate /admin/security-access against its nearest accepted
+    Claude Design authority, exact requirement and acceptance ownership, route
+    and action roles, maker-checker evidence, Arabic/responsive/accessibility
+    states and runtime deltas.
+  constraints:
+    - Read-only application, design, provider, database and test review.
+    - No frozen mapping, branch, lease, main, setup/Inspection or stash change.

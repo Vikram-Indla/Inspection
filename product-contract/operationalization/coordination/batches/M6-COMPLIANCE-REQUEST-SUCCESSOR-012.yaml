@@ -1,0 +1,459 @@
+schema_version: "1.0"
+packet_id: M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+status: REVIEWER_READY_READ_ONLY_LOCK_SAFE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Prepare a truthful successor for the Compliance Configuration Request
+  register, request creation, governed workspace and approval queue. The design
+  coordinates maker-checker review and publication; it never replaces the
+  domain screens that own configuration authoring.
+
+lock_safe_boundary:
+  state: MAC_LOCKED_OR_UI_UNAVAILABLE
+  allowed:
+    - "Read canonical repository and existing exported design evidence."
+    - "Create and validate this owned orchestration packet."
+  prohibited:
+    - "Computer Use, browser or desktop UI."
+    - "Live Claude Design inventory, creation, edit or export."
+    - "Mapping, application, test, Supabase, seed or shared-data mutation."
+  resume_gate: "Reverify live design inventory and leases after unlock before any design write."
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: c204a351b6267b0c6b6c29b31fe858f6e5e3f370
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/M9-PACKAGE-DESIGNER-INLINE-SUCCESSOR-020.yaml
+    - product-contract/operationalization/coordination/batches/M9-PACKAGE-DESIGNER-NO-CODE-MATCH-RESOLUTION-019.yaml
+  dirty_path_ownership: "Prior Claude Design lane packets; preserved and not modified."
+  task: M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+  process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+  requirement_ids:
+    primary_enabling:
+      - "CR-458..CR-463"
+    contextual_domain:
+      - "CR-449..CR-457"
+      - "CR-464..CR-478"
+  ownership_rule: >-
+    CR-458..CR-463 are coordinated here only as request/review/publication
+    lifecycle. Every domain value, rule and dependency remains authored and
+    semantically owned by the Regulation, Item, Package, Violation, Penalty and
+    Template screens. The request design does not count those rows complete.
+  acceptance_ids: ["WA-M6-AC-001..006"]
+  routes:
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - "/admin/compliance-requests/:id"
+    - /admin/compliance-approvals
+  screens:
+    - "Compliance Request Register"
+    - "New Compliance Request"
+    - "Compliance Request Workspace"
+    - "Compliance Approval Queue"
+  engines: ["ENG-07", "ENG-08", "ENG-09", "ENG-10", "ENG-12"]
+  dependencies:
+    - M6-TRACEABILITY-SPLIT-011
+    - M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010
+    - M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015
+    - M9-COMPLIANCE-DETAIL-SUCCESSOR-016
+    - M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+    - SAFE-SUCCESSOR-REVISION-005
+  do_not_touch:
+    - "WA-DES-019 and every Claude Design file."
+    - "Frozen requirement, design, route and acceptance artifacts."
+    - "Application source, tests, migrations, seeds, Supabase and shared data."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  corrected_traceability: product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+  prior_audit: product-contract/operationalization/coordination/batches/M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010.yaml
+  registry_successor: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015.yaml
+  detail_successor: product-contract/operationalization/coordination/batches/M9-COMPLIANCE-DETAIL-SUCCESSOR-016.yaml
+  penalty_authority: product-contract/operationalization/coordination/batches/M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018.yaml
+  safe_successor_method: product-contract/operationalization/coordination/batches/SAFE-SUCCESSOR-REVISION-005.yaml
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  acceptance: product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  route_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  components:
+    - apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/actions.ts
+    - apps/web/src/app/(app)/admin/compliance-requests/ActionForm.tsx
+    - apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+  tests:
+    - apps/web/e2e/compliance-approval-queue.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+    - apps/web/e2e/compliance-request-engine.spec.ts
+
+immutable_predecessor:
+  logical_id: WA-DES-019
+  revision: BASE_REGISTERED
+  filename: "SAQEEL Compliance Requests.dc.html"
+  source_directory: /Users/vikramindla/Attachment dump/export-non-inspector
+  bytes: 12557
+  sha256: "05332be7bf0ed96a70f58507aa183f2f3010adada28938bf70466fa4038fad18"
+  identity_reverified_on: "2026-07-25"
+  state: ACCEPTED_PREDECESSOR_IMMUTABLE
+  registered_routes:
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - "/admin/compliance-requests/:id"
+  missing_registered_route: /admin/compliance-approvals
+  no_overwrite_rule: "Never edit, rename, replace or delete the predecessor."
+
+proposed_successor:
+  logical_id: WA-DES-019
+  revision: WA-DES-019-C1
+  exact_filename: "SAQEEL Compliance Requests - WA-DES-019-C1.dc.html"
+  initial_state: DRAFT_NON_CONSUMABLE
+  authority_kind: REQUEST_REVIEW_PUBLICATION_ENVELOPE
+  routes:
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - "/admin/compliance-requests/:id"
+    - /admin/compliance-approvals
+  local_export_inventory:
+    exact_successor_match: NOT_CHECKED_LIVE_WHILE_LOCKED
+    rule: "Complete cloud inventory and exact filename absence are mandatory before creation."
+  creation_authorization: NOT_GRANTED_BY_THIS_PACKET
+
+route_component_reconciliation:
+  request_register:
+    route: /admin/compliance-requests
+    component: apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+    real_behavior:
+      - "RLS-scoped request list ordered by creation time."
+      - "Request number/title, create/modify type, lifecycle status, revision and date."
+      - "Compliance/Form writers can start a request; other roles receive a truthful read-only note."
+      - "Read failure and verified empty are distinct."
+  new_request:
+    route: /admin/compliance-requests/new
+    component: apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+    real_behavior:
+      - "Create or Modify request envelope with title and description."
+      - "Creation requires Compliance/Form authority and the guarded create RPC."
+      - "Successful creation redirects to the governed workspace."
+  request_workspace:
+    route: "/admin/compliance-requests/:id"
+    component: apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+    real_behavior:
+      - "Request/revision facts, components, dependencies, decisions and publications."
+      - "Owner-only draft/revision actions and distinct reviewer decisions."
+      - "Current/proposed snapshot comparison."
+      - "Submit, revise, return, reject, cancel and publish through existing RPCs."
+      - "Reason, correlation, audit reference and immutable published version evidence."
+  approval_queue:
+    route: /admin/compliance-approvals
+    component: apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+    current_design_mapping: NO_EXACT_MAPPING
+    nearest_design: WA-DES-019
+    validation: CONFIRMED_WITH_CORRECTION
+    real_behavior:
+      - "Pending, partially approved and ready-to-publish views."
+      - "Own requests excluded from decision workload."
+      - "Request/component/dependency progress without an invented SLA."
+      - "Opens the same request workspace in review context."
+
+supported_domain_component_boundary:
+  current_entity_kinds:
+    - regulation
+    - inspection_item
+    - violation
+    - penalty
+  not_proven_supported:
+    - package
+    - template
+    - workflow
+    - risk
+    - operational_enforcement
+  rule: >-
+    The successor may show only the four current entity kinds. Package,
+    template and other configuration changes remain governed by their domain
+    screens unless separate backend and product change control authorizes a
+    request component extension.
+  raw_snapshot_boundary: >-
+    Current implementation accepts JSON snapshots. The successor must present a
+    clear current-versus-proposed comparison and validation contract, but this
+    packet does not authorize replacing the JSON editor, adding schema fields
+    or inventing domain semantics.
+
+canonical_lifecycle_contract:
+  draft:
+    - "Maker creates an envelope and adds supported components/dependencies."
+    - "Only the owner can edit an eligible draft or returned revision."
+  submit:
+    - "Submission validates the current revision and freezes it for review."
+  review:
+    - "Reviewer is authorized and not the owner."
+    - "Component approve/reject decisions are revision-scoped."
+    - "Reject/return requires a reason."
+  revise:
+    - "Returned request creates a new immutable revision; prior revision remains auditable."
+  publish:
+    - "Only approved/eligible branches may be published."
+    - "Publication assigns immutable version references and retains correlation/audit evidence where returned."
+    - "Do not claim atomicity, transactional scope or generated domain fields beyond current runtime evidence."
+  cancel:
+    - "Only an eligible owner can cancel through the guarded transition."
+  audit:
+    - "Request, revision, component, decision and publication histories remain immutable and scoped."
+
+permissions:
+  create_and_edit: ["Compliance Admin", "Form Admin"]
+  review: ["Compliance Admin", "Reviewer"]
+  segregation: "Owner/maker cannot review or publish their own request."
+  read: "Only rows allowed by current route guard and RLS."
+  failure_rule: "Permission-read failure disables actions and never grants optimistic access."
+  UI_rule: "Visible buttons mirror capability only; RPC and RLS remain authoritative."
+
+bounded_design_delta:
+  preserve:
+    - "Envelope-first request creation."
+    - "Request workspace with components and dependency tree."
+    - "Current/proposed comparison."
+    - "Maker-checker action zone and revision history."
+    - "Correlation and publication evidence."
+  remove:
+    - "Typed Arabic-only صناعي branding."
+    - "Fixed request IDs, email addresses, counts, dates and component values."
+    - "Fire-safety/legal examples presented as real."
+    - "Unproven 'transactional publication' and absolute RPC/RLS/audit claims."
+    - "Any Committee, Risk, Planning or operational Enforcement action."
+    - "Any score, weight, SLA, priority, provider, legal or penalty value not returned by a source."
+  add:
+    - "Request Register and Approval Queue modes as full route variants."
+    - "Complete loading, empty, error, denied, stale/conflict and immutable states."
+    - "Full EN/LTR and AR/RTL parity."
+    - "Responsive desktop/tablet/mobile layouts and accessible comparison alternatives."
+    - "Explicit handoff links to domain screens without duplicating their editors."
+  correct:
+    - "Approved bilingual SAQEEL shell."
+    - "Configuration approval queue is distinct from Inspection Review & Approval."
+    - "Verified zero and unavailable remain distinct."
+    - "Publication language reflects only independently proven current behavior."
+
+required_state_matrix:
+  register:
+    - "Loading."
+    - "Populated RLS-scoped register."
+    - "Verified zero."
+    - "Read error/count unknown."
+    - "Read-only role."
+    - "Permission-read failure."
+    - "Search/filter no match if search/filter is retained."
+  create:
+    - "Authorized blank form."
+    - "Unauthorized."
+    - "Validation errors."
+    - "Duplicate/conflict or RPC failure with values retained."
+    - "Creating and success redirect."
+  workspace:
+    - "Loading."
+    - "Not found or outside scope."
+    - "One governed read fails; no inferred state."
+    - "Draft with no components."
+    - "Draft with components and no dependencies."
+    - "Pending review."
+    - "Partially approved."
+    - "Approved/ready to publish."
+    - "Returned with required reason."
+    - "Rejected."
+    - "Cancelled."
+    - "Published immutable versions."
+    - "Read-only observer."
+    - "Owner/maker excluded from review."
+    - "Stale revision or invalid transition conflict."
+    - "Component/dependency validation error."
+    - "Publish failure with no false version reference."
+  approval_queue:
+    - "Loading."
+    - "Populated pending/partial/publish views."
+    - "Verified zero eligible requests."
+    - "One or more read failures; workload unknown."
+    - "Own requests excluded."
+    - "Unauthorized/read-only."
+    - "Dependency/component progress unavailable."
+  common:
+    - "Audit/correlation unavailable is not zero."
+    - "Provider/notification side effect unavailable does not change transition truth."
+    - "Every action has pending, success, failure and focus-recovery behavior."
+
+responsive_locale_theme_contract:
+  viewports:
+    - "1440x900 page comparison"
+    - "1160x900 predecessor comparison"
+    - "1024x768 tablet"
+    - "412x915 mobile"
+    - "390x844 mobile"
+    - "320x568 minimum"
+  variants:
+    - "EN/LTR light"
+    - "EN/LTR dark"
+    - "AR/RTL light"
+    - "AR/RTL dark"
+  desktop:
+    - "Register/queue use bounded tables or cards."
+    - "Workspace uses comparison plus dependency/history rail without fixed overflow."
+  tablet:
+    - "Workspace comparison and side rail stack while actions remain near request context."
+  mobile:
+    - "Register and queue become labelled cards."
+    - "Current/proposed comparison becomes sequential sections with persistent labels."
+    - "Dependency tree and revision history remain keyboard and screen-reader navigable."
+    - "Action zone never hides reasons, validation or final history."
+    - "No page-wide horizontal scrolling."
+  rtl:
+    - "Mirror navigation, comparison ordering, dependency arrows and actions."
+    - "Keep request numbers, UUIDs, correlations, revisions, dates and JSON tokens in bdi dir=ltr."
+    - "Arabic labels, states, validation, reasons and announcements have semantic parity."
+  shell_and_theme:
+    - "Approved SAQEEL | صقيل wordmark/shield only."
+    - "No صناعي, Industrial or ADMIN sub-brand."
+    - "Approved semantic tokens; status never conveyed by colour alone."
+
+accessibility_contract:
+  - "One h1 per route and ordered headings."
+  - "Landmarks and skip links identify navigation, main and governed action zone."
+  - "Register tables have captions, scoped headers and labelled open actions."
+  - "Mobile cards retain every table header as an accessible label."
+  - "Current/proposed comparison groups are programmatically named."
+  - "Dependency links identify parent and child; arrows are decorative."
+  - "Revision and decision histories use ordered semantic lists."
+  - "Every reason/comment field has persistent label and linked error."
+  - "Validation summary receives focus and links to the affected field/component."
+  - "Pending, success, return, reject, publish and conflict outcomes use appropriate live announcements."
+  - "Focus returns to the action result or affected component."
+  - "All controls are keyboard reachable with visible focus and approved target size."
+  - "200% and 400% zoom preserve all content/actions without two-dimensional page scrolling."
+  - "Reduced motion preserves every state change."
+
+truth_and_non_invention:
+  - "No score, weight, risk, health, KPI or SLA."
+  - "No legal authority, clause, severity, grace, penalty, provider or notification delivery claim."
+  - "No component, dependency, revision, audit or publication count unless returned by the current read."
+  - "No transaction/atomicity claim without independent current backend evidence."
+  - "No package/template request support when the current entity-kind contract does not expose it."
+  - "No domain completion claim from an approved request alone."
+
+explicit_do_not_build:
+  - "No new route, redirect or alias."
+  - "No new entity kind or JSON schema."
+  - "No domain regulation/item/package/violation/penalty editor."
+  - "No Committee workflow."
+  - "No operational Enforcement action."
+  - "No risk/scoring policy."
+  - "No notification/provider integration."
+  - "No database, RPC, RLS/RBAC, audit or workflow change."
+  - "No replacement of raw snapshot editing without separate accepted design and implementation lease."
+  - "No status-board completion increase."
+
+identity_and_creation_gates:
+  before_create:
+    - "Mac unlocked and explicit design-write lease issued."
+    - "Complete live project inventory proves exact successor filename absent."
+    - "Record project page count and predecessor URL."
+    - "Re-export predecessor and require 12,557 bytes plus exact SHA-256."
+    - "Approve addition of /admin/compliance-approvals to the logical route mapping."
+    - "Stop on any identity mismatch, conflict or P0/P1."
+  create:
+    - "Create exactly one successor from exact predecessor bytes."
+    - "Apply only this bounded four-route delta."
+    - "Do not edit any existing design."
+  after_create:
+    - "Inventory shows exactly one expected addition."
+    - "Re-export/hash predecessor and successor; predecessor remains byte-identical."
+    - "Record successor URL, bytes, SHA-256, creator and timestamp."
+    - "Keep DRAFT_NON_CONSUMABLE until independent and sponsor acceptance."
+
+mapping_correction_after_acceptance_only:
+  logical_id: WA-DES-019
+  revision: WA-DES-019-C1
+  preserve_routes:
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - "/admin/compliance-requests/:id"
+  add_route:
+    - /admin/compliance-approvals
+  requirement_scope: "CR-458..CR-463 enabling lifecycle; CR-449..CR-457 and CR-464..CR-478 contextual only."
+  remove_incorrect_companions:
+    - WA-DES-018
+    - WA-DES-023
+    - WA-DES-040
+  rule: "No frozen mapping is changed by this packet."
+
+runtime_certification_required:
+  identity:
+    - "Branch, commit, routes and exact components."
+  positive:
+    - "Authorized maker creates request, adds supported component/dependency and submits."
+    - "Distinct reviewer decides components, returns/rejects with reason or publishes eligible branches."
+    - "Revision and publication evidence persists after refresh."
+  negative:
+    - "Unauthorized/read-only roles."
+    - "Maker self-review blocked."
+    - "Missing required reason."
+    - "Invalid/stale transition and revision conflict."
+    - "Partial read failure."
+    - "Dependency or publication failure."
+  regression:
+    - "Domain screens remain semantic owners."
+    - "Immutable prior revisions and published version references remain."
+    - "RLS, correlation and audit boundaries remain fail-closed."
+  browser:
+    - "Every route, viewport, locale/direction and theme."
+    - "Console/network health, keyboard, focus, zoom and accessibility."
+  rule: "Code existence and design captures do not constitute runtime certification."
+
+comparison_and_acceptance_evidence:
+  - "Before/after cloud inventory, page count and URLs."
+  - "Predecessor/successor bytes and SHA-256; unchanged predecessor proof."
+  - "1160x900 predecessor and four-route successor comparisons."
+  - "Text scan proving no invented values, unrelated products or unsupported entity kinds."
+  - "All required state, viewport, locale/direction, theme and accessibility captures."
+  - "Route/component preservation and runtime-certification matrix."
+  - "Independent Codex verdict and sponsor acceptance naming exact successor hash."
+
+rollback:
+  design: "Reject WA-DES-019-C1 and retain the immutable predecessor as current authority."
+  mapping: "No pre-acceptance mapping mutation; rollback is no-op."
+  implementation: >-
+    No implementation occurs here. Any later correction must retain the current
+    route/components or a proven route-level feature rollback.
+
+queued_successor:
+  packet: M6-COMPLIANCE-REQUEST-MAPPING-CORRECTION-013
+  status: READY_READ_ONLY_AFTER_THIS_REVIEW
+  objective: >-
+    Prepare an exact frozen-mapping amendment proposal for WA-DES-019-C1,
+    including /admin/compliance-approvals and contextual-only domain ownership,
+    without editing mappings or product code.
+
+recommendation:
+  disposition: APPROVE_PACKET_FOR_FUTURE_BOUNDED_DESIGN_WRITE_LEASE
+  design_write_now: false
+  mapping_change_now: false
+  implementation_now: false
+  completion_score_change: 0
+  real_browser_proof_ready: false
+
+stop_conditions:
+  - "Mac remains locked or live inventory cannot be proven."
+  - "Successor filename exists or predecessor identity differs."
+  - "Any existing design would change."
+  - "A new route/entity/backend/provider/domain editor is introduced."
+  - "Request envelope is counted as domain capability completion."
+  - "Any permission, workflow, maker-checker, audit, revision, publication or conflict safeguard is weakened."
+  - "Any P0/P1 state, responsive, Arabic/RTL, accessibility or runtime evidence is missing."

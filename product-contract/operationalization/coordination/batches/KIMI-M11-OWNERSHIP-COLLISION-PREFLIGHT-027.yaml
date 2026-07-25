@@ -1,0 +1,286 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+status: DOCUMENTATION_ONLY_PREFLIGHT_READY_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+acknowledgement:
+  packet: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  verdict: ACK_DOCUMENTATION_ONLY_NON_EXECUTABLE
+  effect:
+    - "The six proposed correction owners are accepted as planning boundaries only."
+    - "No source-correction, application, database, test, migration or QA lease is issued."
+    - "No implementation or requirement-completion credit is created."
+
+authority:
+  consolidated_return: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  readiness_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  source_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  future_review: KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+  lease_registry: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+
+hard_boundary:
+  allowed:
+    - "Read-only ownership, dependency, file and migration collision analysis."
+    - "Prepare a future dispatch order and hard collision-stop checklist."
+    - "Monitor manual Mac unlock without attempting automatic unlock."
+  prohibited:
+    - "Product, application, database, remote DDL, test, migration, data, UI or seed writes."
+    - "Branch/worktree creation, switching, push, merge or protected-branch changes."
+    - "Lease issuance, owner appointment or migration filename allocation."
+    - "Main, setup/Inspection or stash changes."
+    - "Execution of review 025 before actual corrected source packets exist."
+
+active_lease_snapshot:
+  observed_on: "2026-07-25"
+  control_writer:
+    actor: Codex
+    worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+    branch: codex/orchestration-control-plane
+    leased_paths:
+      - "product-contract/operationalization/coordination/**"
+      - product-contract/operationalization/ORCHESTRATION_STATUS.md
+    status: ACTIVE
+    collision_effect: >-
+      Kimi may not concurrently write the six coordination packets while this
+      lease is active unless the registry is formally changed.
+  kimi:
+    worktree: /Users/vikramindla/Developer/Inspection
+    branch: docs/saqeel-inspector-inventory
+    packet: KIMI-M4-READINESS-001
+    mode: READ_ONLY
+    status: ACTIVE
+    collision_effect: >-
+      The existing Kimi session has no repository write authority. It may
+      analyze and return complete corrected packet payloads in chat only.
+  product_write_leases:
+    application_paths: NONE_FOUND_IN_REGISTRY
+    supabase_paths: NONE_FOUND_IN_REGISTRY
+    migration_paths: NONE_FOUND_IN_REGISTRY
+    qualification: >-
+      This is a point-in-time preflight, not a future lease. The registry must
+      be re-read immediately before any correction dispatch or implementation.
+  other_rows:
+    - "M3 worktrees are review-only and pending review."
+    - "Claude Design discovery is on hold and excludes application/Supabase writes."
+  status_file_note: >-
+    ORCHESTRATION_STATUS.md is a status aid, not lease authority. Where it is
+    stale, ACTIVE_WORKTREE_LEASES.csv and the product contract control.
+
+safe_correction_return_mode:
+  recommended: CHAT_PAYLOAD_ONLY
+  reason: >-
+    It keeps Kimi productive without violating its read-only canonical-repo
+    boundary or colliding with the Codex coordination control-writer lease.
+  rules:
+    - "Kimi receives 022, 024, 026 and this preflight after manual unlock."
+    - "Kimi returns six complete YAML payloads plus the closure matrix in chat."
+    - "Kimi performs no filesystem, branch, lease, product, database or test write."
+    - "Codex validates the returned content before any control-writer file update."
+    - "A returned chat payload is not an accepted corrected packet until written by an authorized owner and independently reviewed."
+  alternative_not_authorized_now: >-
+    A later explicit registry change may release or narrow the Codex control
+    lease and grant Kimi an exact six-file lease in an authorized worktree.
+    This preflight neither requests nor issues that lease.
+
+correction_dispatch_order:
+  - order: 0
+    action: MANUAL_UNLOCK_AND_SESSION_CONFIRMATION
+    exit:
+      - "Mac is manually unlocked."
+      - "Existing Kimi conversation identity is confirmed."
+      - "Fresh SAQEEL OS v2 bootstrap and canonical-repository boundary are acknowledged."
+  - order: 1
+    action: DISPATCH_CHAT_ONLY_CORRECTION_BRIEF
+    inputs: [KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022, KIMI-M11-CORRECTION-READINESS-REVIEW-024, KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026, KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027]
+    exit:
+      - "Kimi explicitly accepts read-only/chat-return mode."
+      - "No repository-write or implementation claim is made."
+  - order: 2
+    action: RETURN_SIX_CORRECTED_PAYLOADS_AND_MANIFESTS
+    required_packets:
+      - KIMI-M11-ATOMIC-FIX-LEASE-010
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+      - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+      - KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+    exit:
+      - "All six complete corrected payloads are present."
+      - "Closure, persona, owner/ACL/dependency, policy/trigger, rollout and proposed-lease manifests are present."
+  - order: 3
+    action: CODEX_CONTROL_WRITER_VALIDATION_AND_MATERIALIZATION
+    exit:
+      - "Payloads are checked against 022, 024, 026 and this preflight."
+      - "Only an authorized control writer may update the six coordination files."
+      - "No product or implementation file changes."
+  - order: 4
+    action: RUN_REVIEW_025
+    precondition: "Actual corrected packets and all manifests exist."
+    exit:
+      - "025 records ACK, RETURN or BLOCKED using its declared result options."
+  - order: 5
+    action: SPONSOR_IMPLEMENTATION_OWNERSHIP_DECISION
+    precondition: "025 is ACK_CORRECTED_PACKETS_READY_FOR_SPONSOR_LEASE_DECISION."
+    effect: "A future decision may authorize one exact implementation owner at a time; none is appointed here."
+
+future_implementation_order_not_authorized:
+  prerequisites:
+    - "Corrected 009r accepted with one QA owner."
+    - "025 ACK."
+    - "Sponsor ownership decision."
+    - "Fresh lease-registry collision check."
+    - "Exact function owner, extension schema, persona authority and provider blockers resolved or explicitly blocked."
+  database_expand:
+    - order: 1
+      owner_packet: KIMI-M11-ATOMIC-FIX-LEASE-010
+      objects: ["Initial atomic creation RPC."]
+    - order: 2
+      owner_packet: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      objects: ["Creation successor.", "Private shared window guard.", "Governed reschedule RPC.", "Governed waiting-room-open RPC."]
+    - order: 3
+      owner_packet: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      objects: ["Atomic join RPC.", "Atomic begin RPC."]
+    - order: 4
+      owner_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+      objects: ["Safe audit projection/RPC.", "Specialized safe participant audit trigger/function."]
+    - order: 5
+      owner_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+      objects: ["Governed close/cancel RPC.", "Governed mark-session-verified RPC."]
+  application_switch:
+    owner: SINGLE_SEQUENTIAL_APPLICATION_INTEGRATOR_TBD
+    rule: >-
+      One current file owner integrates accepted predecessors in the exact file
+      order below. OTP remains disabled; no concurrent call-site edits.
+  quiesce:
+    action: "Stop new M11 traffic and drain in-flight sessions before contract."
+  database_contract:
+    - order: 1
+      owner_packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+      objects: ["Initial locked/no-secret OTP definitions.", "Session/participant policies.", "Table ACLs and obsolete-grant removal."]
+    - order: 2
+      owner_packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+      objects: ["Exact OTP successor definitions.", "Raw audit policy contraction.", "Generic append-event contraction."]
+      handoff: "Immediate sequential replacement after 013, with no traffic between migrations."
+  certification:
+    owner: M11_QA_OWNER_TBD
+    rule: "Run the accepted 009r/016 stack only after the integrated final contract exists."
+
+shared_application_file_sequence:
+  apps/web/src/app/(app)/virtual/actions.ts:
+    sequence:
+      - KIMI-M11-ATOMIC-FIX-LEASE-010
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    stop: "011 cannot start until 010 is independently accepted and its file lease is released."
+  apps/web/src/app/(app)/virtual/[id]/actions.ts:
+    sequence:
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      - "Single bounded 013/015 application-switch integrator."
+    stop: "No two packets or workers may edit this file concurrently."
+  apps/web/src/app/(app)/virtual/[id]/Room.tsx:
+    sequence:
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      - "Single bounded 013/015 application-switch integrator."
+    stop: "015 audit rendering starts only after 014 acceptance and file release."
+  apps/web/src/app/(app)/virtual/[id]/page.tsx:
+    sequence:
+      - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    stop: "CR-337 list/timezone/confirmation work is prohibited."
+  global_audit_consumers:
+    owner: UNASSIGNED_PENDING_INVENTORY
+    stop: "015 receives no global application-file lease until every consumer and exact file is inventoried."
+
+database_object_sequence:
+  creation_rpc:
+    initial_owner: KIMI-M11-ATOMIC-FIX-LEASE-010
+    exact_successor: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  window_guard_reschedule_waiting:
+    sole_owner: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+  join_begin:
+    sole_owner: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+  close_verified:
+    sole_owner: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  session_participant_policies_and_table_acls:
+    sole_owner: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+  safe_audit_projection_and_participant_trigger:
+    sole_owner: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+  otp_signatures:
+    initial_contract_owner: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    exact_successor_owner: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    rule: "Never parallel; preserve 013 authorization and locking in the 015 neutral-error/no-secret successor."
+  raw_audit_and_generic_append_contract:
+    sole_owner: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+
+migration_allocation:
+  status: NOT_ALLOCATED
+  rule:
+    - "Symbolic packet/order identifiers are not migration filenames."
+    - "Only the future integration owner allocates the next monotonic filename immediately before the exact lease begins."
+    - "The predecessor commit and migration-chain checksum are recorded at allocation."
+    - "No worker preallocates timestamps or edits an existing migration."
+    - "A successor migration begins only after predecessor acceptance and release."
+
+collision_stop_checklist:
+  - id: M11-COLLISION-STOP-01
+    stop_when: "A fresh ACTIVE_WORKTREE_LEASES.csv row overlaps any proposed application or supabase path."
+  - id: M11-COLLISION-STOP-02
+    stop_when: "Kimi attempts repository writes under its current READ_ONLY canonical-repo row."
+  - id: M11-COLLISION-STOP-03
+    stop_when: "A source packet is not corrected, materialized and accepted by review 025."
+  - id: M11-COLLISION-STOP-04
+    stop_when: "009r lacks acceptance or a single QA owner."
+  - id: M11-COLLISION-STOP-05
+    stop_when: "A predecessor application-file lease is not reviewed and released."
+  - id: M11-COLLISION-STOP-06
+    stop_when: "Two workers propose the same migration filename, function signature, policy, trigger or application file."
+  - id: M11-COLLISION-STOP-07
+    stop_when: "013 and 015 edit the OTP signatures concurrently or traffic occurs between their contract migrations."
+  - id: M11-COLLISION-STOP-08
+    stop_when: "015 safe participant audit trigger/projection is not installed before OTP is exercised."
+  - id: M11-COLLISION-STOP-09
+    stop_when: "Direct DML or generic append authority is contracted before the governed application switch."
+  - id: M11-COLLISION-STOP-10
+    stop_when: "M11 traffic is not quiesced and drained before 013 then 015 contract."
+  - id: M11-COLLISION-STOP-11
+    stop_when: "Any global audit consumer or its exact file ownership remains unidentified."
+  - id: M11-COLLISION-STOP-12
+    stop_when: "Function owner, SECURITY DEFINER model, extension schema, role grant or dependency remains unresolved."
+  - id: M11-COLLISION-STOP-13
+    stop_when: "Planner/Operations authority is inferred rather than cited."
+  - id: M11-COLLISION-STOP-14
+    stop_when: "An unavailable OTP provider is described as delivered or complete."
+  - id: M11-COLLISION-STOP-15
+    stop_when: "CR-337 or DEC-005 enters the M11 stack."
+  - id: M11-COLLISION-STOP-16
+    stop_when: "Review 025 is invoked before all actual corrected inputs exist."
+
+preflight_verdict:
+  correction_dispatch: BLOCKED_PENDING_MANUAL_UNLOCK_AND_KIMI_SESSION_CONFIRMATION
+  safe_return_mode: CHAT_PAYLOAD_ONLY
+  source_materialization: BLOCKED_PENDING_ACTUAL_RETURNED_PAYLOADS
+  review_025: QUEUED_NOT_EXECUTABLE
+  implementation: BLOCKED
+  implementation_lease: NOT_ISSUED
+  requirement_completion_change: 0
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  kimi_conversation_status: COMPLETED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  active_lease_registry_checked: PASS
+  six_owner_boundaries_checked: PASS
+  shared_application_file_sequence_checked: PASS
+  database_object_sequence_checked: PASS
+  migration_order_checked: PASS
+  OTP_013_to_015_successor_checked: PASS
+  review_025_remains_queued: PASS
+  no_lease_issued: PASS
+  non_executable_boundary_checked: PASS

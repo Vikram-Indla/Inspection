@@ -1,0 +1,313 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-CONSOLIDATED-CONSENT-CHECK-047
+title: Independent consolidated consent check for GIS writer convergence
+status: RETURN_FOR_CONSOLIDATED_PACKET_CORRECTION_AND_SPONSOR_ANSWERS
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_CONSOLIDATED_CONSENT_CHECK
+
+reviewed_packets:
+  - packet_id: M10-ADMIN-GIS-WRITER-CONVERGENCE-DECISION-PACKET-044
+    role: Base decision packet
+    source_status: AWAITING_SPONSOR_POLICY_AND_AUTHORITY_CHOICES
+  - packet_id: M10-ADMIN-GIS-DECISION-GAP-ADDENDUM-046
+    role: Missing-decision addendum
+    source_status: AWAITING_SPONSOR_CHOICES_NO_AUTHORITY_GRANTED
+  - packet_id: M10-ADMIN-GIS-SPONSOR-CONSENT-READINESS-045
+    role: Prior independent readiness findings
+    source_status: RETURN_FOR_DECISION_PACKET_COMPLETION
+
+review_boundary:
+  objective: >
+    Determine whether packets 044 and 046 together provide one complete,
+    neutral, requirement-preserving and business-readable set of sponsor
+    choices, and whether a completed response could pass a bounded
+    post-consent gate.
+  mutations: NONE
+  option_selected: false
+  policy_value_selected: false
+  authority_granted: false
+  implementation_lease_granted: false
+  future_ownership_envelopes: UNGRANTED
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+authority_reconciled:
+  governed_screen: SCR-ADM-070
+  companion_screen: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+  exact_primary_478_requirements: []
+  transferred_requirements:
+    - MVP2-REQ-0072 / MVP2-AC-0072
+    - MVP2-REQ-0075 / MVP2-AC-0075
+    - MVP2-REQ-0233 / MVP2-AC-0233
+  phase1_acceptance:
+    - WA-M10-AC-001..006
+  special_map_acceptance:
+    - SPC-GIS-001..008
+  open_decisions_and_holds:
+    - DEC-002
+    - MVP3-HOLD-002
+    - MVP3-HOLD-006 where legal or retention policy applies
+    - WA-DES-006-C1
+  rule: >
+    A sponsor answer to these packets cannot itself close an open decision,
+    design acceptance row or provider/legal hold. Each requires its governed
+    evidence and change-control path.
+
+executive_verdict:
+  decision_coverage: PASS_WITH_RESIDUAL_GAPS
+  requirement_preservation: PASS
+  business_readability: PASS_WHEN_READ_TOGETHER
+  standalone_sponsor_usability: FAIL
+  neutrality: FAIL
+  compatibility_validation: PARTIAL
+  sponsor_answers_present: false
+  safe_to_capture_binding_consent_now: false
+  safe_to_grant_implementation_authority: false
+  verdict: RETURN
+  implementation_state: BLOCK
+  concise_reason: >
+    Addendum 046 closes most missing decision categories and preservation
+    floors, but explicitly does not replace or amend packet 044. The unequal
+    wording previously found in three base options therefore remains. The
+    persona matrix also omits an explicit effective-policy-version disclosure
+    field, and the compatibility rules do not cover all activation, lineage,
+    emergency and recovery combinations. No sponsor selections have been
+    recorded. A single corrected, standalone consent packet is required before
+    binding consent can be checked.
+
+prior_finding_reconciliation:
+  neutrality:
+    - prior_id: GISCONSENT-N-01
+      subject: Writer option wording
+      status: OPEN
+      evidence: >
+        Packet 044 still calls GIS-WRITER-A the "Clearest ownership and audit
+        story." Addendum 046 states that it does not amend packet 044 and does
+        not provide a balanced replacement comparison for GIS-WRITER-A,
+        GIS-WRITER-B and GIS-WRITER-C.
+      required_correction: >
+        Present the same benefit, operating cost, migration consequence and
+        governance risk structure for all three writer choices.
+    - prior_id: GISCONSENT-N-02
+      subject: Offline lineage tradeoffs
+      status: OPEN
+      evidence: >
+        Packet 044 gives an explicit continuity cost for GIS-OFFLINE-B but not
+        an equivalent operational, audit and conflict-handling cost for
+        GIS-OFFLINE-A. Addendum 046 does not replace these options.
+      required_correction: >
+        Give both offline choices the same benefit, field-continuity cost,
+        audit burden and conflict/review consequence structure.
+    - prior_id: GISCONSENT-N-03
+      subject: Conflict-protection tradeoffs
+      status: OPEN
+      evidence: >
+        Packet 044 calls field-level merge more complex but does not equally
+        disclose the refresh/re-entry burden of reject-and-compare.
+      required_correction: >
+        Give both conflict choices the same user-friction, delivery-complexity
+        and residual-risk structure.
+  business_readability:
+    - prior_id: GISCONSENT-BR-01
+      status: CLOSED_BY_046
+      evidence: Addendum 046 opens with a short sponsor brief and no-build boundary.
+    - prior_id: GISCONSENT-BR-02
+      status: CLOSED_BY_046
+      evidence: Addendum 046 defines stale protection, minimum data and linked audit in plain language.
+    - prior_id: GISCONSENT-BR-03
+      status: CLOSED_BY_046
+      evidence: Addendum 046 distinguishes decisions required now from spatial, provider and legal holds.
+  completeness:
+    - prior_id: GISCONSENT-C-01
+      subject: Policy activation timing
+      status: CLOSED_BY_046
+      evidence: Immediate, scheduled and lifecycle-boundary choices plus timezone, boundary and replacement details are present.
+    - prior_id: GISCONSENT-C-02
+      subject: Complete field ownership
+      status: CLOSED_BY_046
+      evidence: Eight shared or factory-specific fields each require an explicit owner or hold state.
+    - prior_id: GISCONSENT-C-03
+      subject: Factory override precedence and reset
+      status: CLOSED_BY_046
+      evidence: Precedence, effective window, clear-to-inherit, replacement, audit and conflict invariants are present.
+    - prior_id: GISCONSENT-C-04
+      subject: Emergency correction
+      status: CLOSED_BY_046
+      evidence: Suspend, restore-safe-version and pin-active/block-new choices include actor, journey, notification and audit details.
+    - prior_id: GISCONSENT-C-05
+      subject: Minimum data per consumer
+      status: PARTIAL
+      evidence: >
+        The persona matrix covers full policy, precise coordinates, effective
+        radius, telemetry and audit history, but omits a separate effective
+        policy-version field requested by review 045. It also does not record
+        the business-purpose/screen scope through which Factory 360 and Visit
+        Detail consume the approved projection.
+      required_correction:
+        - Add effective_policy_version to every persona row.
+        - Record approved purpose/surface scope for Planning, Operations, Field, Reviewer, Factory 360 and Visit Detail consumption.
+        - Keep precise, masked, reduced, own-scope and none meanings explicit.
+    - prior_id: GISCONSENT-C-06
+      subject: Existing-data transition
+      status: CLOSED_BY_046
+      evidence: Current engine values, factory exceptions, immutable events, queued offline events and hard-coded client labels each have bounded treatments.
+    - prior_id: GISCONSENT-C-07
+      subject: Recovery and rollback
+      status: CLOSED_BY_046
+      evidence: Restore-as-new, cancel-future and suspend-then-change options preserve immutable history.
+    - prior_id: GISCONSENT-C-08
+      subject: Audit visibility and owner
+      status: CLOSED_BY_046
+      evidence: Reader, review-owner, precision and export choices are explicit and do not imply write authority.
+    - prior_id: GISCONSENT-C-09
+      subject: Technical Admin identity
+      status: CLOSED_BY_046
+      evidence: An existing canonical mapping is required and creating a role from the screen label is prohibited.
+    - prior_id: GISCONSENT-C-10
+      subject: Refresh and lineage compatibility
+      status: PARTIAL
+      evidence: >
+        The direct REFRESH-C plus LINEAGE-B contradiction and core permitted
+        combinations are recorded. However, lifecycle activation, emergency
+        response, recovery and offline replay interactions are not completely
+        validated.
+      required_correction:
+        - Define whether GIS-ACTIVATE-C means journey start or visit publication and require the matching lineage choice.
+        - Define which emergency choices are permitted with each online lineage model.
+        - Define whether recovery inherits the original activation model or requires a newly selected effective time.
+        - Define how queued offline evidence is treated under each emergency and recovery state.
+
+requirement_preservation_check:
+  status: PASS
+  explicit_floors_found:
+    - Official coordinates cannot be silently overwritten by Field observation.
+    - Historical geo, transition, override and audit records remain immutable.
+    - Existing Field, Planning, Operations, Factory 360 and Visit Detail behavior cannot be removed to simplify convergence.
+    - Server authority for accepted geofence and workflow transitions is preserved.
+    - Offline conflict and evidence cannot be silently overwritten or discarded.
+    - Required non-map evidence survives provider or offline-map unavailability.
+    - Phase 2 or transferred status cannot weaken active MVP1 parent behavior.
+    - No numeric threshold, radius, retention, persona or legal status is invented.
+    - Unresolved policy fails closed without fabricating an accepted value.
+  prohibited_consent_effects:
+    - removing an accepted map, coordinate, route, geofence, override, audit or fallback behavior
+    - rewriting historical outcomes after a radius or policy change
+    - treating a hard-coded client label as server-resolved lineage
+    - closing a provider, geography, offline or legal hold without its own evidence
+    - equating page visibility with permission
+    - authorizing a role that has no canonical capability and database alignment
+
+complete_binding_answer_checklist:
+  immediate_safe_repair_decisions:
+    - authoritative writer model
+    - field owner or explicit hold for every GIS rule
+    - read model and minimum disclosure per persona, purpose and surface
+    - write model and exact existing capabilities
+    - factory-radius governance, precedence and reset
+    - conflict protection
+    - atomic audit truth, readers and review owner
+    - policy activation time, timezone and exact boundary
+    - online policy lineage
+    - offline policy lineage
+    - open-client refresh
+    - emergency suspension, actor, journey treatment, notification and recovery
+    - existing-data transition
+    - recovery and rollback
+  may_be_explicitly_held:
+    - Spatial Canvas scope and screen identity
+    - exact Mapbox runtime, style, geography and offline clauses
+    - legal-evidence and retention claims
+  every_answer_must_include:
+    - selected option ID or explicit governed hold
+    - business owner
+    - affected personas and surfaces
+    - stated consequence accepted by sponsor
+    - compatibility result
+    - unresolved dependency retained
+  current_answer_state: ALL_PENDING
+
+consequence_check:
+  sponsor_must_be_told:
+    - A single Map Settings writer concentrates governance but requires migration or removal of duplicate editing controls.
+    - Split ownership preserves specialization but increases boundary, audit and regression complexity.
+    - Proposal-and-approval adds a new workflow and cannot be inferred as existing scope.
+    - Immediate activation is fast but may interrupt open clients unless lineage and refresh rules resolve it.
+    - Scheduled activation supports preparation but adds future-state cancellation and timing controls.
+    - Lifecycle activation runs multiple valid versions and requires durable version display and lineage.
+    - Direct radius changes are faster but still require reason, conflict protection and atomic audit.
+    - Approval-controlled radius exceptions add review lifecycle and turnaround dependency.
+    - Rejecting stale saves prevents overwrite but can require user refresh and re-entry.
+    - Field-level merge reduces unnecessary re-entry but has greater implementation and test complexity.
+    - Preserving capture-time offline policy supports evidentiary truth but increases reconciliation and review complexity.
+    - Blocking policy-sensitive offline completion protects current-policy enforcement but can interrupt field continuity.
+    - Emergency suspension can stop work; restoration requires a prior accepted version; pin-active/block-new cannot cover immediate harm.
+    - Any rollback is a new governed action or future cancellation, never a history rewrite.
+  status: PASS_SUBJECT_TO_NEUTRAL_REWRITE_OF_OPEN_ITEMS
+
+compatibility_gate:
+  current_status: INCOMPLETE
+  already_prohibited:
+    - independent overlapping writers
+    - page, action and database permission disagreement
+    - last-writer-wins or zero-row false success
+    - non-atomic required audit
+    - REFRESH-C with LINEAGE-B
+    - RADIUS-B with immediate unreviewed save
+    - WRITER-B with overlapping field ownership
+    - ACTIVATE-C without stored lifecycle version
+  additional_rules_required_before_sponsor_presentation:
+    - ACTIVATE-C journey-start boundary requires a journey-pinned lineage and durable journey version.
+    - ACTIVATE-C visit-publication boundary requires publication-pinned lineage and planning/visit version scope.
+    - EMERGENCY-C cannot be combined with a policy declared immediately unsafe for active journeys.
+    - RECOVERY-B applies only to a version that has not become effective.
+    - Recovery of an effective policy must create a new version/change and pass activation, conflict, audit and refresh rules.
+    - Offline replay cannot silently complete a policy-sensitive transition while emergency suspension is active.
+    - A held field cannot remain editable or be presented as newly governed.
+    - NOT_IN_CURRENT_RELEASE cannot remove mandatory active behavior.
+
+post_consent_gate:
+  name: GIS_CONVERGENCE_CHANGE_CONTROL_AND_LEASE_GATE
+  state: CLOSED
+  pass_only_when:
+    - One corrected standalone packet contains every sponsor selection and accepted consequence.
+    - Independent validation finds no blank, contradictory or unmapped selection.
+    - DEC-002 is resolved through approved change control for affected policy values and version semantics.
+    - WA-DES-006-C1 is accepted for every affected UI state before UI implementation.
+    - Exact personas, capabilities, fields, versions and negative paths are frozen.
+    - Spatial, provider, geography, offline and legal clauses remain explicitly held unless separately closed with evidence.
+    - Characterization tests reproduce false success, lost update, audit failure and version divergence.
+    - A bounded fixture and evidence contract is approved.
+    - One implementation owner and non-overlapping file envelope are recorded.
+    - Reviewer ownership remains separate from the implementation lease.
+  gate_does_not_grant:
+    - product or database mutation
+    - design acceptance
+    - provider certification
+    - legal status
+    - completion credit
+
+review_recommendation:
+  ACK:
+    - ACK packet 046 for closing most missing policy categories and adding the preservation floor.
+    - ACK packet 044's evidence basis, problem statement and no-lease boundary.
+  RETURN:
+    - RETURN the two-packet presentation for one neutral standalone consent packet correcting the open neutrality, disclosure and compatibility items.
+  BLOCK:
+    - BLOCK binding sponsor consent, authority mutation, implementation and lease assignment until the returned packet is corrected and answered.
+  current: RETURN_CONSENT_SET_BLOCK_IMPLEMENTATION
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-CONSOLIDATED-SPONSOR-CONSENT-PACKET-048
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Produce one standalone, non-leading and business-readable sponsor consent
+    packet that incorporates the accepted substance of 044 and 046, corrects
+    the three open neutrality findings, adds effective-policy-version and
+    purpose/surface disclosure, completes activation-lineage-emergency-recovery
+    compatibility, and retains every preservation floor and hold. Do not select
+    an answer, grant authority or propose implementation files.
+  non_overlap:
+    - no product, design, data, test, evidence, shared control, branch or lease mutation

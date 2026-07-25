@@ -1,0 +1,333 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-CONSUMER-AND-DISCLOSURE-INVENTORY-017
+title: Generic and semantic audit consumer, disclosure and migration inventory
+status: VALIDATED_MIGRATION_INVENTORY_RAW_READ_REVOCATION_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessors:
+    - M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+    - M9-ADMIN-AUDIT-RUNTIME-REMEDIATION-PREFLIGHT-015
+    - M9-ADMIN-AUDIT-RLS-PRIVACY-ENGINEERING-DESIGN-016
+  package: M9
+  route: /admin/audit
+  governed_screen_id: NONE
+  direct_requirements:
+    - [MVP2-REQ-0230, MVP2-AC-0230, MVP2-EV-0230]
+    - [MVP2-REQ-0237, MVP2-AC-0237, MVP2-EV-0237]
+    - [MVP2-REQ-0254, MVP2-AC-0254, MVP2-EV-0254]
+  ontology_range:
+    - MVP2-REQ-0137 through MVP2-REQ-0172
+    - MVP2-AC-0137 through MVP2-AC-0172
+    - MVP2-EV-0137 through MVP2-EV-0172
+  foundation:
+    - [MVP1-FND-003, FND-ACC-003]
+  web_admin_acceptance:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+  policy_holds:
+    - DEC-006 evidence retention and redaction policy
+    - DEC2-009 retention/redaction/legal boundary referenced by M2-05
+  mode: READ_ONLY
+  no_policy_invention: true
+  no_mutation: true
+
+recommended_target_boundary:
+  packet: M9-ADMIN-AUDIT-RLS-PRIVACY-ENGINEERING-DESIGN-016
+  option: GUARDED_AUDIT_REPLAY_RPC
+  consequence: >-
+    Authenticated direct SELECT on audit_events and audit_semantic_events is
+    revoked only after every legitimate reader has migrated or received an
+    explicitly governed narrow seam.
+
+application_direct_read_consumers:
+  - consumer_id: AUD-CONS-APP-001
+    route: /admin/audit
+    source:
+      - apps/web/src/app/(app)/admin/audit/page.tsx
+    reads:
+      - audit_events with actor, object, action, before_state and after_state
+      - audit_semantic_events with before_state, after_state and semantic_payload
+      - audit_replay_case returning raw semantic rows
+    personas: [auditor, ops, security_admin, leadership, reviewer, planner, compliance_admin]
+    object_scope:
+      generic: Global for all permitted roles under current audit_read policies.
+      semantic: Global for auditor/ops/security_admin; object-scoped for leadership/reviewer/planner/compliance_admin.
+    disclosure: Full raw before, after and semantic payload rendered in event detail.
+    search_export:
+      search: Case filter plus client q over bounded loaded rows.
+      export: Not implemented; print-safe only; export is policy-held.
+    guarded_boundary_impact: BREAKS
+    required_migration: Replace all three reads with the guarded replay RPC.
+    requirements:
+      - MVP2-REQ-0230
+      - MVP2-REQ-0237
+      - MVP2-REQ-0254
+      - MVP2-REQ-0137 through MVP2-REQ-0172
+  - consumer_id: AUD-CONS-APP-002
+    route: /admin
+    screen_id: SCR-ADM-001
+    source:
+      - apps/web/src/app/(app)/admin/page.tsx
+    read: audit_events exact head count
+    personas: Authenticated route group; effective rows depend on audit_events RLS.
+    object_scope: Current role-wide generic audit scope.
+    disclosure: Count only; no event payload.
+    search_export: None.
+    guarded_boundary_impact: BREAKS
+    required_migration: Add a governed count or health-summary result to the guarded read boundary.
+    requirements:
+      - MVP1-M09-015
+      - AC-0463
+      - MVP1-FND-003
+      - FND-ACC-003
+  - consumer_id: AUD-CONS-APP-003
+    route: /dashboard
+    source:
+      - apps/web/src/app/(app)/dashboard/page.tsx
+      - apps/web/src/lib/dashboard-kpi/projection.ts
+    read: Newest 12 audit_events for scoped Visit, Inspection, Review and Violation object IDs and dashboard time range.
+    personas: Route inventory includes inspector and planner; raw audit RLS does not grant inspector audit_read.
+    object_scope: Application builds an object-ID allow-list, but the database policy is still role-wide.
+    disclosure: ID, object type/id, action, requirement references and timestamp; no raw before/after.
+    search_export: No audit search/export; feeds OPS-KPI-008 evidence references.
+    guarded_boundary_impact: BREAKS
+    required_migration: Guarded scoped-timeline projection preserving newest-12 and failed-source semantics.
+    requirements:
+      - MVP1-M08-015
+      - AC-0444
+      - MVP2-REQ-0229
+      - MVP2-REQ-0253
+  - consumer_id: AUD-CONS-APP-004
+    route: /visits/:id
+    screen_id: SCR-WEB-210
+    source:
+      - apps/web/src/app/(app)/visits/[id]/page.tsx
+    read: Latest 30 audit_events for object_type visits and the selected Visit ID.
+    personas: [planner, ops, inspector_read_context]
+    object_scope: Exact Visit ID in application query; inspector lacks generic audit_read.
+    disclosure: Actor, action, before_state, after_state and timestamp are loaded.
+    failure_truth: Audit query error is not surfaced; denied Inspector read becomes an empty timeline.
+    search_export: None.
+    guarded_boundary_impact: BREAKS
+    required_migration: Narrow Visit timeline RPC with assigned/scope authorization and approved redaction.
+    requirements:
+      - MVP1-M02-014
+      - AC-0066
+      - MVP1-M02-044
+      - AC-0096
+  - consumer_id: AUD-CONS-APP-005
+    route: /reviews/:id
+    screen_ids: [SCR-WEB-310, SCR-WEB-320]
+    source:
+      - apps/web/src/app/(app)/reviews/[id]/page.tsx
+    read: Latest 25 audit_events across Inspection, Submission Version and Review object IDs.
+    personas: [reviewer]
+    object_scope: Exact aggregate IDs derived after scoped Inspection read.
+    disclosure: ID, action, object type, timestamp and actor; no raw before/after selected.
+    search_export: No audit search/export.
+    guarded_boundary_impact: BREAKS
+    required_migration: Narrow review-chain projection preserving immutable chronological proof.
+    requirements:
+      - [MVP1-M06-009, AC-0365]
+      - [MVP1-M06-010, AC-0366]
+      - [MVP1-M06-022, AC-0378]
+      - [MVP1-M06-027, AC-0383]
+      - [MVP1-M06-039, AC-0395]
+      - [MVP1-M06-050, AC-0406]
+      - [MVP1-M06-051, AC-0407]
+
+privileged_narrow_rpc_consumers:
+  - consumer_id: AUD-CONS-RPC-001
+    rpc: admin_configuration_audit
+    implementation: supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+    application_consumers:
+      - apps/web/src/app/(app)/admin/items/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/page.tsx
+      - apps/web/src/app/(app)/admin/regulations/actions.ts
+      - apps/web/src/app/(app)/admin/violations/page.tsx
+    routes: [/admin/items, /admin/regulations, /admin/violations]
+    personas: [compliance_admin, form_admin]
+    object_scope: Approved configuration object-type allow-list plus exact object ID.
+    disclosure: RPC returns every audit_events column including raw before_state and after_state.
+    guarded_boundary_impact: DOES_NOT_BREAK_SECURITY_DEFINER_BUT_BYPASSES_NEW_REDACTION
+    required_migration: Converge on guarded typed projection or reduce RPC return columns before raw-table revocation certification.
+    requirements:
+      - MVP1-M09-015
+      - AC-0463
+      - WA-M6-AC-001 through WA-M6-AC-006
+      - WA-M9-AC-001 through WA-M9-AC-006
+  - consumer_id: AUD-CONS-RPC-002
+    rpc: admin_notification_rule_audit
+    implementation: supabase/migrations/20260716222000_scr_adm_080_notification_rules.sql
+    application_consumers: []
+    status: LIVE_REGISTERED_RPC_WITH_NO_CURRENT_APP_CALL_FOUND
+    personas: [compliance_admin, form_admin, workflow_admin, risk_owner, gis_admin, security_admin]
+    object_scope: Exact notification_rules object ID.
+    disclosure: Returns every raw audit_events column.
+    guarded_boundary_impact: DOES_NOT_BREAK_SECURITY_DEFINER_BUT_REMAINS_BYPASS_ENDPOINT
+    required_migration: Retire, narrow or route through the approved projection before certification.
+  - consumer_id: AUD-CONS-RPC-003
+    rpc: vs_audit_trail
+    implementation: supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    application_consumers: []
+    test_consumer:
+      - apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    current_ui_note: Current virtual room uses virtual_sessions.timeline, not this RPC output.
+    personas:
+      - ops
+      - reviewer
+      - auditor
+      - compliance_admin
+      - planner
+      - assigned_inspector
+    object_scope: Exact Virtual Session and its participant rows.
+    disclosure: Returns after_state as detail, including identity/OTP verification material if present.
+    guarded_boundary_impact: DOES_NOT_BREAK_SECURITY_DEFINER_BUT_BYPASSES_NEW_REDACTION
+    required_migration: Preserve RBAC-014 session scope while applying approved field redaction.
+    requirements:
+      - RBAC-014
+      - [MVP1-M05-001, AC-0337]
+      - [MVP1-M05-007, AC-0343]
+
+database_internal_consumers:
+  - consumer_id: AUD-CONS-DB-001
+    component: append_semantic_audit_event
+    source: supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql
+    purpose: Validate a real generic source event before semantic append.
+    guarded_boundary_impact: PRESERVE_INTERNAL_SECURITY_DEFINER_READ
+  - consumer_id: AUD-CONS-DB-002
+    component: audit_replay_case
+    source: supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql
+    purpose: Keyset case replay under caller RLS.
+    guarded_boundary_impact: BREAKS_IF_DIRECT_SEMANTIC_SELECT_REVOKED; supersede with guarded replay contract.
+  - consumer_id: AUD-CONS-DB-003
+    component: audit_semantic_read policy and can_read_semantic_audit_object
+    source: supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql
+    purpose: Verify source-event visibility and object scope.
+    guarded_boundary_impact: REUSE_OR_REPLACE_WITH_FAIL_CLOSED_GENERIC_AND_SEMANTIC_SCOPE
+
+test_and_probe_consumers:
+  direct_rest_generic_reads:
+    files:
+      - apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
+      - apps/web/e2e/cd-044-admin-planning.spec.ts
+      - apps/web/e2e/cd-045-downstream-contract.spec.ts
+      - apps/web/e2e/pln-browser-certification.spec.ts
+      - apps/web/e2e/r3-remaining-bulk-capacity.spec.ts
+    query_occurrences: 7
+    impact: BREAK; migrate to guarded evidence query or approved test-only database probe.
+  static_direct_read_assertions:
+    files:
+      - apps/web/e2e/web-admin-m2-batch-001.spec.ts
+      - apps/web/e2e/web-admin-m2-batch-002.spec.ts
+    impact: BREAK_BY_DESIGN; replace expectation with guarded timeline boundary.
+  semantic_contract_and_browser:
+    files:
+      - apps/web/e2e/mvp2-m2-05-audit-replay.spec.ts
+      - apps/web/e2e/mvp2-m2-05-contract.spec.ts
+    impact: BREAK; update source expectations and runtime queries without weakening ontology or immutability assertions.
+  privileged_rpc:
+    files:
+      - apps/web/e2e/cd-042-audit-read-seam.spec.ts
+      - apps/web/e2e/cd-005-006-regulations.spec.ts
+      - apps/web/e2e/cd-007-items.spec.ts
+      - apps/web/e2e/cd-010-011-violations.spec.ts
+    impact: CONDITIONAL; existing RPCs continue, but tests must certify redaction and no bypass.
+  database_owner_probes:
+    files:
+      - supabase/tests/0027_cd023_immediate_visit_atomic.sql
+      - supabase/tests/0031_cd031_factory360_contract.sql
+      - supabase/tests/0031_cd031_live_release_probe.sql
+      - supabase/tests/0032_factory360_v2_foundation_contract.sql
+      - supabase/tests/0032_m09_live_release_probe.sql
+    query_occurrences: 11
+    impact: >-
+      Owner-level assertions may continue to inspect immutable facts, but they
+      cannot substitute for authenticated RLS/replay tests and must not depend
+      on a removed authenticated raw-read contract.
+
+disclosure_and_policy_findings:
+  - priority: P0
+    finding: Raw generic rows expose before/after more broadly than object-scoped semantic rows.
+  - priority: P0
+    finding: Visit Detail loads raw before/after and silently renders an empty timeline when Inspector RLS denies the read.
+  - priority: P0
+    finding: vs_audit_trail returns raw after_state detail to assigned inspectors under RBAC-014.
+  - priority: P0
+    finding: Three SECURITY DEFINER audit seams bypass any future raw-table SELECT revocation.
+  - priority: P1
+    finding: Dashboard Inspector persona cannot read audit_events under the current generic policy, so OPS-KPI-008 may degrade.
+  - priority: P1
+    finding: No approved field-redaction or reveal-purpose matrix exists.
+  - priority: P1
+    finding: No audit export exists; print-safe cannot be treated as evidence export.
+  - priority: P1
+    finding: Retention, purge, watermark and legal-evidence status remain policy-held.
+
+provider_and_legal_dependencies:
+  replay_provider_required: false
+  external_export_provider_selected: false
+  legal_evidence_provider_selected: false
+  retention_policy_approved: false
+  redaction_policy_approved: false
+  digital_signature_dependency: >-
+    Signature events may be replayed only as recorded facts. Legal signature
+    validity remains subject to the separate approved KSA trust-provider,
+    timestamp, seal and acceptance contract; audit replay cannot infer it.
+  prohibited_claims:
+    - legal evidence
+    - verified signature
+    - compliant retention
+    - complete export pack
+    - redaction complete
+
+migration_order:
+  - Inventory and approve persona/object/field disclosure matrix.
+  - Add guarded replay/search/count/timeline projections while keeping old reads available.
+  - Migrate five direct application readers.
+  - Converge or explicitly exempt three privileged RPC seams.
+  - Migrate direct REST and browser/source-contract tests.
+  - Add authenticated RLS, redaction, reveal, paging and source-failure probes.
+  - Verify no legitimate authenticated raw-table consumer remains.
+  - Only then revoke authenticated direct SELECT on raw audit tables.
+  - Capture browser and evidence matrix; retain rollback-compatible application behavior.
+
+raw_read_revocation_gate:
+  current_result: BLOCKED
+  blockers:
+    - five direct application readers
+    - three privileged raw-row RPC seams
+    - seven direct REST test reads
+    - two static tests requiring direct reads
+    - unresolved DEC-006 and DEC2-009 policy
+    - no governed screen identity
+    - no authenticated replacement test/evidence pack
+
+next_queued_task:
+  packet_id: M9-ADMIN-AUDIT-GUARDED-REPLAY-TEST-EVIDENCE-MATRIX-018
+  status: QUEUED_READY_READ_ONLY
+  owner_lane: CLAUDE_CODE_QA_PREFLIGHT
+  collision_boundary:
+    - No application, database, test, evidence, design or shared-data mutation.
+    - Use proposed new paths only after explicit collision and lease checks.
+    - Preserve every existing suite until replacement coverage is proven.
+  objective: >-
+    Produce the exact persona, object-scope, redaction, paging, immutability,
+    consumer-regression and browser evidence matrix required before the guarded
+    replay boundary can receive an implementation lease.
+  completion_credit: 0
+
+validation:
+  direct_application_readers: 5
+  privileged_rpc_seams: 3
+  direct_rest_test_files: 5
+  direct_rest_query_occurrences: 7
+  database_owner_probe_files: 5
+  database_owner_query_occurrences: 11
+  policy_values_invented: false
+  product_database_test_data_design_lease_branch_stash_mutation: false

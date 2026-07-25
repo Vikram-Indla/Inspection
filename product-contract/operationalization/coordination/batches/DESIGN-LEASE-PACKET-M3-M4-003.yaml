@@ -1,0 +1,322 @@
+schema_version: "1.0"
+packet_group_id: DESIGN-LEASE-PACKET-M3-M4-003
+status: SUPERSEDED_BY_SAFE_SUCCESSOR_REVISION_005
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+authority:
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
+  sponsor_direction: M3-SPONSOR-DIRECTION-20260725
+  hard_boundary:
+    - "These are design-write lease packets only; this file does not issue either lease."
+    - "No Claude Design, application, Supabase, product-contract authority, main, merge, deployment or provider write is authorized by preparation of this file."
+    - "The two leases have no overlapping design files and must be reviewed independently."
+
+leases:
+  - lease_id: CLAUDE-DESIGN-M3-PROVENANCE-003-A
+    status: BLOCKED_CONCURRENT_VERSION_CONTROL
+    module: M3 Operations Live
+    requirements: ["CR-430..CR-448"]
+    acceptance:
+      - "WA-M3-AC-001..006"
+      - "SPC-LIVE-001..007"
+      - "SPC-CMD-005"
+    routes: ["/operations/live"]
+    logical_design_ids: ["WA-DES-034"]
+    revision_target: WA-DES-034-C3
+    exclusive_write_files:
+      - "SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+    prohibited_files:
+      - "SAQEEL M3 Operations Center - WA-DES-033-C3.dc.html"
+      - "SAQEEL Factories.dc.html"
+      - "SAQEEL Factory 360.dc.html"
+      - "every other Claude Design file"
+      - "all application, migration, seed and contract-authority files"
+
+    current_evidence:
+      live_url: "https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61?file=SAQEEL+M3+Operations+Live+-+WA-DES-034-C3.dc.html"
+      verified_surface: "Separate Claude Design Chrome surface; not a Claude Code session."
+      observed_on: "2026-07-25"
+      original_base_file: "SAQEEL Operations Live.dc.html"
+      original_base_sha256: "157b68c8ba4bbbdba4f61265b25ff98d097a810e5acb42f2aef67f4b4403452d"
+      observed_revision_label: WA-DES-034-C3
+      current_export:
+        path: "/Users/vikramindla/Attachment dump/SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+        bytes: 21270
+        modified_at: "2026-07-25T02:17:04+0300"
+        sha256: "ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279"
+      observed_current_text: "Projected route — not live GPS"
+      observed_state_controls:
+        - "Map: normal"
+        - "Loading"
+        - "RLS-empty"
+        - "Error"
+        - "Tile/provider failure"
+        - "No positions"
+        - "Direct-route: unauthorized"
+      observed_viewports: ["1200x800", "1024x768", "412x915", "390x844", "320x568"]
+      observed_modes: ["Standard", "Wallboard", "Motion", "Reduced motion"]
+      evidence_limit: >-
+        The live browser exposes the C3 filename and logical ID but no immutable
+        revision token, export checksum or current content hash. The original
+        base hash does not prove the current C3 bytes.
+
+    exact_semantic_delta:
+      before:
+        - "A single global label claims every plotted entity is a projected route."
+        - "The underlying base design contains route/path presentation that conflicts with the Phase 1 no-route rule."
+        - "Actual observed GPS, schedule-derived projection and unavailable location are not distinguished by provenance."
+      after:
+        priority_order:
+          - tier: 1
+            condition: "A permitted immutable geo_events observation exists."
+            label: "Last recorded GPS — not guaranteed live"
+            required_metadata: ["occurred_at", "accuracy_m when present", "event provenance/kind"]
+          - tier: 2
+            condition: "No permitted geo_event exists, but assignment/schedule and a governed factory or dispatch coordinate exist."
+            label: "Projected from assignment/schedule — not live GPS"
+            required_metadata: ["coordinate provenance", "scheduled time"]
+          - tier: 3
+            condition: "Neither a permitted observation nor a governed projected coordinate exists."
+            label: "Location unavailable"
+            required_metadata: ["specific missing-data reason"]
+            list_behavior: "Keep the entity visible in the accessible operational list."
+        universal_rule:
+          - "Draw markers and operational state only."
+          - "Draw no route line, trail, path animation or navigation."
+          - "Show no fabricated ETA."
+          - "Do not introduce a freshness threshold or live-GPS claim."
+
+    preserved_capabilities:
+      - "Operations parent navigation with Operations Live visibly active."
+      - "Approved bilingual SAQEEL | صقيل identity asset."
+      - "Active, On the way and Arrived operational summaries."
+      - "Map controls, markers and accessible list alternative."
+      - "Standard and wallboard modes."
+      - "Motion and reduced-motion choices, excluding the removed route/path animation."
+      - "EN/LTR and AR/RTL direction."
+      - "Light and dark themes."
+      - "Keyboard, focus and accessible naming."
+      - "No change to RBAC, RLS, audit, workflow, API, seeding or application behavior."
+    preserved_states:
+      - "Map: normal"
+      - "Loading"
+      - "RLS-empty"
+      - "Error"
+      - "Tile/provider failure"
+      - "No positions"
+      - "Direct-route: unauthorized"
+
+    required_comparison:
+      before_capture:
+        - "1200x800 dark EN/LTR, Map: normal"
+        - "390x844 dark EN/LTR, Map: normal"
+      after_frames:
+        viewports: ["1200x800", "1024x768", "412x915", "390x844", "320x568"]
+        locales: ["EN/LTR", "AR/RTL"]
+        themes: ["dark", "light"]
+        required_cases:
+          - "Tier 1 actual observation with timestamp, accuracy and provenance."
+          - "Tier 2 schedule projection with source and scheduled time."
+          - "Tier 3 unavailable location with reason and retained list row."
+          - "Tile/provider failure with no schematic replacement map."
+          - "Direct-route unauthorized."
+          - "Reduced motion."
+      assertions:
+        - "The retired text 'Projected route — not live GPS' is absent."
+        - "No route/path/trail/ETA is visible in any case."
+        - "Every marker/list entry has exactly one provenance tier."
+        - "All pre-existing state controls remain selectable."
+        - "No new logical page or route is created."
+
+    revision_and_rollback:
+      pre_write_gate:
+        - "Read and record the live file etag/revision identifier immediately before editing."
+        - "Use that etag as if_match or an equivalent compare-and-swap write guard."
+        - "Export the current C3 file immediately before editing and require SHA-256 ef0a7c0dc933a793e194b87aa84de849cee2386b01aa1368375ef598e8ded279."
+        - "Stop if the file changed after this packet's 2026-07-25 observation."
+      post_write_evidence:
+        - "Record the new live etag/revision identifier."
+        - "Export and SHA-256 hash the corrected C3 file."
+        - "Record that WA-DES-034-C3 remains a superseding revision of WA-DES-034 and not a new product screen."
+      rollback: "Restore the captured pre-write C3 revision through Claude Design version history; do not recreate it from memory."
+      stable_revision_gap: >-
+        PARTIALLY CLOSED. The browser-visible filename and current C3 export hash
+        are proven. The browser UI does not expose an etag, so the executor must
+        capture it through the connected design read immediately before writing
+        and use it as the write guard.
+
+    exit:
+      success: "All comparison assertions pass and pre/post revision evidence is recorded."
+      stop_conditions:
+        - "Revision evidence cannot be captured."
+        - "A requested change requires another design file."
+        - "A route, ETA, provider, threshold or policy would need to be invented."
+        - "Any preserved state or capability regresses."
+
+  - lease_id: CLAUDE-DESIGN-M4-SOURCE-BRAND-003-B
+    status: BLOCKED_CONCURRENT_VERSION_CONTROL_AND_P1_GAPS
+    module: M4 Factories and Factory 360
+    requirements: ["CR-410..CR-429"]
+    acceptance: ["WA-M4-AC-001..006"]
+    routes: ["/factories", "/factories/:id", "/factories/cr/:id"]
+    logical_design_ids: ["WA-DES-026", "WA-DES-027"]
+    revision_target: "First bounded correction of the two original M4 pages; do not create a new logical screen."
+    exclusive_write_files:
+      - "SAQEEL Factories.dc.html"
+      - "SAQEEL Factory 360.dc.html"
+    prohibited_files:
+      - "SAQEEL M3 Operations Live - WA-DES-034-C3.dc.html"
+      - "SAQEEL M3 Operations Center - WA-DES-033-C3.dc.html"
+      - "every other Claude Design file"
+      - "all application, migration, seed and contract-authority files"
+
+    current_evidence:
+      live_project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
+      observed_on: "2026-07-25"
+      files:
+        - logical_id: WA-DES-026
+          file: "SAQEEL Factories.dc.html"
+          last_observed_etag: "1784806013700217"
+          sha256: "b6fbf963aee937be7cf40b8df65862b10a88ccd8a89dd3ac5a6021a87f2244c6"
+          current_export_sha256: "a099cdf0b94e85ff57b3357fb4a26212c052261e0cb49b29bb4237d8372dfa87"
+          current_export_drift: "Only initial preview theme changed from light to dark."
+          defect: "The sentence 'Factory identity records sync from the national source ().' contains a blank provider placeholder."
+        - logical_id: WA-DES-027
+          file: "SAQEEL Factory 360.dc.html"
+          last_observed_etag: "1784806013700217"
+          sha256: "680c838cde826e24d1ad53ac4438a4de06379e0cf07605d30ad3d1d1a2392d77"
+          current_export_sha256: "8fdfd8530ccf4ebbddb4a1960455aee3f638824d72bd1b7db824ed7eba096573"
+          current_export_drift: "Only initial preview theme changed from light to dark."
+          defects:
+            - "Header claims 'source MODON · recorded 2026-07-20'."
+            - "Freshness panel claims 'Source system MODON' and a recorded sync."
+            - "Industrial rows claim 'MODON · v6'."
+            - "English/LTR reference visibly renders Arabic-only 'صقيل صناعي' branding instead of the approved bilingual Web/Admin asset."
+      provider_contract_evidence:
+        - "EXTERNAL_SOURCE_CONTRACT_REGISTER.csv records no MODON adapter or accepted provider contract."
+        - "ADAPTER_REPLACEMENT_PLAN.md prohibits fabricating a MODON integration."
+        - "Current code exposes generic source and source_synced_at fields."
+      evidence_limit: >-
+        The live UI verifies project, filename and visible branding, while the
+        etag/hash evidence comes from the read-only DesignSync inventory. Neither
+        file currently has an in-file C1/correction suffix.
+
+    exact_semantic_delta:
+      before:
+        provider:
+          - "WA-DES-026 displays an empty provider placeholder."
+          - "WA-DES-027 presents MODON as a live, versioned and recently synchronized source without a contract."
+        brand:
+          - "WA-DES-027 English/LTR uses an Arabic-only typed wordmark and the unapproved descriptor صناعي."
+      after:
+        provider:
+          configured: >-
+            Bind the displayed source name and last-synchronized timestamp to
+            the governed source/source_synced_at data contract. Show only values
+            actually present in the record.
+          unconfigured: >-
+            Render "Source not configured"; omit provider version, sync claim
+            and timestamp rather than fabricating them.
+          prohibited:
+            - "No literal MODON provider claim."
+            - "No invented source version."
+            - "No invented synchronization timestamp or freshness SLA."
+        brand:
+          expanded_dark_rail: "Use the approved dark-surface bilingual SAQEEL | صقيل wordmark asset."
+          expanded_light_rail: "Use the approved light-surface bilingual SAQEEL | صقيل wordmark asset only when the rail itself is light."
+          collapsed_rail: "Use the approved shield/favicon mark."
+          prohibited:
+            - "No typed Arabic-only or English-only substitute."
+            - "No صناعي or Industrial sub-brand."
+
+    preserved_capabilities:
+      - "All CR-410..CR-429 information and actions."
+      - "Factory search/list and List/Map mode."
+      - "Factory identity, licenses, CR, products, materials, workforce, investment/capacity, visits, inspections, compliance, risk, documents, timeline and access control."
+      - "License selection and its dependent refresh behavior."
+      - "Official, planner and observed location separation."
+      - "Read-only synchronized source semantics."
+      - "Conditional/masked sensitive history."
+      - "Partial-profile behavior when one source is unavailable."
+      - "RLS/RBAC, audit, immutable history, routes and application services."
+      - "No new provider, route, API, database field, state transition or policy."
+    preserved_states:
+      required_contract_states:
+        - "loading"
+        - "empty"
+        - "error"
+        - "degraded"
+        - "unauthorized"
+        - "stale/conflict"
+        - "provider-unavailable"
+        - "not-found where route-specific"
+      constraint: >-
+        This lease corrects source semantics and brand identity only. It must not
+        remove or falsely claim completion of required states that remain
+        absent from the current M4 design. Missing-state and distinct legacy
+        /factories/:id frame work remains a separate follow-on lease.
+
+    required_comparison:
+      before_capture:
+        - "WA-DES-026 1200x860 EN/LTR reference."
+        - "WA-DES-027 1440x900 EN/LTR dark reference showing current source and wordmark."
+      after_frames:
+        files: ["WA-DES-026", "WA-DES-027"]
+        viewports: ["1440x900 or 1200x860 reference", "1024x768", "412x915", "390x844", "320x800"]
+        locales: ["EN/LTR", "AR/RTL"]
+        themes: ["dark", "light"]
+        data_cases:
+          - "Configured governed source with a real source name and source_synced_at value."
+          - "Null/unconfigured source."
+          - "Provider-unavailable/partial profile."
+      assertions:
+        - "No MODON literal, source version or fabricated sync value remains."
+        - "No empty parentheses remain."
+        - "Configured and unconfigured source states are visually distinct and truthful."
+        - "The approved bilingual asset is used in English/LTR and Arabic/RTL."
+        - "No صناعي or Industrial typed sub-brand remains."
+        - "All existing sections, interactions and conditional visibility remain."
+        - "Zero new logical pages, routes or product capabilities are created."
+
+    revision_and_rollback:
+      pre_write_gate:
+        - "Re-read both live files immediately before editing and capture their current etags."
+        - "Use both current etags as if_match or equivalent compare-and-swap write guards."
+        - "Export both files immediately before editing."
+        - "Require WA-DES-026 current-export SHA-256 a099cdf0b94e85ff57b3357fb4a26212c052261e0cb49b29bb4237d8372dfa87."
+        - "Require WA-DES-027 current-export SHA-256 8fdfd8530ccf4ebbddb4a1960455aee3f638824d72bd1b7db824ed7eba096573."
+        - "Record the platform revision mechanism selected for the first M4 correction without changing the logical base IDs."
+      post_write_evidence:
+        - "Record both new etags/revision identifiers."
+        - "Export and SHA-256 hash both corrected files."
+        - "Record WA-DES-026 and WA-DES-027 as the unchanged logical screen IDs and the correction as their superseding revision."
+      rollback: "Restore both captured pre-write revisions together through Claude Design version history; do not partially roll back only one file."
+      stable_revision_gap: >-
+        PARTIALLY CLOSED. Exact current export hashes are proven and the prior
+        external-read etag is recorded, but the browser UI exposes no current
+        etag. The executor must capture both etags immediately before writing,
+        use them as write guards and record the first M4 correction as C1 in the
+        authority ledger without creating new logical screens.
+
+    exit:
+      success: "Both files pass every source/brand assertion and pre/post revision evidence is recorded."
+      stop_conditions:
+        - "Either etag/hash differs from the recorded pre-write evidence."
+        - "A named provider would need to be invented."
+        - "The correction requires adding, removing or redesigning a functional section."
+        - "Any CR-410..CR-429 capability or required state regresses."
+
+review:
+  required_reviewer: Codex lead
+  allowed_dispositions: ["ISSUE", "RETURN FOR CORRECTION", "BLOCK"]
+  current_recommendation:
+    m3: >-
+      Do not issue an in-place write. Claude Design proved that true
+      compare-and-swap protection is unavailable. Use only the immutable
+      predecessor/new-successor method in SAFE-SUCCESSOR-REVISION-005.
+    m4: >-
+      Do not issue an in-place write. Use the paired immutable successors in
+      SAFE-SUCCESSOR-REVISION-005 only after every P1 closure row in
+      M4-P1-CLOSURE-DESIGN-006 is satisfied.
+  implementation_effect: "None. These design leases do not authorize application implementation."

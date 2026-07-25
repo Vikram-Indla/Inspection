@@ -1,0 +1,289 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-CONTROL-REF-CLASSIFIER-SELF-TEST-068
+status: READ_ONLY_SYNTHETIC_SELF_TEST_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Exhaustively self-test the packet-067 ref-advance classifier across every
+  boolean combination of ownership drift, lease-authority change, stale pin
+  and documentation-only movement, including contradictory signals.
+
+authority:
+  classifier:
+    packet: KIMI-M11-CONTROL-REF-ADVANCE-CLASSIFIER-067
+    sha256: 788ad21df990884831e3639bcbd9b3fc83a892bdd02cffae159ec0c407fe1652
+  mutation_matrix: KIMI-M11-DISPATCH-VALIDATOR-MUTATION-MATRIX-064
+
+hard_boundary:
+  - "Synthetic truth-table and decision-function validation plus this one owned packet."
+  - "No fetch, checkout, branch/worktree creation, merge, push, real dispatch, identity, owner, lease or shared-control mutation."
+  - "No implementation, QA, product/test/SQL/data/design/provider/stash mutation or requirement credit."
+
+signals:
+  ownership_drift:
+    true_when:
+      - "Overlapping active ownership exists."
+      - "Owner/task/worktree/repository/mode mismatch exists."
+      - "Owner separation or preservation floor fails."
+    precedence: 1
+  lease_authority_change:
+    true_when:
+      - "Lease-registry blob, path or semantic row changes."
+    precedence: 2
+  stale_dispatch_pin:
+    true_when:
+      - "Dispatch coordination commit/hash/task row does not reproduce the current authority view."
+    precedence: 3
+  documentation_only_movement:
+    true_when:
+      - "Changed files are non-authoritative coordination documents and authority blobs/rows are identical."
+    precedence: 4
+
+classifier_function:
+  pseudocode:
+    - "if ownership_drift then BLOCKING_OWNERSHIP_DRIFT"
+    - "else if lease_authority_change then LEASE_AUTHORITY_CHANGE"
+    - "else if stale_dispatch_pin then STALE_DISPATCH_PIN"
+    - "else if documentation_only_movement then HARMLESS_DOCUMENTATION_ADVANCE"
+    - "else NO_REF_MOVEMENT"
+  invariant: >-
+    Lower-priority or contradictory true signals can never override a
+    higher-priority signal. In particular, documentation-only movement cannot
+    mask lease-authority change or ownership drift.
+
+expected_verdicts:
+  BLOCKING_OWNERSHIP_DRIFT: BLOCK_OWNERSHIP_DRIFT
+  LEASE_AUTHORITY_CHANGE: RETURN_FOR_FULL_LEASE_REVALIDATION
+  STALE_DISPATCH_PIN: RETURN_REFRESH_PIN_OR_BLOCK_IF_WRITE_ATTEMPTED
+  HARMLESS_DOCUMENTATION_ADVANCE: ACK_DOCUMENTATION_ADVANCE
+  NO_REF_MOVEMENT: ACK_NO_REF_MOVEMENT
+
+exhaustive_truth_table:
+  - id: M068-TT-0000
+    ownership_drift: false
+    lease_authority_change: false
+    stale_dispatch_pin: false
+    documentation_only_movement: false
+    expected_class: NO_REF_MOVEMENT
+    expected_verdict: ACK_NO_REF_MOVEMENT
+  - id: M068-TT-0001
+    ownership_drift: false
+    lease_authority_change: false
+    stale_dispatch_pin: false
+    documentation_only_movement: true
+    expected_class: HARMLESS_DOCUMENTATION_ADVANCE
+    expected_verdict: ACK_DOCUMENTATION_ADVANCE
+  - id: M068-TT-0010
+    ownership_drift: false
+    lease_authority_change: false
+    stale_dispatch_pin: true
+    documentation_only_movement: false
+    expected_class: STALE_DISPATCH_PIN
+    expected_verdict: RETURN_REFRESH_PIN_OR_BLOCK_IF_WRITE_ATTEMPTED
+  - id: M068-TT-0011
+    ownership_drift: false
+    lease_authority_change: false
+    stale_dispatch_pin: true
+    documentation_only_movement: true
+    expected_class: STALE_DISPATCH_PIN
+    expected_verdict: RETURN_REFRESH_PIN_OR_BLOCK_IF_WRITE_ATTEMPTED
+  - id: M068-TT-0100
+    ownership_drift: false
+    lease_authority_change: true
+    stale_dispatch_pin: false
+    documentation_only_movement: false
+    expected_class: LEASE_AUTHORITY_CHANGE
+    expected_verdict: RETURN_FOR_FULL_LEASE_REVALIDATION
+  - id: M068-TT-0101
+    ownership_drift: false
+    lease_authority_change: true
+    stale_dispatch_pin: false
+    documentation_only_movement: true
+    expected_class: LEASE_AUTHORITY_CHANGE
+    expected_verdict: RETURN_FOR_FULL_LEASE_REVALIDATION
+  - id: M068-TT-0110
+    ownership_drift: false
+    lease_authority_change: true
+    stale_dispatch_pin: true
+    documentation_only_movement: false
+    expected_class: LEASE_AUTHORITY_CHANGE
+    expected_verdict: RETURN_FOR_FULL_LEASE_REVALIDATION
+  - id: M068-TT-0111
+    ownership_drift: false
+    lease_authority_change: true
+    stale_dispatch_pin: true
+    documentation_only_movement: true
+    expected_class: LEASE_AUTHORITY_CHANGE
+    expected_verdict: RETURN_FOR_FULL_LEASE_REVALIDATION
+  - id: M068-TT-1000
+    ownership_drift: true
+    lease_authority_change: false
+    stale_dispatch_pin: false
+    documentation_only_movement: false
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1001
+    ownership_drift: true
+    lease_authority_change: false
+    stale_dispatch_pin: false
+    documentation_only_movement: true
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1010
+    ownership_drift: true
+    lease_authority_change: false
+    stale_dispatch_pin: true
+    documentation_only_movement: false
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1011
+    ownership_drift: true
+    lease_authority_change: false
+    stale_dispatch_pin: true
+    documentation_only_movement: true
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1100
+    ownership_drift: true
+    lease_authority_change: true
+    stale_dispatch_pin: false
+    documentation_only_movement: false
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1101
+    ownership_drift: true
+    lease_authority_change: true
+    stale_dispatch_pin: false
+    documentation_only_movement: true
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1110
+    ownership_drift: true
+    lease_authority_change: true
+    stale_dispatch_pin: true
+    documentation_only_movement: false
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+  - id: M068-TT-1111
+    ownership_drift: true
+    lease_authority_change: true
+    stale_dispatch_pin: true
+    documentation_only_movement: true
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    expected_verdict: BLOCK_OWNERSHIP_DRIFT
+
+class_coverage:
+  NO_REF_MOVEMENT:
+    rows: [M068-TT-0000]
+    observed: 1
+  HARMLESS_DOCUMENTATION_ADVANCE:
+    rows: [M068-TT-0001]
+    observed: 1
+  STALE_DISPATCH_PIN:
+    rows: [M068-TT-0010, M068-TT-0011]
+    observed: 2
+  LEASE_AUTHORITY_CHANGE:
+    rows: [M068-TT-0100, M068-TT-0101, M068-TT-0110, M068-TT-0111]
+    observed: 4
+  BLOCKING_OWNERSHIP_DRIFT:
+    rows: [M068-TT-1000, M068-TT-1001, M068-TT-1010, M068-TT-1011, M068-TT-1100, M068-TT-1101, M068-TT-1110, M068-TT-1111]
+    observed: 8
+
+ambiguity_assertions:
+  ownership_always_wins:
+    rows_tested: 8
+    rows_passed: 8
+    result: PASS
+  lease_change_beats_stale_pin:
+    rows_tested: [M068-TT-0110, M068-TT-0111]
+    rows_passed: 2
+    result: PASS
+  lease_change_beats_documentation:
+    rows_tested: [M068-TT-0101, M068-TT-0111]
+    rows_passed: 2
+    result: PASS
+  stale_pin_beats_documentation:
+    rows_tested: [M068-TT-0011]
+    rows_passed: 1
+    result: PASS
+  documentation_cannot_mask_lease_or_ownership:
+    contradictory_rows_tested: [M068-TT-0101, M068-TT-0111, M068-TT-1001, M068-TT-1011, M068-TT-1101, M068-TT-1111]
+    rows_passed: 6
+    result: PASS
+
+synthetic_semantic_mutations:
+  - id: M068-SM-001
+    mutation: "Changed paths are labelled documentation-only while lease SHA changes."
+    derived_signals: {ownership_drift: false, lease_authority_change: true, stale_dispatch_pin: true, documentation_only_movement: true}
+    expected_class: LEASE_AUTHORITY_CHANGE
+    result: PASS_DOCUMENTATION_LABEL_CANNOT_MASK_LEASE_CHANGE
+  - id: M068-SM-002
+    mutation: "Lease blob is unchanged but two parsed rows overlap one exact path."
+    derived_signals: {ownership_drift: true, lease_authority_change: false, stale_dispatch_pin: false, documentation_only_movement: true}
+    expected_class: BLOCKING_OWNERSHIP_DRIFT
+    result: PASS_SEMANTIC_OWNERSHIP_DRIFT_BEATS_BLOB_EQUALITY
+  - id: M068-SM-003
+    mutation: "Old pin and current ref have equal lease SHA but different commits."
+    derived_signals: {ownership_drift: false, lease_authority_change: false, stale_dispatch_pin: true, documentation_only_movement: true}
+    expected_class: STALE_DISPATCH_PIN
+    result: PASS_EQUAL_BLOB_DOES_NOT_REFRESH_PIN
+  - id: M068-SM-004
+    mutation: "No ref movement and no authority or ownership delta."
+    derived_signals: {ownership_drift: false, lease_authority_change: false, stale_dispatch_pin: false, documentation_only_movement: false}
+    expected_class: NO_REF_MOVEMENT
+    result: PASS_NO_FALSE_DOCUMENTATION_CLASS
+
+result:
+  verdict: ACK
+  exact_reason: ACK_EXHAUSTIVE_PRECEDENCE_AND_AMBIGUITY_SELF_TEST_PASS
+  truth_table_rows: 16
+  truth_table_rows_passed: 16
+  semantic_mutations: 4
+  semantic_mutations_passed: 4
+  ownership_precedence_passed: true
+  documentation_masking_prevented: true
+  real_dispatches_created: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+
+queued_next:
+  packet: KIMI-M11-CONTROL-REF-CLASSIFIER-LIVE-REPLAY-069
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Re-run the exhaustive classifier against the latest local coordination ref,
+    changed-path set, lease blob and row delta; report only a compact live
+    classification and pin delta.
+  prohibited:
+    - "No fetch, real dispatch, option, identity, owner, worktree, branch, lease, shared-control mutation, implementation, QA or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  boolean_signals: 4
+  exhaustive_rows_expected: 16
+  exhaustive_rows_observed: 16
+  exhaustive_rows_passed: 16
+  classes_expected_including_no_movement: 5
+  classes_observed: 5
+  ownership_true_rows_expected: 8
+  ownership_true_rows_classified_blocking: 8
+  documentation_mask_rows_expected: 6
+  documentation_mask_rows_passed: 6
+  semantic_mutations_expected: 4
+  semantic_mutations_passed: 4
+  real_dispatches_created: 0
+  real_leases_created: 0
+  credit_granted: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS

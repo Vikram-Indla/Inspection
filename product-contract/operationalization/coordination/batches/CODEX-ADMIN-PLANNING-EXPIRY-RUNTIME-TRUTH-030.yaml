@@ -1,0 +1,778 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-PLANNING-EXPIRY-RUNTIME-TRUTH-030
+title: Independent Admin Planning Expiry runtime truth and acceptance-credit review
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY
+status: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+    accepted_designs: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    The Admin route, planning_expiry_rules table, configured 15-minute
+    scheduler, rule provenance, lifecycle event, generic append-only audit and
+    notification inserts are real. The database function commits each matched
+    visit status, provenance, lifecycle event and configured notifications in
+    one transaction, and repeated sweeps do not reselect already-expired rows.
+    Those positives do not complete a canonical requirement. Only expiry after
+    a missed visit window is source-authorized; three additional rule families,
+    arbitrary offsets through one year and optional consequence flags have no
+    cited business-policy authority. Activation is two non-atomic writes, the
+    database permits zero or multiple enabled versions, enabled and historical
+    rows remain editable, effective intervals are not maintained, and one
+    offered rule can never match the non-null visit-window schema. A single
+    broadly granted Admin actor can make the policy effective before the next
+    sweep without maker-checker or concurrency protection. Separately,
+    Expired is not immutable: Planner/Operations can still edit notes and
+    add/remove attachments, and the broad visits UPDATE policy has no terminal
+    row guard. The live Arabic route is RTL but its complete Expiry business
+    surface remains English. The focused tests mutate shared data and have
+    visibly accumulated persistent rule versions. No live cron-run history,
+    exact screen identity, route-specific accepted design, complete negative
+    path, responsive or accessibility certification exists. Return the route
+    for policy, lifecycle, database, design and isolated-quality remediation;
+    block implementation credit and release use.
+
+task_contract:
+  task_id: CODEX-ADMIN-PLANNING-EXPIRY-RUNTIME-TRUTH-030
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  package_id: M9
+  channel: ADMIN
+  business_capability: >-
+    Configure versioned rules consumed by the system scheduler to make eligible
+    Published visits Expired and notify affected users.
+  route: /admin/planning/expiry
+  implementation_contract: PLN-CON-013
+  canonical_transition: STM-VIS-003
+  do_not_touch_observed:
+    - product application code
+    - product tests
+    - design files or design mappings
+    - local or shared product data
+    - Supabase schema, policies, providers, rows or cron jobs
+    - branches, leases, stashes, main or setup/Inspection
+    - peer-owned orchestration packets
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_and_after: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_write: 2fc42db3aee59dcbfdda665d74fd00db4af73105
+  concurrent_unowned_untracked_files_present: true
+  concurrent_files_touched: false
+  runtime_source_worktree: /Users/vikramindla/Developer/Inspection-codex-f0-shell
+  runtime_scope_diff_against_product_head:
+    expiry_route: NONE
+  runtime_worktree_authority: SAME_CANONICAL_GIT_COMMON_DIRECTORY
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_business_data_mutation: false
+  browser_business_action_submitted: false
+  mutating_test_executed: false
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/domain/state_transitions.csv
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/requirements-control/REQUIREMENT_TRACEABILITY.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/screens/screen_route_catalogue.csv
+  route_and_design:
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+  runtime:
+    - apps/web/src/app/(app)/admin/planning/expiry/page.tsx
+    - apps/web/src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx
+    - apps/web/src/app/(app)/admin/planning/expiry/actions.ts
+    - apps/web/src/app/(app)/admin/planning/expiry/types.ts
+    - apps/web/src/app/(app)/visits/[id]/page.tsx
+    - apps/web/src/app/(app)/visits/[id]/actions.ts
+    - apps/web/src/app/(app)/visits/[id]/NotesEditor.tsx
+    - apps/web/src/app/(app)/visits/[id]/Attachments.tsx
+    - apps/web/src/app/(app)/planning/page.tsx
+    - apps/web/src/app/(app)/operations/page.tsx
+    - apps/web/src/app/(app)/field/page.tsx
+    - apps/web/src/app/(app)/field/my-tasks/page.tsx
+    - apps/web/src/lib/notification-read.ts
+  database:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0005_audit_absolute_immutability.sql
+    - supabase/migrations/0025_scheduled_visit_expiry.sql
+    - supabase/migrations/0030_cd023_inspector_immediate_expiry.sql
+    - supabase/migrations/20260721030000_planning_capabilities.sql
+    - supabase/migrations/20260721030100_planning_canonical_structures.sql
+    - supabase/migrations/20260721030200_planning_visits_update_policy.sql
+  tests:
+    - apps/web/e2e/cd-044-admin-planning.spec.ts
+    - apps/web/e2e/pln-browser-certification.spec.ts
+    - apps/web/e2e/cd-026-visit-management.spec.ts
+    - apps/web/e2e/cd-027-visit-detail.spec.ts
+    - apps/web/e2e/cd-045-downstream-contract.spec.ts
+    - supabase/tests/0027_cd023_immediate_visit_atomic.sql
+  external_current_platform_guidance:
+    - https://supabase.com/docs/guides/database/postgres/row-level-security
+    - https://supabase.com/docs/guides/cron
+    - https://supabase.com/docs/guides/troubleshooting/pgcron-debugging-guide-n1KTaz
+  peer_evidence_not_authority:
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-EXPIRY-RUNTIME-PERMISSION-MAPPING-026.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-EXPIRY-RUNTIME-REMEDIATION-PREFLIGHT-027.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-PLANNING-EXPIRY-DESIGN-AUTHORITY-REVIEW-048.yaml
+
+canonical_scope:
+  ownership_correction:
+    route_inventory_claim: CR-001..CR-478
+    disposition: OVERBROAD_NOT_CREDITABLE
+    reason: >-
+      The Expiry control plane cannot own all 478 customer requirements. Its
+      direct source obligations are automatic visit expiry after a missed
+      window and the resulting final-state, audit and planner-notification
+      consequences. Audit, lifecycle and general notification rows are
+      dependencies, not blanket route ownership.
+    canonical_change_written: false
+  direct_and_dependency_rows:
+    - mvp1_id: MVP1-M02-014
+      customer_id: CR-066
+      acceptance_id: WA-AC-0066
+      evidence_id: WA-EV-0066
+      atomic_requirements:
+        - id: REQ-R0C-00202
+          obligation: Record every change with previous value, new value, user and timestamp.
+          result: PARTIAL_NO_CREDIT
+        - id: REQ-R0C-00203
+          obligation: All Planning actions are audited and audit records cannot be edited or deleted.
+          result: PARTIAL_NO_CREDIT
+      reason: >-
+        Generic row triggers and immutable audit_events exist, but activation
+        is split into separate uncorrelated updates, system cron audit uses a
+        null actor by convention, and no route-level audit/history proof or
+        complete live journey was executed.
+    - mvp1_id: MVP1-M02-015
+      customer_id: CR-067
+      acceptance_id: WA-AC-0067
+      evidence_id: WA-EV-0067
+      atomic_requirements:
+        - id: REQ-R0C-00204
+          obligation: Enforce lifecycle transitions based on business rules.
+          result: FAIL
+        - id: REQ-R0C-00205
+          obligation: >-
+            Planning statuses are Draft, Published, Returned, Cancelled and
+            Expired; Cancelled and Expired are final; Returned is pre-start only.
+          result: FAIL
+      reason: >-
+        The expiry function selects Published visits, but terminal immutability
+        is not enforced for all fields or authorized Data API paths.
+    - mvp1_id: MVP1-M02-016
+      customer_id: CR-068
+      acceptance_id: WA-AC-0068
+      evidence_id: WA-EV-0068
+      atomic_requirements:
+        - id: REQ-R0C-00206
+          obligation: Update visit status to Expired and record audit history.
+          result: PARTIAL_NO_CREDIT
+        - id: REQ-R0C-00207
+          obligation: Expired is final, view-only and cannot be edited, republished or cancelled.
+          result: FAIL
+      reason: >-
+        The canonical window-end rule updates status and records rule/lifecycle
+        provenance transactionally, but live scheduler health was not available
+        and Expired visit notes and attachments remain editable.
+    - mvp1_id: MVP1-M02-041
+      customer_id: CR-093
+      acceptance_id: WA-AC-0093
+      evidence_id: WA-EV-0093
+      atomic_requirements:
+        - id: REQ-R0C-00256
+          obligation: Send notifications for publish, return, cancel, reassignment, rescheduling and expiry.
+          result: PARTIAL_NO_CREDIT
+      reason: >-
+        The expiry leg inserts in-app rows for configured recipients in the
+        same transaction. Delivery is marked delivered at insert, live receipt
+        was not certified, and the Admin rule can disable recipients without a
+        cited policy authority.
+    - mvp1_id: MVP1-M02-046
+      customer_id: CR-098
+      acceptance_id: WA-AC-0098
+      evidence_id: WA-EV-0098
+      atomic_requirements:
+        - id: REQ-R0C-00263
+          obligation: Update visit status and notify planner.
+          result: PARTIAL_NO_CREDIT
+      reason: >-
+        Repository and prior fixture evidence show one transactional function
+        performs both consequences, but live pg_cron run history and safe
+        policy/version governance are absent.
+  canonical_transition:
+    id: STM-VIS-003
+    from: Eligible active Visit
+    trigger: Expiry trigger
+    to: Expired
+    actor: System
+    guard: Configured threshold reached
+    side_effects:
+      - block execution
+      - notify if configured
+      - rule/version audit
+    implementation_result: PARTIAL_NO_CREDIT
+  renewal_truth:
+    canonical_admin_rule_renewal_requirement_found: false
+    route_renewal_state_or_action: absent
+    version_creation_is_renewal: false
+    separate_final_visit_behavior:
+      contract: PLN-REQ-011
+      behavior: Duplicate a Cancelled or Expired visit into a new Draft without copying execution evidence.
+      disposition: SEPARATE_PLANNING_CAPABILITY_NOT_OWNED_OR_CREDITED_HERE
+    governance_rule: >-
+      Do not invent renewal of an Expired record. If business requires a
+      renewal policy beyond duplicate-to-new-Draft, it needs explicit canonical
+      authority before design or implementation.
+  web_admin_quality:
+    - [WA-M9-AC-001, P0, FAIL, "Real services exist, but rule authority, lifecycle and effective activation are unsafe."]
+    - [WA-M9-AC-002, P0, FAIL, "Atomicity, maker-checker, terminal immutability, least privilege and concurrency negatives fail or are absent."]
+    - [WA-M9-AC-003, P1, BLOCKED, "No route-specific accepted design or fixed-viewport comparison exists."]
+    - [WA-M9-AC-004, P1, FAIL, "Arabic content fails; tablet/narrow and complete accessibility evidence are absent."]
+    - [WA-M9-AC-005, P0, FAIL, "Version, maker-checker, terminal-state and isolated-test protected regression is incomplete."]
+    - [WA-M9-AC-006, P1, FAIL, "Exact screen/design identity and complete runtime evidence are absent."]
+
+design_and_route_truth:
+  real_route: /admin/planning/expiry
+  route_files:
+    page: apps/web/src/app/(app)/admin/planning/expiry/page.tsx
+    component: apps/web/src/app/(app)/admin/planning/expiry/ExpiryAdmin.tsx
+    actions: apps/web/src/app/(app)/admin/planning/expiry/actions.ts
+    types: apps/web/src/app/(app)/admin/planning/expiry/types.ts
+  route_local_loading: ABSENT
+  route_local_error_boundary: ABSENT
+  route_local_authorization_boundary: ABSENT_READ_ONLY_FALLBACK_ONLY
+  exact_screen_catalogue_row: ABSENT
+  registered_route_specific_design: ABSENT
+  nearest_workflow_pattern:
+    design_id: WA-DES-014
+    filename: SAQEEL Admin Workflow Builder.dc.html
+    sha256: 36ad28c22b36d9bc9d2841049af609491bccaaaeeed760888bb7a7fc6140f65c
+    registered_route: /admin/workflows
+    disposition: PATTERN_ONLY_NOT_EXPIRY_ROUTE_AUTHORITY
+  nearest_versioned_list_pattern:
+    design_id: WA-DES-010
+    filename: SAQEEL Admin Lookups.dc.html
+    sha256: 11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d
+    registered_route: /admin/localization
+    disposition: PATTERN_ONLY_NOT_EXPIRY_ROUTE_AUTHORITY
+  route_inventory_design_list:
+    result: OVERBROAD_NON_ROUTE_SPECIFIC
+    limitation: >-
+      Listing every M9 Admin design is not accepted Expiry-screen authority and
+      cannot prove visual parity.
+  result: BLOCKED_PENDING_GOVERNED_SCREEN_ID_EXACT_MAPPING_AND_ACCEPTED_ROUTE_DESIGN
+
+rule_service_and_effective_date_truth:
+  table: public.planning_expiry_rules
+  columns:
+    lifecycle_present: [enabled, version, effective_from, effective_to]
+    lifecycle_missing:
+      - status
+      - proposed_by
+      - approved_by
+      - approved_at
+      - rejection_reason
+      - predecessor_id
+      - row_version
+      - updated_at
+  constraints:
+    unique_rule_type_and_version: true
+    one_enabled_version_per_type: false
+    one_effective_version_per_type: false
+    immutable_active_or_retired: false
+    effective_interval_non_overlap: false
+  seeded_source_authorized_rule:
+    rule_type: not_completed_at_window_end
+    version: 1
+    offset_minutes: 0
+    reason: Window elapsed before inspection started
+    source_alignment: CLOSEST_DIRECT_MATCH_TO_CR_068_AND_CR_098
+  additional_rule_families:
+    - rule_type: no_acknowledgement
+      source_authority: NOT_FOUND
+      runtime_reachable: true
+    - rule_type: no_execution_start
+      source_authority: NOT_FOUND
+      runtime_reachable: true
+    - rule_type: no_execution_date
+      source_authority: NOT_FOUND
+      runtime_reachable: false
+      reason: The predicate requires visits.window_start IS NULL while the schema requires it NOT NULL.
+  offset_policy:
+    accepted_business_thresholds_found: false
+    route_allowed_range_minutes: 0_THROUGH_525600
+    disposition: UNAUTHORIZED_POLICY_RANGE
+  create_version:
+    sequence: Read maximum version, then insert maximum plus one.
+    created_enabled: false
+    effective_from: Set to creation time even while disabled.
+    serialization: absent
+    collision_behavior: Unique violation asks the actor to refresh and retry.
+  edit_version:
+    enabled_version_editable: true
+    disabled_historical_version_editable: true
+    expected_version_or_CAS: absent
+    scheduler_effect: Edited active values are consumed on the next sweep.
+  enable_version:
+    sequence:
+      - Disable all siblings for client-supplied rule_type.
+      - Enable independently client-supplied rule_id.
+    transaction_or_governed_RPC: absent
+    identity_binding_between_type_and_id: absent
+    failure_after_first_step: Can leave the family with no enabled version.
+    concurrent_double_enable: Not database-prevented.
+    prior_effective_to_closed: false
+    selected_effective_from_opened_on_activation: false
+  disable_version:
+    last_enabled_version_may_be_disabled: true
+    persistent_blocking_warning: absent
+    effective_to_closed: false
+  maker_checker:
+    distinct_proposer_and_approver: absent
+    reviewed_activation_state: absent
+    decision_record: absent
+  displayed_effective_truth:
+    disabled_rows_shown_as_ongoing: true
+    live_browser_confirmation: true
+    result: SEMANTICALLY_FALSE
+
+scheduler_and_consequence_truth:
+  repository_schedule:
+    extension: pg_cron
+    job_name: expire-lapsed-visits
+    cadence: "*/15 * * * *"
+    entrypoint: public.expire_lapsed_visits_scheduled()
+    entrypoint_exposed_to_authenticated: false
+    core: public._expire_lapsed_visits_core(text)
+  live_deployment:
+    target_project: iiozvqntawxfwbgffzqu
+    project_available_to_supabase_connector: false
+    unrelated_visible_project: cyijbdeuehohvhnsywig
+    unrelated_project_queried: false
+    cron_job_row_observed: false
+    cron_run_history_observed: false
+    health_or_failure_alert_observed: false
+    result: BLOCKED_BY_TARGET_PROJECT_CONNECTOR_ACCESS
+  selection:
+    requires_enabled: true
+    effective_from_lte_now: true
+    effective_to_gt_now_or_null: true
+    ordering: rule_type then version ascending
+    overlap_effect: >-
+      If multiple versions are enabled and effective, the earliest matching row
+      expires the visit and wins the recorded provenance.
+  canonical_window_end_predicate:
+    planning_status: published
+    window_end_plus_offset_before_now: true
+    started_inspection_excluded: true
+    inspector_created_immediate_excluded: true
+    exact_scope_filters: [visit_type, execution_mode, priority]
+  transactional_consequences:
+    visit_planning_status: expired
+    visit_rule_provenance: expired_by_rule_id
+    lifecycle_event: expire
+    lifecycle_previous_state_and_rule_id: present
+    generic_visit_audit: present
+    inspector_notification: conditional
+    plan_creator_notification: conditional
+    atomic_database_function_call: true
+    partial_commit_on_database_error: false
+    status_idempotency: true
+  notification_truth:
+    channel: inapp
+    insertion_state: delivered
+    delivered_at: insertion time
+    actual_client_receipt_proof: absent
+    duplicate_constraint_for_visit_event_recipient: absent
+    replay_duplicate_risk: Low after status transition, but not independently constrained.
+
+permission_rls_and_terminal_truth:
+  anonymous:
+    browser_result: REDIRECT_TO_LOGIN
+  route_read:
+    page_guard: none beyond authenticated app shell
+    table_select_policy: auth.uid() is not null
+    observed_reviewer_deep_link: FULL_CATALOGUE_READ_ONLY
+    observed_planner_deep_link: FULL_CATALOGUE_READ_ONLY
+    least_privilege_decision: NOT_FOUND
+  route_write:
+    page_control_gate: planning.configure_expiry
+    server_action_recheck: present
+    insert_policy: planning.configure_expiry
+    update_policy: planning.configure_expiry
+    delete_policy: absent
+    default_grantees:
+      - compliance_admin
+      - form_admin
+      - workflow_admin
+      - risk_owner
+      - gis_admin
+      - security_admin
+    result: BROAD_SINGLE_ACTOR_CONTROL
+  final_expired_visit:
+    planning_action_buttons: mostly hidden by page-level final-state presentation
+    notes_editor_rendered: true
+    note_server_action_status_guard: absent
+    attachment_upload_status_guard: absent
+    attachment_remove_status_guard: absent
+    visits_update_policy_terminal_guard: absent
+    visit_attachment_policy_terminal_guard: absent
+    direct_authorized_update_terminal_guard: absent
+    result: FAIL_FINAL_VIEW_ONLY_CONTRACT
+  audit:
+    expiry_rule_row_trigger: trg_audit_planning_expiry_rules
+    visit_row_trigger: trg_audit_visits
+    before_and_after_state: present
+    audit_events_update_delete_blocked: true
+    correlated_activation_change_set: absent
+    route_history_or_audit_link: absent
+
+downstream_truth:
+  planning:
+    source: visits.planning_status and expired_by_rule_id
+    behavior:
+      - Planning lists and KPIs can count Expired visits.
+      - Visit detail resolves rule reason/type and displays final-state banner.
+      - Final visit duplicate creates a new Draft under PLN-REQ-011.
+    config_version_pinning_at_publish: absent
+    in_flight_rule_binding: Current effective rule at sweep time.
+  operations:
+    source: visits.planning_status kept separate from operational_state
+    behavior:
+      - Operations queries include planning_status.
+      - Published workload calculations exclude Expired rows.
+    explicit_rule_version_display: absent
+  field:
+    source: assigned visits with planning_status
+    behavior:
+      - Expired tasks remain visible as non-actionable history.
+      - Actionable collections exclude Expired.
+      - Expired count and badge are rendered.
+    execution_start_database_guard: Present on selected execution/override paths, not a complete terminal immutability guard.
+  notifications:
+    field_notification_icon: visit_expired mapped
+    shared_notification_deep_link: visit_expired mapped to visit detail
+  result: REAL_PARTIAL_CONSUMPTION_NO_CONTROL_PLANE_COMPLETION_CREDIT
+
+hard_state_localization_responsive_accessibility:
+  present:
+    - populated rule families and versions
+    - per-family no-version text
+    - capability-based read-only banner
+    - inline read error banner
+    - pending action state
+    - action success and error status
+    - enabled and disabled rows
+    - inline edit
+    - create disabled version
+    - anonymous login redirect
+    - light and dark theme
+  unsafe_or_missing:
+    - route loading boundary
+    - route-level unauthorized state for authenticated non-configurers
+    - distinct gate-provider unavailable state
+    - safe read-error state separated from editable empty state
+    - atomic activation failure and rollback
+    - multiple-active and zero-active conflict state
+    - stale edit and concurrent allocation state
+    - pending approval, rejected, future and retired lifecycle states
+    - immutable active and historical state
+    - affected-visit and recipient impact preview
+    - scheduler delayed, failed or unavailable state
+    - unsupported dormant-rule warning
+    - audit unavailable state
+  English_LTR:
+    route_business_content: PRESENT
+    live_result: PASS_DESKTOP_ONLY
+  Arabic_RTL:
+    html_lang: ar
+    html_dir: rtl
+    shared_shell: ARABIC
+    route_title_banner_rule_names_headers_actions_and_help: ENGLISH
+    live_result: FAIL
+  dates:
+    formatter: Date.toLocaleDateString without route locale
+    result: NOT_EXPLICITLY_LOCALE_BOUND
+  themes:
+    light: OBSERVED
+    dark: OBSERVED
+  responsive:
+    desktop_1280: OBSERVED
+    document_horizontal_overflow_at_desktop: false
+    tablet_1024: NOT_PROVEN
+    narrow_412_390_320: NOT_PROVEN
+    wide_table_small_screen_alternative: absent
+  accessibility:
+    positive:
+      - skip link present
+      - native labelled form controls
+      - table headers use scope=col
+      - action feedback uses status or alert roles
+      - native buttons are keyboard-reachable by construction
+    missing:
+      - route-specific automated accessibility result
+      - complete keyboard and visible-focus journey
+      - activation confirmation semantics
+      - screen-reader and bidi certification
+      - 200 and 400 percent zoom evidence
+      - narrow-table accessible alternative
+  qualified_native_arabic_review: NOT_PERFORMED
+
+browser_evidence:
+  runtime_origin: Local canonical-repository worktree wired to configured non-production Supabase
+  source_equivalence:
+    expiry_route_diff_product_to_runtime: NONE
+  authorized_admin:
+    route: http://127.0.0.1:3165/admin/planning/expiry
+    roles_visible:
+      - compliance_admin
+      - form_admin
+      - gis_admin
+      - risk_owner
+      - security_admin
+      - workflow_admin
+    controls:
+      - New version
+      - Enable or Disable
+      - Edit
+    live_rows:
+      no_acknowledgement: {versions: 2, enabled: 0}
+      no_execution_date: {versions: 2, enabled: 0}
+      no_execution_start: {versions: 2, enabled: 0}
+      not_completed_at_window_end: {versions: 7, enabled: 1}
+    live_data_truth: >-
+      Twelve disabled rows and one enabled row were visible. Disabled rows were
+      labelled ongoing. Six persistent M9 contract-test versions and repeated
+      M12 certification fixtures prove prior tests do not restore or isolate
+      the rule catalogue.
+    dark_theme: OBSERVED
+  reviewer:
+    route: http://localhost:3165/admin/planning/expiry
+    result: FULL_CATALOGUE_VISIBLE_READ_ONLY_NO_WRITE_CONTROLS
+  planner_arabic:
+    route: http://0.0.0.0:3165/admin/planning/expiry
+    result: RTL_SHELL_WITH_ENGLISH_EXPIRY_CONTENT_READ_ONLY
+  authorized_admin_arabic:
+    html_lang: ar
+    html_dir: rtl
+    title: Planning expiry rules
+    sample_actions: [New version, Enable, Edit]
+    column_headers: [Version, Status, Offset, Reason, Notify, Scope, Effective, Actions]
+    result: FAIL_ARABIC_BUSINESS_CONTENT
+  anonymous:
+    requested_route: http://saqeel.localhost:3165/admin/planning/expiry
+    result: REDIRECTED_TO_LOGIN
+  prohibited_actions_confirmed:
+    - no rule created, edited, enabled or disabled
+    - no visit expired or duplicated
+    - no note or attachment changed
+    - no role or permission changed
+    - no database row or cron job changed
+
+test_and_validator_evidence:
+  canonical_validator:
+    command: node scripts/validate_web_admin_phase1.mjs
+    result: PASS
+    requirement_rows: 478
+    limitation: Structural inventory validation does not certify this route or its runtime behavior.
+  focused_test_discovery:
+    command: npx playwright test e2e/cd-044-admin-planning.spec.ts --list
+    result: PASS_DISCOVERY
+    expiry_tests_listed: 2
+    executed: false
+    reason_not_executed: >-
+      Both tests mutate shared rules. One disables then re-enables the seeded
+      rule and can strand it disabled on interruption. The other creates a new
+      disabled version and performs no cleanup.
+  scheduler_test_discovery:
+    command: npx playwright test e2e/pln-browser-certification.spec.ts --list
+    result: PASS_DISCOVERY
+    expiry_test_listed: 1
+    executed: false
+    reason_not_executed: >-
+      The test creates enabled shared rule versions and real visits, invokes
+      expiry, disables only the staged rules and intentionally retains governed
+      visit/audit fixtures.
+  focused_coverage_present:
+    - seeded v1 can disable and re-enable through the page
+    - new version is created disabled
+    - three reachable rule families can expire staged visits through the user-scoped RPC
+    - rule provenance, audit rows and notification rows can be queried
+    - no_execution_date is documented and asserted as dormant
+    - expired visit detail can display rule provenance
+    - inspector-created immediate visit exclusion has a database probe
+  critical_missing_coverage:
+    - policy authority for every family, scope and threshold
+    - atomic activation rollback on second-write failure
+    - mismatched rule_id and rule_type
+    - database prevention of multiple enabled/effective versions
+    - prevention or approved handling of zero enabled versions
+    - immutable active and retired versions through UI, action and Data API
+    - effective_from and effective_to boundary selection
+    - distinct-actor maker-checker
+    - stale edit and concurrent version allocation
+    - denied direct REST read/write for exact personas
+    - live scheduled job installation, run history and failure alert
+    - Expired note and attachment immutability
+    - notification receipt and idempotent uniqueness
+    - safe read/gate/provider error and loading states
+    - isolated reversible fixtures with no residual rows
+    - EN/AR, LTR/RTL, light/dark, desktop/tablet/narrow
+    - keyboard/focus, automated accessibility, screen-reader and zoom
+  readiness: NOT_READY_FOR_CERTIFICATION
+
+p0_findings:
+  - id: PLN-EX-P0-001
+    finding: Three rule families and the 0-to-525600-minute policy range lack canonical business authority.
+    impact: Admins can introduce final-state timing and recipient policy that CR-068 and CR-098 do not authorize.
+    blocks: [REQ-R0C-00204, REQ-R0C-00206, REQ-R0C-00263, WA-M9-AC-001]
+  - id: PLN-EX-P0-002
+    finding: Activation is a non-atomic two-write operation with no database single-enabled invariant.
+    impact: Failure or concurrency can leave zero or multiple enabled versions and ambiguous expiry provenance.
+    blocks: [REQ-R0C-00204, REQ-R0C-00206, WA-M9-AC-001, WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-EX-P0-003
+    finding: Enabled and historical rule versions are mutable and effective intervals are not maintained.
+    impact: A previously used version can change meaning, and the UI cannot truthfully reconstruct which policy governed a visit.
+    blocks: [REQ-R0C-00202, REQ-R0C-00203, REQ-R0C-00206, WA-M9-AC-001, WA-M9-AC-005]
+  - id: PLN-EX-P0-004
+    finding: no_execution_date is exposed as functioning even though its predicate cannot match the non-null window_start schema.
+    impact: An administrator can enable a promised final-state rule that never executes.
+    blocks: [REQ-R0C-00204, REQ-R0C-00206, WA-M9-AC-001, WA-M9-AC-002]
+  - id: PLN-EX-P0-005
+    finding: Expiry activation has no maker-checker and is broadly granted to every Admin access-class role.
+    impact: One actor can unilaterally alter final-state behavior before the next 15-minute sweep.
+    blocks: [WA-M9-AC-002, WA-M9-AC-005]
+  - id: PLN-EX-P0-006
+    finding: Expired visits remain editable through notes, attachment upload/removal and broad authorized update paths.
+    impact: The canonical final and view-only rule is false even when the scheduler status transition succeeds.
+    blocks: [REQ-R0C-00205, REQ-R0C-00207, WA-AC-0067, WA-AC-0068, WA-M9-AC-002, WA-M9-AC-005]
+
+p1_findings:
+  - id: PLN-EX-P1-001
+    finding: No exact screen-catalogue row, route-specific accepted design or immutable route design revision exists.
+  - id: PLN-EX-P1-002
+    finding: The route inventory's CR-001..CR-478 assignment is overbroad and cannot receive credit.
+  - id: PLN-EX-P1-003
+    finding: All authenticated users can read the complete rule catalogue; least-privilege read authority is undecided.
+  - id: PLN-EX-P1-004
+    finding: Draft edits and version allocation have no CAS, row version or family serialization.
+  - id: PLN-EX-P1-005
+    finding: Scope values are duplicated in UI and actions rather than bound to governed Planning lookup authority.
+  - id: PLN-EX-P1-006
+    finding: Live pg_cron installation, recent success, failure history and alerting are not available to this review.
+  - id: PLN-EX-P1-007
+    finding: Disabled rule versions are displayed as effective and ongoing.
+  - id: PLN-EX-P1-008
+    finding: Arabic/RTL renders the complete Expiry business surface in English and uses non-explicit date locale formatting.
+  - id: PLN-EX-P1-009
+    finding: Loading, unauthorized, provider-degraded, stale, conflict, future, retired and audit-unavailable states are incomplete.
+  - id: PLN-EX-P1-010
+    finding: Tablet, narrow, full keyboard/focus, automated accessibility, screen-reader and zoom evidence is absent.
+  - id: PLN-EX-P1-011
+    finding: Focused tests mutate shared data and visibly accumulate residual rule versions.
+  - id: PLN-EX-P1-012
+    finding: Qualified native-Arabic review and fixed-viewport design comparison are absent.
+
+exact_prerequisites:
+  policy_and_contract:
+    - Approve exactly which rule families exist and the legal/business basis for each time basis, scope and offset.
+    - Decide whether each family must always have exactly one active version or may intentionally have none.
+    - Decide whether already-Published visits bind a rule version at publish time or use the effective version at sweep time.
+    - Decide exact view, propose, approve and activate personas under least privilege.
+    - Require or explicitly waive distinct-actor maker-checker; recommendation is require it.
+    - Decide whether configured notification flags may suppress the canonical planner notification.
+    - Remove or hold no_execution_date unless an approved reachable data authority is introduced without weakening window_start.
+    - Keep renewal outside this screen unless a new governed requirement explicitly authorizes it.
+  governed_mapping_and_design:
+    - Register one exact screen-catalogue row for /admin/planning/expiry.
+    - Replace CR-001..CR-478 with the direct and dependency IDs in this packet.
+    - Accept and fingerprint a route-specific design without reassigning WA-DES-010 or WA-DES-014.
+    - Include impact preview, immutable versions, proposal/review/activation, effective intervals, conflict, audit and rollback states.
+  database_and_service:
+    - Add a governed transactional activation RPC that resolves rule identity/type inside the database.
+    - Enforce at most one active/effective version per family and approved continuous coverage if selected.
+    - Make active, retired and rejected rows immutable and retain predecessor/decision lineage.
+    - Maintain effective_from and effective_to atomically at activation and retirement.
+    - Serialize family version allocation and activation; add expected-version protection for draft edits.
+    - Add a non-bypassable Expired terminal guard for visit and child editable content.
+    - Preserve current transactional status, provenance, lifecycle, audit and notification consequences.
+    - Provide live cron job, run-history, failure-alert and idempotent replay evidence.
+  route:
+    - Add an exact route permission boundary and approved read-only behavior.
+    - Use only approved governed scope values.
+    - Remove active/historical edit controls and impossible rules.
+    - Expose draft, pending, future, active, retired, rejected, unavailable and stale states truthfully.
+    - Add affected-visit and notification-recipient impact before activation.
+    - Add route loading, safe error/degraded and audit-history states.
+    - Complete governed Arabic strings and locale-aware dates.
+  qa:
+    - Use an isolated seed namespace and a complete semantic cleanup manifest.
+    - Prove atomic rollback, single-active invariants, identity binding, maker-checker, immutability and concurrency at the database boundary.
+    - Prove the scheduled job, not only the user-scoped manual RPC.
+    - Prove Expired rejects edit, republish, cancel, notes and attachment changes through UI, action, RPC and Data API.
+    - Prove Planning, Operations and Field consume the result without losing provenance.
+    - Certify EN/LTR and AR/RTL, light/dark, desktop/tablet/narrow, keyboard/focus, automated accessibility, screen-reader and negative states.
+    - Require qualified native-Arabic review; automation may not self-certify it.
+
+rollback_and_stop_conditions:
+  rollback: No runtime rollback is required because this packet changed no product, design, test or data.
+  packet_rollback: Remove only this unique YAML packet before integration if Codex lead returns it.
+  stop_conditions:
+    - any rule family, threshold, recipient or renewal behavior lacks explicit authority
+    - activation can leave zero or multiple active/effective versions contrary to the approved invariant
+    - active or historical rule meaning can change after use
+    - maker and checker are not separated if approval is required
+    - Expired records remain editable through any authorized path
+    - no_execution_date remains advertised while structurally dormant
+    - live scheduler health and isolated reversible data proof are absent
+    - exact route design, Arabic, responsive or accessibility evidence remains unaccepted
+
+safe_queued_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-RUNTIME-TRUTH-031
+  mode: READ_ONLY
+  scope: >-
+    Independently audit /admin/compliance-requests, its detail and creation
+    routes against exact compliance-request requirements, permissions/RLS,
+    maker-checker decisions, immutable evidence and publication effects,
+    concurrency, negative paths, tests and real browser truth.
+  design_boundary: Treat design identity and revision as a separate dependency.
+  non_overlap: >-
+    Does not write or claim the active Devices, Audit, Access, Workflows,
+    Planning Expiry, Localization, shell, database, design or test lanes.
+
+validation:
+  yaml_parse: PASS
+  required_packet_id_match: PASS
+  exact_one_owned_file_diff: PASS
+  product_worktree_clean: PASS
+  prohibited_paths_changed: NONE
+  canonical_validator: PASS_478_OF_478
+  verdict: PASS_PACKET_IS_INTERNALLY_VALID_RETURN_BLOCKED_ZERO_CREDIT

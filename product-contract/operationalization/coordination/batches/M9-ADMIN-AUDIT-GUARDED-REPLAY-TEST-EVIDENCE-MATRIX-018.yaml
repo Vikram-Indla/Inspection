@@ -1,0 +1,299 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-AUDIT-GUARDED-REPLAY-TEST-EVIDENCE-MATRIX-018
+title: Collision-safe guarded audit replay test and evidence matrix
+status: MATRIX_READY_IMPLEMENTATION_AND_DATA_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessors:
+    - M9-ADMIN-AUDIT-RUNTIME-PERMISSION-MAPPING-014
+    - M9-ADMIN-AUDIT-RUNTIME-REMEDIATION-PREFLIGHT-015
+    - M9-ADMIN-AUDIT-RLS-PRIVACY-ENGINEERING-DESIGN-016
+    - M9-ADMIN-AUDIT-CONSUMER-AND-DISCLOSURE-INVENTORY-017
+  requirements:
+    - MVP2-REQ-0230
+    - MVP2-REQ-0237
+    - MVP2-REQ-0254
+    - MVP2-REQ-0137 through MVP2-REQ-0172
+    - MVP1-FND-003
+    - MVP1-M08-015
+    - MVP1-M02-014
+    - MVP1-M02-044
+    - MVP1-M06-009
+    - MVP1-M06-010
+    - MVP1-M06-022
+    - MVP1-M06-027
+    - MVP1-M06-039
+    - MVP1-M06-050
+    - MVP1-M06-051
+    - MVP1-M09-015
+  acceptance:
+    - WA-M9-AC-001
+    - WA-M9-AC-002
+    - WA-M9-AC-003
+    - WA-M9-AC-004
+    - WA-M9-AC-005
+    - WA-M9-AC-006
+    - FND-ACC-003
+    - AC-0444
+    - AC-0066
+    - AC-0096
+    - AC-0365
+    - AC-0366
+    - AC-0378
+    - AC-0383
+    - AC-0395
+    - AC-0406
+    - AC-0407
+    - AC-0463
+  policy_holds: [DEC-006, DEC2-009]
+  no_policy_invention: true
+  implementation_authorized: false
+  mutation_performed: false
+
+collision_check:
+  checked_paths:
+    - apps/web/e2e/web-admin-m9-admin-audit-runtime.spec.ts
+    - supabase/tests/m9_admin_audit_runtime_probe.sql
+    - product-contract/evidence/screens/m9-admin-audit-runtime
+  observed_state: FREE_AT_REVIEW_TIME
+  proposed_only: true
+  rule: Recheck immediately before any lease; availability here grants no ownership.
+
+persona_fixture_gap:
+  currently_seeded_test_personas:
+    - planner
+    - inspector
+    - reviewer
+    - admin
+    - ops
+  missing_required_personas:
+    - auditor
+    - leadership
+    - compliance_admin
+    - form_admin
+    - unassigned_inspector
+  implication: Full persona certification cannot start without an isolated fixture/data lease.
+  hard_rule: Do not repurpose sponsor, operator or another suite's accounts.
+
+persona_scope_matrix:
+  - persona: anonymous
+    expected: RPC denied; zero event and existence disclosure.
+  - persona: expired_session
+    expected: Neutral authentication denial; zero event disclosure.
+  - persona: inspector
+    expected: /admin/audit denied; raw tables denied; no general guarded replay.
+  - persona: assigned_inspector
+    expected: Only approved Virtual Session/participant facts under RBAC-014, with sensitive fields redacted.
+  - persona: planner
+    expected: Object-scoped facts already visible through Planning RLS; partial-scope disclosure.
+  - persona: reviewer
+    expected: Object-scoped Inspection/Submission/Review facts; partial-scope disclosure.
+  - persona: leadership
+    expected: Approved organizational object scope only; partial-scope disclosure.
+  - persona: compliance_admin
+    expected: Approved compliance/configuration scope only; partial-scope disclosure.
+  - persona: form_admin
+    expected: Exact supported configuration objects only; no global Audit route unless separately approved.
+  - persona: auditor
+    expected: Full scope only if approved by the disclosure matrix; still redacted by field policy.
+  - persona: ops
+    expected: Full or operational scope exactly as approved; still redacted by field policy.
+  - persona: security_admin
+    expected: No automatic reveal; scope and redaction remain policy-controlled.
+
+database_test_cases:
+  - id: AUD-DB-001
+    priority: P0
+    test: Anonymous cannot execute guarded replay or read raw stores.
+  - id: AUD-DB-002
+    priority: P0
+    test: Authenticated direct SELECT on audit_events and audit_semantic_events is denied after migration.
+  - id: AUD-DB-003
+    priority: P0
+    test: Generic and semantic UPDATE/DELETE remain rejected for authenticated, elevated and owner-equivalent probe contexts.
+  - id: AUD-DB-004
+    priority: P0
+    test: Planner sees one in-scope Visit and zero out-of-scope Visit facts.
+  - id: AUD-DB-005
+    priority: P0
+    test: Reviewer sees one in-scope Review chain and zero unrelated Inspection facts.
+  - id: AUD-DB-006
+    priority: P0
+    test: Compliance Admin sees supported configuration objects and zero unrelated operational objects.
+  - id: AUD-DB-007
+    priority: P0
+    test: Assigned Inspector sees only the approved Virtual Session trail.
+  - id: AUD-DB-008
+    priority: P0
+    test: Unassigned Inspector receives zero Virtual Session facts.
+  - id: AUD-DB-009
+    priority: P0
+    test: Unknown aggregate type fails closed.
+  - id: AUD-DB-010
+    priority: P0
+    test: Empty/unavailable disclosure policy returns redacted data and disables reveal.
+  - id: AUD-DB-011
+    priority: P0
+    test: Unknown field path never appears in before, after or payload.
+  - id: AUD-DB-012
+    priority: P0
+    test: Reveal without approved role, field, purpose and policy version is denied.
+  - id: AUD-DB-013
+    priority: P0
+    test: Successful reveal, if later authorized, produces one correlated access event.
+  - id: AUD-DB-014
+    priority: P0
+    test: Identical reveal request ID is idempotent; changed reuse is rejected.
+  - id: AUD-DB-015
+    priority: P0
+    test: Generic and semantic versions of one business fact correlate without silent double-counting.
+  - id: AUD-DB-016
+    priority: P0
+    test: Cursor is bound to actor and filter fingerprint; cross-filter replay is rejected.
+  - id: AUD-DB-017
+    priority: P1
+    test: Limit is bounded to 1 through 250 with deterministic occurred_at/id keyset ordering.
+  - id: AUD-DB-018
+    priority: P1
+    test: More than 250 portfolio facts returns has_more and a valid next cursor.
+  - id: AUD-DB-019
+    priority: P1
+    test: More than 5000 case facts marks history partial and completeness uncertifiable.
+  - id: AUD-DB-020
+    priority: P0
+    test: Source, scope or redaction failure never widens access.
+  - id: AUD-DB-021
+    priority: P0
+    test: Existing semantic append source validation and idempotency remain intact.
+  - id: AUD-DB-022
+    priority: P0
+    test: Existing configuration and Virtual narrow seams cannot bypass the new redaction boundary.
+
+application_regression_cases:
+  - id: AUD-APP-001
+    route: /admin/audit
+    expected: Recorder, reconstruct, compare, ledger, custody and print-safe consume guarded results.
+  - id: AUD-APP-002
+    route: /admin
+    expected: Governed audit summary distinguishes verified count, verified zero and unavailable.
+  - id: AUD-APP-003
+    route: /dashboard
+    expected: OPS-KPI-008 preserves newest-12 scoped facts and explicit failed-source state for every permitted persona.
+  - id: AUD-APP-004
+    route: /visits/:id
+    expected: Planner/Ops scoped timeline works; Inspector gets an authorized narrow timeline or explicit unavailable, never false empty.
+  - id: AUD-APP-005
+    route: /reviews/:id
+    expected: Reviewer chronological chain preserves actor, action, object and timestamp without raw payload leakage.
+  - id: AUD-APP-006
+    route: /admin/items
+    expected: Configuration history preserves supported object scope and approved fields.
+  - id: AUD-APP-007
+    route: /admin/regulations
+    expected: Regulation history preserves supported object scope and approved fields.
+  - id: AUD-APP-008
+    route: /admin/violations
+    expected: Violation and penalty history preserves supported object scope and approved fields.
+  - id: AUD-APP-009
+    route: /virtual/sessions/:id/verify
+    expected: RBAC-014 session scope remains intact and verification material is redacted.
+
+browser_evidence_matrix:
+  - id: AUD-EV-001
+    frame: Full-scope recorder with redacted detail.
+    locale_theme_viewport: EN_LTR_light_design_fixed
+  - id: AUD-EV-002
+    frame: Partial-scope Planner recorder and scope disclosure.
+    locale_theme_viewport: EN_LTR_dark_1024x768
+  - id: AUD-EV-003
+    frame: Compliance Admin partial scope.
+    locale_theme_viewport: AR_RTL_light_design_fixed
+  - id: AUD-EV-004
+    frame: Inspector unauthorized zero disclosure.
+    locale_theme_viewport: AR_RTL_dark_412x915
+  - id: AUD-EV-005
+    frame: Verified empty.
+    locale_theme_viewport: EN_LTR_light_390x844
+  - id: AUD-EV-006
+    frame: Generic-only degraded state.
+    locale_theme_viewport: EN_LTR_dark_1440x900
+  - id: AUD-EV-007
+    frame: Semantic/ontology unavailable with generic provenance preserved.
+    locale_theme_viewport: AR_RTL_light_1024x768
+  - id: AUD-EV-008
+    frame: Bounded portfolio with next-page state.
+    locale_theme_viewport: EN_LTR_light_320x800
+  - id: AUD-EV-009
+    frame: Truncated case with uncertifiable completeness.
+    locale_theme_viewport: EN_LTR_dark_design_fixed
+  - id: AUD-EV-010
+    frame: Point-in-time reconstruction and no-event boundary.
+    locale_theme_viewport: AR_RTL_dark_design_fixed
+  - id: AUD-EV-011
+    frame: Comparison with changed, unchanged and conflict states.
+    locale_theme_viewport: EN_LTR_light_1440x900
+  - id: AUD-EV-012
+    frame: Custody with not-assessed, mismatch and incomplete chain states.
+    locale_theme_viewport: AR_RTL_light_412x915
+  - id: AUD-EV-013
+    frame: Print-safe with export/legal/policy-held disclosure.
+    locale_theme_viewport: EN_LTR_light_print
+  - id: AUD-EV-014
+    frame: Event-detail keyboard dialog with focus cycle and restoration.
+    locale_theme_viewport: EN_LTR_dark_1024x768
+  - id: AUD-EV-015
+    frame: Assigned Inspector Virtual-session redacted audit seam.
+    locale_theme_viewport: AR_RTL_light_320x800
+
+evidence_bundle_requirements:
+  - exact commit and migration inventory
+  - persona and fixture manifest with no credentials
+  - database before/after counts
+  - guarded RPC request and redacted response
+  - RLS denial responses
+  - immutable mutation denial
+  - semantic correlation and idempotency rows
+  - browser screenshots and accessibility output
+  - consumer regression test results
+  - cleanup/reconciliation report
+  - requirement, acceptance, route, screen and design crosswalk
+
+execution_order:
+  - Transaction-wrapped database contract against an isolated local database.
+  - Authenticated remote read-only RLS and projection probes.
+  - Isolated namespaced seed fixtures after data lease.
+  - Focused consumer regression suites.
+  - Browser state and accessibility matrix.
+  - Cleanup and immutable-fixture reconciliation.
+  - Full protected regression.
+
+stop_conditions:
+  - Missing governed screen identity or policy decisions required by the selected behavior.
+  - Missing auditor, leadership, compliance_admin, form_admin or unassigned-inspector fixtures.
+  - Any fixture overlaps sponsor or another suite account/data.
+  - Raw-table or privileged-seam bypass remains.
+  - Reveal defaults on when policy is absent.
+  - Immutable test facts cannot be namespaced and reconciled.
+  - Any P0 database or consumer regression case fails.
+  - Evidence omits a required locale, scope, denial or partial-history state.
+
+next_queued_task:
+  packet_id: M9-ADMIN-AUDIT-GUARDED-REPLAY-LEASE-READINESS-019
+  status: QUEUED_BLOCKED
+  objective: >-
+    Recheck collisions, governance decisions, live schema, fixture availability
+    and exact path ownership before issuing any implementation, database, test,
+    data or evidence lease.
+  completion_credit: 0
+
+validation:
+  database_cases: 22
+  application_regressions: 9
+  browser_frames: 15
+  currently_seeded_personas: 5
+  missing_personas: 5
+  policy_values_invented: false
+  product_database_test_data_design_lease_branch_stash_mutation: false

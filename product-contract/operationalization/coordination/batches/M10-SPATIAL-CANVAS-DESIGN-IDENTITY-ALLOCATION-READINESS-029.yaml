@@ -1,0 +1,493 @@
+schema_version: "1.0"
+packet_id: M10-SPATIAL-CANVAS-DESIGN-IDENTITY-ALLOCATION-READINESS-029
+title: Spatial Canvas governed design identity allocation readiness
+status: READY_FOR_GOVERNANCE_DECISION_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_identity_allocated: false
+screen_identity_allocated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+predecessor_acknowledgement:
+  packet_id: M10-REGISTERED-DESIGN-CORRECTION-CONSENT-CLOSEOUT-028
+  disposition: NOT_APPROVED
+  design_write_authorized: false
+  implementation_authorized: false
+  rule: >-
+    Readiness and sponsor-decision packaging are not consent. The four
+    registered correction successors remain blocked until their individual
+    decisions, named writers, leases, and return evidence are recorded.
+
+task_contract:
+  task_id: M10-SPATIAL-CANVAS-DESIGN-IDENTITY-ALLOCATION-READINESS-029
+  gate: M10 Spatial Canvas design identity governance
+  route: /admin/gis/spatial
+  channel: ADMIN
+  process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06A", "G2-P12"]
+  requirement_basis:
+    transferred_primary_partial: [MVP2-REQ-0072, MVP2-REQ-0233]
+    transferred_contextual_cross_channel: [MVP2-REQ-0075]
+    dedicated_primary_row_in_478_baseline: NONE
+  acceptance_ids:
+    transferred: [MVP2-AC-0072, MVP2-AC-0075, MVP2-AC-0233]
+    special_component: [SPC-GIS-001, SPC-GIS-002, SPC-GIS-003, SPC-GIS-004, SPC-GIS-005, SPC-GIS-006, SPC-GIS-007, SPC-GIS-008]
+    design_family: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-003, WA-M10-AC-004, WA-M10-AC-005, WA-M10-AC-006]
+  engine_ids: [ENG-06, ENG-08, ENG-11, ENG-12]
+  dependencies:
+    - M10-SPATIAL-CANVAS-DESIGN-AUTHORITY-020
+    - M10-ADMIN-GIS-DESIGN-READINESS-015
+    - M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019
+    - DEC-002
+    - DEC-004
+    - MVP3-HOLD-002
+    - governed_design_identity_allocation
+    - governed_screen_identity_and_requirement_ownership_decision
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design or any design file
+    - frozen design, screen, route, requirement, acceptance, or evidence mappings
+    - Spatial Canvas, GIS, Factory 360, Planning, Field, Operations, or shared shell application code
+    - tests, evidence, Supabase, migrations, providers, credentials, environment, seeds, or data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 45c4df47
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-SEQUENCE-011-INTERNAL-PREFLIGHT-012.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027.yaml
+    - product-contract/operationalization/coordination/batches/M10-REGISTERED-DESIGN-CORRECTION-CONSENT-CLOSEOUT-028.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This packet is a read-only governance decision aid. It starts no design or
+    application batch, allocates no identity, and changes no accepted authority.
+
+authority:
+  design_workspace:
+    - design/claude-design-mvp1/00_START_HERE.md
+    - design/claude-design-mvp1/prompts/00_MASTER_DESIGN_CONSTITUTION.md
+    - design/claude-design-mvp1/prompts/systems/GIS_GEOFENCE_AND_ROUTE_DESIGN.md
+    - design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+  route_and_mapping:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv
+  requirements_and_policy:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/governance/decision_register.csv
+    - product-contract/domain/rbac_matrix.csv
+  current_implementation:
+    - apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/loading.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/CreateLayer.tsx
+    - apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+  current_tests:
+    - apps/web/e2e/mvp2-modules-live.spec.ts
+    - apps/web/e2e/mvp2-modules-rls-negative.spec.ts
+    - apps/web/e2e/mvp2-m2-06-spatial.spec.ts
+
+route_and_component_evidence:
+  route_exists: true
+  route: /admin/gis/spatial
+  primary_component: apps/web/src/app/(app)/admin/gis/spatial/page.tsx
+  create_component: apps/web/src/app/(app)/admin/gis/spatial/CreateLayer.tsx
+  server_action: apps/web/src/app/(app)/admin/gis/spatial/actions.ts
+  feature_flag:
+    key: FEATURE_SPATIAL_CANVAS
+    safe_default: "off"
+    off_state: Honest NotYetBoundary with Mapbox held.
+    action_fail_closed: true
+  current_reads:
+    gis_layers: [id, layer_key, label, layer_type, active]
+    factory_locations: [id, factory_id, source, geofence_radius_m]
+  current_write:
+    table: gis_layers
+    fields: [layer_key, label, layer_type, created_by]
+    allowed_layer_types: [base, overlay, boundary, heat, route]
+  current_route_truth:
+    - RLS-scoped layer and bounded working-location reads exist.
+    - A feature-gated additive layer-create seam exists.
+    - Layer label, type, and active state are rendered.
+    - Working-location records are fetched but not rendered.
+    - No map, geometry, layer-order, edit, activation, deletion, version, submission, publication, map-pack, snapshot, or privacy lifecycle is rendered.
+    - Successful create refresh persistence and complete mutation audit are not proven.
+
+catalogue_and_collision_evidence:
+  screen_catalogue:
+    exact_route_row: NONE
+    nearest_row:
+      screen_id: SCR-ADM-070
+      route: /admin/gis
+      screen: GIS & Geofence Settings
+      rule: This row cannot be silently stretched to a second route.
+    code_declared_label:
+      value: CD-045
+      classification: ENGINEERING_MODULE_REFERENCE_NOT_DESIGN_OR_SCREEN_ID
+  design_inventory:
+    registered_design_count: 46
+    registered_ids: WA-DES-001_THROUGH_WA-DES-046_ALL_OCCUPIED
+    exact_route_authority: NONE
+    exact_filename_match: NONE
+    exact_predecessor_fingerprint: NONE
+    consequence: >-
+      This reviewer cannot choose a next number, reuse an occupied number, or
+      transform CD-045 into a design identity. Governance must allocate a
+      collision-checked logical design ID and screen identity through change
+      control.
+  route_inventory:
+    current_design_authority_field: >-
+      Broad seven-file M10 bundle containing Integration Hub, Factory Data,
+      Geofence, SENAI, Execution, Virtual, and Control Panel designs.
+    classification: NON_EXACT_BUNDLE_NOT_SAFE_AS_SPATIAL_AUTHORITY
+  collision_result: NO_EXISTING_EXACT_IDENTITY_AND_NO_FREE_ID_MAY_BE_ASSUMED
+
+predecessor_and_nearest_design_evidence:
+  exact_predecessor:
+    exists: false
+    rule: First governed Spatial Canvas design has no predecessor comparison fingerprint.
+  nearest_design:
+    design_id: WA-DES-006
+    filename: SAQEEL Admin Geofence.dc.html
+    sha256: 39c768e8e3dbe588cc8424306d7eab1c387fd51392bb76d6a78afd8e3bdaf956
+    route: /admin/gis
+    screen_id: SCR-ADM-070
+    relationship: ADJACENT_GIS_FAMILY_REFERENCE_ONLY
+    usable_as_route_authority: false
+    reasons:
+      - WA-DES-006 owns official factory coordinates and geofence-radius administration.
+      - Spatial Canvas has a separate route, feature flag, component tree, layer registry, and create action.
+      - Borrowing WA-DES-006 would merge independent permissions, states, evidence, and revision lineage.
+  pattern_references_not_authority:
+    - design/saqeel/component-source/map/map.card.html
+    - design/saqeel/screens/html/map-command.html
+    - design/saqeel/screens/html/map-command-dark.html
+    - design/saqeel/screens/html/map-command-ar.html
+    - design/astryx/d2/D2-07_risk-gis.html
+  rule: >-
+    Pattern references may inform component grammar only after identity
+    allocation. They do not authorize routes, capabilities, provider claims, or
+    requirement ownership.
+
+identity_recommendation:
+  requires_separate_governed_design_identity: true
+  recommended_classification: NEW_LOGICAL_DESIGN_AUTHORITY
+  proposed_title_only: SAQEEL Spatial Canvas
+  design_id: UNALLOCATED
+  screen_id: UNALLOCATED
+  filename: UNALLOCATED_UNTIL_ID_DECISION
+  allocation_rule: >-
+    Governance must create a collision-checked identity and lineage record.
+    This packet deliberately supplies no candidate number.
+  governed_alternative:
+    classification: WA_DES_006_COMPANION
+    recommendation: NOT_PREFERRED
+    minimum_decision: >-
+      If selected by governance, explicitly name the companion route, filename,
+      independent revision lineage, screen identity, requirements, permissions,
+      acceptance rows, and evidence. It must not replace or broaden WA-DES-006.
+
+capability_boundary:
+  spatial_canvas_owns_when_contractually_approved:
+    - Additive working-layer registry with source, lifecycle truth, visibility scope, and completeness labelling.
+    - Working-location registry with factory identity, coordinate availability, source, sensitivity, and RLS-visible scope.
+    - Governed layer creation limited to the proven fields and allowlisted layer types.
+    - Map/list synchronized selection only after the provider contract is approved.
+    - Honest held states for map provider, offline packs, privacy, visibility, snapshots, and unresolved policy.
+  adjacent_gis_studio_owns:
+    route: /admin/gis
+    capabilities:
+      - Official factory coordinate display and immutability.
+      - Geofence-radius administration and record-supplied GIS engine settings.
+      - Factory search, region/risk filters, and official-pin registry.
+  explicitly_excluded:
+    - Editing, replacing, reverting, reconciling, or publishing official factory coordinates.
+    - Inventing a layer edit, activation, deletion, ordering, version, submit, approve, or publish lifecycle.
+    - Field tracking, check-in, override, GPS evidence, route navigation, or offline field execution.
+    - Factory 360 dossier editing, Planning, Operations, risk, compliance, or enforcement actions.
+    - Mapbox health, tile, style, route, offline-pack, or geographic-authority claims while held.
+    - Numeric geofence, GPS accuracy, arrival, telemetry, retention, privacy, or visibility policy.
+    - Treating a map as legal evidence or seed data as proof of provider, policy, permission, audit, or lifecycle completion.
+
+requirement_ownership:
+  source_478:
+    exact_primary_rows: NONE
+    contextual_only:
+      location_authority: [CR-037, CR-038, CR-046, CR-117, CR-154, CR-157, CR-414]
+      map_and_navigation: [CR-091, CR-101, CR-129, CR-130, CR-137, CR-138, CR-431]
+      gps_and_geofence: [CR-123, CR-124, CR-135, CR-136, CR-140, CR-144, CR-145, "CR-150..CR-162"]
+      override_and_audit: [CR-160, CR-161, CR-173, CR-174, CR-442, CR-443]
+    rule: Do not claim all 478 requirements against this route or double-count contextual ownership.
+  transferred_rows:
+    - requirement_id: MVP2-REQ-0072
+      fit: PRIMARY_PARTIAL
+      boundary: Spatial layers are relevant; official pins remain GIS Studio-owned and offline/privacy are held.
+    - requirement_id: MVP2-REQ-0075
+      fit: CONTEXTUAL_CROSS_CHANNEL
+      boundary: Field route, check-in, geotagged evidence, and offline behavior cannot be completed here.
+    - requirement_id: MVP2-REQ-0233
+      fit: PRIMARY_PARTIAL
+      boundary: Governed GIS evidence is relevant; accuracy, exceptions, snapshots, and offline maps remain unproven or held.
+  source_code_claim:
+    value: MVP2-REQ-0087_THROUGH_0108
+    status: REQUIRES_REGISTER_RECONCILIATION
+    rule: Preserve as code provenance only; do not convert it to canonical ownership without the exact source register.
+
+provider_policy_and_permission_stops:
+  - id: DEC-002
+    status: OPEN
+    effect: No accuracy, radius, geofence, or telemetry value may be invented or published.
+  - id: DEC-004
+    status: OPEN
+    effect: Arabic scope may not be assumed; design acceptance requires a recorded locale decision and qualified review.
+  - id: MVP3-HOLD-002
+    status: OPEN
+    missing: [runtime token, approved map style, geographic authority, offline-pack policy]
+    fail_closed: Non-map registry and coordinate evidence remain usable; map actions report dependency unavailable.
+  - id: ROUTE_CAPABILITY_GUARD
+    status: NOT_EVIDENCED
+    effect: Authentication plus RLS is not proof of an explicit route/action capability contract.
+  - id: MUTATION_AUDIT_AND_CONFLICT
+    status: NOT_EVIDENCED
+    effect: No audited, versioned, stale-safe layer lifecycle may be claimed.
+
+required_design_state_matrix:
+  access_and_feature:
+    - FEATURE_OFF
+    - AUTHORIZED
+    - UNAUTHORIZED_DIRECT_ROUTE
+    - SESSION_EXPIRED
+    - RLS_EMPTY_OR_ZERO_DISCLOSURE
+  data:
+    - LOADING
+    - EMPTY_AUTHORIZED
+    - POPULATED_LAYERS
+    - POPULATED_WORKING_LOCATIONS
+    - POPULATED_BOTH
+    - LAYER_READ_ERROR
+    - LOCATION_READ_ERROR
+    - BOTH_READ_ERROR
+    - COMPLETENESS_UNKNOWN
+  layer_create:
+    - INVALID_CREATE
+    - CREATE_PENDING
+    - CREATE_SUCCESS_PERSISTED_AFTER_REFRESH
+    - CREATE_RLS_DENIED_NO_CHANGE
+    - CREATE_DUPLICATE_KEY_NO_CHANGE
+    - CREATE_FAILURE_INPUT_PRESERVED
+    - STALE_OR_CONFLICT_BLOCKED
+  provider_and_policy:
+    - PROVIDER_HELD
+    - PROVIDER_UNAVAILABLE
+    - OFFLINE_PACK_POLICY_HELD
+    - PRIVACY_POLICY_HELD
+    - VISIBILITY_POLICY_HELD
+    - POLICY_UNRESOLVED
+  truth_rule: >-
+    A state may be designed as required behavior or an honest unavailable
+    boundary, but may not be labelled implemented without runtime evidence.
+
+responsive_language_theme_accessibility:
+  viewports:
+    - viewport: 1440x900
+      expectation: Persistent Admin shell; bounded registry and optional map region without page-level horizontal overflow.
+    - viewport: 1200x840
+      expectation: Desktop evidence baseline with complete task and state visibility.
+    - viewport: 1024x768
+      expectation: Stacked map and registries with no clipped controls or hanging side rail.
+    - viewport: 768x1024
+      expectation: Registry-first tablet layout that remains usable without pointer map interaction.
+    - viewport: 412x915
+      expectation: Single-column task order, no peeking submenu icons, complete create and recovery actions.
+    - viewport: 390x844
+      expectation: Error, held-provider, selection, and form parity without two-dimensional scroll.
+    - viewport: 320x568
+      expectation: No task loss, overlap, clipping, or hidden status/action.
+  locales:
+    - locale: en
+      direction: ltr
+    - locale: ar
+      direction: rtl
+  bidi_rules:
+    - Use logical properties and mirror structural direction.
+    - Keep coordinates, layer keys, factory codes, versions, and technical identifiers LTR.
+    - Localize headings, states, filters, actions, validation, denials, provider messages, and recovery.
+    - Require qualified native-Arabic review before acceptance.
+  themes: [light, dark]
+  theme_proof:
+    - Shell, registry, form, map controls, popup, legend, attribution, focus, errors, disabled text, and held states.
+    - Selection and lifecycle status must not depend on color alone.
+  accessibility:
+    - One h1 with ordered semantic headings and landmarks.
+    - Programmatic labels, hints, errors, status announcements, and preserved input on failure.
+    - Real button/link semantics for selectable records and actions.
+    - Synchronized keyboard and nonvisual list equivalent for every map marker.
+    - Visible single focus treatment and logical LTR/RTL tab order.
+    - Forty-four-pixel minimum action targets.
+    - Required provider attribution remains visible and operable.
+    - Reduced motion removes fly-to, animated fitting, pulsing, and motion-only selection.
+    - Prove 200 percent zoom and 400 percent or 320 CSS-pixel equivalent reflow.
+
+p0_return_gates:
+  - id: P0-IDENTITY-ALLOCATION
+    return_if: A design or screen ID is invented, reused, inferred, or allocated outside governance change control.
+  - id: P0-ROUTE-OWNERSHIP
+    return_if: WA-DES-006 or SCR-ADM-070 is silently stretched from /admin/gis to /admin/gis/spatial.
+  - id: P0-REQUIREMENT-OWNERSHIP
+    return_if: All 478 rows, CD-045, or MVP2-REQ-0087..0108 are claimed as canonical route ownership without reconciliation.
+  - id: P0-CAPABILITY
+    return_if: Official-pin, GIS Studio, Field, Factory 360, Planning, Operations, risk, compliance, or enforcement behavior is absorbed.
+  - id: P0-INVENTED-LIFECYCLE
+    return_if: Edit, activate, delete, order, version, submit, approve, publish, retry, or reconcile behavior is shown without a contract.
+  - id: P0-POLICY
+    return_if: Any geofence, accuracy, arrival, telemetry, privacy, retention, or visibility value is invented.
+  - id: P0-PROVIDER
+    return_if: Mapbox, geographic authority, map style, map tiles, offline pack, or route behavior is presented as operational while held.
+  - id: P0-AUTHORIZATION
+    return_if: Menu visibility, authentication, or optimistic UI is presented as route/action authority.
+  - id: P0-CONFIDENTIALITY
+    return_if: Denied users can see sensitive locations, layer detail, policy, or create controls.
+  - id: P0-AUDIT
+    return_if: A mutation is labelled audited without actor, object, before/after, timestamp, and immutable record evidence.
+  - id: P0-CONFLICT
+    return_if: Silent overwrite is allowed or stale-write prevention is presented as implemented without proof.
+  - id: P0-COMPLETENESS
+    return_if: A bounded or RLS-scoped read is presented as complete without total and pagination evidence.
+  - id: P0-MAP-EVIDENCE
+    return_if: A map, centroid, circle, fixture, or seed record is presented as legal or source-authoritative evidence.
+  - id: P0-IMPLEMENTATION-CLAIM
+    return_if: The design, current heading, layer create, or screenshots are used to claim end-to-end implementation completion.
+
+p1_return_gates:
+  - id: P1-STATE-COVERAGE
+    return_if: Any required access, data, create, provider, policy, failure, or recovery state is missing.
+  - id: P1-MAP-LIST-EQUIVALENCE
+    return_if: A marker lacks synchronized semantic registry selection or working locations remain invisible.
+  - id: P1-RESPONSIVE
+    return_if: Any required viewport clips, overlaps, hides tasks, hangs the shell, peeks submenu icons, or scrolls the page in two dimensions.
+  - id: P1-ARABIC-RTL
+    return_if: Arabic is untranslated, unreviewed, directionally broken, or reverses technical identifiers.
+  - id: P1-THEME
+    return_if: Light/dark contrast or state parity fails in shell, registry, form, map, popup, legend, attribution, focus, or error surfaces.
+  - id: P1-ACCESSIBILITY
+    return_if: Labels, headings, landmarks, focus, target size, keyboard operation, announcements, map alternative, or attribution is missing.
+  - id: P1-MOTION-ZOOM
+    return_if: Reduced-motion or 200/400 percent zoom evidence is missing or causes task loss.
+  - id: P1-EVIDENCE-PACK
+    return_if: Identity decision, inventory collision proof, component annotations, state index, limitations, visual matrix, and new export fingerprint are incomplete.
+
+sponsor_and_governance_decisions:
+  - decision_id: SD-029-01
+    owner: GOVERNANCE
+    status: PENDING
+    question: >-
+      Approve a new logical design authority for /admin/gis/spatial, or
+      explicitly govern it as an independently versioned WA-DES-006 companion?
+    recommendation: NEW_LOGICAL_DESIGN_AUTHORITY
+  - decision_id: SD-029-02
+    owner: GOVERNANCE
+    status: PENDING
+    question: Allocate a collision-checked design ID and exact output filename.
+    constraint: WA-DES-001 through WA-DES-046 are occupied; this packet proposes no number.
+  - decision_id: SD-029-03
+    owner: GOVERNANCE
+    status: PENDING
+    question: Allocate or reconcile the route's governed screen identity and exact requirement ownership.
+    constraint: CD-045 is not a screen ID; no dedicated primary row exists in the 478 baseline.
+  - decision_id: SD-029-04
+    owner: SPONSOR
+    status: PENDING
+    question: Accept the bounded capability split between GIS Studio and Spatial Canvas.
+    recommendation: >-
+      Spatial Canvas owns additive working layers and working-location context;
+      GIS Studio retains official coordinates and geofence-radius administration.
+  - decision_id: SD-029-05
+    owner: SPONSOR_GOVERNANCE
+    status: PENDING
+    question: >-
+      Confirm FEATURE_SPATIAL_CANVAS remains fail-closed for completion claims
+      and provider/policy-held states remain explicit.
+    recommendation: KEEP_FAIL_CLOSED
+  - decision_id: SD-029-06
+    owner: SPONSOR
+    status: PENDING
+    question: Approve one named Claude Design writer only after SD-029-01 through SD-029-05 are recorded.
+    constraint: Design consent is not implementation, mapping, provider, policy, or release authority.
+
+safe_design_lease_sequence:
+  current_state: NOT_ISSUED
+  steps:
+    - order: 1
+      owner: GOVERNANCE
+      action: Record SD-029-01 through SD-029-03 and update the governed identity/ownership registers under authorized change control.
+    - order: 2
+      owner: SPONSOR_GOVERNANCE
+      action: Record SD-029-04 and SD-029-05; preserve DEC-002, DEC-004, and MVP3-HOLD-002 as explicit blocks.
+    - order: 3
+      owner: ORCHESTRATOR
+      action: Re-run design ID, filename, route, screen, writer, and concurrent-file collision checks.
+    - order: 4
+      owner: SPONSOR
+      action: Name exactly one Claude Design writer and issue one bounded design-only lease for the allocated artifact.
+    - order: 5
+      owner: NAMED_DESIGNER
+      action: Produce the first governed design and full state/evidence pack without altering WA-DES-006 or implying held behavior.
+    - order: 6
+      owner: INDEPENDENT_REVIEWER
+      action: Verify export fingerprint, route/capability boundary, state coverage, responsive/Arabic/theme/accessibility evidence, and every P0/P1 return gate.
+    - order: 7
+      owner: SPONSOR
+      action: Accept, return, or reject the design. Any later implementation lease is separate.
+  parallelism_rule: >-
+    No Spatial Canvas design writer may run in parallel with another writer
+    touching the same Admin GIS shell, map grammar, or allocated output file.
+
+browser_evidence_prerequisites:
+  design_review:
+    - Fixed-viewport captures for every required viewport in light/dark and EN/AR where scope is approved.
+    - Keyboard-only recording for registry, create, errors, retry, and any map/list synchronization.
+    - Provider-held, feature-off, RLS-empty, per-source failure, invalid, denial, duplicate, persistence, and conflict frames.
+    - Accessibility and reduced-motion annotations plus export fingerprint and state index.
+  later_application_review_not_authorized_here:
+    - Real route guard and direct-action denial with zero location disclosure.
+    - Layer create refresh persistence, duplicate no-change, failure input preservation, and immutable audit evidence.
+    - Working-location visibility, source accuracy, bounded-count truth, and per-source failures.
+    - Provider failure with complete non-map fallback; no invented policy.
+    - EN/AR RTL, light/dark, all viewports, keyboard, zoom, target size, focus, and reduced-motion runtime proof.
+  truth_rule: >-
+    Claude Design screenshots prove appearance only. They do not prove runtime
+    wiring, authorization, RLS, persistence, audit, provider readiness, policy,
+    data completeness, or application implementation.
+
+reviewer_conclusion:
+  separate_governed_design_identity_required: true
+  identity_allocated: false
+  exact_design_match: false
+  nearest_design: WA-DES-006
+  nearest_design_authoritative_for_route: false
+  codex_validation: NO_DESIGN_MATCH
+  recommended_action: CHANGE_DESIGN
+  recommendation: BLOCK_DUE_TO_MISSING_GOVERNED_IDENTITY_AND_CONTRACT
+  completion_claim: NOT_ALLOWED
+
+safe_follow_on:
+  packet_id: M10-ADMIN-OPERATIONS-DESIGN-IDENTITY-ALLOCATION-READINESS-030
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  route: /admin/operations
+  objective: >-
+    Determine the exact governed identity decision for the separate Admin
+    Platform Operations route using its current route, code, inventory, and
+    nearest-design evidence without allocating an ID or starting design work.
+  non_overlap:
+    - No Spatial Canvas or GIS design, mapping, code, test, data, provider, or lease work.
+    - No branch, main, setup/Inspection, or stash mutation.

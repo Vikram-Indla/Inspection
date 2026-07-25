@@ -1,0 +1,98 @@
+schema_version: "1.0"
+certificate_id: KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029
+certificate_type: PASS_OR_RETURN_DISPATCH_INTEGRITY
+verdict: PASS
+status: PASS_LOCKED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+subject:
+  packet: KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028
+  sha256: 2d613f96665f16584b4825d19e08c7e8019d78236be6ed34731392f64156d1f5
+
+authority_checked:
+  - KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  - KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  - KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  - KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+
+integrity_results:
+  source_fingerprints:
+    verdict: PASS
+    checked: 10
+    detail:
+      - "All six source packet SHA-256 values match current 010/011/013/014/015/017 bytes."
+      - "All four authority SHA-256 values match current 022/024/026/027 bytes."
+      - "Dispatch gate requires a fresh comparison after manual unlock and immediately before dispatch."
+  corrected_yaml_delimiters:
+    verdict: PASS
+    packet_count: 6
+    detail:
+      - "010, 011, 014, 013, 015 and 017 each have exactly one begin and one end delimiter in the future chat message."
+      - "Every begin delimiter precedes its matching end delimiter."
+      - "The six response envelopes occur in the declared order."
+      - "The response-manifest envelope occurs after all six packet envelopes."
+  response_manifest:
+    verdict: PASS
+    detail:
+      - "All required top-level manifest fields are declared."
+      - "No-write, no-implementation, no-lease and no-review-025 values are explicitly required false."
+      - "All six packet result fields, closure-matrix columns and allowed blocked/closed statuses match 026."
+      - "The manifest requires source acknowledgements, unresolved blockers, all collision-stop acknowledgements and self-validation."
+  collision_stops:
+    verdict: PASS
+    count: 16
+    detail:
+      - "All 16 stops from 027 are preserved without weakening."
+      - "Lease overlap, Kimi read-only, predecessor acceptance/release, duplicate ownership, OTP succession, safe audit ordering, switch/quiesce, unknown audit consumers, unresolved security identity, persona authority, provider status, CR-337/DEC-005 isolation and premature 025 execution are all covered."
+  codex_gates:
+    verdict: PASS
+    count: 5
+    detail:
+      - "Gate 1 covers manual unlock, Kimi identity, fresh fingerprints and chat-only acknowledgement."
+      - "Gate 2 covers delimiter uniqueness/order, complete parseable YAML and stable packet IDs."
+      - "Gate 3 covers 026 assignment closure, blocker preservation, 013→015 succession and all 16 stops."
+      - "Gate 4 covers fresh lease review and Codex-only coordination materialization with no product writes."
+      - "Gate 5 keeps review 025 blocked until six actual corrected packets and manifests exist."
+  authority_alignment:
+    verdict: PASS
+    detail:
+      - "022 MIGSEC/addendum security authority is not weakened."
+      - "024 contradictions X01 through X06 remain assigned to the six corresponding packets."
+      - "026 primary ownership, proposed-not-issued leases, acceptance gates and stop conditions remain binding."
+      - "027 chat-only return mode, sequential application/database ownership and 013→015 no-traffic successor remain binding."
+
+dispatch_decision:
+  package_integrity: PASS
+  dispatch_now: BLOCKED
+  blocked_by:
+    - MANUAL_MAC_UNLOCK
+    - EXISTING_KIMI_CONVERSATION_CONFIRMATION
+    - FRESH_PRE_DISPATCH_FINGERPRINT_RECHECK
+  leases_issued: false
+  review_025_executed: false
+  source_packets_changed: false
+  requirement_completion_change: 0
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+certificate_rule: >-
+  PASS certifies only that package 028 is internally complete and aligned for
+  future chat-only dispatch after its dispatch guards pass. It does not
+  authorize repository writes, implementation, lease issuance, review 025 or
+  requirement completion.
+
+validation:
+  yaml_parse: PASS
+  package_structural_audit: PASS
+  source_hash_recheck: PASS
+  delimiter_count_and_order: PASS
+  manifest_contract: PASS
+  collision_stop_parity: PASS
+  codex_gate_count_and_scope: PASS
+  locked_no_dispatch_boundary: PASS
