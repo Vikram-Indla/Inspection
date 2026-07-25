@@ -31,7 +31,15 @@
 }
 
 .count { font-size: 13px; color: var(--text-secondary); }
-.countFailed { color: var(--status-warning-text); }
+
+.warning {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.45;
+  background: var(--status-warning-soft);
+  color: var(--status-warning-text);
+}
 
 .gate {
   display: flex;
