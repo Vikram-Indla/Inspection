@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import FieldHeaderSync from "@/components/field/FieldHeaderSync";
 import FieldHome, { type FieldHomeMarker } from "@/components/field/FieldHome";
@@ -89,15 +88,6 @@ export default async function Field() {
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const nav = (
-    <FieldNav active="home" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
 
   const [profileRead, assignmentRead, notificationRead, dailyBriefing] = await Promise.all([
     sb.from("profiles").select("full_name, region").eq("user_id", user.id).maybeSingle(),
@@ -120,7 +110,6 @@ export default async function Field() {
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
           </div>
         </div>
-        {nav}
       </>
     );
   }
@@ -554,7 +543,6 @@ export default async function Field() {
           .field-nav-spacer (56px / 60px ≥834px, + safe-area). The design's
           static 58px div here is now a duplicate that stacked a second gap
           under the content. */}
-      {nav}
     </>
   );
 }

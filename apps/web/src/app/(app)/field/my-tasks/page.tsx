@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import FieldLocationMap from "@/components/field/FieldLocationMap";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -91,16 +90,6 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
   const text = (value: string | number | null | undefined) => (value == null || value === "" ? "—" : String(value));
   const label = (value: string | null | undefined) => (value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—");
-
-  const nav = (
-    <FieldNav active="myTasks" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
 
@@ -128,7 +117,6 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
             {t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}
           </div>
         </div>
-        {nav}
       </>
     );
   }
@@ -558,7 +546,6 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
       {/* No local nav spacer: FieldNav is position:fixed and renders its own
           .field-nav-spacer. Keeping the design's static 58px div here shrank
           the master/detail grid and floated the action bar above the tab bar. */}
-      {nav}
     </>
   );
 }

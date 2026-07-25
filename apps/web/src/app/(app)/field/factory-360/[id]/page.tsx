@@ -1,5 +1,4 @@
 import Link from "next/link";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Factory360ExportButton from "@/app/(app)/factories/cr/[id]/Factory360ExportButton";
@@ -42,15 +41,6 @@ export default async function FieldFactory360({ params, searchParams }: {
   const tr = (key: string, en: string, ar: string) => (locale === "ar" ? ar : t(key, en));
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const nav = (
-    <FieldNav active="myTasks" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
   // Back-arrow respects the existing `return` param (only in-field returns are
   // honoured) and otherwise falls back to the task list this screen is reached
   // from. safeReturn is also reused by the sticky "Return to visit" action.
@@ -77,7 +67,6 @@ export default async function FieldFactory360({ params, searchParams }: {
         </div>
       </div>
       <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      {nav}
     </>
   );
 
@@ -93,7 +82,6 @@ export default async function FieldFactory360({ params, searchParams }: {
         </div>
       </div>
       <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      {nav}
     </>
   );
 
@@ -386,7 +374,6 @@ export default async function FieldFactory360({ params, searchParams }: {
         </div>
       </div>
       <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      {nav}
     </>
   );
 }

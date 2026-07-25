@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -148,13 +147,6 @@ export default async function FieldAccountPage() {
 
       {/* No spacer here: FieldNav renders its own .field-nav-spacer, sized from
           the real bar height + safe-area inset. A second one double-counted it. */}
-      <FieldNav active="account" labels={{
-        home: tr("field.tabs.home", "Home", "الرئيسية"),
-        myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-        establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-        notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-        account: tr("field.tabs.account", "Account", "الحساب"),
-      }} />
     </>
   );
 }

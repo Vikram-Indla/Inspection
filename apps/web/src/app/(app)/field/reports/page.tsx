@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import FieldHeader from "@/components/field/FieldHeader";
-import FieldNav from "@/components/field/FieldNav";
 import { formatDate } from "@/lib/dates";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
@@ -80,15 +79,6 @@ export default async function FieldReportsPage() {
       </svg>
     </Link>
   );
-  const nav = (
-    <FieldNav active="home" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
 
   return (
     <>
@@ -165,7 +155,6 @@ export default async function FieldReportsPage() {
         )}
       </main>
       <div aria-hidden="true" className={styles.navSpace} />
-      {nav}
     </>
   );
 }

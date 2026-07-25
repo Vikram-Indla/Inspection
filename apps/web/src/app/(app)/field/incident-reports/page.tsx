@@ -1,5 +1,4 @@
 import Link from "next/link";
-import FieldNav from "@/components/field/FieldNav";
 import FieldHeader from "@/components/field/FieldHeader";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
@@ -118,15 +117,6 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
 
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
-  const nav = (
-    <FieldNav active="home" labels={{
-      home: tr("field.tabs.home", "Home", "الرئيسية"),
-      myTasks: tr("field.tabs.myTasks", "My Tasks", "مهامي"),
-      establishments: tr("field.tabs.establishments", "Establishments", "المنشآت"),
-      notifications: tr("field.tabs.notifications", "Notifications", "الإشعارات"),
-      account: tr("field.tabs.account", "Account", "الحساب"),
-    }} />
-  );
   const back = (
     <Link href="/field" prefetch={false} className="btn btn-icon btn-ghost"
       aria-label={tr("common.back", "Back", "رجوع")}>
@@ -223,7 +213,6 @@ export default async function FieldIncidentReportsPage({ searchParams }: { searc
         )}
       </div>
       <div aria-hidden="true" style={{ height: 58, flex: "none" }} />
-      {nav}
     </>
   );
 }

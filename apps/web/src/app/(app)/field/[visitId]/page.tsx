@@ -39,7 +39,10 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   if (authError || !user) redirect("/login");
   // SAQEEL field chrome — the global <Shell> is replaced by the shared
   // <FieldHeader> (back arrow + language + theme). This is a focused execution
-  // screen, so like the design it carries no bottom <FieldNav>.
+  // screen. It previously carried no bottom bar on the claim that the design
+  // omits one — the design does not: SAQEEL PWA-Field Execution Shell,
+  // Inspection Form and Preparation all load pwa-tabbar.js. Only the pre-auth
+  // Login screen omits it. The bar now comes from the field layout.
   const tr = (k: string, en: string, ar: string) => (locale === "ar" ? ar : t(k, en));
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
