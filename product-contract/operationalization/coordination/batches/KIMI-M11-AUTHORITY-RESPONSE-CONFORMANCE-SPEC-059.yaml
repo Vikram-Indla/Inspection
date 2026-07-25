@@ -1,0 +1,208 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUTHORITY-RESPONSE-CONFORMANCE-SPEC-059
+status: READ_ONLY_CONFORMANCE_SPEC_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Define deterministic ACK, RETURN and BLOCK validation for any future M11
+  authority response while preserving the independently audited floor and
+  preventing a response from being mistaken for an active implementation or
+  QA lease.
+
+authority:
+  decision_brief: KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057
+  preservation_audit: KIMI-M11-PRESERVATION-FLOOR-INDEPENDENT-AUDIT-058
+  preservation_audit_sha256: ed88c87b7c94fbb80d2088f7a471bc92a9846f76940f3c2938320902e2d067f3
+
+hard_boundary:
+  - "Specification only; no authority response exists or is inferred here."
+  - "No owner selection, lease issuance, queue/slice/shared-control mutation, implementation, test execution, SQL, data, design, branch or stash mutation."
+  - "No requirement credit."
+
+allowed_options:
+  - EXECUTION_TASK_ABSORBS_M11
+  - M11_CHAIN_OWNS_VIRTUAL
+  - KEEP_BOTH_BLOCKED
+
+response_schema:
+  always_required:
+    - selected_option
+    - decision_authority_identity
+    - decision_timestamp
+    - preserved_contract_ack
+    - preserved_requirement_range
+    - preserved_requirement_count
+    - preserved_test_case_count
+    - preserved_unique_test_case_count
+    - preserved_proof_cluster_count
+    - preserved_QA_path_count
+    - preserved_unique_QA_path_count
+    - preserved_blocker_count
+    - unresolved_blockers
+    - requirement_credit
+  required_when_implementation_option_selected:
+    - change_control_id
+    - implementation_owner
+    - independent_QA_owner
+    - exact_lease_record
+  exact_lease_record_fields:
+    - task_id
+    - named_owner
+    - repository
+    - worktree
+    - branch
+    - exact_application_paths
+    - exact_test_paths
+    - exact_database_objects
+    - migration_allocation_rule
+    - predecessor_commit
+    - baseline_hash
+    - start_time
+    - expiry_or_release_condition
+    - independent_reviewer
+    - prohibited_paths
+    - collision_stop_conditions
+
+preservation_assertions:
+  preserved_contract_ack: true
+  preserved_requirement_range: CR-337..CR-356
+  preserved_requirement_count: 20
+  preserved_test_case_count: 361
+  preserved_unique_test_case_count: 361
+  preserved_proof_cluster_count: 18
+  preserved_QA_path_count: 9
+  preserved_unique_QA_path_count: 9
+  preserved_blocker_count: 12
+  requirement_credit_before_runtime_certification: 0
+  waived_or_deleted_requirements: 0
+  waived_or_deleted_test_cases: 0
+  waived_or_deleted_QA_paths: 0
+
+validation_order:
+  - order: 1
+    check: RESPONSE_PROVENANCE
+    rule: "Decision authority identity and timestamp must be explicit; never infer them from queue text, chat role or branch name."
+  - order: 2
+    check: OPTION_ENUM
+    rule: "selected_option must equal one allowed option."
+  - order: 3
+    check: PRESERVATION_FLOOR
+    rule: "Every preservation assertion must match exactly; unresolved blockers must retain every blocker not proven closed."
+  - order: 4
+    check: OPTION_CONDITIONS
+    rule: "Implementation options require change control, separate implementation/QA owners and a complete exact lease record."
+  - order: 5
+    check: COLLISION
+    rule: "Re-read the live lease registry; reject overlapping paths, objects, functions, migrations or QA paths."
+  - order: 6
+    check: SHARED_CONTROL_MATERIALIZATION
+    rule: "A conformant response is not executable until an authorized writer records the exact active lease and accepted change control in shared controls."
+  - order: 7
+    check: RUNTIME_CREDIT
+    rule: "Credit remains zero until runtime, negative, audit, regression and evidence gates pass."
+
+verdict_rules:
+  ACK:
+    exact_result: ACK_DECISION_RESPONSE_CONFORMANT_NOT_YET_EXECUTABLE
+    all_required:
+      - "Provenance and option are valid."
+      - "The 20/361/18/9/12 floor matches exactly with zero waiver/deletion."
+      - "Option-specific fields are complete."
+      - "Implementation and QA owners are independent."
+      - "All 16 exact lease fields are complete when applicable."
+      - "No live collision is found."
+      - "Requirement credit is zero."
+    effect:
+      - "Response may proceed to authorized shared-control materialization."
+      - "No implementation or QA authority is granted by the ACK itself."
+  RETURN:
+    exact_result: RETURN_FOR_CORRECTABLE_RESPONSE_GAP
+    triggers:
+      - "Missing or malformed response field."
+      - "Implementation option omits change control, owner separation or an exact lease field."
+      - "Preserved contract acknowledgement or unresolved-blocker list is omitted."
+      - "Choice wording is ambiguous but does not yet waive or mutate coverage."
+    effect:
+      - "Return to decision authority for correction; retain all blocks."
+  BLOCK:
+    exact_result: BLOCK_DUE_TO_AUTHORITY_COVERAGE_OR_COLLISION_VIOLATION
+    triggers:
+      - "Any requirement, case, cluster, QA path or blocker count is reduced."
+      - "Any requirement, test or QA path is waived, deleted or silently absorbed."
+      - "The same actor is assigned active implementation and independent QA authority."
+      - "Any exact path/object/function/migration collision exists."
+      - "A write began before exact active lease materialization."
+      - "Decision authority is absent, unauthorized or inferred."
+      - "Requirement credit exceeds zero before full certification."
+    effect:
+      - "Reject the response and stop implementation/QA."
+
+KEEP_BOTH_BLOCKED_rule:
+  required:
+    - "All always-required response fields."
+    - "Exact 20/361/18/9/12 preservation."
+    - "Requirement credit zero."
+  not_required:
+    - change_control_id
+    - implementation_owner
+    - independent_QA_owner
+    - exact_lease_record
+  effect: "Retain current read-only authority and every blocker."
+
+implementation_option_rule:
+  applies_to: [EXECUTION_TASK_ABSORBS_M11, M11_CHAIN_OWNS_VIRTUAL]
+  additional_required:
+    - "Accepted change-control identifier."
+    - "One implementation owner."
+    - "A different independent QA owner."
+    - "Complete exact lease record with all 16 fields."
+    - "Fresh collision-free active lease registry validation."
+  executable_only_after:
+    - "Authorized shared-control writer materializes the accepted decision and exact lease."
+    - "The active lease registry can be re-read and matches the response."
+    - "Every prerequisite blocker for the leased step is proven closed."
+
+current_result:
+  verdict: ACK
+  exact_reason: ACK_CONFORMANCE_SPEC_COMPLETE
+  authority_response_observed: false
+  implementation_authority: BLOCKED
+  QA_authority: BLOCKED
+  requirement_credit: 0
+  leases_issued: 0
+
+queued_next:
+  packet: KIMI-M11-AUTHORITY-RESPONSE-VALIDATOR-060
+  state: QUEUED_SAFE_READ_ONLY_TRIGGER_OR_FALLBACK
+  primary_trigger: "An explicit authority response or shared-control change is observed."
+  fallback_if_no_trigger: >-
+    Independently build the exact live-collision recheck checklist and
+    materialization-order audit without waiting or changing shared controls.
+  prohibited:
+    - "No response inference, owner selection, lease issuance, shared-control mutation, implementation, QA execution or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  allowed_options: 3
+  always_required_fields: 14
+  implementation_required_fields: 4
+  exact_lease_fields: 16
+  verdict_classes: 3
+  preservation_requirements: 20
+  preservation_test_cases: 361
+  preservation_proof_clusters: 18
+  preservation_QA_paths: 9
+  preservation_blockers: 12
+  credit_granted: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS
