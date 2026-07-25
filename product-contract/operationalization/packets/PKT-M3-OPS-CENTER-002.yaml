@@ -1,0 +1,143 @@
+schema_version: "1.0"
+packet_id: "PKT-M3-OPS-CENTER-002"
+authored_by: "ChatGPT"
+planning_lane: "gpt-w1"
+status: "QUEUED_NO_LEASE"
+queue_position: 2
+predecessor: "PKT-M3-OPS-LIVE-001"
+module: "M3 Operations Center and Live Operations"
+vertical_slice: "Authorized Operations user opens Operations Center, sees source-backed visit lifecycle and bounded drilldowns, and retains a usable partial dashboard when one source fails."
+
+contract_anchor:
+  repository: "Vikram-Indla/Inspection"
+  branch: "codex/saqeel-v3-contract-reset"
+  baseline_commit: "8ec751ad21f64d0764cd048f486879fc213f677c"
+  requirement_ids: ["CR-430", "CR-432", "CR-437", "CR-438", "CR-447", "CR-448"]
+  screen_ids: ["SCR-WEB-500", "WA-DES-033"]
+  engine_ids: ["G2-P12", "MOD-16", "WA-MIG-047"]
+  acceptance_ids:
+    - "WA-AC-0430"
+    - "WA-AC-0432"
+    - "WA-AC-0437"
+    - "WA-AC-0438"
+    - "WA-AC-0447"
+    - "WA-AC-0448"
+    - "WA-M3-AC-001..006"
+    - "WA-SHELL-AC-008"
+    - "WA-SHELL-AC-009"
+    - "WA-SHELL-AC-017"
+  evidence_ids: ["WA-EV-0430", "WA-EV-0432", "WA-EV-0437", "WA-EV-0438", "WA-EV-0447", "WA-EV-0448", "WA-M3-EV-001..006"]
+  route: "/operations"
+  design_authority: "SAQEEL Operations Center.dc.html"
+  reference_viewport: "1440x900"
+
+business_scope:
+  persona: "Operations user"
+  outcome: >
+    Show correct source-backed visit operational states, monitoring-only access by
+    default, and authorized read-only handoffs to Visit Detail and Factory 360;
+    isolate source failures so one failed widget does not break Operations Center.
+  required_interactions:
+    - "Open Operations Center and switch between its primary map and national performance views."
+    - "Filter and open a visit while preserving operational-state versus workflow-status semantics."
+    - "Open Factory 360 only when the existing Factory 360 permission boundary authorizes it."
+    - "Retry a failed widget while healthy widgets remain usable."
+  required_states: ["loading", "populated", "empty", "unauthorized", "partial-source error", "degraded", "stale/conflict", "provider unavailable"]
+  delivery_matrix:
+    locales: ["EN/LTR", "AR/RTL"]
+    themes: ["light", "dark"]
+    viewports: ["1440x900", "1024x768", "412x915", "390x844", "320x800 reflow"]
+    accessibility: "Keyboard navigation, visible focus, semantic labels, non-colour state cues and applicable WCAG checks."
+
+wiring_contract:
+  real_services:
+    - "Existing authenticated Supabase server reads and execution-state contracts for visits, inspections, factories and bounded widget sources."
+    - "Existing verified-user and role/region permission enforcement."
+    - "Existing Visit Detail and Factory 360 route contracts; no duplicate authorization logic."
+  rls_rbac:
+    - "Positive Operations role within authorized scope."
+    - "Negative role, unauthorized entity and unauthorized region tests."
+    - "Monitoring remains read-only unless an existing action permission explicitly authorizes a bounded action."
+  audit:
+    - "No new mutation is introduced. Existing audited handoffs and immutable evidence/history remain unchanged and regression tested."
+  truth_rules:
+    - "Operational state remains distinct from workflow status."
+    - "No KPI, SLA, risk threshold, alert rule or policy value may be invented in this slice."
+    - "One failed source degrades only its widget and exposes retry/error truth."
+
+write_lease:
+  requested_owner: "cc-w1"
+  module: "M3"
+  lease_state: "NONE_WHILE_QUEUED"
+  activation_rule: "Codex may consider a lease only after PKT-M3-OPS-LIVE-001 is ACKed or formally returned/released; the one-lease-per-module rule is absolute."
+  allowed_paths:
+    - "apps/web/src/app/(app)/operations/page.tsx"
+    - "apps/web/src/app/(app)/operations/loading.tsx"
+    - "apps/web/src/lib/operations/center.ts"
+    - "apps/web/e2e/web-admin-m3-operations.spec.ts"
+    - "product-contract/evidence/PKT-M3-OPS-CENTER-002.md"
+  prohibited_paths:
+    - "apps/web/src/app/(app)/operations/live/**"
+    - "apps/web/src/app/(app)/operations/exceptions/**"
+    - "apps/web/src/app/(app)/layout.tsx"
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/app/astryx.css"
+    - "apps/web/src/app/globals.css"
+    - "apps/web/public/**"
+    - "apps/web/src/app/api/**"
+    - "supabase/**"
+    - "**/migrations/**"
+    - "apps/web/src/lib/providers/**"
+    - "/field/**"
+    - "PWA, iPad, offline, service-worker and manifest paths"
+    - "main and all unrelated worker branches"
+
+dependencies:
+  required:
+    - "PKT-M3-OPS-LIVE-001 has a recorded Codex verdict and its M3 write lease is released."
+    - "F0 shared shell remains the accepted inherited foundation."
+    - "Existing M3 dirty paths and branch ownership are reconciled before lease grant."
+  open_decisions:
+    - id: "DEC-001"
+      impact: "No new risk model or risk ranking may be created."
+    - id: "DEC-003"
+      impact: "No new SLA calendar or overdue threshold may be created."
+    - id: "DEC-004"
+      impact: "Complete Arabic/RTL is mandatory."
+    - id: "DEC-010"
+      impact: "No NFR target may be invented."
+  fallback_read_work:
+    - "Kimi A maps source, RLS/RBAC and audit boundaries without a write lease."
+    - "Kimi B prepares negative-path and regression review without modifying product code."
+    - "Claude Design read lane performs drift and accessibility review only."
+
+evidence_required:
+  - "Commit-pinned positive and negative test report for lifecycle truth, permission scope, drilldowns, partial-source isolation and retries."
+  - "Browser evidence for every locale, theme and viewport with persona, route, commit, console and network result."
+  - "RLS/RBAC negative evidence for unauthorized role, geography, visit and factory."
+  - "Evidence that operational state and workflow status are not conflated."
+  - "Accessibility and keyboard evidence."
+  - "Evidence index at product-contract/evidence/PKT-M3-OPS-CENTER-002.md; external binaries remain under INSPECTION_DOCS_ROOT."
+
+stop_conditions:
+  - "Do not activate while PKT-M3-OPS-LIVE-001 holds or requests the M3 write lease."
+  - "STOP THE LINE for suspected auth/RLS bypass, secret/PII exposure, data corruption or silent requirement loss."
+  - "Return rather than invent any KPI, SLA, risk, alert, freshness or provider rule."
+  - "Stop completion claims when any required state, locale, viewport, evidence leg or P0/P1 closure is absent."
+  - "Do not accept work, set severity, break leases, merge, deploy, run DDL, change providers or write outside allowed paths."
+
+definition_of_done:
+  - "The /operations vertical slice is implementation-first and demonstrated in the real browser."
+  - "All listed IDs trace to current code, tests and evidence."
+  - "Real services and RLS/RBAC boundaries pass positive and negative verification without permanent mocks."
+  - "EN/AR, responsive, accessibility and every required state pass."
+  - "Typecheck, production build, focused M3 suite, protected regression and git diff check pass."
+  - "Codex issues ACK only after real-browser review and zero P0/P1; sponsor acceptance is recorded separately where required."
+
+estimated_size:
+  points: 5
+  class: "M"
+  target_elapsed: "one bounded implementation cycle plus independent review"
+  rationale: "One route with existing service and handoff contracts; no DDL, provider change, shared shell or Live Operations edit."
+
+queued_successor: null
