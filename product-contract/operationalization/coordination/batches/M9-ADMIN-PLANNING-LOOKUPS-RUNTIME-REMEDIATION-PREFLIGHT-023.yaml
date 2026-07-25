@@ -1,0 +1,240 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-LOOKUPS-RUNTIME-REMEDIATION-PREFLIGHT-023
+title: Collision-safe Planning Lookups remediation preflight
+status: PREFLIGHT_READY_POLICY_DESIGN_AND_ALL_IMPLEMENTATION_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-PLANNING-LOOKUPS-RUNTIME-PERMISSION-MAPPING-022
+  design_dependency: M9-ADMIN-PLANNING-LOOKUPS-DESIGN-AUTHORITY-REVIEW-046
+  package: M9
+  route: /admin/planning/lookups
+  implementation_contract: PLN-CON-012
+  requirements:
+    - CR-006
+    - CR-017
+    - CR-019
+    - CR-027
+    - CR-029
+    - CR-033
+    - CR-039
+    - CR-045
+    - CR-047
+    - CR-060
+    - CR-062
+    - CR-063
+    - CR-080
+    - CR-081
+    - CR-086
+    - CR-170
+    - CR-342
+    - REQ-R0C-01411
+    - REQ-R0C-01464
+    - REQ-R0C-01486
+  acceptance:
+    - WA-M9-AC-001 through WA-M9-AC-006
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+blocking_decisions:
+  - id: LK-DEC-001
+    decision: >-
+      Select one canonical cancellation vocabulary for Planning, Field,
+      Execution and Operations, including migration and backward compatibility.
+    prohibited_default: Do not silently synchronize two mutable authorities.
+  - id: LK-DEC-002
+    decision: >-
+      Approve lookup ownership: every Admin-class role, a dedicated Planning
+      configuration role, or an explicit capability grant model.
+    prohibited_default: Do not infer ownership from current permissive defaults.
+  - id: LK-DEC-003
+    decision: >-
+      Approve version/effective-date/maker-checker governance or a documented,
+      bounded direct-publication exception by lookup kind and risk.
+    prohibited_default: Do not retrofit generic config_versions without a migration contract.
+  - id: LK-DEC-004
+    decision: >-
+      Define dependency behavior when an active value is used by drafts,
+      published visits, in-flight inspections or audit history.
+    prohibited_default: Do not block, rewrite or cascade historical references by assumption.
+  - id: LK-DEC-005
+    decision: >-
+      Define whether Arabic labels are mandatory before activation and who may
+      approve translation completeness.
+
+proposed_lease_sequence:
+  - lease_id: LK-LEASE-CONTRACT-001
+    order: 1
+    purpose: Canonical vocabulary and backward-compatibility contract.
+    owner: ONE_CONTRACT_OWNER
+    artifacts_only:
+      - source-of-truth decision
+      - kind/key and metadata schema
+      - canonical REQ-R0C-01486 value reconciliation
+      - historical-reference and consumer migration rules
+    do_not_touch:
+      - product code
+      - database
+      - design
+      - tests
+  - lease_id: LK-LEASE-DB-001
+    order: 2
+    purpose: Version, approval, concurrency, dependency and projection boundary.
+    owner: ONE_DATABASE_ENGINEER
+    proposed_paths:
+      - one new forward-only Planning Lookup governance migration
+      - one new authenticated RLS/concurrency database probe
+    forbidden_overlap:
+      - existing migrations
+      - engine_settings execution-admin ownership
+      - audit replay migration
+      - remote Supabase apply
+    entry_criteria:
+      - LK-DEC-001 through LK-DEC-005 recorded.
+      - Migration filename and database owner recorded.
+      - Execution-admin owner accepts the source convergence plan.
+    exit_criteria:
+      - Exactly one approved active/effective vocabulary drives every consumer.
+      - Maker/checker or approved bounded exception is database-enforced.
+      - Compare-and-set rejects stale writes.
+      - Deactivation applies the approved dependency policy.
+      - Historical references remain resolvable.
+      - Audit records proposal, approval, activation, retirement and source migration.
+  - lease_id: LK-LEASE-CONSUMERS-001
+    order: 3
+    purpose: Migrate all readers to the governed active/effective projection.
+    owner: ONE_CROSS_MODULE_INTEGRATION_ENGINEER
+    proposed_paths:
+      - apps/web/src/app/(app)/planning/page.tsx
+      - apps/web/src/app/(app)/planning/bulk/actions.ts
+      - apps/web/src/app/(app)/planning/immediate/page.tsx
+      - apps/web/src/app/(app)/planning/immediate/actions.ts
+      - apps/web/src/lib/planning/lifecycle.ts
+      - approved Field/Execution/Operations adapters only
+    collision_rule: >-
+      Field, Execution and Operations files require explicit package-owner
+      consent; otherwise add a stable shared projection and leave their files
+      to their recorded owners.
+    exit_criteria:
+      - Every affected route reads the same effective value set.
+      - Unknown/deactivated keys fail safely without corrupting existing records.
+      - assignment_override_reason is either wired or removed from claims.
+  - lease_id: LK-LEASE-UI-001
+    order: 4
+    purpose: Implement accepted Planning Lookup authority and hard states.
+    owner: ONE_M9_WEB_ENGINEER
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/planning/lookups/page.tsx
+      - apps/web/src/app/(app)/admin/planning/lookups/LookupsAdmin.tsx
+      - apps/web/src/app/(app)/admin/planning/lookups/actions.ts
+      - apps/web/src/app/(app)/admin/planning/lookups/constants.ts
+      - optional route-local layout only
+    entry_criteria:
+      - Design review 046 has an accepted stable revision.
+      - DB and consumer contracts are frozen.
+    exit_criteria:
+      - Route authorization matches the approved owner model.
+      - Draft/check/publish or approved direct-publication semantics are honest.
+      - Stale, dependency-blocked, unauthorized, empty, provider-error and audit-error states are visible.
+      - Success text names exactly which consumers receive the change.
+      - EN/AR completeness follows LK-DEC-005.
+  - lease_id: LK-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    purpose: Independent database, browser and cross-channel certification.
+    owner: INDEPENDENT_QA_REVIEWER
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-planning-lookups-runtime.spec.ts
+      - new supabase/tests/m9_planning_lookups_governance_probe.sql
+      - external evidence under approved INSPECTION_DOCS_ROOT
+    rule: QA owner does not modify implementation files or issue its own completion credit.
+
+isolated_fixture_plan:
+  personas:
+    - approved_lookup_maker
+    - approved_lookup_checker
+    - second_concurrent_editor
+    - planner
+    - ops
+    - inspector
+    - workflow_admin
+    - compliance_admin
+    - unauthorized_authenticated_user
+    - anonymous
+  data:
+    - one active unused lookup
+    - one active lookup referenced by a draft plan
+    - one active lookup referenced by a published visit
+    - one cancellation value used by an in-flight inspection
+    - one retired historical value
+    - canonical REQ-R0C-01486 cancellation set
+  seeder_rules:
+    - Use an isolated seed_batch_id and manifest.
+    - Do not mutate or repurpose existing test rows.
+    - Cleanup must never delete rows referenced by non-seed records.
+    - Seeder execution requires a separate data lease after schema freeze.
+
+focused_test_matrix:
+  p0:
+    - id: LK-TST-001
+      proof: Planning, Field, Execution and Operations return identical effective cancellation keys and metadata.
+    - id: LK-TST-002
+      proof: Every REQ-R0C-01486 required key exists with governed comments/evidence rules.
+    - id: LK-TST-003
+      proof: Unauthorized users cannot propose, approve, activate, edit or retire lookup values.
+    - id: LK-TST-004
+      proof: Maker cannot approve their own high-impact vocabulary change.
+    - id: LK-TST-005
+      proof: Two editors load one version and the stale writer is rejected without overwrite.
+    - id: LK-TST-006
+      proof: Deactivation of an in-use value follows the approved dependency rule and preserves history.
+    - id: LK-TST-007
+      proof: A scheduled/effective change appears in no consumer early and every consumer after activation.
+    - id: LK-TST-008
+      proof: Change and audit publication are atomic or durably correlated.
+  p1:
+    - id: LK-TST-009
+      proof: Active-only readers never receive drafts, future versions or retired metadata.
+    - id: LK-TST-010
+      proof: Approved administrators can review inactive/history data without widening consumer reads.
+    - id: LK-TST-011
+      proof: Unknown kind, malformed key, invalid metadata and duplicate version fail neutrally.
+    - id: LK-TST-012
+      proof: EN/AR, LTR/RTL, light/dark, responsive and keyboard/a11y evidence passes.
+    - id: LK-TST-013
+      proof: UI success, stale, dependency, audit and provider messages describe the real outcome.
+
+protected_regression:
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - apps/web/e2e/cd-027-visit-detail.spec.ts
+  - apps/web/e2e/cd-020-planning-home.spec.ts
+  - apps/web/e2e/cd-021-bulk-targeting.spec.ts
+  - apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
+  - apps/web/e2e/cd-026-visit-management.spec.ts
+  - apps/web/e2e/execution-crossmodule-contract.spec.ts
+  - apps/web/e2e/shell-navigation.spec.ts
+
+collision_register:
+  shared_hotspots:
+    - planning_lookups schema and policies
+    - engine_settings.field.cancellation_reasons
+    - apps/web/src/app/admin/execution/**
+    - apps/web/src/app/(app)/field/**
+    - apps/web/src/app/(app)/operations/**
+    - audit_events write and disclosure boundaries
+    - shared shell/navigation
+  active_peer_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-TEST-EVIDENCE-GAP-MAP-032.yaml
+  touched_by_this_lane: false
+  rule: Recheck every path immediately before lease; one owner per file and migration.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the five policy decisions and corrected design authority first.
+    Then lease the vocabulary/database contract, consumer convergence, UI and
+    independent certification in that order. Do not approve a cosmetic-only
+    Planning Lookups change while the Field/Execution source remains separate.

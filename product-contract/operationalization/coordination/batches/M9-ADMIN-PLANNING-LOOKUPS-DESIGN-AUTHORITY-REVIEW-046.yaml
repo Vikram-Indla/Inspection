@@ -1,0 +1,450 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PLANNING-LOOKUPS-DESIGN-AUTHORITY-REVIEW-046
+title: Independent Planning Lookups design authority and runtime-delta review
+status: RETURN_FOR_IDENTITY_REQUIREMENT_AND_DESIGN_MAPPING_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The route and capability are real, but no governed screen identity, exact
+    atomic 478-row mapping, route-specific accepted design, immutable design
+    revision or unambiguous CD lineage was found. WA-DES-010 is only the
+    nearest generic lookup pattern and is not safe to consume as-is.
+
+task_contract:
+  task_id: M9-ADMIN-PLANNING-LOOKUPS-DESIGN-AUTHORITY-REVIEW-046
+  gate: M9 Planning Lookups design authority
+  route: /admin/planning/lookups
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids: []
+  screen_identity_status: MISSING_GOVERNED_SCREEN_ID
+  implementation_trace_ids:
+    - PLN-REQ-043
+    - PLN-REQ-070
+    - PLN-CON-010
+    - PLN-CON-012
+    - PLN-CON-013
+  trace_id_warning: >-
+    These planning-pack identifiers explain implementation intent but are not a
+    substitute for exact source requirement and acceptance mappings.
+  exact_requirement_ids:
+    directly_governing_admin_screen: NOT_FOUND
+    verified_dependent_rows:
+      - CR-170
+      - CR-342
+    wider_requirement_index_examples:
+      - REQ-R0C-01790
+      - REQ-R0C-01999
+      - REQ-R0C-02089
+      - REQ-R0C-02197
+  acceptance_ids:
+    exact_screen_acceptance: NOT_FOUND
+    package_level_only:
+      - WA-M9-AC-001
+      - WA-M9-AC-002
+      - WA-M9-AC-003
+      - WA-M9-AC-004
+      - WA-M9-AC-005
+      - WA-M9-AC-006
+  dependencies:
+    - governed screen identity and capability row
+    - exact atomic 478-row and acceptance mapping
+    - route-specific accepted design and exact frame manifest
+    - unambiguous CD lineage
+    - lookup dependency and deactivation-impact contract
+    - maker-checker applicability decision
+    - immutable version and effective-date policy decision
+    - optimistic concurrency contract
+    - Arabic completeness and bilingual wordmark authority
+  do_not_touch:
+    - live Claude Design, WA-DES-009, WA-DES-010 or any CD package
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No application, design, database,
+    test, evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_capability_validation:
+  route_exists: true
+  page:
+    path: apps/web/src/app/(app)/admin/planning/lookups/page.tsx
+    validation: CONFIRMED
+  component:
+    path: apps/web/src/app/(app)/admin/planning/lookups/LookupsAdmin.tsx
+    validation: CONFIRMED
+  actions:
+    path: apps/web/src/app/(app)/admin/planning/lookups/actions.ts
+    validation: CONFIRMED
+  constants:
+    path: apps/web/src/app/(app)/admin/planning/lookups/constants.ts
+    validation: CONFIRMED
+  business_capability: >-
+    Govern planning lookup values used by planning consumers: create values,
+    edit bilingual labels and ordering, configure metadata flags, and retire or
+    reactivate values without deletion.
+  channel_validation: CONFIRMED_ADMIN
+  route_operationalization: >-
+    REAL_IMPLEMENTED_ADDITIONAL_ROUTE_WITHOUT_GOVERNED_SCREEN_ID
+  stale_authority:
+    path: design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
+    claim: Lookup Management is hidden or blocked because no governed route exists.
+    validation: INCORRECT_STALE_RUNTIME_STATEMENT
+  registered_shell_target:
+    path: product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+    target: /admin/planning/lookups
+    child_routes:
+      - /admin/localization
+      - /admin/planning/status
+      - /admin/planning/expiry
+    validation: CONFIRMED
+
+governed_lookup_contract:
+  table: public.planning_lookups
+  kinds:
+    - visit_type
+    - visit_mode
+    - priority
+    - return_reason
+    - cancellation_reason
+    - manual_entry_reason
+    - assignment_override_reason
+  guided_metadata_flags:
+    - manual_entry_allowed
+    - attachment_required
+    - location_required
+    - comments_required
+  supported_actions:
+    - create
+    - edit English and Arabic labels
+    - edit sort order
+    - edit guided metadata flags
+    - replace metadata with a validated raw JSON object
+    - activate
+    - deactivate
+  unsupported_actions:
+    - delete
+    - immutable version publication
+    - scheduled effective activation
+    - dependency impact preview
+    - maker-checker approval
+    - compare-and-set update
+  dependency_behavior:
+    active_consumers: Governed selects read active rows on their next load.
+    historical_reference: Deactivation preserves the row.
+    unresolved_risk: >-
+      Editing an existing row remains mutable and can change the current label
+      or metadata observed by historical consumers. The route does not prove a
+      frozen display snapshot or immutable lookup-version binding.
+
+permission_and_rls_validation:
+  read:
+    database_policy: Any authenticated user may select planning_lookups.
+    page_behavior: Users without configure capability receive the full read-only catalogue.
+    validation: CONFIRMED_WITH_SCOPE_REVIEW_REQUIRED
+  write:
+    capability: planning.configure_lookups
+    page_gate: has_planning_capability
+    action_gate_recheck: true
+    database_insert_policy: capability required
+    database_update_policy: capability required
+    database_delete_policy: absent
+    validation: CONFIRMED
+  fail_closed:
+    direct_write: CONFIRMED_BY_RLS
+    page_gate_provider_error: >-
+      Gate errors collapse canConfigure to false and are logged, so the user
+      sees the ordinary read-only permission banner rather than a distinct
+      authorization-provider failure state.
+    validation: CONFIRMED_WITH_CORRECTION
+  self_escalation: NOT_APPLICABLE_TO_LOOKUP_VALUES
+  maker_checker:
+    implementation: ABSENT
+    policy_authority: UNRESOLVED
+    finding: >-
+      All permitted changes apply immediately. Do not invent a maker-checker
+      obligation, but do not certify governance until applicability is decided.
+
+audit_version_concurrency:
+  audit:
+    trigger: trg_audit_planning_lookups
+    function: public.audit_row_change
+    actor: auth.uid()
+    before_state: recorded on update and delete
+    after_state: recorded on insert and update
+    append_only_audit_table_claim: SUPPORTED_BY_SHARED_AUDIT_CONTRACT
+    route_audit_view_or_link: ABSENT
+    validation: CONFIRMED_BACKEND_ONLY
+  retirement:
+    delete_denied: true
+    inactive_row_preserved: true
+    validation: CONFIRMED
+  immutable_revision:
+    lookup_version_column: absent
+    publish_or_lock_lifecycle: absent
+    effective_from_to: absent
+    validation: MISSING
+  concurrency:
+    row_version_column: absent
+    expected_version_input: absent
+    compare_and_set_filter: absent
+    update_filter: id_only
+    toggle_filter: id_only
+    risk: Concurrent editors can overwrite one another; toggles are last-write-wins.
+    validation: MISSING
+  dependency_guard:
+    usage_check_before_deactivation: absent
+    required_default_check: absent
+    impact_preview: absent
+    confirmation: absent
+    validation: MISSING
+
+requirement_mapping_review:
+  route_inventory_claim:
+    mapping: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD_MAPPING
+    rule: >-
+      A package-wide range cannot certify this route or award any of the 478
+      rows. Exact obligations and acceptance evidence must be mapped.
+  verified_dependencies:
+    - requirement_id: CR-170
+      capability: Physical cancellation reason
+      dependency: Lookup Management
+      phase: PHASE2_IPAD_DEFERRED
+      implication: It demonstrates a future dependent lookup, not completion of this admin screen.
+    - requirement_id: CR-342
+      capability: Virtual cancellation reason
+      dependency: Lookup Management
+      phase: PHASE1_WEB
+      implication: It demonstrates a dependent lookup, not complete admin-screen authority.
+  wider_index:
+    - requirement_id: REQ-R0C-01790
+      obligation: Penalty Types shall be maintained through Lookup Management.
+    - requirement_id: REQ-R0C-01999
+      obligation: Values used by prioritization, dashboards and related engines come from Lookup Management.
+    - requirement_id: REQ-R0C-02089
+      obligation: Values used by prioritization, dashboards and related engines come from Lookup Management.
+    - requirement_id: REQ-R0C-02197
+      obligation: Penalty Type values come from Lookup Management.
+  scope_gap: >-
+    The current seven planning kinds do not include penalty types, regions,
+    industrial activities, document types, violation severity or fuel types.
+    The wider Lookup Management product boundary therefore cannot be inferred
+    from this planning-only route.
+
+registered_design_evidence:
+  nearest_pattern:
+    design_id: WA-DES-010
+    filename: SAQEEL Admin Lookups.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Lookups.dc.html
+    bytes: 12358
+    lines: 139
+    sha256: 11867bb534b7c318d7689b0300e6b59c485db8a5daab009a3c904851d222d91d
+    fingerprint_recomputed: true
+    registered_route: /admin/localization
+    validation: NEAREST_GENERIC_PATTERN_ONLY
+  duplicate_alias:
+    design_id: WA-DES-009
+    duplicate_of: WA-DES-010
+    validation: BYTE_IDENTICAL_ALIAS_NOT_SEPARATE_AUTHORITY
+  immutable_revision:
+    export_sha_available: true
+    platform_revision_id_available: false
+    exact_frame_manifest_available: false
+    accepted_route_specific_revision_available: false
+    validation: INSUFFICIENT_EVIDENCE
+  CD_lineage:
+    route_specific_package: NOT_FOUND
+    test_label: CD-044
+    collision: >-
+      CD-044 is also registered in MVP2 authority as the External Portal
+      foundation. A Playwright filename or describe label cannot establish a
+      separate immutable design lineage.
+    validation: AMBIGUOUS_IDENTITY_COLLISION
+
+nearest_design_validation:
+  classification: NO_DIRECT_DESIGN_MATCH
+  nearest_pattern: WA-DES-010
+  reason: >-
+    WA-DES-010 supplies a useful reference-list information architecture but
+    depicts a different catalogue and lacks the governed planning behaviors.
+  parity:
+    - lookup/reference-list administration concept
+    - bilingual value concept
+    - navigation by lookup category
+    - tabular reference-value presentation
+    - administration-shell context
+  design_has_code_lacks:
+    - generic reference catalogues including authorities, regions, activities, document types, severity and fuel types
+    - visible versioned-value claim
+    - external Senaei synchronization provenance
+  code_has_design_lacks:
+    - seven planning-specific lookup kinds
+    - create-new value flow
+    - active and inactive states
+    - activate and deactivate actions
+    - guided eligibility metadata flags
+    - raw metadata JSON override
+    - read-only capability state
+    - per-action success and neutral error feedback
+    - no-delete retirement note
+  semantic_conflicts:
+    - WA-DES-010 is registered to /admin/localization, not /admin/planning/lookups.
+    - WA-DES-010 values are not the planning lookup kinds implemented by this route.
+    - WA-DES-010 claims versioning while planning_lookups is directly mutable and unversioned.
+    - WA-DES-010 suggests provider synchronization absent from the planning lookup contract.
+    - The design's edit-only interaction does not cover create, retirement, reactivation or metadata.
+  recommended_design_action: >-
+    Correct and bind a route-specific Planning Lookups design state after the
+    screen identity, exact requirements, CD lineage, version/concurrency and
+    dependency policies are decided. Reuse WA-DES-010 only as a visual and IA
+    pattern; do not adopt its catalogue or unsupported provider claims.
+
+language_responsive_accessibility:
+  English_LTR:
+    implementation: TRANSLATION_KEYS_WITH_ENGLISH_FALLBACKS
+    design: ENGLISH_CONTENT_WITH_ARABIC_ONLY_WORDMARK
+    validation: CONFIRMED_WITH_WORDMARK_CORRECTION
+  Arabic_RTL:
+    implementation: >-
+      Arabic labels use dir=auto and shell localization is invoked, but complete
+      route translation, RTL visual parity and evidence were not found here.
+    design: NO_COMPLETE_ARABIC_OR_RTL_STATE
+    validation: INSUFFICIENT_EVIDENCE
+  wordmark:
+    accepted_bilingual_asset: NOT_PROVEN_IN_ROUTE_SPECIFIC_DESIGN
+    WA_DES_010_English_state: ARABIC_ONLY_WORDMARK
+    validation: INCORRECT
+  responsive:
+    design_reference: 1160x840
+    design_behavior: >-
+      Fixed 248px rail with only a lookup-grid breakpoint near 900px; no complete
+      compact-shell or small-mobile behavior is evidenced.
+    implementation_behavior: Table wrapper and flex wrapping exist but runtime viewport evidence is absent.
+    validation: INSUFFICIENT_EVIDENCE
+  accessibility:
+    implementation_positive:
+      - labelled form controls
+      - table header scopes
+      - role status and alert feedback
+      - keyboard-native buttons and inputs
+    missing_evidence:
+      - focus order and visible focus
+      - tab-state semantics beyond aria-current
+      - table reflow or alternate small-screen reading mode
+      - screen-reader announcement under concurrent action
+      - automated and manual accessibility results
+      - Arabic screen-reader and bidi behavior
+    validation: INSUFFICIENT_EVIDENCE
+
+hard_state_review:
+  evidenced_in_code:
+    - populated catalogue
+    - per-kind no-row table body
+    - read-only permission mode
+    - read failure banner
+    - inline edit
+    - active
+    - inactive
+    - action working
+    - action success
+    - validation and provider-neutral action error
+    - duplicate key
+    - missing row
+  missing_or_unproven:
+    - dedicated loading state
+    - explicit empty-state explanation and recovery
+    - gate-provider unavailable distinct from permission denial
+    - partial source or stale cache
+    - session expiry at page level
+    - dependency impact before deactivation
+    - concurrent stale edit conflict
+    - audit write failure
+    - immutable-version conflict
+    - destructive raw-metadata replacement confirmation
+    - unsupported metadata schema or consumer incompatibility
+    - complete EN/LTR and AR/RTL states
+    - light and dark states
+    - desktop, tablet and mobile evidence
+
+bounded_delta:
+  bounded_frontend_only: false
+  backend_change_required_now: false
+  contract_decisions_required_before_build:
+    - establish exact route/screen/requirement/acceptance identity
+    - decide wider Lookup Management versus planning-only product boundary
+    - resolve CD-044 identity collision
+    - decide maker-checker applicability
+    - decide immutable version and effective-date requirements
+    - decide optimistic concurrency requirement
+    - decide dependency impact and deactivation safeguards
+  implementation_boundary: >-
+    No implementation is authorized by this review. Once the missing contracts
+    are approved, lease the route, its exact design state, focused tests and any
+    explicitly approved additive database work to one implementation owner.
+
+evidence:
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+  - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+  - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+  - design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+  - product-contract/seeding-discovery/ENDPOINT_DATA_SOURCE_MATRIX.csv
+  - apps/web/src/app/(app)/admin/planning/lookups/page.tsx
+  - apps/web/src/app/(app)/admin/planning/lookups/LookupsAdmin.tsx
+  - apps/web/src/app/(app)/admin/planning/lookups/actions.ts
+  - apps/web/src/app/(app)/admin/planning/lookups/constants.ts
+  - apps/web/e2e/cd-044-admin-planning.spec.ts
+  - supabase/migrations/20260721030100_planning_canonical_structures.sql
+  - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+  - product-contract/mvp2/MVP2_LOCAL_SOURCE_CERTIFICATE.md
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Lookups.dc.html
+
+reviewer_recommendation:
+  outcome: RETURN_FOR_MAPPING_CORRECTION
+  blockers:
+    - BLOCK_DUE_TO_MISSING_GOVERNED_SCREEN_ID
+    - BLOCK_DUE_TO_MISSING_EXACT_REQUIREMENT_AND_ACCEPTANCE_MAPPING
+    - BLOCK_DUE_TO_NO_ROUTE_SPECIFIC_ACCEPTED_DESIGN
+    - BLOCK_DUE_TO_AMBIGUOUS_CD044_LINEAGE
+    - BLOCK_DUE_TO_MISSING_IMMUTABLE_DESIGN_REVISION
+    - BLOCK_DUE_TO_UNRESOLVED_VERSION_CONCURRENCY_AND_DEPENDENCY_POLICY
+  sponsor_decision: >-
+    Do not approve this route as complete and do not count any of the 478 rows.
+    Approve only the governance correction work needed to establish its exact
+    identity and bounded design/engineering contract.
+
+next_non_overlapping_review:
+  task_id: M9-ADMIN-PLANNING-STATUS-DESIGN-AUTHORITY-REVIEW-047
+  route: /admin/planning/status
+  mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+  scope:
+    - validate route, component and business capability
+    - establish governed screen and exact requirement identities
+    - identify nearest immutable design and CD lineage
+    - review status lifecycle, permissions, audit, version and concurrency
+    - review EN/AR, RTL/LTR, responsive, accessibility, wordmark and hard states
+  exclusions:
+    - /admin/planning/lookups
+    - /admin/workflows
+    - application, test, database, design, mapping or evidence modifications
+  queue_status: READY

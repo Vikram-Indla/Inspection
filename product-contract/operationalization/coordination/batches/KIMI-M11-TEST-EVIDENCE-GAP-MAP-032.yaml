@@ -1,6 +1,6 @@
 schema_version: "1.0"
 packet_id: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
-status: READ_ONLY_GAP_MAP_NO_TEST_OR_LEASE_EXECUTION
+status: READ_ONLY_GAP_MAP_REVALIDATED_NO_TEST_OR_LEASE_EXECUTION
 prepared_by: codex_kimi_live_watch
 prepared_on: "2026-07-25"
 saqeel_os: "v2"
@@ -16,6 +16,7 @@ authority:
   prior_gap_source: KIMI-M11-CORRECTION-READINESS-REVIEW-024
   ownership_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
   collision_preflight: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+  active_security_review: KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042
   acceptance_harness: KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
   planned_negative_matrix: KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016
   unaccepted_test_return: KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001
@@ -99,6 +100,17 @@ current_truth:
   rows_with_complete_current_proof: 0
   rows_with_reusable_candidate_assets: 25
   rows_with_no_direct_current_candidate: 6
+  severity_distribution:
+    P0: 16
+    P1: 9
+    CONTRADICTION: 6
+  missing_proof_distribution:
+    POSITIVE: 13
+    NEGATIVE: 18
+    UNAUTHORIZED: 17
+    CONCURRENCY: 14
+    AUDIT: 22
+    PROVIDER: 2
   reason: >-
     All current runtime/source evidence predates the corrected packet stack.
     Several tests encode legacy Planner OTP/audit positives, direct table fixture
@@ -473,8 +485,14 @@ validation:
   yaml_parse: PASS
   closure_rows_expected: 31
   closure_rows_mapped: 31
+  closure_row_ids_unique: PASS
+  reusable_candidate_rows: 25
+  no_direct_candidate_rows: 6
+  severity_distribution_checked: PASS
+  missing_proof_distribution_checked: PASS
   current_assets_fingerprinted: PASS
   gap_classes_complete: PASS
+  proposed_test_path_count: 9
   proposed_file_paths_unique: PASS
   owners_proposed_not_issued: PASS
   impossible_rows_identified: PASS
