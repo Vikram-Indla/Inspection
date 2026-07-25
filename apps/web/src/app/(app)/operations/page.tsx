@@ -48,7 +48,11 @@ type VisitRow = {
   factories: FactoryEmbed;
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
-type GeoRow = { id: string; visit_id: string; kind: string; geofence_result: string | null; accuracy_m: number; occurred_at: string };
+type GeoRow = {
+  id: string; visit_id: string; kind: string; geofence_result: string | null;
+  accuracy_m: number; occurred_at: string; observed_lat: number; observed_lng: number;
+  integration_mode: string | null;
+};
 type ActionRow = {
   id: string;
   form_type: string;
@@ -58,7 +62,9 @@ type ActionRow = {
   status: string;
   is_blocking: boolean;
   required_correction: string | null;
-  inspections: { visit_id: string; visits: { factories: { id: string; name: string } | null } | null } | null;
+  inspections: { visit_id: string; visits: { factories: {
+    id: string; name: string; factory_code: string | null; region: string | null; city: string | null;
+  } | null } | null } | null;
 };
 type NotifRow = { id: string; event_key: string; channel: string; delivery_state: string; created_at: string };
 type FactoryRow = {
@@ -72,8 +78,20 @@ type OverrideRow = {
   id: string; visit_id: string; status: string; reason_label: string; explanation: string;
   safety_security_exception: boolean; observed_lat: number; observed_lng: number;
   accuracy_m: number; distance_m: number; device_occurred_at: string; requested_at: string; expires_at: string;
-  visits: { factories: { name: string; region: string | null } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
+  visits: { factories: {
+    name: string; region: string | null; city: string | null; factory_code: string | null;
+  } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
 };
+
+const CLEAN_FACTORY_CODES = new Set([
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204", "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+]);
+
+const isCleanFactory = (factory: { factory_code?: string | null } | null | undefined) =>
+  Boolean(factory?.factory_code && CLEAN_FACTORY_CODES.has(factory.factory_code));
 
 const NOTIF_TONE: Record<string, string> = {
   queued: "sq-lozenge--warning",
@@ -175,6 +193,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const view = sp.view === "performance" ? "performance" : "map";
   const { t, locale } = await useT();
   const local = (english: string, arabic: string) => locale === "ar" ? arabic : english;
+  const localePersonName = (name: string | null | undefined) => {
+    const value = name?.trim();
+    if (!value) return null;
+    const hasArabic = /[\u0600-\u06ff]/.test(value);
+    return (locale === "ar") === hasArabic
+      ? value
+      : local("Name unavailable in English", "الاسم غير متاح بالعربية");
+  };
   const sb = await supabaseServer();
   // DSG-CMD-020 — direct-route authorization must be identical to the accepted
   // shared navigation contract. Derive it from the same builder instead of
@@ -215,9 +241,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   // assigned region keeps the existing national visibility already granted by the
   // visits/factories RLS role policies; this filter only narrows that grant. It is
   // independent of the operator-selectable ?region= display filter below (M08-010).
-  const authorizedRegionId = resolveRegionId(profileRow?.region ?? null);
-  const inAuthorizedGeography = (r: string | null) =>
-    authorizedRegionId === null || resolveRegionId(r) === authorizedRegionId;
+  const authorizedScope = profileRow?.region?.trim() ?? "";
+  const authorizedRegionId = resolveRegionId(authorizedScope || null);
+  const inAuthorizedGeography = (r: string | null, c: string | null) => {
+    if (!authorizedScope) return false;
+    if (authorizedRegionId) return resolveRegionId(r) === authorizedRegionId;
+    const normalized = authorizedScope.toLocaleLowerCase("en");
+    return [r, c].some(value => value?.trim().toLocaleLowerCase("en") === normalized);
+  };
 
   // A page GET is read-only. Use one request-start timestamp to exclude elapsed
   // requests from the actionable queue without materializing workflow state.
@@ -236,13 +267,13 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     // exceeds an arbitrary recent-row limit. Page the immutable ledger using a
     // stable order, then scope it to the monitored visits below.
     collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
-      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at")
+      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at, observed_lat, observed_lng, integration_mode")
       .order("occurred_at", { ascending: false })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>),
     // Corrective actions queue (M09-027 blocking flag; DEC-003 due default 14d)
     collectPostgrestPages<ActionRow>((from, to) => sb.from("action_forms")
-      .select("id, form_type, owner_name, owner_role, due_at, status, is_blocking, required_correction, inspections(visit_id, visits(factories(id, name)))")
+      .select("id, form_type, owner_name, owner_role, due_at, status, is_blocking, required_correction, inspections(visit_id, visits(factories(id, name, factory_code, region, city)))")
       .neq("status", "closed")
       .order("due_at", { ascending: true })
       .order("id", { ascending: true })
@@ -255,6 +286,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     // Factory master for the KSA map + region/city options (M08-002/010)
     collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class, factory_code, source")
+      .in("factory_code", [...CLEAN_FACTORY_CODES])
       .order("name", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
@@ -264,12 +296,13 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     // M08-006 — high-risk factory board (ENG-04 output, top scores)
     sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class, factory_code, source")
+      .in("factory_code", [...CLEAN_FACTORY_CODES])
       .not("risk_score", "is", null)
       .order("risk_score", { ascending: false })
       .limit(8),
     // M04-043 / RBAC-008 — only Operations sees pending requests through RLS.
     sb.from("geo_override_requests")
-      .select("id, visit_id, status, reason_label, explanation, safety_security_exception, observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at, requested_at, expires_at, visits(factories(name, region), assignments(profiles(full_name)))")
+      .select("id, visit_id, status, reason_label, explanation, safety_security_exception, observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at, requested_at, expires_at, visits(factories(name, region, city, factory_code), assignments(profiles(full_name)))")
       .eq("status", "pending")
       .gt("expires_at", nowIso)
       .order("expires_at", { ascending: true }),
@@ -302,22 +335,31 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const isVerificationFactory = (factory: FactoryEmbed | FactoryRow | null) =>
     factory?.source === "verification_fixture" || isTestFixtureEstablishment(factory);
   const integrityFilteredVisits = ((visitsRes.data ?? []) as unknown as VisitRow[])
-    .filter(visit => !isVerificationFactory(visit.factories));
+    .filter(visit => isCleanFactory(visit.factories) && !isVerificationFactory(visit.factories));
   // CR-439/CR-447: narrow every widget to the caller's authorized geography.
   const visits = integrityFilteredVisits
-    .filter(visit => inAuthorizedGeography(visit.factories?.region ?? null));
+    .filter(visit => inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null));
   const outOfScopeVisitCount = integrityFilteredVisits.length - visits.length;
   const geo = (geoRes.data ?? []) as unknown as GeoRow[];
-  const actions = (actionsRes.data ?? []) as unknown as ActionRow[];
+  const actions = ((actionsRes.data ?? []) as unknown as ActionRow[]).filter(action => {
+    const factory = action.inspections?.visits?.factories;
+    return isCleanFactory(factory) && inAuthorizedGeography(factory?.region ?? null, factory?.city ?? null);
+  });
   const notifs = (notifsRes.data ?? []) as unknown as NotifRow[];
   const factories = ((factoriesRes.data ?? []) as unknown as FactoryRow[])
-    .filter(factory => !isVerificationFactory(factory) && inAuthorizedGeography(factory.region));
+    .filter(factory => isCleanFactory(factory) && !isVerificationFactory(factory)
+      && inAuthorizedGeography(factory.region, factory.city));
   const engines = (engineRes.data ?? []) as unknown as EngineRow[];
   const highRisk = ((riskRes.data ?? []) as unknown as FactoryRow[])
-    .filter(factory => !isVerificationFactory(factory) && inAuthorizedGeography(factory.region));
+    .filter(factory => isCleanFactory(factory) && !isVerificationFactory(factory)
+      && inAuthorizedGeography(factory.region, factory.city));
   const integrityFilteredOverrides = (overrideRes.data ?? []) as unknown as OverrideRow[];
   const overrides = integrityFilteredOverrides
-    .filter(row => inAuthorizedGeography(row.visits?.factories?.region ?? null));
+    .filter(row => isCleanFactory(row.visits?.factories)
+      && inAuthorizedGeography(
+        row.visits?.factories?.region ?? null,
+        row.visits?.factories?.city ?? null,
+      ));
   const outOfScopeOverrideCount = integrityFilteredOverrides.length - overrides.length;
   const evidenceByRequest = new Map<string, number>();
   const evidenceUrls = new Map<string, string>();
@@ -339,7 +381,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     requested_at: row.requested_at, expires_at: row.expires_at, evidence_count: evidenceByRequest.get(row.id) ?? 0,
     evidence_url: evidenceUrls.get(row.id) ?? null,
     factory_name: row.visits?.factories?.name ?? null,
-    inspector_name: row.visits?.assignments?.[0]?.profiles?.full_name ?? null,
+    inspector_name: localePersonName(row.visits?.assignments?.[0]?.profiles?.full_name),
   }));
 
   // Governed cancellation reason labels (engine_settings.field, 0020 seed) —
@@ -356,13 +398,15 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   type CancellationReqRow = {
     id: string; visit_id: string; phase: string; reason_key: string; comment: string | null;
     evidence_id: string | null; requested_at: string;
-    visits: { factories: { name: string; region: string | null } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
+    visits: { factories: {
+      name: string; region: string | null; city: string | null; factory_code: string | null;
+    } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
   };
   let cancellationQueueRows: CancellationQueueRow[] = [];
   let outOfScopeCancellationCount = 0;
   {
     const { data: cancelRows, error: cancelError } = await sb.from("cancellation_requests")
-      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, visits(factories(name, region), assignments(profiles(full_name)))")
+      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, visits(factories(name, region, city, factory_code), assignments(profiles(full_name)))")
       .eq("status", "pending")
       .order("requested_at", { ascending: true });
     if (cancelError) {
@@ -374,7 +418,11 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     } else {
       const integrityFilteredRows = (cancelRows ?? []) as unknown as CancellationReqRow[];
       const rows = integrityFilteredRows
-        .filter(row => inAuthorizedGeography(row.visits?.factories?.region ?? null));
+        .filter(row => isCleanFactory(row.visits?.factories)
+          && inAuthorizedGeography(
+            row.visits?.factories?.region ?? null,
+            row.visits?.factories?.city ?? null,
+          ));
       outOfScopeCancellationCount = integrityFilteredRows.length - rows.length;
       const reasonLabels = new Map<string, string>();
       for (const r of fieldCfgReasons) reasonLabels.set(r.key, r.label);
@@ -395,7 +443,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         reason_label: reasonLabels.get(row.reason_key) ?? row.reason_key,
         comment: row.comment, requested_at: row.requested_at,
         factory_name: row.visits?.factories?.name ?? null,
-        inspector_name: row.visits?.assignments?.[0]?.profiles?.full_name ?? null,
+        inspector_name: localePersonName(row.visits?.assignments?.[0]?.profiles?.full_name),
         evidence_url: row.evidence_id ? cancelEvidenceUrls.get(row.evidence_id) ?? null : null,
       }));
     }
@@ -408,12 +456,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   type ReturnedRow = {
     id: string; visit_id: string;
     reviews: { decision: string | null; decided_at: string | null }[] | null;
-    visits: { factories: { name: string; region: string | null; city: string | null } | null } | null;
+    visits: { factories: {
+      name: string; region: string | null; city: string | null; factory_code: string | null;
+    } | null } | null;
   };
   let resubmissionSources: ResubmissionSource[] = [];
   {
     const { data: returnedRows, error: returnedError } = await sb.from("inspections")
-      .select("id, visit_id, reviews(decision, decided_at), visits(factories(name, region, city))")
+      .select("id, visit_id, reviews(decision, decided_at), visits(factories(name, region, city, factory_code))")
       .eq("status", "returned");
     if (returnedError) {
       console.error(`[operations] returned-inspection SLA read failed: ${returnedError.message}`);
@@ -428,6 +478,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             .pop();
           if (!decided) return null;
           const f = row.visits?.factories ?? null;
+          if (!isCleanFactory(f) || !inAuthorizedGeography(f?.region ?? null, f?.city ?? null)) return null;
           if (region && f?.region !== region) return null;
           if (city && f?.city !== city) return null;
           return { inspection_id: row.id, visit_id: row.visit_id, factory_name: f?.name ?? null, returned_at: decided };
@@ -455,12 +506,28 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     (v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)) &&
     (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
   const monitoredVisitIds = new Set(monitored.map(v => v.id));
-  const scopedGeo = geo.filter(g => monitoredVisitIds.has(g.visit_id));
+  const scopedGeo = geo.filter(g => monitoredVisitIds.has(g.visit_id)
+    && (g.integration_mode == null || g.integration_mode === "production")
+    && Number.isFinite(Date.parse(g.occurred_at))
+    && Date.parse(g.occurred_at) <= now);
 
   // Latest geofence result per visit (geo list already newest-first) — M08-014
   const latestGeofence = new Map<string, string>();
   for (const g of scopedGeo) {
     if (g.geofence_result && !latestGeofence.has(g.visit_id)) latestGeofence.set(g.visit_id, g.geofence_result);
+  }
+  const latestObservedPosition = new Map<string, GeoRow>();
+  for (const event of scopedGeo) {
+    const occurredAt = Date.parse(event.occurred_at);
+    const lat = Number(event.observed_lat);
+    const lng = Number(event.observed_lng);
+    const valid = Number.isFinite(occurredAt) && occurredAt <= now
+      && Number.isFinite(lat) && lat >= -90 && lat <= 90
+      && Number.isFinite(lng) && lng >= -180 && lng <= 180
+      && (event.integration_mode == null || event.integration_mode === "production");
+    if (valid && !latestObservedPosition.has(event.visit_id)) {
+      latestObservedPosition.set(event.visit_id, event);
+    }
   }
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
 
@@ -481,13 +548,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     const tone = ACTIVE_TONE[v.operational_state];
     if (!tone) continue;
     const f = scopedFactories.find(x => x.id === (v.factories?.id ?? v.factory_id));
-    if (!f || f.official_lat == null || f.official_lng == null) continue;
+    const observed = latestObservedPosition.get(v.id);
+    if (!f || !observed) continue;
     pinnedFactoryIds.add(f.id);
     pins.push({
       id: `v:${v.id}`, kind: "visit",
-      lat: Number(f.official_lat), lng: Number(f.official_lng),
-      label: `${f.name} · ${enumLabel(v.operational_state)}`,
-      tone, radiusM: f.geofence_radius_m ?? gisDefault,
+      lat: Number(observed.observed_lat), lng: Number(observed.observed_lng),
+      label: `${f.name} · ${enumLabel(v.operational_state)} · ${enumLabel(observed.kind)} · ${formatDateTime(Date.parse(observed.occurred_at), locale === "ar" ? "ar" : "en")}`,
+      tone,
       href: `/visits/${v.id}`,
     });
   }
@@ -496,7 +564,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     pins.push({
       id: `f:${f.id}`, kind: "factory",
       lat: Number(f.official_lat), lng: Number(f.official_lng),
-      label: f.name, tone: "neutral",
+      label: `${f.name} · ${local("Factory registry coordinate", "إحداثية سجل المصنع")}`, tone: "neutral",
       href: `/factories/${f.id}`,
     });
   }
@@ -514,7 +582,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     factory_name: v.factories?.name ?? null,
     operational_state: v.operational_state,
     geofence: latestGeofence.get(v.id) ?? null,
-    inspector: v.assignments?.[0]?.profiles?.full_name ?? null,
+    inspector: localePersonName(v.assignments?.[0]?.profiles?.full_name),
   }));
   const enumLabels = Object.fromEntries(
     [...states, "inside", "outside", "override"].map(v => [v, enumLabel(v)]));
@@ -627,7 +695,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const actionCountForFactory = (factoryId: string) => actions.filter(action =>
     action.inspections?.visits?.factories?.id === factoryId).length;
   const previewFields = (factory: FactoryRow | undefined, visit: VisitRow | undefined) => {
-    const inspectorName = visit?.assignments?.[0]?.profiles?.full_name ?? null;
+    const sourceInspectorName = visit?.assignments?.[0]?.profiles?.full_name ?? null;
     const latestGeoEvent = visit ? scopedGeo.find(event => event.visit_id === visit.id) : null;
     return {
       factoryId: factory?.id ?? visit?.factories?.id ?? visit?.factory_id ?? null,
@@ -635,9 +703,9 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       region: factory?.region ?? visit?.factories?.region ?? null,
       city: factory?.city ?? visit?.factories?.city ?? null,
       visitId: visit?.id ?? null,
-      inspectorName,
-      assignmentCount: inspectorName
-        ? monitored.filter(item => item.assignments?.[0]?.profiles?.full_name === inspectorName).length
+      inspectorName: localePersonName(sourceInspectorName),
+      assignmentCount: sourceInspectorName
+        ? monitored.filter(item => item.assignments?.[0]?.profiles?.full_name === sourceInspectorName).length
         : 0,
       lastGeoAt: latestGeoEvent ? fmtTs(Date.parse(latestGeoEvent.occurred_at)) : null,
       riskScore: factory?.risk_score ?? null,
@@ -693,7 +761,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     ...overdueActions.map(action => ({
       id: `action:${action.id}`,
       label: t("ops.highlights.action", "Corrective action overdue"),
-      description: `${action.inspections?.visits?.factories?.name ?? action.owner_name ?? action.id.slice(0, 8)} · ${action.required_correction ?? enumLabel(action.status)}`,
+      description: `${action.inspections?.visits?.factories?.name ?? localePersonName(action.owner_name) ?? action.id.slice(0, 8)} · ${action.required_correction ?? enumLabel(action.status)}`,
       at: action.due_at ? Date.parse(action.due_at) : 0,
       href: action.inspections?.visit_id ? `/visits/${action.inspections.visit_id}` : performanceAnchor("corrective-actions"),
       evidenceUrl: null as string | null,
@@ -1107,7 +1175,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                         ? <a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a>
                         : "—"}<br />
                         {a.inspections?.visit_id && <a className="sq-link sq-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
-                      <td>{a.owner_name ?? "—"}{a.owner_role && <span className="sq-caption"> · {a.owner_role}</span>}</td>
+                      <td>{localePersonName(a.owner_name) ?? "—"}{a.owner_role && <span className="sq-caption"> · {a.owner_role}</span>}</td>
                       <td>{a.due_at
                         ? <span className={overdue ? "sq-lozenge sq-lozenge--critical" : "sq-numeric"}>{formatDate(a.due_at, locale === "ar" ? "ar" : "en")}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
                         : "—"}</td>

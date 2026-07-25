@@ -18,7 +18,7 @@ import { redirect } from "next/navigation";
 type FactoryRow = {
   id: string; name: string; region: string | null; city: string | null;
   official_lat: number | null; official_lng: number | null;
-  source: string; is_temporary: boolean;
+  source: string; is_temporary: boolean; factory_code: string | null;
 };
 type VisitRow = {
   id: string; operational_state: string; planning_status: string;
@@ -26,7 +26,7 @@ type VisitRow = {
   factories: { id: string; name: string; region: string | null; city: string | null;
     official_lat: number | null; official_lng: number | null;
     source: string; is_temporary: boolean; factory_code: string | null } | null;
-  assignments: { profiles: { full_name: string } | null }[] | null;
+  assignments: { profiles: { full_name: string; email: string | null } | null }[] | null;
 };
 type GeoPositionRow = {
   id: string;
@@ -44,8 +44,46 @@ function isVerificationRecord(factory: VisitRow["factories"], notes: string | nu
     || /\b(?:verification|test) fixture\b/i.test(notes ?? "");
 }
 
-function sourceInspectorName(name: string | null | undefined, fallback: string): string {
-  return name?.trim() || fallback;
+const CLEAN_FACTORY_CODES = new Set([
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204", "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+]);
+const TEST_ACCOUNT_EMAILS = new Set([
+  "planner@mim.gov.sa",
+  "inspector@mim.gov.sa",
+  "reviewer@mim.gov.sa",
+  "admin@mim.gov.sa",
+  "ops@mim.gov.sa",
+]);
+
+function isCleanFactory(factory: VisitRow["factories"] | FactoryRow | null): boolean {
+  return Boolean(factory?.factory_code && CLEAN_FACTORY_CODES.has(factory.factory_code));
+}
+
+function sourceInspectorName(
+  profile: { full_name: string; email: string | null } | null | undefined,
+  locale: string,
+  fallback: string,
+): string {
+  if (!profile?.email || !TEST_ACCOUNT_EMAILS.has(profile.email.toLowerCase())) return fallback;
+  const name = profile.full_name.trim();
+  if (!name) return fallback;
+  const hasArabic = /[\u0600-\u06ff]/.test(name);
+  return (locale === "ar") === hasArabic ? name : fallback;
+}
+
+function validObservedPosition(position: GeoPositionRow, snapshotMs: number): boolean {
+  const occurredAt = Date.parse(position.occurred_at);
+  const lat = Number(position.observed_lat);
+  const lng = Number(position.observed_lng);
+  return Number.isFinite(occurredAt)
+    && occurredAt <= snapshotMs
+    && Number.isFinite(lat)
+    && Number.isFinite(lng)
+    && lat >= -90 && lat <= 90
+    && lng >= -180 && lng <= 180;
 }
 
 const KSA_REGION_NAMES = new Map(
@@ -102,19 +140,25 @@ export default async function LiveOperations({ searchParams }: {
   // assignment (also used by task_assignments scope matching). A user with no
   // assigned region keeps the existing national visibility already granted by
   // the visits/factories RLS role policies; this filter only narrows that grant.
-  const authorizedRegionId = resolveRegionId(profileRow?.region ?? null);
-  const inAuthorizedGeography = (region: string | null) =>
-    authorizedRegionId === null || resolveRegionId(region) === authorizedRegionId;
+  const authorizedScope = profileRow?.region?.trim() ?? "";
+  const authorizedRegionId = resolveRegionId(authorizedScope || null);
+  const inAuthorizedGeography = (region: string | null, city: string | null) => {
+    if (!authorizedScope) return false;
+    if (authorizedRegionId) return resolveRegionId(region) === authorizedRegionId;
+    const normalized = authorizedScope.toLocaleLowerCase("en");
+    return [region, city].some(value => value?.trim().toLocaleLowerCase("en") === normalized);
+  };
 
   const observedAt = new Date();
   const [factoriesRes, visitsRes] = await Promise.all([
     collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
-      .select("id, name, region, city, official_lat, official_lng, source, is_temporary")
+      .select("id, name, region, city, official_lat, official_lng, source, is_temporary, factory_code")
+      .in("factory_code", [...CLEAN_FACTORY_CODES])
       .not("official_lat", "is", null)
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
     collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
-      .select("id, operational_state, planning_status, window_start, window_end, factory_id, notes, factories(id, name, region, city, official_lat, official_lng, source, is_temporary, factory_code), assignments(profiles(full_name))")
+      .select("id, operational_state, planning_status, window_start, window_end, factory_id, notes, factories(id, name, region, city, official_lat, official_lng, source, is_temporary, factory_code), assignments(profiles(full_name, email))")
       .in("operational_state", ["on_the_way", "arrived", "executing"])
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
@@ -127,7 +171,7 @@ export default async function LiveOperations({ searchParams }: {
   const visitRows = (visitsRes.data ?? []) as unknown as VisitRow[];
 
   const integrityFilteredVisitRows = visitRows.filter(visit => {
-    if (isVerificationRecord(visit.factories, visit.notes)) return false;
+    if (!isCleanFactory(visit.factories) || isVerificationRecord(visit.factories, visit.notes)) return false;
     const startsAt = visit.window_start ? Date.parse(visit.window_start) : NaN;
     // An operational position cannot be current before its visit window starts.
     // Reject future-dated rows instead of presenting impossible "Since" values.
@@ -137,7 +181,7 @@ export default async function LiveOperations({ searchParams }: {
   // profiles.region). A visit whose factory carries no region cannot be
   // proven in-scope, so it is excluded rather than assumed authorized.
   const activeVisitRows = integrityFilteredVisitRows.filter(visit =>
-    inAuthorizedGeography(visit.factories?.region ?? null));
+    inAuthorizedGeography(visit.factories?.region ?? null, visit.factories?.city ?? null));
   const outOfScopeRecordCount = integrityFilteredVisitRows.length - activeVisitRows.length;
   const activeVisitIds = activeVisitRows.map(visit => visit.id);
   const geoPositionsRes = activeVisitIds.length > 0
@@ -145,7 +189,6 @@ export default async function LiveOperations({ searchParams }: {
       .select("id, visit_id, observed_lat, observed_lng, occurred_at, integration_mode, kind")
       .in("visit_id", activeVisitIds)
       .or("integration_mode.is.null,integration_mode.eq.production")
-      .lte("occurred_at", observedAt.toISOString())
       .order("occurred_at", { ascending: false })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoPositionRow>>)
@@ -153,10 +196,15 @@ export default async function LiveOperations({ searchParams }: {
   if (geoPositionsRes.error) {
     console.error(`[operations live] geo position read failed: ${geoPositionsRes.error.message}`);
   }
-  const hasReadError = Boolean(factoriesRes.error || visitsRes.error || geoPositionsRes.error);
+  const visitReadError = Boolean(visitsRes.error);
+  const positionReadError = Boolean(geoPositionsRes.error);
+  const factoryReadError = Boolean(factoriesRes.error);
   const latestPositionByVisit = new Map<string, GeoPositionRow>();
+  const rejectedPositionVisitIds = new Set<string>();
   for (const position of (geoPositionsRes.data ?? []) as GeoPositionRow[]) {
-    if (!latestPositionByVisit.has(position.visit_id)) {
+    if (!validObservedPosition(position, observedAt.getTime())) {
+      rejectedPositionVisitIds.add(position.visit_id);
+    } else if (!latestPositionByVisit.has(position.visit_id)) {
       latestPositionByVisit.set(position.visit_id, position);
     }
   }
@@ -165,7 +213,9 @@ export default async function LiveOperations({ searchParams }: {
     .sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null;
   const activeFactoryIds = new Set(activeVisitRows.map(visit => visit.factory_id).filter(Boolean));
   const factories: LiveFactory[] = factoryRows
-    .filter(factory => activeFactoryIds.has(factory.id))
+    .filter(factory => isCleanFactory(factory)
+      && activeFactoryIds.has(factory.id)
+      && inAuthorizedGeography(factory.region, factory.city))
     .map(f => ({
     id: `f:${f.id}`, rawId: f.id, name: f.name, region: f.region, city: f.city,
     lat: Number(f.official_lat), lng: Number(f.official_lng),
@@ -196,21 +246,18 @@ export default async function LiveOperations({ searchParams }: {
   const positionTimeFormatter = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
     dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh",
   });
-  const inspectors: (LiveInspector & {
-    positionObservedAt: string | null;
-    positionObservedLabel: string;
-    positionSourceLabel: string | null;
-  })[] = [];
+  const inspectors: LiveInspector[] = [];
   for (const v of activeVisitRows) {
     const f = v.factories;
     const position = latestPositionByVisit.get(v.id);
-    const name = v.assignments?.[0]?.profiles?.full_name;
+    const profile = v.assignments?.[0]?.profiles;
     if (!f || f.official_lat == null || f.official_lng == null) continue;
     inspectors.push({
       id: `i:${v.id}`,
       visitId: v.id,
       inspector: sourceInspectorName(
-        name,
+        profile,
+        locale,
         t("ops.live.inspectorFallback", local("Inspector name unavailable", "اسم المفتش غير متاح")),
       ),
       factoryId: `f:${f.id}`, factoryName: f.name,
@@ -230,6 +277,9 @@ export default async function LiveOperations({ searchParams }: {
         ? positionTimeFormatter.format(new Date(position.occurred_at))
         : t("ops.live.positionUnobserved", local("No recorded position for this visit", "لا يوجد موقع مسجّل لهذه الزيارة")),
       positionSourceLabel: position ? positionSourceLabel(position.kind) : null,
+      positionState: position
+        ? "recorded"
+        : rejectedPositionVisitIds.has(v.id) ? "rejected" : "unavailable",
     });
   }
 
@@ -295,6 +345,26 @@ export default async function LiveOperations({ searchParams }: {
     positionSourceField: t("ops.live.positionSourceField", local("Position source", "مصدر الموقع")),
     positionObservedField: t("ops.live.positionObservedField", local("Position observed", "وقت رصد الموقع")),
     openVisit: t("ops.live.openVisit", local("Open visit record", "فتح سجل الزيارة")),
+    active: t("ops.live.active", local("Active", "نشط")),
+    arrived: t("ops.live.arrived", local("Arrived", "وصل")),
+    recordedState: t("ops.live.recordedState", local(
+      "Last recorded position — not guaranteed live",
+      "آخر موقع مسجّل — ليس مضموناً أنه مباشر",
+    )),
+    unavailableState: t("ops.live.unavailableState", local("Location unavailable", "الموقع غير متاح")),
+    rejectedState: t("ops.live.rejectedState", local(
+      "Rejected implausible telemetry",
+      "بيانات موقع غير معقولة ومرفوضة",
+    )),
+    partialSource: t("ops.live.partialSource", local(
+      "Position source is unavailable. Active visits remain listed without location claims.",
+      "مصدر المواقع غير متاح. تبقى الزيارات النشطة مدرجة دون ادعاءات عن الموقع.",
+    )),
+    factorySourceUnavailable: t("ops.live.factorySourceUnavailable", local(
+      "Factory marker source is unavailable. Inspector observations remain independently bounded.",
+      "مصدر مؤشرات المصانع غير متاح. تبقى مشاهدات المفتشين مستقلة ومحدودة.",
+    )),
+    sourceNotRecorded: t("ops.live.sourceNotRecorded", local("Not recorded", "غير مسجّل")),
   };
 
   const title = t("ops.live.title", local("Live Operations — Saudi Arabia", "العمليات المباشرة — المملكة العربية السعودية"));
@@ -308,7 +378,9 @@ export default async function LiveOperations({ searchParams }: {
         snapshotAt={observedAt.toISOString()}
         positionObservedAt={latestPositionObservedAt}
         wallboard={wallboard}
-        hasReadError={hasReadError}
+        visitReadError={visitReadError}
+        positionReadError={positionReadError}
+        factoryReadError={factoryReadError}
         excludedRecordCount={visitRows.length - integrityFilteredVisitRows.length}
         outOfScopeRecordCount={outOfScopeRecordCount}
         locale={locale}
