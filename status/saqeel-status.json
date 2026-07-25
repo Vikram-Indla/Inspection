@@ -1448,6 +1448,10 @@
           "text": "Build /field/reports (library + detail). Challenge Report has no route and no schema reference."
         },
         {
+          "lane": "code",
+          "text": "A discarded stash carried an 8-line per-visit Records Library entry point in field/inspection/[id]/page.tsx linking to /field/inspection/[id]/reports — a dead link, since that route does not exist. Re-add the entry point only once the route is built."
+        },
+        {
           "lane": "design",
           "text": "Confirm whether Reports Library duplicates Drafts or is a separate submitted-history surface."
         }
