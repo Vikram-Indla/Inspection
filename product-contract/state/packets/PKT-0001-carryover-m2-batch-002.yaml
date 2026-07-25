@@ -1,0 +1,42 @@
+# V5 §0.1.3 — in-flight packet restated under new authority. NOT re-issued: parked
+# behind the cutover freeze until criteria are frozen+hashed (§35.5) and a Verifier
+# session exists (§34.2). Restated from the contract, not inherited from chat.
+schema_version: "1.0"
+packet_id: "PKT-0001"
+restated_from: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002 / WA-P1-M2-BATCH-002"
+change_control_id: "CC-WEB-ADMIN-PHASE1-001"
+title: "Planning landing and Planning-owned Visits list/detail"
+status: "PARKED_PENDING_CUTOVER_COMPLETION"
+size: "M"
+
+requirement_ids: ["CR-001..CR-098"]
+acceptance_ids: ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"]
+screen_ids: ["WA-DES-036", "WA-DES-045"]
+engine_ids: ["Supabase SSR/RLS", "planning capability + expiry RPCs", "visit lifecycle", "audit/versioning"]
+
+frozen_criteria_hash: null        # §35.5 — Orchestrator must author + hash before re-issue
+criteria_frozen: false
+
+allowed_paths:
+  - "apps/web/src/app/(app)/planning/**"
+  - "apps/web/e2e/web-admin-m2-batch-002.spec.ts"
+prohibited_paths:
+  - "apps/web/src/app/field/**"          # do-not-touch (contract + user directive: skip field)
+  - "apps/web/src/app/(app)/visits/**"   # retained canonical until approved cutover
+
+expected_evidence:
+  - "typecheck + production build"
+  - "Playwright functional + refresh-persistence"
+  - "EN/LTR + AR/RTL, light/dark, desktop/tablet/mobile, axe WCAG 2.1 AA"
+  - "evidence manifests carrying commit SHA (§21)"
+
+stop_conditions:
+  - "Product Owner has NOT approved cutover of /visits routes."
+  - "No sampling rate set (§0.1.8) — queue blocked."
+  - "No separate Verifier session provisioned (§34.2)."
+
+carryover_note: >-
+  Prior status was AWAITING_PRODUCT_OWNER_APPROVAL at commit 31baf2f8 on the
+  'revamp' worktree. Under §0.1.4/§0.1.5 any prior ACK not backed by current
+  evidence against HEAD does not carry; this packet re-enters the browser gate
+  when re-issued.

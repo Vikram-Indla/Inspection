@@ -1,0 +1,70 @@
+schema_version: "1.0"
+change_control_id: "CC-SAQEEL-OS-V5-ADOPTION-001"
+title: "Adopt SAQEEL Operating System V5 as the programme operating model"
+status: "MERGE_AUTHORIZED_VIA_DELEGATION — operating gates still OPEN"
+authored_by: "claude-orchestrator (session operator: khan.jahanara@gmail.com)"
+authored_on: "2026-07-25"
+supersedes_ref: "CC-OPS-CONTROL-SYSTEM-001 (INSPECTION-MULTI-AGENT-OS-001, status PROPOSED_FOR_LIVE_TEST)"
+sponsor_signature: null            # NOT signed by the sponsor directly. See delegated_merge_authority.
+sponsor_signed_on: null
+delegated_merge_authority:
+  granted_to: "khan.jahanara@gmail.com"
+  granted_by: "Vikram Indla (sponsor)"
+  scope: "Merge of PR #74 (this control-plane scaffolding) into setup/Inspection ONLY."
+  recorded_via: "Operator assertion of delegation, session 2026-07-25. Not a sponsor signature on the full adoption."
+  does_not_resolve:
+    - "GATE-SAMPLING-RATE — still OPEN; the packet queue remains BLOCKED (§0.1.8)."
+    - "GATE-INDEPENDENCE-ACCEPTANCE — still OPEN (§34.6)."
+    - "GATE-WORKFORCE-SESSIONS — still OPEN (§34.2)."
+  effect: "Lands the V5 control plane as git-authoritative. Does NOT start V5 delivery, issue packets, or retire the legacy protocol beyond the superseded-on-signature marker."
+
+summary: >-
+  Replace the dormant Codex/Kimi multi-agent operating protocol with the
+  SAQEEL Operating System V5 (all-Claude workforce: Orchestrator, Build A,
+  Build B, Design, Verifier + advisory ChatGPT). Introduce the machine-readable
+  state subsystem (product-contract/state/**), frozen-and-hashed acceptance
+  criteria, TTL leases, blind verification, and sponsor sampling.
+
+authority_basis:
+  - ".claude/rules/product-contract.md — controlled contracts change only under an approved change ID; this is that record."
+  - "SAQEEL OS V5 §22 — requirement/authority change requires a signed note."
+  - "SAQEEL OS V5 §0.1 — cutover is mandatory before any new work under V5."
+
+scope_in:
+  - "Commit the V5 doc to product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md (git-authoritative)."
+  - "Stand up product-contract/state/** (heartbeat, leases, packets, decisions, CONTROL_BOARD.md)."
+  - "Add product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml."
+  - "Run and publish the §0.1 cutover report."
+
+scope_out_requires_separate_sponsor_action:
+  - id: "GATE-SAMPLING-RATE"
+    ref: "V5 §0.1.8 / §35.3"
+    note: "Sponsor MUST set the sampling percentage. No default exists. Until set, the packet queue is BLOCKED. Rows touching auth/RBAC, money, deletion, audit, providers are 100% sampled regardless of rate."
+  - id: "GATE-INDEPENDENCE-ACCEPTANCE"
+    ref: "V5 §34.6 / §35.6 / Appendix B"
+    note: "Sponsor must acknowledge that all-Claude verification (blind-internal) is WEAKER than the external verification V4 had, or elect to re-introduce a non-Claude actor."
+  - id: "GATE-WORKFORCE-SESSIONS"
+    ref: "V5 §34.2"
+    note: "V5 requires >=5 distinct Claude sessions with separate identities. A single session cannot occupy Build/Verify roles without a P1 (§34.2.1). Sponsor/operator must provision the separate sessions before build packets issue."
+  - "No merge to main, deploy, DDL, provider change, or requirement-denominator change is authorized by this CC (V5 §8, §34.5)."
+
+non_regression:
+  - "Existing coordination artifacts (AGENT_OPERATING_PROTOCOL.yaml, events/, batches/, worker-outputs/) are RETAINED, not deleted, and marked superseded-on-signature."
+  - "No 478-requirement disposition, workflow guard, RLS/RBAC, audit event, or offline behavior is changed by this CC."
+  - "Active product slice and G10 verification are not interrupted."
+  - "Authored in an ISOLATED worktree (~/.saqeel-os-cutover) off setup/Inspection@3eebbf86 — not the shared origin checkout, which had concurrent Codex/Claude iPad sessions live at authoring time."
+
+rollback:
+  method: "Delete product-contract/state/** and SAQEEL_OPERATING_SYSTEM.md; drop this branch/worktree. Retained legacy protocol remains operative."
+  reversible: true
+
+files_added:
+  - "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"
+  - "product-contract/governance/CC-SAQEEL-OS-V5-ADOPTION-001.yaml"
+  - "product-contract/state/CONTROL_BOARD.md"
+  - "product-contract/state/CUTOVER_REPORT.md"
+  - "product-contract/state/heartbeat/claude-orchestrator.yaml"
+  - "product-contract/state/leases/README.md"
+  - "product-contract/state/packets/PKT-0001-carryover-m2-batch-002.yaml"
+  - "product-contract/state/decisions/OPEN_DECISIONS.yaml"
+  - "product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml"

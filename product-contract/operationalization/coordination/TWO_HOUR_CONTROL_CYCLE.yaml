@@ -1,0 +1,40 @@
+# V5 §5 — the two-hour planning/reconciliation horizon (NOT an idle tolerance).
+# Referenced by the §2 bootstrap read-order. Regenerate CONTROL_BOARD.md from state.
+schema_version: "1.0"
+cycle_hours: 2
+idle_tolerance_minutes: 5          # no passive idle > 5 min while a safe READY packet exists
+heartbeat_interval_minutes: 5      # missing 10 min => ORCH-DEFECT (§5)
+
+orchestrator_cycle_actions:        # §5, run every 2 hours
+  - "Read context-health bands for every actor (§17)."
+  - "Read gate, slice, decisions, worktrees, branches, dirty paths."
+  - "Inspect each lane: running / ready / completed / blocked / suspect / stalled."
+  - "Review finished handoffs -> ACK / RETURNED / BLOCKED."
+  - "Reconcile completion against all 478 requirement rows."
+  - "Browser delivery gate on newly delivered work (§6)."
+  - "Commit + push reviewed-green work; update PR. Never merge/deploy without authority."
+  - "Refresh CONTROL_BOARD.md from evidence only."
+  - "Publish flow metrics, decisions at risk, verification ledger (independence split), sampling status."
+  - "Issue next two-hour queue."
+
+cycle_close_invariants:            # §5
+  - "Every lane: active work OR handoff-under-review OR recorded dependency + active fallback."
+  - "At least one worker RUNNING unless every READY task is contract-blocked."
+  - "Each active worker has one bounded READY packet queued behind current work."
+  - "Each packet has requirement/screen/engine/acceptance IDs + frozen criteria hash."
+  - "No two write packets overlap."
+  - "No row reached figure 2 without blind verification by a non-authoring session."
+  - "Sponsor sampling queue <= 1 cycle behind."
+
+thresholds:                        # Appendix A.2 (subset)
+  wip_commit_interval_minutes: 30  # no repo delta => SUSPECT
+  suspect_unanswered_minutes: 15   # => STALLED, lease reclaimed
+  lease_ttl_minutes: 90
+  lease_max_renewals: 2
+  concurrent_write_leases_max: 3
+  review_queue_stop_depth: 2       # > 2 => stop issuing build packets (§34.2.6)
+  median_review_latency_minutes: 30
+  return_rate_escalate_pct: 30
+  blocked_time_escalate_pct: 25
+
+cutover_state: "PARKED — queue frozen at GATE-SAMPLING-RATE (§0.1.8). No cycle issues build packets until resolved."
