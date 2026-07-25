@@ -1,0 +1,373 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-WAVE-00-RECIPIENT-AUTHORITY-RESOLUTION-054F
+title: Admin GIS recipient authority source resolution
+status: PARTIAL_ROLE_AUTHORITY_FOUND_NO_CONTROLLED_DISPATCH_TARGETS
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_RECIPIENT_AUTHORITY_RESOLUTION
+
+purpose: >
+  Map each of the seven acknowledgement-request authority types to existing
+  canonical role, decision and review sources; distinguish an authority type
+  from an actual dispatch identity; identify where exact authority is absent;
+  and define the minimum governance record required before controlled dispatch.
+  No real person, channel, acknowledgement, authority or lease is inferred.
+
+boundary:
+  source_dispatch_review: M10-ADMIN-GIS-WAVE-00-ACK-REQUEST-DISPATCH-READINESS-054E
+  requests_reviewed: 7
+  actual_people_identified: 0
+  dispatch_identities_assigned: 0
+  channels_selected: 0
+  requests_sent: 0
+  acknowledgements_recorded: 0
+  authority_granted: false
+  implementation_lease_granted: false
+  product_design_data_control_mutation: NONE
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+
+canonical_source_manifest:
+  - source_id: AUTH-DECISION-REGISTER
+    path: product-contract/governance/decision_register.csv
+    sha256: b5538721b57c9e7548cec42f3fd82976c5fe8d479a1838430b0d3b673033ed6f
+    authority_use:
+      - Sponsor decision authority
+      - Product Owner decision-owner type
+      - GIS/Operations ownership of DEC-002
+      - Compliance/Security ownership of DEC-006
+      - DEC-012 independent Codex wiring-audit rule
+  - source_id: AUTH-RBAC-MATRIX
+    path: product-contract/domain/rbac_matrix.csv
+    sha256: ce76258b3377c02c16aed11e388901e9beeb791b48a140c3c807311b7d506472
+    authority_use:
+      - RBAC-005 GIS Admin configuration boundary
+      - RBAC-006 Security Admin roles and permissions boundary
+      - RBAC-008 Operations User exception/override boundary
+      - RBAC-012 Auditor view-only boundary
+  - source_id: AUTH-SCREEN-CATALOGUE
+    path: product-contract/screens/screen_route_catalogue.csv
+    sha256: fcc6f1c394fed74e08af529caf78f1ea1881a4be7bd392e1c0b85c8349386e8a
+    authority_use:
+      - SCR-ADM-070 GIS Admin/Technical Admin screen contract
+      - SCR-ADM-090 Security Admin role-and-permission contract
+      - SCR-WEB-500 Operations personas and boundary
+  - source_id: AUTH-HUMAN-APPROVALS
+    path: product-contract/governance/HUMAN_APPROVALS.yaml
+    sha256: a54f639689764ee3f3b42d96176976938a7fd36964a87a76ee58aa080db8b1ee
+    authority_use:
+      - Examples of stable sponsor approval records and bounded scope
+    limitation: Prior approvals do not answer or dispatch packet 048.
+  - source_id: AUTH-CODEX-AUDIT-CHECKLIST
+    path: product-contract/governance/CODEX_WIRING_AUDIT_CHECKLIST.md
+    sha256: f9974928753f4494a609f07c65c715b1487336c467e65e26946240bfc787dd90
+    authority_use:
+      - Independent Codex reviewer definition for CD-0XX wiring audits
+    limitation: Does not automatically appoint a reviewer for this GIS governance packet.
+  - source_id: AUTH-CAPABILITY-MIGRATION
+    path: supabase/migrations/20260721030000_planning_capabilities.sql
+    sha256: 931428b1648abc0e4fa5de083e154b8c136b26f1480c6f0e0cf1978268a542d5
+    authority_use:
+      - Existing role keys include gis_admin and security_admin.
+      - admin.access.manage maps to security_admin.
+    limitation: Runtime capability does not equal policy, sponsor or dispatch authority.
+  - source_id: AUTH-RLS-EXPECTATION
+    path: product-contract/seeding-discovery/PERSONA_RLS_EXPECTATION_MATRIX.csv
+    sha256: 46e5995d45580f026a2f30e223842602773e3bef1b1b3fd758607a500e1d1554
+    authority_use:
+      - Existing gis_admin and security_admin runtime expectations.
+    limitation: Seeder/persona evidence cannot appoint a decision owner or real recipient.
+
+authority_type_resolution:
+  - request_id: GIS-REQ-W00-01
+    acknowledgement_id: GIS-ACK-W00-01
+    required_authority_type: Product-contract source custodian
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-HUMAN-APPROVALS
+      - AUTH-SCREEN-CATALOGUE
+    authority_type_result: NO_EXACT_CANONICAL_CUSTODIAN_ROLE_FOUND
+    related_but_insufficient:
+      - SRC-CUST-001 in the requirement baseline is a source identifier, not a custodian role or dispatch identity.
+      - Product Owner authority governs scope decisions but does not automatically attest repository custody.
+      - Sponsor approval records govern decisions but do not designate the source custodian.
+    actual_dispatch_identity: MISSING
+    minimum_governance_record:
+      record_type: SOURCE_CUSTODY_ACK_ASSIGNMENT
+      required_fields:
+        - accountable body or role
+        - exact authority to attest the named source files and hashes
+        - scope exclusion prohibiting requirement or decision changes
+        - named dispatch identity
+        - delegation evidence if applicable
+        - permitted delivery channel and destination
+        - authorized sender
+        - effective time and expiry or one-request limit
+        - stable approval reference and timestamp
+    safe_interim_boundary:
+      - Keep request unsent.
+      - Treat hashes as technical evidence only, not custodian acknowledgement.
+    dispatch_readiness: BLOCK_NO_EXACT_AUTHORITY
+
+  - request_id: GIS-REQ-W00-02
+    acknowledgement_id: GIS-ACK-W00-02
+    required_authority_type: Independent governance reviewer
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-CODEX-AUDIT-CHECKLIST
+    authority_type_result: PROCEDURAL_INDEPENDENT_REVIEW_ROLE_EXISTS_BUT_SCOPE_IS_DIFFERENT
+    related_but_insufficient:
+      - DEC-012 requires an independent Codex wiring audit for CD-0XX slices.
+      - CODEX_WIRING_AUDIT_CHECKLIST defines independence from design authors and implementers.
+      - Neither source appoints a reviewer for packets 048 through 054E.
+    actual_dispatch_identity: MISSING
+    minimum_governance_record:
+      record_type: GIS_GOVERNANCE_REVIEW_ASSIGNMENT
+      required_fields:
+        - exact packets and hashes under review
+        - named independent reviewer identity
+        - authority source for the assignment
+        - no-authorship and no-future-implementation conflict declaration
+        - review method and allowed ACK/RETURN/BLOCK outcomes
+        - prohibited sponsor-answer substitution
+        - delivery channel, destination and sender authority
+        - stable assignment reference and timestamp
+    safe_interim_boundary:
+      - Reuse independence principles only.
+      - Do not treat DEC-012 as the assignment.
+    dispatch_readiness: BLOCK_ASSIGNMENT_MISSING
+
+  - request_id: GIS-REQ-W01-01
+    acknowledgement_id: GIS-ACK-W01-01
+    required_authority_type: Sponsor
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-HUMAN-APPROVALS
+    authority_type_result: EXACT_SPONSOR_DECISION_AUTHORITY_TYPE_PRESENT
+    evidence:
+      - The decision register assigns multiple product decisions to Sponsor authority.
+      - HUMAN_APPROVALS demonstrates bounded sponsor approvals are recorded as stable governance artifacts.
+    limitation:
+      - This packet deliberately does not copy or infer a real person's identity.
+      - Prior approvals do not answer packet 048.
+      - No delivery channel, destination or sender authority is recorded for this request.
+    actual_dispatch_identity: MISSING_BY_POLICY
+    minimum_governance_record:
+      record_type: SPONSOR_PACKET_DISPATCH_ASSIGNMENT
+      required_fields:
+        - explicit sponsor dispatch identity
+        - authority reference for packet 048
+        - exact request and source hashes
+        - permitted channel and destination
+        - authorized sender
+        - no-implementation and no-hold-closure boundary
+        - stable dispatch record and timestamp
+    safe_interim_boundary:
+      - Keep packet 048 unanswered.
+      - Do not use prior general approval or conversation context as the dispatch record.
+    dispatch_readiness: RETURN_AUTHORITY_TYPE_FOUND_IDENTITY_AND_CHANNEL_MISSING
+
+  - request_id: GIS-REQ-W01-02
+    acknowledgement_id: GIS-ACK-W01-02
+    required_authority_type: Product Owner
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-HUMAN-APPROVALS
+    authority_type_result: EXACT_PRODUCT_OWNER_AUTHORITY_TYPE_PRESENT
+    evidence:
+      - DEC-005 assigns an open product boundary decision to Product Owner.
+      - DEC-033 records Product Owner approval for Web/Admin replacement and requirement-coverage policy.
+    limitation:
+      - A Product Owner type is not an actual dispatch identity.
+      - Existing decisions do not acknowledge this GIS mapping request.
+    actual_dispatch_identity: MISSING
+    minimum_governance_record:
+      record_type: PRODUCT_OWNER_GIS_SCOPE_ACK_ASSIGNMENT
+      required_fields:
+        - named dispatch identity
+        - product-scope authority source
+        - exact requirement/screen/non-double-counting scope
+        - prohibited privacy, RBAC and implementation substitutions
+        - permitted channel, destination and sender authority
+        - stable assignment reference and timestamp
+    safe_interim_boundary:
+      - Keep requirement mapping unchanged.
+      - Count no contextual row as Admin GIS completion.
+    dispatch_readiness: RETURN_AUTHORITY_TYPE_FOUND_IDENTITY_AND_CHANNEL_MISSING
+
+  - request_id: GIS-REQ-W01-03
+    acknowledgement_id: GIS-ACK-W01-03
+    required_authority_type: Existing GIS / Operations domain authority
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-RBAC-MATRIX
+      - AUTH-SCREEN-CATALOGUE
+      - AUTH-CAPABILITY-MIGRATION
+      - AUTH-RLS-EXPECTATION
+    authority_type_result: DOMAIN_OWNER_TYPE_AND_RUNTIME_ROLES_PRESENT_JOINT_DECISION_AUTHORITY_UNRESOLVED
+    evidence:
+      - DEC-002 names GIS/Operations as the policy owner.
+      - RBAC-005 defines GIS Admin configuration scope.
+      - RBAC-008 defines Operations User exception/override scope.
+      - Existing runtime role keys include gis_admin and ops.
+    limitation:
+      - DEC-002 does not say whether one or both domain authorities must acknowledge packet 048 consequences.
+      - Runtime roles do not establish policy-review or dispatch authority.
+      - No actual recipient or channel is recorded.
+    actual_dispatch_identity: MISSING
+    minimum_governance_record:
+      record_type: GIS_OPERATIONS_DOMAIN_REVIEW_ASSIGNMENT
+      required_fields:
+        - whether acknowledgement is joint or which authority is final
+        - named dispatch identity or identities
+        - existing authority source for each
+        - exact writer, activation, emergency and recovery review scope
+        - prohibition on answering for sponsor or RBAC
+        - permitted channel/destination and sender authority
+        - sponsor response prerequisite
+        - stable assignment reference and timestamp
+    safe_interim_boundary:
+      - Keep both runtime roles as evidence of current behavior only.
+      - Do not let either role choose the writer or policy lifecycle by default.
+    dispatch_readiness: BLOCK_JOINT_AUTHORITY_AND_TARGET_UNRESOLVED
+
+  - request_id: GIS-REQ-W01-04
+    acknowledgement_id: GIS-ACK-W01-04
+    required_authority_type: Existing Security and privacy governance
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-RBAC-MATRIX
+      - AUTH-SCREEN-CATALOGUE
+      - AUTH-CAPABILITY-MIGRATION
+      - AUTH-RLS-EXPECTATION
+    authority_type_result: ACCESS_SECURITY_ROLE_PRESENT_PRIVACY_REVIEW_AUTHORITY_PARTIAL
+    evidence:
+      - RBAC-006 and SCR-ADM-090 assign roles and permission scope to Security Admin.
+      - admin.access.manage maps to security_admin.
+      - DEC-006 names Compliance/Security for evidence policy including retention and redaction.
+    limitation:
+      - Security Admin access authority does not by itself authorize the complete GIS persona-purpose privacy matrix.
+      - DEC-006 does not appoint the reviewer for packet 048.
+      - Legal/retention status remains held where MVP3-HOLD-006 applies.
+    actual_dispatch_identity: MISSING
+    minimum_governance_record:
+      record_type: GIS_DISCLOSURE_SECURITY_PRIVACY_REVIEW_ASSIGNMENT
+      required_fields:
+        - named Security/privacy accountable body or joint authorities
+        - existing authority source
+        - exact persona/data/purpose/export/masking review scope
+        - explicit legal/retention hold boundary
+        - prohibition on inventing roles or purposes
+        - permitted channel/destination and sender authority
+        - reviewable sponsor matrix prerequisite
+        - stable assignment reference and timestamp
+    safe_interim_boundary:
+      - Do not broaden current reads.
+      - Keep authenticated-wide precise disclosure classified as a defect.
+      - Do not call Security Admin the privacy decision owner without the assignment.
+    dispatch_readiness: BLOCK_EXACT_PRIVACY_AUTHORITY_AND_TARGET_MISSING
+
+  - request_id: GIS-REQ-W01-05
+    acknowledgement_id: GIS-ACK-W01-05
+    required_authority_type: Independent compatibility reviewer
+    canonical_sources_checked:
+      - AUTH-DECISION-REGISTER
+      - AUTH-CODEX-AUDIT-CHECKLIST
+    authority_type_result: INDEPENDENCE_PATTERN_EXISTS_NO_EXACT_COMPATIBILITY_REVIEW_AUTHORITY
+    related_but_insufficient:
+      - DEC-012 and the Codex checklist establish independence for CD-0XX design-to-code wiring audits.
+      - They do not appoint a compatibility reviewer for GIS owner acknowledgements.
+      - Four prerequisite owner responses are absent.
+    actual_dispatch_identity: MISSING
+    minimum_governance_record:
+      record_type: GIS_ACK_COMPATIBILITY_REVIEW_ASSIGNMENT
+      required_fields:
+        - named reviewer identity
+        - assignment authority source
+        - no-owner, no-author, no-implementation conflict declaration
+        - exact four prerequisite response IDs and hashes
+        - compatibility rules and earliest-wave return authority
+        - prohibition on filling missing responses
+        - permitted channel/destination and sender authority
+        - stable assignment reference and timestamp
+    safe_interim_boundary:
+      - Prepare validation rules only.
+      - Do not dispatch for verdict until all four responses exist.
+    dispatch_readiness: BLOCK_NO_ASSIGNMENT_AND_PREREQUISITES
+
+authority_resolution_summary:
+  exact_authority_type_present:
+    count: 2
+    requests:
+      - GIS-REQ-W01-01
+      - GIS-REQ-W01-02
+    note: Dispatch identity, channel and sender authority still missing.
+  partial_or_related_authority_present:
+    count: 3
+    requests:
+      - GIS-REQ-W00-02
+      - GIS-REQ-W01-03
+      - GIS-REQ-W01-04
+    note: Existing rules/roles do not cover the exact acknowledgement scope.
+  no_exact_authority_present:
+    count: 2
+    requests:
+      - GIS-REQ-W00-01
+      - GIS-REQ-W01-05
+  controlled_dispatch_ready: 0
+
+minimum_governance_record_common_fields:
+  assignment_id: REQUIRED
+  request_id: REQUIRED
+  acknowledgement_id: REQUIRED
+  accountable_authority_type: REQUIRED
+  named_dispatch_identity: REQUIRED
+  canonical_authority_source: REQUIRED
+  exact_allowed_scope: REQUIRED
+  explicit_excluded_scope: REQUIRED
+  delegation_and_evidence: REQUIRED_NONE_OR_DETAILS
+  conflict_and_non_overlap: REQUIRED
+  prerequisite_response_ids: REQUIRED_NONE_OR_LIST
+  permitted_delivery_channel: REQUIRED
+  exact_destination: REQUIRED
+  authorized_sender: REQUIRED
+  one_request_or_expiry_boundary: REQUIRED
+  no_implementation_authority_statement: REQUIRED
+  approval_reference: REQUIRED
+  timestamp_with_timezone: REQUIRED
+
+fail_closed_rules:
+  - A role type without a named dispatch identity is not dispatch-ready.
+  - A runtime role or capability is not policy-review authority.
+  - A named identity without a canonical authority source is not dispatch-ready.
+  - Prior sponsor or Product Owner approvals do not answer a new packet.
+  - DEC-012 independence cannot be expanded to unrelated review scope without assignment.
+  - Security Admin does not automatically own privacy, legal or retention decisions.
+  - GIS Admin or Operations User does not automatically become the sole DEC-002 domain authority.
+  - No request is sent until channel, destination and sender authority are recorded.
+  - No response is inferred from silence, previous conversation or application access.
+
+review_recommendation:
+  ACK:
+    - ACK the canonical source mapping and distinction between authority type and dispatch identity.
+  RETURN:
+    - RETURN sponsor and Product Owner requests for explicit dispatch identity/channel assignment.
+    - RETURN partial authority types for an exact governed assignment.
+  BLOCK:
+    - BLOCK source-custodian and compatibility-review dispatch because no exact authority exists.
+    - BLOCK GIS/Operations and Security/privacy dispatch until joint/exact review authority is governed.
+    - BLOCK all requests from being sent in this packet.
+  current: ACK_AUTHORITY_MAP_BLOCK_CONTROLLED_DISPATCH
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-WAVE-00-MINIMUM-TARGET-ASSIGNMENT-RECORD-054G
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Produce one blank governed target-assignment record template using the
+    common fields in packet 054F, with request-specific scope and exclusions
+    for all seven requests. Do not fill names, channels, destinations,
+    dispositions or authority; do not send requests.
+  non_overlap:
+    - no external communication, product, design, data, test, fixture, evidence, shared control, branch or lease mutation
