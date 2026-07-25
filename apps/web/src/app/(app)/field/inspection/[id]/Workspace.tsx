@@ -9,6 +9,7 @@ import {
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
+import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
@@ -136,6 +137,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [findings, setFindings] = useState<Record<string, FindingDraft>>(() => Object.fromEntries(serverFindings.filter(f => !!f.item_id).map(f =>
     [f.item_id!, { id: f.id, description: f.description, severity: f.severity, state: "saved" as const }])));
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
+  // SCR-IPAD-630 — item ids whose finding op is still in the canonical outbox
+  // (unsynced). Authoritative source of the per-finding "pending" state and of
+  // the submit gate; refreshed from the outbox on every sync tick.
+  const [queuedFindingItems, setQueuedFindingItems] = useState(() => new Set<string>());
   const [commentDrafts, setCommentDrafts] = useState({} as Record<string, string>);
   // F2 — captured photos awaiting the annotation overlay (pre-enqueue, offline-safe)
   const [pendingShots, setPendingShots] = useState([] as { item: Item; b64: string; mime: string; fname: string; replaceId?: string }[]);
@@ -252,7 +257,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const vioIdsRef = useRef(vioIds); vioIdsRef.current = vioIds;
   const itemStatesRef = useRef(itemStates); itemStatesRef.current = itemStates;
   const manualFormsRef = useRef(manualForms); manualFormsRef.current = manualForms;
-  const pending = useRef({ ctx: false, forms: new Set(), findings: new Set(), vios: new Set(), manual: [] as { id: string; form_type: string; title: string }[] } as { ctx: boolean; forms: Set<string>; findings: Set<string>; vios: Set<string>; manual: { id: string; form_type: string; title: string }[] });
+  const pending = useRef({ ctx: false, forms: new Set(), vios: new Set(), manual: [] as { id: string; form_type: string; title: string }[] } as { ctx: boolean; forms: Set<string>; vios: Set<string>; manual: { id: string; form_type: string; title: string }[] });
   const flushRef = useRef(() => {});
   // F2 — durable media pendings (replace-archive M04-163 · soft delete M04-164);
   // persisted as local drafts so they survive reload while offline.
@@ -274,13 +279,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
           }
         }
         if (k.startsWith(`${inspection.id}:finding:`)) {
+          // Restore the narrative TEXT after a reload; the outbox (durable in
+          // IndexedDB) remains the authority for whether it is still unsynced.
           const itemId = k.slice(`${inspection.id}:finding:`.length);
           const draft = r.v as FindingDraft;
           setFindings(current => ({
             ...current,
             [itemId]: current[itemId]?.state === "saved" ? current[itemId] : { ...draft, state: "pending" },
           }));
-          pending.current.findings.add(itemId);
         }
       }
       if (pendingArch.current.length || pendingDel.current.length) {
@@ -305,6 +311,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const refreshQueued = useCallback(async () => {
     const ops = await local.peekAll();
     setQueuedEv(ops.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.inspection_id === inspection.id));
+    const fids = new Set<string>();
+    for (const o of ops) if (o.kind === "finding" && o.inspection_id === inspection.id) fids.add(o.item_id);
+    setQueuedFindingItems(fids);
   }, [inspection.id]);
   useEffect(() => {
     const tick = () => { processOutbox(userId, onState); refreshQueued(); flushRef.current(); };
@@ -330,55 +339,63 @@ export default function Workspace({ inspection, items, library, serverResponses,
     await local.saveDraft(inspection.id, "__ctx", next);   // durable local home while offline
     await pushCtx(next);
   }
-  async function saveFinding(item: Item, code: string) {
+  // SCR-IPAD-630 / FLD-FND-001..003 — remove every queued finding op for a
+  // stable id, so a re-save/retry REPLACES rather than duplicates (idempotency
+  // at the queue level; the replay UPSERT is idempotent at the row level too).
+  async function removeFindingOps(id: string) {
+    const ops = await local.peekAll();
+    const keys = await local.keys();
+    for (let i = 0; i < ops.length; i++) {
+      const o = ops[i];
+      if (o.kind === "finding" && (o as FindingOp).id === id) await local.remove(keys[i]);
+    }
+  }
+  /** Persist the finding narrative locally and (re)enqueue its canonical FIFO
+   *  outbox op. No network here — replay is driven by the sync tick / online
+   *  event / explicit retry, exactly like every other outbox op. Empty narrative
+   *  clears any queued op (nothing persists an empty finding). */
+  async function queueFinding(item: Item, code: string, description: string) {
     const cfg = vioConfig[code];
     const current = findingsRef.current[item.id];
-    const description = current?.description.trim() ?? "";
-    if (!description) {
-      setFindings(all => ({ ...all, [item.id]: { id: current?.id ?? null, description: "", severity: cfg?.level ?? "", state: "failed" } }));
-      setMsg(strings.findingRequired);
+    // Stable client id == idempotency key; reuse the existing one (incl. a
+    // server row's id) so retries UPSERT the SAME row.
+    const id = current?.id ?? crypto.randomUUID();
+    const trimmed = description.trim();
+    if (!trimmed) {
+      await removeFindingOps(id);
+      const empty: FindingDraft = { id, description: "", severity: cfg?.level ?? "", state: "pending" };
+      setFindings(all => ({ ...all, [item.id]: empty }));
+      await local.saveDraft(inspection.id, `finding:${item.id}`, empty);
+      await refreshQueued();
       return;
     }
-    const draft: FindingDraft = {
-      id: current?.id ?? null,
-      description: description.slice(0, 2000),
-      severity: cfg?.level ?? "",
-      state: navigator.onLine ? "pending" : "pending",
-    };
+    const draft: FindingDraft = { id, description: trimmed.slice(0, 2000), severity: cfg?.level ?? "", state: "pending" };
     setFindings(all => ({ ...all, [item.id]: draft }));
     await local.saveDraft(inspection.id, `finding:${item.id}`, draft);
-    if (!navigator.onLine) { pending.current.findings.add(item.id); setMsg(strings.findingPending); return; }
-
-    const sb = supabaseBrowser();
-    let findingId = draft.id;
-    const write = findingId
-      ? await sb.from("findings").update({ description: draft.description, severity: draft.severity }).eq("id", findingId).eq("inspection_id", inspection.id).select("id").maybeSingle()
-      : await sb.from("findings").insert({ inspection_id: inspection.id, item_id: item.id, severity: draft.severity, description: draft.description }).select("id").single();
-    if (write.error || !write.data?.id) {
-      console.error("[field workspace finding]", write.error?.message ?? "finding write returned no row");
-      pending.current.findings.add(item.id);
-      setFindings(all => ({ ...all, [item.id]: { ...draft, state: "failed" } }));
-      setMsg(strings.saveFailed);
-      return;
-    }
-    findingId = write.data.id;
-    const violationId = await ensureViolation(code);
-    if (violationId) {
-      const { error: linkError } = await sb.from("violations").update({ finding_id: findingId }).eq("id", violationId).eq("inspection_id", inspection.id);
-      if (linkError) {
-        console.error("[field workspace finding link]", linkError.message);
-        pending.current.findings.add(item.id);
-        setFindings(all => ({ ...all, [item.id]: { ...draft, id: findingId, state: "failed" } }));
-        setMsg(strings.saveFailed);
-        return;
-      }
-    }
-    const saved = { ...draft, id: findingId, state: "saved" as const };
-    setFindings(all => ({ ...all, [item.id]: saved }));
-    await local.saveDraft(inspection.id, `finding:${item.id}`, saved);
-    pending.current.findings.delete(item.id);
-    setMsg(strings.findingSaved);
+    const op: FindingOp = { kind: "finding", id, inspection_id: inspection.id, item_id: item.id, severity: cfg?.level ?? "", description: draft.description, queued_at: new Date().toISOString() };
+    await removeFindingOps(id);      // dedupe by stable id — never a second op
+    await local.enqueue(op);         // canonical FIFO outbox (before any submit op)
+    await refreshQueued();
   }
+  /** Commit-on-blur / retry: ensure the latest narrative is queued, then kick
+   *  the canonical replay. Empty narrative surfaces the mandatory-finding notice. */
+  async function saveFinding(item: Item, code: string) {
+    const description = findingsRef.current[item.id]?.description ?? "";
+    await queueFinding(item, code, description);
+    if (!description.trim()) { setMsg(strings.findingRequired); return; }
+    processOutbox(userId, onState);
+    setMsg(navigator.onLine ? strings.findingPending : strings.findingPending);
+  }
+  /** A finding's effective state is derived from the outbox: still-queued →
+   *  pending (waiting to sync); gone from the queue with text → saved. We do NOT
+   *  paint a finding "failed" from the workspace-global sync state; a failed
+   *  replay simply leaves the op queued (pending) and the shared sync chip
+   *  reports the failure. */
+  const findingStatus = useCallback((itemId: string): FindingSyncState => {
+    const d = findingsRef.current[itemId];
+    if (!d || !d.description.trim()) return "empty";
+    return queuedFindingItems.has(itemId) ? "pending" : "saved";
+  }, [queuedFindingItems]);
   async function ensureViolation(code: string): Promise<string | null> {
     const known = vioIdsRef.current[code]; if (known) return known;
     const cfg = vioConfig[code];
@@ -523,12 +540,8 @@ export default function Workspace({ inspection, items, library, serverResponses,
       const def = formRequired(item, answersRef.current[itemId]?.value, formDefs);
       if (def) pushForm(item, def);
     }
-    for (const itemId of [...pending.current.findings]) {
-      const item = items.find(i => i.id === itemId) ?? library.find(i => i.id === itemId);
-      const value = answersRef.current[itemId]?.value;
-      const code = value ? item?.response_model.mapping?.[value]?.violation : undefined;
-      if (item && code) saveFinding(item, code);
-    }
+    // Findings are canonical outbox ops now — processOutbox() replays them in
+    // FIFO order; no bespoke reconnect replay needed here.
     // Phase 5 (§18) — replay queued manual action-form adds (id-keyed inserts).
     if (pending.current.manual.length) {
       const rest: typeof pending.current.manual = [];
@@ -714,9 +727,22 @@ export default function Workspace({ inspection, items, library, serverResponses,
     .map(code => ({ code, config: vioConfig[code] ?? null })), [invalidatedVios, vioConfig]);
 
   async function submit() {
-    const missingFindingNarratives = implied.filter(v => !findingsRef.current[v.itemId]?.description.trim());
-    if (missingFindingNarratives.length) {
-      setMsg(`${strings.findingRequired}: ${missingFindingNarratives.map(v => v.itemCode).join(", ")}`);
+    // Findings gate (FLD-FND-003): every implied violation needs a narrative that
+    // has PERSISTED. Read the outbox authoritatively (not the ≤8s-stale tick
+    // state) so an empty, still-queued (unsynced) or failed finding all block
+    // submission — a submitted inspection can never reference an unpersisted
+    // finding, and FIFO replay would carry findings before the submit op anyway.
+    const queuedNow = await local.peekAll();
+    const queuedFindingIds = new Set(queuedNow.filter(o => o.kind === "finding" && o.inspection_id === inspection.id).map(o => (o as FindingOp).item_id));
+    const findingState: Record<string, FindingSyncState> = {};
+    for (const v of implied) {
+      const d = findingsRef.current[v.itemId];
+      findingState[v.itemId] = !d || !d.description.trim() ? "empty" : queuedFindingIds.has(v.itemId) ? "pending" : "saved";
+    }
+    const findingBlocks = findingSubmitBlockers(implied.map(v => ({ itemId: v.itemId, itemCode: v.itemCode })), findingState);
+    if (findingBlocks.length) {
+      processOutbox(userId, onState);   // nudge any unsynced finding toward sync
+      setMsg(`${strings.findingRequired}: ${findingBlocks.join(", ")}`);
       return;
     }
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
@@ -1289,15 +1315,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
                       placeholder={strings.findingPlaceholder}
                       value={findings[v.itemId]?.description ?? ""}
                       onChange={e => {
-                        const next: FindingDraft = {
-                          id: findingsRef.current[v.itemId]?.id ?? null,
-                          description: e.target.value,
-                          severity: v.config?.level ?? "",
-                          state: "pending",
-                        };
-                        setFindings(all => ({ ...all, [v.itemId]: next }));
-                        void local.saveDraft(inspection.id, `finding:${v.itemId}`, next);
-                        pending.current.findings.add(v.itemId);
+                        // Local narrative edit → (re)queue the canonical finding
+                        // op (deduped by id); no network until blur / tick.
+                        const item = items.find(i => i.id === v.itemId) ?? library.find(i => i.id === v.itemId);
+                        if (item) void queueFinding(item, v.code, e.target.value);
                       }}
                       onBlur={() => {
                         const item = items.find(i => i.id === v.itemId) ?? library.find(i => i.id === v.itemId);
@@ -1306,16 +1327,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
                     />
                   </label>
                   <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
-                    <span className="t-caption">
-                      {findings[v.itemId]?.state === "saved" ? strings.findingSaved
-                        : findings[v.itemId]?.state === "failed" ? strings.saveFailed
+                    <span className="t-caption" data-testid={`finding-status-${v.itemCode}`}>
+                      {findingStatus(v.itemId) === "saved" ? strings.findingSaved
+                        : findingStatus(v.itemId) === "empty" ? strings.findingRequired
                         : strings.findingPending}
                     </span>
-                    {findings[v.itemId]?.state === "failed" && (
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => {
-                        const item = items.find(i => i.id === v.itemId) ?? library.find(i => i.id === v.itemId);
-                        if (item) void saveFinding(item, v.code);
-                      }}>{strings.findingRetry}</button>
+                    {findingStatus(v.itemId) === "pending" && (
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.findingRetry}</button>
                     )}
                   </div>
                 </div>
