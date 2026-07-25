@@ -29,7 +29,7 @@ final class DashboardStore: ObservableObject {
         }
     }
 
-    static func riyadhToday() -> String {
+    nonisolated static func riyadhToday() -> String {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "Asia/Riyadh") ?? .current
         let c = cal.dateComponents([.year, .month, .day], from: Date())
