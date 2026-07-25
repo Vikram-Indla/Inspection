@@ -30,7 +30,13 @@ async function resolveLocale(): Promise<Locale> {
   return c.get("login_locale")?.value === "en" ? "en" : "ar";
 }
 
-export default async function Login() {
+export default async function Login({ searchParams }: {
+  searchParams: Promise<{ next?: string; reason?: string }>;
+}) {
+  // field/layout, Shell and FieldSessionBoundary all bounce here with ?next and
+  // ?reason on an expired or unauthorized field session. Read them, or a signed
+  // -out inspector loses the page they were on and the reason they were sent back.
+  const sp = await searchParams;
   const locale = await resolveLocale();
   const ar = locale === "ar";
 
@@ -134,7 +140,8 @@ export default async function Login() {
   return (
     <div className="lg-page lg-page--split" dir={ar ? "rtl" : "ltr"} lang={locale}>
       <FieldLoginClient s={fieldStrings} dir={ar ? "rtl" : "ltr"} lang={locale}
-        localeHref={ar ? "/locale?set=en" : "/locale?set=ar"} />
+        localeHref={ar ? "/locale?set=en" : "/locale?set=ar"}
+        returnTo={sp.next} reason={sp.reason} />
       <StoryPanel strings={story} locale={locale} />
     </div>
   );

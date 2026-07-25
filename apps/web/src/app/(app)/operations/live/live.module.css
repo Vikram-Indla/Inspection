@@ -413,10 +413,15 @@
   to { opacity: 1; }
 }
 
+/* iPad and below: stop competing for width. A 270px side rail forced the
+   inspector cards to one word per line ("Najd / Steel / Fabrication"), which is
+   unreadable and is not what the design shows. Stack instead — map first, the
+   full-width inspector list under it — so every card gets the whole row. */
 @media (max-width: 1024px) {
   .workspace {
-    grid-template-columns: minmax(0, 1fr) minmax(270px, 0.65fr);
+    grid-template-columns: minmax(0, 1fr);
   }
+  .workspace > * { min-inline-size: 0; }
 }
 
 @media (max-width: 700px) {
