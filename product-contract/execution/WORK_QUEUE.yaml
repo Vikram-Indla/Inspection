@@ -8,6 +8,14 @@ items:
     blocked_by: ["Product Owner confirms the corrected real Web/Admin shell in Chrome"]
     blocks: ["M3 final sponsor browser acceptance", "Reliable shared-shell visual baseline for later Web/Admin modules"]
     note: "Sponsor-reported EN/LTR Operations defect was a global shell regression against the already-approved bilingual asset. Real-browser follow-up also proved the promoted ShellClient's ax-* namespace had no matching root stylesheet import. The isolated correction restores /saqeel-wordmark-dark-mode.svg expanded, /saqeel-favicon.svg collapsed, mobile drawer expansion, and the existing astryx.css component layer in root layout. Typecheck/build, focused 4/4 and runtime compiled-CSS link pass. Await Product Owner Chrome confirmation. No M3 page, Field/PWA/iPad, asset, backend, remote, commit, push, merge or deployment action."
+  - task_id: "TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001"
+    gate: "Web/Admin M3 implementation and human screen approval"
+    priority: "P0"
+    status: "APPROVED_IN_PROGRESS"
+    owner: "Codex implementation and QA + Claude Design review + Product Owner screen approval"
+    blocked_by: []
+    blocks: ["M3 canonical promotion", "Real-system Operations sponsor walkthrough"]
+    note: "Route-safety and WA-DES-033-C3 Operations Center composition pass typecheck/build and focused source/runtime/route-safety 11/11 after two independent-review correction returns. Five governed KPIs, two views, neutral Mapbox/list, preview dialogs, drill and existing operational functions are preserved. Submitted Today and Active Alerts remain fail-closed. Operations Live and final integrated Chrome/RTL/theme/viewport/provider/a11y/protected evidence remain open. /operations/exceptions, Field/PWA/iPad, shared shell/GeoMap, APIs, migrations and remote Supabase are excluded."
   - task_id: "TASK-WEB-ADMIN-PHASE1-M1-DASHBOARD-001"
     gate: "Web/Admin M1 implementation and screen certification"
     priority: "P0"
