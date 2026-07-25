@@ -85,7 +85,7 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     updatedAgo: tr("field.travel.updatedAgo", "{n}s ago", "قبل {n} ثانية"),
     updatedNow: tr("field.travel.updatedNow", "just now", "الآن"),
     openInMaps: tr("field.travel.openInMaps", "Open in Maps", "فتح في الخرائط"),
-    privacyNote: tr("field.travel.privacyNote", "Your live location is used only during this journey to draw your route and range. This screen does not record or store your position.", "يُستخدم موقعك المباشر أثناء هذه الرحلة فقط لرسم مسارك ونطاقك. لا تسجّل هذه الشاشة موقعك ولا تخزّنه."),
+    privacyNote: tr("field.travel.privacyNote", "This route view only displays your live location to draw your route and range; the view itself stores nothing. Your journey position and arrival are recorded by the governed check-in as immutable geo events (M04-004).", "يعرض هذا المسار موقعك المباشر فقط لرسم مسارك ونطاقك، ولا يخزّن العرض نفسه أي شيء. تُسجَّل مواضع رحلتك ووصولك عبر تسجيل الدخول المحكوم كأحداث موقع غير قابلة للتغيير (M04-004)."),
   };
 
   const factory = (v?.factories ?? null) as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null; risk_band: string | null } | null;
