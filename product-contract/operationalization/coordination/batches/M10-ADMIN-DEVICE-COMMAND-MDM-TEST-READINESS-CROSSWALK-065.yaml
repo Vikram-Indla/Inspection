@@ -1,0 +1,489 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+title: Trusted Devices and MDM test-readiness crosswalk
+status: CROSSWALK_COMPLETE_TEST_EXECUTION_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_TEST_READINESS
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  tests_added_or_executed: 0
+  lifecycle_cases_proven: 0
+  reason: >-
+    This crosswalk assigns future proof layers and blocker ownership. It does
+    not add or run tests, approve policy/provider/design contracts, or prove a
+    lifecycle outcome.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-TEST-READINESS-CROSSWALK-065
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-EVIDENCE-GAP-INVENTORY-063
+    - M10-ADMIN-DEVICE-COMMAND-MDM-NEGATIVE-ACCEPTANCE-MATRIX-064
+  route: /admin/devices
+  module_id: M3-06
+  module_design_id: CD-056
+  do_not_touch:
+    - Claude Design, WA-DES-015, WA-DES-041 or CD-056
+    - application, database, provider, seed, test or evidence files
+    - RBAC, transition, provider-hold, decision, acceptance or status registers
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only trace and readiness definition. No implementation, design,
+    provider, database, seed, test, evidence or control state is changed.
+
+requirement_authority:
+  MVP2-REQ-0176:
+    acceptance: MVP2-AC-0176
+    outcome: Register and assign devices, enforce MDM, govern package expiry and remote wipe, expose sync health; revoked devices cannot open packages.
+    priority: P0
+  MVP2-REQ-0184:
+    acceptance: MVP2-AC-0184
+    outcome: Only trusted enrolled iPads may run field inspections.
+    priority: P0
+  MVP2-REQ-0186:
+    acceptance: MVP2-AC-0186
+    outcome: Operational sync-health dashboard supports field-issue rescue.
+    priority: P1
+  MVP2-REQ-0244:
+    acceptance: MVP2-AC-0244
+    outcome: Only trusted enrolled devices may download, open and submit official packages; unregistered/revoked/non-compliant paths fail closed.
+    priority: P0
+  WA-M8-AC-001: Authorized source-backed behavior and real-service interactions.
+  WA-M8-AC-002: Unauthorized, validation, stale/conflict, provider and RLS/RBAC paths fail safely.
+  WA-M8-AC-003: Zero unapproved visual difference at the governed viewport.
+  WA-M8-AC-004: EN/LTR and AR/RTL at desktop, 1024, 412/390 and 320 plus keyboard/accessibility.
+  WA-M8-AC-005: Backend, workflow, audit, version, maker-checker and adjacent-route regression.
+  WA-M8-AC-006: Complete truthful requirement/design/route/evidence trace.
+
+future_test_layers:
+  DB_RLS:
+    purpose: Authenticated persona, row visibility and direct table/RPC mutation boundaries.
+    evidence: Transactional result, before/after rows, role identity and zero-side-effect assertions.
+  DB_LIFECYCLE:
+    purpose: Locked transition, version/precondition, idempotency, audit atomicity and terminal-state rules.
+    evidence: Positive and negative transactional receipts with concurrent-session cases.
+  SERVER_ACTION:
+    purpose: Input validation, session expiry, neutral errors, correlation identity and revalidation behavior.
+    evidence: Named action/API result plus database and provider-spy side-effect assertion.
+  ADMIN_BROWSER:
+    purpose: /admin/devices persona behavior, commands, confirmation, errors, evidence history and degraded states.
+    evidence: Playwright trace plus stable screenshot/video for each governed state.
+  FIELD_BROWSER:
+    purpose: Enrollment, package download/open/cached-open/sync/submit enforcement and offline replay.
+    evidence: iPad-profile browser trace, local-store/server rows and denial/recovery screenshots.
+  PROVIDER_CONTRACT:
+    purpose: Approved provider dispatch, authentication, correlation, retry, rejection and receipt stages.
+    evidence: Genuine non-production provider receipt; mocks may test shape but cannot certify provider runtime.
+  VISUAL_I18N_A11Y:
+    purpose: Accepted design, EN/AR, RTL/LTR, light/dark, reflow, keyboard and semantic accessibility.
+    evidence: Governed design fingerprint, fixed-view comparison, axe/semantic results and screenshots.
+  REGRESSION:
+    purpose: Package, submission, immutable evidence, offline isolation and adjacent admin route preservation.
+    evidence: Required focused and protected-suite run receipts with zero unexplained failures.
+
+fixture_prerequisites:
+  deterministic_data:
+    owner: Seeder and data-fixture engineering lease after contract approval
+    required:
+      - one device per state: pending, trusted, suspended, revoked, wipe_pending, wiped
+      - assigned and unassigned devices with stable non-production identifiers
+      - compliant and non-compliant app versions
+      - fresh, stale, absent and mismatched evidence cases
+      - active, expired, invalidated and cached package manifests
+      - empty, pending, conflicted, failed and replayable outbox/sync cases
+      - commands in every approved lifecycle state with independent actor identities
+    restriction: No seed may manufacture a genuine provider acknowledgement or be cited as production evidence.
+  personas:
+    owner: Identity/RBAC governance plus test-fixture engineering
+    required:
+      - unauthenticated
+      - inspector assigned self
+      - unrelated authenticated user
+      - auditor
+      - ops if approved
+      - security_admin if approved
+      - separate requester and approver if required
+  provider:
+    owner: Sponsor plus security/integration owner
+    required:
+      - approved provider or explicit formal hold
+      - authenticated non-production endpoint
+      - command, correlation, idempotency and receipt schemas
+      - accepted, rejected, timeout, mismatched, duplicate and late receipt fixtures
+    restriction: Provider outcome, timing and retries cannot be invented.
+  design:
+    owner: Claude Design owner plus sponsor
+    required:
+      - stable CD-056 route-specific package/frame identity
+      - accepted desktop, tablet and narrow reflow
+      - EN/LTR and AR/RTL
+      - loading, empty, denied, stale, conflict, provider-unavailable, failed-receipt and terminal states
+
+negative_case_crosswalk:
+  - group_id: NEG-XW-01
+    case_ids: [DEV-NEG-AUTH-01, DEV-NEG-AUTH-02, DEV-NEG-AUTH-03, DEV-NEG-AUTH-04, DEV-NEG-AUTH-05, DEV-NEG-AUTH-06, DEV-NEG-AUTH-07]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+    layers: [DB_RLS, SERVER_ACTION, ADMIN_BROWSER, REGRESSION]
+    data_prerequisites: Named personas, assigned/unassigned devices, command/source-state fixtures, separate requester/approver if approved.
+    provider_prerequisites: Dispatch spy proves zero outbound request for denials; genuine provider is not required for these denial cases.
+    browser_evidence: Direct-route and direct-submit result per persona, mutation controls, denial/recovery, no restricted data disclosure.
+    blocker_owner:
+      primary: Sponsor and RBAC governance
+      implementation_after_decision: Device-command engineering lease
+      reviewer: Independent Codex reviewer
+    blocker: DEV-CMD-DEC-01..03 are unresolved.
+
+  - group_id: NEG-XW-02
+    case_ids: [DEV-NEG-STATE-01, DEV-NEG-STATE-02, DEV-NEG-STATE-03, DEV-NEG-STATE-04, DEV-NEG-STATE-05, DEV-NEG-STATE-06, DEV-NEG-STATE-07, DEV-NEG-STATE-08]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, FIELD_BROWSER, REGRESSION]
+    data_prerequisites: Every device state, every approved command, malformed identifiers/reasons, prior evidence, package/open/sync/submit fixtures.
+    provider_prerequisites: Zero outbound dispatch for locally invalid transitions.
+    browser_evidence: Ineligible controls explain why; forced direct submission fails; terminal state and package denial remain visible.
+    blocker_owner:
+      primary: Sponsor for transition and terminal policy
+      implementation_after_decision: Database/device/package engineering lease
+      reviewer: Independent Codex reviewer
+    blocker: DEV-CMD-DEC-02 and DEV-CMD-DEC-04 are unresolved; current Resume source is unsafe.
+
+  - group_id: NEG-XW-03
+    case_ids: [DEV-NEG-STALE-01, DEV-NEG-STALE-02, DEV-NEG-STALE-03, DEV-NEG-STALE-04, DEV-NEG-STALE-05]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-002, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, PROVIDER_CONTRACT, REGRESSION]
+    data_prerequisites: Versioned device snapshots, concurrent actors, stale/absent evidence, superseded commands, stale sync state.
+    provider_prerequisites: Late and superseded authenticated receipt fixtures after the lifecycle schema is approved.
+    browser_evidence: Conflict, refresh/reconcile path, last-confirmed timestamp, stale/unknown state and disabled mutation.
+    blocker_owner:
+      primary: Sponsor for freshness and lifecycle semantics
+      implementation_after_decision: Database/concurrency and provider-adapter leases
+      reviewer: Independent Codex reviewer
+    blocker: DEV-CMD-DEC-05, DEV-CMD-DEC-06 and DEV-CMD-DEC-08 are unresolved.
+
+  - group_id: NEG-XW-04
+    case_ids: [DEV-NEG-DUP-01, DEV-NEG-DUP-02, DEV-NEG-DUP-03, DEV-NEG-DUP-04]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0244, WA-M8-AC-002, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, PROVIDER_CONTRACT]
+    data_prerequisites: Stable correlation/idempotency identities, duplicate submissions, duplicate receipts and already-invalidated packages.
+    provider_prerequisites: Approved retry/deduplication contract and genuine duplicate/timeout non-production receipts.
+    browser_evidence: Pending submit disables safely, resubmission resolves to existing command, effect/history appears once.
+    blocker_owner:
+      primary: Sponsor and provider/security owner
+      implementation_after_decision: Database and provider-adapter leases
+      reviewer: Independent Codex reviewer
+    blocker: DEV-CMD-DEC-06, DEV-CMD-DEC-07 and DEV-CMD-DEC-09 are unresolved.
+
+  - group_id: NEG-XW-05
+    case_ids: [DEV-NEG-PROV-01, DEV-NEG-PROV-02, DEV-NEG-PROV-03, DEV-NEG-PROV-04, DEV-NEG-PROV-05, DEV-NEG-PROV-06]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005, WA-M8-AC-006]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, FIELD_BROWSER, PROVIDER_CONTRACT, REGRESSION]
+    data_prerequisites: Pending/rejected/unknown/accepted/received/completed/quarantined command records with correlation and evidence metadata.
+    provider_prerequisites: Approved provider or formal hold, authenticated receipt contract and genuine non-production receipts.
+    browser_evidence: Provider-unavailable, rejection, timeout, accepted-not-applied, failed receipt and quarantined evidence states.
+    blocker_owner:
+      primary: Sponsor plus security/integration owner
+      implementation_after_decision: Provider-adapter and device-command leases
+      reviewer: Independent Codex reviewer
+    blocker: No approved provider contract or formal MDM hold; DEV-CMD-DEC-06 and DEV-CMD-DEC-09 unresolved.
+
+  - group_id: NEG-XW-06
+    case_ids: [DEV-NEG-OFF-01, DEV-NEG-OFF-02, DEV-NEG-OFF-03, DEV-NEG-OFF-04, DEV-NEG-OFF-05]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0186, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, FIELD_BROWSER, PROVIDER_CONTRACT, REGRESSION]
+    data_prerequisites: Offline admin interruption, offline device, cached package, replayable outbox, conflicts, unavailable sync source.
+    provider_prerequisites: Provider/network interruption fixture; no false success when acknowledgement is absent.
+    browser_evidence: Both admin and field traces show pending/blocked state, last-confirmed age, recovery, replay denial and no evidence loss.
+    blocker_owner:
+      primary: Sponsor for sync-health and invalidation ownership
+      implementation_after_decision: Offline/sync, package and provider-adapter leases
+      reviewer: Independent Codex reviewer
+    blocker: DEV-CMD-DEC-07..09 are unresolved.
+
+  - group_id: NEG-XW-07
+    case_ids: [DEV-NEG-AUD-01, DEV-NEG-AUD-02, DEV-NEG-AUD-03, DEV-NEG-AUD-04]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0244, WA-M8-AC-002, WA-M8-AC-005, WA-M8-AC-006]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, PROVIDER_CONTRACT, REGRESSION]
+    data_prerequisites: Forced audit failure, malformed/unverifiable receipt, incomplete audit fields and attempted history mutation.
+    provider_prerequisites: Approved receipt authenticity and correlation fields.
+    browser_evidence: Audit failure does not claim queueing; failed receipt and immutable history are visible to authorized personas.
+    blocker_owner:
+      primary: Security/audit governance plus sponsor
+      implementation_after_decision: Audit/database and provider-adapter leases
+      reviewer: Independent Codex reviewer
+    blocker: Receipt schema and lifecycle authority are unresolved.
+
+  - group_id: NEG-XW-08
+    case_ids: [DEV-NEG-I18N-01, DEV-NEG-I18N-02]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0186, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-003, WA-M8-AC-004, WA-M8-AC-006]
+    layers: [ADMIN_BROWSER, FIELD_BROWSER, VISUAL_I18N_A11Y]
+    data_prerequisites: Long EN/AR names/reasons, UUIDs, mixed-direction identifiers, dates, every lifecycle/degraded state.
+    provider_prerequisites: None for layout; genuine provider labels/receipts required before final completion-state certification.
+    browser_evidence: Fixed screenshots and semantic traces in EN/LTR and AR/RTL with bidi-isolated machine values.
+    blocker_owner:
+      primary: Claude Design owner and Arabic reviewer
+      implementation_after_decision: Devices UI lease
+      reviewer: Independent Codex reviewer
+    blocker: Stable accepted CD-056 revision and reviewed Arabic are absent.
+
+  - group_id: NEG-XW-09
+    case_ids: [DEV-NEG-RESP-01, DEV-NEG-RESP-02]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0186]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0186, WA-M8-AC-003, WA-M8-AC-004]
+    layers: [ADMIN_BROWSER, VISUAL_I18N_A11Y]
+    data_prerequisites: Long content and full command/evidence history at 1200x governed, 1024, 412/390 and 320.
+    provider_prerequisites: None.
+    browser_evidence: Screenshot and interaction trace at every required viewport, 200 percent zoom and keyboard-visible state.
+    blocker_owner:
+      primary: Claude Design owner
+      implementation_after_decision: Devices UI lease
+      reviewer: Independent Codex reviewer
+    blocker: Route-specific accepted responsive design is absent.
+
+  - group_id: NEG-XW-10
+    case_ids: [DEV-NEG-A11Y-01, DEV-NEG-A11Y-02, DEV-NEG-A11Y-03]
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0186]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0186, WA-M8-AC-004, WA-M8-AC-006]
+    layers: [ADMIN_BROWSER, VISUAL_I18N_A11Y]
+    data_prerequisites: Every enabled, disabled, pending, success, denied, conflict, stale and failed-receipt state.
+    provider_prerequisites: None for semantics; final live updates require real lifecycle events.
+    browser_evidence: Keyboard trace, focus order, accessible names/descriptions, live-region behavior, contrast, forced-colors and reduced-motion.
+    blocker_owner:
+      primary: Claude Design owner and accessibility reviewer
+      implementation_after_decision: Devices UI lease
+      reviewer: Independent Codex reviewer
+    blocker: Accepted interaction/state design and route-specific accessibility proof are absent.
+
+negative_coverage_integrity:
+  expected_case_count: 46
+  mapped_case_count: 46
+  duplicate_case_ids: []
+  missing_case_ids: []
+  execution_result: NOT_RUN
+
+positive_lifecycle_crosswalk:
+  - case_id: DEV-POS-01
+    lifecycle: Self-enroll assigned iPad as pending and fail-closed.
+    requirements: [MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-002]
+    layers: [DB_RLS, FIELD_BROWSER]
+    prerequisites: Assigned inspector persona and fresh device identifier; no self-asserted MDM/compliance values.
+    browser_evidence: Pending device visible to self; official package actions remain unavailable.
+    blocker_owner: Field-device engineering lease; RBAC reviewer.
+    readiness: PARTIAL_SOURCE_AND_OPT_IN_TEST_ONLY
+  - case_id: DEV-POS-02
+    lifecycle: Authorized administrator registers and assigns a managed device as pending.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, WA-M8-AC-001]
+    layers: [DB_RLS, SERVER_ACTION, ADMIN_BROWSER]
+    prerequisites: Approved role, assignee and enrollment policy.
+    browser_evidence: Real registration result, assigned inspector and audit fact.
+    blocker_owner: Sponsor/RBAC governance then device-command engineering lease.
+    readiness: BLOCKED_BY_DEV_CMD_DEC_01
+  - case_id: DEV-POS-03
+    lifecycle: Approved evidence advances pending device to trusted.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER]
+    prerequisites: Approved attestation/compliance evidence, freshness, authoritative actor and receipt.
+    browser_evidence: Before/after state, evidence source/time and actor; no queued-request shortcut.
+    blocker_owner: Sponsor/security/provider owner.
+    readiness: BLOCKED_BY_DEV_CMD_DEC_05_06_09
+  - case_id: DEV-POS-04
+    lifecycle: Trusted assigned compliant device downloads and opens an active official package.
+    requirements: [MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, FIELD_BROWSER, REGRESSION]
+    prerequisites: Trusted assigned device, compliant app and active manifest.
+    browser_evidence: Real download/open with device/package/access-event correlation.
+    blocker_owner: Package/Field engineering lease; independent reviewer.
+    readiness: PARTIAL_SERVER_OPEN_ONLY_DOWNLOAD_NOT_PROVEN
+  - case_id: DEV-POS-05
+    lifecycle: Trusted assigned compliant device submits and syncs official inspection evidence.
+    requirements: [MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, FIELD_BROWSER, REGRESSION]
+    prerequisites: Valid package, submission transition and online/offline sync context.
+    browser_evidence: Submission/sync result with immutable version, audit and device correlation.
+    blocker_owner: Field/offline/submission engineering leases.
+    readiness: NOT_CROSS_CERTIFIED_TO_DEVICE_TRUST
+  - case_id: DEV-POS-06
+    lifecycle: Eligible suspend request is approved if required, dispatched, acknowledged and applied.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, SERVER_ACTION, ADMIN_BROWSER, PROVIDER_CONTRACT, FIELD_BROWSER]
+    prerequisites: Approved role/state/approval/provider lifecycle.
+    browser_evidence: Distinct requested, approved, accepted, received and applied facts as approved; subsequent field access denial.
+    blocker_owner: Sponsor/provider owner then device-command lease.
+    readiness: BLOCKED
+  - case_id: DEV-POS-07
+    lifecycle: Eligible resume restores trust only after newly approved evidence and genuine completion.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER, FIELD_BROWSER]
+    prerequisites: Non-terminal eligible source state, fresh evidence, genuine receipt and approved restoration path.
+    browser_evidence: Trust remains blocked until completed proof; field access becomes available only afterward.
+    blocker_owner: Sponsor/security/provider owner.
+    readiness: KNOWN_CURRENT_SOURCE_UNSAFE
+  - case_id: DEV-POS-08
+    lifecycle: Revoke reaches terminal state and permanently denies the enrolled identity.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER, FIELD_BROWSER]
+    prerequisites: Approved revoke command, terminal/re-enrollment policy and receipt.
+    browser_evidence: Terminal history plus download/open/sync/submit denial.
+    blocker_owner: Sponsor/security/provider owner.
+    readiness: BLOCKED_COMMAND_NOT_CURRENTLY_IMPLEMENTED
+  - case_id: DEV-POS-09
+    lifecycle: Remote wipe progresses without claiming completion before verified effect.
+    requirements: [MVP2-REQ-0176]
+    acceptance: [MVP2-AC-0176, WA-M8-AC-001, WA-M8-AC-005, WA-M8-AC-006]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER, FIELD_BROWSER]
+    prerequisites: Approved wipe approval, lifecycle, provider and device-effect receipt.
+    browser_evidence: Request-to-effect timeline, wipe-pending fail-closed state and genuine completion evidence.
+    blocker_owner: Sponsor/security/provider owner.
+    readiness: BLOCKED_LOCAL_WIPE_PENDING_ONLY
+  - case_id: DEV-POS-10
+    lifecycle: Expire packages invalidates the approved device/package scope.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0244, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER, FIELD_BROWSER]
+    prerequisites: Approved invalidation scope, online/cached effect and evidence contract.
+    browser_evidence: Exact affected manifests, cached/offline outcome and completion receipt.
+    blocker_owner: Sponsor/package/offline/provider owners.
+    readiness: BLOCKED_CURRENT_COMMAND_HAS_NO_PACKAGE_EFFECT
+  - case_id: DEV-POS-11
+    lifecycle: Sync-health dashboard exposes actionable real status and governed rescue.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0186]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0186, WA-M8-AC-001, WA-M8-AC-002]
+    layers: [DB_LIFECYCLE, ADMIN_BROWSER, FIELD_BROWSER, REGRESSION]
+    prerequisites: Canonical outbox, conflict, error, replay, last-seen and ownership sources.
+    browser_evidence: Real health/rescue behavior with stale, empty, error and degraded cases.
+    blocker_owner: Sponsor for ownership then sync/offline engineering lease.
+    readiness: BLOCKED_ROUTE_CURRENTLY_LACKS_SYNC_DASHBOARD
+  - case_id: DEV-POS-12
+    lifecycle: Genuine provider rejection or failure is resolved without losing history.
+    requirements: [MVP2-REQ-0176]
+    acceptance: [MVP2-AC-0176, WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER]
+    prerequisites: Approved retry/escalation policy and authenticated provider rejection.
+    browser_evidence: Failure, safe next action, retry correlation and preserved original receipt.
+    blocker_owner: Sponsor/provider/security owner.
+    readiness: BLOCKED
+  - case_id: DEV-POS-13
+    lifecycle: Re-enrollment after terminal identity follows a separate governed path.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, WA-M8-AC-001, WA-M8-AC-005]
+    layers: [DB_LIFECYCLE, PROVIDER_CONTRACT, ADMIN_BROWSER, FIELD_BROWSER]
+    prerequisites: Approved terminal identity and re-enrollment policy with fresh evidence.
+    browser_evidence: New governed identity and preserved prior terminal history; no ordinary Resume.
+    blocker_owner: Sponsor/security/provider owner.
+    readiness: BLOCKED_BY_DEV_CMD_DEC_04_05
+  - case_id: DEV-POS-14
+    lifecycle: Complete Devices route receives bilingual, responsive, accessible and visual certification.
+    requirements: [MVP2-REQ-0176, MVP2-REQ-0184, MVP2-REQ-0186, MVP2-REQ-0244]
+    acceptance: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244, WA-M8-AC-003, WA-M8-AC-004, WA-M8-AC-006]
+    layers: [ADMIN_BROWSER, FIELD_BROWSER, VISUAL_I18N_A11Y, REGRESSION]
+    prerequisites: Accepted stable CD-056 design and every prior lifecycle/negative state.
+    browser_evidence: Fixed-view parity, EN/AR, theme/reflow, keyboard/a11y and external evidence manifest.
+    blocker_owner: Claude Design owner plus sponsor, then Devices UI lease and independent reviewer.
+    readiness: BLOCKED_BY_DEV_CMD_DEC_10_AND_LIFECYCLE
+
+existing_test_reuse:
+  apps/web/e2e/field-settings-rls-live.spec.ts:
+    reusable_for: [DEV-POS-01, DEV-POS-02, DEV-NEG-AUTH-02]
+    limit: Opt-in skipped by default; no Admin approval/trust or command lifecycle.
+  supabase/tests/mvp3_retrofit_live_probe.sql:
+    reusable_for: [DEV-NEG-STATE-01]
+    limit: One suspend and missing-device negative; privileged direct acknowledgement is not canonical.
+  apps/web/e2e/field-offline-isolation.spec.ts:
+    reusable_for: [DEV-NEG-OFF-04]
+    limit: User-store isolation only; no command/trust/package invalidation.
+  apps/web/e2e/offline-drill.spec.ts:
+    reusable_for: [DEV-POS-05, DEV-NEG-OFF-04]
+    limit: Answer replay only; no device-command state boundary.
+  apps/web/e2e/cd-008-009-packages.spec.ts:
+    reusable_for: [DEV-POS-04, DEV-POS-10, DEV-NEG-STATE-08]
+    limit: Package authoring/projection, not device download/open/submit or cached invalidation.
+  apps/web/e2e/mvp3-retrofit-regression.spec.ts:
+    reusable_for: [DEV-POS-14]
+    limit: Devices route/title smoke only; no action, persona, Arabic, responsive or visual proof.
+  apps/web/e2e/mvp3-enterprise-contract.spec.ts:
+    reusable_for: [DEV-POS-01, DEV-POS-04]
+    limit: Static source assertions only.
+
+recommended_future_spec_partition:
+  database:
+    - supabase/tests/m10_device_command_rls_negative.sql
+    - supabase/tests/m10_device_command_lifecycle_concurrency.sql
+    - supabase/tests/m10_device_package_invalidation.sql
+  server_contract:
+    - apps/web/e2e/m10-device-command-server-contract.spec.ts
+  admin_browser:
+    - apps/web/e2e/m10-admin-devices-persona-actions.spec.ts
+    - apps/web/e2e/m10-admin-devices-lifecycle-errors.spec.ts
+    - apps/web/e2e/m10-admin-devices-visual-i18n-a11y.spec.ts
+  field_browser:
+    - apps/web/e2e/m10-device-package-trust-boundary.spec.ts
+    - apps/web/e2e/m10-device-offline-replay-invalidation.spec.ts
+  provider:
+    - apps/web/e2e/m10-mdm-provider-contract.spec.ts
+    - apps/web/e2e/m10-mdm-provider-live-preprod.spec.ts
+  restriction: Names are planning targets only; no files were created and no provider result may be mocked into acceptance.
+
+readiness_gates:
+  GATE_1_POLICY:
+    owner: Sponsor
+    pass: DEV-CMD-DEC-01..10 have recorded answers that preserve the requirement floor.
+  GATE_2_DESIGN:
+    owner: Claude Design owner plus sponsor
+    pass: Stable CD-056 route-specific revision covers all lifecycle, negative and presentation states.
+  GATE_3_PROVIDER:
+    owner: Security/integration owner plus sponsor
+    pass: Approved provider contract exists or a formal fail-closed hold disables provider-dependent mutation.
+  GATE_4_DATA:
+    owner: Seeder/data-fixture engineering
+    pass: Deterministic non-production fixtures cover the matrix without fabricating provider evidence.
+  GATE_5_IMPLEMENTATION:
+    owner: Single recorded implementation lease per file set
+    pass: Database, provider, route and field boundaries implement the approved contracts.
+  GATE_6_EXECUTION:
+    owner: QA lease
+    pass: All applicable negative and positive cases pass with named evidence; blocked cases remain truthfully blocked.
+  GATE_7_CERTIFICATION:
+    owner: Independent reviewer plus sponsor
+    pass: Requirement/design/route/test/provider evidence is complete with no P0/P1 failure or unexplained gap.
+
+review:
+  disposition: BLOCK
+  code: BLOCK_DUE_TO_POLICY_PROVIDER_DESIGN_AND_IMPLEMENTATION_PREREQUISITES
+  rationale:
+    - All 46 negative cases are crosswalked exactly once.
+    - Fourteen positive lifecycle cases cover enrollment through trust, package use, commands, provider failure, sync rescue, re-enrollment and visual certification.
+    - Current source cannot safely enter test execution while Resume writes Trusted immediately and provider acknowledgement is absent.
+    - Existing tests are reusable foundations but none proves the complete Admin Devices lifecycle.
+    - Test creation before decisions may define skipped contract placeholders only; it cannot encode invented policy.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-BLOCKER-OWNERSHIP-BOARD-066
+    mode: READ_ONLY
+    objective: >-
+      Convert the ten decisions and seven readiness gates into a concise
+      accountable ownership board with unblock input, completion artifact,
+      reviewer, dependency order and no-wait parallel work, without changing
+      product or control state.
