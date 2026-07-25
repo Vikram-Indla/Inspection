@@ -1,101 +1,137 @@
-schema_version: "1.5"
-task_id: "TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001"
-batch_id: "WA-P1-SHARED-BRAND-REGRESSION-001"
-change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin shared-shell regression correction"
-title: "Restore approved bilingual authenticated-shell wordmark"
-status: "TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF"
+schema_version: "1.6"
+task_id: "PKT-M3-OPS-LIVE-001"
+change_control_id: "SAQEEL-OS-V3-OPERATIONS-ACTIVATION-001"
+gate: "G10 verification / G11 hardening"
+title: "Live Operations source truth, permissions, states and browser evidence"
+status: "ACTIVE_IMPLEMENTATION_LEASE_GRANTED"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: true
-branch: "codex/shared-brand-regression"
-baseline_sha: "9d8c414258a5e04244fdf9ce350e5f25f952dfc1"
-worktree: "/Users/vikramindla/Developer/Inspection-codex-shared-brand"
-
-approval:
-  approved_by: "Vikram Indla / Product Owner"
-  approved_on: "2026-07-24"
-  evidence: "Sponsor reported that EN/LTR Operations incorrectly shows the Arabic-only صقيل صناعي shell identity and directed the orchestrator to move forward."
-  interpretation: "APPROVED — correct the demonstrated global Web/Admin brand regression using the already-approved bilingual asset."
-  authorizes: "Branch-local governance, the exact shared-shell source/style/test lease, local build, non-destructive evidence, commit, branch push and draft pull request. No main merge, deployment, remote mutation or M3 page work."
-
-process_ids: ["G2-P00", "G2-P12"]
-requirement_ids: ["CR-001..CR-478"]
-acceptance_ids: ["WA-SHELL-AC-001", "WA-F0-AC-003..006"]
-screen_ids: ["GLOBAL_SHELL"]
-preservation_ids: ["WA-SP-001"]
-routes:
-  - "All authenticated non-Field routes rendered by apps/web/src/app/(app)/layout.tsx"
-  - "Focused smoke: /dashboard, /operations, /factories"
-engines:
-  - "Next.js authenticated AppShell"
-  - "Approved SAQEEL Web/Admin brand assets"
-  - "Responsive/collapsible shared navigation"
 
 authority:
-  source: "SAQEEL Design System (7).zip"
-  source_sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
-  approved_expanded_asset: "/saqeel-wordmark-dark-mode.svg"
-  approved_collapsed_asset: "/saqeel-favicon.svg"
-  accessible_name: "SAQEEL | صقيل"
-  rule: "The expanded graphite Web/Admin rail uses the approved bilingual asset in both locales; this task does not invent locale-specific branding."
+  sponsor_direction: "Adopt SAQEEL Operating System V3 and begin implementation-first execution."
+  planning_packet: "product-contract/operationalization/packets/PKT-M3-OPS-LIVE-001.yaml"
+  planning_commit: "2db0f6184b33aa945876a7301d7b84ed71a9e5d1"
+  accepted_design: "WA-DES-034 / SAQEEL Operations Live.dc.html"
+  rule: "The packet fixes scope and sequence. This slice records Codex safety activation and the sole M3 lease; it does not amend the queue."
 
-implementation_lease:
-  owner: "Codex shared-shell correction owner"
-  files:
-    - "apps/web/src/components/ShellClient.tsx"
-    - "apps/web/src/app/layout.tsx"
-    - "apps/web/src/app/astryx.css"
-    - "apps/web/e2e/web-admin-f0-foundation.spec.ts"
-    - "product-contract/evidence/TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001.md"
-    - "product-contract/CURRENT_STATE.md"
-    - "product-contract/execution/CURRENT_SLICE.yaml"
-    - "product-contract/execution/WORK_QUEUE.yaml"
-    - "product-contract/sessions/SESSION_LEDGER.json"
-  source_assets_read_only:
-    - "apps/web/public/saqeel-favicon.svg"
-    - "apps/web/public/saqeel-wordmark-dark-mode.svg"
-    - "apps/web/public/saqeel-wordmark-light-mode.svg"
+process_ids: ["G2-P12"]
+requirement_ids: ["CR-431", "CR-433", "CR-439", "CR-447", "CR-448"]
+acceptance_ids:
+  - "WA-AC-0431"
+  - "WA-AC-0433"
+  - "WA-AC-0439"
+  - "WA-AC-0447"
+  - "WA-AC-0448"
+  - "WA-M3-AC-001"
+  - "WA-M3-AC-002"
+  - "WA-M3-AC-003"
+  - "WA-M3-AC-004"
+  - "WA-M3-AC-005"
+  - "WA-M3-AC-006"
+  - "WA-SHELL-AC-008"
+  - "WA-SHELL-AC-009"
+  - "WA-SHELL-AC-017"
+screen_ids: ["SCR-WEB-500", "WA-DES-034"]
+engine_ids: ["G2-P12", "MOD-16", "WA-MIG-049"]
+evidence_ids: ["WA-EV-0431", "WA-EV-0433", "WA-EV-0439", "WA-EV-0447", "WA-EV-0448", "WA-M3-EV-001..006"]
+route: "/operations/live"
+
+branch: "codex/m3-operations-reconciliation"
+baseline_sha: "b38930d4d0dd84a656a48bb16477d84a53dace99"
+worktree: "/Users/vikramindla/Developer/Inspection-codex-m3-operations"
+
+lease:
+  lease_id: "LEASE-M3-OPS-LIVE-001"
+  module: "M3"
+  holder: "cc-w1"
+  packet_id: "PKT-M3-OPS-LIVE-001"
+  state: "GRANTED"
+  acquired_at: "2026-07-25T13:50:55+03:00"
+  expires_at: "2026-07-25T15:20:55+03:00"
+  ttl_minutes: 90
+  renewal_count: 0
+  maximum_renewals: 2
+  breaker: "Codex"
+  allowed_paths:
+    - "apps/web/src/app/(app)/operations/live/page.tsx"
+    - "apps/web/src/app/(app)/operations/live/LiveOps.tsx"
+    - "apps/web/e2e/web-admin-m3-operations.spec.ts"
+    - "product-contract/evidence/PKT-M3-OPS-LIVE-001.md"
+  preserved_preexisting_dirty_paths:
+    - "apps/web/src/app/(app)/operations/live/page.tsx"
+    - "apps/web/src/app/(app)/operations/live/LiveOps.tsx"
+    - "apps/web/e2e/web-admin-m3-operations.spec.ts"
+  excluded_preexisting_path:
+    - "apps/web/.next-corrupt-20260725-1154/**"
+
+codex_safety_ruling:
+  verdict: "LEASE_GRANTED_FOR_CORRECTION_NOT_ACCEPTANCE"
+  severity:
+    p0: 0
+    p1:
+      - "Per-marker source and observation time are absent or misleading."
+      - "Required governed geography filtering is absent."
+      - "Required permitted visit handoff is absent."
+      - "Required negative, degraded, locale, responsive, accessibility and traceability evidence is incomplete."
+  rationale:
+    - "The formerly unleased dirty files are preserved as one coupled correction slice and now have one explicit owner."
+    - "No auth bypass, data corruption, secret exposure or silent production cutover was evidenced; ownership risk is ruled P1, not P0."
+    - "The lease exists to close the listed P1s; it is not acceptance of the current implementation."
+
+dependencies:
+  required:
+    - "F0 shared shell remains inherited and unchanged."
+    - "Operations persona and deterministic labelled test data remain available."
+    - "Kimi and Claude Design reviews remain read-only and may return defects."
+  open_decisions:
+    - id: "DEC-002"
+      boundary: "No invented GIS accuracy, geofence or freshness threshold."
+    - id: "DEC-004"
+      boundary: "Complete Arabic and RTL delivery is mandatory."
+    - id: "DEC-010"
+      boundary: "Measure NFR behavior without inventing a pass threshold."
+
+required_behavior:
+  - "Show per-position entity type, source and observation timestamp."
+  - "Never represent factory coordinates, fixtures, missing timestamps or future records as live inspector GPS."
+  - "Enforce authenticated role and authorized geography on direct route and data."
+  - "Provide governed region/branch/city filtering only where source dimensions exist; unavailable dimensions must be truthful."
+  - "Provide a permission-preserving visit handoff."
+  - "Keep healthy widgets usable when telemetry or the map provider fails."
+  - "Deliver loading, populated, empty, unauthorized, partial error, provider unavailable, stale, future-data and fixture-labelled states."
+  - "Deliver EN/LTR, AR/RTL, light/dark, named responsive viewports and accessibility."
 
 verification:
-  - "Focused static brand authority contract"
   - "Typecheck and production build"
-  - "Expanded and collapsed shell source behavior"
-  - "Mobile drawer restores expanded bilingual identity"
-  - "No hard-coded Arabic-only shell identity remains"
-  - "git diff --check and exact lease audit"
+  - "Focused M3 positive and negative Playwright coverage"
+  - "Unauthorized role and geography evidence"
+  - "Future-dated, fixture, stale, provider-unavailable and partial-source evidence"
+  - "Keyboard and non-map equivalent"
+  - "EN/AR, light/dark and 1200x800, 1024x768, 412x915, 390x844 and 320x800"
+  - "Protected Operations regression and git diff check"
+  - "Real-browser review by Codex on the implementation commit"
 
 do_not_touch:
-  - "Do not edit M3 Operations pages or tests outside the focused shared-brand contract."
-  - "Do not edit assets, translations, global tokens, navigation structure, backend, APIs, Supabase, RLS/RBAC, migrations or providers."
-  - "Do not edit /field/**, PWA, iPad, offline engines, service workers or manifests."
-  - "Do not modify main, setup/Inspection, stashes or remote systems."
-  - "Do not commit, push, merge or deploy."
+  - "Do not edit /operations, /operations/exceptions or any queued successor path."
+  - "Do not edit shared shell, global CSS, assets, APIs, providers, Supabase or migrations."
+  - "Do not edit Field/PWA/iPad/offline/service-worker/manifest paths."
+  - "Do not modify main, setup/Inspection, stashes, shared data or remote systems."
+  - "Do not remove or overwrite apps/web/.next-corrupt-20260725-1154."
+  - "Do not merge, deploy, run DDL or change providers."
 
-rollback:
-  method: "Revert this isolated branch diff; no data or remote state is involved."
-  retention: "The pre-correction source remains in Git history."
+stop_conditions:
+  - "Stop immediately for suspected auth/RLS bypass, unauthorized location exposure, secret/PII exposure, data corruption or silent requirement loss."
+  - "Stop if any allowed path gains a second owner or the dirty path set expands."
+  - "Stop rather than invent source timestamps, freshness thresholds, policy or provider behavior."
+  - "Stop completion claims while any required evidence leg or P0/P1 remains."
+
+queued_successor:
+  packet_id: "PKT-M3-OPS-CENTER-002"
+  state: "QUEUED_NO_LEASE"
+  next_packet_id: "PKT-M3-OPS-EXCEPTIONS-003"
 
 exit_condition: >-
-  Stop after the approved bilingual expanded wordmark and collapsed favicon
-  behavior pass focused source checks, typecheck and production build, with
-  truthful textual evidence and no file outside the lease changed.
-
-completion:
-  completed_on: "2026-07-24"
-  verdict: "TECHNICAL_PASS_RUNTIME_EVIDENCED_AWAITING_SPONSOR_SIGNOFF"
-  changes:
-    - "Expanded authenticated Web/Admin navigation uses /saqeel-wordmark-dark-mode.svg with accessible name SAQEEL | صقيل."
-    - "Collapsed desktop navigation uses /saqeel-favicon.svg."
-    - "Mobile drawer restores the expanded bilingual wordmark and suppresses the collapsed favicon."
-    - "Arabic-only hard-coded صقيل صناعي shell lettering is removed."
-    - "Root layout loads astryx.css because the current authenticated ShellClient still emits the ax-* namespace defined by that stylesheet."
-  tests:
-    - "Typecheck PASS"
-    - "Production build PASS"
-    - "Focused F0 source and brand contract 4/4 PASS"
-    - "Runtime HTML links the compiled stylesheet containing .ax-shell and .ax-shell__brand-wordmark."
-    - "Real authenticated Chrome route renders the styled graphite shell and accessible SAQEEL | صقيل wordmark together."
-    - "git diff --check PASS"
-  evidence: "product-contract/evidence/TASK-WEB-ADMIN-SHARED-BRAND-REGRESSION-001.md"
-  caveat: "Codex captured real Chrome implementation evidence; the Product Owner's visual signoff remains the final human acceptance step."
+  Stop after Claude Code hands off a commit-pinned implementation and evidence
+  package for Codex review. The lease does not authorize acceptance, main,
+  merge, deployment, DDL, provider changes or successor work.
