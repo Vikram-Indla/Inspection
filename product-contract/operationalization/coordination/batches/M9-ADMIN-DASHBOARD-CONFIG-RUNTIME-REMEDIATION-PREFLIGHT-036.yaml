@@ -1,0 +1,439 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-DASHBOARD-CONFIG-RUNTIME-REMEDIATION-PREFLIGHT-036
+title: Collision-safe Admin Dashboard Configuration runtime remediation preflight
+status: PREFLIGHT_READY_DEPENDENCIES_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  canonical_requirement:
+    atomic_id: MVP1-M08-016
+    requirement_id: CR-445
+    acceptance_id: WA-AC-0445
+    legacy_acceptance_alias: AC-0445
+    evidence_id: WA-EV-0445
+    module: Operations Center
+    capability: Operations KPIs
+    route_authority: /operations/**
+    screen_id: SCR-WEB-500
+    personas: [Executive, Supervisor]
+    required_metrics:
+      - visits planned
+      - visits completed
+      - visits cancelled
+      - visits overdue
+      - active inspectors
+      - average duration
+      - SLA breach rate
+    exact_business_rule: KPI calculation period is configurable.
+    exact_acceptance: KPIs display accurately.
+  admin_surface:
+    route: /admin/dashboard-config
+    current_files:
+      - apps/web/src/app/admin/dashboard-config/page.tsx
+      - apps/web/src/app/admin/dashboard-config/actions.ts
+      - apps/web/src/app/admin/dashboard-config/ActionForm.tsx
+    current_design_candidates:
+      - WA-DES-021 / SAQEEL Dashboard Config.dc.html
+      - WA-DES-031 / SAQEEL KPI Management.dc.html
+    note: >-
+      CR-445 authorizes accurate Operations KPI display and a configurable
+      calculation period. It does not independently authorize every one of the
+      fourteen Admin configuration domains, every KPI formula in the code
+      registry, or any unresolved policy value.
+  independent_runtime_audit:
+    expected_packet: CODEX-ADMIN-DASHBOARD-CONFIG-018
+    materialized_in_worktree: false
+    reconciliation: >-
+      The named audit was not present as a repository packet at preflight time.
+      Its requested runtime claims were independently checked against the
+      current route, actions, KPI contract, KPI loader, dashboard consumers and
+      migrations. The missing packet remains a dependency; this preflight does
+      not invent or quote absent audit content.
+  design_dependency:
+    packet: M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+    state: MATERIALIZED_BLOCK_DUE_TO_UNAUTHENTICATED_ROUTE_AND_MISSING_TYPED_POLICY_CONTRACT
+    reviewer_recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+    reconciled_findings:
+      - No governed Dashboard Configuration screen ID or screen-specific acceptance contract exists.
+      - WA-DES-021 is an exact named predecessor but has insufficient acceptance evidence.
+      - WA-DES-031 maps to a query mode the current route does not implement.
+      - The authenticated shell, bilingual content, hard states and responsive/accessibility evidence are absent.
+      - Raw JSON authoring, effective-date failure, stale publication and non-consumption match this preflight's independent runtime findings.
+    gating_rule: >-
+      No UI implementation lease may start until a governed screen identity,
+      accepted successor evidence for WA-DES-021/031, exact persona/action
+      contract and bilingual interaction/hard-state acceptance are recorded.
+  decision_dependency:
+    decision_id: DEC-028
+    state: OPEN
+    preserved_rules:
+      - Preserve Compliant divided by Compliant plus Non-compliant.
+      - Unsupported metrics and policies remain not configured or unavailable.
+      - Risk is not Health.
+      - Do not invent dates, thresholds, targets, AI findings, eligibility, cycles or formula substitutions.
+      - Formula logic remains governed code.
+      - Admin may configure only explicitly approved parameters.
+  mode: READ_ONLY
+  no_product_mutation: true
+  no_data_mutation: true
+  no_test_mutation: true
+  no_design_mutation: true
+  no_lease_claimed: true
+
+runtime_reconciliation:
+  confirmed_assets:
+    - The /admin/dashboard-config page, server actions and action-state wrapper exist.
+    - The migration defines draft, immutable version and head tables plus guarded maker-checker RPCs.
+    - Direct authenticated writes to the three dashboard_config tables are revoked.
+    - Published dashboard_config_versions are protected from update and delete.
+    - A 28-entry code-side KPI registry and typed SharedMetric contract exist.
+    - Pure KPI formula/projection tests exist.
+    - The operational dashboard already calculates the seven CR-445 output families with a user-selected date window.
+  correction_required:
+    - id: DASHCFG-P0-001
+      priority: P0
+      finding: The Admin Dashboard Configuration route is outside the authenticated application route group.
+      evidence: >-
+        apps/web/src/app/admin/dashboard-config is not under apps/web/src/app/(app);
+        the active middleware only propagates x-pathname and performs no auth
+        redirect; the page calls auth.getUser but does not redirect when the
+        user is absent.
+      implication: >-
+        Anonymous requests can reach the page component and its shell instead
+        of failing closed at a verified-user and Admin-capability boundary.
+    - id: DASHCFG-P0-002
+      priority: P0
+      finding: Page-level write/review capability is derived from roles belonging to any RLS-visible user.
+      evidence: >-
+        The page selects role_key from user_roles without user_id = current
+        user. The user_roles_read policy permits several privileged personas to
+        enumerate the roster, then the page's Set tests any returned role.
+      implication: >-
+        Controls and review states can be presented to the wrong current user.
+        RPC role checks prevent some writes, but UI authorization is false and
+        cannot be accepted as permission proof.
+    - id: DASHCFG-P0-003
+      priority: P0
+      finding: Configuration payloads are arbitrary JSON objects, not governed typed domain payloads.
+      evidence: >-
+        parseObject and dash_create/update_config_draft validate only that the
+        value is a JSON object. No per-config_key schema, allowed field set,
+        unit, range, decision reference, source, or cross-field constraint is
+        enforced in TypeScript or PostgreSQL.
+      implication: >-
+        Writers can publish unknown keys, invented thresholds and incompatible
+        values, including DEC-028-governed values, while the UI labels the
+        result as governed.
+    - id: DASHCFG-P0-004
+      priority: P0
+      finding: Future-effective publication immediately replaces the current head.
+      evidence: >-
+        dash_publish_config stores requested_effective_from but unconditionally
+        upserts dashboard_config_heads to the new version at publication time.
+        resolveDashboardPolicyVersion reads only that pointer and performs no
+        effective_from check.
+      implication: >-
+        A future policy can apply early and the previously effective policy is
+        no longer resolvable as current.
+    - id: DASHCFG-P0-005
+      priority: P0
+      finding: The shared policy loader and typed KPI projection are not consumed by runtime pages.
+      evidence: >-
+        resolveDashboardPolicyVersion has no call site. /dashboard directly
+        invokes buildDashboardMetrics and renders the legacy DashboardMetrics
+        shape; it does not invoke buildDashboardKpiProjection. No current Web,
+        Operations or Field route consumes a published dashboard payload.
+      implication: >-
+        Publishing Admin configuration has no demonstrated effect on KPI
+        calculation period, formula metadata, policyVersionId, visibility,
+        freshness, masking or any other runtime behavior.
+    - id: DASHCFG-P0-006
+      priority: P0
+      finding: Current configuration publication does not prove exact CR-445 semantics.
+      evidence: >-
+        CR-445 requires the seven named Operations KPI families and a
+        configurable calculation period. The existing user-selected date scope
+        is real, but the Admin control plane neither defines a typed period
+        parameter nor proves that /operations or /dashboard consumes it.
+      implication: >-
+        Existing CR-445 evidence must remain protected, while Admin-default
+        period behavior remains unimplemented until its exact precedence and
+        allowed values are approved under DEC-028.
+    - id: DASHCFG-P0-007
+      priority: P0
+      finding: Published configuration policy is globally readable without a field-level disclosure contract.
+      evidence: >-
+        dashboard_config_versions and dashboard_config_heads allow every
+        authenticated principal to read complete payloads. Domains include
+        masking_export, map_profile, freshness_offline_policy and AI policy.
+      implication: >-
+        Visibility may disclose operational/security policy fields to personas
+        that need only a reduced resolved policy projection.
+    - id: DASHCFG-P1-001
+      priority: P1
+      finding: Draft edit, revision CAS and deterministic publication concurrency are absent.
+      evidence: >-
+        dash_update_config_draft exists but has no UI caller, accepts no
+        expected revision, and does not increment revision for ordinary edits.
+        dash_publish_config calculates max(version_number)+1 without a
+        config-key serialization lock or expected-head comparison.
+      implication: >-
+        Concurrent makers can overwrite intent, and concurrent reviewers can
+        collide at the unique version constraint without a stable conflict
+        response or preserved rebase path.
+    - id: DASHCFG-P1-002
+      priority: P1
+      finding: The page does not expose effective-date authoring or future/current lifecycle truth.
+      evidence: >-
+        createConfigDraft never supplies p_effective_from; the page renders the
+        head as Active version even when its effective_from is in the future.
+      implication: Administrators cannot author or distinguish scheduled policy safely.
+    - id: DASHCFG-P1-003
+      priority: P1
+      finding: KPI catalogue persistence is a second incomplete governance path.
+      evidence: >-
+        The route renders code registry definitions alongside
+        mvp3_kpi_definitions rows. Database policy permits Leadership or
+        Security Admin to insert KPI drafts, but no KPI-definition publish RPC
+        or runtime catalogue resolver is wired here; seed identity is selected
+        from the first profile.
+      implication: >-
+        Code formula authority and database catalogue status can diverge while
+        the page presents both as one catalogue.
+    - id: DASHCFG-P1-004
+      priority: P1
+      finding: Existing tests do not certify route, RLS, maker-checker, effective-time or consumption behavior.
+      evidence: >-
+        dashboard-kpi-contract.spec.ts is a pure formula/projection test.
+        No focused browser or SQL test invokes dashboard configuration RPCs,
+        attacks permissions, proves CAS, activates a scheduled version, or
+        demonstrates a changed resolved policy in an actual KPI consumer.
+      implication: Source presence and pure formula tests cannot support runtime completion credit.
+
+target_contract:
+  route_and_permissions:
+    - Verified authentication is required before any page data or shell is rendered.
+    - Current-user roles are queried with user_id = auth.uid or a server-only current-user capability helper.
+    - Route, control visibility, RPC authorization and RLS use one approved persona matrix.
+    - Unauthorized and anonymous access fail closed without exposing drafts or policy payloads.
+  governed_payloads:
+    - Every config_key maps to a versioned discriminated schema.
+    - Every field declares type, unit, allowed range or vocabulary, decision authority and consuming metric IDs.
+    - Unknown keys and unapproved DEC-028 values are rejected at both application and database boundaries.
+    - Formula text, SQL, executable expressions and arbitrary client code are never configurable payload.
+    - Resolved consumer payloads are reduced to the minimum fields each persona/metric needs.
+  version_and_effective_time:
+    - Publication creates immutable approved history without activating a future version early.
+    - Current resolution selects the latest approved version whose effective window contains the server instant.
+    - Exactly one version is effective per config_key at any instant.
+    - Draft edits require expected revision CAS and increment revision.
+    - Publication requires expected head/version CAS and config-key serialization.
+    - Conflicts return a neutral stable error and preserve both accepted history and draft work.
+  consumption:
+    - One server resolver returns the typed, currently effective, permission-reduced policy.
+    - /dashboard and /operations consume the same governed operational KPI projection.
+    - CR-445 user-selected period behavior and any approved Admin default have an explicit precedence rule.
+    - Every emitted metric carries formulaVersion, applied policyVersionId, exact scope, numerator, denominator, source status and permission result.
+    - Missing or undecided policy yields not_configured, decision_required or unavailable; never a fabricated fallback.
+    - No Field/iPad consumer is changed until its separate channel/design/ownership contract is approved.
+
+future_non_overlapping_leases:
+  - lease_id: DASHCFG-LEASE-AUTH-001
+    order: 1
+    owner: ONE_ADMIN_ROUTE_PERMISSION_ENGINEER
+    purpose: Establish authenticated route and exact current-user permission evaluation only.
+    proposed_paths:
+      - apps/web/src/app/admin/dashboard-config/layout.tsx
+      - apps/web/src/lib/dashboard-config/access.ts
+      - route-local permission use in apps/web/src/app/admin/dashboard-config/page.tsx
+    entry_criteria:
+      - Review 053 blockers are closed by an accepted route/persona matrix and governed screen ID.
+      - Current route ownership and page-line reservation are recorded.
+    do_not_touch:
+      - visual structure and styling owned by Review 053
+      - KPI formulas and projection
+      - migrations and data
+  - lease_id: DASHCFG-LEASE-CONTRACT-001
+    order: 2
+    owner: ONE_TYPED_POLICY_CONTRACT_ENGINEER
+    purpose: Define schemas and reduced resolved payload types without assigning policy values.
+    proposed_paths:
+      - apps/web/src/lib/dashboard-config/contract.ts
+      - apps/web/src/lib/dashboard-config/schema.ts
+      - apps/web/src/lib/dashboard-config/redaction.ts
+    entry_criteria:
+      - DEC-028 disposition exists for every field admitted to the schema.
+      - CR-445 calculation-period precedence is explicitly approved.
+    do_not_touch:
+      - route components
+      - KPI calculation code
+      - database migrations
+      - Field/iPad
+  - lease_id: DASHCFG-LEASE-DB-001
+    order: 3
+    owner: ONE_DASHBOARD_CONFIG_DATABASE_ENGINEER
+    purpose: Enforce typed payload parity, effective-time resolution, immutable lineage and CAS transactionally.
+    proposed_paths:
+      - one new forward-only Supabase migration
+      - one new database contract probe owned by the QA lease
+    entry_criteria:
+      - Typed policy contract is frozen.
+      - Database object and migration ownership are recorded.
+      - No active lease owns dashboard_config_* objects.
+    do_not_touch:
+      - existing migration files
+      - application routes
+      - shared or production data
+  - lease_id: DASHCFG-LEASE-CONSUMER-001
+    order: 4
+    owner: ONE_DASHBOARD_KPI_CONSUMER_ENGINEER
+    purpose: Wire the accepted resolver and typed projection into Web/Operations consumers found by the consumer inventory.
+    proposed_paths:
+      - apps/web/src/lib/dashboard-kpi/loader.ts
+      - apps/web/src/lib/dashboard-kpi/projection.ts
+      - exact Web/Operations consumer files enumerated by the inventory
+    entry_criteria:
+      - Consumer inventory packet is approved.
+      - DB resolver and typed payload contract pass negative probes.
+      - M1 Dashboard and M3 Operations file ownership is released or explicitly shared.
+    do_not_touch:
+      - Admin route UI
+      - Field/iPad routes
+      - formulas or DEC-028 values not expressly approved
+  - lease_id: DASHCFG-LEASE-SEED-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: DEDICATED_SEEDER_LANE
+    purpose: Prepare deterministic isolated Dashboard Config proof data only.
+    isolation:
+      - unique seed_batch_id
+      - dedicated maker and distinct checker personas
+      - unique config_key test lineage or approved test namespace
+      - past-effective, future-effective, stale-CAS and unauthorized fixtures
+      - no production KPI values
+      - complete cleanup manifest
+      - transaction rollback for negative database probes
+    mutation_gate: Separate explicit shared-data approval is required before any apply.
+  - lease_id: DASHCFG-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-dashboard-config-runtime.spec.ts
+      - new supabase/tests/m9_dashboard_config_governance_negative_probe.sql
+      - evidence under approved INSPECTION_DOCS_ROOT
+    do_not_touch:
+      - product implementation files
+      - design files
+      - shared data outside the isolated seed manifest
+  - lease_id: DASHCFG-LEASE-UI-001
+    order: AFTER_DESIGN_053_ACCEPTANCE_AND_RUNTIME_CONTRACT
+    owner: ONE_M9_ADMIN_UI_ENGINEER
+    purpose: Implement only the accepted Review 053 presentation and interaction states.
+    proposed_paths:
+      - apps/web/src/app/admin/dashboard-config/**
+    collision_rule: >-
+      AUTH-001 must release its exact page lines first; the UI owner cannot
+      alter schema, resolver, KPI formulas, migrations, Web/Operations
+      consumers or Field/iPad.
+
+focused_test_and_browser_proof:
+  database_p0:
+    - Anonymous and every unauthorized persona cannot read drafts, invoke RPCs or resolve sensitive payload fields.
+    - A current user never inherits another visible user's writer/reviewer role.
+    - Maker cannot publish own draft; caller-supplied actor identity is impossible.
+    - Unknown keys, wrong units, wrong types, executable expressions and unresolved DEC-028 values are rejected.
+    - Stale draft revision and stale expected head fail without data loss.
+    - Two concurrent publications for one config_key serialize to consecutive immutable versions.
+    - A future version does not replace the current effective version before its server-time instant.
+    - Published versions cannot be updated or deleted and the audit correlation remains immutable.
+  consumer_p0:
+    - CR-445 exposes all seven required KPI families with exact selected scope, numerator, denominator and source status.
+    - Published approved period policy changes only the approved default/allowed behavior after its effective instant.
+    - User-selected versus Admin-default period precedence matches the sponsor-approved rule.
+    - Every rendered governed KPI includes the exact applied policyVersionId.
+    - Missing policy is explicit and does not silently use an unapproved value.
+    - Web Dashboard and Operations use the same projection for shared operational KPIs.
+    - RLS/region scope cannot be widened by an Admin payload.
+  protected_regression:
+    - apps/web/e2e/dashboard-business.spec.ts
+    - apps/web/e2e/dashboard-kpi-contract.spec.ts
+    - apps/web/e2e/dashboard-kpi-seed.spec.ts
+    - existing M1 Dashboard and M3 Operations permission, partial-source and drilldown suites
+    - product-contract/evidence/TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md
+    - CR-445 / WA-AC-0445 evidence and all accepted seven-metric behavior
+  browser_matrix:
+    - authorized maker create, edit, submit and conflict recovery
+    - independent checker return and publish
+    - anonymous, unauthorized and maker-self-publish negative states
+    - current, scheduled and historical version truth
+    - exact consumer change after effective instant
+    - EN/LTR and AR/RTL
+    - light and dark
+    - 1440x900, 1024x768, 412x915 or 390x844, and 320x800 reflow
+    - keyboard, focus, screen reader and automated accessibility
+    - loading, empty, error, degraded, stale/conflict and not-configured states
+
+collision_register:
+  active_dependencies:
+    - CODEX-ADMIN-DASHBOARD-CONFIG-018
+  materialized_blocking_reviews:
+    - M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+  shared_hotspots:
+    - apps/web/src/app/admin/dashboard-config/page.tsx
+    - apps/web/src/lib/dashboard-kpi/loader.ts
+    - apps/web/src/lib/dashboard-kpi/projection.ts
+    - apps/web/src/app/(app)/dashboard/**
+    - apps/web/src/app/(app)/operations/**
+    - public.dashboard_config_parameters
+    - public.dashboard_config_versions
+    - public.dashboard_config_heads
+    - public.mvp3_kpi_definitions
+  neighboring_owners:
+    - M1 Dashboard
+    - M3 Operations
+    - M9 Admin design
+    - dedicated Seeder
+    - independent QA
+  touched_by_this_lane: false
+  rule: One owner per exact file, page-line range, migration, database object and fixture namespace.
+
+next_queue:
+  task_id: M9-ADMIN-DASHBOARD-CONFIG-CONSUMER-INVENTORY-037
+  title: Read-only Dashboard Configuration consumer and precedence inventory
+  mode: READ_ONLY
+  completion_credit: 0
+  non_overlap:
+    owned_outputs_only:
+      - one new orchestration inventory packet
+    prohibited:
+      - product code
+      - database
+      - tests
+      - design
+      - data
+      - leases
+      - branch or stash state
+  scope:
+    - Enumerate every call site and non-call-site for dashboard-kpi loader, registry, typed projections and legacy metrics.
+    - Map Web Dashboard, Operations, Admin and Field/iPad consumer status without changing Field/iPad.
+    - Trace each CR-445 output to source query, formula, period input, permission scope and presentation.
+    - Record current user-selected calculation-period behavior separately from any Admin default.
+    - Define the smallest consumer-file lease that cannot collide with M1, M3, M9 design or Field owners.
+    - Reconcile CODEX-ADMIN-DASHBOARD-CONFIG-018 and Design Review 053 if they materialize.
+  exit: >-
+    Exact consumer matrix, precedence gap, collision-free file boundary and
+    protected regression set are reviewable before any consumer implementation lease.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  completion_claim_allowed: false
+  recommended_sponsor_action: >-
+    Preserve the existing CR-445 Operations KPI behavior and approve no new
+    policy value yet. First materialize/reconcile audit 018 and Design Review
+    053, then decide the exact calculation-period precedence and every admitted
+    DEC-028 parameter. After that, activate the non-overlapping Auth, typed
+    contract, database, consumer, isolated-data, QA and accepted-UI leases in
+    order. Do not count the current Admin page, migration or pure KPI tests as
+    runtime-configured KPI completion.
