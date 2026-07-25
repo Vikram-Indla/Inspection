@@ -441,11 +441,13 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   position: sticky; inset-block-start: 0; block-size: 100dvh; min-inline-size: 0; overflow: hidden;
 }
 .ax-shell__brand { display:flex; align-items:center; gap: var(--ax-space-100); min-block-size: 64px; padding: var(--ax-space-100) var(--ax-space-100) var(--ax-space-150); border-block-end: 1px solid var(--nav-border); margin-block-end: var(--ax-space-050); }
-.ax-shell__brand-mark { display: none; inline-size: 34px; block-size: 34px; flex: 0 0 auto; background: center / contain no-repeat url("/saqeel-favicon.svg"); }
-/* The nav rail is deep graphite in BOTH themes, so the dark-mode wordmark is
-   the correct asset regardless of the app theme. */
-.ax-shell__brand-lockup { display: block; inline-size: 156px; block-size: 24px; flex: 0 0 auto; background: left center / contain no-repeat url("/saqeel-wordmark-dark-mode.svg"); }
-[dir="rtl"] .ax-shell__brand-lockup { background-position: right center; }
+/* WA-BRAND-r1 — canonical authenticated-shell identity, sized from the design
+   authority (SAQEEL Brand Identity Proof.dc.html + saqeel/components.css): a
+   22px-cap bilingual wordmark on the expanded rail and a 26px shield/check
+   favicon on the collapsed rail. The rail is deep graphite in BOTH themes, so
+   the dark-mode wordmark is correct regardless of the app theme. */
+.ax-shell__brand-lockup { display: block; block-size: 22px; inline-size: auto; flex: 0 0 auto; }
+.ax-shell__brand-mark { display: none; inline-size: 26px; block-size: 26px; flex: 0 0 auto; }
 .ax-shell__close { display: none; margin-inline-start: auto; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid var(--nav-border); border-radius: var(--ax-radius-small); background: var(--nav-bg-hover); color: var(--nav-text-active); cursor: pointer; font-size: 24px; }
 .ax-shell__groups { display: flex; flex: 1; min-block-size: 0; overflow-y: auto; flex-direction: column; gap: var(--ax-space-100); scrollbar-width: thin; }
 .ax-nav-group { display: flex; flex-direction: column; gap: var(--ax-space-050); }
@@ -500,7 +502,8 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell.is-collapsed .ax-nav-subgroup__chevron,
 .ax-shell.is-collapsed .ax-nav-item--child { display: none; }
 .ax-shell.is-collapsed .ax-nav-lock { display: none; }
-.ax-shell.is-collapsed .ax-shell__brand-mark,
+/* The favicon keeps its design-authority 26px; only the collapse control is
+   sized to the 28px rail control box. */
 .ax-shell.is-collapsed .ax-shell__collapse {
   inline-size: 28px;
   block-size: 28px;
