@@ -757,3 +757,16 @@
 @media (max-width: 960px) {
   .lg-page--split .lg-story { display: none; }
 }
+
+/* iPad (and any touch-primary device) → PWA card only, in BOTH orientations,
+   regardless of width. Interaction media queries reflect the hardware input,
+   so this detects iPad reliably where UA sniffing cannot (iPadOS 13+ reports a
+   desktop Mac UA). iPad landscape is wider than the 960px breakpoint above, so
+   this rule — not the width rule — is what makes landscape behave. A laptop
+   with a mouse/trackpad (pointer:fine / hover:hover), even a touchscreen one,
+   is unaffected and keeps the wide split + atlas. */
+@media (hover: none) and (pointer: coarse) {
+  .lg-page--split { grid-template-columns: 1fr; }
+  .lg-page--split .lg-panel { border-inline-end: none; }
+  .lg-page--split .lg-story { display: none; }
+}
