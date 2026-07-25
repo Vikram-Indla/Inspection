@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import FieldLoginClient, { type FieldLoginStrings } from "./FieldLoginClient";
+import { safeFieldReturnPath } from "@/lib/field-auth";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +28,9 @@ async function resolveLocale(searchLang?: string): Promise<Locale> {
 export default async function FieldLogin({
   searchParams,
 }: {
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; next?: string; reason?: string }>;
 }) {
-  const { lang: langParam } = await searchParams;
+  const { lang: langParam, next, reason } = await searchParams;
   const locale = await resolveLocale(langParam);
   const ar = locale === "ar";
 
@@ -63,6 +64,13 @@ export default async function FieldLogin({
         authNetwork: "تعذّر الوصول إلى خدمة تسجيل الدخول. تحقّق من الاتصال وحاول مرة أخرى.",
         signingIn: "جارٍ الدخول…",
         unlocking: "جارٍ التحقق…",
+        checkingSession: "جارٍ التحقق من جلسة المفتش…",
+        sessionExpired: "انتهت جلستك أو تعذّر تجديدها. سجّل الدخول للمتابعة من المكان نفسه.",
+        offlineKnown: "أنت دون اتصال. لا يمكن فتح الجلسة إلا إذا كانت جلسة المفتش المعروفة ما زالت صالحة على هذا الجهاز.",
+        offlineLoginBlocked: "يتطلب تسجيل دخول جديد اتصالاً بالشبكة. أعد الاتصال ثم حاول مرة أخرى.",
+        unauthorizedInspector: "هذا الحساب غير مخوّل لتطبيق المفتش. لم يتم فتح أي بيانات ميدانية.",
+        signedOut: "تم تسجيل الخروج ومسح هوية الجلسة المحلية لهذا المستخدم.",
+        continueOffline: "متابعة العمل دون اتصال",
       }
     : {
         brand1: "SAQEEL",
@@ -95,7 +103,15 @@ export default async function FieldLogin({
           "We could not reach the sign-in service. Check your connection and try again.",
         signingIn: "Signing in…",
         unlocking: "Verifying…",
+        checkingSession: "Checking your Inspector session…",
+        sessionExpired: "Your session expired or could not be renewed. Sign in to continue from the same place.",
+        offlineKnown: "You are offline. Access is limited to a still-valid, previously verified Inspector session on this device.",
+        offlineLoginBlocked: "A new sign-in requires a network connection. Reconnect, then try again.",
+        unauthorizedInspector: "This account is not authorized for the Inspector app. No field data was opened.",
+        signedOut: "Signed out. This user's local session identity was cleared.",
+        continueOffline: "Continue offline",
       };
 
-  return <FieldLoginClient s={strings} dir={ar ? "rtl" : "ltr"} lang={locale} />;
+  return <FieldLoginClient s={strings} dir={ar ? "rtl" : "ltr"} lang={locale}
+    returnTo={safeFieldReturnPath(next)} reason={reason} />;
 }

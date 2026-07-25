@@ -5,6 +5,7 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { getFieldDeviceIdentifier } from "@/lib/field-device";
 import { readFieldDeviceEnrollment } from "@/app/(app)/field/settings/actions";
 import { readBiometricUnlock, unlockWithBiometric, type BiometricUnlockRecord } from "@/lib/field-biometric-unlock";
+import { authorizeInspectorLogin, bootstrapFieldSession, safeFieldReturnPath } from "@/lib/field-auth";
 import "./field-login.css";
 
 // SAQEEL Field Login — implementation of the Claude Design component
@@ -72,6 +73,13 @@ export type FieldLoginStrings = {
   authNetwork: string;
   signingIn: string;
   unlocking: string;
+  checkingSession: string;
+  sessionExpired: string;
+  offlineKnown: string;
+  offlineLoginBlocked: string;
+  unauthorizedInspector: string;
+  signedOut: string;
+  continueOffline: string;
 };
 
 const ShieldIcon = () => (
@@ -115,10 +123,14 @@ export default function FieldLoginClient({
   s,
   dir,
   lang,
+  returnTo,
+  reason,
 }: {
   s: FieldLoginStrings;
   dir: "rtl" | "ltr";
   lang: "ar" | "en";
+  returnTo: string;
+  reason?: string;
 }) {
   const [showPw, setShowPw] = useState(false);
   const [identifier, setIdentifier] = useState("");
@@ -135,6 +147,8 @@ export default function FieldLoginClient({
   const [lockScreen, setLockScreen] = useState<{ record: BiometricUnlockRecord } | null>(null);
   const [unlocking, setUnlocking] = useState(false);
   const [showPasswordFallback, setShowPasswordFallback] = useState(false);
+  const [bootstrapping, setBootstrapping] = useState(true);
+  const [offlineReady, setOfflineReady] = useState(false);
 
   // Network state is observed, never assumed: the DC's pill is a live claim
   // about connectivity and the field app is offline-first.
@@ -152,6 +166,26 @@ export default function FieldLoginClient({
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      const sb = supabaseBrowser();
+      const bootstrap = await bootstrapFieldSession(sb, navigator.onLine);
+      if (cancelled) return;
+      if (bootstrap.status === "ready") {
+        window.location.replace(returnTo);
+        return;
+      }
+      if (bootstrap.status === "offline_known") {
+        setMessage(s.offlineKnown);
+        setOfflineReady(true);
+      } else if (bootstrap.status === "expired" || reason === "expired") {
+        setMessage(s.sessionExpired);
+      } else if (bootstrap.status === "unauthorized") {
+        await sb.auth.signOut();
+        setMessage(s.unauthorizedInspector);
+      } else if (reason === "signedout") {
+        setMessage(s.signedOut);
+      }
+      setBootstrapping(false);
+
       // 1. Is there a persisted session? If not, this is a fresh login —
       // there is nothing to unlock, so no further check runs.
       const { data: { session } } = await supabaseBrowser().auth.getSession();
@@ -175,7 +209,7 @@ export default function FieldLoginClient({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reason, returnTo, s.offlineKnown, s.sessionExpired, s.signedOut, s.unauthorizedInspector]);
 
   const unlockWithFaceId = useCallback(async () => {
     if (!lockScreen) return;
@@ -197,13 +231,22 @@ export default function FieldLoginClient({
       setShowPasswordFallback(true);
       return;
     }
-    window.location.assign("/field");
-  }, [lockScreen, s.bioUnavailable]);
+    const bootstrap = await bootstrapFieldSession(supabaseBrowser(), navigator.onLine);
+    if (bootstrap.status === "ready" || bootstrap.status === "offline_known") window.location.assign(returnTo);
+    else {
+      setMessage(bootstrap.status === "unauthorized" ? s.unauthorizedInspector : s.sessionExpired);
+      setShowPasswordFallback(true);
+    }
+  }, [lockScreen, returnTo, s.bioUnavailable, s.sessionExpired, s.unauthorizedInspector]);
 
   const submitCredentials = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setMessage(null);
+      if (!navigator.onLine) {
+        setMessage(s.offlineLoginBlocked);
+        return;
+      }
 
       // The design labels this field "National ID / Staff number". Resolving a
       // national ID or staff number to an account requires the MIM directory
@@ -230,15 +273,20 @@ export default function FieldLoginClient({
         setMessage(s.authInvalid);
         return;
       }
-      window.location.assign("/field");
+      if (!(await authorizeInspectorLogin(supabaseBrowser(), data.session, keepSignedIn))) {
+        await supabaseBrowser().auth.signOut();
+        setMessage(s.unauthorizedInspector);
+        return;
+      }
+      window.location.assign(returnTo);
     },
-    [identifier, password, s.directoryBlocked, s.authInvalid, s.authNetwork],
+    [identifier, keepSignedIn, password, returnTo, s.directoryBlocked, s.authInvalid, s.authNetwork, s.offlineLoginBlocked, s.unauthorizedInspector],
   );
 
   const netLabel = online ? s.netOnline : s.netOffline;
   const showLockScreen = lockScreen !== null && !showPasswordFallback;
 
-  const localeHref = useMemo(() => `/login/field?lang=${lang === "ar" ? "en" : "ar"}`, [lang]);
+  const localeHref = useMemo(() => `/login/field?lang=${lang === "ar" ? "en" : "ar"}&next=${encodeURIComponent(safeFieldReturnPath(returnTo))}`, [lang, returnTo]);
 
   return (
     <div className="fl-root" dir={dir} lang={lang}>
@@ -275,7 +323,9 @@ export default function FieldLoginClient({
               component: this never appears on a first-run or unenrolled
               device, and there is no "unrecognised device" warning — an
               unenrolled device is the normal case, not an anomaly. */}
-          {showLockScreen ? (
+          {bootstrapping ? (
+            <div className="fl-msg" role="status">{s.checkingSession}</div>
+          ) : showLockScreen ? (
             <>
               <div className="fl-pill fl-trusted-pill">
                 <LockIcon />
@@ -360,8 +410,14 @@ export default function FieldLoginClient({
                   {message}
                 </div>
               )}
+              {offlineReady && (
+                <button type="button" className="btn btn-secondary btn-lg btn-block"
+                  onClick={() => window.location.assign(returnTo)}>
+                  {s.continueOffline}
+                </button>
+              )}
 
-              <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy}>
+              <button type="submit" className="btn btn-primary btn-lg btn-block fl-submit" disabled={busy || !online}>
                 {busy ? s.signingIn : s.signIn}
               </button>
             </form>
