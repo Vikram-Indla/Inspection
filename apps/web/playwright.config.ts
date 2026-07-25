@@ -33,10 +33,17 @@ export default defineConfig({
     {
       name: "e2e",
       testMatch: /.*\.spec\.ts/,
+      testIgnore: /pixel\/.*\.spec\.ts/,
       dependencies: ["setup"],
     },
+    {
+      // BS-1 owns its inspector-only, environment-sourced authentication and
+      // must not run the multi-persona setup or mutate shared journey data.
+      name: "pixel",
+      testMatch: /pixel\/.*\.spec\.ts/,
+    },
   ],
-  webServer: {
+  webServer: process.env.PIXEL_HARNESS === "1" ? undefined : {
     command: `npm run start -- -H 127.0.0.1 -p ${playwrightPort}`,
     // Browser verification explicitly runs the replaceable field adapters.
     // The application default remains disabled; individual tests opt down to
