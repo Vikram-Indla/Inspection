@@ -18,6 +18,10 @@ final class VisitsStore: ObservableObject {
 
     var visible: [VisitListItem] { filter.apply(to: all, todayISODate: todayProvider()) }
 
+    func count(for filter: VisitFilter) -> Int {
+        filter.apply(to: all, todayISODate: todayProvider()).count
+    }
+
     func load() async {
         isLoading = true; errorMessage = nil
         defer { isLoading = false }

@@ -11,29 +11,53 @@ struct VisitCard: View {
         let f = DateFormatter(); f.dateFormat = "d MMM"; return f
     }()
 
+    private var subtitle: String {
+        [item.visit.visitType.capitalized,
+         item.visit.executionMode.rawValue.capitalized,
+         item.factory?.city].compactMap { $0 }.joined(separator: " · ")
+    }
+
     var body: some View {
-        SaqeelCard {
-            VStack(alignment: .leading, spacing: SaqeelSpacing.sm) {
+        Button(action: onOpen) {
+            VStack(alignment: .leading, spacing: SaqeelSpacing.xs) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(item.factory?.factoryCode ?? item.visit.visitType.uppercased())
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundColor(theme.colors.textSecondary)
+                    Spacer(minLength: SaqeelSpacing.sm)
+                    StatusPill(VisitStatusPresentation.lifecycleLabel(item.inspectionLifecycle),
+                               tone: VisitStatusPresentation.lifecycleTone(item.inspectionLifecycle))
+                }
+
                 Text(item.factory?.name ?? "Unknown factory")
                     .font(SaqeelTypography.subheading)
                     .foregroundColor(theme.colors.text)
-                if let code = item.factory?.factoryCode {
-                    Text(code).font(SaqeelTypography.caption).foregroundColor(theme.colors.textSecondary)
-                }
-                Text("\(item.visit.visitType) · \(item.visit.executionMode.rawValue)")
-                    .font(SaqeelTypography.caption).foregroundColor(theme.colors.textSecondary)
+                    .lineLimit(1)
+
+                Text(subtitle)
+                    .font(SaqeelTypography.caption)
+                    .foregroundColor(theme.colors.textSecondary)
+                    .lineLimit(1)
+
                 HStack(spacing: SaqeelSpacing.xs) {
-                    StatusLozenge(item.visit.planningStatus.rawValue,
-                                  tone: VisitStatusPresentation.planningTone(item.visit.planningStatus),
-                                  domain: .plan)
-                    StatusLozenge(VisitStatusPresentation.lifecycleLabel(item.inspectionLifecycle),
-                                  tone: VisitStatusPresentation.lifecycleTone(item.inspectionLifecycle),
-                                  domain: .review)
+                    StatusPill(item.visit.planningStatus.rawValue.capitalized,
+                               tone: VisitStatusPresentation.planningTone(item.visit.planningStatus))
+                    Spacer(minLength: 0)
+                    Text("\(Self.dateFmt.string(from: item.visit.windowStart)) – \(Self.dateFmt.string(from: item.visit.windowEnd))")
+                        .font(SaqeelTypography.caption)
+                        .foregroundColor(theme.colors.textSecondary)
                 }
-                Text("\(Self.dateFmt.string(from: item.visit.windowStart)) – \(Self.dateFmt.string(from: item.visit.windowEnd))")
-                    .font(SaqeelTypography.caption).foregroundColor(theme.colors.textSecondary)
-                SaqeelButton("Open", style: .secondary, action: onOpen)
+                .padding(.top, SaqeelSpacing.hairline)
             }
+            .padding(SaqeelSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(theme.colors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: SaqeelRadius.large))
+            .overlay(
+                RoundedRectangle(cornerRadius: SaqeelRadius.large)
+                    .stroke(theme.colors.border, lineWidth: 1)
+            )
         }
+        .buttonStyle(.plain)
     }
 }
