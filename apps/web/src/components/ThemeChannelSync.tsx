@@ -18,7 +18,9 @@ const isDarkChannel = (pathname: string) =>
   pathname === "/field" ||
   pathname.startsWith("/field/") ||
   pathname === "/login" ||
-  pathname.startsWith("/login/");
+  pathname.startsWith("/login/") ||
+  pathname === "/reset" ||
+  pathname.startsWith("/reset/");
 
 export default function ThemeChannelSync() {
   const pathname = usePathname();

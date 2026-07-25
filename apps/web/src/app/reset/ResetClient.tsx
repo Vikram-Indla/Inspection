@@ -4,7 +4,6 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff } from "../icons";
-import ThemeToggle from "@/components/ThemeToggle";
 
 export type ResetStrings = {
   dir: "rtl" | "ltr";
@@ -140,14 +139,13 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
     setStage("done");
   }
 
-  const themeLabels = { toLight: s.themeToLight, toDark: s.themeToDark };
-
   return (
     <div className="lg-page" dir={s.dir} lang={s.lang}>
       <header className="lg-topbar">
         <a className="lg-topbar__brand" href="/login" lang="ar" dir="rtl">{s.brandTitle}</a>
         <div className="lg-controls">
-          <ThemeToggle className="lg-iconbtn" labels={themeLabels} />
+          {/* Reset is dark-locked and exposes no theme control (ThemeScript /
+              ThemeChannelSync force dark on /reset). Only the language control remains. */}
           <a className="lg-lang" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
         </div>
       </header>
