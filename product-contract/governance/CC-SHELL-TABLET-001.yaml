@@ -1,0 +1,104 @@
+schema_version: "1.0"
+change_control_id: "CC-SHELL-TABLET-001"
+title: "Console shell at tablet / iPad size"
+raised_by: "Claude Orchestrator"
+raised_at: "2026-07-26T01:30:00+03:00"
+state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE"
+landed_commit: "f49c90ca"
+
+sponsor_direction: >
+  Product Owner, 2026-07-26: at iPad size — a real iPad or a responsive window —
+  the console shows the hamburger AND a persistent sticky footer. The footer's
+  options are the design's, not authored in code.
+
+why_this_is_a_change_control_item: >
+  There is no tablet specification for the console. SAQEEL Web Shell v5.dc.html
+  declares no media queries; across all 42 web designs breakpoints appear once
+  each (600, 820, 900, 1100, 1180, 1280) with no shared tablet system, and no
+  design file mentions iPad or tablet. Every rule below is therefore a decision
+  taken in code, not a transcription of accepted design. It is recorded here so
+  it is visible rather than silently becoming precedent.
+
+design_proposal:
+  file: "SAQEEL Web Shell v5 - Tablet PROPOSAL.dc.html"
+  project: "SAQEEL Design System (5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61)"
+  url: "https://claude.ai/design/p/5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61?file=SAQEEL+Web+Shell+v5+-+Tablet+PROPOSAL.dc.html"
+  note: >
+    Written as a NEW page. SAQEEL Web Shell v5.dc.html is untouched and remains
+    the accepted authority until the sponsor accepts this proposal. Code must
+    never overwrite accepted design.
+
+decisions:
+  breakpoint:
+    rule: "@media (max-width: 1024px), (pointer: coarse)"
+    replaces: "899px"
+    basis: >
+      An iPad sat above 899px and received a narrow icon rail instead of a
+      hamburger. The pointer term catches an iPad Pro in landscape, which is
+      1366px wide — above any width breakpoint — but is still an iPad.
+  bottom_bar:
+    component: "components/field/FieldNav.tsx (ports designs/pwa/pwa/pwa-tabbar.js verbatim)"
+    spec: "WA-PWA-TAB-r1"
+    tabs: ["Home / الرئيسية", "My Tasks / مهامي", "Establishments / المنشآت", "Notifications / الإشعارات", "Account / حسابي"]
+    scope: "console routes only — field pages render their own FieldNav today"
+    rejected_alternative: >
+      A first attempt derived the tabs from SHELL_NAVIGATION (Dashboard,
+      Planning, Inspection Rules, Users). That was invented, not designed, and
+      was reverted before it reached main.
+  topbar:
+    change: "the notification bell is hidden at tablet size"
+    basis: >
+      Notifications is a tab there, so the bell was the same destination twice.
+      This mirrors the rule already applied to field-only personas for exactly
+      that reason. Desktop keeps the bell — there is no tab bar there.
+
+defect_fixes_included:
+  - "Drawer wordmark was crushed into a 28px grid column and vanished; the drawer now resets brand to flex and keeps the design's 22px cap height."
+  - "Drawer close control was a filled 44px box with a 24px glyph beside a 22px wordmark, so the X read as the heading; it is now a ghost 20px icon."
+  - "A nav subgroup rendered as an unlabelled shield ('Inspection'): the collapsed rail hides label and chevron, and the drawer override restored the container but not its contents."
+  - "The Insights group / AI Insights rail entry is removed (O-28 — never sponsor-agreed). The top-bar AI entry is unaffected."
+
+open_question_for_sponsor:
+  id: "CC-SHELL-TABLET-001-Q1"
+  question: >
+    The five tabs are field routes. For an Inspector that is correct — the
+    access gate (TASK-WEB-CHANNEL-ACCESS-GATE-001, "Inspector = iPad") already
+    routes them to the field channel. But an Operations or Leadership user on an
+    iPad is on the console, and these tabs point at routes their role cannot
+    open.
+  options:
+    - "A — accept as-is: the bar is field navigation and a console persona has a shortcut into the field channel."
+    - "B — hide the bar for non-field personas; they keep the hamburger only."
+    - "C — commission a separate console tab set with its own design. It must not be improvised from the rail."
+
+propagation:
+  files_changed:
+    - "apps/web/src/app/astryx.css"
+    - "apps/web/src/components/Shell.tsx"
+    - "apps/web/src/components/ShellClient.tsx"
+    - "apps/web/src/components/field/FieldNav.tsx"
+    - "apps/web/src/lib/shell-navigation.ts"
+  required_of_every_active_session: >
+    Rebase on origin/main before your next commit. These five files are shared
+    shell and are newer on main than on any card branch. Resolve them by taking
+    main's version; keep your own card's files. Do not reintroduce an
+    inline-style FieldNav — main's .field-nav implementation ports the design CSS
+    verbatim (56px tabs, 60px above 834px, 34x2px active indicator, its own
+    scroll spacer). Do not re-add the Insights nav group.
+  do_not_build_further_tablet_rules: >
+    Until this proposal is accepted, do not add new tablet behaviour. Align to
+    the single breakpoint pair above rather than introducing a third.
+
+known_gaps:
+  - id: "pwa-shell coverage"
+    detail: >
+      FieldNav is pasted per page rather than living in field/layout.tsx, so 11
+      of 21 field screens still render no tab bar: /field/search,
+      /field/notifications (+/[id]), /field/factory-360, /field/feedback,
+      /field/[visitId]/travel, /field/inspection/[id]/statement, /field/settings
+      (+/conflicts, /devices, /readiness).
+  - id: "vendored designs are stale"
+    detail: >
+      The live Claude Design project contains SAQEEL Login v2.dc.html (44 KB)
+      which is not vendored under designs/. The repo's login work was built
+      against the older SAQEEL Login.dc.html. Re-pull before further login work.

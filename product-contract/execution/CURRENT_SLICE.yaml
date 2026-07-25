@@ -207,6 +207,23 @@ blocked_cards:
   - card: "pwa-reopening"
     reason: "DECISION — reopening is an enforcement outcome, not a field decision. Governing rule unconfirmed."
 
+active_change_control:
+  - id: "CC-SHELL-TABLET-001"
+    file: "product-contract/governance/CC-SHELL-TABLET-001.yaml"
+    state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE"
+    landed_commit: "f49c90ca"
+    summary: >
+      Console shell at tablet/iPad size: hamburger plus the WA-PWA-TAB-r1 bottom
+      bar, breakpoint (max-width: 1024px) or (pointer: coarse), notification bell
+      hidden where Notifications is a tab, and three drawer defect fixes. No
+      tablet design existed, so these are recorded decisions rather than
+      transcriptions.
+    required_of_every_session: >
+      Rebase on origin/main before your next commit. astryx.css, Shell.tsx,
+      ShellClient.tsx, field/FieldNav.tsx and lib/shell-navigation.ts are shared
+      shell and newer on main — take main's version, keep your own card's files.
+      Do not add further tablet rules until the proposal is accepted.
+
 standing_boundaries:
   - "DEC-032 / submission_versions digest() trigger remains P0 and blocks all new real inspection submissions. It needs a DB migration, not application code, and is out of scope for every board card."
   - "Never invent policy values, thresholds, SLAs, providers, risk weights, geofence values, retention or Arabic scope."
