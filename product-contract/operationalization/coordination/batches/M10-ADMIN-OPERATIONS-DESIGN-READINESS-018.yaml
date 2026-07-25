@@ -1,0 +1,261 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-OPERATIONS-DESIGN-READINESS-018
+status: REVIEWER_READY_READ_ONLY_BLOCKED_NEW_DESIGN_AUTHORITY
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+application_writes_performed: false
+mapping_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Establish truthful design readiness for /admin/operations: endpoint-contract
+  counts, error-queue retry requests, maker-checker feature-flag publication and
+  policy-held retention/backup/restore. Reject WA-DES-020 as the wrong screen:
+  it is an Administration navigation catalogue, not the operations/resilience
+  control plane implemented at this route.
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 64eccf8dcd5c608577971f6578d92a9f5b41e7dd
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-ATOMIC-FIX-LEASE-010.yaml
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-BOUNDARY-LEASE-015.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-BEGIN-ATOMICITY-LEASE-014.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-PERMISSION-HARDENING-LEASE-013.yaml
+    - product-contract/operationalization/coordination/batches/M10-INTEGRATION-HUB-DESIGN-READINESS-017.yaml
+  dirty_path_ownership: "Other active/preceding lanes; preserved and not modified."
+  task: M10-ADMIN-OPERATIONS-DESIGN-READINESS-018
+  process_ids: ["G2-P00"]
+  requirement_ids:
+    phase_1_direct: "NONE_IN_478_BASELINE"
+    transferred_context: ["M3-00 exact 14-row register, especially MVP2-REQ-0078 and MVP2-REQ-0239"]
+  acceptance_ids: ["WA-M10-AC-001..006", "MVP2-AC-0078", "MVP2-AC-0239"]
+  dependencies:
+    - "MVP3 database contract"
+    - "Approved retention/backup/restore decisions"
+    - "Dedicated logical design authority"
+  do_not_touch:
+    - "WA-DES-020 and every live/exported design."
+    - "Frozen mapping, requirements, product, tests, migrations, RPCs and data."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  mvp3_register: product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+  implementation:
+    - apps/web/src/app/(app)/admin/operations/page.tsx
+    - apps/web/src/app/(app)/admin/operations/loading.tsx
+    - apps/web/src/app/(app)/admin/mvp3-actions.ts
+    - apps/web/src/components/Mvp3ActionForm.tsx
+  tests:
+    - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+  mapped_design:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Control Panel.dc.html"
+    logical_id: WA-DES-020
+    bytes: 17009
+    sha256: "387114f67318fc3d8d0022b72f711a4b952dce588a66ba5875fd8a5d675125d2"
+    viewport: "1200x900"
+
+independent_mapping_result:
+  route: /admin/operations
+  route_exists: true
+  component_exists: true
+  proposed_design: WA-DES-020
+  design_is_nearest_match: false
+  better_existing_design_match: false
+  claude_code_classification: REPLICATION_WITH_REAL_DATA_ADAPTATION
+  codex_validation: INCORRECT_MAPPING
+  design_match_status: NO_DESIGN_MATCH
+  evidence:
+    - "WA-DES-020 is a grouped Administration catalogue of navigation cards."
+    - "Its System Operations card links elsewhere and contains no queue, flags, endpoint counts or governed actions."
+    - "The real route is a data/action control plane, not a landing-page catalogue."
+  required_correction:
+    - "Remove WA-DES-020 as /admin/operations authority."
+    - "Preserve WA-DES-020 only for a separately approved Admin catalogue route if one exists."
+    - "Assign a new unused logical design ID before any operations design is created."
+    - "Replace CR-001..CR-478 with exact transferred/control-plane traceability."
+    - "Replace fictional Technical Admin with proven route/RPC authorization."
+
+real_route_contract:
+  reads:
+    - table: mvp3_error_queue
+      fields: [source, operation, status, attempt_count, last_error_code, created_at]
+      limit: 50
+    - table: mvp3_feature_flags
+      fields: [flag_key, version, description, enabled, status, created_by, approved_by]
+    - table: mvp3_integration_endpoints
+      fields: [status]
+  derived_counts:
+    endpoint_contracts: "RLS-visible endpoint row count."
+    configured_endpoints: "Rows whose stored status equals configured; not connectivity/health."
+    open_errors: "Rows not stored as resolved; not platform reliability or throughput."
+    published_flags: "Rows whose stored status equals published."
+  actions:
+    retry_request:
+      rpc: mvp3_request_error_retry
+      eligibility: "Only failed or dependency_blocked rows render the action."
+      success_truth: "Retry requested; delivery is not claimed until receipt exists."
+    publish_flag:
+      rpc: mvp3_publish_feature_flag
+      eligibility: "Only draft versions render the action."
+      success_truth: "Independent approver publication; maker cannot approve own flag."
+  policy_hold:
+    - "Retention value."
+    - "Backup target."
+    - "Restore objectives and successful restore evidence."
+  provider_boundary: "No provider credential, health probe, job execution or service-control action."
+
+authorization_findings:
+  route_guard: AUTHENTICATED_ADMIN_CHANNEL_GROUP
+  row_scope: RLS
+  action_authority: "Security-definer RPC contracts; exact roles must be proven from migration/runtime."
+  current_gap:
+    - "No route-specific AdminRouteBoundary."
+    - "mvp3-actions returns raw RPC error.message to the UI."
+    - "Design may not invent Security/Workflow Admin authority before the RPC contract audit resolves it."
+  dependency: CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002
+
+source_truth_gaps:
+  per_source_errors:
+    error_queue: "Only this read's error is captured."
+    feature_flags: "Error discarded; failure can look empty."
+    endpoints: "Error discarded; failure can look like zero."
+    implication: "Design must show independent source failure as an implementation gap."
+  raw_errors:
+    finding: "Server actions currently return raw RPC error.message."
+    risk: "Provider/database/internal details may leak."
+    design_rule: "Use neutral action failure copy; record this as implementation gap."
+  conflict:
+    finding: "No visible optimistic concurrency/version-conflict handling beyond RPC semantics."
+    rule: "Do not imply conflict-safe publication until runtime-proven."
+
+new_design_authority_boundary:
+  status: BLOCKED_PENDING_APPROVED_LOGICAL_ID
+  predecessor: NONE
+  title: "SAQEEL Platform Operations and Resilience"
+  filename_pattern: "SAQEEL Platform Operations and Resilience - <APPROVED-ID>-C1.dc.html"
+  current_state: NOT_CREATED
+  forbidden:
+    - "Do not reuse WA-DES-020 or invent a WA-DES number."
+    - "Do not create TBD/PENDING-named design files."
+  required_before_creation:
+    - "Approved unused logical ID."
+    - "Exact route, title and filename."
+    - "Exact role/RPC authority."
+    - "Creator lease and live inventory collision check."
+    - "DRAFT_NON_CONSUMABLE state."
+
+future_design_contract:
+  identity: "Approved SAQEEL | صقيل wordmark; no صناعي/Industrial sub-brand."
+  title: "Platform operations and resilience"
+  summary_cards:
+    - "Endpoint contracts: scoped count plus configured record count; explicitly not health."
+    - "Open error records: scoped unresolved count; explicitly not throughput."
+    - "Published flag versions: scoped count and maker-checker truth."
+  error_queue:
+    columns: [source, operation, status, last safe error code, attempts, governed action]
+    rules:
+      - "Retry is a request, not job completion."
+      - "No raw error detail, credential, payload or provider secret."
+      - "Resolved rows have no retry action."
+  feature_flags:
+    columns: [flag key, description, version, lifecycle, value, checker action]
+    rules:
+      - "Only draft renders Approve and publish."
+      - "Maker/checker identities and denial remain server-authoritative."
+      - "Published historical versions remain immutable."
+  policy_hold: "Retention, backup and restore remain visibly held; no invented RPO/RTO or purge action."
+
+state_matrix:
+  loading: "Use existing route loading boundary; reserve cards/tables."
+  populated: "Render exact RLS-visible records and derived counts."
+  empty_errors: "Verified zero RLS-visible rows; not health."
+  empty_flags: "Verified successful flag read with zero versions."
+  empty_endpoints: "Verified successful endpoint read with zero contracts."
+  schema_unavailable: "No counts or health inferred."
+  partial_source_error: "Healthy sources remain; each failed source says unavailable."
+  unauthorized: "No queue/flags/endpoint values or actions leak."
+  dependency_blocked: "Retry can remain requested/blocked; no successful-job claim."
+  action_pending: "Disable submitted action only; prevent duplicate request."
+  action_denied: "Neutral permission/separation-of-duties message."
+  action_failed: "Neutral recoverable message; preserve current row truth."
+  conflict: "Stale flag/error version must reload/reconcile; no silent overwrite."
+  policy_held: "No purge/backup/restore control."
+
+responsive_bidi_theme_accessibility:
+  viewports: ["1440x900", "1200x900", "1024x768", "768x1024", "412x915", "390x844", "320x568"]
+  locales: ["EN/LTR", "AR/RTL with codes, flag keys and versions isolated LTR"]
+  themes: ["Light", "Dark"]
+  requirements:
+    - "One h1, ordered headings and labelled tables."
+    - "Tables reflow without losing action/status relationships."
+    - "44px actions, visible focus and keyboard-complete flow."
+    - "Status uses words/icons plus color."
+    - "Action result is announced and focus managed."
+    - "Long safe error codes and keys wrap/accessibly disclose."
+    - "No horizontal overflow at zoom/reflow."
+
+test_and_evidence_assessment:
+  current_proof:
+    - "MVP3 schema, RLS, maker-checker and fail-closed contracts are source-tested."
+    - "Admin runtime smoke opens the route."
+    - "Arabic mobile/theme coverage exists on sibling additive control plane."
+  missing:
+    - "Focused runtime queue/flag actions and refresh persistence."
+    - "Exact permitted/denied role matrix and self-approval denial."
+    - "Per-source failure isolation."
+    - "Raw-error neutralization."
+    - "Retry receipt versus requested distinction."
+    - "Conflict/stale action behavior."
+    - "Full RTL/theme/viewport/keyboard/accessibility evidence."
+  completion_rule: "No completion claim until new design authority and runtime evidence both pass."
+
+risk_register:
+  - {id: OPSADM-RISK-001, severity: CRITICAL, risk: "Wrong navigation design is implemented as an operations control plane."}
+  - {id: OPSADM-RISK-002, severity: CRITICAL, risk: "Configured/count is misrepresented as service health."}
+  - {id: OPSADM-RISK-003, severity: HIGH, risk: "Retry requested is misrepresented as job success."}
+  - {id: OPSADM-RISK-004, severity: HIGH, risk: "Raw RPC errors leak internal details."}
+  - {id: OPSADM-RISK-005, severity: HIGH, risk: "Failed source is rendered as verified zero."}
+  - {id: OPSADM-RISK-006, severity: HIGH, risk: "Maker-checker or role boundary is visually overstated."}
+
+do_not_build:
+  - "No reuse of WA-DES-020 for this route."
+  - "No provider health, uptime, throughput, count, credential or job-success claim."
+  - "No retry execution/cancel/resolve action beyond the real request RPC."
+  - "No feature-flag create/edit/delete/self-approve action."
+  - "No retention, purge, backup, restore, RPO or RTO value/control."
+  - "No new route, role, RPC, table, migration, provider, seed or shared-data change."
+
+recommended_reviewer_action: RETURN_FOR_MAPPING_CORRECTION
+recommendation: >-
+  Remove WA-DES-020 from /admin/operations and approve creation of a new design
+  authority only after ID and authorization governance. Do not implement from
+  the current Control Panel catalogue design.
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    design_logical_id: WA-DES-020
+    route: UNRESOLVED_ADMIN_CATALOGUE
+  scope: >-
+    Determine whether the Administration catalogue has a real route/component,
+    then preserve or retire WA-DES-020 mapping through change control. No live
+    design, mapping or product mutation.
+  collision_check: "Ownership-only; distinct from operations implementation."

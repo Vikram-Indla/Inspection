@@ -1,0 +1,380 @@
+schema_version: "1.0"
+packet_id: CODEX-M3-OPERATIONS-AUTHORIZATION-DECISION-BOUNDARY-003
+status: PENDING_SPONSOR_GOVERNANCE_DECISION
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+authority_status: PROPOSAL_ONLY
+
+warning: >-
+  Nothing in this packet is an approved policy, implementation lease, role
+  grant, requirement change or migration authorization. Every recommendation
+  is a reviewer proposal derived from
+  CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002. Sponsor/governance must
+  approve or revise the five decision axes before implementation.
+
+purpose: >-
+  Obtain one explicit, bounded Operations authorization decision that separates
+  route/view access, precise inspector GPS and identity visibility, write
+  capabilities, region/organization server scoping and national-scope access.
+
+non_change_boundary:
+  application_code_changed: false
+  tests_changed: false
+  data_or_seed_changed: false
+  design_changed: false
+  migration_or_rls_changed: false
+  requirements_changed: false
+  role_or_permission_grants_changed: false
+  claude_eight_file_map_lease_changed: false
+  commit_push_pr_merge: false
+
+inputs:
+  audit_packet: >-
+    product-contract/operationalization/coordination/batches/
+    CODEX-M3-OPERATIONS-AUTHORIZATION-CONTRACT-AUDIT-002.yaml
+  active_claude_return: >-
+    product-contract/operationalization/coordination/batches/
+    CLAUDE-M3-MAP-PROVENANCE-IMPLEMENTATION-RETURN-001.yaml
+  requirement_ids:
+    - CR-430
+    - CR-433
+    - CR-439
+    - CR-447
+  rbac_ids:
+    - RBAC-008
+    - RBAC-013
+  existing_capabilities:
+    - operations.view
+    - operations.resolve_exception
+    - operations.approve_active_cancel
+
+decision_axes:
+  - decision_id: OPS-AUTH-D01
+    name: Route and view permission
+    question: Who may enter /operations/** and receive Operations data?
+    current_proven_state:
+      capability_grants:
+        operations.view:
+          - ops
+          - planner
+          - leadership
+      route_behavior: >-
+        The current route guard does not use operations.view; it trusts broadly
+        enabled business navigation and therefore admits actors without this
+        capability.
+    proposal:
+      status: PROPOSAL_NOT_AUTHORITY
+      recommendation: >-
+        Use operations.view as the single route and navigation read gate.
+        Preserve the existing ops, planner and leadership grants only if the
+        sponsor approves Planner as a monitoring-only additive interpretation
+        of CR-430.
+      proposed_persona_projection:
+        ops: Full operational monitoring, still subject to geography.
+        planner: >-
+          Monitoring-only planning context, subject to geography and the
+          location/identity restrictions in D02.
+        leadership: >-
+          Aggregate/masked Executive monitoring, subject to geography and the
+          location/identity restrictions in D02.
+        every_other_role: >-
+          Denied unless governance deliberately grants operations.view.
+      alternative: >-
+        Strict CR-430 interpretation: retain Operations and Leadership only;
+        remove Planner's operations.view grant through separately governed
+        capability change.
+    sponsor_answer_required:
+      - APPROVE_PROPOSAL
+      - STRICT_CR430_NO_PLANNER
+      - REVISE_WITH_EXACT_ROLE_KEYS
+
+  - decision_id: OPS-AUTH-D02
+    name: Precise GPS and inspector identity visibility
+    question: Which route-authorized personas may see raw inspector identity and precise recorded GPS?
+    current_proven_state: >-
+      geo_events SELECT currently includes ops, planner, reviewer, auditor and
+      leadership. The route guard is broader still. CR-433 names Supervisor,
+      while RBAC-013 describes Leadership as aggregate/masked.
+    proposal:
+      status: PROPOSAL_NOT_AUTHORITY
+      recommendation:
+        precise_recorded_gps:
+          allowed:
+            - ops
+          denied_or_projected:
+            planner: >-
+              May see factory/visit/schedule and a truthfully labelled
+              assignment/factory projection, but not raw geo-event coordinates,
+              accuracy or event-level position history.
+            leadership: >-
+              May see aggregate regional posture and counts, but not precise
+              inspector coordinates or event-level position history.
+            all_other_roles: No Operations-route position access.
+        inspector_identity:
+          allowed:
+            - ops
+          masked:
+            planner: >-
+              Use workload/assignment facts without inspector name unless a
+              separate identity permission is approved.
+            leadership: Aggregate counts only; no inspector name.
+          denied:
+            - reviewer
+            - auditor
+            - admin_only
+            - factory_rep
+            - role_less
+    proposed_future_capability:
+      key: operations.view_precise_location_identity
+      grant_to:
+        - ops
+      status: PROPOSAL_ONLY_REQUIRES_GOVERNED_MIGRATION
+    sponsor_answer_required:
+      - APPROVE_OPS_ONLY_PRECISE_LOCATION_AND_IDENTITY
+      - APPROVE_DIFFERENT_EXACT_ROLE_KEYS
+      - APPROVE_SEPARATE_GPS_AND_IDENTITY_RULES
+
+  - decision_id: OPS-AUTH-D03
+    name: Write capabilities
+    question: Which personas may resolve exceptions and decide operational requests?
+    current_proven_state:
+      operations.resolve_exception:
+        granted_to:
+          - ops
+      operations.approve_active_cancel:
+        granted_to:
+          - ops
+      decide_geo_override:
+        guarded_by: ops role
+      defect_boundary: >-
+        The UI does not consistently hide or disable every write control using
+        these authority facts. Some unauthorized users can see controls that
+        later fail safely at the database.
+    proposal:
+      status: PROPOSAL_NOT_AUTHORITY
+      recommendation:
+        resolve_exception: ops via operations.resolve_exception
+        approve_active_cancel: ops via operations.approve_active_cancel
+        decide_geo_override: >-
+          ops under the existing RPC guard until governance deliberately
+          authorizes a capability migration.
+        planner: Monitoring only; no Operations writes.
+        leadership: Monitoring only; no Operations writes.
+        all_other_roles: No Operations writes.
+      presentation_rule: >-
+        Controls should be absent or explicitly read-only when the corresponding
+        capability is absent; database/RPC enforcement remains mandatory.
+    sponsor_answer_required:
+      - APPROVE_EXISTING_OPS_ONLY_WRITE_MODEL
+      - REVISE_WITH_EXACT_CAPABILITY_GRANTS
+
+  - decision_id: OPS-AUTH-D04
+    name: Region and organization server scoping
+    question: How is each route-authorized user's permitted geography derived and enforced?
+    current_proven_state:
+      available_profile_fields:
+        - profiles.region
+        - profiles.org_scope
+      current_operations_behavior: >-
+        Region/city is a user-selected presentation filter over broadly
+        RLS-visible rows. No reviewed Operations policy binds factories,
+        visits or geo_events to profiles.region or profiles.org_scope.
+      requirement_gap:
+        - CR-439
+        - CR-447
+        - RBAC-008
+        - RBAC-013
+    proposal:
+      status: PROPOSAL_NOT_AUTHORITY
+      recommendation:
+        server_authority: >-
+          Derive allowed geography from authenticated profile scope plus
+          explicit grants; never from a client query parameter.
+        region: profiles.region
+        organization: profiles.org_scope
+        null_semantics: >-
+          Null means scope is unconfigured and must fail closed. Null must not
+          silently mean national.
+        enforcement_layers:
+          - Server-side route/query scope before records reach components.
+          - Row-level security or an equivalent database-authoritative scoped read.
+          - Region/city UI options limited to already-authorized geography.
+        client_filter_role: >-
+          The region/city selector may narrow the authorized set but may never
+          expand it.
+      unresolved_value: >-
+        The exact mapping between org_scope and factories/visits is not proven
+        by the reviewed schema and requires governance/data-model confirmation.
+    sponsor_answer_required:
+      - APPROVE_PROFILE_SCOPE_WITH_NULL_FAIL_CLOSED
+      - REVISE_SCOPE_SOURCE_AND_NULL_SEMANTICS
+
+  - decision_id: OPS-AUTH-D05
+    name: National-scope grant
+    question: How does a user receive access to all regions?
+    current_proven_state: >-
+      Current role-broad RLS effectively gives several roles national reads,
+      but there is no explicit national Operations grant tied to CR-439/447.
+    proposal:
+      status: PROPOSAL_NOT_AUTHORITY
+      recommendation:
+        grant_model: Explicit capability, never inferred from a null profile scope.
+        proposed_capability_key: operations.view_all_regions
+        default_grants: []
+        grant_process: >-
+          Security/governance assigns the capability to specific role(s) or
+          users only after sponsor approval and audit requirements are defined.
+        audit_expectation: >-
+          Grant, revoke and use of national scope must be attributable to actor,
+          time and authority.
+      no_assumption: >-
+        This packet does not propose automatically granting national scope to
+        ops or leadership. The sponsor must name the role keys or require
+        per-user grants.
+    sponsor_answer_required:
+      - APPROVE_EXPLICIT_NATIONAL_CAPABILITY_AND_NAME_GRANTEES
+      - REVISE_NATIONAL_SCOPE_MODEL
+
+sponsor_copy_paste_decision:
+  recommended_proposal_text: >-
+    APPROVE AS A PROPOSAL FOR GOVERNED IMPLEMENTATION: use operations.view for
+    /operations/** route and navigation access; retain ops, planner and
+    leadership, with Planner limited to monitoring-only planning context and
+    Leadership limited to aggregate/masked Executive context; permit precise
+    inspector GPS and identity only to ops; retain ops-only
+    operations.resolve_exception, operations.approve_active_cancel and the
+    current ops-only geo-override decision; enforce authorized region and
+    organization on the server and in database-authoritative reads using
+    approved profile scope, with null scope failing closed; require a separate
+    explicit operations.view_all_regions grant for national access, with no
+    default grantee until governance names one.
+  effect_of_approval: >-
+    Approval authorizes contract drafting and implementation planning only. It
+    does not itself authorize a code change, migration, RLS change, data write,
+    merge or deployment.
+
+implementation_boundary_after_decision:
+  status: NOT_AUTHORIZED_NOT_STARTED
+  sequencing_rule: >-
+    Do not touch any file in the active Claude eight-file map-provenance lease.
+    Any overlapping authorization implementation begins only after Claude
+    returns, independent review accepts or supersedes its diff, and a new
+    owner/branch/base commit is recorded.
+  proposed_work_packages:
+    - package_id: OPS-AUTH-WP01
+      name: Capability-aligned route and navigation gate
+      dependencies:
+        - Sponsor decision D01
+        - Claude map lease closed or ownership reconciled
+      proposed_files:
+        - apps/web/src/lib/shell-navigation.ts
+        - apps/web/src/app/(app)/operations/page.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+      outcome: >-
+        The same operations.view fact controls navigation and direct route;
+        denial occurs before protected Operations reads.
+      backend_change: false_if_existing_has_capability_is_reused
+
+    - package_id: OPS-AUTH-WP02
+      name: Persona-safe Operations projection
+      dependencies:
+        - Sponsor decision D02
+        - Claude map lease closed or ownership reconciled
+      overlapping_claude_files:
+        - apps/web/src/app/(app)/operations/OperationsMapWorkspace.tsx
+        - apps/web/src/app/(app)/operations/live/LiveMapInner.tsx
+        - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+        - apps/web/src/app/(app)/operations/live/page.tsx
+        - apps/web/src/app/(app)/operations/live/types.ts
+        - apps/web/src/app/(app)/operations/page.tsx
+      outcome: >-
+        Ops receives authorized precise provenance; Planner and Leadership
+        receive only the approved reduced projections; restricted facts never
+        reach their client payload.
+      backend_change: >-
+        Likely required for a database-authoritative precise-location permission;
+        exact migration scope must be reviewed separately.
+
+    - package_id: OPS-AUTH-WP03
+      name: Capability-aligned write presentation
+      dependencies:
+        - Sponsor decision D03
+      proposed_files:
+        - apps/web/src/app/(app)/operations/actions.ts
+        - apps/web/src/app/(app)/operations/Controls.tsx
+        - apps/web/src/app/(app)/operations/OverrideQueue.tsx
+        - apps/web/src/app/(app)/operations/CancellationQueue.tsx
+        - apps/web/src/app/(app)/operations/page.tsx
+        - apps/web/e2e/web-admin-m3-operations-authorization.spec.ts
+      outcome: >-
+        Every control matches its capability; database/RPC guards remain the
+        final authority and negative tests prove no mutation.
+      special_review: >-
+        Reconcile action_forms update authority with
+        operations.resolve_exception before claiming completion.
+
+    - package_id: OPS-AUTH-WP04
+      name: Region, organization and national-scope enforcement
+      dependencies:
+        - Sponsor decisions D04 and D05
+        - Approved mapping from org_scope to governed records
+        - Separate backend/RLS lease
+      proposed_surfaces:
+        - profiles scope read
+        - factories SELECT scope
+        - visits SELECT scope
+        - geo_events SELECT scope through authorized visits
+        - Operations server queries and filter options
+        - role/capability administration and audit
+      outcome: >-
+        Same-region access works; cross-region existence is not disclosed; null
+        scope fails closed; national access requires the explicit grant.
+      backend_change: REQUIRED_AND_NOT_AUTHORIZED
+
+proposed_acceptance_matrix:
+  route_personas:
+    - ops
+    - planner
+    - leadership
+    - reviewer
+    - auditor
+    - inspector_only
+    - compliance_admin
+    - other_admin_only
+    - factory_rep
+    - zero_roles
+    - inspector_plus_non_operations_role
+  permission_states:
+    - operations.view present
+    - operations.view absent
+    - precise-location permission present
+    - precise-location permission absent
+    - write capability present
+    - write capability absent
+  geography_states:
+    - same authorized region
+    - different unauthorized region
+    - authorized organization
+    - unauthorized organization
+    - null profile scope
+    - explicit national grant
+    - national grant revoked
+  required_negative_proofs:
+    - "Denied route performs zero protected Operations reads."
+    - "Restricted projection never sends precise GPS, accuracy or inspector identity to the client."
+    - "Absent write capability produces zero mutation."
+    - "Cross-region and cross-organization records are not disclosed by counts, filters, lists, maps or errors."
+    - "Null scope does not become national access."
+    - "Revoked national scope fails on the next authoritative read."
+
+current_blocker:
+  sponsor_governance: FIVE_AXIS_DECISION_REQUIRED
+  claude_dispatch: MANUAL_MAC_UNLOCK_REQUIRED
+  product_implementation: NOT_AUTHORIZED
+
+stop_condition:
+  decision_packet_complete: true
+  wait_for:
+    - Sponsor/governance decision on D01-D05
+    - Manual Mac unlock for the independent Claude map-correction return
