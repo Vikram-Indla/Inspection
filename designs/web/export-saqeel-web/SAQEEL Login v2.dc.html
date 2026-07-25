@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+/* Transcribed from web/src/app/login/login.css + field/field-login.css.
+   Only what cannot be inline lives here: keyframes, hover/focus states,
+   container-query plane sizing, transitions. Scene STATE is driven from the
+   logic class, not from ancestor attribute selectors. */
+html, body { height: 100%; margin: 0; }
+a { color: var(--nav-indicator); text-decoration: none; }
+a:hover { color: var(--nav-indicator); text-decoration: underline; text-underline-offset: 3px; }
+
+@keyframes fl-blink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.fl-live { animation: fl-blink 2.2s ease-in-out infinite; }
+.lg-in:focus-visible { outline: 2px solid var(--action-primary); outline-offset: 1px; }
+.lg-stage-btn:focus-visible, .lg-hot:focus-visible, .lg-slab-edge:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* the atlas plane — the approved 1672×941 composition is never cropped out of
+   proportion, so every normalized overlay position stays locked to it */
+.lg-atlas { position: absolute; inset: 0; overflow: hidden; container-type: size; }
+.lg-plane { position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+  inline-size: min(132cqw, calc(100cqh * 1.776833)); aspect-ratio: 1672 / 941;
+  transform-style: preserve-3d;
+  transition: transform 1050ms cubic-bezier(.16,.84,.25,1), filter 1050ms ease; }
+.lg-base { position: absolute; inset: 0; transition: filter 800ms ease; }
+.lg-base img { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
+  object-fit: fill; user-select: none; }
+
+.lg-motion { position: absolute; inset: 0; z-index: 8; pointer-events: none;
+  transition: opacity 700ms ease; }
+.lg-motion svg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; }
+/* Scene changes cross-fade over 2s so one story dissolves into the next
+   instead of cutting. */
+.lg-zoneline { fill: color-mix(in srgb, var(--zone-tone) 2%, transparent);
+  stroke: color-mix(in srgb, var(--zone-tone) 56%, transparent); stroke-width: 1.2;
+  stroke-dasharray: 5 6; vector-effect: non-scaling-stroke; transition: opacity 2s ease; }
+.lg-route-line { fill: none; stroke: var(--status-info); stroke-width: 1.6;
+  stroke-linecap: round; stroke-dasharray: 4 7; transition: opacity 2s ease; }
+.lg-route-stop { fill: var(--nav-bg); stroke: var(--status-info); stroke-width: 1.6;
+  transition: opacity 2s ease; }
+.lg-suvs { transition: opacity 2s ease; }
+.lg-actor { position: absolute; z-index: 3; inline-size: 42px; block-size: 67px;
+  transition: opacity 2s ease-out var(--d), transform 2s ease-out var(--d); }
+.lg-actor img { display: block; inline-size: 100%; block-size: 100%; object-fit: contain;
+  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .68)); }
+.lg-outcome { position: absolute; z-index: 3; display: flex; align-items: center; gap: 5px;
+  min-inline-size: max-content; padding: 4px 8px; border: 1px solid var(--nav-bg);
+  border-radius: var(--radius-full); color: var(--text-inverse); box-shadow: var(--shadow-xs);
+  font: 700 11px/1 var(--font-body);
+  transition: opacity 2s ease-out var(--d), transform 2s ease-out var(--d); }
+
+/* hover-driven terrain extraction: cavity, exposed earth sidewall, raised top */
+.lg-lift { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+.lg-lift svg { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; }
+.lg-slab > * { transform-box: view-box; transform-origin: center;
+  transition: transform 900ms cubic-bezier(.16,.84,.25,1), opacity 680ms ease, filter 820ms ease; }
+/* ambient darkness mixed from black is shade, not a palette colour */
+.lg-slab-cavity { fill: rgba(0, 0, 0, .96); }
+.lg-slab-wall image { filter: brightness(.32) saturate(.7) sepia(.28); }
+.lg-slab-edge { fill: transparent; stroke-width: .8; vector-effect: non-scaling-stroke;
+  pointer-events: all; cursor: pointer; }
+/* geofenced site perimeters — scene 01 only */
+.lg-fence { position: absolute; transform: translate(-50%, -50%); border-radius: 50%;
+  inline-size: 64px; block-size: 64px; border: 1.4px dashed var(--status-info);
+  background: color-mix(in srgb, var(--status-info) 7%, transparent);
+  transition: opacity 2s ease; }
+.lg-fence::after { content: ""; position: absolute; inset: -7px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--status-info) 34%, transparent);
+  animation: lg-fence-pulse 2.8s ease-out infinite; }
+@keyframes lg-fence-pulse { 0% { transform: scale(.84); opacity: .9; } 100% { transform: scale(1.18); opacity: 0; } }
+/* illustrative trip distance, carried while a vehicle is on the road */
+.lg-km { position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
+  padding: 2px 7px; border-radius: var(--radius-full);
+  color: var(--nav-text-active); background: color-mix(in srgb, var(--nav-bg) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-info) 42%, transparent);
+  transition: opacity 2s ease; }
+
+/* zone type set into the terrain — no card, no chrome */
+.lg-zlabel { position: absolute; display: flex; flex-direction: column; gap: 3px;
+  transition: transform 900ms cubic-bezier(.16,.84,.25,1), opacity 680ms ease; }
+.lg-zstats { display: flex; align-items: baseline; gap: 9px; white-space: nowrap;
+  font: 600 11px/1.3 var(--font-body); transition: opacity 520ms ease; }
+
+/* site anchors: silent at rest, named on hover / keyboard focus */
+.lg-hot { position: absolute; z-index: 20; inline-size: 46px; block-size: 46px;
+  transform: translate(-50%, -50%); display: grid; place-items: center;
+  border: 0; background: none; padding: 0; border-radius: var(--radius-full); cursor: pointer; }
+.lg-hot::before { content: ""; position: absolute; inset: 5px; border-radius: inherit;
+  border: 1.5px solid var(--tone); opacity: 0; transform: scale(.7);
+  transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.8,.2,1); }
+.lg-hot:hover::before, .lg-hot:focus-visible::before { opacity: 1; transform: scale(1); }
+.lg-hot-core, .lg-hot-label { opacity: 0; transition: opacity 200ms ease; }
+.lg-hot:hover .lg-hot-core, .lg-hot:focus-visible .lg-hot-core,
+.lg-hot:hover .lg-hot-label, .lg-hot:focus-visible .lg-hot-label { opacity: 1; }
+.lg-hot-core { inline-size: 10px; block-size: 10px; border-radius: 50%; background: var(--tone); }
+.lg-hot-label { position: absolute; z-index: 2; min-inline-size: max-content;
+  padding: 1px 6px; border-radius: var(--radius-full); color: var(--nav-text-active);
+  background: color-mix(in srgb, var(--nav-bg) 86%, transparent);
+  inset-block-start: calc(100% - 8px); left: 50%; transform: translateX(-50%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-live { animation: none; }
+  .lg-event > *, .lg-readout > * { animation: none; }
+  .lg-plane, .lg-slab > *, .lg-motion, .lg-base, .lg-actor, .lg-outcome { transition: none !important; }
+}
+/* login.css, verbatim rule: below the desktop breakpoint the story panel is
+   REMOVED, not restacked, and touch devices are excluded by pointer as well as
+   width — so an iPad in landscape (1024–1366px) still gets the card alone. */
+@media (max-width: 1024px), (pointer: coarse) {
+  .lg-split { grid-template-columns: 1fr !important; }
+  .lg-story-col { display: none !important; }
+}
+</style>
+</helmet>
+
+<div class="lg-split" dir="{{ dir }}" lang="{{ lang }}" data-theme="dark" data-screen-label="Login /login" style="min-height:100vh; display:grid; grid-template-columns:{{ gridCols }}; width:{{ frameWidth }}; margin-inline:auto; background:var(--nav-bg); color:var(--nav-text-active); font-family:var(--font-body);">
+
+  <!-- ══ CREDENTIAL COLUMN — FieldLoginClient (.fl-root), dark-locked, no card surface ══ -->
+  <main style="position:relative; min-inline-size:0; display:flex; flex-direction:column; background:var(--nav-bg); color:var(--nav-text-active);">
+
+    <div style="display:flex; align-items:center; gap:8px; padding:16px 20px 0;">
+      <span style="display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; background:{{ netBg }}; color:{{ netColor }};">
+        <span class="{{ netDotClass }}" style="width:7px; height:7px; border-radius:50%; background:currentColor; display:inline-block;"></span>{{ netLabel }}
+      </span>
+      <span style="flex:1;"></span>
+      <a href="#" onClick="{{ toggleLocale }}" style="padding:6px 12px; border-radius:999px; border:1px solid color-mix(in srgb, var(--nav-text) 30%, transparent); font-size:12.5px; font-weight:700; color:var(--nav-text-active);">{{ s.langBtn }}</a>
+    </div>
+
+    <!-- The credential block is centred against the full column, and the
+         assurance footer is taken out of flow, so dismissing the offline note
+         cannot shift the form. -->
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 24px 190px; text-align:center;">
+      <div style="width:100%; max-width:400px; display:flex; flex-direction:column; align-items:center;">
+
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:52px; height:52px; margin-block-end:14px;">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path><path d="m9 12 2 2 4-4"></path>
+        </svg>
+        <div style="display:flex; align-items:baseline; gap:10px;">
+          <span lang="en" style="font-weight:700; font-size:28px; letter-spacing:.06em; color:var(--nav-text-active);">SAQEEL</span>
+          <span lang="ar" style="font-weight:700; font-size:24px; color:var(--nav-text-active);">صقيل</span>
+        </div>
+        <div class="t-caption" style="color:var(--nav-text); margin-block-start:6px;">{{ s.tagline }}</div>
+
+        <!-- Face ID unlock — only when session + backend device trust + local opt-in all hold -->
+        <sc-if value="{{ lockScreen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+            <span style="display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; margin-block-start:18px; background:color-mix(in srgb, var(--nav-indicator) 14%, transparent); color:var(--nav-indicator);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px; height:14px;" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>{{ s.trustedDevice }}
+            </span>
+            <button type="button" aria-label="{{ s.faceUnlock }}" style="margin-block-start:24px; width:88px; height:88px; border-radius:24px; border:2px solid var(--nav-indicator); background:color-mix(in srgb, var(--nav-indicator) 10%, transparent); display:grid; place-items:center; cursor:pointer;" style-hover="background:color-mix(in srgb, var(--nav-indicator) 20%, transparent); transform:translateY(-2px);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.6" style="width:42px; height:42px;" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"></path><path d="M9 10h.01M15 10h.01M9.5 15c.9.7 4.1.7 5 0"></path></svg>
+            </button>
+            <div style="font-size:15px; font-weight:600; margin-block-start:12px; color:var(--nav-text-active);">{{ s.faceUnlock }}</div>
+            <div class="t-caption" style="color:var(--nav-text); margin-block-start:4px; max-width:32ch;">{{ s.faceDesc }}</div>
+            <div style="display:flex; align-items:center; gap:12px; width:100%; margin-block:22px 2px;">
+              <span style="flex:1; height:1px; background:color-mix(in srgb, var(--nav-text) 22%, transparent);"></span>
+              <span class="t-label" style="color:var(--nav-text);">{{ s.orPassword }}</span>
+              <span style="flex:1; height:1px; background:color-mix(in srgb, var(--nav-text) 22%, transparent);"></span>
+            </div>
+            <button type="button" class="btn btn-ghost btn-block" onClick="{{ usePassword }}">{{ s.bioFallback }}</button>
+          </div>
+        </sc-if>
+
+        <!-- Plain credential form — first run, no session, unenrolled device, expired session -->
+        <sc-if value="{{ formView }}" hint-placeholder-val="{{ true }}">
+          <form style="width:100%; text-align:start; display:flex; flex-direction:column; gap:14px; margin-block-start:14px;">
+            <label style="display:flex; flex-direction:column; gap:7px;">
+              <span class="t-label" style="color:var(--nav-text);">{{ s.idLabel }}</span>
+              <input class="lg-in" type="text" autoComplete="username" style="width:100%; min-height:48px; border-radius:var(--radius-md); border:1px solid var(--border-input); background:var(--surface-primary); color:var(--text-primary); font:inherit; font-size:15px; padding:0 14px; box-sizing:border-box;">
+            </label>
+            <label style="display:flex; flex-direction:column; gap:7px;">
+              <span class="t-label" style="color:var(--nav-text);">{{ s.password }}</span>
+              <span style="position:relative; display:flex; align-items:center;">
+                <input class="lg-in" type="{{ pwType }}" autoComplete="current-password" style="width:100%; min-height:48px; border-radius:var(--radius-md); border:1px solid var(--border-input); background:var(--surface-primary); color:var(--text-primary); font:inherit; font-size:15px; padding-block:0; padding-inline:14px 44px; box-sizing:border-box;">
+                <button type="button" onClick="{{ togglePw }}" aria-label="{{ s.showPw }}" aria-pressed="{{ showPw }}" style="position:absolute; inset-inline-end:8px; border:0; background:none; padding:6px; cursor:pointer; color:var(--text-muted); display:grid; place-items:center;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px; height:20px;" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </span>
+            </label>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <label class="check" style="font-size:13px; color:var(--nav-text); display:flex; align-items:center; gap:7px;"><input type="checkbox" checked="{{ true }}">{{ s.keepSignedIn }}</label>
+              <a href="#" style="font-size:13px; color:var(--nav-indicator);">{{ s.forgot }}</a>
+            </div>
+
+            <sc-if value="{{ showMessage }}" hint-placeholder-val="{{ false }}">
+              <div role="alert" style="width:100%; margin-block-start:14px; text-align:start; padding:12px 14px; border-radius:var(--radius-md); background:color-mix(in srgb, var(--status-warning-text) 12%, transparent); border:1px solid color-mix(in srgb, var(--status-warning-text) 34%, transparent); color:var(--nav-text-active); font-size:13px; line-height:1.55;">{{ message }}</div>
+            </sc-if>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" disabled="{{ submitDisabled }}" style="margin-block-start:20px;">{{ s.signIn }}</button>
+          </form>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="position:absolute; inset-inline:0; inset-block-end:0; padding:0 24px 24px; max-width:440px; width:100%; margin:0 auto; box-sizing:border-box;">
+      <sc-if value="{{ showOfflineNote }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; align-items:flex-start; gap:9px; padding:12px 14px; border-radius:var(--radius-md); background:color-mix(in srgb, var(--nav-text-active) 5%, transparent); border:1px solid color-mix(in srgb, var(--nav-text) 18%, transparent);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.6" style="width:16px; height:16px; flex:none; margin-block-start:1px;" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14 0M8.5 16.05a6 6 0 0 1 7 0M2 8.82a15 15 0 0 1 20 0"></path><circle cx="12" cy="20" r="1"></circle></svg>
+          <span class="t-compact" style="color:var(--nav-text); line-height:1.55; flex:1;">{{ s.offlineNote }}</span>
+          <button type="button" onClick="{{ dismissNote }}" aria-label="{{ s.dismiss }}" style="flex:none; margin-block-start:-2px; margin-inline-end:-4px; border:0; background:none; padding:4px; cursor:pointer; color:var(--nav-text); display:grid; place-items:center; border-radius:var(--radius-sm);" style-hover="color:var(--nav-text-active); background:color-mix(in srgb, var(--nav-text-active) 10%, transparent);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:14px; height:14px;" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </sc-if>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-block-start:12px;">
+        <span class="t-caption" style="color:var(--nav-text);">{{ s.copyright }}</span>
+        <span class="t-caption" style="display:flex; align-items:center; gap:6px; color:var(--nav-text);">
+          <span style="width:6px; height:6px; border-radius:50%; background:{{ netColor }};"></span>{{ netLabel }}
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ══ ATLAS COLUMN — StoryPanel (.lg-story) ══ -->
+  <aside class="lg-story-col" style="position:relative; min-inline-size:0; overflow:hidden; display:{{ atlasDisplay }}; background:var(--nav-bg); border-inline-start:1px solid color-mix(in srgb, var(--nav-text) 14%, transparent);">
+
+    <div class="lg-atlas" style="background:var(--nav-bg);">
+      <div class="lg-plane" style="transform:{{ planeTransform }};">
+        <!-- the raster is pulled toward the card's graphite ground so the two
+             halves read as one surface instead of two palettes -->
+        <div class="lg-base" style="filter:{{ baseFilter }};"><img src="saqeel/atlas/inspection-atlas-scene-base-v2.png" alt="{{ st.title }}" style="filter:saturate(.58) hue-rotate(-10deg) brightness(.93);"></div>
+        <div style="position:absolute; inset:0; z-index:6; pointer-events:none; background:var(--nav-bg); opacity:.34; mix-blend-mode:color;"></div>
+        <div style="position:absolute; inset:0; z-index:6; pointer-events:none; background:color-mix(in srgb, var(--nav-bg) 18%, transparent); mix-blend-mode:multiply;"></div>
+
+        <!-- zone names over a label-free base render, in the active locale.
+             Lifting a zone expands its own label into the regional readout —
+             the intelligence is set into the geography, not onto a card. -->
+        <div style="position:absolute; inset:0; z-index:14; pointer-events:none;">
+          <sc-for list="{{ zoneLabels }}" as="zl" hint-placeholder-count="5">
+            <span class="lg-zlabel" style="left:{{ zl.left }}; top:{{ zl.top }}; transform:{{ zl.tf }}; opacity:{{ zl.op }}; text-align:{{ textAlign }};">
+              <span style="display:block; white-space:nowrap; color:{{ zl.nameColor }}; font:{{ zl.nameFont }}; letter-spacing:{{ zl.nameLs }}; text-shadow:0 1px 10px rgba(0,0,0,.92), 0 0 4px rgba(0,0,0,.85);">{{ zl.name }}</span>
+              <span class="lg-zstats" style="opacity:{{ zl.statsOp }}; text-shadow:0 1px 10px rgba(0,0,0,.92), 0 0 4px rgba(0,0,0,.85);">
+                <b style="color:var(--nav-text-active); font-weight:700;">{{ zl.inspections }}</b>
+                <span style="color:var(--status-compliant);">{{ zl.compliance }}</span>
+                <span style="color:var(--status-warning);">{{ zl.action }}</span>
+              </span>
+            </span>
+          </sc-for>
+        </div>
+
+        <!-- exactly one operational story per scene -->
+        <div class="lg-motion" style="opacity:{{ motionOp }};">
+          <svg viewBox="0 0 1000 563" preserveAspectRatio="none">
+            <sc-for list="{{ zones }}" as="z" hint-placeholder-count="5">
+              <path class="lg-zoneline" d="{{ z.path }}" style="--zone-tone:{{ z.tone }}; opacity:{{ z.lineOp }};"></path>
+            </sc-for>
+          </svg>
+          <svg viewBox="0 0 1000 563" preserveAspectRatio="none">
+            <sc-for list="{{ routes }}" as="r" hint-placeholder-count="3">
+              <path class="lg-route-line" d="{{ r.path }}" style="opacity:{{ r.op }};"></path>
+            </sc-for>
+            <sc-for list="{{ routeStops }}" as="p" hint-placeholder-count="6">
+              <circle class="lg-route-stop" cx="{{ p.x }}" cy="{{ p.y }}" r="4" style="opacity:{{ p.op }};"></circle>
+            </sc-for>
+          </svg>
+          {{ suvLayer }}
+          <sc-for list="{{ fences }}" as="f" hint-placeholder-count="3">
+            <span class="lg-fence" style="left:{{ f.left }}; top:{{ f.top }}; opacity:{{ f.op }};"></span>
+          </sc-for>
+          <sc-for list="{{ kms }}" as="k" hint-placeholder-count="3">
+            <span class="lg-km" style="left:{{ k.left }}; top:{{ k.top }}; opacity:{{ k.op }}; font:{{ kmFont }}; letter-spacing:{{ kmLs }};">{{ k.label }}</span>
+          </sc-for>
+          {{ actorLayer }}
+          <sc-for list="{{ outcomes }}" as="o" hint-placeholder-count="3">
+            <span class="lg-outcome" style="left:{{ o.left }}; top:{{ o.top }}; --d:{{ o.delay }}; background:{{ o.bg }}; opacity:{{ o.op }}; transform:{{ o.tf }};">
+              <span style="width:6px; height:6px; border-radius:50%; background:currentColor;"></span>{{ o.label }}
+            </span>
+          </sc-for>
+        </div>
+
+        <!-- hover-driven terrain extraction: cavity, earth sidewall, raised top -->
+        <div class="lg-lift" role="group" aria-label="{{ st.zoneGroup }}">
+          <svg viewBox="0 0 1000 563" preserveAspectRatio="none">
+            <defs>
+              <clipPath id="lg-zclip-north" clipPathUnits="userSpaceOnUse"><path d="M180 150 L250 65 L480 55 L610 120 L600 220 L385 185 Z"></path></clipPath>
+              <clipPath id="lg-zclip-east" clipPathUnits="userSpaceOnUse"><path d="M610 120 L730 180 L870 300 L760 410 L590 370 L600 220 Z"></path></clipPath>
+              <clipPath id="lg-zclip-central" clipPathUnits="userSpaceOnUse"><path d="M385 185 L600 220 L590 370 L400 350 Z"></path></clipPath>
+              <clipPath id="lg-zclip-south" clipPathUnits="userSpaceOnUse"><path d="M400 350 L590 370 L760 410 L560 515 L350 500 Z"></path></clipPath>
+              <clipPath id="lg-zclip-west" clipPathUnits="userSpaceOnUse"><path d="M180 150 L385 185 L400 350 L350 500 L250 430 L140 290 Z"></path></clipPath>
+            </defs>
+            <sc-for list="{{ zones }}" as="z" hint-placeholder-count="5">
+              <g class="lg-slab">
+                <path class="lg-slab-cavity" d="{{ z.path }}" style="opacity:{{ z.cavityOp }}; transform:{{ z.cavityTf }}; filter:{{ z.cavityFilter }};"></path>
+                <g class="lg-slab-wall" clipPath="{{ z.clip }}" style="opacity:{{ z.wallOp }}; transform:{{ z.wallTf }}; filter:{{ z.wallFilter }};"><image href="saqeel/atlas/inspection-atlas-scene-base-v2.png" x="0" y="0" width="1000" height="563" preserveAspectRatio="none"></image></g>
+                <g class="lg-slab-terrain" clipPath="{{ z.clip }}" style="opacity:{{ z.topOp }}; transform:{{ z.topTf }}; filter:{{ z.topFilter }};"><image href="saqeel/atlas/inspection-atlas-scene-base-v2.png" x="0" y="0" width="1000" height="563" preserveAspectRatio="none"></image></g>
+                <path class="lg-slab-edge" d="{{ z.path }}" tabIndex="0" role="button" aria-label="{{ z.aria }}" onPointerEnter="{{ z.enter }}" onPointerLeave="{{ z.leave }}" onFocus="{{ z.enter }}" onBlur="{{ z.leave }}" style="stroke:{{ z.edgeStroke }}; stroke-width:{{ z.edgeWidth }}; transform:{{ z.topTf }};"></path>
+              </g>
+            </sc-for>
+          </svg>
+
+        </div>
+
+        <!-- the nine industrial sites: silent at rest, named on hover / focus -->
+        <div style="position:absolute; inset:0; z-index:20;">
+          <sc-for list="{{ sites }}" as="p" hint-placeholder-count="9">
+            <button type="button" class="lg-hot" aria-label="{{ p.aria }}" style="left:{{ p.left }}; top:{{ p.top }}; --tone:{{ p.tone }};">
+              <span class="lg-hot-core"></span>
+              <span class="lg-hot-label" style="font:{{ hotLabelFont }}; letter-spacing:{{ hotLabelLs }};">{{ p.name }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- atmospheric fades so the title and rail melt into the hero, and a
+           seam gradient that dissolves the boundary with the credential column -->
+      <div style="position:absolute; inset-inline:0; inset-block-start:0; height:132px; z-index:22; pointer-events:none; background:linear-gradient(to bottom, color-mix(in srgb, var(--nav-bg) 60%, transparent), color-mix(in srgb, var(--nav-bg) 14%, transparent) 58%, transparent);"></div>
+      <div style="position:absolute; inset-inline:0; inset-block-end:0; height:112px; z-index:22; pointer-events:none; background:linear-gradient(to top, color-mix(in srgb, var(--nav-bg) 52%, transparent), color-mix(in srgb, var(--nav-bg) 12%, transparent) 58%, transparent);"></div>
+      <div style="position:absolute; inset-block:0; inset-inline-start:0; width:190px; z-index:24; pointer-events:none; background:linear-gradient(to {{ seamDir }}, var(--nav-bg), color-mix(in srgb, var(--nav-bg) 55%, transparent) 46%, transparent);"></div>
+    </div>
+
+
+    <header style="position:absolute; inset-block-start:0; inset-inline:0; z-index:30; display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); padding:clamp(18px,2.2vw,30px) clamp(20px,2.4vw,34px); pointer-events:none;">
+      <div style="display:flex; flex-direction:column; gap:3px; min-inline-size:0;">
+        <span style="font:700 18px/24px var(--font-body); color:var(--nav-text-active); text-shadow:0 1px 12px var(--nav-bg), 0 0 4px var(--nav-bg);">{{ st.title }}</span>
+        <span style="font:{{ overlineFont }}; letter-spacing:{{ overlineLs }}; color:var(--nav-text); align-self:{{ overlineAlign }}; text-shadow:0 1px 8px var(--nav-bg);">{{ st.overline }}</span>
+      </div>
+    </header>
+
+    <div role="tablist" aria-label="{{ st.stagesLabel }}" style="position:absolute; inset-inline:10px; inset-block-end:10px; z-index:610; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:0; padding:4px; overflow:hidden; border:1px solid color-mix(in srgb, var(--nav-text) 18%, transparent); border-radius:var(--radius-sm); background:color-mix(in srgb, var(--surface-primary) 90%, transparent); box-shadow:var(--shadow-xs); backdrop-filter:blur(10px);">
+      <sc-for list="{{ stages }}" as="sg" hint-placeholder-count="5">
+        <button type="button" role="tab" class="lg-stage-btn" aria-selected="{{ sg.active }}" tabIndex="{{ sg.tabIndex }}" onClick="{{ sg.pick }}" onKeyDown="{{ sg.key }}" style="min-inline-size:0; display:flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-3); text-align:start; cursor:pointer; background:{{ sg.bg }}; border:0; border-inline-end:{{ sg.rule }}; border-radius:var(--radius-xs); color:{{ sg.color }}; font:inherit;">
+          <span dir="ltr" style="font:700 10px var(--font-mono); color:{{ sg.numColor }};">{{ sg.num }}</span>
+          <span style="font:600 12px var(--font-body); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ sg.label }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </aside>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;viewport&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Fill&quot;,&quot;Desktop 1440&quot;,&quot;Laptop 1280&quot;,&quot;iPad landscape 1194&quot;,&quot;iPad portrait 834&quot;,&quot;Phone 390&quot;],&quot;default&quot;:&quot;Fill&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;locale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ar&quot;,&quot;en&quot;],&quot;default&quot;:&quot;ar&quot;,&quot;tsType&quot;:&quot;\&quot;ar\&quot; | \&quot;en\&quot;&quot;,&quot;section&quot;:&quot;Login&quot;},&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;form&quot;,&quot;face-unlock&quot;],&quot;default&quot;:&quot;form&quot;,&quot;tsType&quot;:&quot;\&quot;form\&quot; | \&quot;face-unlock\&quot;&quot;,&quot;section&quot;:&quot;Login&quot;},&quot;network&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;online&quot;,&quot;offline&quot;],&quot;default&quot;:&quot;online&quot;,&quot;tsType&quot;:&quot;\&quot;online\&quot; | \&quot;offline\&quot;&quot;,&quot;section&quot;:&quot;Login&quot;}}">
+// SAQEEL /login — synced to web/src/app/login (page.tsx, field/FieldLoginClient.tsx,
+// StoryPanel.tsx, SaudiIndustrialAtlas.tsx, login.css, field/field-login.css). 2026-07-26.
+// Credential column FIRST (start side), atlas second; AR/RTL default; dark-locked.
+// Scene state is computed here and applied as element styles: the DC style
+// pipeline drops ancestor attribute-value selectors, so [data-stage] /
+// [data-lifted] / [dir=rtl] descendant rules never match.
+class Component extends DCLogic {
+  // Sign-in opens on scene 05 (Zones) — the regional-intelligence view — and
+  // the five-scene loop takes over after a 12s hold.
+  state = { locale: "ar", stage: 4, manual: true, showPw: false, view: "form", online: true, zone: null, note: true };
+
+  componentDidMount() {
+    if (this.props.locale && this.props.locale !== this.state.locale) this.setState({ locale: this.props.locale });
+    if (this.props.view) this.setState({ view: this.props.view });
+    if (this.props.network) this.setState({ online: this.props.network !== "offline" });
+    // saudi-atlas-motion.ts — five-scene reveal, cumulative ends 3/14/19/24/30s,
+    // held while a zone is engaged, a tab was picked, or the tab is hidden.
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    this._resume = setTimeout(() => this.setState({ manual: false }), 12000);
+    const ENDS = [3, 14, 19, 24, 30];
+    let elapsed = 0, last = 0;
+    this._tick = now => {
+      const held = this.state.manual || this.state.zone !== null || document.hidden;
+      if (!held) {
+        if (last) elapsed += now - last;
+        const t = (elapsed / 1000) % 30;
+        let i = 4; for (let k = 0; k < 5; k++) if (t < ENDS[k]) { i = k; break; }
+        if (i !== this.state.stage) this.setState({ stage: i });
+      }
+      last = now;
+      this._raf = requestAnimationFrame(this._tick);
+    };
+    this._raf = requestAnimationFrame(this._tick);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this._raf); clearTimeout(this._resume); }
+
+  renderVals() {
+    const AR = this.state.locale === "ar";
+    const stage = this.state.stage;
+    const SC = ["plan", "travel", "arrive", "inspect", "decide"][stage];
+
+    // Field card strings — verbatim from page.tsx fieldStrings.
+    const s = AR ? {
+      langBtn: "EN",
+      tagline: "تطبيق المفتّش الميداني · وزارة الصناعة والثروة المعدنية",
+      netOnline: "متصل", netOffline: "دون اتصال — يعمل محلياً",
+      trustedDevice: "جهاز موثوق",
+      faceUnlock: "افتح بالتعرف على الوجه",
+      faceDesc: "التحقق يتم على جهازك عبر Face ID — لا تُرسل بياناتك الحيوية إلى الخادم.",
+      orPassword: "أو بكلمة المرور",
+      bioFallback: "استخدم كلمة المرور بدلاً من ذلك",
+      idLabel: "الهوية الوطنية / رقم المنسوب",
+      password: "كلمة المرور", showPw: "إظهار كلمة المرور",
+      keepSignedIn: "إبقائي مسجّلاً", forgot: "نسيت كلمة المرور؟", signIn: "تسجيل الدخول",
+      offlineNote: "التطبيق يعمل دون اتصال: تُحفظ زياراتك وأدلّتك محلياً وتُزامَن تلقائياً عند عودة الشبكة. القفل الحيوي متاح فقط على هذا الجهاز الموثوق.",
+      copyright: "صقيل © 2026", dismiss: "إخفاء الملاحظة",
+      offlineLoginBlocked: "يتطلب تسجيل دخول جديد اتصالاً بالشبكة. أعد الاتصال ثم حاول مرة أخرى.",
+    } : {
+      langBtn: "AR",
+      tagline: "Field Inspector App · Ministry of Industry & Mineral Resources",
+      netOnline: "Online", netOffline: "Offline — working locally",
+      trustedDevice: "Trusted device",
+      faceUnlock: "Unlock with Face ID",
+      faceDesc: "Verification happens on your device via Face ID — your biometric data is never sent to the server.",
+      orPassword: "or use password",
+      bioFallback: "Use password instead",
+      idLabel: "National ID / Staff number",
+      password: "Password", showPw: "Show password",
+      keepSignedIn: "Keep me signed in", forgot: "Forgot password?", signIn: "Sign in",
+      offlineNote: "The app works offline: your visits and evidence are saved locally and sync automatically when the network returns. Biometric unlock is available only on this trusted device.",
+      copyright: "SAQEEL © 2026", dismiss: "Dismiss this note",
+      offlineLoginBlocked: "A new sign-in requires a network connection. Reconnect, then try again.",
+    };
+
+    // Atlas / story strings — accepted CD-001 copy.
+    const st = AR ? {
+      title: "منصة التفتيش الصناعي",
+      overline: "رحلة تفتيش واحدة · من البداية إلى النهاية",
+      stagesLabel: "مشاهد قصة التفتيش",
+      zoneGroup: "ذكاء التفتيش الإقليمي",
+    } : {
+      title: "Industrial inspection platform",
+      overline: "ONE VISIT · END TO END",
+      stagesLabel: "Inspection story scenes",
+      zoneGroup: "Regional inspection intelligence",
+    };
+
+    const STAGES = AR ? [
+      ["الخريطة", "خريطة المملكة والمنشآت الصناعية فقط"],
+      ["الإرسال", "مركبتان تنطلقان من الرياض، والثالثة من جازان، لكل منها وجهة تفتيش محددة"],
+      ["الوصول", "وصول الفرق إلى المواقع وتأكيد الحضور في نطاق المنشأة"],
+      ["التفتيش", "توثيق الأدلة وإظهار نتيجة التفتيش والإجراءات المطلوبة"],
+      ["المناطق", "مرّر المؤشر على منطقة لرفعها ككتلة أرضية ثلاثية الأبعاد وعرض ذكاء التفتيش"],
+    ] : [
+      ["Map", "The Kingdom map and industrial sites establish context"],
+      ["Dispatch", "Two vehicles deploy from Riyadh and a third from Jazan, each on a defined inspection mission"],
+      ["Arrival", "Teams arrive at their sites and confirm geofenced attendance"],
+      ["Inspection", "Evidence is captured and each inspection reaches an illustrated outcome"],
+      ["Zones", "Hover a zone to lift it from the landmass and reveal regional inspection intelligence"],
+    ];
+
+    // A picked scene holds for 12s, then the five-scene loop resumes from it —
+    // so the dispatch vehicles and arriving inspectors always come back round.
+    const pick = i => {
+      clearTimeout(this._resume);
+      this.setState({ stage: i, manual: true });
+      this._resume = setTimeout(() => this.setState({ manual: false }), 12000);
+    };
+    const stages = STAGES.map((m, i) => ({
+      num: String(i + 1).padStart(2, "0"), label: m[0], active: i === stage,
+      tabIndex: i === stage ? 0 : -1,
+      bg: i === stage ? "color-mix(in srgb, var(--action-primary) 26%, var(--surface-primary))" : "transparent",
+      color: i === stage ? "var(--nav-text-active)" : "var(--nav-text)",
+      numColor: i === stage ? "var(--nav-text-active)" : "var(--status-info)",
+      rule: i === 4 ? "0" : "1px solid color-mix(in srgb, var(--nav-text) 18%, transparent)",
+      pick: () => pick(i),
+      key: e => {
+        const fwd = AR ? "ArrowLeft" : "ArrowRight", back = AR ? "ArrowRight" : "ArrowLeft";
+        let n = i;
+        if (e.key === fwd || e.key === "ArrowDown") n = (i + 1) % 5;
+        else if (e.key === back || e.key === "ArrowUp") n = (i + 4) % 5;
+        else if (e.key === "Home") n = 0; else if (e.key === "End") n = 4; else return;
+        e.preventDefault(); pick(n);
+      },
+    }));
+
+    // ZONE_SURFACES + ZONE_INTELLIGENCE — verbatim from SaudiIndustrialAtlas.tsx.
+    const ZI = {
+      north: { x: 42, y: 8, en: "Northern zone", ar: "المنطقة الشمالية", i: "264", c: "91%", a: "18", outcome: "follow-up" },
+      east: { x: 78, y: 24, en: "Eastern zone", ar: "المنطقة الشرقية", i: "318", c: "90%", a: "21", outcome: "follow-up" },
+      central: { x: 52, y: 20, en: "Central zone", ar: "المنطقة الوسطى", i: "221", c: "92%", a: "9", outcome: "complete" },
+      south: { x: 56, y: 62, en: "Southern zone", ar: "المنطقة الجنوبية", i: "198", c: "89%", a: "14", outcome: "complete" },
+      west: { x: 17, y: 30, en: "Western zone", ar: "المنطقة الغربية", i: "247", c: "89%", a: "12", outcome: "complete" },
+    };
+    // One layer per scene — dispatch shows only the vehicles, arrival only the
+    // inspectors, inspection only the outcomes and the zone type. Scene 05
+    // (Zones) is the composite: every layer on at once.
+    const on = sc => SC === sc || SC === "decide";
+    const fmtI = v => AR ? `${v} عملية تفتيش` : `${v} inspections`;
+    const fmtC = v => AR ? `${v} ملتزم` : `${v} compliant`;
+    const fmtA = v => AR ? `${v} متابعة` : `${v} follow-ups`;
+    const ZP = [
+      ["north", "M180 150 L250 65 L480 55 L610 120 L600 220 L385 185 Z"],
+      ["east", "M610 120 L730 180 L870 300 L760 410 L590 370 L600 220 Z"],
+      ["central", "M385 185 L600 220 L590 370 L400 350 Z"],
+      ["south", "M400 350 L590 370 L760 410 L560 515 L350 500 Z"],
+      ["west", "M180 150 L385 185 L400 350 L350 500 L250 430 L140 290 Z"],
+    ];
+    // The repo's --shadow-base is not a token in this project's stylesheet;
+    // ambient darkness is shade mixed from black, so it is written literally.
+    const shadow = p => `rgba(0, 0, 0, ${p / 100})`;
+    const zones = ZP.map(z => {
+      const k = z[0], d = ZI[k], up = this.state.zone === k;
+      return {
+        path: z[1], clip: `url(#lg-zclip-${k})`,
+        tone: d.outcome === "complete" ? "var(--status-compliant)" : "var(--status-critical)",
+        lineOp: SC === "decide" ? ".68" : "0",
+        cavityOp: up ? "1" : "0",
+        cavityTf: up ? "translateY(3px) scale(.985)" : "none",
+        cavityFilter: up ? "blur(1.2px)" : "none",
+        wallOp: up ? "1" : "0",
+        wallTf: up ? "translateY(-16px) scale(1.004)" : "none",
+        wallFilter: up ? `drop-shadow(0 16px 13px ${shadow(80)})` : "none",
+        topOp: up ? "1" : "0",
+        topTf: up ? "translateY(-33px) scale(1.012)" : "none",
+        topFilter: up ? `brightness(1.06) drop-shadow(0 15px 12px ${shadow(76)})` : "none",
+        edgeStroke: up ? "color-mix(in srgb, var(--status-info) 78%, transparent)" : "transparent",
+        edgeWidth: up ? "1.1" : ".8",
+        aria: AR
+          ? `${d.ar}: ${fmtI(d.i)}، ${fmtC(d.c)}، ${fmtA(d.a)}. اضغط لتثبيت عرض التضاريس.`
+          : `${d.en}: ${fmtI(d.i)}, ${fmtC(d.c)}, ${fmtA(d.a)}. Press to lock this terrain view.`,
+        enter: () => this.setState({ zone: k }),
+        leave: () => this.setState({ zone: null }),
+      };
+    });
+    const zk = this.state.zone, zi = zk ? ZI[zk] : null;
+
+    // ZONES label anchors. A lifted zone's own label becomes its readout and
+    // rides up with the slab, so the intelligence sits in the geography.
+    const zoneLabels = [["north", 32, 11], ["west", 18, 27], ["central", 39, 45], ["east", 72, 51], ["south", 51, 74]]
+      .map(z => {
+        const k = z[0], d = ZI[k], up = zk === k, dim = zk !== null && !up;
+        const visible = on("inspect") || up;
+        return {
+          left: z[1] + "%", top: z[2] + "%",
+          name: AR ? d.ar : (up ? d.en : d.en.toUpperCase()),
+          nameColor: up ? "var(--nav-text-active)" : "var(--nav-text)",
+          nameFont: up
+            ? "700 15px/1.2 var(--font-body)"
+            : (AR ? "600 10px/15px var(--font-body)" : "600 10px/15px var(--font-mono)"),
+          nameLs: up || AR ? "0" : "1px",
+          tf: up ? "translate(-50%,-50%) translateY(-26px)" : "translate(-50%,-50%)",
+          op: !visible ? "0" : (dim ? ".35" : "1"),
+          statsOp: up ? "1" : "0",
+          inspections: fmtI(d.i), compliance: fmtC(d.c), action: fmtA(d.a),
+        };
+      });
+
+    // DISPATCH_ROUTES — two from the Riyadh hub, one from Jazan.
+    const travel = on("travel");
+    const RT = [
+      ["M508 265 C573 249 663 211 737 183", 508, 265, 737, 183],
+      ["M508 265 C429 247 321 224 220 236", 508, 265, 220, 236],
+      ["M440 442 C371 429 274 404 205 383", 440, 442, 205, 383],
+    ];
+    const routes = RT.map(r => ({ path: r[0], op: travel ? ".72" : "0" }));
+    const routeStops = RT.flatMap(r => [
+      { x: r[1], y: r[2], op: travel ? "1" : "0" },
+      { x: r[3], y: r[4], op: travel ? "1" : "0" },
+    ]);
+    // animateMotion has no template form; built once so the motion survives re-render.
+    const suvLayer = React.createElement("svg", {
+      className: "lg-suvs", viewBox: "0 0 1000 563", preserveAspectRatio: "none",
+      style: { opacity: travel ? 1 : 0 },
+    }, RT.map((r, i) => React.createElement("image", {
+      key: i, href: "saqeel/atlas/inspection-suv-topdown-v1.png",
+      x: -13.5, y: -27, width: 27, height: 54, opacity: 0, transform: "rotate(90)",
+      style: { filter: `drop-shadow(0 2px 3px ${shadow(68)})` },
+    },
+      React.createElement("animate", { attributeName: "opacity", values: "0;1;1;0", keyTimes: "0;0.08;0.88;1", dur: "6s", begin: `${i * 2.5}s`, repeatCount: "indefinite" }),
+      React.createElement("animateMotion", { path: r[0], rotate: "auto", dur: "6s", begin: `${i * 2.5}s`, repeatCount: "indefinite", calcMode: "spline", keyTimes: "0;1", keySplines: "0.32 0.05 0.2 1" }),
+    )));
+
+    // Geofenced site perimeters at the three inspection destinations — scene 01
+    // establishes the fenced sites, then they clear for dispatch.
+    const map = SC === "plan" || SC === "decide";
+    const fences = [[73.7, 32.5], [22.0, 42.0], [20.5, 68.0]]
+      .map(f => ({ left: f[0] + "%", top: f[1] + "%", op: map ? "1" : "0" }));
+
+    // Illustrative trip distances, carried at each route's midpoint while the
+    // vehicle is on the road; they clear on arrival. Not routing data.
+    const KM = [[61.9, 40.6, 420], [37.2, 42.5, 950], [32.3, 73.8, 710]];
+    const arNum = n => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[+d]);
+    const kms = KM.map(k => ({
+      left: k[0] + "%", top: k[1] + "%", op: travel ? "1" : "0",
+      label: AR ? `${arNum(k[2])} كم` : `${k[2]} km`,
+    }));
+
+    // INSPECTOR_SCENE_POSITIONS / OUTCOME_POSITIONS — verbatim.
+    const onSite = on("arrive");
+    // Built here rather than in the template: an unresolved {{ hole }} in an
+    // img src is fetched literally during the streaming placeholder phase.
+    const actorLayer = [[41.5, 15.5, "03"], [22, 38.5, "02"], [50.8, 42.5, "01"], [73.7, 28.5, "01"], [44, 74.5, "03"]]
+      .map((a, i) => React.createElement("span", {
+        key: i, className: "lg-actor",
+        style: {
+          left: a[0] + "%", top: a[1] + "%", "--d": (i * 0.65) + "s",
+          opacity: onSite ? 1 : 0,
+          transform: onSite
+            ? "translate(-50%,-50%) translateY(-3px) scale(1)"
+            : "translate(-50%,-50%) translateY(8px) scale(.82)",
+        },
+      }, React.createElement("img", { src: `saqeel/atlas/inspector-character-v2-${a[2]}.png`, alt: "", draggable: false })));
+    const shown = on("inspect");
+    const outcomes = [[73.7, 32.5, 0], [22, 42, 1], [44, 78.5, 1]].map((o, i) => ({
+      left: o[0] + "%", top: o[1] + "%", delay: (i * 0.65) + "s",
+      label: o[2] ? (AR ? "ناجح" : "Passed") : (AR ? "لم يجتز" : "Failed"),
+      bg: o[2] ? "var(--status-compliant)" : "var(--status-critical)",
+      op: shown ? "1" : "0",
+      tf: shown ? "translate(-50%,-50%) scale(1)" : "translate(-50%,-50%) scale(.68)",
+    }));
+
+    // ATLAS_LOCATIONS — the nine industrial sites.
+    const TONE = { arrival: "var(--status-compliant)", planned: "var(--status-warning)", virtual: "var(--status-info)", route: "var(--action-primary)" };
+    const sites = [
+      [39.0, 17.5, "planned", "HA'IL", "حائل", "Regional manufacturing", "تصنيع إقليمي"],
+      [43.5, 32.0, "planned", "QASSIM", "القصيم", "Food production", "إنتاج غذائي"],
+      [65.3, 14.0, "route", "RAS AL-KHAIR", "رأس الخير", "Mining / metals", "تعدين ومعادن"],
+      [73.7, 32.5, "arrival", "JUBAIL", "الجبيل", "Petrochemical / process", "بتروكيماويات ومعالجة"],
+      [64.2, 35.5, "planned", "DAMMAM", "الدمام", "Fabrication / heavy mfg", "تصنيع ثقيل"],
+      [50.8, 47.0, "planned", "RIYADH", "الرياض", "Pharma / clean assembly", "أدوية وتجميع نظيف"],
+      [22.0, 42.0, "arrival", "YANBU", "ينبع", "Refining / port-linked", "تكرير ومرتبط بالميناء"],
+      [20.5, 68.0, "virtual", "JEDDAH", "جدة", "Food / packaging", "أغذية وتعبئة"],
+      [44.0, 78.5, "route", "JAZAN", "جازان", "Downstream / logistics", "صناعات تحويلية ولوجستيات"],
+    ].map(p => ({
+      left: p[0] + "%", top: p[1] + "%", tone: TONE[p[2]],
+      name: AR ? p[4] : p[3], aria: AR ? `${p[4]} — ${p[6]}` : `${p[3]} — ${p[5]}`,
+    }));
+
+    // cinematic camera push while a zone is extracted
+    const engaged = zk !== null;
+    const base = AR ? "translate(50%, -50%)" : "translate(-50%, -50%)";
+    const lifted = AR
+      ? "translate(50%, -48%) perspective(1300px) rotateX(8deg) rotateZ(.7deg) scale(1.035)"
+      : "translate(-50%, -48%) perspective(1300px) rotateX(8deg) rotateZ(-.7deg) scale(1.035)";
+
+    // Resolution preview. "Fill" leaves the real media queries in charge; a
+    // named device frames the page at that width and applies the same rule the
+    // media queries would (card only at iPad width and below).
+    const VP = {
+      "Fill": [null, false],
+      "Desktop 1440": ["1440px", false],
+      "Laptop 1280": ["1280px", false],
+      "iPad landscape 1194": ["1194px", true],
+      "iPad portrait 834": ["834px", true],
+      "Phone 390": ["390px", true],
+    };
+    const vp = VP[this.props.viewport] || VP.Fill;
+
+    const online = this.state.online;
+    const lock = this.state.view === "face-unlock";
+    return {
+      frameWidth: vp[0] || "100%",
+      gridCols: vp[1] ? "1fr" : "minmax(420px,500px) minmax(0,1fr)",
+      atlasDisplay: vp[1] ? "none" : "block",
+      s, st, dir: AR ? "rtl" : "ltr", lang: AR ? "ar" : "en",
+      textAlign: AR ? "right" : "start",
+      seamDir: AR ? "left" : "right",
+      overlineFont: AR ? "600 10px/14px var(--font-body)" : "600 10px/14px var(--font-mono)",
+      overlineLs: AR ? "0" : "0.16em",
+      overlineAlign: AR ? "end" : "start",
+      eventStageFont: AR ? "700 10px/14px var(--font-body)" : "700 10px/14px var(--font-mono)",
+      eventStageLs: AR ? "0" : "0.08em",
+      eventStageCase: AR ? "none" : "uppercase",
+      zoneLabelFont: AR ? "600 10px/15px var(--font-body)" : "600 10px/15px var(--font-mono)",
+      zoneLabelLs: AR ? "0" : "1px",
+      hotLabelFont: AR ? "700 11px/15px var(--font-body)" : "700 10px/15px var(--font-mono)",
+      hotLabelLs: AR ? "0" : "0.4px",
+      eyebrowFont: AR ? "700 9px/1.2 var(--font-body)" : "700 8px/1.2 var(--font-mono)",
+      eyebrowLs: AR ? "0" : ".8px",
+      toggleLocale: e => { e.preventDefault(); this.setState(x => ({ locale: x.locale === "ar" ? "en" : "ar" })); },
+      showPw: this.state.showPw, pwType: this.state.showPw ? "text" : "password",
+      togglePw: () => this.setState(x => ({ showPw: !x.showPw })),
+      lockScreen: lock, formView: !lock,
+      usePassword: () => this.setState({ view: "form" }),
+      netLabel: online ? s.netOnline : s.netOffline,
+      netColor: online ? "var(--status-compliant-text)" : "var(--status-warning-text)",
+      netBg: online ? "color-mix(in srgb, var(--status-compliant-text) 16%, transparent)" : "color-mix(in srgb, var(--status-warning-text) 20%, transparent)",
+      netDotClass: online ? "fl-live" : "",
+      showMessage: !online, message: s.offlineLoginBlocked, submitDisabled: !online,
+      showOfflineNote: this.state.note,
+      dismissNote: () => this.setState({ note: false }),
+      stages, activeNum: String(stage + 1).padStart(2, "0"),
+      activeLabel: STAGES[stage][0], activeEvent: STAGES[stage][1],
+      zones, zoneLabels, routes, routeStops, suvLayer, actorLayer, outcomes, sites, fences, kms,
+      kmFont: AR ? "700 11px/1.4 var(--font-body)" : "700 10px/1.4 var(--font-mono)",
+      kmLs: AR ? "0" : ".4px",
+      planeTransform: engaged ? lifted : base,
+      baseFilter: engaged ? "brightness(.73) saturate(.82)" : "none",
+      motionOp: engaged ? ".42" : "1",
+
+    };
+  }
+}
+
+</script>
+</body>
+</html>
