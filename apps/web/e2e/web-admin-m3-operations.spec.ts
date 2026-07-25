@@ -98,6 +98,19 @@ test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 composition contract", ()
     expect(cssSource).toContain("text-decoration: none");
     expect(cssSource).toContain(".page :global(a.sq-link:focus-visible)");
   });
+
+  test("scopes every widget to the caller's authorized geography and offers a real partial-error retry", () => {
+    expect(pageSource).toContain('.from("profiles")');
+    expect(pageSource).toContain('.select("region")');
+    expect(pageSource).toContain("resolveRegionId(profileRow?.region ?? null)");
+    expect(pageSource).toContain("inAuthorizedGeography(visit.factories?.region ?? null)");
+    expect(pageSource).toContain("inAuthorizedGeography(factory.region)");
+    expect(pageSource).toContain("outOfScopeVisitCount");
+    expect(pageSource.indexOf('.from("profiles")')).toBeGreaterThan(pageSource.indexOf("if (!mayViewOperations)"));
+    expect(pageSource).toContain('href="/operations">{t("ops.err.retry"');
+    expect(pageSource).not.toContain('{t("ops.err.retry", "retry")}.');
+    expect(pageSource).not.toMatch(/\.(insert|update|upsert|delete)\(/);
+  });
 });
 
 test.describe("TASK-WEB-ADMIN-PHASE1-M3-OPERATIONS-001 Live composition contract", () => {

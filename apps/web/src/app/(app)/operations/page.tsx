@@ -26,6 +26,7 @@ import OperationsMapWorkspace, {
   type OperationsMapWorkspaceStrings,
 } from "./OperationsMapWorkspace";
 import OperationsScopeFilter from "./OperationsScopeFilter";
+import { resolveRegionId } from "@/lib/ksa-regions";
 import styles from "./operations.module.css";
 
 // SCR-WEB-500 — Operations Center (SB12, M08). Read legs + write legs
@@ -204,6 +205,20 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       </Shell>
     );
   }
+  const { data: profileRow } = await sb
+    .from("profiles")
+    .select("region")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  // RBAC-008 data-scope: profiles.region is the sole existing authorized-geography
+  // assignment (also used by task_assignments RLS scope matching). A user with no
+  // assigned region keeps the existing national visibility already granted by the
+  // visits/factories RLS role policies; this filter only narrows that grant. It is
+  // independent of the operator-selectable ?region= display filter below (M08-010).
+  const authorizedRegionId = resolveRegionId(profileRow?.region ?? null);
+  const inAuthorizedGeography = (r: string | null) =>
+    authorizedRegionId === null || resolveRegionId(r) === authorizedRegionId;
+
   // A page GET is read-only. Use one request-start timestamp to exclude elapsed
   // requests from the actionable queue without materializing workflow state.
   // decide_geo_override remains the database-authoritative race guard.
@@ -286,16 +301,20 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   const isVerificationFactory = (factory: FactoryEmbed | FactoryRow | null) =>
     factory?.source === "verification_fixture" || isTestFixtureEstablishment(factory);
-  const visits = ((visitsRes.data ?? []) as unknown as VisitRow[])
+  const integrityFilteredVisits = ((visitsRes.data ?? []) as unknown as VisitRow[])
     .filter(visit => !isVerificationFactory(visit.factories));
+  // CR-439/CR-447: narrow every widget to the caller's authorized geography.
+  const visits = integrityFilteredVisits
+    .filter(visit => inAuthorizedGeography(visit.factories?.region ?? null));
+  const outOfScopeVisitCount = integrityFilteredVisits.length - visits.length;
   const geo = (geoRes.data ?? []) as unknown as GeoRow[];
   const actions = (actionsRes.data ?? []) as unknown as ActionRow[];
   const notifs = (notifsRes.data ?? []) as unknown as NotifRow[];
   const factories = ((factoriesRes.data ?? []) as unknown as FactoryRow[])
-    .filter(factory => !isVerificationFactory(factory));
+    .filter(factory => !isVerificationFactory(factory) && inAuthorizedGeography(factory.region));
   const engines = (engineRes.data ?? []) as unknown as EngineRow[];
   const highRisk = ((riskRes.data ?? []) as unknown as FactoryRow[])
-    .filter(factory => !isVerificationFactory(factory));
+    .filter(factory => !isVerificationFactory(factory) && inAuthorizedGeography(factory.region));
   const overrides = (overrideRes.data ?? []) as unknown as OverrideRow[];
   const evidenceByRequest = new Map<string, number>();
   const evidenceUrls = new Map<string, string>();
@@ -765,7 +784,19 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       context={<span className="sq-lozenge sq-lozenge--info">{t("ops.context", "National inspection activity and decisions")}</span>}>
       {loadErrors.length > 0 && (
         <div className="sq-banner sq-banner--critical" role="alert"><div>
-          <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")} — {t("ops.err.retry", "retry")}.
+          <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")}.{" "}
+          <a className="sq-link" href="/operations">{t("ops.err.retry", "Retry")}</a>
+        </div></div>
+      )}
+      {outOfScopeVisitCount > 0 && (
+        <div className="sq-banner sq-banner--warning" role="status"><div>
+          {t(
+            "ops.outOfScopeGeography",
+            local(
+              "Records outside your authorized region are excluded from this view. Excluded records:",
+              "تُستبعد السجلات خارج نطاقك الجغرافي المخوَّل من هذا العرض. السجلات المستبعدة:",
+            ),
+          )} <strong>{outOfScopeVisitCount}</strong>
         </div></div>
       )}
 
