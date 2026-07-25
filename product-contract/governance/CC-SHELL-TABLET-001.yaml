@@ -40,17 +40,23 @@ decisions:
     component: "components/field/FieldNav.tsx (ports designs/pwa/pwa/pwa-tabbar.js verbatim)"
     spec: "WA-PWA-TAB-r1"
     tabs: ["Home / الرئيسية", "My Tasks / مهامي", "Establishments / المنشآت", "Notifications / الإشعارات", "Account / حسابي"]
-    scope: "console routes only — field pages render their own FieldNav today"
+    scope: >
+      Field channel: rendered once by field/layout.tsx, covering all 21 screens.
+      Console: only for a field persona (Q1 option B) — a console persona never
+      sees it, at any width.
     rejected_alternative: >
       A first attempt derived the tabs from SHELL_NAVIGATION (Dashboard,
       Planning, Inspection Rules, Users). That was invented, not designed, and
       was reverted before it reached main.
   topbar:
-    change: "the notification bell is hidden at tablet size"
-    basis: >
-      Notifications is a tab there, so the bell was the same destination twice.
-      This mirrors the rule already applied to field-only personas for exactly
-      that reason. Desktop keeps the bell — there is no tab bar there.
+    change: "no change — the bell stays at every width for a console persona"
+    history: >
+      An earlier pass hid the bell at tablet size on the grounds that
+      Notifications was a tab there. Q1 option B removed the console tab bar, so
+      that reasoning no longer holds: the bell is a console persona's only route
+      to notifications and must remain at every size. The rule and its
+      .ax-topbar-hide-tablet class were reverted. A field-only persona still does
+      not get the bell, because for them it genuinely duplicates a tab.
 
 defect_fixes_included:
   - "Drawer wordmark was crushed into a 28px grid column and vanished; the drawer now resets brand to flex and keeps the design's 22px cap height."
@@ -100,14 +106,19 @@ propagation:
     Until this proposal is accepted, do not add new tablet behaviour. Align to
     the single breakpoint pair above rather than introducing a third.
 
-known_gaps:
+closed_gaps:
   - id: "pwa-shell coverage"
+    closed_by: "0c27103c"
     detail: >
-      FieldNav is pasted per page rather than living in field/layout.tsx, so 11
-      of 21 field screens still render no tab bar: /field/search,
-      /field/notifications (+/[id]), /field/factory-360, /field/feedback,
-      /field/[visitId]/travel, /field/inspection/[id]/statement, /field/settings
-      (+/conflicts, /devices, /readiness).
+      FieldNav was pasted per page, so 11 of 21 field screens rendered no tab
+      bar and an inspector had no way out except browser-back. It now renders
+      once in field/layout.tsx with the active tab resolved from the pathname.
+      Verified in an authenticated session: all 21 screens return exactly one
+      .field-nav. A stale comment on /field/[visitId] claiming the design omits
+      the bar was also corrected — Execution Shell, Inspection Form and
+      Preparation all load pwa-tabbar.js; only the pre-auth Login omits it.
+
+known_gaps:
   - id: "vendored designs are stale"
     detail: >
       The live Claude Design project contains SAQEEL Login v2.dc.html (44 KB)
