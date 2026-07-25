@@ -177,27 +177,28 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
         onBlurCapture={event => {
           if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setCredentialFocus(false);
         }}>
-        <header className="lg-lockup">
-          <SaqeelMark className="lg-lockup__mark" />
-          <span className="lg-lockup__text">
-            <span className="lg-lockup__names">
-              <span className="lg-lockup__ar" lang="ar">صقيل</span>
-              <span className="lg-lockup__div" aria-hidden="true" />
-              <span className="lg-lockup__latin" lang="en">SAQEEL</span>
-            </span>
-            <span className="lg-lockup__sub" dir={s.dir}>
-              {s.lang === "ar" ? "التفتيش الصناعي" : "INDUSTRIAL INSPECTIONS"}
-            </span>
-          </span>
-          <div className="lg-controls lg-controls--end">
-            {/* Sign-in is dark-locked and exposes no theme control (ThemeScript /
-                ThemeChannelSync force dark on /login). Only the language control
-                remains. */}
-            <a className="lg-lang lg-lang--top" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
-          </div>
-        </header>
+        {/* Top utility row: language only. Sign-in is dark-locked and exposes
+            no theme control (ThemeScript / ThemeChannelSync force dark). */}
+        <div className="lg-util">
+          <a className="lg-lang" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
+        </div>
 
         <div className="lg-center">
+          {/* PWA card head — shield + SAQEEL lockup + tagline, one centred unit
+              with the form directly below (structure transcribed from
+              SAQEEL PWA-Field Login.dc.html, mirroring the field login). */}
+          <div className="lg-cardhead">
+            <SaqeelMark className="lg-cardhead__mark" />
+            <span className="lg-cardhead__brand">
+              <span className="lg-cardhead__ar" lang="ar">صقيل</span>
+              <span className="lg-cardhead__div" aria-hidden="true" />
+              <span className="lg-cardhead__latin" lang="en">SAQEEL</span>
+            </span>
+            <span className="lg-cardhead__tagline" dir={s.dir}>
+              {s.lang === "ar" ? "التفتيش الصناعي" : "INDUSTRIAL INSPECTIONS"}
+            </span>
+          </div>
+
           {view === "signin" && (
             <section className="lg-card" aria-label={s.cardTitle}>
               <h1 className="lg-card__title">{s.cardTitle}</h1>
