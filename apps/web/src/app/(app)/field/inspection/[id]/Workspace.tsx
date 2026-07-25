@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
+import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp, type SubmitSynced } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
@@ -60,6 +60,10 @@ export type WorkspaceStrings = {
   conflictHead: string; thisDevice: string; server: string; keepMine: string; keepServer: string;
   returnedScope: string; returnedNote: string;
   submittedTitle: string; submittedBody: string;
+  completionVersionLabel: string; completionCreatedTitle: string;
+  completionCreatedVersion: string; completionCreatedAudit: string; completionCreatedReview: string;
+  completionIdempotency: string; completionReused: string; completionPendingSync: string;
+  completionFailedTitle: string; completionFailedBody: string;
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
@@ -139,6 +143,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
   const [signing, setSigning] = useState(false);
   const [submitted, setSubmitted] = useState(inspection.status === "submitted");
+  // SCR-IPAD-660. Server-confirmed submission (submission_version_id,
+  // version_number, reused). Null until the outbox op actually syncs — submit
+  // is asynchronous, so `submitted` alone does NOT mean the server accepted it.
+  const [submission, setSubmission] = useState<SubmitSynced | null>(null);
   // Phase 4B / D-016 — active-session cancellation is NON-BLOCKING until
   // Operations decides: a pending request shows a banner while the inspector
   // keeps working; only an approval locks the workspace read-only (terminal).
@@ -721,7 +729,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
     // After a successful RPC submit, local state follows the SERVER-assigned
     // version number (D-020); the legacy fallback never reports one back.
     processOutbox(userId, onState, (inspectionId, info) => {
-      if (inspectionId === inspection.id) setMsg(fmt(strings.submitting, { v: info.version_number }));
+      if (inspectionId !== inspection.id) return;
+      setMsg(fmt(strings.submitting, { v: info.version_number }));
+      // D-020: the completion state reports the SERVER-assigned version, never
+      // the optimistic legacyVersion above. Until this fires there is no
+      // confirmed submission, so the panel renders the queued state instead of
+      // claiming a version that may never exist.
+      setSubmission(info);
     });
   }
 
@@ -800,7 +814,56 @@ export default function Workspace({ inspection, items, library, serverResponses,
         const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
         return lastReturn ? <div className="alert alert-warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
       })()}
-      {submitted && <div className="alert alert-immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
+      {/* SCR-IPAD-660 completion state (CR-320/321/324/327/333/335/336).
+          Deliberately NOT a separate route: submit is asynchronous through the
+          outbox, so at setSubmitted(true) the server has not confirmed anything
+          yet and a route push would land on a completion URL for an inspection
+          that may still fail. Three honest states below, driven by real signals
+          only — never a claim the server has not made. */}
+      {submitted && sync === "failed" && (
+        <div className="alert alert-critical" role="alert">
+          <div>
+            <strong>{strings.completionFailedTitle}</strong> {strings.completionFailedBody}
+            {detail ? <div className="t-caption id-code" style={{ marginBlockStart: "var(--space-1)" }}>{detail}</div> : null}
+          </div>
+        </div>
+      )}
+      {submitted && sync !== "failed" && (
+        <div className="alert alert-immutable" role="status">
+          <div className="stack" style={{ gap: "var(--space-2)" }}>
+            <div>
+              <strong>{strings.submittedTitle}</strong> {strings.submittedBody}
+            </div>
+            {/* CR-324: version is server-authoritative. Rendered only once the
+                server has assigned one — zero-assumption, no optimistic number. */}
+            {submission ? (
+              <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
+                <span className="badge badge-compliant">
+                  {strings.completionVersionLabel} v{submission.version_number}
+                </span>
+                <span className="t-caption id-code">{submission.submission_version_id}</span>
+              </div>
+            ) : (
+              <div className="t-caption">{strings.completionPendingSync}</div>
+            )}
+            {submission?.reused ? <div className="t-caption">{strings.completionReused}</div> : null}
+            {submission ? (
+              <>
+                {/* CR-335 — what the submission created, stated plainly. */}
+                <div>
+                  <strong className={styles.overline}>{strings.completionCreatedTitle}</strong>
+                  <ul style={{ margin: "var(--space-1) 0 0", paddingInlineStart: "var(--space-4)" }}>
+                    <li>{strings.completionCreatedVersion}</li>
+                    <li>{strings.completionCreatedAudit}</li>
+                    <li>{strings.completionCreatedReview}</li>
+                  </ul>
+                </div>
+                <div className="t-caption">{strings.completionIdempotency}</div>
+              </>
+            ) : null}
+          </div>
+        </div>
+      )}
       {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
           pending: non-blocking banner, the inspector keeps working (§12). */}
       {cancelApproved && <div className="alert alert-immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}

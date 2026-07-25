@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r5",
-  "updated": "2026-07-25T22:35:00+03:00",
+  "revision": "SB-r6",
+  "updated": "2026-07-25T22:55:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1661,22 +1661,34 @@
       "group": "pwagap",
       "name": "Completion & visit statement",
       "design": 65,
-      "code": 40,
-      "wiring": 40,
+      "code": 70,
+      "wiring": 70,
       "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html · Visit Statement · Visit Results",
       "route": "partially covered by field/inspection/[id] submit path",
       "pwa": {
         "state": "gap",
-        "note": "No dedicated completion or statement route; the design implies distinct post-submit screens."
+        "note": "SCR-IPAD-660 completion state built as the post-submit state of Workspace (NOT a route): server-assigned version + submission_version_id captured, what-submission-created, idempotency note, and honest queued / failed states. Runtime pixel + AR/RTL comparison not yet run."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "Confirm whether Completion and Visit Statement are routes or post-submit states of Workspace."
+          "text": "RESOLVED — Completion is the post-submit STATE of /field/inspection/[id], not a separate route. Evidence: canonical capture matrix maps SCR-IPAD-660 to that same url (PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv:4424); submit is async via the outbox so a route push at submit would land on a completion URL for an inspection the server may still reject."
+        },
+        {
+          "lane": "design",
+          "text": "Missing presentation still to build, all inside this state: return severity badge, explicit 'Open correction mode' action, 'Resubmit — version N+1' labelling, v1 vs v2 comparison, and the version-history timeline."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison against SAQEEL PWA-Field Completion.dc.html not run (BS-1: no automated pixel diff exists)."
         },
         {
           "lane": "wiring",
-          "text": "Immutable submit — a statement view must never allow edit."
+          "text": "Feedback QR NOT built and must not be — the design embeds a live token URL but there is no inspector_qr_token schema (see the feedback card). Building it would mean inventing token issuance."
+        },
+        {
+          "lane": "wiring",
+          "text": "Visit Statement is a separate lean report TYPE (only the 5.2.9 fields, skips the item list), not a completion screen — it does not belong to this card."
         }
       ],
       "phase": 5,

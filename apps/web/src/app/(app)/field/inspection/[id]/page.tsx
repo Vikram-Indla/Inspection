@@ -503,6 +503,19 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next final submitted version (STM-COR-001/002)."),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
     submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
+    // SCR-IPAD-660 completion state (CR-320/324/327/335/336). The version number
+    // and id are SERVER-assigned and only known once the outbox op syncs, so
+    // every one of these renders nothing until the server has confirmed.
+    completionVersionLabel: t("field.ws.completionVersionLabel", "Submission version"),
+    completionCreatedTitle: t("field.ws.completionCreatedTitle", "What this submission created"),
+    completionCreatedVersion: t("field.ws.completionCreatedVersion", "An immutable submitted version — content can no longer be edited here."),
+    completionCreatedAudit: t("field.ws.completionCreatedAudit", "A submission audit event recording the version and section count."),
+    completionCreatedReview: t("field.ws.completionCreatedReview", "A review task for the reviewer — approve, return for correction, or reject."),
+    completionIdempotency: t("field.ws.completionIdempotency", "Protected by an idempotency key — a retry can never create a second version."),
+    completionReused: t("field.ws.completionReused", "Already submitted — the server returned the existing version rather than creating a new one."),
+    completionPendingSync: t("field.ws.completionPendingSync", "Not submitted yet — this is queued on the device and will submit exactly once when the connection returns. No version exists until the server assigns one."),
+    completionFailedTitle: t("field.ws.completionFailedTitle", "Submission did not complete."),
+    completionFailedBody: t("field.ws.completionFailedBody", "The server rejected this submission, so no submitted version was created. Your answers are safe on this device. Retry, or contact your supervisor if it keeps failing."),
     lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only (M06-043); DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
     submitBtn: t("field.ws.submitBtn", "Review & submit — final version"),
