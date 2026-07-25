@@ -25,6 +25,9 @@ export type PackData = {
   factoryName: string;
   packPolicyVersion: string | null;
   packageLabel: string | null;
+  packageVersionId: string | null;
+  packageDefinition: unknown | null;
+  packageChecksum: string | null;
   packageStatus: string | null;
   crNumber: string | null;
   officialLocation: string | null;
@@ -71,6 +74,17 @@ export type PackStrings = {
   ackRepeatReviewed: string;
   required: string;
   downloadOffline: string;
+  downloadingOffline: string;
+  downloadUnavailable: string;
+  downloadFailed: string;
+  retryDownload: string;
+  integrityVerified: string;
+  integrityFailed: string;
+  packageOutdated: string;
+  legacyUnverified: string;
+  offlineUnavailable: string;
+  packageVersion: string;
+  packageHash: string;
   checkIn: string;           // "Check in — startup"
   checkInBlocked: string;    // "Check in — review required"
   startupNote: string;       // "Opens the governed startup; check-in gates are enforced there."
@@ -94,22 +108,89 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
   const local = useMemo(() => localForUser(userId), [userId]);
   const [open, setOpen] = useState(false);
   const [packageCached, setPackageCached] = useState(false);
+  const [cacheState, setCacheState] = useState<"checking" | "missing" | "downloading" | "verified" | "outdated" | "corrupt" | "legacy_unverified" | "failed">("checking");
+  const [online, setOnline] = useState(true);
   const [factory360Ack, setFactory360Ack] = useState(false);
   const [repeatReviewed, setRepeatReviewed] = useState(false);
 
   // Read the REAL offline package cache presence (display only).
-  useEffect(() => {
-    if (!open || !data.inspectionId) return;
-    let alive = true;
-    void local.getPackage(data.inspectionId).then((def) => { if (alive) setPackageCached(!!def); }).catch(() => {});
-    return () => { alive = false; };
-  }, [open, data.inspectionId, local]);
+  const cacheKey = data.inspectionId ? `inspection:${data.inspectionId}` : `visit:${data.visitId}`;
+  const authority = useMemo(() => data.packageVersionId ? ({
+    packageVersionId: data.packageVersionId,
+    authorityChecksum: data.packageChecksum,
+  }) : null, [data.packageChecksum, data.packageVersionId]);
 
-  // Readiness blocker: the repeat-findings review acknowledgement. This is a
-  // local readiness nudge, not an invented governance policy — the authoritative
-  // check-in gate lives at /field/[visitId].
-  const blocked = !repeatReviewed;
-  const startupHref = `/field/${data.visitId}`;
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    if (!authority) {
+      setCacheState("missing");
+      setPackageCached(false);
+      return;
+    }
+    void local.resolveVerifiedPackage({
+      visitId: data.visitId,
+      inspectionId: data.inspectionId,
+      authority,
+    }).then((result) => {
+      if (!alive) return;
+      setCacheState(result.state);
+      setPackageCached(result.state === "verified");
+    }).catch(() => {
+      if (alive) {
+        setCacheState("failed");
+        setPackageCached(false);
+      }
+    });
+    return () => { alive = false; };
+  }, [authority, data.inspectionId, data.visitId, open, local]);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  async function downloadOfflinePackage() {
+    if (!online || !data.packageVersionId || data.packageDefinition == null) return;
+    setCacheState("downloading");
+    try {
+      await local.cacheVerifiedPackage(cacheKey, {
+        packageVersionId: data.packageVersionId,
+        packageVersionLabel: data.packageLabel ?? data.packageVersionId,
+        authorityChecksum: data.packageChecksum,
+        definition: data.packageDefinition,
+      });
+      const verified = await local.verifyCachedPackage(cacheKey, {
+        packageVersionId: data.packageVersionId,
+        authorityChecksum: data.packageChecksum,
+      });
+      setCacheState(verified.state);
+      setPackageCached(verified.state === "verified");
+    } catch {
+      setCacheState("failed");
+      setPackageCached(false);
+    }
+  }
+
+  // This drawer's Continue control requires the downloaded package to pass its
+  // local integrity + authority check and the two review acknowledgements.
+  // The server-side startup/readiness gate remains independently authoritative.
+  const blockerCount = Number(!packageCached) + Number(!factory360Ack) + Number(!repeatReviewed);
+  const blocked = blockerCount > 0;
+
+  function continueToReadiness() {
+    if (blocked) return;
+    setOpen(false);
+    requestAnimationFrame(() => {
+      document.querySelector('[data-testid="pre-execution-panel"]')?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   return (
     <>
@@ -135,9 +216,16 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
 
             <div className={moduleClasses.packChipRow}>
               <span className={`sq-lozenge sq-lozenge--${blocked ? "warning" : "success"}`}>
-                {blocked ? strings.reviewBlocker.replace("{n}", "1") : strings.ready}
+                {blocked ? strings.reviewBlocker.replace("{n}", String(blockerCount)) : strings.ready}
               </span>
-              <span className="sq-sync sq-sync--synced">{strings.cached}</span>
+              <span className={`sq-sync ${packageCached ? "sq-sync--synced" : ""}`} role="status" data-testid="pack-cache-status">
+                {cacheState === "verified" ? strings.integrityVerified
+                  : cacheState === "outdated" ? strings.packageOutdated
+                  : cacheState === "corrupt" ? strings.integrityFailed
+                    : cacheState === "legacy_unverified" ? strings.legacyUnverified
+                      : cacheState === "failed" ? strings.downloadFailed
+                        : strings.downloadUnavailable}
+              </span>
               {data.freshnessMinutes != null && (
                 <span className="sq-freshness sq-numeric">{strings.freshness.replace("{n}", String(data.freshnessMinutes))}</span>
               )}
@@ -155,7 +243,10 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
 
               <Section title={strings.sectionPackage}>
                 {data.packageLabel
-                  ? <>{data.packageLabel}{data.packageStatus ? ` · ${data.packageStatus}` : ""}</>
+                  ? <>
+                      <div>{strings.packageVersion}: <span className="sq-numeric">{data.packageLabel}</span>{data.packageStatus ? ` · ${data.packageStatus}` : ""}</div>
+                      <div>{strings.packageHash}: <span className="sq-numeric">{data.packageChecksum ? data.packageChecksum.slice(0, 16) : "—"}</span></div>
+                    </>
                   : <em>—</em>}
               </Section>
 
@@ -203,11 +294,11 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
                 <div className="sq-overline" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.startReadiness}</div>
                 <label className="sq-check">
                   <input type="checkbox" checked={packageCached} readOnly disabled />
-                  {strings.ackPackageCached}
+                  {strings.ackPackageCached} <span className={moduleClasses.packBlocked}>{strings.required}</span>
                 </label>
                 <label className="sq-check">
                   <input type="checkbox" checked={factory360Ack} onChange={(e) => setFactory360Ack(e.target.checked)} />
-                  {strings.ackFactory360}
+                  {strings.ackFactory360} <span className={moduleClasses.packBlocked}>{strings.required}</span>
                 </label>
                 <label className="sq-check">
                   <input type="checkbox" checked={repeatReviewed} onChange={(e) => setRepeatReviewed(e.target.checked)} />
@@ -217,16 +308,31 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses, u
             </div>
 
             <div className={moduleClasses.packFooter}>
-              <button type="button" className="sq-btn sq-btn--secondary" style={{ flex: 1 }}>{strings.downloadOffline}</button>
-              <a
-                href={blocked ? undefined : startupHref}
+              <button
+                type="button"
+                className="sq-btn sq-btn--secondary"
+                style={{ flex: 1 }}
+                onClick={() => void downloadOfflinePackage()}
+                disabled={!online || !data.packageVersionId || data.packageDefinition == null || cacheState === "downloading"}
+                data-testid="pack-download-offline"
+              >
+                {cacheState === "downloading" ? strings.downloadingOffline
+                  : !online ? strings.offlineUnavailable
+                    : cacheState === "failed" || cacheState === "corrupt" || cacheState === "outdated" || cacheState === "legacy_unverified"
+                      ? strings.retryDownload
+                      : strings.downloadOffline}
+              </button>
+              <button
+                type="button"
+                onClick={continueToReadiness}
+                disabled={blocked}
                 aria-disabled={blocked}
                 className="sq-btn sq-btn--prominent"
                 style={{ flex: 1, textAlign: "center", ...(blocked ? { opacity: 0.5, pointerEvents: "none" } : {}) }}
                 title={strings.startupNote}
               >
                 {blocked ? strings.checkInBlocked : strings.checkIn}
-              </a>
+              </button>
             </div>
           </aside>
         </>

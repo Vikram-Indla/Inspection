@@ -4,17 +4,24 @@
 // explicit records, never silent overwrites.
 import { createClient } from "@supabase/supabase-js";
 import { supabaseBrowser } from "@/lib/supabase";
+import {
+  resolveInspectionPackageCache,
+  sealInspectionPackage,
+  verifyInspectionPackage,
+  packageCacheNamespace,
+  type CachedInspectionPackage,
+  type PackageAuthority,
+  type PackageIntegrityResult,
+} from "@/lib/offline-package-integrity";
+export type { CachedInspectionPackage, PackageIntegrityResult } from "@/lib/offline-package-integrity";
 
 const LEGACY_DB = "mim-field-v1";
-const DB_PREFIX = "mim-field-v1:";
 const LEGACY_RESOLUTION_KEY = "mim-field-v1:legacy-resolution";
 const STORE_NAMES = ["drafts", "packages", "outbox", "conflicts"] as const;
 type StoreName = typeof STORE_NAMES[number];
 
 export function offlineDatabaseName(userId: string): string {
-  const verifiedUserId = userId.trim();
-  if (!verifiedUserId) throw new Error("A verified user id is required for offline storage");
-  return `${DB_PREFIX}${verifiedUserId}`;
+  return packageCacheNamespace(userId);
 }
 export type SyncState = "synced" | "offline" | "pending" | "syncing" | "conflict" | "failed";
 export type OutboxOp =
@@ -106,6 +113,35 @@ function createUserOfflineStore(userId: string) {
     },
     cachePackage: (inspection: string, def: unknown) => tx(verifiedUserId, "packages", "readwrite", s => s.put(def, inspection)),
     getPackage: (inspection: string) => tx<unknown>(verifiedUserId, "packages", "readonly", s => s.get(inspection)),
+    cacheVerifiedPackage: async (key: string, input: {
+      packageVersionId: string;
+      packageVersionLabel: string;
+      authorityChecksum: string | null;
+      definition: unknown;
+    }): Promise<CachedInspectionPackage> => {
+      const cached = await sealInspectionPackage(input);
+      await tx(verifiedUserId, "packages", "readwrite", store => store.put(cached, key));
+      return cached;
+    },
+    verifyCachedPackage: async (key: string, authority?: PackageAuthority): Promise<PackageIntegrityResult> => {
+      const value = await tx<unknown>(verifiedUserId, "packages", "readonly", store => store.get(key));
+      return verifyInspectionPackage(value, authority);
+    },
+    resolveVerifiedPackage: (input: {
+      visitId: string;
+      inspectionId: string | null;
+      authority: PackageAuthority;
+    }): Promise<PackageIntegrityResult> => {
+      return resolveInspectionPackageCache({
+        ...input,
+        cache: {
+          get: key => tx<unknown>(verifiedUserId, "packages", "readonly", store => store.get(key)),
+          put: async (key, value) => {
+            await tx(verifiedUserId, "packages", "readwrite", store => store.put(value, key));
+          },
+        },
+      });
+    },
     // FLD-JRN-003/004 — the last provider estimate is a display-only offline
     // value. It never mutates workflow state and is always surfaced as stale.
     cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx(verifiedUserId, "packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
