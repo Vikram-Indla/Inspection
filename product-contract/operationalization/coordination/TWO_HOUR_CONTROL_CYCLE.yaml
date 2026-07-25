@@ -1,0 +1,62 @@
+schema_version: "1.0"
+control_id: "SAQEEL-OS-TWO-HOUR-CYCLE-001"
+authority: "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md section 5"
+purpose: >
+  Machine-readable state for the mandatory two-hour planning and
+  reconciliation cycle defined by the SAQEEL Operating System. ChatGPT
+  sequences the queue; Codex records acceptance state and closes the cycle.
+
+status: "OPEN"
+note: >
+  CLI re-authentication is complete. The new V3 contract is being adopted and
+  ChatGPT is authoring the replacement Operations queue. No requirement figure
+  is inferred from prior chat or stale artifacts.
+
+current_cycle:
+  cycle_id: "SAQEEL-CYCLE-2026-07-25-001"
+  opened_at: "2026-07-25T13:02:00+03:00"
+  closed_at: null
+  watch_lanes:
+    chatgpt:
+      state: "RUNNING"
+      active_packet: "GPT-V3-OPS-QUEUE-001"
+      queued_packet: "OPERATIONS-SUCCESSOR-PENDING"
+      dependency: null
+    kimi:
+      state: "READY"
+      active_packet: null
+      queued_packet: null
+      dependency: "DEP-GPT-QUEUE-001"
+    claude_code:
+      state: "READY"
+      active_packet: null
+      queued_packet: null
+      dependency: "DEP-GPT-QUEUE-001"
+    claude_design:
+      state: "READY"
+      active_packet: null
+      queued_packet: null
+      dependency: "DEP-GPT-QUEUE-001"
+    independent_codex_delivery_tasks:
+      - state: "REVIEW"
+        packet_id: "PKT-M9-LOC-001"
+        branch: "codex/admin-localization-lookups"
+        head: "82b55ce8"
+        queued_packet: "PKT-M9-LOC-002"
+  requirement_figures:
+    built_rows: null
+    independently_verified_rows: null
+    fully_accepted_rows: null
+    total_rows: 478
+    p0_count: null
+    p1_count: null
+  handoffs_reviewed: []
+  dirty_laundry_updates: []
+  next_two_hour_queue: []
+
+  cycle_history: []
+
+references:
+  scorecard: "product-contract/operationalization/SAQEEL_REQUIREMENT_SCORECARD.yaml"
+  requirement_baseline: "product-contract/requirements-control/CURRENT_REQUIREMENTS_BASELINE.yaml"
+  operating_system: "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"

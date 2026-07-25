@@ -1,0 +1,13 @@
+schema_version: "1.0"
+contract: "SAQEEL Operating System"
+version: "3.0"
+source_file: "SAQEEL OPERATING SYSTEM V3 2.pdf"
+source_sha256: "7a8823fdace8e90d698ebd88a2e289268ef0932845bdfee603b8f9128368585d"
+source_pages: 33
+source_bytes: 259521
+adopted_on: "2026-07-25"
+adopted_by: "Vikram Indla / Product Owner"
+canonical_text: "product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md"
+effect: >
+  Supersedes the repository V2 operating standard and V3 addendum without
+  relaxing any product, evidence, security, acceptance or release gate.
