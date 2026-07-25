@@ -435,3 +435,16 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
   acceptance remains pending.
 - Current routes remain canonical. Cutover, legacy removal, and stabilization
   acceptance are not granted by this checkpoint.
+
+## Inspector completed inspection history — 2026-07-25
+
+- Task: `TASK-IPAD-COMPLETED-HISTORY-001`; process `G2-P09`; continuation of
+  `SCR-IPAD-660`; requirements `MVP1-M04-210..223`.
+- Source acceptance: inspector-scoped list, immutable-version receipt/detail,
+  canonical timestamps/reference, locked state, snapshot findings/evidence, and
+  user-scoped display-only cache are implemented and verified.
+- Engineering checks: focused contract 4/4 PASS; typecheck PASS; production
+  build PASS.
+- Runtime acceptance remains **PENDING** for an authenticated inspector fixture,
+  iPad-class offline/reload behavior, accessibility, and physical-device review.
+  No G10/G11 release status is upgraded by source evidence alone.

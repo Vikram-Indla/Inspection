@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-IPAD-COMPLETED-HISTORY-001"
+    gate: "G10/G11 Inspector PWA verification"
+    priority: "P1"
+    status: "SOURCE_IMPLEMENTED_VERIFIED_AWAITING_RUNTIME_ACCEPTANCE"
+    owner: "Codex implementation and QA + Product Owner runtime acceptance"
+    blocked_by: ["Authenticated inspector fixture with an immutable submission", "iPad-class runtime and physical-device evidence"]
+    blocks: []
+    note: "Source commit 38e18e81 adds inspector-scoped /field/completed list and immutable receipt detail, version-derived reference/timestamps, read-only snapshot findings/evidence, and user-scoped display-only cache. Typecheck/build PASS; focused static/negative contract 4/4 PASS. No DDL, shared-data mutation, workflow mutation, provider, deploy, merge, or main change."
   - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
     gate: "Web/Admin human screen approval"
     priority: "P0"
