@@ -32,12 +32,5 @@
 	<string>$(SUPABASE_ANON_KEY)</string>
 	<key>SUPABASE_URL</key>
 	<string>$(SUPABASE_URL)</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>IBMPlexSansArabic-Regular.ttf</string>
-		<string>IBMPlexSansArabic-Medium.ttf</string>
-		<string>IBMPlexSansArabic-SemiBold.ttf</string>
-		<string>IBMPlexSansArabic-Bold.ttf</string>
-	</array>
 </dict>
 </plist>
