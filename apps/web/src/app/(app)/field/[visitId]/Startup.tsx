@@ -977,7 +977,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const activeCancellationPhase = !!journeySchemaAvailable && ["on_the_way", "arrived"].includes(visit.operational_state);
   const latestCorrection = corrections[0] ?? null;
   return (
-    <div className="stack" style={{ gap: "var(--space-6)" }}>
+    <div className="stack" style={{ gap: 14, maxInlineSize: 760, inlineSize: "100%", marginInline: "auto" }}>
       {/* Phase 4B — overdue-inside-window warning (start proceeds; delay is recorded) */}
       {overdueWarning && (
         <div className="alert alert-warning" role="status"><div>{strings.journeyOverdueWarning}</div></div>
@@ -989,7 +989,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {activeCancel?.status === "rejected" && (
         <div className="alert alert-warning" role="status"><div>{fmt(strings.cancelRejectedCopy, { reason: activeCancel.decision_reason ?? "—" })}</div></div>
       )}
-      <div className="panel" style={{ padding: "var(--space-6)" }} data-testid="field-device-readiness">
+      <div className="panel" style={{ padding: "16px 18px", borderRadius: 14, boxShadow: "var(--shadow-card)" }} data-testid="field-device-readiness">
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.readiness}</h4>
         <div className={styles.readyList}>
           <div className={styles.readyRow}>
@@ -1062,7 +1062,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         advisoryLabel={strings.aiAdvisory}
       />
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
-      <div className="panel" style={{ padding: "var(--space-6)" }}>
+      <div className="panel" style={{ padding: "16px 18px", borderRadius: 14, boxShadow: "var(--shadow-card)" }}>
         <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
           <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="badge badge-info">SB20 · ENG-08</span></h4>
           <span className="row" style={{ gap: 8, alignItems: "center" }}>
