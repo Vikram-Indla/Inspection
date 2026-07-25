@@ -1,0 +1,480 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICES-DESIGN-IDENTITY-READINESS-033
+title: Admin Trusted Devices nearest-design and identity readiness
+status: READY_FOR_MAPPING_CORRECTION_AND_GOVERNANCE_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+new_design_identity_allocated: false
+screen_identity_allocated: false
+live_design_mutated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+predecessor_acknowledgement:
+  packet_id: M10-ADMIN-OPERATIONS-NEAREST-DESIGN-CORRECTION-032
+  disposition: RETURN_FOR_MAPPING_CORRECTION
+  status: BLOCKED_NO_DESIGN_WRITE_AUTHORITY
+  rule: >-
+    Operations remains blocked until its seven governance decisions close and
+    one collision-safe writer is named. This Devices packet grants no authority
+    to consume or modify packet 032.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICES-DESIGN-IDENTITY-READINESS-033
+  gate: Admin Trusted Devices nearest-design and identity governance
+  route: /admin/devices
+  channel: ADMIN
+  process_ids: ["G2-P00"]
+  module_id: M3-06
+  module_design_id: CD-056
+  direct_requirement_ids:
+    - MVP2-REQ-0176
+    - MVP2-REQ-0184
+    - MVP2-REQ-0186
+    - MVP2-REQ-0244
+  contextual_requirement_ids:
+    - MVP2-REQ-0074
+    - MVP2-REQ-0076
+    - MVP2-REQ-0178
+    - MVP2-REQ-0179
+    - MVP2-REQ-0180
+    - MVP2-REQ-0181
+    - MVP2-REQ-0182
+    - MVP2-REQ-0183
+    - MVP2-REQ-0185
+    - MVP2-REQ-0240
+  acceptance_ids:
+    direct: [MVP2-AC-0176, MVP2-AC-0184, MVP2-AC-0186, MVP2-AC-0244]
+    contextual: [MVP2-AC-0074, MVP2-AC-0076, MVP2-AC-0178, MVP2-AC-0179, MVP2-AC-0180, MVP2-AC-0181, MVP2-AC-0182, MVP2-AC-0183, MVP2-AC-0185, MVP2-AC-0240]
+    web_admin_family: [WA-M8-AC-001, WA-M8-AC-002, WA-M8-AC-003, WA-M8-AC-004, WA-M8-AC-005, WA-M8-AC-006]
+  dependencies:
+    - WA-DES-015_devices_frame_route_binding_decision
+    - WA-DES-004_devices_mapping_removal
+    - WA-DES-043_and_WA-DES-011_route_inventory_correction
+    - CD-056_M3-06_R2_package_identity_and_fingerprint_verification
+    - WA-DES-015_to_CD-056_lineage_registration
+    - exact_screen_identity_and_requirement_ownership_decision
+    - route_navigation_RLS_RPC_persona_reconciliation
+    - external_MDM_contract_and_formal_hold_registration
+    - device_command_audit_acknowledgement_and_concurrency_contract
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design, CD-056, WA-DES-015, WA-DES-004, WA-DES-041, WA-DES-043, WA-DES-011, or exports
+    - frozen design, route, screen, requirement, acceptance, or evidence mappings
+    - Devices, Field/iPad, Security Access, Access, shared shell, offline, package, sync, or provider application code
+    - tests, evidence, Supabase, migrations, RPCs, credentials, environment, seeds, or data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  observed_head: 9f45e538
+  unrelated_dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-FUTURE-TEST-READINESS-REVIEW-033.yaml
+    - product-contract/operationalization/coordination/batches/KIMI-M11-TEST-EVIDENCE-GAP-MAP-032.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-OPERATIONS-NEAREST-DESIGN-CORRECTION-032.yaml
+  dirty_path_ownership: Other active lanes or predecessor output; preserved.
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    Read-only governance analysis only. No active application slice, design
+    source, mapping, branch, lease, test, backend or shared data is changed.
+
+authority:
+  module_and_requirements:
+    - product-contract/mvp3/README.md
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+  route_and_design_inventory:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+    - product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv
+  live_code_mapping:
+    - apps/web/src/app/(app)/admin/devices/page.tsx
+    - apps/web/src/app/(app)/admin/devices/loading.tsx
+    - apps/web/src/app/(app)/admin/mvp3-actions.ts
+    - apps/web/src/components/Mvp3ActionForm.tsx
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+  current_tests:
+    - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+  external_registered_designs_read_only:
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+      design_id: WA-DES-015
+      bytes: 42071
+      sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+      reference_viewport: 1440x900
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Extended.dc.html
+      design_id: WA-DES-004
+      bytes: 21561
+      sha256: b2ff11c538430f6f045ba66cf992cbcbc53897c0a62db1db98e30e3c811b19fc
+      reference_viewport: 1200x900
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL States System.dc.html
+      design_id: WA-DES-041
+      bytes: 14928
+      sha256: 9e78eb7ced8d9b43096d2346a8925534feeecd30c748cc48f70a86a17f4b5d9a
+      reference_viewport: 1200x820
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Users Roles.dc.html
+      design_id: WA-DES-043
+      bytes: 16534
+      sha256: 9d4e9879d7f2d4fd39a47895c9f746d99cbb3b3030aa033009889c7ada82a6b6
+    - path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Role Override.dc.html
+      design_id: WA-DES-011
+      bytes: 10979
+      sha256: 98827572052bf6157e8fe4710cd6de7d49bc49459dd82aa324d14d159b4f58bd
+
+screen_and_inventory_findings:
+  exact_screen_catalogue_row: NONE
+  exact_route_inventory_row: PRESENT
+  route_inventory_module: M8
+  route_inventory_designs: [SAQEEL Users Roles.dc.html, SAQEEL Admin Role Override.dc.html]
+  route_inventory_persona: inspector
+  route_inventory_classification: INCORRECT_AND_INCOMPLETE
+  design_route_map:
+    claimed_design_id: WA-DES-004
+    claimed_route: /admin/devices
+    classification: INCORRECT_MAPPING
+  defects:
+    - WA-DES-043 is a users and roles surface, not device trust administration.
+    - WA-DES-011 is a role-override surface, not device trust administration.
+    - WA-DES-004 has no Devices state or device register.
+    - The inventory persona inspector conflicts with navigation and action authority.
+    - CR-001..CR-478 is a preservation envelope, not exact route ownership or completion.
+    - Static inventory says no RPC although the route calls mvp3_issue_device_command.
+
+nearest_design_resolution:
+  nearest:
+    design_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    state_key: devices
+    title: Field devices
+    subtitle: registered devices · last sync · attestation
+    classification: NEAREST_EXISTING_FUNCTIONAL_AND_INFORMATION_ARCHITECTURE_MATCH
+    exact_evidence:
+      - A dedicated Devices navigation state exists in the registered multi-state Admin design.
+      - Its table contains Device, Inspector, OS, Last sync, Outbox and Status.
+      - It distinguishes online, offline and revoked illustrative states.
+      - Its content is closer to trusted-device and offline administration than any mapped M8 design.
+    limitations:
+      - It has no governed suspend, resume, expire-package or remote-wipe command.
+      - It has no mandatory reason, authorization, pending/acknowledged/completed/failed evidence or audit actor.
+      - It presents last sync and outbox values not read by the current route.
+      - It lacks MDM/app-version compliance and trust-policy detail required by the real schema.
+      - It contains hard-coded device, inspector, OS, timestamp, outbox and status fixtures.
+      - It does not cover registration, assignment, package access, readiness, replay or sync-rescue requirements end to end.
+  state_system_support:
+    design_id: WA-DES-041
+    state_key: devices
+    classification: FOUNDATION_STATE_SUPPORT_NOT_ROUTE_AUTHORITY
+    exact_support:
+      en_title: Trusted Devices
+      ar_title: الأجهزة الموثوقة
+      en_empty: No registered devices are visible under access policy.
+      ar_empty: لا توجد أجهزة مسجلة مرئية وفق سياسات الوصول.
+    rule: Use its verified-empty semantics as a foundation reference; do not replace the route design with it.
+  rejected:
+    - {design_id: WA-DES-004, reason: No Devices state exists.}
+    - {design_id: WA-DES-043, reason: Users and roles, not device administration.}
+    - {design_id: WA-DES-011, reason: Role override, not device administration.}
+  validation_status: CONFIRMED_WITH_CORRECTION
+
+cd_056_family_authority:
+  module: M3-06
+  design_id: CD-056
+  register_rows: 14
+  authority_statement: Corrected CD-056 R2 is the binding M3-06 visual and interaction family authority.
+  repository_reference: CD-056_M3-06_R2_FINAL with renders 01 through 06
+  package_dc_html_present: false
+  package_sha256_present: false
+  exact_frame_manifest_present: false
+  required_lineage: CD-056_R2 -> WA-DES-015_devices_state -> /admin/devices
+  rule: >-
+    WA-DES-015 is the nearest registered route expression and does not replace
+    CD-056. Retrieve, fingerprint and reconcile CD-056 before consumption.
+
+recommended_authority_path:
+  preferred:
+    classification: GOVERN_EXISTING_WA-DES-015_DEVICES_FRAME_AS_CD-056_ROUTE_EXPRESSION
+    new_logical_design_id_required: false
+    condition: >-
+      Governance records a stable frame/state identifier, exact fingerprint,
+      CD-056 lineage, route, screen identity, exact requirements and evidence
+      boundary for WA-DES-015 Devices.
+  fallback:
+    classification: GOVERNED_ROUTE_CHILD_LINKED_TO_WA-DES-015_AND_CD-056
+    new_logical_design_id_required: GOVERNANCE_DECISION_ONLY
+    condition: >-
+      Use only if the multi-state source cannot support independent stable
+      revision and evidence lineage. This packet supplies no candidate ID.
+  prohibited:
+    - Inventing the next WA-DES or screen number.
+    - Reusing WA-DES-004, WA-DES-043 or WA-DES-011 as route authority.
+    - Treating WA-DES-041 foundation states as the full route.
+    - Treating any illustrative device, inspector, time, outbox or status as runtime truth.
+
+real_route_truth:
+  route_exists: true
+  component: apps/web/src/app/(app)/admin/devices/page.tsx
+  loading_component: apps/web/src/app/(app)/admin/devices/loading.tsx
+  title: Trusted device and offline administration
+  code_authority_badge: M3-06_CD-056_14_CONTROLLED_ROWS
+  reads:
+    devices:
+      table: mvp3_devices
+      fields: [id, device_identifier, platform, assigned_user_id, trust_status, mdm_reference, last_seen_at, enrolled_at]
+      order: enrolled_at_descending
+      pagination_or_limit: NONE
+    commands:
+      table: mvp3_device_commands
+      fields: [id, device_id, command, status, reason, requested_at, completed_at]
+      order: requested_at_descending
+      limit: 30
+  governed_action:
+    rpc: mvp3_issue_device_command
+    commands: [suspend, resume, expire_packages, remote_wipe]
+    reason_minimum_characters: 8
+    authorized_roles: [ops, security_admin]
+    concurrency: Device row is locked before command creation and immediate trust-state update.
+    queued_truth: Command creation is not device acknowledgement or completion.
+  immediate_state_effects:
+    suspend: suspended
+    resume: trusted
+    remote_wipe: wipe_pending
+    expire_packages: NO_IMMEDIATE_DEVICE_STATE_CHANGE
+  current_route_gaps:
+    - Only the device read error is handled; command-read failure can appear as verified no commands.
+    - Raw RPC error.message is returned to the client.
+    - Device list is unbounded; command history is bounded to 30 without completeness or total.
+    - Assigned users render as opaque UUIDs, not governed display identities.
+    - MDM reference is shown as unverified when null but external MDM status is not independently proven.
+    - App version and app_version_compliant exist in schema but are not selected or shown.
+    - Command evidence omits device identifier, requester, requested time and completed time.
+    - Every row exposes every command even when it is nonsensical for the current trust state.
+    - The RPC does not reject no-op or contradictory state transitions and has no optimistic version guard.
+    - The command table is not append-only and no dedicated immutable audit trigger is proven.
+    - Command acknowledgement/completion is not implemented by this route.
+    - Registration, reassignment, revoke, sync health, outbox, package-access and replay controls are absent.
+
+permission_truth:
+  route_group: AUTHENTICATED_NON_FIELD_CHANNEL
+  navigation_visible_roles: [security_admin]
+  route_specific_guard: NOT_PRESENT
+  source_visibility:
+    devices:
+      own_assigned_device: AUTHENTICATED_ASSIGNEE
+      elevated_roles: [ops, security_admin, auditor]
+    commands: [ops, security_admin, auditor]
+  action_authority: [ops, security_admin]
+  required_persona_states:
+    - SECURITY_ADMIN_FULL_VISIBLE_SCOPE_AND_COMMAND
+    - OPS_VISIBLE_SCOPE_AND_COMMAND_WITHOUT_NAV_ENTRY
+    - AUDITOR_VISIBLE_READ_ONLY_WITHOUT_NAV_ENTRY
+    - INSPECTOR_OWN_DEVICE_ONLY_NO_COMMAND_HISTORY
+    - OTHER_AUTHENTICATED_VERIFIED_EMPTY_OR_DENIED
+    - UNAUTHORIZED_DIRECT_ROUTE
+    - SESSION_EXPIRED
+  rule: Navigation, route admission, source visibility and command authority are separate facts.
+
+requirement_scope_truth:
+  source_478:
+    exact_primary_rows: NONE
+    rule: Do not claim CR-001 through CR-478 for this route.
+  direct:
+    - {requirement_id: MVP2-REQ-0176, fit: PRIMARY_PARTIAL, gap: Registration, assignment, revoke, sync health and acknowledged wipe are incomplete.}
+    - {requirement_id: MVP2-REQ-0184, fit: PRIMARY_PARTIAL, gap: Trust register exists but device-open enforcement is proven elsewhere, not by this screen.}
+    - {requirement_id: MVP2-REQ-0186, fit: PRIMARY_PARTIAL, gap: Command history is not an operational sync dashboard.}
+    - {requirement_id: MVP2-REQ-0244, fit: PRIMARY_PARTIAL, gap: Package download/open/submit enforcement and app-version policy are not visible end to end here.}
+  contextual_rule: >-
+    The other ten M3-06 rows belong to field execution, package, evidence,
+    acknowledgement, safety or replay contexts and cannot become route-complete
+    claims merely because CD-056 covers fourteen rows.
+
+data_audit_concurrency_and_provider_truth:
+  data:
+    - Count only successful RLS-visible reads.
+    - Distinguish verified empty, denied, read failure and bounded history.
+    - A last-seen timestamp is not sync health; no outbox data is read here.
+    - Trusted requires a non-empty MDM reference and compliant app version in the schema.
+  audit:
+    - Command row stores command, reason, requester and request time.
+    - Current UI does not expose the full stored actor/time/device evidence.
+    - No append-only command trigger or canonical audit event is proven.
+  concurrency:
+    - The RPC locks the device row during command creation and state update.
+    - There is no expected version, allowed-transition matrix or duplicate-command idempotency key.
+    - Concurrent commands serialize but may still create contradictory sequential commands.
+  provider:
+    implementation_status: RUNTIME_CERTIFIED_MDM_HELD
+    formal_provider_hold_id: NONE_IN_MVP3_PROVIDER_POLICY_HOLDS
+    consequence: >-
+      External MDM enrollment, attestation, command transport, acknowledgement
+      and completed wipe cannot be claimed live. Governance must register the
+      MDM contract and fail-closed hold before design acceptance or enablement.
+    production_hold: MVP3-HOLD-008
+
+required_design_states:
+  route_and_reads:
+    - LOADING
+    - SECURITY_ADMIN_FULL_SCOPE
+    - OPS_FULL_DATA_SCOPE
+    - AUDITOR_READ_ONLY
+    - INSPECTOR_OWN_DEVICE_ONLY
+    - VERIFIED_EMPTY_UNDER_RLS
+    - DEVICES_UNAVAILABLE
+    - COMMANDS_UNAVAILABLE
+    - BOTH_SOURCES_UNAVAILABLE
+    - COMMAND_HISTORY_BOUNDED_COMPLETENESS_UNKNOWN
+    - SESSION_EXPIRED
+    - UNAUTHORIZED_DIRECT_ROUTE
+  trust_and_compliance:
+    - PENDING
+    - TRUSTED_COMPLIANT
+    - TRUSTED_DATA_INCONSISTENCY
+    - SUSPENDED
+    - REVOKED
+    - WIPE_PENDING
+    - WIPED
+    - MDM_UNVERIFIED
+    - APP_VERSION_NONCOMPLIANT
+    - NEVER_SEEN
+    - LAST_SEEN_STALE_WITHOUT_INVENTED_THRESHOLD
+  command:
+    - ELIGIBLE
+    - INVALID_FOR_CURRENT_STATE
+    - REASON_INVALID
+    - PENDING
+    - QUEUED_AWAITING_DEVICE_ACKNOWLEDGEMENT
+    - ACKNOWLEDGED
+    - COMPLETED_WITH_RECEIPT
+    - FAILED_NEUTRAL
+    - DEPENDENCY_BLOCKED
+    - DENIED_NO_CHANGE
+    - STALE_OR_CONFLICT
+    - DUPLICATE_OR_CONTRADICTORY_COMMAND
+  provider_and_policy:
+    - MDM_CONTRACT_HELD
+    - MDM_TRANSPORT_UNAVAILABLE
+    - DEVICE_ACKNOWLEDGEMENT_UNAVAILABLE
+    - PRODUCTION_RELEASE_HELD
+
+responsive_theme_language_accessibility:
+  viewports:
+    - {viewport: 1440x900, expectation: Register and evidence remain bounded with actions adjacent to each device.}
+    - {viewport: 1200x900, expectation: Exact foundation and multi-state comparison without horizontal page overflow.}
+    - {viewport: 1024x768, expectation: Columns reflow without hanging shell or detached command state.}
+    - {viewport: 768x1024, expectation: Device facts precede its command and evidence in a single task order.}
+    - {viewport: 412x915, expectation: Labelled records replace wide tables; no hidden or peeking controls.}
+    - {viewport: 390x844, expectation: Trust, MDM, version, pending, denied and receipt truth remain visible.}
+    - {viewport: 320x568, expectation: No clipping, two-dimensional scroll, identity loss or accidental destructive action.}
+  themes:
+    - LIGHT_WITH_TOKEN_AND_CONTRAST_PARITY
+    - DARK_WITH_TOKEN_AND_CONTRAST_PARITY
+  languages:
+    - ENGLISH_LTR_COMPLETE
+    - APPROVED_ARABIC_RTL_COMPLETE
+  accessibility:
+    - keyboard and visible focus order
+    - programmatic device-to-command relationship
+    - non-color trust and command status
+    - destructive command confirmation and consequence text
+    - pending/error/status announcements
+    - screen-reader table or labelled-record equivalence
+    - zoom/reflow and reduced-motion parity
+
+p0_gates:
+  - {id: DEV-DES-P0-01, criterion: No design or screen ID is invented.}
+  - {id: DEV-DES-P0-02, criterion: WA-DES-015 Devices is bound as nearest route expression under CD-056.}
+  - {id: DEV-DES-P0-03, criterion: CD-056 R2 package is retrieved, fingerprinted and lineage-recorded.}
+  - {id: DEV-DES-P0-04, criterion: WA-DES-004, WA-DES-043 and WA-DES-011 are removed as route authorities.}
+  - {id: DEV-DES-P0-05, criterion: Every illustrative device, inspector, OS, time, outbox and state is labelled fixture-only.}
+  - {id: DEV-DES-P0-06, criterion: Exact requirements are separated from contextual M3-06 coverage and 478-row preservation.}
+  - {id: DEV-DES-P0-07, criterion: Route, navigation, RLS read and RPC command permissions are reconciled.}
+  - {id: DEV-DES-P0-08, criterion: Trust, MDM attestation, app-version compliance and last-seen facts remain distinct.}
+  - {id: DEV-DES-P0-09, criterion: Last seen and a hard-coded outbox never become sync-health claims.}
+  - {id: DEV-DES-P0-10, criterion: Queue, acknowledgement, completion and genuine device receipt remain distinct.}
+  - {id: DEV-DES-P0-11, criterion: Destructive and state-changing commands have valid-state, reason, confirmation and fail-neutral truth.}
+  - {id: DEV-DES-P0-12, criterion: Command actor, time, device, state, reason, audit and concurrency evidence is contractually complete.}
+  - {id: DEV-DES-P0-13, criterion: Verified empty, RLS scope, read error and bounded command history cannot collapse.}
+  - {id: DEV-DES-P0-14, criterion: Raw internal errors, identifiers, MDM secrets and command payloads remain undisclosed.}
+  - {id: DEV-DES-P0-15, criterion: External MDM contract and formal fail-closed hold are registered before live claims.}
+  - {id: DEV-DES-P0-16, criterion: No design acceptance claims Field/iPad or route implementation completion.}
+
+p1_gates:
+  - {id: DEV-DES-P1-01, criterion: All required access, read, trust, command, error, empty, degraded and provider-held states are specified.}
+  - {id: DEV-DES-P1-02, criterion: All seven viewports preserve bounded reading and command adjacency.}
+  - {id: DEV-DES-P1-03, criterion: English/LTR and approved Arabic/RTL have semantic and task-order parity.}
+  - {id: DEV-DES-P1-04, criterion: Light/dark modes preserve contrast and non-color status meaning.}
+  - {id: DEV-DES-P1-05, criterion: Keyboard, focus, announcements, record relationships and destructive-action safety pass.}
+  - {id: DEV-DES-P1-06, criterion: Zoom, reflow and reduced motion preserve every governed task.}
+  - {id: DEV-DES-P1-07, criterion: As-of time, RLS scope, bounded completeness and MDM/provider provenance are visible.}
+  - {id: DEV-DES-P1-08, criterion: Evidence includes exact fingerprints and all state/responsive/theme/RTL comparisons.}
+
+remaining_governance_decisions:
+  - id: DEV-DES-DEC-01
+    decision: Bind WA-DES-015 Devices to /admin/devices as the route expression of CD-056.
+  - id: DEV-DES-DEC-02
+    decision: Remove WA-DES-004, WA-DES-043 and WA-DES-011 as route authorities and correct the M8/M9 ownership conflict.
+  - id: DEV-DES-DEC-03
+    decision: Retrieve and fingerprint CD-056 R2 and record stable frame lineage.
+  - id: DEV-DES-DEC-04
+    decision: Allocate or reconcile exact screen identity, requirements and acceptance ownership.
+  - id: DEV-DES-DEC-05
+    decision: Reconcile route admission, navigation, RLS visibility and command roles.
+  - id: DEV-DES-DEC-06
+    decision: Define valid command transitions, confirmation, idempotency/concurrency, audit and receipt contracts.
+  - id: DEV-DES-DEC-07
+    decision: Register the external MDM provider contract and formal fail-closed hold.
+  - id: DEV-DES-DEC-08
+    decision: Decide whether sync-health, package-access and offline replay belong here or on adjacent route-specific surfaces.
+  - id: DEV-DES-DEC-09
+    decision: After all prior decisions, name exactly one design writer; design consent is not implementation consent.
+
+collision_safe_design_lease:
+  prerequisite_sequence:
+    - Governance binds WA-DES-015 Devices, removes false route authorities and records CD-056 lineage.
+    - Governance closes identity, scope, permission, command, audit, MDM and adjacent-surface decisions.
+    - Orchestrator rechecks WA-DES-015, every state in SAQEEL Admin.dc.html, CD-056, WA-DES-041 and all active writers.
+    - Sponsor names exactly one writer and one bounded Devices-frame design lease.
+  writer_boundary:
+    may_change_after_lease:
+      - WA-DES-015 Devices state only, within the accepted bounded delta.
+    must_preserve:
+      - every other WA-DES-015 state and its selector
+      - CD-056 family authority
+      - WA-DES-041 foundation semantics
+      - fail-closed MDM and production holds
+    prohibited_parallel_writers:
+      - any writer touching SAQEEL Admin.dc.html or its state selector
+      - any writer touching its Devices state or shared Admin shell
+      - any writer touching CD-056, WA-DES-041 or the same evidence index
+  closeout:
+    - Independent reviewer verifies P0 and P1 evidence.
+    - Sponsor accepts, returns or rejects the design correction.
+    - Any later implementation lease separately records exact application-file ownership.
+
+recommendation:
+  reviewer_recommendation: RETURN_FOR_MAPPING_CORRECTION
+  sponsor_business_decision: >-
+    Approve WA-DES-015 Devices as the nearest existing design under CD-056,
+    correct the three false design associations, and close nine governance
+    decisions before one design writer is leased. Do not approve implementation.
+
+safe_follow_on:
+  task_id: M8-ADMIN-ACCESS-DESIGN-AUTHORITY-REVIEW-034
+  objective: >-
+    Read-only resolve /admin/access against WA-DES-043, WA-DES-011, the real
+    route and canonical role/RLS contracts; determine exact nearest authority
+    without allocating an ID or granting a design lease.
+  constraints:
+    - No live design, code, tests, data, mapping, branch, lease, main, setup/Inspection or stash mutation.

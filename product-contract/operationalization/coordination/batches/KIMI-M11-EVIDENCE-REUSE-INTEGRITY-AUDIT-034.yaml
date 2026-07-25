@@ -1,0 +1,362 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-EVIDENCE-REUSE-INTEGRITY-AUDIT-034
+status: READ_ONLY_EVIDENCE_REUSE_AUDIT_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Audit the 11 unique candidate assets referenced by the 25 closure rows with
+  candidate evidence in gap map 032. Classify reuse integrity, prevent legacy
+  persona/provider assumptions from becoming final evidence, and define exact
+  future recapture needs. The remaining six rows stay explicitly evidence-free.
+
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  prior_readiness_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  correction_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  collision_preflight: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+  acceptance_harness: KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
+  gap_map: KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+  blocked_follow_on: KIMI-M11-FUTURE-TEST-READINESS-REVIEW-033
+
+hard_boundary:
+  - "No test write or execution."
+  - "No dispatch or review 025 execution."
+  - "No product, application, database, remote DDL, migration, data, UI or seed write."
+  - "No branch/worktree change, lease issuance, push, merge, main, setup/Inspection or stash change."
+  - "Classification never grants acceptance or completion credit."
+
+classification_contract:
+  REUSABLE:
+    meaning: "Harness shape or assertion idea may be adapted, but current result must be recaptured on the corrected stack."
+  STALE:
+    meaning: "Historical result may provide provenance only; it cannot prove the corrected stack."
+  CONTRADICTORY:
+    meaning: "Current expectation conflicts with 022 and must be removed or inverted before future use."
+  CONTAMINATED_LEGACY_PERSONA_PROVIDER_TRUTH:
+    meaning: "Useful mechanics are mixed with direct-DML, dev-code, legacy persona or unsafe audit assumptions; current evidence is inadmissible."
+  UNUSABLE:
+    meaning: "No test/evidence reuse until the governing specification is corrected and accepted."
+
+fingerprint_audit:
+  algorithm: SHA-256
+  result: PASS
+  assets_checked: 11
+  mismatches: 0
+
+asset_classification:
+  A01:
+    path: apps/web/e2e/cd-041-virtual-backend.spec.ts
+    sha256: 22da73947435f4b7491ec974884eb55d427128e58acccdf091fdfe7bda220721
+    classification: REUSABLE
+    allowed_reuse:
+      - "Source-reading pattern for RPC existence and no client-only verified transition."
+      - "Participant-ID rather than display-name wiring assertion."
+    prohibited_reuse:
+      - "Current security invoker/grant expectations as final catalog proof."
+    exact_recapture:
+      - "Read final 010/013/014/015 migration definitions after correction."
+      - "Assert exact identity arguments, owner, security mode, search_path, dependencies and proacl from the isolated database catalog."
+  A02:
+    path: apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+    sha256: 438eafa6f14d61b7182bb399daeb63acf65fac26f4500abb276099998d8559e4
+    classification: CONTAMINATED_LEGACY_PERSONA_PROVIDER_TRUTH
+    allowed_reuse:
+      - "Browser locators for blocked/ready begin and closed immutability."
+      - "Reviewer-denial and final field-route navigation shapes."
+    prohibited_reuse:
+      - "Direct table fixture writes as proof."
+      - "Rendered dev-code retrieval or verification."
+      - "Legacy session/participant setup bypassing governed RPCs."
+    exact_recapture:
+      - "Create fixtures through corrected governed paths in an isolated database."
+      - "Use transaction-local OTP injection only if separately authorized."
+      - "Capture assigned-Inspector positive and every non-Inspector mutation denial through ordinary sessions."
+  A03:
+    path: apps/web/e2e/cd-042-otp-status-authz.spec.ts
+    sha256: 88906bf0ec39672203cf0d93c1a46355c8966cd0c00b9fa60d2b0d92380ca3c8
+    classification: CONTRADICTORY
+    allowed_reuse:
+      - "REST helper and fresh-principal denial structure."
+    prohibited_reuse:
+      - "Planner-positive OTP status expectation."
+      - "Current raw authorization error text expectation."
+    exact_recapture:
+      - "Assigned Inspector is the only positive OTP request/status/verify persona."
+      - "Planner, Operations, Reviewer, Auditor and unassigned Inspector receive the governed neutral response with zero mutation."
+  A04:
+    path: apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    sha256: f87c7328b4796c138259b7ec94583200e77d1493eba655382bf473cbb7fbd910
+    classification: CONTAMINATED_LEGACY_PERSONA_PROVIDER_TRUTH
+    allowed_reuse:
+      - "Session-scoped audit query shape and unauthorized-caller structure."
+    prohibited_reuse:
+      - "Planner-positive audit-read expectation unless exact corrected authority cites it."
+      - "OTP_SENT visibility as proof without secret-sentinel checks."
+      - "Legacy raw audit policy behavior."
+    exact_recapture:
+      - "Reviewer/Auditor safe projection positive proof under ordinary sessions."
+      - "Raw before/after JSON denial for every authenticated application persona."
+      - "Secret sentinel absent from safe projection, RPC response, DOM, logs and evidence export."
+  A05:
+    path: apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+    sha256: ac1dc6fcc59ca98d2dc83497bcc3934030acf042c2b1753e3c6e29f968890b06
+    classification: REUSABLE
+    allowed_reuse:
+      - "Closed immutability, offline-control and stale-revision browser assertions."
+    prohibited_reuse:
+      - "Out-of-band direct PATCH as proof of final governed concurrency."
+    exact_recapture:
+      - "Drive corrected close/begin RPCs with two coordinated ordinary sessions."
+      - "Capture database lock order, affected rows, stable conflict result and unchanged final state."
+  A06:
+    path: apps/web/e2e/neutral-error-sweep.spec.ts
+    sha256: 15df88d82e10c5e7fad705a7679b40b71a0a881996d0632a3c21f17731c9ea09
+    classification: REUSABLE
+    allowed_reuse:
+      - "Static sweep preventing raw provider/database text in user-visible virtual-session actions."
+    prohibited_reuse:
+      - "Claim that neutral copy proves missing/out-of-scope anti-enumeration."
+    exact_recapture:
+      - "For every final public RPC, compare missing and existing-out-of-scope status/token/body byte-for-byte."
+      - "Repeat at RPC JSON, server action and rendered DOM boundaries."
+  A07:
+    path: product-contract/evidence/B6-EV-001-otp-flow.txt
+    sha256: eb99e198e1b9fe3cffefdceebf53a3fd26e0cc81aa78fd67324e21fe4d2e8613
+    classification: CONTAMINATED_LEGACY_PERSONA_PROVIDER_TRUTH
+    allowed_reuse:
+      - "Candidate assertions for attempts, resend, cooldown, lockout and one OTP_VERIFIED event."
+    prohibited_reuse:
+      - "Dev provider, returned code or release-provider claim."
+      - "Historical successful result as final evidence."
+    exact_recapture:
+      - "Prove no-provider fail-closed with no dev_code/code_hash/raw verification exposure."
+      - "Use an automatically removed transaction-local isolated injection for engine-only OTP checks."
+      - "Capture successful real delivery separately only after approved provider authority/configuration exists."
+  A08:
+    path: product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
+    sha256: f2085ed8dbff56fdebcd08591d68f459eaa6575ef67e9c312b15f601b3d39a68
+    classification: STALE
+    allowed_reuse:
+      - "Evidence narrative format and historical RPC-availability provenance."
+    prohibited_reuse:
+      - "Any current schema, permission, migration or live-gate conclusion."
+    exact_recapture:
+      - "Fresh isolated migration-chain checksum and final RPC catalog."
+      - "Final governed verified transition, negative personas and complete-stack regression."
+  A09:
+    path: product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md
+    sha256: 8559ce3abc7b6c85f247869a4af3f28e78f82be5509a226fe7474988b332570c
+    classification: STALE
+    allowed_reuse:
+      - "Evidence format and provider-text regression inventory."
+    prohibited_reuse:
+      - "Historical pass counts or delivered-surface result as M11 corrected-stack proof."
+    exact_recapture:
+      - "Fresh no-exclusion M11 stack run after corrected migrations."
+      - "Correlate neutral RPC pairs, provider-blocked outcome and UI/log redaction by run_id."
+  A10:
+    path: product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-NEGATIVE-ACCEPTANCE-MATRIX-016.yaml
+    sha256: 0fc12cc064d5c5df69f05a960ecd8736c6f4639a58592337b1b1cdd3dadda6ca
+    classification: REUSABLE
+    allowed_reuse:
+      - "Case shapes for positive, unauthorized, forced rollback, concurrency, audit, secret and neutral paths."
+    prohibited_reuse:
+      - "Any PASS claim, because the 28 cases are unimplemented and exclude 011."
+      - "Legacy Planner/Operations assumptions not reconciled with 022."
+    exact_recapture:
+      - "Reconcile cases to the final 31 rows and corrected 009r."
+      - "Add 011 window/action cases and final provider/owner/catalog coverage."
+      - "Execute only under one future QA owner in an isolated database."
+  A11:
+    path: product-contract/operationalization/coordination/batches/KIMI-M11-NEGATIVE-TEST-SPEC-009-RETURN-001.yaml
+    sha256: d9857f77523c03e00d1c011bdafe0c0ab44cbfaeb11b4923c5c355d5470953db
+    classification: UNUSABLE
+    allowed_reuse: []
+    prohibited_reuse:
+      - "Any fixture, assertion, test implementation or acceptance claim before corrected 009r is returned and accepted."
+    exact_recapture:
+      - "First obtain accepted deterministic today/confirmed, isolated OTP and true atomic-failure specifications."
+      - "Then map only accepted 009r cases into the future QA lease."
+
+classification_totals:
+  unique_assets:
+    REUSABLE: 4
+    STALE: 2
+    CONTRADICTORY: 1
+    CONTAMINATED_LEGACY_PERSONA_PROVIDER_TRUTH: 3
+    UNUSABLE: 1
+    total: 11
+  candidate_rows:
+    with_assets: 25
+    without_assets: 6
+    total: 31
+
+candidate_row_reuse_audit:
+  - row: M11-MIGSEC-001
+    assets: [A01, A10]
+    integrity: REUSABLE_SHAPES_ONLY
+    exact_recapture: "Final all-function proconfig/search_path/qualified-dependency catalog plus ordinary-persona execution."
+  - row: M11-MIGSEC-002
+    assets: [A02, A03, A04]
+    integrity: CONTAMINATED_AND_CONTRADICTORY
+    exact_recapture: "Exact-signature proacl/overload catalog and PUBLIC/anon/authenticated positive/denial matrix."
+  - row: M11-MIGSEC-003
+    assets: [A01, A02]
+    integrity: PARTIALLY_REUSABLE_CONTAMINATED_FIXTURES
+    exact_recapture: "Final post-013 creation/join/begin invoker-definer checks with ordinary authorized and unauthorized sessions."
+  - row: M11-MIGSEC-004
+    assets: [A04]
+    integrity: CONTAMINATED
+    exact_recapture: "All-role raw participant-audit denial and Reviewer/Auditor safe-projection positives."
+  - row: M11-MIGSEC-005
+    assets: [A04, A07]
+    integrity: CONTAMINATED
+    exact_recapture: "Safe trigger installed before OTP, secret sentinel, historical checksum and rollback residue absence."
+  - row: M11-MIGSEC-006
+    assets: [A10]
+    integrity: REUSABLE_SPECIFICATION_ONLY
+    exact_recapture: "Catalog exact 013 OTP definitions then 015 successors, with migration ordering and no traffic."
+  - row: M11-MIGSEC-007
+    assets: [A07, A10]
+    integrity: CONTAMINATED_PLUS_UNEXECUTED_SPEC
+    exact_recapture: "Coordinated request/request and verify/verify; locked participant, one consume, one OTP_VERIFIED, no secret."
+  - row: M11-MIGSEC-008
+    assets: [A10]
+    integrity: REUSABLE_SPECIFICATION_ONLY
+    exact_recapture: "Expand→switch with OTP disabled→quiesce/drain→013→015 contract→certify rehearsal."
+  - row: M11-MIGSEC-011
+    assets: [A02, A04, A05, A07]
+    integrity: CONTAMINATED_PARTIAL_EVENTS
+    exact_recapture: "Trigger order, one-event cardinality for every transition, forced rollback and historical integrity."
+  - row: M11-MIGSEC-012
+    assets: [A05, A10]
+    integrity: REUSABLE_SHAPES_ONLY
+    exact_recapture: "Pre/post-contract compatibility, disabled-path rehearsal and roll-forward-only fail-closed recovery."
+  - row: "021-P0-01"
+    assets: [A02, A03]
+    integrity: CONTRADICTORY_PERSONA_TRUTH
+    exact_recapture: "Assigned Inspector positive; Planner, Operations, Reviewer, Auditor and unassigned Inspector OTP negative."
+  - row: "021-P0-02"
+    assets: [A06, A07, A09]
+    integrity: REUSABLE_REDACTION_PLUS_CONTAMINATED_PROVIDER
+    exact_recapture: "No-provider fail-closed/no-secret; isolated engine injection; separate live delivery only after approval."
+  - row: "021-P0-03"
+    assets: [A04]
+    integrity: CONTAMINATED
+    exact_recapture: "Direct raw audit query denied for every authenticated application persona before and after OTP."
+  - row: "021-P0-05"
+    assets: [A02]
+    integrity: CONTAMINATED_FIXTURE_MODEL
+    exact_recapture: "Direct session/participant INSERT/UPDATE/DELETE denial for PUBLIC, anon and authenticated."
+  - row: "021-P0-06"
+    assets: [A06, A09]
+    integrity: REUSABLE_BUT_STALE_AND_INCOMPLETE
+    exact_recapture: "Missing/out-of-scope status/token/body equality for every final governed RPC and rendered surface."
+  - row: "021-P0-08"
+    assets: [A04, A08]
+    integrity: CONTAMINATED_PLUS_STALE
+    exact_recapture: "Inventory every global audit consumer and rerun safe maker-checker/admin evidence after raw-policy contraction."
+  - row: "021-P1-01"
+    assets: [A01]
+    integrity: REUSABLE_SOURCE_PATTERN_ONLY
+    exact_recapture: "Catalog nested function dependencies and prove no unsafe search_path=public definer helper."
+  - row: "021-P1-02"
+    assets: [A03, A04]
+    integrity: CONTRADICTORY_PERSONA_TRUTH
+    exact_recapture: "Per-RPC Planner/Operations ALLOW/DENY/BLOCKED matrix tied to exact canonical authority."
+  - row: "021-P1-03"
+    assets: [A05, A10]
+    integrity: REUSABLE_STALE_CONFLICT_SHAPE
+    exact_recapture: "Coordinated multi-transaction lock trace proving visit→session→participant UUID→inspection order."
+  - row: "021-P1-05"
+    assets: [A03]
+    integrity: CONTRADICTORY_AND_INCOMPLETE
+    exact_recapture: "Final policy predicate, affected-row/zero-row, neutral result and supporting-index catalog."
+  - row: "024-X01"
+    assets: [A01, A10, A11]
+    integrity: REUSABLE_PLUS_UNUSABLE_AUTHORITY
+    exact_recapture: "Accepted 009r, atomic creation positive/denials, forced rollback, duplicate race and final catalog."
+  - row: "024-X03"
+    assets: [A02, A05, A10]
+    integrity: CONTAMINATED_FIXTURES_REUSABLE_UI_SHAPES
+    exact_recapture: "Governed join/begin positive, denial, rollback, mixed concurrency and one-event proof."
+  - row: "024-X04"
+    assets: [A02, A03, A07, A10]
+    integrity: CONTRADICTORY_AND_PROVIDER_CONTAMINATED
+    exact_recapture: "013 expansion/contract, direct-DML denial, assigned-Inspector OTP concurrency and exact 015 handoff."
+  - row: "024-X05"
+    assets: [A04, A06, A07, A09, A10]
+    integrity: CONTAMINATED_STALE_WITH_REUSABLE_SHAPES
+    exact_recapture: "Safe trigger/projection, all-role raw denial, global consumers, neutral pairs and exact OTP successor."
+  - row: "024-X06"
+    assets: [A10]
+    integrity: REUSABLE_SPECIFICATION_ONLY
+    exact_recapture: "Corrected 017 rollout/ownership static proof plus integrated-stack quiesce and regression evidence."
+
+no_evidence_rows:
+  - row: M11-MIGSEC-009
+    reason: "No current pg_policy permissive-OR/table-ACL/index manifest proof."
+    exact_recapture: "Fresh final catalog and ordinary-session per-command RLS matrix."
+  - row: M11-MIGSEC-010
+    reason: "No current policy-recursion or nested-helper dependency proof."
+    exact_recapture: "Fresh dependency graph and recursive-policy negative probe."
+  - row: "021-P0-04"
+    reason: "No current proof that a safe participant trigger precedes any hardened OTP execution."
+    exact_recapture: "Migration/trigger-order catalog plus secret sentinel before first OTP mutation."
+  - row: "021-P0-07"
+    reason: "No current quiesce/drain or uninterrupted 013→015 contract evidence."
+    exact_recapture: "Authorized isolated rollout rehearsal with in-flight count zero and no mutation between migrations."
+  - row: "021-P1-04"
+    reason: "No exact function owner, BYPASSRLS effect, extension schema/type or dependency manifest."
+    exact_recapture: "Isolated catalog capture after final owner and extension authority are resolved."
+  - row: "024-X02"
+    reason: "No current execution-window creation/reschedule/waiting positive, negative, authorization or race evidence."
+    exact_recapture: "Corrected 011 inclusive-boundary, outside-window, zero-row, persona and join/reschedule race suite."
+
+recapture_gates:
+  - "Six corrected packets exist and review 025 returns an allowed result."
+  - "Corrected 009r is accepted with one proposed QA owner."
+  - "Final function/policy/trigger/application manifests exist."
+  - "Provider and Planner/Operations authority are either resolved or truthfully blocked."
+  - "Fresh lease/collision check passes; proposed test paths remain non-overlapping."
+  - "Evidence is produced in a fresh isolated database with ordinary persona sessions and unique run_id."
+
+follow_on_state:
+  packet: KIMI-M11-FUTURE-TEST-READINESS-REVIEW-033
+  status: QUEUED_SAFE_FOLLOW_ON_NOT_DISPATCHED
+  remains_blocked_by:
+    - CORRECTED_PACKETS_NOT_RETURNED
+    - REVIEW_025_NOT_EXECUTED
+    - CORRECTED_009R_NOT_ACCEPTED
+    - FINAL_AUTHORITY_PROVIDER_OWNER_STATE_NOT_AVAILABLE
+
+read_only_verdict:
+  unique_assets_fingerprint_valid: 11
+  candidate_rows_audited: 25
+  no_evidence_rows_preserved: 6
+  current_rows_certifiable: 0
+  tests_written_or_run: false
+  leases_issued: false
+  review_025_executed: false
+  requirement_completion_change: 0
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  fingerprints_match: PASS
+  unique_assets_classified: 11
+  classification_total: 11
+  candidate_rows_expected: 25
+  candidate_rows_audited: 25
+  no_evidence_rows_expected: 6
+  no_evidence_rows_preserved: 6
+  recapture_needs_present: PASS
+  review_033_remains_blocked: PASS
+  non_mutating_boundary_checked: PASS
