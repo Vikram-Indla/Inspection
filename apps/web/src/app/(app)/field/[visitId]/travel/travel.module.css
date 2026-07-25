@@ -1,14 +1,20 @@
 /* SAQEEL Field Travel — route-scoped layout for the "Journey to Site" screen.
+   Geometry is a literal port of designs/pwa/SAQEEL PWA-Field Travel.dc.html
+   (.tv-wrap / .tv-card / .tv-stat / .tv-pin and the sticky action bar).
    Presentation only; DS tokens exclusively (var(--space-*), --surface-*,
-   --text-*, --border-*, --radius-*, --status-*). No bare colors. Surfaces,
-   badges and buttons use the ported SAQEEL DS classes linked by
-   (app)/field/layout.tsx. */
+   --text-*, --border-*, --status-*). No bare colors. Surfaces, badges and
+   buttons use the ported SAQEEL DS classes linked by (app)/field/layout.tsx.
+
+   Card radius is the literal 14px the PWA designs use throughout (the DS
+   .panel value), NOT var(--radius-lg) — that token is 6px and is scoped to
+   modals/drawers in the console channel. Same convention as
+   field-home.module.css. */
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-5) 120px;
+  gap: 14px;
+  padding: 16px 18px 110px;
   max-inline-size: 720px;
   margin-inline: auto;
   inline-size: 100%;
@@ -16,12 +22,13 @@
 
 .card {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 14px;
   background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 
-.pad { padding: var(--space-5) var(--space-5); }
+.pad { padding: 16px 18px; }
 
 /* Definite-height map box so GeoMap's blockSize:100% resolves (Mapbox fills
    the frame instead of collapsing to its default height). */
@@ -33,27 +40,26 @@
 
 .mapChip {
   position: absolute;
-  inset-block-end: var(--space-2);
-  inset-inline-end: var(--space-3);
+  inset-block-end: 8px;
+  inset-inline-end: 10px;
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--text-muted);
   background: var(--surface-primary);
-  padding: 3px var(--space-2);
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-subtle);
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 .stats {
   display: flex;
   border-block-start: 1px solid var(--border-subtle);
-  padding: var(--space-3) var(--space-4);
+  padding: 12px 16px;
 }
 
 .stat {
   flex: 1;
   text-align: center;
-  padding: var(--space-2) var(--space-2);
+  padding: 10px 8px;
 }
 
 .stat + .stat { border-inline-start: 1px solid var(--border-subtle); }
@@ -64,13 +70,13 @@
   color: var(--text-primary);
 }
 
-.etaNote { padding: 0 var(--space-4) var(--space-3); margin: 0; }
+.etaNote { padding: 0 16px 12px; margin: 0; }
 
 .cardHead {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-block-end: var(--space-3);
+  gap: 9px;
+  margin-block-end: 10px;
 }
 
 .cardTitle { font-weight: 600; font-size: 14px; }
@@ -82,14 +88,50 @@
   color: var(--action-primary);
 }
 
+/* Geofence verification map — the design's 150px schematic box, rendered with
+   the real Mapbox basemap and the real governed fence ring instead of the
+   dotted-grid placeholder. */
+.fenceFrame {
+  position: relative;
+  block-size: 150px;
+  border-radius: 10px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+  margin-block-end: 10px;
+}
+
+/* Floating in/out-of-fence verdict, ported from the design's .panel chip. */
+.fenceChip {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-primary);
+  box-shadow: var(--shadow-card);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.chipOk { color: var(--status-compliant-text); }
+.chipOut { color: var(--status-critical-text); }
+.chipWait { color: var(--text-secondary); }
+
+.chipGlyph { inline-size: 13px; block-size: 13px; flex: none; }
+
 .rangeNote {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-3);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  line-height: 1.45;
+  gap: 8px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
 .rangeOk { background: var(--status-compliant-soft); color: var(--status-compliant-text); }
@@ -101,16 +143,17 @@
 .metaRow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1) var(--space-4);
-  margin-block-start: var(--space-3);
+  gap: 4px 16px;
+  margin-block-start: 8px;
 }
 
+/* Sticky action bar — design geometry (12px 18px, safe-area aware). */
 .footer {
   position: sticky;
   inset-block-end: 0;
   background: var(--surface-primary);
   border-block-start: 1px solid var(--border-subtle);
-  padding: var(--space-3) var(--space-5);
+  padding: 12px 18px;
   padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
 }
 
@@ -118,8 +161,23 @@
   max-inline-size: 720px;
   margin-inline: auto;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  align-items: center;
+  gap: 12px;
 }
 
-.checkinCaption { margin: 0; text-align: center; }
+.checkinCaption { margin: 0; flex: 1; min-inline-size: 0; }
+
+/* Field-channel touch target floor. */
+.footerAction {
+  flex: none;
+  min-block-size: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .footerInner { flex-direction: column; align-items: stretch; gap: 8px; }
+  .checkinCaption { text-align: center; }
+  .footerAction { inline-size: 100%; }
+}

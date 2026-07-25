@@ -33,6 +33,7 @@ export type TravelStrings = {
   etaUnavailable: string; noCoords: string; noCoordsBody: string;
   notFound: string; notFoundBody: string; youLabel: string; mapAria: string;
   continueCheckin: string; checkinCaption: string;
+  fenceWithin: string; fenceOutside: string; fenceLocating: string; fenceMapAria: string;
 };
 
 type LatLng = { lat: number; lng: number };
@@ -147,6 +148,12 @@ export default function TravelClient({
     return list;
   }, [destination, fix, factoryName, factoryTone, fenceRadiusM, strings.youLabel]);
 
+  // The design's second map is the geofence check at fence scale: the same
+  // real markers, but framed on the establishment + its governed ring rather
+  // than fitted to the whole route. Never a schematic — same Mapbox basemap
+  // and the same real KSA region layer as every other field map.
+  const fenceCenter: [number, number] | null = destination ? [destination.lat, destination.lng] : null;
+
   const center: [number, number] = destination
     ? [destination.lat, destination.lng]
     : fix ? [fix.lat, fix.lng] : KSA_CENTER;
@@ -234,6 +241,37 @@ export default function TravelClient({
                 </svg>
                 <span className={styles.cardTitle}>{strings.geofenceTitle}</span>
               </div>
+
+              {/* Fence-scale verification map + live verdict chip. Real Mapbox
+                  basemap, real governed ring, real fix — the design's
+                  dotted-grid schematic is deliberately not reproduced. */}
+              {fenceCenter && (
+                <div className={styles.fenceFrame}>
+                  <span
+                    className={`${styles.fenceChip} ${straightM == null ? styles.chipWait : inRange ? styles.chipOk : styles.chipOut}`}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.chipGlyph} aria-hidden="true">
+                      {straightM == null
+                        ? <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>
+                        : inRange
+                          ? <path d="M20 6 9 17l-5-5" />
+                          : <><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></>}
+                    </svg>
+                    {straightM == null
+                      ? strings.fenceLocating
+                      : fmt(inRange ? strings.fenceWithin : strings.fenceOutside, { d: Math.round(straightM) })}
+                  </span>
+                  <GeoMap
+                    center={fenceCenter}
+                    zoom={15}
+                    markers={markers}
+                    height="100%"
+                    interactive={false}
+                    ariaLabel={strings.fenceMapAria}
+                  />
+                </div>
+              )}
+
               {!destination ? null
                 : geoDenied ? (
                   <div className={`${styles.rangeNote} ${styles.rangeWarn}`}>{strings.geoUnavailableNote}</div>
@@ -267,8 +305,8 @@ export default function TravelClient({
           (M04-004). No state mutation, no parallel arrival path. */}
       <div className={styles.footer}>
         <div className={styles.footerInner}>
-          <Link href={backHref} prefetch={false} className="btn btn-primary btn-block">{strings.continueCheckin}</Link>
           <p className={`t-caption ${styles.checkinCaption}`}>{strings.checkinCaption}</p>
+          <Link href={backHref} prefetch={false} className={`btn btn-primary ${styles.footerAction}`}>{strings.continueCheckin}</Link>
         </div>
       </div>
     </>
