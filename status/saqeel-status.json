@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r15",
-  "updated": "2026-07-26T00:06:00+03:00",
+  "revision": "SB-r17",
+  "updated": "2026-07-26T00:45:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1188,19 +1188,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Global search",
-      "design": 80,
-      "code": 90,
-      "wiring": 85,
+      "design": 88,
+      "code": 92,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Global Search.dc.html",
       "route": "web/src/app/(app)/field/search/page.tsx",
       "pwa": {
         "state": "ok",
-        "note": "Route exists and is reachable from the tab bar."
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Result grouping and empty/error states not diffed."
+          "text": "CLOSED — result grouping plus explicit empty and error states."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 4,
@@ -1214,19 +1218,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Notifications (+ detail)",
-      "design": 85,
+      "design": 90,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Notifications.dc.html",
       "route": "web/src/app/(app)/field/notifications (+ [id])",
       "pwa": {
         "state": "ok",
-        "note": "List and detail both shipped."
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Detail screen has no dedicated design page — only the list is designed."
+          "text": "Detail screen has no design page of its own; DERIVED from the list card idiom, centralised in notification-meta.ts rather than scattered. Flagged as derived, not matched."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 4,
@@ -1240,19 +1248,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Account & settings",
-      "design": 85,
+      "design": 90,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Account.dc.html · Settings",
       "route": "web/src/app/(app)/field/account · field/settings (+ FieldSettingsClient.tsx)",
       "pwa": {
         "state": "ok",
-        "note": "Both shipped."
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "Settings gained no control that writes an ungoverned value."
+        },
+        {
           "lane": "design",
-          "text": "Settings sections not pixel-diffed."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 4,
@@ -1427,19 +1439,27 @@
       "channel": "pwa",
       "group": "pwareport",
       "name": "OCR evidence capture",
-      "design": 65,
-      "code": 70,
-      "wiring": 70,
+      "design": 85,
+      "code": 90,
+      "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field OCR Capture.dc.html",
       "route": "lib/providers/ocr-gemini.ts (no /field/ocr route)",
       "pwa": {
-        "state": "gap",
-        "note": "Provider exists; no dedicated field capture route — capture happens inside evidence upload."
+        "state": "ok",
+        "note": "Built and committed on feat/pwa-completion (PR #86). Canonical .dc.html geometry applied; runtime pixel capture not yet run."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "No field OCR route. Confirm whether the design screen is a real destination or an in-form affordance."
+          "text": "RESOLVED — in-form affordance, not a route. Same evidence that settled pwa-samples: Visit Results.dc.html is 'Step 3 of 4' with capture inline. No /field/ocr route created."
+        },
+        {
+          "lane": "wiring",
+          "text": "Honest by construction: extracted text NEVER fills an inspection field, confidence renders 'unavailable — not inferred' rather than a manufactured score, failure/timeout states say no text or confidence was invented, and GEMINI_API_KEY absent fails closed with the reason in EN and AR. Losing OCR never costs the inspector their evidence."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
         }
       ],
       "phase": 5,
