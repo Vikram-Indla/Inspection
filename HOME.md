@@ -27,6 +27,11 @@
 - [[design/claude-design-mvp1/acceptance/DESIGN_SIGNOFF_CHECKLIST]]
 - [[design/claude-design-mvp1/handoff/CLAUDE_DESIGN_READ_ORDER]]
 
+## iPad app (native SwiftUI)
+- [[apps/ipad/IPAD_APP_PROGRESS]]
+- [[apps/ipad/README]]
+- [[apps/ipad/PHASE1-FOLLOWUPS]]
+
 ## Session continuity
 - [[product-contract/execution/RESUME_PROTOCOL]]
 - [[product-contract/execution/SESSION_HANDOFF_TEMPLATE]]
