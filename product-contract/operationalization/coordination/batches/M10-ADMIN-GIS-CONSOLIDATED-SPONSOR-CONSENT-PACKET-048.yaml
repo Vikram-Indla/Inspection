@@ -1,0 +1,879 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-GIS-CONSOLIDATED-SPONSOR-CONSENT-PACKET-048
+title: Consolidated sponsor consent packet for GIS governance convergence
+status: READY_FOR_SPONSOR_CHOICES_NO_AUTHORITY_GRANTED
+prepared_by: CODEX
+prepared_on: "2026-07-25"
+mode: READ_ONLY_SPONSOR_DECISION_PACKET
+
+purpose: >
+  Present one complete, neutral and business-readable set of choices for
+  correcting the GIS governance collision. This packet replaces neither the
+  product contract nor any open decision. It records no selection, changes no
+  policy, grants no authority or lease, and authorizes no implementation.
+
+sponsor_brief:
+  problem_now:
+    - More than one Admin screen can control parts of one GIS operating policy under different permissions.
+    - An older screen can overwrite a newer accepted value.
+    - A screen can report success when its intended database change or audit did not complete.
+    - Field and server records can identify different governing GIS policy versions.
+    - Current read access can disclose more configuration or location data than a persona needs.
+  decisions_required_before_safe_repair:
+    count: 13
+    categories:
+      - authoritative writer and field ownership
+      - read and write authority
+      - minimum persona data disclosure
+      - factory-radius governance and inheritance
+      - concurrent-edit protection
+      - audit truth and visibility
+      - activation timing
+      - online and offline policy lineage
+      - open-client refresh
+      - emergency suspension
+      - existing-data transition
+      - recovery and rollback
+      - explicit held boundaries
+  what_may_remain_held:
+    - Spatial Canvas product scope and governed screen identity
+    - exact Mapbox runtime, style, geography and offline certification clauses
+    - legal-evidence and retention claims
+  no_build_boundary: >
+    Sponsor choices in this packet are necessary but are not implementation
+    approval. After choices are recorded, the post-consent gate must still pass
+    through governed change control, accepted design, characterization evidence,
+    bounded ownership and independent review.
+  recommendation: NONE
+
+authority:
+  governed_screen: SCR-ADM-070
+  companion_screen: SPATIAL_CANVAS_SCREEN_ID_REQUIRED
+  exact_primary_478_requirements: []
+  transferred_requirements:
+    - MVP2-REQ-0072 / MVP2-AC-0072
+    - MVP2-REQ-0075 / MVP2-AC-0075
+    - MVP2-REQ-0233 / MVP2-AC-0233
+  phase1_acceptance:
+    - WA-M10-AC-001..006
+  special_map_acceptance:
+    - SPC-GIS-001..008
+  unresolved:
+    - DEC-002
+    - MVP3-HOLD-002
+    - MVP3-HOLD-006 where legal or retention status is required
+    - WA-DES-006-C1
+  rule: >
+    Nothing selected here closes an unresolved decision, design acceptance row,
+    provider clause or legal hold. Each must follow its own controlled evidence
+    and approval path.
+
+evidence_basis:
+  - packet_id: M10-ADMIN-GIS-RUNTIME-PERMISSION-MAPPING-040
+    finding: Route entitlement, radius authority, concurrency and policy defects.
+  - packet_id: M10-ADMIN-GIS-REMEDIATION-PREFLIGHT-041
+    finding: Repair boundary defined; implementation remained blocked.
+  - packet_id: M10-ADMIN-GIS-CONSUMER-TEST-INVENTORY-042
+    finding: Consumer lineage and test evidence were incomplete.
+  - packet_id: M10-ADMIN-GIS-CONFIG-WRITER-COLLISION-AUDIT-043
+    finding: Writer, authority, audit and lineage collisions confirmed.
+  - packet_id: M10-ADMIN-GIS-WRITER-CONVERGENCE-DECISION-PACKET-044
+    finding: Core business choices identified.
+  - packet_id: M10-ADMIN-GIS-SPONSOR-CONSENT-READINESS-045
+    finding: Missing choices, preservation floors and neutrality corrections identified.
+  - packet_id: M10-ADMIN-GIS-DECISION-GAP-ADDENDUM-046
+    finding: Missing decision categories and preservation floors supplied.
+  - packet_id: M10-ADMIN-GIS-CONSOLIDATED-CONSENT-CHECK-047
+    finding: Residual wording, disclosure and compatibility gaps identified.
+
+plain_language_terms:
+  authoritative_writer: The one approved business path that can finally activate a shared GIS rule.
+  field_owner: The approved screen or held state for one specific GIS setting.
+  stale_change_protection: Stop an older screen from overwriting a newer accepted change.
+  minimum_necessary_data: Give each persona only the GIS values and precision required for its approved job.
+  atomic_audit: The business change and its required audit either both succeed or both fail.
+  linked_audit_records: Technical and business audit entries that share one reference and can be read as one change.
+  effective_time: The exact approved moment a policy begins governing new actions.
+  capture_time_policy: The policy version present when a device recorded an event.
+  current_policy: The policy version the server considers active now.
+  pinned_policy: A stored policy version that remains attached to a journey or published visit.
+  factory_exception: A factory-specific radius that takes precedence over the shared default under an approved rule.
+
+requirement_preservation_floor:
+  - Official factory coordinates remain governed; Field observation never silently overwrites them.
+  - Historical geo events, check-ins, arrivals, overrides, versions and audit records remain immutable.
+  - Existing Field, Planning, Operations, Factory 360 and Visit Detail behavior cannot be removed merely to simplify convergence.
+  - The server remains authoritative for accepted geofence and workflow transitions.
+  - Offline conflicts are surfaced and reconciled; evidence is never silently overwritten or discarded.
+  - Provider or offline-map unavailability cannot hide required non-map operational evidence.
+  - No Phase 2 or transferred status weakens active MVP1 parent behavior.
+  - No numeric threshold, radius, retention rule, persona, provider, legal status or Arabic scope is invented here.
+  - A missing or unresolved policy fails closed without fabricating an accepted value.
+  - A factory-radius or shared-policy correction never recalculates a historical check-in or arrival outcome.
+  - A held field cannot remain editable or be presented as newly governed.
+  - NOT_IN_CURRENT_RELEASE cannot be selected if it removes mandatory active behavior.
+
+decision_01_authoritative_writer:
+  question: Which operating model is the final authority for shared GIS rules?
+  choice_required: ONE
+  options:
+    - option_id: GIS-WRITER-A
+      label: Map Settings is the final authority
+      business_model:
+        - SCR-ADM-070 owns shared GIS rules and factory exceptions.
+        - Execution may display effective values and link to Map Settings but cannot activate them.
+      benefit: One GIS-focused ownership and audit boundary.
+      operating_cost: Existing shared-rule controls in Execution must move or become read-only without losing behavior.
+      migration_consequence: Personas, navigation, history and accepted states must be preserved through the move.
+      governance_risk: The Map Settings screen can become overloaded unless shared rules and factory exceptions are clearly separated.
+    - option_id: GIS-WRITER-B
+      label: Split non-overlapping ownership through one governance service
+      business_model:
+        - Execution owns explicitly named execution-facing rules.
+        - Map Settings owns explicitly named GIS and factory-exception rules.
+        - Both use one approved version, conflict and audit service.
+      benefit: Keeps settings close to their operational context.
+      operating_cost: Users must understand which screen owns each field.
+      migration_consequence: Every field and capability must be assigned once and tested across both screens.
+      governance_risk: Boundary and audit drift can recur if either screen bypasses the shared service.
+    - option_id: GIS-WRITER-C
+      label: Execution proposes and Map Settings approves
+      business_model:
+        - Execution prepares a proposed shared-rule change.
+        - GIS governance approves and activates it through SCR-ADM-070.
+      benefit: Separates operational proposal from final GIS approval.
+      operating_cost: Adds a review queue, turnaround dependency and exception handling.
+      migration_consequence: A new proposal, review, rejection and activation lifecycle must be approved and evidenced.
+      governance_risk: This is scope expansion and cannot be treated as existing behavior.
+  prohibited_current_state:
+    - Independent overlapping writers.
+    - Different page, action and database permission models.
+  selection: PENDING
+
+decision_02_complete_field_ownership:
+  question: Which approved owner state applies to every GIS field?
+  sponsor_action: Select one owner state for every row; no field may remain implicit.
+  allowed_owner_states:
+    - MAP_SETTINGS
+    - EXECUTION_SETTINGS
+    - PROPOSE_IN_EXECUTION_APPROVE_IN_MAP_SETTINGS
+    - READ_ONLY_EXISTING_VALUE_PENDING_DECISION
+    - NOT_IN_CURRENT_RELEASE
+  fields:
+    - field: GPS accuracy threshold
+      current_writer: /admin/execution
+      current_display: /admin/gis and /admin/execution
+      owner_state: PENDING
+    - field: Arrival detection radius
+      current_writer: /admin/execution
+      current_display: /admin/gis and /admin/execution
+      owner_state: PENDING
+    - field: Shared geofence default radius
+      current_writer: /admin/execution
+      current_display: /admin/gis and /admin/execution
+      owner_state: PENDING
+    - field: Telemetry interval
+      current_writer: /admin/execution
+      current_display: /admin/gis and /admin/execution
+      owner_state: PENDING
+    - field: Route deviation rule
+      current_writer: No governed editor found in reviewed screens.
+      current_display: /admin/gis
+      owner_state: PENDING
+    - field: GIS retention rule
+      current_writer: No governed editor found in reviewed screens.
+      current_display: /admin/gis
+      owner_state: PENDING
+    - field: Geofence override policy
+      current_writer: No complete governed editor found in reviewed screens.
+      current_display: Partial downstream workflow only.
+      owner_state: PENDING
+    - field: Per-factory radius exception
+      current_writer: /admin/gis
+      current_display: /admin/gis and downstream maps/dossiers
+      owner_state: PENDING
+  consequences_by_owner_state:
+    MAP_SETTINGS:
+      benefit: One GIS-focused control surface.
+      cost: Existing editing behavior may need to move.
+      risk: Screen complexity increases unless groups and permissions remain clear.
+    EXECUTION_SETTINGS:
+      benefit: Execution rules remain near journey configuration.
+      cost: GIS administration remains distributed.
+      risk: Governance can drift unless the shared service is mandatory.
+    PROPOSE_IN_EXECUTION_APPROVE_IN_MAP_SETTINGS:
+      benefit: Independent activation control.
+      cost: New queue and response-time dependency.
+      risk: Unapproved workflow expansion.
+    READ_ONLY_EXISTING_VALUE_PENDING_DECISION:
+      benefit: Preserves compatibility without claiming new approval.
+      cost: No user can change the value through this release.
+      risk: Operations may require a governed exception path.
+    NOT_IN_CURRENT_RELEASE:
+      benefit: Prevents an incomplete control appearing governed.
+      cost: Dependent operations need an approved fail-closed boundary.
+      risk: Cannot remove mandatory active behavior.
+
+decision_03_read_and_write_authority:
+  question: Who may read and change GIS policy and factory exceptions?
+  selections_required:
+    read_model: ONE
+    write_model: ONE
+  read_options:
+    - option_id: GIS-READ-A
+      label: GIS administrators receive full policy; all others receive task-specific reduced data
+      benefit: Narrow full-policy exposure.
+      cost: Requires maintained projections for each approved consumer purpose.
+      risk: An incomplete projection can block legitimate work or leak unnecessary data.
+    - option_id: GIS-READ-B
+      label: GIS and named existing technical capabilities receive full policy; all others receive task-specific reduced data
+      benefit: Allows approved technical support without giving every Admin full access.
+      cost: Every named capability needs page, action and database alignment.
+      risk: A screen label must not create a new role or implied authority.
+  write_options:
+    - option_id: GIS-WRITE-A
+      label: GIS Admin capability only
+      benefit: Smallest write-authority surface.
+      cost: Operational changes depend on GIS Admin availability.
+      risk: Work can bottleneck without an approved escalation path.
+    - option_id: GIS-WRITE-B
+      label: GIS Admin plus named delegated existing capabilities
+      benefit: Permits bounded operational delegation.
+      cost: Delegation lifecycle, revocation and audit require governance.
+      risk: Broad role grants can exceed the approved field boundary.
+  sponsor_must_name:
+    - whether Planner may change only per-factory radius
+    - whether Compliance, Security or Workflow Admin may change any shared field
+    - whether delegation is a permanent role mapping or revocable user grant
+    - canonical mapping for any Technical Admin label
+  invariants:
+    - Hidden navigation is not authorization.
+    - Direct route, rendered controls, server action and database policy agree.
+    - Zero affected rows is an error, never success.
+  selections:
+    read_model: PENDING
+    write_model: PENDING
+    named_capabilities: PENDING
+
+decision_04_minimum_persona_data_disclosure:
+  question: What is the minimum GIS data each persona needs for an approved purpose and surface?
+  sponsor_action: Complete every data cell and record the allowed business purposes/surfaces.
+  allowed_values:
+    FULL: Complete governed configuration or precise data.
+    REDUCED: Only effective values required for the approved job.
+    MASKED: Approximate or redacted location.
+    OWN_SCOPE: Only assigned or explicitly scoped records.
+    NONE: No approved business need.
+  matrix:
+    - persona: GIS Admin
+      approved_purposes_and_surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Technical Admin
+      canonical_role_or_capability: PENDING_EXISTING_MAPPING_REQUIRED
+      approved_purposes_and_surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Planner
+      approved_purposes_and_surfaces:
+        - Planning
+        - other exact approved surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Inspector
+      approved_purposes_and_surfaces:
+        - Field assigned journey
+        - Visit Detail own scope
+        - other exact approved surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: OWN_SCOPE_OR_PENDING
+      precise_coordinates: OWN_SCOPE_OR_PENDING
+      effective_radius: OWN_SCOPE_OR_PENDING
+      telemetry_history: OWN_SCOPE_OR_PENDING
+      audit_history: PENDING
+    - persona: Operations
+      approved_purposes_and_surfaces:
+        - Operations Center
+        - Factory 360
+        - Visit Detail
+        - other exact approved surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Reviewer
+      approved_purposes_and_surfaces:
+        - Review and Approval
+        - Visit Detail
+        - other exact approved surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Auditor
+      approved_purposes_and_surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Leadership
+      approved_purposes_and_surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+    - persona: Other Admin roles
+      approved_purposes_and_surfaces: PENDING
+      full_policy: PENDING
+      effective_policy_version: PENDING
+      precise_coordinates: PENDING
+      effective_radius: PENDING
+      telemetry_history: PENDING
+      audit_history: PENDING
+  invariants:
+    - Exact coordinates and telemetry are never disclosed solely because a user is authenticated.
+    - Full policy is not required merely to show one effective value.
+    - Audit readers receive only the precision required for their approved duty.
+    - Surface access never expands the selected persona data scope.
+
+decision_05_factory_radius_governance:
+  question: How is a factory-specific radius created, applied and returned to inheritance?
+  governance_choice_required: ONE
+  governance_options:
+    - option_id: GIS-RADIUS-A
+      label: Direct audited operational exception
+      benefit: An authorized operator can correct a factory value promptly.
+      operating_cost: Every change still requires reason, actor, before/after values, governing version and stale protection.
+      residual_risk: Incorrect changes take effect immediately under the selected activation rule.
+    - option_id: GIS-RADIUS-B
+      label: Versioned approval-controlled exception
+      benefit: Independent review occurs before activation.
+      operating_cost: Adds draft, review, rejection, activation and turnaround behavior.
+      residual_risk: It is workflow expansion and may delay an operational correction.
+  precedence_choice_required: ONE
+  precedence_options:
+    - option_id: GIS-OVERRIDE-PRECEDENCE-A
+      label: Exception remains effective until explicitly cleared
+      benefit: Stable factory treatment.
+      operating_cost: Exceptions need periodic ownership review.
+      residual_risk: Shared-default changes do not reach exception factories.
+    - option_id: GIS-OVERRIDE-PRECEDENCE-B
+      label: Exception applies only during an approved effective window
+      benefit: Temporary exceptions can expire automatically.
+      operating_cost: Requires start/end timing and expiry monitoring.
+      residual_risk: Expiry must visibly and safely return to the approved default.
+  reset_choice_required: ONE
+  reset_options:
+    - option_id: GIS-OVERRIDE-RESET-A
+      label: Clear exception and inherit the current shared default
+      consequence: Record old exception, reason, actor, default version and inherited result.
+    - option_id: GIS-OVERRIDE-RESET-B
+      label: Replace with a newly approved exception
+      consequence: Record a new change; never edit the earlier exception history.
+  invariants:
+    - Shared-default changes never silently rewrite stored factory exceptions.
+    - Exception precedence is visible to Admin and every affected downstream consumer.
+    - Reset is stale-protected and historical event outcomes are never recalculated.
+  selections:
+    governance: PENDING
+    precedence: PENDING
+    reset: PENDING
+
+decision_06_concurrent_edit_protection:
+  question: What happens when another accepted change occurred after a user loaded the screen?
+  choice_required: ONE
+  options:
+    - option_id: GIS-CONFLICT-A
+      label: Reject the stale save and show a comparison
+      benefit: No automatic merge can hide a conflict.
+      user_cost: The user may need to refresh, review and re-enter a proposed change.
+      delivery_cost: Requires clear comparison, retry and accessibility states.
+      residual_risk: Operational correction can be delayed while the user reconciles.
+    - option_id: GIS-CONFLICT-B
+      label: Merge unchanged independent fields and reject same-field conflicts
+      benefit: A user need not re-enter unrelated changes.
+      user_cost: The user must understand which fields merged and which were rejected.
+      delivery_cost: Requires exact field ownership, field-level version checks and broader concurrency tests.
+      residual_risk: Incorrect field boundaries can produce an unintended merge.
+  required_for_both:
+    - Save includes the version or value originally loaded.
+    - Zero affected rows is an error.
+    - Same-field conflict is never overwritten.
+    - Refresh never silently reapplies an old client value.
+  selection: PENDING
+
+decision_07_audit_truth_and_visibility:
+  question: What is the authoritative audit outcome and who may read it?
+  truth_choice_required: ONE
+  truth_options:
+    - option_id: GIS-AUDIT-A
+      label: One scoped GIS business event
+      benefit: One human-readable record represents the accepted change.
+      operating_cost: Generic duplicate history must be suppressed or reconciled at this boundary.
+      residual_risk: Removing technical detail can weaken diagnosis unless required fields remain complete.
+    - option_id: GIS-AUDIT-B
+      label: Linked technical and business events
+      benefit: Preserves technical row history and business decision context.
+      operating_cost: Both records must share one reference and remain readable as one change.
+      residual_risk: Duplicate-looking records can confuse reviewers without correlation and explanation.
+  visibility_choice_required: ONE
+  visibility_options:
+    - option_id: GIS-AUDIT-VIEW-A
+      label: GIS Admin plus Auditor
+      benefit: Narrow audit exposure.
+      operating_cost: Operations needs a separate reduced exception view when action is required.
+      residual_risk: Operational responders may lack context unless the reduced view is complete.
+    - option_id: GIS-AUDIT-VIEW-B
+      label: GIS Admin, Auditor and named Operations oversight
+      benefit: Approved responders can inspect relevant history directly.
+      operating_cost: Precise fields and masking must be specified.
+      residual_risk: Broader visibility can expose unnecessary location detail.
+    - option_id: GIS-AUDIT-VIEW-C
+      label: Existing capability-based readers
+      benefit: Access can be granted by approved duty rather than broad role.
+      operating_cost: Capability lifecycle and database alignment must be governed.
+      residual_risk: Stale grants can outlive the approved duty.
+  required_event_fields:
+    - actor
+    - authority or capability
+    - shared-policy or factory object
+    - reason where applicable
+    - before value
+    - after value
+    - source version
+    - resulting version
+    - effective time
+    - timestamp
+    - requirement references
+  invariants:
+    - Change and required audit both commit or both fail.
+    - Audit visibility never implies write authority.
+    - Export permission and precise-location visibility are separately approved.
+  selections:
+    audit_truth: PENDING
+    audit_visibility: PENDING
+    exception_review_owner: PENDING
+    export_permission: PENDING
+    precise_location_visibility: PENDING
+
+decision_08_policy_activation:
+  question: When does an approved shared GIS policy begin governing actions?
+  choice_required: ONE
+  options:
+    - option_id: GIS-ACTIVATE-A
+      label: Immediately after final approval
+      benefit: Approved correction takes effect without delay.
+      operating_cost: Open clients require revalidation, refresh or reconfirmation.
+      residual_risk: Active work can encounter a new rule unless lineage is pinned.
+    - option_id: GIS-ACTIVATE-B
+      label: At a scheduled date and time
+      benefit: Operations can communicate and prepare.
+      operating_cost: Requires future-version scheduling, cancellation, replacement and timezone handling.
+      residual_risk: A future policy must never activate early or twice.
+    - option_id: GIS-ACTIVATE-C
+      label: At one selected lifecycle boundary
+      boundary_must_be_one_of:
+        - journeys started after approval
+        - visits published after approval
+      benefit: Work before the boundary stays on a stable version.
+      operating_cost: Multiple valid policy versions coexist and must be displayed.
+      residual_risk: Missing durable lineage makes the boundary unprovable.
+  required_details:
+    timezone: PENDING
+    exact_inclusive_boundary: PENDING
+    future_policy_cancel_or_replace_rule: PENDING
+    already_open_client_consequence: PENDING
+  selection: PENDING
+
+decision_09_policy_lineage:
+  question: Which policy version governs online and offline work?
+  online_choice_required: ONE
+  online_options:
+    - option_id: GIS-LINEAGE-A
+      label: Pin policy at journey start
+      benefit: One version governs the journey from start to end.
+      field_continuity_cost: Active journeys do not automatically receive later corrections.
+      delivery_cost: Journey records and every relevant screen must store and show the pinned version.
+      residual_risk: An emergency process must override pinning when continued use is unsafe.
+    - option_id: GIS-LINEAGE-B
+      label: Resolve current policy at each governed action
+      benefit: Check-in and arrival use the server's currently effective rule.
+      field_continuity_cost: A policy change can require user notice and reconfirmation during a journey.
+      delivery_cost: Every governed action needs online version validation and mismatch states.
+      residual_risk: Connectivity loss can prevent a policy-sensitive action.
+    - option_id: GIS-LINEAGE-C
+      label: Pin policy when the visit is published
+      benefit: Planning and execution share one published governing version.
+      field_continuity_cost: Later corrections do not reach published visits unless formally re-versioned.
+      delivery_cost: Planning, publication, visit history and downstream consumers need version support.
+      residual_risk: Broad planning and visit-version scope increases regression exposure.
+  offline_choice_required: ONE
+  offline_options:
+    - option_id: GIS-OFFLINE-A
+      label: Preserve capture-time policy and reconcile explicitly
+      benefit: Device evidence retains the policy actually present at capture.
+      field_continuity_cost: Replay may require later review when server and capture versions differ.
+      audit_and_delivery_cost: Store both versions, conflict outcome and reviewer action without rewriting capture evidence.
+      residual_risk: A captured transition cannot be accepted automatically when current policy or emergency state prohibits it.
+    - option_id: GIS-OFFLINE-B
+      label: Preserve evidence but hold policy-sensitive completion until refresh and reconfirmation
+      benefit: Final transition cannot complete under an expired or unsafe rule.
+      field_continuity_cost: Inspector workflow can pause after reconnection.
+      audit_and_delivery_cost: Preserve capture evidence, hold reason, refresh outcome and user confirmation.
+      residual_risk: A delayed state change can require Operations intervention.
+  required_for_all:
+    - Remove hard-coded GIS version claims from future records.
+    - Preserve historical stored labels and classify provenance honestly.
+    - Visit Detail distinguishes capture-time, pinned and current server versions.
+    - Server remains authoritative for the accepted transition.
+  selections:
+    online: PENDING
+    offline: PENDING
+
+decision_10_open_client_refresh:
+  question: How does an already-open screen learn that policy changed?
+  choice_required: ONE
+  options:
+    - option_id: GIS-REFRESH-A
+      label: Revalidate before every policy-sensitive action
+      benefit: Action uses an authoritative version without continuous updates.
+      operating_cost: The screen can look stale until the user acts.
+      residual_risk: The action requires a clear changed-policy notice and safe retry.
+    - option_id: GIS-REFRESH-B
+      label: Push or poll for version change
+      benefit: Open Admin, Operations and Field screens can display change promptly.
+      operating_cost: Adds connection, retry, stale-indicator and accessibility behavior.
+      residual_risk: Push or polling failure still requires action-time revalidation.
+    - option_id: GIS-REFRESH-C
+      label: Keep the open journey on its stored pinned version
+      benefit: Prevents ordinary policy change from interrupting the journey.
+      operating_cost: Multiple versions remain active and visible.
+      residual_risk: Cannot override an emergency state that makes the pinned version unsafe.
+  required_for_all:
+    - Admin screens cannot display different accepted current versions after successful change propagation.
+    - Consumer cache and refresh expectations are testable and visible.
+  selection: PENDING
+
+decision_11_emergency_suspension:
+  question: What happens when an accepted GIS policy is discovered to be unsafe?
+  choice_required: ONE
+  options:
+    - option_id: GIS-EMERGENCY-A
+      label: Suspend policy-sensitive state changes
+      benefit: Check-in or arrival cannot complete under a policy known to be unsafe.
+      operating_cost: Field work can pause and require Operations intervention.
+      residual_risk: Required non-map evidence and captured data must remain available.
+    - option_id: GIS-EMERGENCY-B
+      label: Activate a previously accepted safe version as a new governed action
+      benefit: Work may continue under a known accepted policy.
+      operating_cost: Requires a valid prior version plus new activation, conflict and audit evidence.
+      residual_risk: Restoration is unsafe if the selected prior version is not valid for the current condition.
+    - option_id: GIS-EMERGENCY-C
+      label: Keep active journeys pinned and block new journeys
+      benefit: Avoids ordinary mid-journey rule changes while stopping new exposure.
+      operating_cost: Two operating states coexist until active journeys close.
+      residual_risk: Prohibited when the active policy creates immediate safety or legal harm.
+  required_details:
+    authorized_existing_capability: PENDING
+    active_journey_behavior: PENDING
+    Field_and_Operations_notification: PENDING
+    reason_and_audit: REQUIRED
+    resume_or_replacement_authority: PENDING
+  selection: PENDING
+
+decision_12_existing_data_transition:
+  question: How should current values and records enter the converged model?
+  sponsor_action: Select one allowed treatment for each data class.
+  data_classes:
+    - class: Current engine_settings.gis values and version
+      options:
+        - Preserve as a legacy active baseline pending formal DEC-002 change control.
+        - Mark unresolved and block policy-sensitive new actions until formally accepted.
+        - Review and republish as a new governed version without rewriting original history.
+      selection: PENDING
+    - class: Existing per-factory radius exceptions
+      options:
+        - Preserve as legacy exceptions and require later review.
+        - Require approval before they govern new actions.
+        - Preserve active behavior while flagging incomplete owner, reason or version metadata.
+      selection: PENDING
+    - class: Historical immutable geo events
+      options:
+        - Preserve exactly as recorded and annotate provenance gaps separately.
+      selection: REQUIRED_PRESERVE_NO_REWRITE
+    - class: Queued offline geo events
+      options:
+        - Replay with capture-time version and separately record current server version when different.
+        - Preserve evidence but hold policy-sensitive transition for refresh and reconfirmation.
+      selection: PENDING
+    - class: Hard-coded GIS version labels already stored
+      options:
+        - Preserve stored value and mark provenance as client-asserted.
+        - Correct only through a separately approved append-only reconciliation record.
+      selection: PENDING
+  prohibited:
+    - rewriting historical check-in, arrival, override or audit records
+    - silently replacing queued evidence
+    - presenting a hard-coded client label as server-resolved proof
+
+decision_13_recovery_and_rollback:
+  question: How may an accepted GIS configuration be reversed?
+  choice_required: ONE
+  options:
+    - option_id: GIS-RECOVERY-A
+      label: Restore a prior accepted value as a new governed version or change
+      benefit: Operations can return to a known value while preserving history.
+      operating_cost: Requires new reason, actor, conflict check, activation, audit and refresh.
+      residual_risk: The earlier value must still be safe and valid for the current context.
+    - option_id: GIS-RECOVERY-B
+      label: Cancel a future scheduled version before it becomes effective
+      benefit: Prevents an unwanted future change without altering current behavior.
+      operating_cost: Requires cancellation state, actor, reason and audit.
+      residual_risk: Cannot be used after the scheduled version becomes effective.
+    - option_id: GIS-RECOVERY-C
+      label: Suspend first, then create a new approved change
+      benefit: Avoids ambiguous direct restoration.
+      operating_cost: Recovery may take longer and suspension must be operationally supported.
+      residual_risk: Field continuity can be interrupted until the new change activates.
+  invariant: No recovery edits or deletes historical versions, policy evidence or geo events.
+  selection: PENDING
+
+decision_14_explicit_held_boundaries:
+  question: Which adjacent scopes remain held after GIS governance choices?
+  sponsor_action: Record HOLD or cite the separately approved closure evidence for every item.
+  items:
+    - item: Spatial Canvas mutation and governed screen identity
+      current_status: HOLD
+      closure_requires: Exact layer/location capabilities, screen authority, audit and acceptance.
+    - item: Mapbox runtime and approved style
+      current_status: HOLD_UNDER_MVP3-HOLD-002
+      closure_requires: Controlled runtime and style evidence for the exact clause.
+    - item: Geographic coverage and accuracy
+      current_status: HOLD_UNDER_MVP3-HOLD-002
+      closure_requires: Controlled geography and accuracy evidence for the exact clause.
+    - item: Offline map packs
+      current_status: HOLD_UNDER_MVP3-HOLD-002
+      closure_requires: Controlled download, version, expiry and offline evidence.
+    - item: Legal-evidence and retention status
+      current_status: HOLD_WHERE_MVP3-HOLD-006_APPLIES
+      closure_requires: Formal policy and legal approval; no inferred claim.
+  invariant: Held adjacent scope does not excuse writer, permission, conflict, audit or lineage defects.
+
+compatibility_rules:
+  writer_and_field_ownership:
+    - if: GIS-WRITER-A
+      then:
+        - Every editable shared field is MAP_SETTINGS or explicitly held.
+        - Execution cannot activate shared GIS rules.
+    - if: GIS-WRITER-B
+      then:
+        - Every field has exactly one non-overlapping owner.
+        - Both screens use one version, conflict and audit boundary.
+    - if: GIS-WRITER-C
+      then:
+        - Proposal, review, rejection, activation and audit lifecycle receives explicit scope approval.
+  activation_and_lineage:
+    - if: GIS-ACTIVATE-C with journeys-started boundary
+      then:
+        - GIS-LINEAGE-A is required.
+        - Journey version is stored and displayed.
+    - if: GIS-ACTIVATE-C with visits-published boundary
+      then:
+        - GIS-LINEAGE-C is required.
+        - Planning and visit publication versioning enter the bounded scope.
+    - if: GIS-LINEAGE-B
+      then:
+        - GIS-REFRESH-A or GIS-REFRESH-B is required.
+        - User notice and reconfirmation are required when the server version differs.
+    - if: GIS-LINEAGE-A
+      then:
+        - GIS-REFRESH-C is allowed for ordinary changes.
+        - Emergency handling still overrides an unsafe pinned version.
+    - if: GIS-LINEAGE-C
+      then:
+        - Published visit version is durable through execution unless formally re-versioned.
+  emergency_and_recovery:
+    - if: GIS-EMERGENCY-A
+      then:
+        - Policy-sensitive online and offline completion is blocked.
+        - Captured evidence remains available.
+    - if: GIS-EMERGENCY-B
+      then:
+        - Only a previously accepted and currently valid version may be reactivated.
+        - Reactivation is a new governed action with activation, conflict, audit and refresh.
+    - if: GIS-EMERGENCY-C
+      then:
+        - It is prohibited when active journeys face immediate safety or legal harm.
+        - New journeys are blocked and active journey versions remain visible.
+    - if: GIS-RECOVERY-B
+      then:
+        - The target version must not yet be effective.
+    - if: Recovery affects an effective policy
+      then:
+        - A new governed version/change is required.
+        - The selected activation and lineage rules apply again.
+  radius_and_conflict:
+    - if: GIS-RADIUS-B
+      then:
+        - Immediate unreviewed activation is prohibited.
+    - if: Any exception reset or replacement
+      then:
+        - Stale-change protection and atomic audit are required.
+  data_and_holds:
+    - if: A field is READ_ONLY_EXISTING_VALUE_PENDING_DECISION
+      then:
+        - It is not editable and is not presented as newly approved.
+    - if: A field is NOT_IN_CURRENT_RELEASE
+      then:
+        - Mandatory active parent behavior must remain available or fail closed through an approved path.
+    - if: An offline event is replayed during emergency suspension
+      then:
+        - Evidence is preserved but a prohibited policy-sensitive transition cannot silently complete.
+  universally_prohibited:
+    - independent overlapping field writers
+    - page, server action and database policy disagreement
+    - hidden navigation treated as authorization
+    - last-writer-wins or zero-row false success
+    - required audit failure while business change succeeds
+    - GIS-REFRESH-C with GIS-LINEAGE-B
+    - lifecycle-boundary activation without stored lineage
+    - shared-default change silently rewriting factory exceptions
+    - precise data exposure based only on authentication
+    - hard-coded version treated as server-resolved proof
+    - history rewrite or queued-evidence discard
+    - provider or legal hold closure without exact controlled evidence
+
+sponsor_capture_template:
+  decision_01_authoritative_writer: PENDING
+  decision_02_field_owners:
+    GPS_accuracy_threshold: PENDING
+    arrival_detection_radius: PENDING
+    shared_geofence_default_radius: PENDING
+    telemetry_interval: PENDING
+    route_deviation_rule: PENDING
+    GIS_retention_rule: PENDING
+    geofence_override_policy: PENDING
+    per_factory_radius_exception: PENDING
+  decision_03_authority:
+    read_model: PENDING
+    write_model: PENDING
+    named_existing_capabilities: PENDING
+    Technical_Admin_mapping: PENDING
+  decision_04_disclosure_matrix: PENDING_ALL_ROWS_AND_PURPOSES
+  decision_05_factory_radius:
+    governance: PENDING
+    precedence: PENDING
+    reset: PENDING
+  decision_06_conflict: PENDING
+  decision_07_audit:
+    truth: PENDING
+    visibility: PENDING
+    review_owner: PENDING
+    export_and_precision: PENDING
+  decision_08_activation:
+    option: PENDING
+    timezone: PENDING
+    exact_boundary: PENDING
+    future_cancel_or_replace: PENDING
+  decision_09_lineage:
+    online: PENDING
+    offline: PENDING
+  decision_10_refresh: PENDING
+  decision_11_emergency:
+    option: PENDING
+    authorized_existing_capability: PENDING
+    active_journey_rule: PENDING
+    notification_and_resume: PENDING
+  decision_12_existing_data:
+    engine_settings: PENDING
+    factory_exceptions: PENDING
+    immutable_geo_events: REQUIRED_PRESERVE_NO_REWRITE
+    queued_offline_events: PENDING
+    hard_coded_version_provenance: PENDING
+  decision_13_recovery: PENDING
+  decision_14_holds:
+    Spatial_Canvas: PENDING_HOLD_OR_CLOSURE_EVIDENCE
+    Mapbox_runtime_and_style: PENDING_HOLD_OR_CLOSURE_EVIDENCE
+    geography_and_accuracy: PENDING_HOLD_OR_CLOSURE_EVIDENCE
+    offline_map_packs: PENDING_HOLD_OR_CLOSURE_EVIDENCE
+    legal_evidence_and_retention: PENDING_HOLD_OR_CLOSURE_EVIDENCE
+  accepted_business_consequences: PENDING
+  no_default_selection: true
+  no_answer_grants_implementation: true
+
+post_consent_gate:
+  name: GIS_CONVERGENCE_CHANGE_CONTROL_AND_LEASE_GATE
+  state: CLOSED_PENDING_COMPLETED_AND_VALIDATED_SPONSOR_RESPONSE
+  pass_only_when:
+    - Every required choice is answered or explicitly held.
+    - Sponsor records acceptance of the stated business consequences.
+    - Independent compatibility review finds no contradiction or unmapped role.
+    - DEC-002 is resolved through approved change control for affected values and version semantics.
+    - WA-DES-006-C1 is accepted for every affected UI state before UI implementation.
+    - Exact personas, capabilities, fields, versions and negative paths are frozen.
+    - Spatial, provider, geography, offline and legal clauses stay held unless separately closed with evidence.
+    - Characterization tests reproduce false success, lost update, audit failure and version divergence.
+    - Exact fixture, seed and evidence boundaries are approved.
+    - One implementation owner and non-overlapping file envelope are recorded.
+    - Reviewer ownership remains independent of the implementation lease.
+  migration_order_after_gate_pass:
+    - Governed contract and design acceptance.
+    - Current-behavior characterization and negative-path evidence.
+    - Database permission, stale protection and atomic audit.
+    - Selected authoritative writer and field ownership.
+    - Consumer lineage, refresh and existing-data transition.
+    - EN/AR, responsive, keyboard, screen-reader and reduced-motion states.
+    - Isolated certification and sponsor review in the real application.
+  gate_does_not_itself_grant:
+    - product or database mutation
+    - provider certification
+    - legal status
+    - completion credit
+
+review_recommendation:
+  ACK:
+    - ACK this packet as a complete, neutral and standalone sponsor-choice instrument.
+    - ACK the preservation floor, compatibility rules and post-consent gate.
+  RETURN:
+    - RETURN any sponsor response with a blank field, unmapped role, unaccepted consequence or incompatible selection.
+  BLOCK:
+    - BLOCK authority mutation, implementation and lease assignment until a completed response independently passes the post-consent gate.
+  current: ACK_PACKET_BLOCK_PENDING_SPONSOR_RESPONSE
+  completion_credit:
+    requirement_rows: 0
+    screens: 0
+  implementation_lease_granted: false
+  future_ownership_envelopes: UNGRANTED
+
+next_queue:
+  packet_id: M10-ADMIN-GIS-SPONSOR-RESPONSE-VALIDATOR-049
+  mode: READ_ONLY
+  status: READY_WHEN_SPONSOR_RESPONSE_EXISTS
+  objective: >
+    Validate a completed sponsor response to packet 048 for completeness,
+    compatibility, canonical capability mapping, accepted consequences,
+    preserved holds and post-consent dependencies. Return ACK, RETURN or BLOCK
+    without selecting an option, granting authority or proposing implementation
+    files.
+  non_overlap:
+    - no product, design, data, test, evidence, shared control, branch or lease mutation

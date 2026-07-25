@@ -1,0 +1,736 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-APPROVALS-RUNTIME-TRUTH-027
+title: Independent Compliance Approvals runtime truth and acceptance-credit review
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY
+status: RETURN_BLOCKED_ZERO_COMPLETION_CREDIT
+
+decision:
+  recommendation: RETURN
+  implementation_gate: BLOCKED
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+    accepted_designs: 0
+  rationale: >-
+    The real Approval Queue, request workspace, populated reviewer data,
+    maker-owned exclusion, planner denial, revision snapshots, dependency graph,
+    decision controls and database-backed read paths exist. Completion is still
+    unsafe: CCR publication creates a separate version/head store that Planning,
+    Field, Enforcement and inspection reports do not consume; publication leaves
+    the request in an approved or partially-approved queue state; raw component
+    JSON is not validated against the complete governed domain contract; and the
+    current tests do not execute database maker-checker, immutability, rollback
+    or downstream-consumption behavior. The route also has no exact accepted
+    design, remains English inside Arabic/RTL, and lacks current P1 visual,
+    accessibility and dark-theme certification.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-APPROVALS-RUNTIME-TRUTH-027
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  package_id: M6
+  channel: ADMIN
+  business_capability: Compliance Configuration maker-checker approval and publication envelope
+  routes:
+    - /admin/compliance-approvals
+    - /admin/compliance-requests
+    - /admin/compliance-requests/new
+    - "/admin/compliance-requests/:id"
+  screen_ids:
+    - CMP-SCR-004
+    - SCR-COMPLIANCE-REQUEST-WORKSPACE
+  engines:
+    - CCR RLS
+    - maker-checker RPCs
+    - immutable revisions and decisions
+    - dependency evaluator
+    - transactional publication
+    - ENG-07
+    - ENG-08
+    - ENG-09
+    - ENG-10
+    - ENG-12
+  do_not_touch_observed:
+    - product application code
+    - product tests
+    - design files or design mappings
+    - local or shared product data
+    - Supabase schema, policies, providers or rows
+    - branches, leases, stashes, main or setup/Inspection
+    - peer-owned orchestration packets
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_and_after: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_at_write: 79ebbc8bf947635b6c01cd23135883c38463d96f
+  retired_checkout_accessed: false
+  product_mutation: false
+  database_or_business_data_mutation: false
+  browser_business_action_submitted: false
+  browser_session_state:
+    - "Existing seeded Admin and Reviewer sessions were used read-only."
+    - "A seeded Planner signed in on the isolated 0.0.0.0 origin solely to prove route denial."
+    - "No approval, rejection, return, publication, draft edit, upload or other business form was submitted."
+
+authority:
+  operating_standard:
+    - product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+    - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+    - product-contract/operationalization/coordination/TWO_HOUR_CONTROL_CYCLE.yaml
+  canonical_contract:
+    - product-contract/requirements-control/REQUIREMENT_INDEX.csv
+    - product-contract/domain/atomic_scope.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+  route_and_design:
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+    - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/DESIGN_SOURCE_MANIFEST.csv
+    - design/saqeel-v5-final/patterns/admin/approval-queue.html
+  runtime:
+    - apps/web/src/app/(app)/admin/compliance-approvals/layout.tsx
+    - apps/web/src/app/(app)/admin/compliance-approvals/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-approvals/loading.tsx
+    - apps/web/src/app/(app)/admin/compliance-approvals/error.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/layout.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/new/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/[id]/page.tsx
+    - apps/web/src/app/(app)/admin/compliance-requests/actions.ts
+    - apps/web/src/components/AdminRouteBoundary.tsx
+  database:
+    - supabase/migrations/20260719213000_compliance_configuration_request_engine.sql
+  downstream:
+    - apps/web/src/app/(app)/admin/packages/actions.ts
+    - apps/web/src/app/(app)/planning/bulk/actions.ts
+    - apps/web/src/app/(app)/planning/single/actions.ts
+    - apps/web/src/app/(app)/field/[visitId]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/page.tsx
+    - apps/web/src/app/(app)/field/inspection/[id]/Workspace.tsx
+    - apps/web/src/app/(app)/enforcement/page.tsx
+    - apps/web/src/app/reports/inspection/[id]/page.tsx
+  tests:
+    - apps/web/e2e/compliance-approval-queue.spec.ts
+    - apps/web/e2e/compliance-request-engine.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+    - apps/web/e2e/compliance-shared-shell.spec.ts
+  historical_evidence_not_current_acceptance:
+    - product-contract/acceptance/CMP_COMPLIANCE_APPROVAL_QUEUE_004.csv
+    - product-contract/evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md
+    - product-contract/execution/slice-history/CURRENT_SLICE_COMPLIANCE_APPROVAL_QUEUE_004_backup_2026-07-20.yaml
+  peer_evidence_not_authority:
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-ENFORCEMENT-DESIGN-AUDIT-010.yaml
+    - product-contract/operationalization/coordination/batches/M6-TRACEABILITY-SPLIT-011.yaml
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-REQUEST-SUCCESSOR-012.yaml
+    - product-contract/operationalization/coordination/batches/M6-COMPLIANCE-REQUEST-MAPPING-CORRECTION-013.yaml
+
+canonical_scope:
+  ownership_correction:
+    finding: >-
+      CR-449..CR-478 on the current route inventory is overbroad. Compliance
+      Requests and Approvals are an enabling cross-cutting envelope. Their
+      narrow primary lifecycle scope is CR-458..CR-463; domain screens retain
+      semantic ownership of regulation, item, package, template, violation,
+      penalty and runtime behavior.
+    canonical_change_written: false
+  primary:
+    - capability_id: CAP-R0C-0458
+      requirement_ids:
+        - MVP1-M09-010
+        - CR-458
+        - REQ-R0C-01138
+        - REQ-R0C-01139
+      acceptance_ids: [WA-AC-0458, AC-0458]
+      evidence_id: WA-EV-0458
+      acceptance: Previous inspections remain traceable to old configuration.
+      built: PARTIAL
+      independently_verified: PARTIAL
+      fully_accepted: false
+      reason: >-
+        CCR versions are append-only in source and visible in the request
+        workspace, but package/runtime locking does not consume CCR heads or
+        compatibility rows. The CCR entity kinds also omit packages.
+    - capability_id: CAP-R0C-0459
+      requirement_ids:
+        - MVP1-M09-011
+        - CR-459
+        - REQ-R0C-01140
+        - REQ-R0C-01141
+        - REQ-R0C-01142
+      acceptance_ids: [WA-AC-0459, AC-0459]
+      evidence_id: WA-EV-0459
+      acceptance: Invalid configuration cannot be published.
+      built: PARTIAL
+      independently_verified: PARTIAL
+      fully_accepted: false
+      reason: >-
+        Draft, submit, component decision and publication RPCs exist, but no
+        terminal published request state exists and published CCR heads are not
+        what Planning or Field select.
+    - capability_id: CAP-R0C-0460
+      requirement_ids:
+        - MVP1-M09-012
+        - CR-460
+        - REQ-R0C-01143
+        - REQ-R0C-01144
+      acceptance_ids: [WA-AC-0460, AC-0460]
+      evidence_id: WA-EV-0460
+      acceptance: Admin receives clear validation errors.
+      built: PARTIAL
+      independently_verified: PARTIAL
+      fully_accepted: false
+      reason: >-
+        Parent-child closure, cycle and orphan checks exist. Publication does
+        not validate the complete regulation/item/response/violation/penalty/
+        evidence/template/package semantics required by the canonical row.
+    - capability_id: CAP-R0C-0461
+      requirement_ids:
+        - MVP1-M09-013
+        - CR-461
+        - REQ-R0C-01145
+        - REQ-R0C-01146
+        - REQ-R0C-01147
+      acceptance_ids: [WA-AC-0461, AC-0461]
+      evidence_id: WA-EV-0461
+      acceptance: Admin can understand impact before publishing.
+      built: NOT_IMPLEMENTED_IN_APPROVAL_WORKSPACE
+      independently_verified: FAIL
+      fully_accepted: false
+      reason: >-
+        The queue/workspace does not show affected packages, active visits or
+        future executions. Dependency count is not impact analysis.
+    - capability_id: CAP-R0C-0462
+      requirement_ids:
+        - MVP1-M09-014
+        - CR-462
+        - REQ-R0C-01148
+        - REQ-R0C-01149
+      acceptance_ids: [WA-AC-0462, AC-0462]
+      evidence_id: WA-EV-0462
+      acceptance: Deactivated configuration no longer appears for new packages.
+      built: NOT_IMPLEMENTED_IN_CCR
+      independently_verified: FAIL
+      fully_accepted: false
+      reason: >-
+        CCR supports create/modify only. It has no deactivation transition,
+        mandatory deactivation reason, or downstream eligibility proof.
+    - capability_id: CAP-R0C-0463
+      requirement_ids:
+        - MVP1-M09-015
+        - CR-463
+        - REQ-R0C-01150
+        - REQ-R0C-01151
+      acceptance_ids: [WA-AC-0463, AC-0463]
+      evidence_id: WA-EV-0463
+      acceptance: Full history is available.
+      built: PARTIAL
+      independently_verified: PARTIAL
+      fully_accepted: false
+      reason: >-
+        Revision, decision, publication, correlation and generic audit contracts
+        exist. The workspace does not expose the complete audit timeline,
+        actor identity, source evidence custody or every append-only event, and
+        no current live immutability-negative test ran.
+  contextual_only_no_completion_credit:
+    requirement_ids:
+      - CR-449..CR-457
+      - CR-464..CR-478
+    rule: >-
+      The queue may display snapshots for four entity kinds but cannot receive
+      credit for the domain authoring, package/template composition, execution,
+      enforcement, reporting or runtime-lock obligations those rows own.
+  web_admin_quality:
+    - acceptance_id: WA-M6-AC-001
+      priority: P0
+      result: FAIL
+      reason: Publication does not reach the real downstream configuration consumers.
+    - acceptance_id: WA-M6-AC-002
+      priority: P0
+      result: FAIL
+      reason: Live maker-checker, RLS write denial, stale/conflict and rollback negatives are not currently executed by tests.
+    - acceptance_id: WA-M6-AC-003
+      priority: P1
+      result: BLOCKED
+      reason: No exact accepted /admin/compliance-approvals module design exists.
+    - acceptance_id: WA-M6-AC-004
+      priority: P1
+      result: FAIL
+      reason: Arabic business content, dark theme and complete accessibility certification are missing.
+    - acceptance_id: WA-M6-AC-005
+      priority: P0
+      result: FAIL
+      reason: The affected focused/protected set is 19/24, and passing CCR tests are source-only.
+    - acceptance_id: WA-M6-AC-006
+      priority: P1
+      result: FAIL
+      reason: Design identity, live DB-negative evidence and downstream proof are incomplete.
+
+historical_local_acceptance_reconciliation:
+  acceptance_ids: CMP-ACC-APQ-001..020
+  ledger_state: HISTORICAL_PASS
+  current_disposition: IMPLEMENTATION_EVIDENCE_ONLY_NOT_COMPLETION
+  observed_in_real_browser:
+    - CMP-ACC-APQ-001
+    - CMP-ACC-APQ-002
+    - CMP-ACC-APQ-003
+    - CMP-ACC-APQ-004
+    - CMP-ACC-APQ-008
+    - CMP-ACC-APQ-011
+    - CMP-ACC-APQ-012
+    - CMP-ACC-APQ-013
+    - CMP-ACC-APQ-014
+    - CMP-ACC-APQ-015
+    - CMP-ACC-APQ-016
+  source_only_or_partial:
+    - id: CMP-ACC-APQ-005
+      reason: Partial view exists in source; no populated browser row was independently observed.
+    - id: CMP-ACC-APQ-006
+      reason: Ready-to-publish browser rows exist, but no terminal published-state separation exists.
+    - id: CMP-ACC-APQ-007
+      reason: Source order is deterministic; high-volume pagination/completeness is untested.
+    - id: CMP-ACC-APQ-009
+      reason: Maker denial is asserted from migration text, not executed in the current test run.
+    - id: CMP-ACC-APQ-010
+      reason: Planner denial and scoped reads were observed, but live policy metadata/direct RLS probes were unavailable.
+    - id: CMP-ACC-APQ-017
+      reason: Transaction order is asserted from SQL text; downstream consumption and terminal lifecycle fail.
+    - id: CMP-ACC-APQ-018
+      reason: Queue source contains no direct DML/RPC, but the workspace action path still lacks behavioral negative coverage.
+    - id: CMP-ACC-APQ-019
+      reason: Empty and own-request states rendered; the focused assertion for error copy is currently stale and fails.
+    - id: CMP-ACC-APQ-020
+      reason: Static non-change proof is not downstream integration acceptance.
+
+route_and_design_truth:
+  shell_authority:
+    source_id: WA-SHELL-SRC-001
+    status: ACCEPTED
+    effect: Approval Queue is the preserved ninth primary business entry.
+  registered_predecessor:
+    logical_id: WA-DES-019
+    filename: SAQEEL Compliance Requests.dc.html
+    sha256: 05332be7bf0ed96a70f58507aa183f2f3010adada28938bf70466fa4038fad18
+    registered_routes:
+      - /admin/compliance-requests
+      - /admin/compliance-requests/new
+      - "/admin/compliance-requests/:id"
+    missing_registered_route: /admin/compliance-approvals
+    conclusion: NEAREST_DESIGN_ONLY_NOT_EXACT_ACCEPTED_AUTHORITY
+  other_current_route_inventory_designs:
+    - WA-DES-018
+    - WA-DES-023
+    - WA-DES-040
+  conclusion_for_other_designs: >-
+    Committee, operational Enforcement and Risk are not Compliance Approval
+    Queue design authority and cannot contribute requirement credit.
+  reference_pattern:
+    file: design/saqeel-v5-final/patterns/admin/approval-queue.html
+    authority: PATTERN_REFERENCE_NOT_ROUTE_ACCEPTANCE
+  proposed_successor:
+    revision: WA-DES-019-C1
+    status: DRAFT_NON_CONSUMABLE_NOT_FINGERPRINTED_OR_ACCEPTED
+    source: M6-COMPLIANCE-REQUEST-SUCCESSOR-012
+  design_gate_result: BLOCKED
+
+permission_and_data_truth:
+  route_guard:
+    allowed_roles: [compliance_admin, reviewer]
+    authorized_admin_result: PASS
+    authorized_reviewer_result: PASS
+    planner_result: DENIED_NO_CONFIGURATION_DATA_LOADED
+    anonymous_result: REDIRECT_TO_LOGIN
+  request_workspace_guard:
+    allowed_roles: [compliance_admin, form_admin, reviewer]
+    write_roles: [compliance_admin, form_admin]
+    review_roles: [compliance_admin, reviewer]
+  maker_checker:
+    ui: Own requests are excluded from the eligible queue.
+    database_source: RPCs reject owner decisions and publication with CCR_MAKER_CHECKER.
+    live_negative_execution: NOT_RUN_READ_ONLY
+    result: SOURCE_AND_UI_PROVEN_LIVE_DATABASE_NEGATIVE_UNPROVEN
+  rls:
+    source: Select policies scope request/revision/component/decision/publication reads to owner or reviewer.
+    live_observation:
+      - Reviewer read a populated request and its four components.
+      - Planner received the role boundary and no configuration content.
+    direct_live_policy_introspection: BLOCKED_BY_CONNECTED_SUPABASE_PERMISSION
+    result: PARTIAL_NOT_CERTIFIED
+  direct_writes:
+    authenticated_table_dml: REVOKED_IN_MIGRATION_SOURCE
+    rpc_execute: authenticated
+    security_definer_checks: Present for every public mutation RPC.
+    behavioral_attack_test: ABSENT
+  remote_migration_runtime:
+    inference: >-
+      Normal authenticated browser reads returned live CCR rows, components and
+      dependencies, proving the required tables are present on the connected
+      application project. Direct metadata/version/policy SQL could not be read
+      because the connected Supabase tool returned permission denied.
+
+lifecycle_and_custody_truth:
+  lifecycle:
+    request_states:
+      - draft
+      - pending_review
+      - returned
+      - partially_approved
+      - approved
+      - rejected
+      - cancelled
+    missing_terminal_state: published
+    transitions:
+      - create
+      - draft update
+      - add component
+      - add dependency
+      - submit
+      - component approve or reject
+      - request return
+      - request reject
+      - revise returned request
+      - cancel
+      - publish approved branches
+  immutability:
+    submitted_revision_content: Protected by triggers in migration source.
+    decisions: Append-only trigger in migration source.
+    published_versions: Append-only trigger in migration source.
+    publications: Append-only trigger in migration source.
+    real_negative_proof: ABSENT_CURRENT_RUN
+  evidence_custody:
+    preserved:
+      - current and proposed JSON snapshots
+      - revision number and timestamps
+      - component and request decisions
+      - correlation UUID
+      - immutable version/publication IDs
+      - audit_events references
+    missing_or_unproven:
+      - full audit-event timeline in the workspace
+      - actor display beyond raw UUIDs
+      - regulation source-file/attachment custody inside CCR
+      - semantic schema validation for proposed snapshots
+      - proof that CCR version IDs are retained by Field or reports
+  concurrency:
+    database_row_locks: Present in mutation RPCs.
+    stale_component_decision: Later duplicate decision is rejected by component status.
+    expected_request_revision_or_etag: ABSENT_FROM_ACTION_CONTRACT
+    user_recovery_for_stale_conflict: ABSENT
+    behavioral_concurrency_test: ABSENT
+    result: PARTIAL_NOT_CERTIFIED
+
+downstream_truth:
+  ccr_publication_writes:
+    - compliance_entity_versions
+    - compliance_entity_heads
+    - compliance_request_publications
+    - compliance_request_components.component_status
+  compatibility_view: compliance_configuration_compatibility
+  consumers_found: 1
+  consumer_detail:
+    - route: "/admin/items/:id/runtime-preview"
+      use: Displays CCR version lineage for a matching legacy item.
+      effect: READ_ONLY_EVIDENCE_ONLY
+  real_planning_and_field_consumers:
+    - package_versions
+    - package_version_item_snapshots
+    - package_version_dependency_snapshots
+    - inspection_items
+    - violation_codes
+    - penalty_mappings
+  enforcement_consumers:
+    - violations
+    - violation_codes
+    - penalty_mappings
+  report_consumers:
+    - inspections.package_versions
+    - violations.violation_codes
+    - penalty_mappings
+  ccr_compatibility_consumption_in_planning_field_enforcement_reports: NONE_FOUND
+  business_effect: >-
+    Publishing a CCR changes the CCR version/head store but does not change what
+    Planning can select, what Field locks and executes, what Enforcement reads,
+    or what an inspection report displays. The approval is therefore not an
+    end-to-end governed configuration publication.
+
+browser_evidence:
+  runtime_origin: local Next.js application wired to the configured shared Supabase project
+  authorized_admin:
+    route: http://127.0.0.1:3155/admin/compliance-approvals
+    locale_direction_theme: EN_LTR_LIGHT
+    observed:
+      - compliance_admin/form_admin Admin identity
+      - one maker-owned pending request excluded
+      - verified zero eligible pending requests
+      - no decision control exposed for the maker-owned request
+  authorized_reviewer:
+    route: http://localhost:3155/admin/compliance-approvals
+    locale_direction_theme: AR_RTL_LIGHT
+    observed:
+      - one pending request
+      - four components
+      - three dependencies
+      - pending component progress
+      - current/proposed comparison
+      - component approve/reject controls
+      - required return/rejection reasons
+      - durable decision section
+  publish_view:
+    route: http://localhost:3155/admin/compliance-approvals?view=publish
+    observed: Four approved records presented as Ready to Publish.
+    limitation: No terminal published-state distinction or completed-publication exclusion can be shown.
+  denied_planner:
+    route: http://0.0.0.0:3156/admin/compliance-approvals
+    locale_direction_theme: AR_RTL_LIGHT
+    observed:
+      - planner identity
+      - role-denied boundary
+      - no configuration data loaded
+  anonymous:
+    requested_route: http://0.0.0.0:3156/admin/compliance-approvals
+    result: redirected to /login
+  responsive:
+    tested_viewports:
+      - 1024x768
+      - 412x915
+      - 320x800
+    horizontal_overflow: NONE_OBSERVED
+    limitation: Only the queue read state was probed at all three viewports; workspace action/error states were not.
+  console:
+    admin_errors: 0
+    reviewer_errors: 0
+    denied_planner_errors: 0
+  prohibited_actions_confirmed:
+    - no approve
+    - no reject
+    - no return
+    - no publish
+    - no data edit
+  not_proven:
+    - dark theme for this route
+    - real loading transition
+    - injected query/component/dependency failure
+    - stale conflict recovery
+    - keyboard action completion and focus recovery
+    - 200 and 400 percent zoom
+    - screen-reader output
+
+localization_responsive_accessibility:
+  shell_arabic: PASS
+  route_business_arabic: FAIL
+  evidence: >-
+    Under html lang=ar and dir=rtl, the route title, banner, filters, facts,
+    status, comparison, dependency, decision and action labels remain English.
+  rtl_geometry: BASIC_PASS_NO_HORIZONTAL_OVERFLOW
+  mixed_direction_identifiers: PARTIAL_BDI_PRESENT
+  heading_structure:
+    h1_count: 0
+    first_route_heading: H2
+    result: FAIL
+  compact_control_observation:
+    smallest_visible_control_height_at_probed_viewports_px: 28.09375
+    conclusion: ROUTE_SPECIFIC_TARGET_SIZE_CERTIFICATION_FAILS_OR_IS_UNPROVEN
+  theme:
+    light: OBSERVED
+    dark: NOT_OBSERVED_FOR_ROUTE
+  native_arabic_review: NOT_PERFORMED
+
+test_and_validator_evidence:
+  focused_command: >-
+    PLAYWRIGHT_PORT=3155 PLAYWRIGHT_REUSE_SERVER=1 npx playwright test
+    e2e/compliance-approval-queue.spec.ts e2e/compliance-request-engine.spec.ts
+    e2e/compliance-library.spec.ts e2e/compliance-shared-shell.spec.ts
+    --project=e2e --no-deps --reporter=line
+  focused_result:
+    passed: 19
+    failed: 5
+    total: 24
+  compliance_approval_queue:
+    passed: 5
+    failed: 1
+    failure: >-
+      The test expects "Awaiting Approval unavailable"; the product now renders
+      "Approval Queue unavailable". This is a stale assertion, not a runtime
+      error-state defect.
+  compliance_request_engine:
+    passed: 8
+    failed: 0
+    limitation: All eight tests inspect source/SQL text; none executes live behavior.
+  adjacent_failures:
+    - "Compliance Library expects the removed Inspection Rules aria-label."
+    - "Shared-shell test expects the stale seven-entry Admin list."
+    - "Shared-shell test expects the stale sq-shell account selector."
+    - "Shared-shell search test expects queries in the route instead of the extracted helper."
+  canonical_validator:
+    command: node scripts/validate_web_admin_phase1.mjs
+    result: PASS
+    requirement_rows: 478
+  important_gap: >-
+    No route-focused browser spec uses Admin, Reviewer and denied personas to
+    exercise the live queue/workspace. No current test performs save/submit,
+    component decision, maker self-decision denial, required-comment denial,
+    partial approval, publish rollback, duplicate publication, immutable-row
+    mutation denial, audit reconciliation or downstream-consumption proof.
+
+p0_findings:
+  - id: CCR-APQ-P0-001
+    finding: CCR publication is not consumed by Planning, Field, Enforcement or reports.
+    evidence: >-
+      publish_compliance_request writes compliance_entity_versions/heads and
+      publications. Source search found only the Admin runtime preview reading
+      CCR versions; all real downstream paths read legacy/package snapshot tables.
+    impact: A reviewer can publish a change that the operational product never executes.
+    blocks:
+      - WA-M6-AC-001
+      - WA-M6-AC-005
+      - WA-AC-0458
+      - WA-AC-0459
+  - id: CCR-APQ-P0-002
+    finding: The request lifecycle has no terminal published state.
+    evidence: >-
+      Request status permits no published value. The publication RPC changes
+      component status but never request status. The queue continues to select
+      approved requests as Ready to Publish, and the workspace continues to
+      derive publishable from approved/partially_approved.
+    impact: Completed publication cannot leave the actionable queue truthfully and repeated publication reaches a no-approved-components error.
+    blocks:
+      - WA-M6-AC-001
+      - WA-M6-AC-005
+      - WA-AC-0459
+  - id: CCR-APQ-P0-003
+    finding: Publication validation is structural, not semantically complete.
+    evidence: >-
+      proposed_value_snapshot accepts any JSON object. The publish RPC checks
+      parent closure and selected foreign version keys but not required legal,
+      effective-date, response, evidence, template, package, cardinality or
+      runtime schema rules.
+    impact: A structurally connected but invalid business configuration can enter the CCR version store.
+    blocks:
+      - WA-M6-AC-001
+      - WA-M6-AC-002
+      - WA-AC-0459
+      - WA-AC-0460
+  - id: CCR-APQ-P0-004
+    finding: Database and workflow negative behavior is not currently regression-tested.
+    evidence: >-
+      The request-engine and approval-queue tests inspect strings in source and
+      SQL. The connected Supabase tool denied direct SQL metadata checks, and
+      this read-only packet performed no write attack.
+    impact: Maker-checker, RLS DML denial, immutable-row rejection, rollback and concurrency are not release-certifiable.
+    blocks:
+      - WA-M6-AC-002
+      - WA-M6-AC-005
+
+p1_findings:
+  - id: CCR-APQ-P1-001
+    finding: /admin/compliance-approvals has no exact accepted module design.
+    evidence: WA-DES-019 excludes the route; WA-DES-019-C1 is proposed and non-consumable.
+    blocks: [WA-M6-AC-003, WA-M6-AC-006]
+  - id: CCR-APQ-P1-002
+    finding: Arabic/RTL locale renders English approval business content.
+    evidence: Real Reviewer browser state under lang=ar and dir=rtl.
+    blocks: [WA-M6-AC-004]
+  - id: CCR-APQ-P1-003
+    finding: Route-specific accessibility and dark-theme certification is incomplete.
+    evidence: No h1, small visible controls, no dark proof, and no keyboard/focus/zoom/screen-reader run.
+    blocks: [WA-M6-AC-003, WA-M6-AC-004]
+  - id: CCR-APQ-P1-004
+    finding: Full audit and source-evidence custody are not reader-visible.
+    evidence: Workspace shows revision/decision/publication summaries but not the complete audit event stream or attachment/source custody.
+    blocks: [WA-M6-AC-001, WA-M6-AC-006, WA-AC-0463]
+  - id: CCR-APQ-P1-005
+    finding: Queue completeness and pagination are unproven.
+    evidence: Queries have no limit, cursor or count reconciliation.
+    blocks: [WA-M6-AC-001]
+  - id: CCR-APQ-P1-006
+    finding: Unauthorized Approval Queue navigation remains visible to Planner.
+    evidence: The Planner shell showed "بانتظار الاعتماد" before the route correctly denied content.
+    blocks: [WA-M6-AC-002, WA-M6-AC-004]
+  - id: CCR-APQ-P1-007
+    finding: The current focused/protected assertion set is red.
+    evidence: 19/24 overall and 5/6 in the approval-queue file.
+    blocks: [WA-M6-AC-005, WA-M6-AC-006]
+
+exact_prerequisites:
+  design:
+    - Accept and fingerprint an exact queue/request successor covering all four routes.
+    - Prove EN/LTR, AR/RTL, light/dark, desktop/tablet/narrow, loading/empty/error/denied/stale/publish states and accessibility.
+  database_and_service:
+    - Define and implement the governed projection/materialization from approved CCR versions into the exact domain/runtime stores, or migrate every consumer to one canonical version resolver.
+    - Add a terminal publication lifecycle and idempotent, truthful queue behavior.
+    - Validate proposed snapshots against the canonical domain schemas and all CR-460 dependency semantics inside the publication transaction.
+    - Preserve immutable decisions, publications, revisions, audit correlation and historical execution locks.
+    - Add expected-revision or equivalent recoverable concurrency proof where request-wide transitions can race.
+  tests:
+    - Execute live Admin-maker, distinct Reviewer, denied Planner and anonymous cases.
+    - Execute maker self-decision denial, direct DML denial, required-comment denial, stale/double decision and double-publication behavior.
+    - Execute partial approval, dependency rejection, transaction rollback, immutable mutation denial and audit reconciliation.
+    - Prove published configuration is selectable by Planning, locked by Field, reflected in Enforcement and retained in reports without changing earlier inspections.
+    - Correct only genuinely stale protected assertions under exact test-file leases.
+  data_and_browser:
+    - Use an isolated reversible non-production request with collision protection.
+    - Record baseline, every immutable decision/audit row, final publication and exact cleanup/retention rule.
+    - Capture current screenshots/states for authorized, maker-excluded, denied, Arabic, themes and named viewports.
+    - Obtain qualified native-Arabic human review; automation must not self-certify language quality.
+  governance:
+    - Approve the CR-458..CR-463 enabling-route mapping correction without transferring domain ownership.
+    - Obtain separate exact leases for database/service, route/UI, tests and isolated data.
+    - No merge, deployment or completion credit while any listed P0/P1 remains.
+
+rollback:
+  this_packet: Delete this single evidence packet; no product, database, data, test, design or branch state changed.
+  future_database_work: Additive forward-only migration with retained old heads and an explicit compatibility rollback path.
+  future_application_work: Revert only the leased route/service/test commits; retain current routes until certified cutover.
+  data_proof: Restore semantic business state while retaining required append-only audit and decision history.
+
+stop_conditions:
+  - Any attempt to count CR-449..CR-478 wholesale from the request/approval envelope.
+  - Any approval that does not change the exact version Planning and Field consume.
+  - Any publication without a terminal, idempotent and auditable lifecycle.
+  - Any semantic dependency or domain validation omitted from the atomic publish gate.
+  - Any maker, unauthorized role or direct table path can decide or forge publication.
+  - Any current or historical runtime configuration changes silently.
+  - Any P0/P1, design gap, Arabic gap, failed protected test or missing real-browser evidence is hidden.
+
+queued_successor:
+  task_id: CODEX-ADMIN-PLANNING-LOOKUPS-RUNTIME-TRUTH-028
+  mode: READ_ONLY
+  route: /admin/planning/lookups
+  objective: >-
+    Independently verify the Admin Planning Lookups capability, permissions,
+    persistence, audit, lifecycle, consumers, tests and browser truth against
+    exact canonical IDs while excluding design identity/revision work.
+  non_overlap: >-
+    Different route, data tables, services and acceptance surface; no Compliance
+    Request/Approval, Devices, Audit-design, database-write or product-write ownership.
+
+final_disposition:
+  ack: false
+  return: true
+  blocked: true
+  completion_credit: ZERO
+  built_requirements: >-
+    Partial enabling behavior exists for CR-458, CR-459, CR-460 and CR-463;
+    CR-461 and CR-462 are absent from this route.
+  independently_verified_requirements: >-
+    Partial runtime evidence exists for CR-458, CR-459, CR-460 and CR-463, but
+    none satisfies its full canonical acceptance condition.
+  fully_accepted_requirements: []
+  current_p0_count: 4
+  current_p1_count: 7
+  real_browser_demo_ready: >-
+    Ready only as an implementation/truth demonstration: Admin own-request
+    exclusion, Reviewer populated queue/workspace, Planner denial, anonymous
+    redirect and Arabic shell are reproducible. It is not an acceptance demo.
