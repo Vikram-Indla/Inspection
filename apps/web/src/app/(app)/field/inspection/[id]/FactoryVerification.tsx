@@ -9,6 +9,7 @@
 // queueing so the annotated copy rides with the original (M04-109).
 // Senaei data is NEVER written back (FND-007 / M04-112).
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSubmittedInSession } from "./submissionLock";
 import { localForUser, processOutbox, sha256b64, type OutboxOp, type SyncState } from "@/lib/offline";
 import Modal from "@/components/Modal";
 import styles from "./factory-verification.module.css";
@@ -154,7 +155,7 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
   );
 }
 
-export default function FactoryVerification({ inspectionId, fields, license, products, materials, initialChecks, checksLoadError, serverFieldEvidence, evidenceLimits, readOnly, strings, userId, riskScore, riskBand, riskBandLabel, incidentHref }: {
+export default function FactoryVerification({ inspectionId, fields, license, products, materials, initialChecks, checksLoadError, serverFieldEvidence, evidenceLimits, readOnly: serverReadOnly, strings, userId, riskScore, riskBand, riskBandLabel, incidentHref }: {
   inspectionId: string;
   userId: string;
   fields: FactoryField[];
@@ -174,6 +175,14 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   // Mid-visit incident logging routes to the real incident-reports screen.
   incidentHref: string;
 }) {
+  // CR-205/242/264/299 — immutable after submission. The server-computed lock
+  // (ins.status !== "in_progress") cannot see a submit that happened in this
+  // session, because submit enqueues to the outbox without a server re-render.
+  // The session latch closes that window; either source locking is enough, and
+  // the latch never unlocks.
+  const submittedInSession = useSubmittedInSession(inspectionId);
+  const readOnly = serverReadOnly || submittedInSession;
+
   const local = useMemo(() => localForUser(userId), [userId]);
   const [checks, setChecks] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c])) as Record<string, CheckState>);
   const [observedDraft, setObservedDraft] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c.observed_value ?? ""])) as Record<string, string>);

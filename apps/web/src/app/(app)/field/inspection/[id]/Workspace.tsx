@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp, type SubmitSynced } from "@/lib/offline";
+import { markSubmitted } from "./submissionLock";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
@@ -725,6 +726,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
     };
     await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: legacyVersion, snapshot, idempotency_key: key, acknowledgement: { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }, queued_at: new Date().toISOString() });
     setSubmitted(true);
+    // CR-205/242/264/299 — latch the sibling FactoryVerification read-only too.
+    // Its lock is server-computed and submit triggers no server render, so
+    // without this it stayed editable for the rest of the session.
+    markSubmitted(inspection.id);
     setMsg(navigator.onLine ? fmt(strings.submitting, { v: legacyVersion }) : strings.queuedOffline);
     // After a successful RPC submit, local state follows the SERVER-assigned
     // version number (D-020); the legacy fallback never reports one back.
