@@ -50,7 +50,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");
   const { data: ins } = await sb.from("inspections")
-    .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)")
+    .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(id, version_number, submitted_at), reviews(returned_sections, decision_reason, decided_at)")
     .eq("id", id).single();
   if (!ins) {
     return (
@@ -503,6 +503,31 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next final submitted version (STM-COR-001/002)."),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
     submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
+    reviewTitle: t("field.ws.review.title", "Final review"),
+    reviewHint: t("field.ws.review.hint", "Review the complete inspection package before creating an immutable submitted version."),
+    reviewAnswers: t("field.ws.review.answers", "Answers"),
+    reviewEvidence: t("field.ws.review.evidence", "Evidence"),
+    reviewViolations: t("field.ws.review.violations", "Violations"),
+    reviewActions: t("field.ws.review.actions", "Action forms"),
+    reviewBlockers: t("field.ws.review.blockers", "Blockers"),
+    reviewBack: t("field.ws.review.back", "Back to inspection"),
+    reviewContinue: t("field.ws.review.continue", "Confirm and submit"),
+    jumpToSection: t("field.ws.review.jump", "Go to section"),
+    declarationRequired: t("field.ws.review.declaration", "I confirm this inspection package is ready for final submission."),
+    queuedTitle: t("field.ws.submit.queuedTitle", "Submission queued"),
+    queuedBody: t("field.ws.submit.queuedBody", "Your final package is locked on this device and will submit in order after earlier offline work synchronizes."),
+    submittingTitle: t("field.ws.submit.submittingTitle", "Submitting inspection"),
+    submittingBody: t("field.ws.submit.submittingBody", "The server is validating and creating the immutable version. Keep this screen open."),
+    submitFailedTitle: t("field.ws.submit.failedTitle", "Submission not completed"),
+    submitFailedBody: t("field.ws.submit.failedBody", "Nothing was marked submitted. Your queued package is preserved; retry when the connection or server is available."),
+    submitRetry: t("field.ws.submit.retry", "Retry submission"),
+    successTitle: t("field.ws.submit.successTitle", "Inspection submitted"),
+    successBody: t("field.ws.submit.successBody", "The immutable version was created and routed for review."),
+    receiptReference: t("field.ws.submit.reference", "Inspection reference"),
+    receiptVersion: t("field.ws.submit.version", "Version"),
+    receiptSubmission: t("field.ws.submit.submissionId", "Submission ID"),
+    receiptTime: t("field.ws.submit.time", "Submitted at"),
+    receiptReport: t("field.ws.submit.report", "Open submitted report"),
     lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only (M06-043); DB also rejects edits."),
     mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
     submitBtn: t("field.ws.submitBtn", "Review & submit — final version"),
