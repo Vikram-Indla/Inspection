@@ -9,6 +9,8 @@ import {
   offlineDatabaseName,
   ReplaySessionChanged,
 } from "../src/lib/offline";
+import { PERSONAS, storageStatePath } from "./personas";
+import { login } from "./live-rest";
 
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
@@ -122,5 +124,63 @@ test.describe("PLAN v7 item 6 — user-scoped field offline state", () => {
     expect(offline).toContain("invalidated_by: capturedUserId");
     expect(offline).toContain('const restore = window.confirm("Restore previous local drafts?")');
     expect(offline).toContain('database.transaction(available, "readonly")');
+  });
+
+  test("real authenticated users have disjoint browser IndexedDB outboxes", async ({ browser }) => {
+    const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+    const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+    const inspectorContext = await browser.newContext({ storageState: storageStatePath("inspector") });
+    const plannerContext = await browser.newContext({ storageState: storageStatePath("planner") });
+    const inspectorPage = await inspectorContext.newPage();
+    const plannerPage = await plannerContext.newPage();
+    await inspectorPage.goto("/field");
+    await plannerPage.goto("/planning");
+
+    const marker = `isolation-${Date.now()}`;
+    await inspectorPage.evaluate(({ userId, marker }) => new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("outbox", "readwrite");
+        transaction.objectStore("outbox").add({
+          kind: "response",
+          inspection_id: marker,
+          item_id: marker,
+          response: { marker },
+          baseline_updated_at: null,
+          queued_at: new Date().toISOString(),
+        });
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      };
+    }), { userId: inspector.userId, marker });
+
+    const plannerEntries = await plannerPage.evaluate(({ userId }) => new Promise<unknown[]>((resolve, reject) => {
+      const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+      request.onerror = () => reject(request.error);
+      request.onupgradeneeded = () => request.result.createObjectStore("outbox", { autoIncrement: true });
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("outbox", "readonly");
+        const all = transaction.objectStore("outbox").getAll();
+        all.onsuccess = () => resolve(all.result);
+        all.onerror = () => reject(all.error);
+      };
+    }), { userId: planner.userId });
+    expect(plannerEntries, "the second authenticated user's outbox must not expose the Inspector marker").toEqual([]);
+
+    const inspectorEntries = await inspectorPage.evaluate(({ userId }) => new Promise<unknown[]>((resolve, reject) => {
+      const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const transaction = request.result.transaction("outbox", "readonly");
+        const all = transaction.objectStore("outbox").getAll();
+        all.onsuccess = () => resolve(all.result);
+        all.onerror = () => reject(all.error);
+      };
+    }), { userId: inspector.userId });
+    expect(JSON.stringify(inspectorEntries)).toContain(marker);
+
+    await inspectorContext.close();
+    await plannerContext.close();
   });
 });

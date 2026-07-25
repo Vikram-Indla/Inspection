@@ -15,10 +15,11 @@
 // it is absent, using the same env-first, fail-closed approach as
 // e2e/pixel/credentials.ts so the harness has one pattern, not two.
 //
-// To run persona specs, set these in apps/web/.env.local (gitignored),
-// apps/web/.env, or the process environment:
-//   E2E_PLANNER_PASSWORD   E2E_INSPECTOR_PASSWORD   E2E_REVIEWER_PASSWORD
-//   E2E_ADMIN_PASSWORD     E2E_OPS_PASSWORD
+// To run persona specs, set SAQEEL_TEST_PASSWORD and the matching
+// SAQEEL_TEST_<ROLE>_EMAIL values in apps/web/.env.local (gitignored),
+// apps/web/.env, or the process environment. The governed local test project
+// intentionally uses an empty password, so presence and value are distinct:
+// `SAQEEL_TEST_PASSWORD=` is valid; an absent assignment is not.
 // Override the file location with E2E_ENV_FILE.
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -64,42 +65,49 @@ function envValues(): Record<string, string> {
  * Failing closed is deliberate: a spec that cannot authenticate must say so
  * rather than fall back to a default or a committed value.
  */
-function requirePassword(envVar: string, persona: string): string {
-  const value = process.env[envVar] || envValues()[envVar];
-  if (!value) {
+function requireSetting(envVar: string, persona: string, allowEmpty = false): string {
+  const files = envValues();
+  const processHas = Object.prototype.hasOwnProperty.call(process.env, envVar);
+  const fileHas = Object.prototype.hasOwnProperty.call(files, envVar);
+  if (!processHas && !fileHas) {
     throw new Error(
-      `Persona "${persona}" has no password. Set ${envVar} in apps/web/.env.local, ` +
-      `apps/web/.env, or E2E_ENV_FILE. Credentials are no longer committed to this repository.`,
+      `Persona "${persona}" is missing ${envVar}. Set it in apps/web/.env.local, ` +
+      `apps/web/.env, or E2E_ENV_FILE. Credentials are never committed to this repository.`,
     );
   }
+  const value = processHas ? process.env[envVar]! : files[envVar];
+  if (!allowEmpty && !value.trim()) throw new Error(`Persona "${persona}" has an empty ${envVar}.`);
   return value;
 }
 
+const sharedPassword = (persona: string) => requireSetting("SAQEEL_TEST_PASSWORD", persona, true);
+const personaEmail = (envVar: string, persona: string) => requireSetting(envVar, persona);
+
 export const PERSONAS = {
   planner: {
-    email: "planner@mim.gov.sa",
+    get email(): string { return personaEmail("SAQEEL_TEST_PLANNER_EMAIL", "planner"); },
     home: "/planning",
-    get password(): string { return requirePassword("E2E_PLANNER_PASSWORD", "planner"); },
+    get password(): string { return sharedPassword("planner"); },
   },
   inspector: {
-    email: "inspector@mim.gov.sa",
+    get email(): string { return personaEmail("SAQEEL_TEST_INSPECTOR_EMAIL", "inspector"); },
     home: "/field",
-    get password(): string { return requirePassword("E2E_INSPECTOR_PASSWORD", "inspector"); },
+    get password(): string { return sharedPassword("inspector"); },
   },
   reviewer: {
-    email: "reviewer@mim.gov.sa",
+    get email(): string { return personaEmail("SAQEEL_TEST_REVIEWER_EMAIL", "reviewer"); },
     home: "/reviews",
-    get password(): string { return requirePassword("E2E_REVIEWER_PASSWORD", "reviewer"); },
+    get password(): string { return sharedPassword("reviewer"); },
   },
   admin: {
-    email: "admin@mim.gov.sa",
+    get email(): string { return personaEmail("SAQEEL_TEST_COMPLIANCE_ADMIN_EMAIL", "admin"); },
     home: "/admin",
-    get password(): string { return requirePassword("E2E_ADMIN_PASSWORD", "admin"); },
+    get password(): string { return sharedPassword("admin"); },
   },
   ops: {
-    email: "ops@mim.gov.sa",
+    get email(): string { return personaEmail("SAQEEL_TEST_OPS_EMAIL", "ops"); },
     home: "/dashboard",
-    get password(): string { return requirePassword("E2E_OPS_PASSWORD", "ops"); },
+    get password(): string { return sharedPassword("ops"); },
   },
 } as const;
 
