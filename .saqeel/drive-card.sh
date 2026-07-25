@@ -44,7 +44,7 @@ trap 'rm -f "$PROMPT_FILE"' EXIT
   echo "You are working SAQEEL card \`$CARD\` on the PWA / iPad inspector channel."
   echo "REPO: $REPO"
   echo "BRANCH: $(git -C "$REPO" branch --show-current)"
-  echo "SPINE: status/saqeel-status.json   DESIGNS: designs/pwa/"
+  echo "SPINE: status/saqeel-status.json   DESIGNS: designs/pwa/pwa/"
   echo "BASELINE: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
   echo
   echo "### Your card (verbatim from the spine)"
@@ -75,7 +75,7 @@ for r in rows[:60]:
   CORRUPTS that cache and hangs the server. This has already happened twice on this workstation
   (see apps/web/.next.corrupt-bak-*). Use `npm run typecheck` to verify. If you genuinely need a
   production build, say so and stop — the operator will run it against a separate build dir.
-- Build to the card's designPage in designs/pwa/ — canonical. Never build from the live render or memory.
+- Build to the card's designPage in designs/pwa/pwa/ — canonical (tracked; the extract copy was removed 2026-07-26). Never build from the live render or memory.
 - EN/LTR and AR/RTL both. Never invent values; if a value is not governed, render nothing.
 - Do NOT touch files owned by another agent. One card, one file set, no overlap.
 - Do NOT push, merge, or modify main. Do NOT edit frozen product-contract artifacts.
