@@ -9,6 +9,7 @@ import {
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
+import { findingSubmitBlockers, type FindingOp, type FindingSyncState } from "./finding-outbox";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
@@ -35,6 +36,8 @@ export type WorkspacePanel = {
 };
 export type PrevComparison = { label: string; date: string | null; answers: Record<string, string>; evidence: Record<string, number> };
 type SForm = { id: string; item_id: string | null; violation_id: string | null; form_type: string; owner_name: string | null; owner_role: string | null; due_at: string | null; required_correction: string | null; status: string };
+type SFinding = { id: string; item_id: string | null; severity: string; description: string };
+type FindingDraft = { id: string | null; description: string; severity: string; state: "saved" | "pending" | "failed" };
 type SVio = { id: string; violation_code_id: string; invalidated_at?: string | null; invalidate_reason?: string | null };
 // Phase 5 (§15) — per-visit item lifecycle row from inspection_item_states.
 type SItemState = { item_id: string; state: "added" | "deselected"; reason: string | null; reverted_at: string | null };
@@ -73,6 +76,8 @@ export type WorkspaceStrings = {
   enumLabels: { [k: string]: string };
   // — Slice E2 runtime depth —
   progress: string;
+  sectionNavTitle: string; sectionNavHint: string; sectionComplete: string; sectionIncomplete: string;
+  previousSection: string; nextSection: string; nextIncomplete: string;
   summaryTitle: string; sumAnswered: string; sumPending: string; sumCompliant: string; sumNonCompliant: string; sumViolations: string; sumEvidence: string;
   ctxTitle: string; ctxHint: string; ctxYes: string; ctxNo: string; ctxLabels: { [k: string]: string };
   guidanceLabel: string; conditionalBadge: string;
@@ -83,6 +88,8 @@ export type WorkspaceStrings = {
   afBlocking: string; afComplete: string; afIncomplete: string; afSaved: string; afFieldLabels: { [k: string]: string };
   vioTitle: string; vioNone: string; vioPenalty: string; vioLevel: string; vioAction: string;
   vioInvalidated: string; vioPenaltyConflict: string;
+  findingTitle: string; findingNarrative: string; findingPlaceholder: string;
+  findingRequired: string; findingSaved: string; findingPending: string; findingRetry: string;
   // — Phase 5 item lifecycle (§15) —
   libTitle: string; libHint: string; libAdd: string; libEmpty: string; libAddedGroup: string; libAddedMsg: string;
   deselectBtn: string; deselectTitle: string; deselectReason: string; deselectReasonPh: string;
@@ -108,8 +115,8 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
-  inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
+export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverFindings, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
+  inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverFindings: SFinding[]; serverViolations: SVio[];
   userId: string;
   serverItemStates: SItemState[]; actionTemplates: ActionTemplate[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
@@ -127,7 +134,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [ctx, setCtx] = useState(serverContext);
   const [forms, setForms] = useState(() => Object.fromEntries(serverForms.filter(f => !!f.item_id).map(f =>
     [f.item_id!, { owner_name: f.owner_name ?? "", owner_role: f.owner_role ?? "", due_at: f.due_at ? f.due_at.slice(0, 10) : "", required_correction: f.required_correction ?? "" }])) as { [itemId: string]: FormDraft });
+  const [findings, setFindings] = useState<Record<string, FindingDraft>>(() => Object.fromEntries(serverFindings.filter(f => !!f.item_id).map(f =>
+    [f.item_id!, { id: f.id, description: f.description, severity: f.severity, state: "saved" as const }])));
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
+  // SCR-IPAD-630 — item ids whose finding op is still in the canonical outbox
+  // (unsynced). Authoritative source of the per-finding "pending" state and of
+  // the submit gate; refreshed from the outbox on every sync tick.
+  const [queuedFindingItems, setQueuedFindingItems] = useState(() => new Set<string>());
   const [commentDrafts, setCommentDrafts] = useState({} as Record<string, string>);
   // F2 — captured photos awaiting the annotation overlay (pre-enqueue, offline-safe)
   const [pendingShots, setPendingShots] = useState([] as { item: Item; b64: string; mime: string; fname: string; replaceId?: string }[]);
@@ -218,6 +231,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
     () => effectiveSections(sections, allMap, itemStates, strings.libAddedGroup),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [allMap, itemStates, strings.libAddedGroup]);
+  const [activeSectionKey, setActiveSectionKey] = useState(() => displaySections[0]?.key ?? "");
+  useEffect(() => {
+    if (!displaySections.some(section => section.key === activeSectionKey)) {
+      setActiveSectionKey(displaySections[0]?.key ?? "");
+    }
+  }, [activeSectionKey, displaySections]);
   const sectionItems = useMemo(() => displaySections.flatMap(s => s.items ?? []).map(c => allMap[c]).filter((i): i is Item => !!i),
     [displaySections, allMap]);
   const flags = useMemo(() => contextFlags(sectionItems), [sectionItems]);
@@ -234,6 +253,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const answersRef = useRef(answers); answersRef.current = answers;
   const ctxRef = useRef(ctx); ctxRef.current = ctx;
   const formsRef = useRef(forms); formsRef.current = forms;
+  const findingsRef = useRef(findings); findingsRef.current = findings;
   const vioIdsRef = useRef(vioIds); vioIdsRef.current = vioIds;
   const itemStatesRef = useRef(itemStates); itemStatesRef.current = itemStates;
   const manualFormsRef = useRef(manualForms); manualFormsRef.current = manualForms;
@@ -258,6 +278,16 @@ export default function Workspace({ inspection, items, library, serverResponses,
             });
           }
         }
+        if (k.startsWith(`${inspection.id}:finding:`)) {
+          // Restore the narrative TEXT after a reload; the outbox (durable in
+          // IndexedDB) remains the authority for whether it is still unsynced.
+          const itemId = k.slice(`${inspection.id}:finding:`.length);
+          const draft = r.v as FindingDraft;
+          setFindings(current => ({
+            ...current,
+            [itemId]: current[itemId]?.state === "saved" ? current[itemId] : { ...draft, state: "pending" },
+          }));
+        }
       }
       if (pendingArch.current.length || pendingDel.current.length) {
         setEvState(s => {
@@ -281,6 +311,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const refreshQueued = useCallback(async () => {
     const ops = await local.peekAll();
     setQueuedEv(ops.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.inspection_id === inspection.id));
+    const fids = new Set<string>();
+    for (const o of ops) if (o.kind === "finding" && o.inspection_id === inspection.id) fids.add(o.item_id);
+    setQueuedFindingItems(fids);
   }, [inspection.id]);
   useEffect(() => {
     const tick = () => { processOutbox(userId, onState); refreshQueued(); flushRef.current(); };
@@ -306,6 +339,63 @@ export default function Workspace({ inspection, items, library, serverResponses,
     await local.saveDraft(inspection.id, "__ctx", next);   // durable local home while offline
     await pushCtx(next);
   }
+  // SCR-IPAD-630 / FLD-FND-001..003 — remove every queued finding op for a
+  // stable id, so a re-save/retry REPLACES rather than duplicates (idempotency
+  // at the queue level; the replay UPSERT is idempotent at the row level too).
+  async function removeFindingOps(id: string) {
+    const ops = await local.peekAll();
+    const keys = await local.keys();
+    for (let i = 0; i < ops.length; i++) {
+      const o = ops[i];
+      if (o.kind === "finding" && (o as FindingOp).id === id) await local.remove(keys[i]);
+    }
+  }
+  /** Persist the finding narrative locally and (re)enqueue its canonical FIFO
+   *  outbox op. No network here — replay is driven by the sync tick / online
+   *  event / explicit retry, exactly like every other outbox op. Empty narrative
+   *  clears any queued op (nothing persists an empty finding). */
+  async function queueFinding(item: Item, code: string, description: string) {
+    const cfg = vioConfig[code];
+    const current = findingsRef.current[item.id];
+    // Stable client id == idempotency key; reuse the existing one (incl. a
+    // server row's id) so retries UPSERT the SAME row.
+    const id = current?.id ?? crypto.randomUUID();
+    const trimmed = description.trim();
+    if (!trimmed) {
+      await removeFindingOps(id);
+      const empty: FindingDraft = { id, description: "", severity: cfg?.level ?? "", state: "pending" };
+      setFindings(all => ({ ...all, [item.id]: empty }));
+      await local.saveDraft(inspection.id, `finding:${item.id}`, empty);
+      await refreshQueued();
+      return;
+    }
+    const draft: FindingDraft = { id, description: trimmed.slice(0, 2000), severity: cfg?.level ?? "", state: "pending" };
+    setFindings(all => ({ ...all, [item.id]: draft }));
+    await local.saveDraft(inspection.id, `finding:${item.id}`, draft);
+    const op: FindingOp = { kind: "finding", id, inspection_id: inspection.id, item_id: item.id, severity: cfg?.level ?? "", description: draft.description, queued_at: new Date().toISOString() };
+    await removeFindingOps(id);      // dedupe by stable id — never a second op
+    await local.enqueue(op);         // canonical FIFO outbox (before any submit op)
+    await refreshQueued();
+  }
+  /** Commit-on-blur / retry: ensure the latest narrative is queued, then kick
+   *  the canonical replay. Empty narrative surfaces the mandatory-finding notice. */
+  async function saveFinding(item: Item, code: string) {
+    const description = findingsRef.current[item.id]?.description ?? "";
+    await queueFinding(item, code, description);
+    if (!description.trim()) { setMsg(strings.findingRequired); return; }
+    processOutbox(userId, onState);
+    setMsg(navigator.onLine ? strings.findingPending : strings.findingPending);
+  }
+  /** A finding's effective state is derived from the outbox: still-queued →
+   *  pending (waiting to sync); gone from the queue with text → saved. We do NOT
+   *  paint a finding "failed" from the workspace-global sync state; a failed
+   *  replay simply leaves the op queued (pending) and the shared sync chip
+   *  reports the failure. */
+  const findingStatus = useCallback((itemId: string): FindingSyncState => {
+    const d = findingsRef.current[itemId];
+    if (!d || !d.description.trim()) return "empty";
+    return queuedFindingItems.has(itemId) ? "pending" : "saved";
+  }, [queuedFindingItems]);
   async function ensureViolation(code: string): Promise<string | null> {
     const known = vioIdsRef.current[code]; if (known) return known;
     const cfg = vioConfig[code];
@@ -446,10 +536,12 @@ export default function Workspace({ inspection, items, library, serverResponses,
     if (pending.current.ctx) pushCtx(ctxRef.current);
     for (const code of [...pending.current.vios]) ensureViolation(code);
     for (const itemId of [...pending.current.forms]) {
-      const item = items.find(i => i.id === itemId); if (!item) continue;
+      const item = items.find(i => i.id === itemId) ?? library.find(i => i.id === itemId); if (!item) continue;
       const def = formRequired(item, answersRef.current[itemId]?.value, formDefs);
       if (def) pushForm(item, def);
     }
+    // Findings are canonical outbox ops now — processOutbox() replays them in
+    // FIFO order; no bespoke reconnect replay needed here.
     // Phase 5 (§18) — replay queued manual action-form adds (id-keyed inserts).
     if (pending.current.manual.length) {
       const rest: typeof pending.current.manual = [];
@@ -601,6 +693,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
   // §15/§20 — every runtime view runs over the ACTIVE scope (deselected
   // excluded, added included immediately) via the itemStates-aware signatures.
   const progress = sectionProgress(sections, allMap, answers, runtimeCtx, itemStates);
+  const activeSectionIndex = Math.max(0, displaySections.findIndex(section => section.key === activeSectionKey));
+  const activeSection = displaySections[activeSectionIndex] ?? displaySections[0];
+  const goToSection = useCallback((key: string) => {
+    setActiveSectionKey(key);
+    requestAnimationFrame(() => document.getElementById(`ax-section-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }, []);
+  const nextIncompleteSection = progress.find(section => section.pct < 100 && section.key !== activeSection?.key);
   const totals = progress.reduce((t, p) => ({ a: t.a + p.answered, b: t.b + p.total }), { a: 0, b: 0 });
   const overallPct = totals.b ? Math.round(100 * totals.a / totals.b) : 100;
   const summary = summarize(sections, allMap, answers, runtimeCtx, activeEvidence.length + queuedEv.length, itemStates);
@@ -628,6 +727,24 @@ export default function Workspace({ inspection, items, library, serverResponses,
     .map(code => ({ code, config: vioConfig[code] ?? null })), [invalidatedVios, vioConfig]);
 
   async function submit() {
+    // Findings gate (FLD-FND-003): every implied violation needs a narrative that
+    // has PERSISTED. Read the outbox authoritatively (not the ≤8s-stale tick
+    // state) so an empty, still-queued (unsynced) or failed finding all block
+    // submission — a submitted inspection can never reference an unpersisted
+    // finding, and FIFO replay would carry findings before the submit op anyway.
+    const queuedNow = await local.peekAll();
+    const queuedFindingIds = new Set(queuedNow.filter(o => o.kind === "finding" && o.inspection_id === inspection.id).map(o => (o as FindingOp).item_id));
+    const findingState: Record<string, FindingSyncState> = {};
+    for (const v of implied) {
+      const d = findingsRef.current[v.itemId];
+      findingState[v.itemId] = !d || !d.description.trim() ? "empty" : queuedFindingIds.has(v.itemId) ? "pending" : "saved";
+    }
+    const findingBlocks = findingSubmitBlockers(implied.map(v => ({ itemId: v.itemId, itemCode: v.itemCode })), findingState);
+    if (findingBlocks.length) {
+      processOutbox(userId, onState);   // nudge any unsynced finding toward sync
+      setMsg(`${strings.findingRequired}: ${findingBlocks.join(", ")}`);
+      return;
+    }
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
     const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
@@ -696,6 +813,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
         item: v.itemCode, code: v.code, title: v.config?.title ?? null, level: v.config?.level ?? null,
         penalty_ref: v.config?.penalty_ref ?? null, legal_basis: v.config?.legal_basis ?? null,
         mapping_version: v.config?.mapping_version ?? null,
+      })),
+      findings: implied.map(v => ({
+        item: v.itemCode,
+        violation_code: v.code,
+        severity: v.config?.level ?? null,
+        description: findings[v.itemId]?.description.trim() ?? "",
+        finding_id: findings[v.itemId]?.id ?? null,
       })),
       action_forms: Object.entries(forms).map(([itemId, draft]) => {
         const item = items.find(i => i.id === itemId) ?? library.find(i => i.id === itemId);
@@ -825,6 +949,48 @@ export default function Workspace({ inspection, items, library, serverResponses,
           fieldset disables every descendant control without touching the
           engine's rendering. */}
       <fieldset disabled={cancelApproved} style={{ display: "contents" }}>
+      {/* SCR-IPAD-630 / M04-062..094 — section-driven iPad workspace. The
+          checklist remains one autosaved runtime, but only the selected section
+          occupies the question panel so inspectors can move deliberately
+          through long packages without losing their place. */}
+      {!submitted && displaySections.length > 0 && (
+        <nav className={`${styles.card} ${styles.sectionNavigator}`} aria-label={strings.sectionNavTitle}>
+          <div className={styles.sectionNavigatorHead}>
+            <div>
+              <h4>{strings.sectionNavTitle}</h4>
+              <p className="t-caption">{strings.sectionNavHint}</p>
+            </div>
+            {nextIncompleteSection && (
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => goToSection(nextIncompleteSection.key)}>
+                {strings.nextIncomplete}
+              </button>
+            )}
+          </div>
+          <div className={styles.sectionTabs} role="list">
+            {displaySections.map((section, index) => {
+              const sectionProgressRow = progress.find(row => row.key === section.key);
+              const pct = sectionProgressRow?.pct ?? 0;
+              const selected = section.key === activeSection?.key;
+              return (
+                <button
+                  type="button"
+                  role="listitem"
+                  key={section.key}
+                  className={`${styles.sectionTab} ${selected ? styles.sectionTabActive : ""}`}
+                  aria-current={selected ? "step" : undefined}
+                  onClick={() => goToSection(section.key)}
+                >
+                  <span className={styles.sectionNumber}>{index + 1}</span>
+                  <span className={styles.sectionTabCopy}>
+                    <strong>{section.title}</strong>
+                    <span>{pct === 100 ? strings.sectionComplete : strings.sectionIncomplete} · {pct}%</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
         <div className={styles.card} style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
@@ -844,7 +1010,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         </div>
       )}
 
-      {!submitted && displaySections.map(s => {
+      {!submitted && displaySections.filter(s => s.key === activeSection?.key).map(s => {
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
@@ -1010,6 +1176,25 @@ export default function Workspace({ inspection, items, library, serverResponses,
               </div>
             );
           })}
+          <div className={styles.sectionFooter}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              disabled={activeSectionIndex === 0}
+              onClick={() => goToSection(displaySections[activeSectionIndex - 1]?.key ?? s.key)}
+            >
+              {strings.previousSection}
+            </button>
+            <span className="t-caption id-code">{activeSectionIndex + 1}/{displaySections.length}</span>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={activeSectionIndex >= displaySections.length - 1}
+              onClick={() => goToSection(displaySections[activeSectionIndex + 1]?.key ?? s.key)}
+            >
+              {strings.nextSection}
+            </button>
+          </div>
         </div>
       );})}
 
@@ -1110,7 +1295,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           <h4>{strings.vioTitle}</h4>
           {implied.length === 0 && invalidatedList.length === 0 ? <p className="t-caption">{strings.vioNone}</p> : implied.map(v => (
             <div key={`${v.itemCode}-${v.code}`} className="alert alert-critical">
-              <div>
+              <div style={{ inlineSize: "100%" }}>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })} · {v.itemCode}
                 {/* §18 / D-018 — penalty singularity fail-closed: a configuration
                     conflict renders the violation WITHOUT a penalty, honestly. */}
@@ -1120,6 +1305,38 @@ export default function Workspace({ inspection, items, library, serverResponses,
                   const d = formDefs.find(x => x.key === v.actionFormKey);
                   return d ? <> · {fmt(strings.vioAction, { status: formComplete(d, forms[v.itemId]) ? strings.afComplete : strings.afIncomplete })}</> : null;
                 })() : null}
+                <div className="stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
+                  <label className={styles.fld}>
+                    <span>{strings.findingNarrative}<span className="req">*</span></span>
+                    <textarea
+                      className="input"
+                      rows={3}
+                      maxLength={2000}
+                      placeholder={strings.findingPlaceholder}
+                      value={findings[v.itemId]?.description ?? ""}
+                      onChange={e => {
+                        // Local narrative edit → (re)queue the canonical finding
+                        // op (deduped by id); no network until blur / tick.
+                        const item = items.find(i => i.id === v.itemId) ?? library.find(i => i.id === v.itemId);
+                        if (item) void queueFinding(item, v.code, e.target.value);
+                      }}
+                      onBlur={() => {
+                        const item = items.find(i => i.id === v.itemId) ?? library.find(i => i.id === v.itemId);
+                        if (item) void saveFinding(item, v.code);
+                      }}
+                    />
+                  </label>
+                  <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+                    <span className="t-caption" data-testid={`finding-status-${v.itemCode}`}>
+                      {findingStatus(v.itemId) === "saved" ? strings.findingSaved
+                        : findingStatus(v.itemId) === "empty" ? strings.findingRequired
+                        : strings.findingPending}
+                    </span>
+                    {findingStatus(v.itemId) === "pending" && (
+                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => processOutbox(userId, onState)}>{strings.findingRetry}</button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ))}

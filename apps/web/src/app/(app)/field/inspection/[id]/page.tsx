@@ -111,9 +111,10 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   // Tolerant fetches for columns landing in migrations 0015/0020 (context,
   // action_forms.item_id, inspection_no, evidence lifecycle): a missing column
   // degrades the feature instead of killing the page.
-  const [{ data: ctxRow }, { data: afRows }, { data: noRow }, { data: evMeta }] = await Promise.all([
+  const [{ data: ctxRow }, { data: afRows }, { data: findingRows }, { data: noRow }, { data: evMeta }] = await Promise.all([
     sb.from("inspections").select("context").eq("id", id).maybeSingle(),
     sb.from("action_forms").select("id, item_id, violation_id, form_type, owner_name, owner_role, due_at, required_correction, status").eq("inspection_id", id),
+    sb.from("findings").select("id, item_id, severity, description").eq("inspection_id", id),
     sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
     sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
   ]);
@@ -535,6 +536,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     enumLabels,
     // — Slice E2 runtime depth —
     progress: t("field.ws.progress", "{pct}% complete"),
+    sectionNavTitle: t("field.ws.sectionNav.title", "Inspection sections"),
+    sectionNavHint: t("field.ws.sectionNav.hint", "Choose a section. Answers are autosaved as you move between sections."),
+    sectionComplete: t("field.ws.sectionNav.complete", "Complete"),
+    sectionIncomplete: t("field.ws.sectionNav.incomplete", "In progress"),
+    previousSection: t("field.ws.sectionNav.previous", "Previous section"),
+    nextSection: t("field.ws.sectionNav.next", "Next section"),
+    nextIncomplete: t("field.ws.sectionNav.nextIncomplete", "Go to next incomplete"),
     summaryTitle: t("field.ws.summaryTitle", "Live summary"),
     sumAnswered: t("field.ws.sum.answered", "Answered"),
     sumPending: t("field.ws.sum.pending", "Pending"),
@@ -578,6 +586,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
     vioInvalidated: t("field.ws.vio.invalidated", "Invalidated — the answer changed back to compliant. Kept for audit; no penalty or action is due from this candidate."),
     vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping unavailable — configuration conflict"),
+    findingTitle: t("field.ws.finding.title", "Inspector finding"),
+    findingNarrative: t("field.ws.finding.narrative", "Finding narrative"),
+    findingPlaceholder: t("field.ws.finding.placeholder", "Describe what you observed and where. Do not propose a policy classification."),
+    findingRequired: t("field.ws.finding.required", "A finding narrative is required for every mapped violation"),
+    findingSaved: t("field.ws.finding.saved", "Finding saved"),
+    findingPending: t("field.ws.finding.pending", "Saved on this iPad — waiting to sync"),
+    findingRetry: t("field.ws.finding.retry", "Retry finding"),
     // — Phase 5 item lifecycle (§15) —
     libTitle: t("field.ws.lib.title", "Item library"),
     libHint: t("field.ws.lib.hint", "Add items from the active library to this visit. Added items count toward progress and compliance immediately and follow their own response and evidence rules."),
@@ -719,6 +734,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         serverResponses={(resp ?? []) as never}
         serverEvidence={(ev ?? []) as never}
         serverForms={(afRows ?? []) as never}
+        serverFindings={(findingRows ?? []) as never}
         serverViolations={(vios ?? []) as never}
         serverItemStates={(itemStateRows ?? []) as never}
         library={library}

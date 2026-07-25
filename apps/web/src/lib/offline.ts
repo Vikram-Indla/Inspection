@@ -43,7 +43,15 @@ export type OutboxOp =
   // Phase 5 (§18, D-018) — invalidate (never delete) the ACTIVE violation
   // candidate when its triggering response flipped back to Compliant. Replays
   // after the response op it follows (FIFO); a missing candidate is a no-op.
-  | { kind: "violation_invalidate"; inspection_id: string; violation_id: string | null; violation_code_id: string | null; reason: string; queued_at: string };
+  | { kind: "violation_invalidate"; inspection_id: string; violation_id: string | null; violation_code_id: string | null; reason: string; queued_at: string }
+  // SCR-IPAD-630 (FLD-FND-001..003) — inspector finding narrative for a mapped
+  // violation. `id` is a client-generated idempotency key: replay UPSERTs the
+  // findings row by id (an ambiguous retry never duplicates), and FIFO order
+  // guarantees the finding is persisted BEFORE the submit op that references it.
+  // The violations.finding_id column is immutable post-insert
+  // (guard_violation_invalidate), so it is never mutated from the client — the
+  // finding↔violation association rides findings.item_id + the submission manifest.
+  | { kind: "finding"; id: string; inspection_id: string; item_id: string; severity: string; description: string; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 export type CachedRouteEstimate = {
   etaMinutes: number;
@@ -413,6 +421,21 @@ export async function processOutbox(verifiedUserId: string, onState: (s: SyncSta
           inspection_id: op.inspection_id, item_id: op.item_id,
           state: op.state, reason: op.reason, reverted_at: op.reverted_at,
         }, { onConflict: "inspection_id,item_id" }));
+        if (error) throw error;
+      } else if (op.kind === "finding") {
+        // SCR-IPAD-630 / FLD-FND-001..003 — idempotent UPSERT of the finding row
+        // by its client-generated id, so an ambiguous retry (or a duplicate op)
+        // collapses to ONE row. Severity is the frozen canonical level captured
+        // at save. RLS (findings_rw) authorizes the assigned inspector only; the
+        // audit trigger records the write. Ordered before the submit op (FIFO),
+        // so a submitted inspection always carries persisted findings. The
+        // violations.finding_id link is NEVER written here — it is immutable
+        // post-insert (guard_violation_invalidate); the association is item_id +
+        // the submission manifest. Pre-existing findings table only — no DDL.
+        const { error } = await guard.network(() => sb.from("findings").upsert({
+          id: op.id, inspection_id: op.inspection_id, item_id: op.item_id,
+          severity: op.severity, description: op.description,
+        }, { onConflict: "id" }));
         if (error) throw error;
       } else if (op.kind === "violation_invalidate") {
         // §18 / D-018 — invalidate, never delete. Targets the row by id when
