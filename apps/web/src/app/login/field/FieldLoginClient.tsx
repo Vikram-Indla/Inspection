@@ -338,9 +338,16 @@ export default function FieldLoginClient({
               component: this never appears on a first-run or unenrolled
               device, and there is no "unrecognised device" warning — an
               unenrolled device is the normal case, not an anomaly. */}
+          {/* The session probe is a STATUS, never a gate. Replacing the card
+              with "checking your session" hid the credential form on both
+              /login and /login/field whenever the probe was slow or never
+              resolved, which left the product with no way to sign in at all.
+              Per the note above: the plain form is the safe default and is what
+              renders during that window. */}
           {bootstrapping ? (
             <div className="fl-msg" role="status">{s.checkingSession}</div>
-          ) : showLockScreen ? (
+          ) : null}
+          {showLockScreen ? (
             <>
               <div className="fl-pill fl-trusted-pill">
                 <LockIcon />
