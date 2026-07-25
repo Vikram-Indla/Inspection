@@ -10,16 +10,16 @@ final class SupabaseVisitRepository: VisitRepository {
     init(client: SupabaseClient = SupabaseClientProvider.shared) { self.client = client }
 
     func fetchAssignedVisits() async throws -> [VisitListItem] {
-        // RLS scopes rows to the signed-in inspector's assigned visits.
-        // Recent-first + a page cap: the full assignment set can be large
-        // (hundreds+ of visits) and each row runs an RLS subquery, so an
-        // unbounded ordered scan hits Postgres' statement_timeout. Real
-        // pagination/infinite-scroll lands in a later phase.
+        // RLS scopes rows to the signed-in inspector's assigned visits. The
+        // per-row RLS check (incl. a SECURITY DEFINER capability function on
+        // the shared DB) is ~4s for this dataset; adding an ORDER BY pushes it
+        // to ~6s, right at Postgres' statement_timeout. So we take an unordered
+        // page cap to stay comfortably under the timeout. Ordered server-side
+        // pagination needs a backend RLS/index optimization (follow-up).
         let response = try await client
             .from("visits")
             .select(VisitRow.selectClause)
-            .order("window_start", ascending: false)
-            .limit(100)
+            .limit(50)
             .execute()
         let rows = try VisitRow.decoder().decode([VisitRow].self, from: response.data)
         return rows.compactMap { $0.toListItem() }
