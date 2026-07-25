@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+  html, body { height:100%; margin:0; }
+  .cp-wrap { max-width:900px; width:100%; margin:0 auto; padding:16px 18px 130px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:15px 16px; display:flex; flex-direction:column; gap:12px; }
+  .cp-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; flex-wrap:wrap; }
+  .cp-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:11.5px; padding:7px 11px; cursor:pointer; color:var(--text-secondary); border-inline-end:1px solid var(--border-input); }
+  .cp-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .cp-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .cp-opt { display:flex; align-items:center; gap:9px; flex:1 1 130px; padding:11px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:46px; color:var(--text-primary); }
+  .cp-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .cp-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .cp-opt[aria-pressed="true"] .cp-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .cp-sig { width:100%; height:170px; background:var(--surface-sunken); border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); touch-action:none; cursor:crosshair; display:block; }
+  .cp-metrics { display:flex; gap:8px; flex-wrap:wrap; }
+  .cp-metric { flex:1 1 110px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-sunken); padding:10px 12px; }
+  .cp-metric .n { font-size:19px; font-weight:700; } .cp-metric .l { font-size:11px; color:var(--text-muted); }
+  .cp-h { margin:0; font-size:15px; font-weight:600; }
+  .cp-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+  .cp-diff { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-subtle); border:1px solid var(--border-subtle); border-radius:8px; overflow:hidden; }
+  .cp-diff > div { background:var(--surface-primary); padding:9px 11px; font-size:12.5px; }
+  .cp-tl { display:flex; flex-direction:column; gap:0; }
+  .cp-tlrow { display:flex; gap:10px; padding:8px 0; }
+  .cp-tldot { width:10px; height:10px; border-radius:50%; margin-top:4px; flex:none; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.3;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge {{ reviewBadgeClass }}">{{ reviewLabel }}</span>
+    <button class="cp-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="cp-wrap">
+    <div class="card" style="gap:9px;">
+      <span class="cp-k">{{ t.demoLabel }}</span>
+      <div class="cp-seg"><sc-for list="{{ phaseTabs }}" as="p" hint-placeholder-count="6"><button aria-pressed="{{ p.active }}" onClick="{{ p.go }}">{{ p.label }}</button></sc-for></div>
+      <label class="check" style="display:flex; gap:8px; align-items:center; font-size:12.5px;"><input type="checkbox" checked="{{ offline }}" onChange="{{ toggleOffline }}"> <span>{{ t.offlineTgl }}</span></label>
+    </div>
+    {{ panel }}
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:10px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge {{ footBadgeClass }}"><span class="dot"></span>{{ footStatus }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary" aria-disabled="{{ primaryDisabled }}" style="{{ primaryStyle }}" onClick="{{ onPrimary }}">{{ primaryLabel }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:1150}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", phase:"review", attendance:"present", sigName:"", hasInk:false, absentReason:"", version:1, offline:false, showCompare:false, blockersCleared:true, correctionDone:false };
+
+  setCanvas = (el)=>{ if(!el||el===this._c) return; this._c=el; const dpr=window.devicePixelRatio||1; const r=el.getBoundingClientRect(); el.width=Math.round((r.width||600)*dpr); el.height=Math.round(170*dpr); const g=el.getContext("2d"); g.scale(dpr,dpr); g.lineWidth=2.25; g.lineCap="round"; g.lineJoin="round"; g.strokeStyle=getComputedStyle(el).getPropertyValue("--text-primary").trim()||"#e9e9ed"; this._g=g; };
+  _pos=(e)=>{ const r=e.currentTarget.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; };
+  _down=(e)=>{ e.currentTarget.setPointerCapture(e.pointerId); this._draw=true; this._last=this._pos(e); };
+  _move=(e)=>{ if(!this._draw||!this._g)return; const p=this._pos(e); this._g.beginPath(); this._g.moveTo(this._last.x,this._last.y); this._g.lineTo(p.x,p.y); this._g.stroke(); this._last=p; if(!this.state.hasInk)this.setState({hasInk:true}); };
+  _up=()=>{ this._draw=false; };
+  _clear=()=>{ if(this._g&&this._c){ this._g.clearRect(0,0,this._c.width,this._c.height); } this.setState({hasInk:false}); };
+
+  // Feedback QR (project feedback module + O-15): token-scoped public scan URL →
+  // establishment rates the visit/inspector AND receives the inspection PDF +
+  // documentation. Same server-projected, permission-filtered PDF as the
+  // inspector download. Rendered on a white card so it scans in dark mode too.
+  qrUrl = "https://saqeel.mim.gov.sa/feedback/scan?token=fbk_VS-40219_a1c8d02b&visit=VS-40219";
+  qrCanvas = (el)=>{ if(!el||el===this._qc) return; this._qc=el; const draw=()=>{ if(window.QRCode&&window.QRCode.toCanvas){ window.QRCode.toCanvas(el,this.qrUrl,{width:150,margin:1,color:{dark:"#0b2036",light:"#ffffff"}},()=>{}); } else setTimeout(draw,120); }; draw(); };
+
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? {
+      back:"رجوع", headerTitle:"الإنهاء ودورة الحياة", headerSub:"شركة الأمل لتدريب العمال", theme:"الوضع", langBtnLabel:"EN",
+      demoLabel:"مرحلة دورة الحياة (عرض)", offlineTgl:"غير متصل", saveDraft:"حفظ كمسودة",
+      p_review:"المراجعة", p_ack:"الإقرار والتوقيع", p_submitted:"مُرسَل", p_pending:"قيد المراجعة", p_returned:"مُعاد", p_approved:"معتمد", p_rejected:"مرفوض",
+      reviewH:"ملخّص المراجعة", answered:"مُجاب", pending:"معلّق", violations:"مخالفات", evidence:"أدلة", forms:"نماذج",
+      reviewNote:"راجع البنود والمخرجات قبل الإرس).", noBlockers:"لا معوّقات — جاهز للإقرار.",
+      ackH:"إقرار ممثل المنشأة", attendance:"حضور ممثل المنشأة", present:"حاضر ووقّع", absent:"لم يحضر", refused:"اعترض على التوقيع",
+      sigHint:"وقّع في الإطار أدناه. تُخزَّن صورة التوقيع والاسم والوقت داخل النسخة النهائية (DEC-009).", sigName:"اسم الممثل", clear:"مسح", absentReasonL:"سبب عدم الحضور/الاعتراض",
+      submitBtn:"مراجعة وإرسال — النسخة النهائية", ackNeed:"يلزم توقيع مرسوم واسم الممثل.",
+      submittedH:"تم الإرسال", submittedImmutable:"النسخة النهائية المرسلة. المحتوى مقفل من قاعدة البيانات؛ التصحيح فقط عبر إرجاع المراجع.", versionLbl:"نسخة الإرسال", idem:"محمي بمفتاح تكرار (idempotency).", queuedOffline:"في قائمة انتظار المزامنة — سيُرسَل عند عودة الاتصال.",
+      pendingH:"قيد مراجعة المستوى الثاني", pendingBody:"استُلمت النسخة النهhas؛ بانتظار قرار المراجع (اعتماد/إرجاع/رفض).",
+      returnedH:"أُعيد للتصحيح", returnedScope:"نطاق التصحيح: {s}", returnedNote:"هذه الأقسام فقط قابلة للتعديل؛ تُنشئ إعادة الإرسال النسخة النهائية التالية (STM-COR-001/002).", returnReason:"سبب الإرجاع", reasonVal:"تعارض في نتيجة بند السلامة مع الدليل المرفق.", correctBtn:"فتح وضع التصحيح", resubmitBtn:"إعادة الإرسال — النسخة {v}", corrected:"جاهز لإعادة الإرسال بالنسخة {v}.",
+      approvedH:"اعتُمدت الزيارة", approvedBody:"اعتُمدت النسخة النهائية. متاح التقرير النهائي.", rejectedH:"رُفضت الزيارة", rejectedBody:"رُفضت بعد المراجعة؛ راجع سبب الرفض.",
+      compareBtn:"مقارنة النسخ", compareH:"مقارنة v1 ← v2", before:"قبل (v1)", after:"بعد (v2)", diffItem:"بند: تصريح السلامة", diffB:"ساري", diffA:"منتهي — مخالفة",
+      historyH:"سجل النسخ", h1:"v1 مُرسلة", h2:"أُعيدت — نطاق: السلامة", h3:"v2 مُرسلة", h4:"اعتُمدت",
+      reportsH:"التقارير والوصول", finalPdf:"تنزيل التقرير النهائي (PDF)", printReport:"طباعة", draftPreview:"معاينة (مسودة)", draftWarn:"المعاينة مسودة وليست نهائية قانونياً.", offlinePdf:"غير متاح دون اتصال.",
+      qrH:"رمز التقييم واستلام التقرير", qrLabel:"امسح لتقييم الزيارة والمفتش واستلام التقرير (PDF) والوثائق", qrNote:"مسح عام محدود برمز (بدون تسجيل دخول). التقييم سرّي ولا يؤثر على نتيجة التفتيش.", qrToken:"الرمز · fbk_VS-40219_a1c8", qrPdfWire:"يُسلّم الرمز نفس ملف PDF المُسقَط من الخادم (مُرشَّح بالصلاحيات) الذي يُنزّله المفتش.", qrOnsite:"يظهر رمز المفتش على شاشات الميدان أثناء التواجد في الموقع.",
+      footReady:"جاهز", footBlocked:"معوّقات قائمة", footSubmitted:"مُرسَل (مقفل)", footPending:"قيد المراجعة", footApproved:"معتمد", footRejected:"مرفوض",
+    } : {
+      back:"Back", headerTitle:"Completion & lifecycle", headerSub:"Al-Amal Worker Training Co.", theme:"Theme", langBtnLabel:"AR",
+      demoLabel:"Lifecycle phase (demo)", offlineTgl:"Offline", saveDraft:"Save draft",
+      p_review:"Review", p_ack:"Acknowledge & sign", p_submitted:"Submitted", p_pending:"Under review", p_returned:"Returned", p_approved:"Approved", p_rejected:"Rejected",
+      reviewH:"Review summary", answered:"Answered", pending:"Pending", violations:"Violations", evidence:"Evidence", forms:"Forms",
+      reviewNote:"Review items and outputs before submitting.", noBlockers:"No blockers — ready to acknowledge.",
+      ackH:"Factory representative acknowledgement", attendance:"Representative attendance", present:"Present & signs", absent:"Did not attend", refused:"Objected to signing",
+      sigHint:"Sign in the box below. The signature image, name and timestamp are stored inside the final submitted version (DEC-009).", sigName:"Representative name", clear:"Clear", absentReasonL:"Reason for absence / objection",
+      submitBtn:"Review & submit — final version", ackNeed:"A drawn signature and the representative name are required.",
+      submittedH:"Submitted", submittedImmutable:"Final submitted version. Content locked by the database; corrections only via reviewer return.", versionLbl:"Submission version", idem:"Idempotency-protected.", queuedOffline:"Queued for sync — will submit when back online.",
+      pendingH:"Under Level-2 review", pendingBody:"The final version was received; awaiting the reviewer decision (approve / return / reject).",
+      returnedH:"Returned for correction", returnedScope:"Correction scope: {s}", returnedNote:"Only these sections are editable; resubmission creates the next final submitted version (STM-COR-001/002).", returnReason:"Return reason", reasonVal:"Safety item result conflicts with the attached evidence.", correctBtn:"Open correction mode", resubmitBtn:"Resubmit — version {v}", corrected:"Ready to resubmit as version {v}.",
+      approvedH:"Visit approved", approvedBody:"The final version was approved. The final report is available.", rejectedH:"Visit rejected", rejectedBody:"Rejected after review; see the rejection reason.",
+      compareBtn:"Compare versions", compareH:"Compare v1 → v2", before:"Before (v1)", after:"After (v2)", diffItem:"Item: Safety permit", diffB:"Valid", diffA:"Expired — violation",
+      historyH:"Version history", h1:"v1 submitted", h2:"Returned — scope: Safety", h3:"v2 submitted", h4:"Approved",
+      reportsH:"Reports & access", finalPdf:"Download final report (PDF)", printReport:"Print", draftPreview:"Preview (draft)", draftWarn:"The preview is a draft, not legally final.", offlinePdf:"Unavailable offline.",
+      qrH:"Feedback & report QR", qrLabel:"Scan to rate the visit & inspector and receive the report (PDF) + documentation", qrNote:"Token-scoped public scan (no login). Feedback is confidential and does not affect the inspection outcome.", qrToken:"Token · fbk_VS-40219_a1c8", qrPdfWire:"The QR delivers the same server-projected, permission-filtered PDF the inspector downloads.", qrOnsite:"The inspector's QR is shown on field screens while on site.",
+      footReady:"Ready", footBlocked:"Blockers remain", footSubmitted:"Submitted (locked)", footPending:"Under review", footApproved:"Approved", footRejected:"Rejected",
+    };
+    const set=(p)=>this.setState(p);
+    const qrCanvas=this.qrCanvas;
+    const chip=(c,x)=>h("span",{className:"badge "+c},x);
+    const ck=h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const banner=(title,body,tone)=>h("div",{className:"card",style:{flexDirection:"row",gap:"10px",alignItems:"flex-start",background:`var(--status-${tone}-soft)`,borderColor:`color-mix(in srgb,var(--status-${tone}) 26%,transparent)`,boxShadow:"none",padding:"12px 14px"}},h("span",{className:"t-compact",style:{color:`var(--status-${tone}-text)`}}, title?h("strong",null,title+" — "):null, body));
+    const fmt=(s,v)=>s.replace(/\{(\w+)\}/g,(m,k)=>v[k]??m);
+    const ph=st.phase;
+
+    let panel;
+    if(ph==="review"){
+      const M=[[t.answered,"18"],[t.pending,"0"],[t.violations,"2"],[t.evidence,"5"],[t.forms,"1"]];
+      panel=h(React.Fragment,null,
+        h("div",{className:"card"}, h("h3",{className:"cp-h"},t.reviewH), h("p",{className:"t-caption",style:{margin:0}},t.reviewNote),
+          h("div",{className:"cp-metrics"}, M.map(([l,n],i)=>h("div",{className:"cp-metric",key:i}, h("div",{className:"n"},n), h("div",{className:"l"},l)))),
+          banner("",t.noBlockers,"compliant")));
+    } else if(ph==="ack"){
+      const att=st.attendance, present=att==="present";
+      panel=h("div",{className:"card"}, h("h3",{className:"cp-h"},t.ackH),
+        h("div",null, h("div",{className:"cp-k",style:{marginBottom:"6px"}},t.attendance),
+          h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}}, [["present",t.present],["absent",t.absent],["refused",t.refused]].map(([k,l])=>{const on=att===k;return h("button",{key:k,className:"cp-opt","aria-pressed":on,onClick:()=>set({attendance:k})},h("span",{className:"cp-ind"},on?ck:null),l);}))),
+        present ? h(React.Fragment,null,
+          h("p",{className:"t-caption",style:{margin:0}},t.sigHint),
+          h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}}, t.sigName+" *"), h("input",{className:"input",value:st.sigName,onChange:e=>set({sigName:e.target.value})})),
+          h("canvas",{className:"cp-sig",ref:this.setCanvas,onPointerDown:this._down,onPointerMove:this._move,onPointerUp:this._up,onPointerLeave:this._up}),
+          h("button",{className:"btn btn-secondary",style:{alignSelf:"flex-start"},onClick:this._clear},t.clear),
+          (!st.hasInk||!st.sigName.trim())?h("div",{className:"t-caption",style:{color:"var(--status-warning-text)"}},t.ackNeed):null)
+        : h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}}, t.absentReasonL+" *"), h("textarea",{className:"input",rows:3,value:st.absentReason,onChange:e=>set({absentReason:e.target.value})})));
+    } else if(ph==="submitted"){
+      panel=h(React.Fragment,null,
+        st.offline?banner("",t.queuedOffline,"warning"):null,
+        banner(t.submittedH,t.submittedImmutable,"completed"),
+        h("div",{className:"card"}, h("div",{style:{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}, chip("badge-completed",t.versionLbl+" v"+st.version), chip("badge-outline",t.idem)),
+          reportsCard()));
+    } else if(ph==="pending"){
+      panel=h(React.Fragment,null, banner(t.pendingH,t.pendingBody,"pending"), historyCard(), reportsCard());
+    } else if(ph==="returned"){
+      panel=h(React.Fragment,null,
+        banner(t.returnedH, fmt(t.returnedScope,{s: ar?"السلامة":"Safety"})+" · "+t.reasonVal+" · "+t.returnedNote,"warning"),
+        h("div",{className:"card"}, h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}, h("span",{className:"cp-k"},t.returnReason), chip("badge-major", ar?"جسمية":"Major")),
+          h("p",{style:{margin:0,fontSize:"13.5px"}},t.reasonVal),
+          st.correctionDone?banner("",fmt(t.corrected,{v:st.version+1}),"compliant"):h("button",{className:"btn btn-secondary",style:{alignSelf:"flex-start"},onClick:()=>set({correctionDone:true})},t.correctBtn)),
+        h("div",{className:"card"}, compareToggle(), st.showCompare?compareBlock():null),
+        historyCard());
+    } else if(ph==="approved"){
+      panel=h(React.Fragment,null, banner(t.approvedH,t.approvedBody,"compliant"), historyCard(), reportsCard());
+    } else {
+      panel=h(React.Fragment,null, banner(t.rejectedH,t.rejectedBody,"critical"),
+        h("div",{className:"card"}, h("span",{className:"cp-k"},t.returnReason), h("p",{style:{margin:0,fontSize:"13.5px"}}, ar?"أدلة غير كافية على المخالفة المرصودة.":"Insufficient evidence for the observed violation.")),
+        historyCard());
+    }
+    function reportsCard(){
+      const locked = st.phase==="approved";
+      return h("div",{className:"card"}, h("h3",{className:"cp-h"},t.reportsH),
+        st.offline?banner("",t.offlinePdf,"warning"):null,
+        h("div",{style:{display:"flex",gap:"16px",flexWrap:"wrap",alignItems:"flex-start"}},
+          // Feedback QR — the establishment's route to the PDF + rating (on a white card so it scans in dark mode)
+          h("div",{style:{display:"flex",flexDirection:"column",gap:"8px",alignItems:"center",flex:"0 0 auto"}},
+            h("div",{style:{background:"#fff",borderRadius:"12px",padding:"10px",boxShadow:"var(--shadow-card)"}}, h("canvas",{ref:qrCanvas,width:150,height:150,style:{display:"block",width:"150px",height:"150px"}})),
+            h("span",{className:"badge badge-outline"},t.qrToken)),
+          h("div",{style:{flex:"1 1 240px",display:"flex",flexDirection:"column",gap:"8px"}},
+            h("div",{style:{fontSize:"13.5px",fontWeight:600}},t.qrH),
+            h("div",{className:"t-caption"},t.qrLabel),
+            h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap",marginTop:"2px"}},
+              h("button",{className:"btn btn-primary",disabled:st.offline||!locked,style:(st.offline||!locked)?{opacity:.5,pointerEvents:"none"}:null},t.finalPdf),
+              h("button",{className:"btn btn-secondary",disabled:st.offline},t.printReport),
+              h("button",{className:"btn btn-secondary"},t.draftPreview)))),
+        h("div",{style:{display:"flex",flexDirection:"column",gap:"4px",borderBlockStart:"1px solid var(--border-subtle)",paddingBlockStart:"10px"}},
+          h("div",{className:"t-caption"},"• "+t.qrPdfWire),
+          h("div",{className:"t-caption"},"• "+t.qrOnsite),
+          h("div",{className:"t-caption"},"• "+t.qrNote),
+          h("div",{className:"t-caption",style:{color:"var(--status-warning-text)"}},t.draftWarn)));
+    }
+    function compareToggle(){ return h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px",flexWrap:"wrap"}}, h("h3",{className:"cp-h"},t.compareH), h("button",{className:"btn btn-secondary",onClick:()=>set({showCompare:!st.showCompare})}, st.showCompare?"−":"+")); }
+    function compareBlock(){ return h("div",null, h("div",{className:"cp-k",style:{marginBottom:"6px"}},t.diffItem),
+      h("div",{className:"cp-diff"}, h("div",null, h("div",{className:"cp-k"},t.before), h("div",{style:{color:"var(--status-compliant-text)"}},t.diffB)), h("div",null, h("div",{className:"cp-k"},t.after), h("div",{style:{color:"var(--status-critical-text)"}},t.diffA)))); }
+    function historyCard(){
+      const rows=[["compliant",t.h1],["warning",t.h2],["compliant",t.h3], st.phase==="approved"?["completed",t.h4]:null].filter(Boolean);
+      return h("div",{className:"card"}, h("h3",{className:"cp-h"},t.historyH),
+        h("div",{className:"cp-tl"}, rows.map(([tone,label],i)=>h("div",{className:"cp-tlrow",key:i}, h("span",{className:"cp-tldot",style:{background:`var(--status-${tone})`}}), h("div",{style:{fontSize:"13px"}},label)))));
+    }
+
+    // footer primary per phase
+    const ackReady = st.attendance==="present" ? (st.hasInk && st.sigName.trim()) : !!st.absentReason.trim();
+    let primaryLabel,primaryBlocked=false,onPrimary=()=>{},foot,footClass;
+    if(ph==="review"){ primaryLabel=t.p_ack; foot=st.blockersCleared?t.footReady:t.footBlocked; footClass=st.blockersCleared?"badge-completed":"badge-critical"; onPrimary=()=>set({phase:"ack"}); }
+    else if(ph==="ack"){ primaryLabel=t.submitBtn; primaryBlocked=!ackReady; foot=ackReady?t.footReady:t.footBlocked; footClass=ackReady?"badge-completed":"badge-critical"; onPrimary=()=>{ if(ackReady)set({phase:"submitted"}); }; }
+    else if(ph==="submitted"){ primaryLabel=t.p_pending; foot=t.footSubmitted; footClass="badge-completed"; onPrimary=()=>set({phase:"pending"}); }
+    else if(ph==="pending"){ primaryLabel=t.p_returned; foot=t.footPending; footClass="badge-pending"; onPrimary=()=>set({phase:"returned"}); }
+    else if(ph==="returned"){ primaryLabel=fmt(t.resubmitBtn,{v:st.version+1}); primaryBlocked=!st.correctionDone; foot=st.correctionDone?t.footReady:t.footBlocked; footClass=st.correctionDone?"badge-completed":"badge-warning"; onPrimary=()=>{ if(st.correctionDone)set({phase:"approved",version:st.version+1,correctionDone:false}); }; }
+    else if(ph==="approved"){ primaryLabel=t.finalPdf; foot=t.footApproved; footClass="badge-completed"; }
+    else { primaryLabel=t.p_review; foot=t.footRejected; footClass="badge-critical"; onPrimary=()=>set({phase:"review"}); }
+    const primaryDis = primaryBlocked;
+
+    const revMap={review:["badge-onhold",t.p_review],ack:["badge-onhold",t.p_ack],submitted:["badge-completed",t.p_submitted],pending:["badge-pending",t.p_pending],returned:["badge-warning",t.p_returned],approved:["badge-completed",t.p_approved],rejected:["badge-critical",t.p_rejected]};
+    const PH=[["review",t.p_review],["ack",t.p_ack],["submitted",t.p_submitted],["pending",t.p_pending],["returned",t.p_returned],["approved",t.p_approved],["rejected",t.p_rejected]];
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      phaseTabs: PH.map(([k,l])=>({label:l, active: ph===k?"true":"false", go:()=>set({phase:k})})),
+      offline:st.offline, toggleOffline:()=>this.setState(s=>({offline:!s.offline})),
+      panel,
+      reviewLabel: revMap[ph][1], reviewBadgeClass: revMap[ph][0],
+      footStatus:foot, footBadgeClass:footClass,
+      primaryLabel, primaryDisabled: primaryDis?"true":"false", primaryStyle: primaryDis?"opacity:.5; pointer-events:none;":"", onPrimary,
+    };
+  }
+}
+</script>
+</body>
+</html>

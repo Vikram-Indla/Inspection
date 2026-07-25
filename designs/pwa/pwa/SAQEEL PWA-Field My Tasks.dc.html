@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .mt-grid { display:grid; grid-template-columns:340px 1fr; height:100%; min-height:0; }
+  .mt-list { border-inline-end:1px solid var(--border-subtle); overflow-y:auto; background:var(--surface-primary); }
+  .mt-detail { overflow-y:auto; min-width:0; }
+  .mt-back { display:none; }
+  @media (max-width:899px){
+    .mt-grid { grid-template-columns:1fr; }
+    [data-pane="list"] .mt-detail { display:none; }
+    [data-pane="detail"] .mt-list { display:none; }
+    [data-pane="detail"] .mt-back { display:inline-flex; }
+  }
+  .mt-item { display:flex; align-items:flex-start; gap:12px; width:100%; text-align:start; padding:15px 18px; border:0; border-block-end:1px solid var(--border-subtle); background:none; cursor:pointer; font:inherit; }
+  .mt-kv { display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .mt-kv .k { font-size:11.5px; color:var(--text-muted); }
+  .mt-kv .v { font-size:13.5px; font-weight:500; }
+  .mt-sec { padding:18px 20px; border-block-end:1px solid var(--border-subtle); }
+  .mt-sec h3 { font-size:14px; font-weight:600; margin:0 0 14px; }
+  .mt-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .mt-chip { padding:8px 14px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; white-space:nowrap; color:var(--text-secondary); }
+  .mt-chip[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+  .mt-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" data-pane="{{ pane }}" dir="{{ dir }}" lang="{{ lang }}" style="height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost mt-back" onClick="{{ backToList }}" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:16px;">{{ t.myTasks }}</div><div class="t-caption">{{ t.myTasksSub }}</div></div>
+    <span style="display:flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px; border:1px solid var(--status-compliant-text); background:var(--status-compliant-soft); color:var(--status-compliant-text); font-size:12px; font-weight:600; white-space:nowrap;"><span style="width:7px;height:7px;border-radius:50%;background:currentColor;"></span>{{ t.online }}</span>
+    <button class="btn btn-icon btn-ghost" onClick="{{ syncNow }}" aria-label="{{ t.syncNow }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>
+    <button class="mt-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div style="flex:1; min-height:0;"><div class="mt-grid">
+    <div class="mt-list">
+      <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="4">
+        <button class="mt-item" onClick="{{ t.pick }}" style="background:{{ t.bg }};">
+          <span class="mt-kv" style="flex:1;"><span class="id-code" style="font-size:12px; color:var(--text-muted);">#{{ t.id }}</span><span class="v" style="font-weight:600; font-size:14.5px;">{{ t.company }}</span><span class="k">{{ t.date }}</span></span>
+          <span class="badge {{ t.badge }}" style="height:20px;">{{ t.status }}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div class="mt-detail">
+      <div style="padding:18px 20px 0;">
+        <div style="height:150px; border-radius:14px; background:linear-gradient(135deg, var(--surface-sunken), var(--accent-soft)); display:grid; place-items:center; color:var(--text-muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:40px;height:40px;"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/><path d="M3 21h18"/></svg></div>
+      </div>
+
+      <div class="mt-sec">
+        <div style="display:flex; align-items:center; gap:10px; margin-block-end:10px;"><h3 style="margin:0;">{{ t.estData }}</h3><span class="badge badge-info" style="height:19px;">{{ t.licensedEst }}</span><span class="grow"></span><button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px;height:14px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>{{ t.timeline }}</button></div>
+        <div style="font-size:19px; font-weight:700; margin-block-end:14px;">{{ sel.company }}</div>
+        <div class="mt-row">
+          <span class="mt-kv"><span class="k">{{ t.regNumber }}</span><span class="v id-code">{{ sel.reg }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.phone }}</span><span class="v id-code">{{ sel.phone }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.investment }}</span><span class="v">{{ sel.investment }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.requestDate }}</span><span class="v id-code">{{ sel.date }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.estType }}</span><span class="v">{{ t.factory }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.estStatus }}</span><span><span class="badge badge-info" style="height:18px;">{{ t.production }}</span></span></span>
+        </div>
+      </div>
+
+      <div class="mt-sec">
+        <h3>{{ t.evalIndicators }}</h3>
+        <div class="mt-row">
+          <span class="mt-kv"><span class="k">{{ t.complianceRate }}</span><span class="v">{{ sel.compliance }} <span class="t-caption">{{ t.compliant }}</span></span></span>
+          <span class="mt-kv"><span class="k">{{ t.riskScore }}</span><span><span class="badge {{ sel.riskBadge }}" style="height:18px;"><span class="dot"></span>{{ sel.risk }}</span></span></span>
+        </div>
+        <div class="t-caption" style="margin-block-start:10px;">{{ t.healthRiskNote }}</div>
+      </div>
+
+      <div class="mt-sec">
+        <h3>{{ t.licenseData }}</h3>
+        <div class="mt-row">
+          <span class="mt-kv"><span class="k">{{ t.licenseType }}</span><span class="v">{{ t.industrial }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.licenseStatus }}</span><span><span class="badge badge-compliant" style="height:18px;">{{ t.valid }}</span></span></span>
+          <span class="mt-kv"><span class="k">{{ t.expiryDate }}</span><span class="v id-code">2027-03-01</span></span>
+          <span class="mt-kv"><span class="k">{{ t.licenseNumber }}</span><span class="v id-code">{{ sel.license }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.region }}</span><span class="v">{{ t.riyadh }}</span></span>
+          <span class="mt-kv"><span class="k">{{ t.city }}</span><span class="v">{{ t.riyadh }}</span></span>
+        </div>
+      </div>
+
+      <div class="mt-sec">
+        <h3>{{ t.visitLocation }}</h3>
+        <span class="mt-kv" style="margin-block-end:12px;"><span class="k">{{ t.address }}</span><span class="v">{{ t.addressVal }}</span></span>
+        <div style="height:160px; border-radius:12px; background:var(--surface-sunken); position:relative; overflow:hidden; display:grid; place-items:center;">
+          <div style="position:absolute; inset:0; background-image:radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size:22px 22px; opacity:.6;"></div>
+          <svg viewBox="0 0 24 24" fill="var(--action-primary)" style="width:34px;height:34px; position:relative;"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>
+          <span class="id-code" style="position:absolute; bottom:8px; inset-inline-end:10px; font-size:10px; color:var(--text-muted);">Mapbox GL · {{ t.officialLoc }}</span>
+        </div>
+      </div>
+
+      <div class="mt-sec">
+        <h3>{{ t.regData }}</h3>
+        <div style="display:flex; gap:8px; overflow-x:auto; padding-block-end:8px; margin-block-end:14px;">
+          <sc-for list="{{ regChips }}" as="rc" hint-placeholder-count="8">
+            <button class="mt-chip" aria-pressed="{{ rc.selected }}" onClick="{{ rc.pick }}">{{ rc.title }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <sc-for list="{{ regCards }}" as="c" hint-placeholder-count="3">
+            <div style="border:1px solid var(--border-subtle); border-radius:12px; padding:14px 16px;">
+              <div style="font-weight:600; font-size:14px; margin-block-end:8px;">{{ c.title }}</div>
+              <div class="mt-row">
+                <sc-for list="{{ c.lines }}" as="ln" hint-placeholder-count="2">
+                  <span class="mt-kv"><span class="k">{{ ln.k }}</span><span class="v">{{ ln.v }}</span></span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="position:sticky; bottom:0; display:flex; gap:12px; padding:14px 20px; padding-block-end:max(14px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+        <a href="SAQEEL%20PWA-Field%20Virtual%20Visit.dc.html" target="_top" class="btn btn-secondary" style="flex:1; text-align:center; text-decoration:none;">{{ t.startRemote }}</a>
+        <a href="SAQEEL%20PWA-Field%20Preparation.dc.html" target="_top" class="btn btn-primary" style="flex:1; text-align:center; text-decoration:none;">{{ t.startVisit }}</a>
+      </div>
+    </div>
+  </div></div>
+  <div aria-hidden="true" style="height:58px; flex:none;"></div>
+  <nav style="position:fixed; inset-inline:0; bottom:0; z-index:30; display:flex; background:var(--nav-bg); color:var(--nav-text); padding-block-end:env(safe-area-inset-bottom);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span style="font-size:11px;">{{ t.navHome }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20My%20Tasks.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text-active);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg><span style="font-size:11px;">{{ t.navTasks }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Establishments.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/></svg><span style="font-size:11px;">{{ t.navEst }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Notifications.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:11px;">{{ t.navNotif }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg><span style="font-size:11px;">{{ t.navAccount }}</span></a>
+  </nav>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", sel: 0, pane: "list", reg: "activities", lang: "en" };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        back:"رجوع", myTasks:"مهامي", myTasksSub:"المهام المسندة إليك · نطاق محكوم بالصلاحية", feedbackQr:"رمز التقييم", theme:"الوضع", langBtnLabel:"EN",
+        estData:"بيانات المنشأة", licensedEst:"منشأة مرخصة", timeline:"الجدول الزمني",
+        regNumber:"رقم السجل", phone:"رقم الهاتف", investment:"حجم الاستثمار", requestDate:"تاريخ إنشاء الطلب", estType:"نوع المنشأة", factory:"مصنع", estStatus:"حالة المنشأة", production:"الإنتاج",
+        evalIndicators:"مؤشرات التقييم", complianceRate:"نسبة الامتثال", compliant:"ممتثل", riskScore:"درجة الخطورة",
+        healthRiskNote:"درجة الصحة ودرجة الخطورة مفهومان منفصلان محكومان.",
+        licenseData:"بيانات الترخيص", licenseType:"نوع الترخيص", industrial:"صناعي", licenseStatus:"حالة الترخيص", valid:"ساري",
+        expiryDate:"تاريخ الانتهاء", licenseNumber:"رقم الرخصة", region:"المنطقة", riyadh:"الرياض", city:"المدينة",
+        visitLocation:"موقع الزيارة", address:"العنوان", addressVal:"المدينة الصناعية الثانية · الرياض", officialLoc:"الموقع الرسمي",
+        regData:"البيانات التنظيمية", startRemote:"بدء زيارة عن بُعد", startVisit:"بدء تنفيذ الزيارة",
+        navHome:"الرئيسية", navTasks:"مهامي", navEst:"المنشآت", navNotif:"الإشعارات", navAccount:"حسابي", online:"متصل", syncNow:"مزامنة الآن",
+      },
+      en: {
+        back:"Back", myTasks:"My Tasks", myTasksSub:"Tasks assigned to you · authority-scoped", feedbackQr:"Feedback QR", theme:"Theme", langBtnLabel:"AR",
+        estData:"Establishment Data", licensedEst:"Licensed establishment", timeline:"Timeline",
+        regNumber:"Registration no.", phone:"Phone", investment:"Investment size", requestDate:"Request created on", estType:"Establishment type", factory:"Factory", estStatus:"Establishment status", production:"In production",
+        evalIndicators:"Evaluation Indicators", complianceRate:"Compliance rate", compliant:"Compliant", riskScore:"Risk score",
+        healthRiskNote:"Health score and risk score are separate, governed concepts.",
+        licenseData:"License Data", licenseType:"License type", industrial:"Industrial", licenseStatus:"License status", valid:"Valid",
+        expiryDate:"Expiry date", licenseNumber:"License number", region:"Region", riyadh:"Riyadh", city:"City",
+        visitLocation:"Visit Location", address:"Address", addressVal:"Second Industrial City · Riyadh", officialLoc:"official location",
+        regData:"Regulatory Data", startRemote:"Start remote visit", startVisit:"Start visit execution",
+        navHome:"Home", navTasks:"My Tasks", navEst:"Establishments", navNotif:"Notifications", navAccount:"Account", online:"Online", syncNow:"Sync Now",
+      },
+    };
+    const t = STR[lang];
+    const TASKS = lang === "ar" ? [
+      { id: "40219", company: "شركة الأمل لتدريب العمال", date: "2026-07-22", status: "قيد التنفيذ", badge: "badge-compliant", reg: "1010445213", phone: "0114567890", investment: "5,000,000 ريال", compliance: "84%", risk: "منخفضة", riskBadge: "badge-compliant", license: "IL-44718" },
+      { id: "40195", company: "مصنع الخليج للمنسوجات", date: "2026-07-23", status: "جديدة", badge: "badge-info", reg: "1010778432", phone: "0126654433", investment: "12,300,000 ريال", compliance: "71%", risk: "عالية", riskBadge: "badge-critical", license: "IL-39820" },
+      { id: "40160", company: "مصنع نجد للألبان", date: "2026-07-23", status: "بانتظار", badge: "badge-warning", reg: "1010556677", phone: "0112233445", investment: "8,900,000 ريال", compliance: "90%", risk: "منخفضة", riskBadge: "badge-compliant", license: "IL-41002" },
+      { id: "40233", company: "شركة الرياض للأسمنت", date: "2026-07-24", status: "جديدة", badge: "badge-info", reg: "1010334455", phone: "0114998877", investment: "45,000,000 ريال", compliance: "78%", risk: "متوسطة", riskBadge: "badge-warning", license: "IL-40771" },
+    ] : [
+      { id: "40219", company: "Al-Amal Worker Training Co.", date: "2026-07-22", status: "In progress", badge: "badge-compliant", reg: "1010445213", phone: "0114567890", investment: "SAR 5,000,000", compliance: "84%", risk: "Low", riskBadge: "badge-compliant", license: "IL-44718" },
+      { id: "40195", company: "Gulf Textiles Factory", date: "2026-07-23", status: "New", badge: "badge-info", reg: "1010778432", phone: "0126654433", investment: "SAR 12,300,000", compliance: "71%", risk: "High", riskBadge: "badge-critical", license: "IL-39820" },
+      { id: "40160", company: "Najd Dairy Factory", date: "2026-07-23", status: "Pending", badge: "badge-warning", reg: "1010556677", phone: "0112233445", investment: "SAR 8,900,000", compliance: "90%", risk: "Low", riskBadge: "badge-compliant", license: "IL-41002" },
+      { id: "40233", company: "Riyadh Cement Co.", date: "2026-07-24", status: "New", badge: "badge-info", reg: "1010334455", phone: "0114998877", investment: "SAR 45,000,000", compliance: "78%", risk: "Medium", riskBadge: "badge-warning", license: "IL-40771" },
+    ];
+    const REG = lang === "ar" ? [
+      ["activities", "أنشطة المصنع"], ["manufacturing", "حالات التصنيع"], ["contacts", "جهات الاتصال"],
+      ["machines", "الآلات"], ["products", "المنتجات"], ["raw", "المواد الأولية"],
+      ["documents", "الوثائق"], ["license", "وثائق الرخصة"],
+    ] : [
+      ["activities", "Factory Activities"], ["manufacturing", "Manufacturing Status"], ["contacts", "Contacts"],
+      ["machines", "Machines"], ["products", "Products"], ["raw", "Raw Materials"],
+      ["documents", "Documents"], ["license", "License Documents"],
+    ];
+    const CARDS = lang === "ar" ? {
+      activities: [{ title: "صناعة المنتجات البلاستيكية", lines: [["رقم النشاط", "22201"], ["ISIC", "2220"]] }, { title: "تصنيع مواد التعبئة", lines: [["رقم النشاط", "22209"], ["الحالة", "نشط"]] }],
+      manufacturing: [{ title: "حالة تصنيع مستمرة", lines: [["الورديات", "3"], ["الطاقة", "الغاز الطبيعي"]] }],
+      contacts: [{ title: "سعود بن فهد القحطاني", lines: [["الصفة", "مدير"], ["الجوال", "0559466370"]] }, { title: "ناصر بن علي الدوسري", lines: [["الصفة", "مسؤول سلامة"], ["الجوال", "0553322119"]] }],
+      machines: [{ title: "ماكينة لحام (MIG/TIG)", lines: [["الطاقة", "120 قطعة/ساعة"], ["الحالة", "موجودة"]] }, { title: "خلاط مواد خام", lines: [["الطاقة", "80 قطعة/ساعة"], ["الحالة", "موجودة"]] }],
+      products: [{ title: "حبيبات بولي إيثيلين (PE)", lines: [["HS", "390110"], ["خاضع للائحة", "نعم"]] }],
+      raw: [{ title: "كربونات كالسيوم صناعية", lines: [["HS", "251710"], ["الكمية", "200 طن"]] }],
+      documents: [{ title: "شهادة الدفاع المدني", lines: [["الحالة", "سارية"], ["الانتهاء", "2026-09-13"]] }],
+      license: [{ title: "شهادة الترخيص الصناعي", lines: [["الرقم", "IL-44718"], ["الانتهاء", "2027-03-01"]] }],
+    } : {
+      activities: [{ title: "Plastic products manufacturing", lines: [["Activity no.", "22201"], ["ISIC", "2220"]] }, { title: "Packaging materials manufacturing", lines: [["Activity no.", "22209"], ["Status", "Active"]] }],
+      manufacturing: [{ title: "Continuous manufacturing status", lines: [["Shifts", "3"], ["Energy", "Natural gas"]] }],
+      contacts: [{ title: "Saud bin Fahd Al-Qahtani", lines: [["Title", "Manager"], ["Mobile", "0559466370"]] }, { title: "Nasser bin Ali Al-Dosari", lines: [["Title", "Safety Officer"], ["Mobile", "0553322119"]] }],
+      machines: [{ title: "Welding machine (MIG/TIG)", lines: [["Output", "120 units/hr"], ["Status", "Present"]] }, { title: "Raw material mixer", lines: [["Output", "80 units/hr"], ["Status", "Present"]] }],
+      products: [{ title: "Polyethylene (PE) pellets", lines: [["HS", "390110"], ["Regulated", "Yes"]] }],
+      raw: [{ title: "Industrial calcium carbonate", lines: [["HS", "251710"], ["Quantity", "200 t"]] }],
+      documents: [{ title: "Civil defense certificate", lines: [["Status", "Valid"], ["Expiry", "2026-09-13"]] }],
+      license: [{ title: "Industrial license certificate", lines: [["Number", "IL-44718"], ["Expiry", "2027-03-01"]] }],
+    };
+    const sel = TASKS[this.state.sel];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      syncNow: () => {},
+      pane: this.state.pane, backToList: () => this.setState({ pane: "list" }),
+      tasks: TASKS.map((tk, i) => ({ ...tk, bg: this.state.sel === i ? "var(--accent-soft)" : "transparent", pick: () => this.setState({ sel: i, pane: "detail" }) })),
+      sel,
+      regChips: REG.map(([id, title]) => ({ title, selected: this.state.reg === id, pick: () => this.setState({ reg: id }) })),
+      regCards: CARDS[this.state.reg] || [],
+    };
+  }
+}
+
+</script>
+</body>
+</html>

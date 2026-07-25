@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .dr-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 16px 18px 100px; display:flex; flex-direction:column; gap:12px; }
+  .dr-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:14px 16px; display:flex; gap:12px; align-items:flex-start; text-decoration:none; color:inherit; }
+  .dr-card:hover { box-shadow:var(--shadow-card-hover); }
+  .dr-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
+    <span class="badge badge-warning" style="height:20px;"><span class="dot"></span>{{ draftCount }} {{ t.draftsWord }}</span>
+    <button class="dr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="dr-wrap">
+    <p class="t-caption" style="margin:0;">{{ t.intro }}</p>
+    <sc-for list="{{ drafts }}" as="d" hint-placeholder-count="3">
+      <a href="SAQEEL%20PWA-Field%20Inspection%20Form.dc.html" target="_top" class="dr-card">
+        <span style="width:38px; height:38px; border-radius:10px; background:var(--status-warning-soft); color:var(--status-warning-text); display:grid; place-items:center; flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:18px;height:18px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></span>
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font-weight:600; font-size:14px;">{{ d.factory }}</span><span class="grow"></span><span class="badge {{ d.syncBadge }}" style="height:18px;">{{ d.syncLabel }}</span></div>
+          <div class="t-caption id-code" style="margin-block-start:2px;">{{ d.ref }} · {{ d.reportKind }}</div>
+          <div class="t-caption id-code" style="margin-block-start:2px; opacity:.75;">{{ t.storeKey }}: {{ d.draftKeyPrefix }} · {{ d.itemsDraft }} {{ t.itemsQueued }}</div>
+          <div class="t-caption" style="margin-block-start:6px;">{{ t.lastEdited }} {{ d.lastEdited }} · {{ d.progress }} {{ t.complete }}</div>
+          <div style="height:5px; border-radius:999px; background:var(--surface-sunken); margin-block-start:6px; overflow:hidden;"><span style="display:block; height:100%; width:{{ d.progress }}; background:var(--action-primary);"></span></div>
+        </div>
+      </a>
+    </sc-for>
+    <div class="panel" style="padding:12px 14px; font-size:12px; color:var(--text-secondary); display:flex; gap:8px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <span>{{ t.offlineNote }}</span>
+    </div>
+    <div class="panel" style="padding:12px 14px; font-size:12px; color:var(--text-secondary); display:flex; gap:8px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px; flex:none; margin-block-start:1px;"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z"/></svg>
+      <span>{{ t.groundingNote }}</span>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  // Mirrors the real IndexedDB `drafts` store (web/src/lib/offline.ts): checklist-item response
+  // drafts are keyed `${inspection_id}:${item_id}`, written via saveDraft() and read per inspection
+  // via getDrafts(inspection_id). Each row below is one inspection that currently holds unsent local
+  // drafts; opening it resumes the form. O-12: drafts are findable from a dedicated list.
+  // Demo data — a DC prototype cannot open IndexedDB; live drafts populate on-device at runtime.
+  state = { theme: "dark", lang: "en" };
+
+  // Canonical per-inspection draft records. draftKeyPrefix is the drafts-store key namespace for
+  // that inspection (`${inspectionId}:<item_id>`); itemsDraft = count of item responses queued locally.
+  store() {
+    return [
+      { inspectionId: "insp_40219", ref: "VS-40219", itemsDraft: 9, progress: "60%", synced: false,
+        factoryAr: "شركة معادن الخليج", factoryEn: "Gulf Metal Industries",
+        reportKindAr: "تقرير زيارة", reportKindEn: "Visit report",
+        editedAr: "اليوم 14:22", editedEn: "Today 14:22" },
+      { inspectionId: "insp_40251", ref: "VS-40251", itemsDraft: 5, progress: "35%", synced: true,
+        factoryAr: "صناعات ينبع الكيميائية", factoryEn: "Yanbu Chemical Industries",
+        reportKindAr: "فسح كيميائي", reportKindEn: "Chemical clearance",
+        editedAr: "أمس 16:40", editedEn: "Yesterday 16:40" },
+      { inspectionId: "insp_40041", ref: "VS-40041", itemsDraft: 14, progress: "80%", synced: true,
+        factoryAr: "مصنع تبوك للبلاستيك", factoryEn: "Tabuk Plastics Factory",
+        reportKindAr: "تقرير سلامة", reportKindEn: "Safety report",
+        editedAr: "قبل 3 أيام", editedEn: "3 days ago" },
+    ];
+  }
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", backArrow:"M15 6l-6 6 6 6", title:"المسودات", langBtnLabel:"EN", draftsWord:"مسودة",
+        intro:"عمليات التفتيش المحفوظة محلياً ولم تُرسل بعد. تُستأنف من حيث توقفت وتُزامَن عند توفر الاتصال.",
+        lastEdited:"آخر تعديل:", complete:"مكتمل", storeKey:"المفتاح", itemsQueued:"بند في الطابور",
+        syncPending:"بانتظار المزامنة", syncLocal:"محفوظة محلياً",
+        offlineNote:"المسودات مخزّنة على جهازك (IndexedDB) وتبقى متاحة دون اتصال حتى الإرسال النهائي.",
+        groundingNote:"مبني على مخزن drafts الفعلي في IndexedDB (mim-field-v1، offline.ts) — إجابات البنود تُخزّن بمفتاح ‎<معرّف_التفتيش>:<معرّف_البند> وتُقرأ عبر getDrafts(). البيانات هنا تجريبية؛ المسودات الحقيقية تُعبأ على الجهاز." },
+      en: { back:"Back", backArrow:"M9 6l6 6-6 6", title:"Drafts", langBtnLabel:"AR", draftsWord:"drafts",
+        intro:"Inspections saved locally and not yet submitted. Resume where you left off; they sync when connectivity is available.",
+        lastEdited:"Last edited:", complete:"complete", storeKey:"Key", itemsQueued:"items queued",
+        syncPending:"Pending sync", syncLocal:"Saved locally",
+        offlineNote:"Drafts are stored on your device (IndexedDB) and stay available offline until final submission.",
+        groundingNote:"Modeled on the real `drafts` IndexedDB store (mim-field-v1, offline.ts) — item responses are keyed `<inspection_id>:<item_id>` and read via getDrafts(). Data here is demo; live drafts populate on-device." },
+    };
+    const t = STR[lang];
+    const drafts = this.store().map(d => ({
+      factory: ar ? d.factoryAr : d.factoryEn,
+      ref: d.ref,
+      reportKind: ar ? d.reportKindAr : d.reportKindEn,
+      draftKeyPrefix: d.inspectionId + ":*",
+      itemsDraft: d.itemsDraft,
+      lastEdited: ar ? d.editedAr : d.editedEn,
+      progress: d.progress,
+      syncBadge: d.synced ? "badge-neutral" : "badge-warning",
+      syncLabel: d.synced ? t.syncLocal : t.syncPending,
+    }));
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      drafts, draftCount: drafts.length,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

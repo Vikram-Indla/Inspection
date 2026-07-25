@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  *:focus { outline: none; }
+  *:focus-visible { outline: 2px solid var(--focus-ring, #6ea8fe); outline-offset: 2px; border-radius: 3px; }
+  @keyframes vlPulse { 0%,100% { opacity: .45; } 50% { opacity: .85; } }
+  .vl-sk { background: var(--surface-sunken); border-radius: 6px; animation: vlPulse 1.4s ease-in-out infinite; }
+  .vl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { .vl-sk { animation: none; } }
+</style>
+</helmet>
+<div style="height:100vh; display:flex; flex-direction:column; background:#0e1116; color:#e7ecf3; font-family:var(--font-body), system-ui, sans-serif;">
+
+  <div style="flex:none; display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:8px 14px; background:#161b23; border-block-end:1px solid #2a323d; font-size:11.5px;">
+    <span style="font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:#8fa3bb;">WA-DES-045 · evidence harness</span>
+    <span style="display:flex; align-items:center; gap:6px;">
+      <span style="color:#8fa3bb;">Frame</span>
+      <sc-for list="{{ vwOpts }}" as="o" hint-placeholder-count="5">
+        <button onClick="{{ o.on }}" aria-pressed="{{ o.active }}" style="{{ o.style }}">{{ o.label }}</button>
+      </sc-for>
+    </span>
+    <span style="display:flex; align-items:center; gap:6px;">
+      <span style="color:#8fa3bb;">Locale</span>
+      <sc-for list="{{ locOpts }}" as="o" hint-placeholder-count="2">
+        <button onClick="{{ o.on }}" aria-pressed="{{ o.active }}" style="{{ o.style }}">{{ o.label }}</button>
+      </sc-for>
+    </span>
+    <span style="display:flex; align-items:center; gap:6px;">
+      <span style="color:#8fa3bb;">Theme</span>
+      <sc-for list="{{ themeOpts }}" as="o" hint-placeholder-count="2">
+        <button onClick="{{ o.on }}" aria-pressed="{{ o.active }}" style="{{ o.style }}">{{ o.label }}</button>
+      </sc-for>
+    </span>
+    <span style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+      <span style="color:#8fa3bb;">Hard state</span>
+      <sc-for list="{{ stateOpts }}" as="o" hint-placeholder-count="8">
+        <button onClick="{{ o.on }}" aria-pressed="{{ o.active }}" style="{{ o.style }}">{{ o.label }}</button>
+      </sc-for>
+    </span>
+  </div>
+
+  <div style="flex:1; min-height:0; overflow:auto; display:grid; justify-items:center; align-content:start; padding:14px;">
+  <div style="{{ scaleStyle }}">
+  <div dir="{{ dir }}" data-theme="{{ theme }}" style="{{ frameStyle }}">
+
+    <sc-if value="{{ isWide }}" hint-placeholder-val="{{ true }}">
+    <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+    </sc-if>
+
+    <main id="main-content" tabindex="-1" style="height:100%; min-inline-size:0; overflow-y:auto; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary);">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+      <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 18px;">
+          <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+            <span style="display:flex; align-items:center; gap:7px;">
+              <button class="btn btn-icon btn-ghost" aria-label="{{ t.menu }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+              <span style="font-weight:700; font-size:14px; letter-spacing:.05em;">SAQEEL</span>
+              <span aria-hidden="true" style="opacity:.4;">|</span>
+              <span lang="ar" dir="rtl" style="font-weight:600; font-size:15px;">صقيل</span>
+            </span>
+          </sc-if>
+          <span class="grow"></span>
+          <span class="id-code" style="font-size:10.5px; color:var(--text-muted);">{{ t.rlsBadge }}</span>
+          <button style="display:flex; align-items:center; gap:8px; border:0; background:none; cursor:pointer; padding:2px 4px; font:inherit; color:inherit;"><span class="avatar" style="background:var(--action-primary); color:#fff;">MQ</span></button>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:12px; padding:0 18px 12px; flex-wrap:wrap;">
+          <div>
+            <h1 style="font-size:20px; font-weight:700; letter-spacing:-0.02em; margin:0;">{{ t.title }}</h1>
+            <div class="t-caption" style="margin-block-start:3px;">{{ t.subtitle }}</div>
+          </div>
+        </div>
+      </header>
+
+      <a id="page-body" tabindex="-1"></a>
+    <div style="padding:16px 18px 64px; display:flex; flex-direction:column; gap:14px;">
+
+        <sc-if value="{{ isUnauthorized }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" role="region" aria-label="{{ t.unauthorizedTitle }}" style="padding:34px 22px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:26px; height:26px; color:var(--text-muted);"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <div style="font-size:15px; font-weight:600;">{{ t.unauthorizedTitle }}</div>
+            <p class="t-caption" style="margin:0; max-width:440px;">{{ t.unauthorizedBody }}</p>
+            <div class="id-code" style="font-size:10.5px; color:var(--text-muted);">CR-053 · CR-075 · planning.view</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showWorkspace }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+
+          <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+            <div aria-busy="true" aria-live="polite" style="display:flex; flex-direction:column; gap:14px;">
+              <span class="vl-sr">{{ t.loading }}</span>
+              <div class="kpi-grid">
+                <sc-for list="{{ skFive }}" as="s" hint-placeholder-count="5">
+                  <div class="kpi"><div class="vl-sk" style="width:58%; height:9px;"></div><div class="vl-sk" style="width:34%; height:22px; margin-block-start:12px;"></div></div>
+                </sc-for>
+              </div>
+              <div class="panel" style="padding:12px 14px; display:flex; gap:10px; flex-wrap:wrap;">
+                <sc-for list="{{ skSeven }}" as="s" hint-placeholder-count="7">
+                  <div class="vl-sk" style="width:118px; height:30px;"></div>
+                </sc-for>
+              </div>
+              <div class="panel" style="padding:14px; display:flex; flex-direction:column; gap:9px;">
+                <sc-for list="{{ skTen }}" as="s" hint-placeholder-count="10">
+                  <div class="vl-sk" style="width:100%; height:26px;"></div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isReady }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+
+            <div class="kpi-grid" role="group" aria-label="{{ t.kpiGroup }}" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(148px,1fr)); gap:10px;">
+              <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+                <button onClick="{{ k.on }}" aria-pressed="{{ k.active }}" style="{{ k.style }}">
+                  <span class="kpi-label" style="display:block; text-align:start;">{{ k.label }}</span>
+                  <span class="kpi-value" style="display:block; text-align:start; font-size:{{ k.valueSize }};">{{ k.value }}</span>
+                  <span class="t-caption" style="display:block; text-align:start;">{{ k.note }}</span>
+                </button>
+              </sc-for>
+            </div>
+
+            <div class="panel" style="padding:12px 14px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <label class="vl-sr" for="vl-q">{{ t.searchLabel }}</label>
+                <div class="input-affix" style="flex:1; min-width:220px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                  <input id="vl-q" class="input" type="search" value="{{ q }}" onChange="{{ onQ }}" placeholder="{{ t.searchPlaceholder }}" aria-describedby="vl-q-help" style="border-radius:var(--radius-full); background:var(--surface-secondary); border-color:var(--border-subtle);">
+                </div>
+                <button class="btn btn-ghost btn-sm" onClick="{{ onReset }}">{{ t.reset }}</button>
+              </div>
+              <div id="vl-q-help" class="t-caption">{{ t.searchHelp }}</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(168px,1fr)); gap:10px;">
+                <sc-for list="{{ filters }}" as="f" hint-placeholder-count="6">
+                  <div style="display:flex; flex-direction:column; gap:4px; min-inline-size:0;">
+                    <label class="t-label" for="{{ f.id }}">{{ f.label }}</label>
+                    <sc-if value="{{ f.ok }}" hint-placeholder-val="{{ true }}">
+                      <select id="{{ f.id }}" class="input" value="{{ f.value }}" onChange="{{ f.on }}" disabled="{{ f.disabled }}" aria-describedby="{{ f.helpId }}" style="background:var(--surface-secondary); border-color:var(--border-subtle); font:inherit; font-size:12.5px; padding:7px 9px;">
+                        <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4">
+                          <option value="{{ o.value }}">{{ o.label }}</option>
+                        </sc-for>
+                      </select>
+                    </sc-if>
+                    <sc-if value="{{ f.broken }}" hint-placeholder-val="{{ false }}">
+                      <div id="{{ f.id }}" role="status" style="border:1px solid var(--status-critical); border-radius:var(--radius-sm, 6px); padding:7px 9px; font-size:12px; display:flex; align-items:center; gap:7px; color:var(--status-critical-text, var(--status-critical));">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px; height:14px; flex:none;"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+                        <span style="flex:1; min-inline-size:0;">{{ t.optionsUnavailable }}</span>
+                        <button class="btn btn-ghost btn-sm" style="padding:0 6px;">{{ t.retry }}</button>
+                      </div>
+                    </sc-if>
+                    <span id="{{ f.helpId }}" class="t-caption">{{ f.help }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ isOutOfRange }}" hint-placeholder-val="{{ false }}">
+              <div class="alert" role="status" style="display:flex; gap:9px; align-items:flex-start;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:16px; height:16px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+                <div>{{ t.outOfRange }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isDataUnavailable }}" hint-placeholder-val="{{ false }}">
+              <div class="panel" role="alert" style="padding:30px 22px; display:flex; flex-direction:column; align-items:center; gap:9px; text-align:center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:24px; height:24px; color:var(--status-critical);"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+                <div style="font-size:14.5px; font-weight:600;">{{ t.unavailableTitle }}</div>
+                <p class="t-caption" style="margin:0; max-width:460px;">{{ t.unavailableBody }}</p>
+                <button class="btn btn-secondary btn-sm">{{ t.retry }}</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showList }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+
+              <sc-if value="{{ isTable }}" hint-placeholder-val="{{ true }}">
+              <div class="panel" style="padding:0; overflow:hidden;">
+                <div class="table-wrap" style="border:0; overflow-x:auto;">
+                  <table class="table">
+                    <caption class="vl-sr">{{ t.tableCaption }}</caption>
+                    <thead><tr>
+                      <sc-for list="{{ columns }}" as="c" hint-placeholder-count="8">
+                        <th aria-sort="{{ c.ariaSort }}" scope="col" style="white-space:nowrap;">
+                          <button onClick="{{ c.on }}" style="background:none; border:0; padding:0; font:inherit; color:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                            <span>{{ c.label }}</span><span aria-hidden="true" style="opacity:.65; font-size:10px;">{{ c.arrow }}</span>
+                          </button>
+                        </th>
+                      </sc-for>
+                    </tr></thead>
+                    <tbody>
+                      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+                        <tr>
+                          <td><a href="#" onClick="{{ r.open }}" class="id-code" style="font-size:12px; font-weight:600; color:var(--action-primary); text-decoration:none;">{{ r.id }}</a></td>
+                          <td><span style="display:block; font-weight:600;">{{ r.factory }}</span><span class="t-caption id-code">{{ r.code }}</span></td>
+                          <td class="t-caption" style="white-space:nowrap;">{{ r.type }}</td>
+                          <td><span class="badge {{ r.planClass }}">{{ r.plan }}</span></td>
+                          <td><span class="badge {{ r.opClass }}">{{ r.op }}</span></td>
+                          <td style="white-space:nowrap;">{{ r.inspector }}</td>
+                          <td class="id-code" style="font-size:11.5px; white-space:nowrap;">{{ r.window }}</td>
+                          <td class="id-code" style="font-size:11.5px; white-space:nowrap; color:var(--text-muted);">{{ r.updated }}</td>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{ isCards }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <label class="t-label" for="vl-sort">{{ t.sortBy }}</label>
+                  <select id="vl-sort" class="input" value="{{ sortKey }}" onChange="{{ onSortSelect }}" style="background:var(--surface-secondary); border-color:var(--border-subtle); font:inherit; font-size:12.5px; padding:6px 9px;">
+                    <sc-for list="{{ columns }}" as="c" hint-placeholder-count="8">
+                      <option value="{{ c.key }}">{{ c.label }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+                <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+                  <a href="#" onClick="{{ r.open }}" class="panel" style="padding:12px 13px; display:flex; flex-direction:column; gap:7px; text-decoration:none; color:inherit;">
+                    <div style="display:flex; align-items:baseline; gap:8px; justify-content:space-between;">
+                      <span class="id-code" style="font-size:12px; font-weight:600; color:var(--action-primary);">{{ r.id }}</span>
+                      <span class="t-caption">{{ r.type }}</span>
+                    </div>
+                    <div style="font-weight:600; font-size:13.5px;">{{ r.factory }}</div>
+                    <div class="t-caption id-code">{{ r.code }}</div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                      <span class="badge {{ r.planClass }}">{{ r.plan }}</span>
+                      <span class="badge {{ r.opClass }}">{{ r.op }}</span>
+                    </div>
+                    <dl style="display:grid; grid-template-columns:auto 1fr; gap:3px 10px; margin:0; font-size:12px;">
+                      <dt class="t-caption">{{ t.colInspector }}</dt><dd style="margin:0;">{{ r.inspector }}</dd>
+                      <dt class="t-caption">{{ t.colWindow }}</dt><dd class="id-code" style="margin:0; font-size:11.5px;">{{ r.window }}</dd>
+                      <dt class="t-caption">{{ t.colUpdated }}</dt><dd class="id-code" style="margin:0; font-size:11.5px;">{{ r.updated }}</dd>
+                    </dl>
+                  </a>
+                </sc-for>
+              </div>
+              </sc-if>
+
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span class="t-caption" aria-live="polite">{{ pageSummary }}</span>
+                <span class="grow"></span>
+                <button class="btn btn-secondary btn-sm" onClick="{{ onPrev }}" disabled="{{ prevDisabled }}">{{ t.prev }}</button>
+                <button class="btn btn-secondary btn-sm" onClick="{{ onNext }}" disabled="{{ nextDisabled }}">{{ t.next }}</button>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isNoMatch }}" hint-placeholder-val="{{ false }}">
+              <div class="panel" role="status" style="padding:30px 22px; display:flex; flex-direction:column; align-items:center; gap:9px; text-align:center;">
+                <div style="font-size:14.5px; font-weight:600;">{{ t.noMatchTitle }}</div>
+                <p class="t-caption" style="margin:0; max-width:430px;">{{ t.noMatchBody }}</p>
+                <button class="btn btn-secondary btn-sm" onClick="{{ onReset }}">{{ t.reset }}</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isRlsZero }}" hint-placeholder-val="{{ false }}">
+              <div class="panel" role="status" style="padding:30px 22px; display:flex; flex-direction:column; align-items:center; gap:9px; text-align:center;">
+                <div style="font-size:14.5px; font-weight:600;">{{ t.rlsZeroTitle }}</div>
+                <p class="t-caption" style="margin:0; max-width:450px;">{{ t.rlsZeroBody }}</p>
+              </div>
+            </sc-if>
+
+            <div class="alert alert-immutable" style="display:flex; gap:9px; align-items:flex-start;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:16px; height:16px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+              <div>{{ t.readOnlyNote }}</div>
+            </div>
+          </div>
+          </sc-if>
+        </div>
+        </sc-if>
+      </div>
+    </main>
+
+    <sc-if value="{{ hasDossier }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="{{ t.dossierTitle }}" style="position:absolute; inset:0; background:rgba(6,9,14,.55); display:flex; justify-content:flex-end;">
+      <div style="inline-size:min(430px, 100%); block-size:100%; overflow-y:auto; background:var(--surface-primary); border-inline-start:1px solid var(--border-subtle); padding:16px 18px; display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:flex-start; gap:10px;">
+          <div style="flex:1; min-inline-size:0;">
+            <div class="t-label">{{ t.dossierTitle }}</div>
+            <h2 style="margin:3px 0 0; font-size:17px; font-weight:700;">{{ dossier.factory }}</h2>
+            <div class="id-code t-caption" style="margin-block-start:3px;">{{ dossier.id }} · {{ dossier.code }}</div>
+          </div>
+          <button class="btn btn-icon btn-ghost" onClick="{{ closeDossier }}" aria-label="{{ t.close }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        </div>
+        <dl style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:11px 16px; margin:0;">
+          <div><dt class="t-label">{{ t.colType }}</dt><dd style="margin:2px 0 0; font-size:13px;">{{ dossier.type }}</dd></div>
+          <div><dt class="t-label">{{ t.colPlan }}</dt><dd style="margin:2px 0 0;"><span class="badge {{ dossier.planClass }}">{{ dossier.plan }}</span></dd></div>
+          <div><dt class="t-label">{{ t.colOp }}</dt><dd style="margin:2px 0 0;"><span class="badge {{ dossier.opClass }}">{{ dossier.op }}</span></dd></div>
+          <div><dt class="t-label">{{ t.colInspector }}</dt><dd style="margin:2px 0 0; font-size:13px;">{{ dossier.inspector }}</dd></div>
+          <div><dt class="t-label">{{ t.colWindow }}</dt><dd class="id-code" style="margin:2px 0 0; font-size:12px;">{{ dossier.window }}</dd></div>
+          <div><dt class="t-label">{{ t.colUpdated }}</dt><dd class="id-code" style="margin:2px 0 0; font-size:12px;">{{ dossier.updated }}</dd></div>
+          <div><dt class="t-label">{{ t.region }}</dt><dd style="margin:2px 0 0; font-size:13px;">{{ dossier.region }}</dd></div>
+          <div><dt class="t-label">{{ t.city }}</dt><dd style="margin:2px 0 0; font-size:13px;">{{ dossier.city }}</dd></div>
+        </dl>
+        <div class="alert alert-immutable" style="display:flex; gap:9px; align-items:flex-start;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:16px; height:16px; flex:none; margin-block-start:1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+          <div>{{ t.dossierNote }}</div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+  </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:980}}">
+class Component extends DCLogic {
+  state = {
+    theme: "dark", locale: "en", vw: 1440, hard: "ready",
+    q: "", page: 1, sortKey: "window", sortDir: "desc",
+    f: { plan: "", type: "", region: "", city: "", win: "", insp: "" },
+    dossier: null,
+    avail: { w: typeof window !== "undefined" ? window.innerWidth : 1440, h: typeof window !== "undefined" ? window.innerHeight : 900 }
+  };
+
+  componentDidMount() {
+    this._r = () => this.setState({ avail: { w: window.innerWidth, h: window.innerHeight } });
+    this._r();
+    window.addEventListener("resize", this._r);
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this._r); }
+
+  renderVals() {
+    const S = this.state;
+    const ar = S.locale === "ar";
+    const H = { 1440: 900, 1024: 768, 412: 900, 390: 844, 320: 800 }[S.vw] || 900;
+    const scale = Math.min(1, (S.avail.w - 40) / S.vw, (S.avail.h - 110) / H);
+
+    const T = {
+      en: {
+        navOverview: "Overview", navDashboard: "Dashboard", navOps: "Operations Center", navFactory: "Factory 360",
+        navPlanningGroup: "Planning", navPlanning: "Planning", navVisits: "Visits", navCompliance: "Compliance",
+        navLibrary: "Compliance Library", shellNote: "F0 shell — inherited, not forked",
+        menu: "Open navigation", rlsBadge: "Access-controlled · RLS scoped",
+        title: "Visit management", subtitle: "Read-only Planning visit list · CR-053 · IDs immutable",
+        kpiGroup: "Planning status counts", kpiDraft: "Draft", kpiPublished: "Published", kpiReturned: "Returned",
+        kpiCancelled: "Cancelled", kpiExpired: "Expired",
+        kpiNoteDraft: "draft + internal validated", kpiNote: "planning status",
+        searchLabel: "Search visits",
+        searchPlaceholder: "Visit ID / reference, factory name, CR number, industrial licence, inspector",
+        searchHelp: "Case-insensitive partial match across visit reference, factory name, CR number, industrial licence and inspector. Scoped by RLS.",
+        reset: "Reset", retry: "Retry",
+        fPlan: "Planning status", fType: "Business visit type", fRegion: "Region", fCity: "City", fWin: "Visit window", fInsp: "Inspector",
+        anyPlan: "Any status", anyType: "Any type", anyRegion: "Any region", anyCity: "Any city", anyWin: "Any window", anyInsp: "Any inspector",
+        helpCombine: "Combines with all other active criteria (AND).",
+        helpCity: "Options follow the selected region.",
+        helpCityLocked: "Select a region first.",
+        optionsUnavailable: "Options unavailable — not shortened",
+        colRef: "Visit reference", colFactory: "Factory", colType: "Type", colPlan: "Planning status",
+        colOp: "Operational state", colInspector: "Inspector", colWindow: "Visit window", colUpdated: "Last update",
+        tableCaption: "Permitted Planning-lifecycle visits, 25 per page",
+        sortBy: "Sort by", prev: "Previous", next: "Next",
+        pageSummary: (a, b, tot, p, tp) => `Showing ${a}–${b} of ${tot} visits · page ${p} of ${tp}`,
+        loading: "Loading visit counts and list",
+        noMatchTitle: "No visits match the current criteria",
+        noMatchBody: "Search text and filters are unchanged. Reset to return to the full permitted list.",
+        rlsZeroTitle: "No planned visits in your authorized scope",
+        rlsZeroBody: "Counts are a true zero for the regions, cities and factories your role is permitted to see. This is not an error.",
+        unavailableTitle: "Visit counts and list unavailable",
+        unavailableBody: "The planning visit source did not respond. Counts are not shown as zero, because zero would be untrue.",
+        outOfRange: "The requested page does not exist. Showing the last valid page.",
+        unauthorizedTitle: "Authorized role required",
+        unauthorizedBody: "This workspace requires business staff with planning.view. No visit counts, rows or filter values are disclosed on this screen.",
+        readOnlyNote: "Read-only workspace. Planning status and operational state are two independent tracks and are never merged. Rescheduling, reassignment, cancellation, bulk actions and publish/return are not part of this slice (CR-071).",
+        dossierTitle: "Read-only visit dossier", dossierNote: "Read-only. No mutation action is bound, hidden or serialized on this surface.",
+        close: "Close", region: "Region", city: "City",
+        unavailableValue: "Unavailable", notSourceBacked: "Not source-backed"
+      },
+      ar: {
+        navOverview: "نظرة عامة", navDashboard: "لوحة المعلومات", navOps: "مركز العمليات", navFactory: "المصنع ٣٦٠",
+        navPlanningGroup: "التخطيط", navPlanning: "التخطيط", navVisits: "الزيارات", navCompliance: "الالتزام",
+        navLibrary: "مكتبة الالتزام", shellNote: "هيكل F0 — موروث وغير مكرَّر",
+        menu: "فتح التنقل", rlsBadge: "محكوم بالصلاحيات · نطاق RLS",
+        title: "إدارة الزيارات", subtitle: "قائمة زيارات التخطيط للقراءة فقط · CR-053 · المعرفات ثابتة",
+        kpiGroup: "أعداد حالات التخطيط", kpiDraft: "مسودة", kpiPublished: "منشورة", kpiReturned: "معادة",
+        kpiCancelled: "ملغاة", kpiExpired: "منتهية",
+        kpiNoteDraft: "مسودة + تم التحقق داخلياً", kpiNote: "حالة التخطيط",
+        searchLabel: "بحث الزيارات",
+        searchPlaceholder: "رقم الزيارة، اسم المصنع، السجل التجاري، الرخصة الصناعية، المفتش",
+        searchHelp: "مطابقة جزئية غير حساسة لحالة الأحرف عبر رقم الزيارة واسم المصنع والسجل التجاري والرخصة الصناعية والمفتش، ضمن نطاق الصلاحيات.",
+        reset: "إعادة تعيين", retry: "إعادة المحاولة",
+        fPlan: "حالة التخطيط", fType: "نوع الزيارة", fRegion: "المنطقة", fCity: "المدينة", fWin: "نافذة الزيارة", fInsp: "المفتش",
+        anyPlan: "كل الحالات", anyType: "كل الأنواع", anyRegion: "كل المناطق", anyCity: "كل المدن", anyWin: "كل النوافذ", anyInsp: "كل المفتشين",
+        helpCombine: "يُدمج مع بقية المعايير النشطة (و).",
+        helpCity: "الخيارات تتبع المنطقة المختارة.",
+        helpCityLocked: "اختر المنطقة أولاً.",
+        optionsUnavailable: "الخيارات غير متاحة — لم يتم اختصارها",
+        colRef: "رقم الزيارة", colFactory: "المصنع", colType: "النوع", colPlan: "حالة التخطيط",
+        colOp: "الحالة التشغيلية", colInspector: "المفتش", colWindow: "نافذة الزيارة", colUpdated: "آخر تحديث",
+        tableCaption: "زيارات دورة التخطيط المصرّح بها، ٢٥ لكل صفحة",
+        sortBy: "الترتيب حسب", prev: "السابق", next: "التالي",
+        pageSummary: (a, b, tot, p, tp) => `عرض ${a}–${b} من ${tot} زيارة · صفحة ${p} من ${tp}`,
+        loading: "جاري تحميل الأعداد والقائمة",
+        noMatchTitle: "لا توجد زيارات مطابقة للمعايير الحالية",
+        noMatchBody: "نص البحث والمرشحات كما هي. أعد التعيين للعودة إلى القائمة الكاملة المصرّح بها.",
+        rlsZeroTitle: "لا توجد زيارات مخططة ضمن نطاقك المصرّح به",
+        rlsZeroBody: "الأعداد صفر حقيقي للمناطق والمدن والمصانع المصرّح لدورك برؤيتها. هذه ليست حالة خطأ.",
+        unavailableTitle: "الأعداد والقائمة غير متاحة",
+        unavailableBody: "لم يستجب مصدر زيارات التخطيط. لا تُعرض الأعداد كصفر لأن الصفر غير صحيح هنا.",
+        outOfRange: "الصفحة المطلوبة غير موجودة. يتم عرض آخر صفحة صالحة.",
+        unauthorizedTitle: "مطلوب دور مصرّح به",
+        unauthorizedBody: "تتطلب هذه الشاشة موظف أعمال لديه صلاحية planning.view. لا يتم كشف أي أعداد أو صفوف أو قيم مرشحات.",
+        readOnlyNote: "شاشة للقراءة فقط. حالة التخطيط والحالة التشغيلية مساران مستقلان ولا يُدمجان. إعادة الجدولة وإعادة الإسناد والإلغاء والإجراءات الجماعية والنشر/الإعادة ليست ضمن هذه الشريحة (CR-071).",
+        dossierTitle: "ملف الزيارة للقراءة فقط", dossierNote: "للقراءة فقط. لا يوجد أي إجراء تعديل مرتبط أو مخفي أو مُسلسل في هذه الشاشة.",
+        close: "إغلاق", region: "المنطقة", city: "المدينة",
+        unavailableValue: "غير متاح", notSourceBacked: "غير مدعوم بمصدر"
+      }
+    };
+    const t = T[S.locale];
+
+    const PC = { draft: "badge-onhold", validated: "badge-onhold", published: "badge-info", returned: "badge-warning", cancelled: "badge-critical", expired: "badge-disabled" };
+    const PLen = { draft: "Draft", validated: "Draft (validated)", published: "Published", returned: "Returned", cancelled: "Cancelled", expired: "Expired" };
+    const PLar = { draft: "مسودة", validated: "مسودة (مُتحقق)", published: "منشورة", returned: "معادة", cancelled: "ملغاة", expired: "منتهية" };
+    const OC = { not_started: "badge-pending", on_way: "badge-info", arrived: "badge-warning", executing: "badge-compliant", submitted: "badge-completed" };
+    const OLen = { not_started: "Not started", on_way: "On the way", arrived: "Arrived", executing: "Executing", submitted: "Submitted" };
+    const OLar = { not_started: "لم تبدأ", on_way: "في الطريق", arrived: "وصل", executing: "قيد التنفيذ", submitted: "مُرسلة" };
+    const TYen = { bulk: "Bulk · scheduled", single: "Single · scheduled", immediate: "Immediate", follow: "Follow-up" };
+    const TYar = { bulk: "مجمّعة · مجدولة", single: "فردية · مجدولة", immediate: "فورية", follow: "متابعة" };
+    const PL = ar ? PLar : PLen, OL = ar ? OLar : OLen, TY = ar ? TYar : TYen;
+
+    const REG = { riyadh: ["Riyadh", "الرياض"], makkah: ["Makkah", "مكة المكرمة"], eastern: ["Eastern Province", "المنطقة الشرقية"], madinah: ["Madinah", "المدينة المنورة"], qassim: ["Qassim", "القصيم"] };
+    const CITY = {
+      riyadh: [["riyadh_c", "Riyadh", "الرياض"], ["kharj", "Al Kharj", "الخرج"]],
+      makkah: [["jeddah", "Jeddah", "جدة"], ["taif", "Taif", "الطائف"]],
+      eastern: [["dammam", "Dammam", "الدمام"], ["jubail", "Jubail", "الجبيل"]],
+      madinah: [["madinah_c", "Madinah", "المدينة"]],
+      qassim: [["buraidah", "Buraidah", "بريدة"]]
+    };
+    const INSP = [["kao", "K. Al-Otaibi", "خ. العتيبي"], ["sh", "S. Hamdan", "س. حمدان"], ["mq", "M. Qahtani", "م. القحطاني"], ["nah", "N. Al-Harbi", "ن. الحربي"], ["fz", "F. Al-Zahrani", "ف. الزهراني"]];
+    const WIN = [["past", "Before today", "قبل اليوم"], ["today", "Today", "اليوم"], ["week", "This week", "هذا الأسبوع"], ["next", "Next week", "الأسبوع القادم"]];
+
+    // Illustrative fixture rows (not data truth) — shape and grain only.
+    const F = [
+      ["VS-40219", "Al Rasheed Steel Works", "مصانع الرشيد للصلب", "F-2231", "1010445213", "IL-44718", "bulk", "published", "arrived", "kao", "riyadh", "riyadh_c", "today", "20 Jul 09:00–12:00", "25 Jul 09:12"],
+      ["VS-40213", "Gulf Textiles Ltd.", "الخليج للنسيج", "F-1884", "1010338920", "IL-41220", "single", "published", "on_way", "sh", "makkah", "jeddah", "week", "21 Jul 10:00–13:00", "25 Jul 08:40"],
+      ["VS-40208", "Najd Dairy Factory", "مصنع نجد للألبان", "F-1602", "1010229117", "IL-39004", "immediate", "published", "executing", "mq", "riyadh", "kharj", "today", "20 Jul 13:30–15:30", "25 Jul 09:01"],
+      ["VS-40201", "Eastern Plastics", "الشرقية للبلاستيك", "F-1450", "2050118844", "IL-37765", "single", "returned", "not_started", "kao", "eastern", "dammam", "week", "22 Jul 15:00–17:00", "24 Jul 17:22"],
+      ["VS-40188", "Riyadh Cement Co.", "شركة أسمنت الرياض", "F-2233", "1010556677", "IL-45001", "bulk", "expired", "not_started", "nah", "riyadh", "riyadh_c", "past", "18 Jul 08:00–11:00", "19 Jul 00:05"],
+      ["VS-40177", "Jubail Chemicals", "الجبيل للكيماويات", "F-1120", "2051009933", "IL-33210", "immediate", "published", "submitted", "sh", "eastern", "jubail", "week", "24 Jul 11:00–13:00", "24 Jul 13:44"],
+      ["VS-40170", "Taif Rose Processing", "الطائف لتصنيع الورد", "F-1301", "4030112277", "IL-31998", "single", "draft", "not_started", "fz", "makkah", "taif", "next", "28 Jul 09:00–11:00", null],
+      ["VS-40166", "Madinah Plastics", "المدينة للبلاستيك", "F-1712", "4650223311", "IL-40112", "follow", "validated", "not_started", "nah", "madinah", "madinah_c", "next", "29 Jul 08:00–10:00", null],
+      ["VS-40159", "Buraidah Feed Mills", "بريدة لمطاحن الأعلاف", "F-1990", "1131445566", "IL-42876", "bulk", "published", "not_started", "mq", "qassim", "buraidah", "next", "27 Jul 07:30–10:30", "23 Jul 11:10"],
+      ["VS-40152", "Dammam Steel Rolling", "الدمام لدرفلة الصلب", "F-2044", "2050334455", "IL-38550", "single", "cancelled", "not_started", "kao", "eastern", "dammam", "past", "17 Jul 09:00–12:00", "16 Jul 15:30"],
+      ["VS-40147", "Jeddah Food Industries", "جدة للصناعات الغذائية", "F-1288", "4030556677", "IL-36610", "bulk", "published", "on_way", "sh", "makkah", "jeddah", "today", "25 Jul 10:00–13:00", "25 Jul 09:20"],
+      ["VS-40141", "Al Kharj Paper Mill", "الخرج لمصانع الورق", "F-1155", "1011223344", "IL-30044", "single", "returned", "not_started", "fz", "riyadh", "kharj", "week", "23 Jul 12:00–14:00", "22 Jul 16:02"],
+      ["VS-40136", "Qassim Textiles", "القصيم للنسيج", "F-1877", "1131778899", "IL-43119", "follow", "published", "arrived", "nah", "qassim", "buraidah", "today", "25 Jul 08:00–11:00", "25 Jul 08:55"],
+      ["VS-40130", "Jubail Petrochem Unit 4", "الجبيل للبتروكيماويات ٤", "F-2410", "2051445566", "IL-46200", "bulk", "published", "executing", "mq", "eastern", "jubail", "today", "25 Jul 07:00–12:00", "25 Jul 09:05"],
+      ["VS-40124", "Riyadh Glass Works", "الرياض للزجاج", "F-1533", "1010889900", "IL-34870", "single", "expired", "not_started", "kao", "riyadh", "riyadh_c", "past", "15 Jul 09:00–11:00", "16 Jul 00:05"],
+      ["VS-40119", "Madinah Dates Packing", "المدينة لتعبئة التمور", "F-1044", "4650667788", "IL-32255", "immediate", "published", "submitted", "fz", "madinah", "madinah_c", "week", "22 Jul 09:00–11:00", "22 Jul 12:12"],
+      ["VS-40112", "Taif Marble", "الطائف للرخام", "F-1620", "4030889911", "IL-35540", "single", "draft", "not_started", "sh", "makkah", "taif", "next", "30 Jul 10:00–12:00", null],
+      ["VS-40108", "Dammam Cable Co.", "الدمام للكابلات", "F-2101", "2050998877", "IL-39990", "bulk", "published", "not_started", "nah", "eastern", "dammam", "next", "28 Jul 08:00–11:00", "21 Jul 10:44"],
+      ["VS-40101", "Buraidah Dairy", "بريدة للألبان", "F-1466", "1131009988", "IL-31110", "follow", "returned", "not_started", "mq", "qassim", "buraidah", "week", "23 Jul 14:00–16:00", "22 Jul 18:31"],
+      ["VS-40096", "Jeddah Steel Pipes", "جدة لأنابيب الصلب", "F-2288", "4030223344", "IL-44002", "single", "published", "on_way", "kao", "makkah", "jeddah", "today", "25 Jul 11:00–14:00", "25 Jul 09:18"],
+      ["VS-40090", "Riyadh Pharma", "الرياض للأدوية", "F-1809", "1010334455", "IL-37001", "immediate", "cancelled", "not_started", "sh", "riyadh", "riyadh_c", "past", "16 Jul 13:00–15:00", "15 Jul 09:40"],
+      ["VS-40084", "Al Kharj Poultry", "الخرج للدواجن", "F-1377", "1011889977", "IL-33380", "bulk", "published", "arrived", "fz", "riyadh", "kharj", "today", "25 Jul 06:30–10:30", "25 Jul 08:12"],
+      ["VS-40079", "Jubail Fertilizers", "الجبيل للأسمدة", "F-2355", "2051667788", "IL-45560", "single", "published", "not_started", "nah", "eastern", "jubail", "next", "29 Jul 09:00–12:00", "20 Jul 14:26"],
+      ["VS-40071", "Madinah Cement", "أسمنت المدينة", "F-2190", "4650334422", "IL-41880", "bulk", "expired", "not_started", "mq", "madinah", "madinah_c", "past", "14 Jul 08:00–12:00", "15 Jul 00:05"],
+      ["VS-40066", "Qassim Plastics", "القصيم للبلاستيك", "F-1244", "1131556644", "IL-30990", "single", "validated", "not_started", "kao", "qassim", "buraidah", "next", "31 Jul 09:00–11:00", null],
+      ["VS-40060", "Jeddah Paints", "جدة للدهانات", "F-1955", "4030445566", "IL-38820", "follow", "published", "executing", "sh", "makkah", "jeddah", "today", "25 Jul 09:30–12:30", "25 Jul 09:22"],
+      ["VS-40055", "Riyadh Aluminium", "الرياض للألمنيوم", "F-2077", "1010667711", "IL-42440", "bulk", "published", "not_started", "fz", "riyadh", "riyadh_c", "week", "24 Jul 07:00–11:00", "22 Jul 09:15"]
+    ].map(r => ({
+      id: r[0], factory: ar ? r[2] : r[1], code: r[3], cr: r[4], lic: r[5], type: r[6],
+      plan: r[7], op: r[8], insp: r[9], region: r[10], city: r[11], win: r[12], window: r[13], updated: r[14]
+    }));
+
+    const hard = S.hard;
+    const isUnauthorized = hard === "unauthorized";
+    const isLoading = hard === "loading";
+    const isDataUnavailable = hard === "unavailable";
+    const isOptionsBroken = hard === "options";
+    const isRlsZeroState = hard === "rlszero";
+    const forcedNoMatch = hard === "nomatch";
+    const isOutOfRange = hard === "outofrange";
+
+    const nameOf = (list, k, i) => { const x = list.find(e => e[0] === k); return x ? x[ar ? 2 : 1] : k; };
+    const inspName = k => nameOf(INSP, k);
+
+    const scope = isRlsZeroState ? [] : F;
+    const q = forcedNoMatch ? "zzz-no-match" : S.q;
+    const ql = q.trim().toLowerCase();
+    const f = S.f;
+    const matches = d =>
+      (!ql || [d.id, d.factory, d.cr, d.lic, inspName(d.insp)].some(v => String(v).toLowerCase().includes(ql))) &&
+      (!f.plan || (f.plan === "draft" ? (d.plan === "draft" || d.plan === "validated") : d.plan === f.plan)) &&
+      (!f.type || d.type === f.type) && (!f.region || d.region === f.region) && (!f.city || d.city === f.city) &&
+      (!f.win || d.win === f.win) && (!f.insp || d.insp === f.insp);
+
+    const filtered = scope.filter(matches);
+    const cmp = (a, b) => {
+      const k = S.sortKey;
+      const val = d => k === "id" ? d.id : k === "factory" ? d.factory : k === "type" ? TY[d.type] : k === "plan" ? PL[d.plan]
+        : k === "op" ? OL[d.op] : k === "inspector" ? inspName(d.insp) : k === "updated" ? (d.updated || "") : d.window;
+      const r = String(val(a)).localeCompare(String(val(b)));
+      return (r !== 0 ? r : a.id.localeCompare(b.id)) * (S.sortDir === "asc" ? 1 : -1);
+    };
+    const sorted = filtered.slice().sort(cmp);
+    const PAGE = 25;
+    const total = sorted.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE));
+    const requested = isOutOfRange ? 9 : S.page;
+    const page = Math.min(Math.max(1, requested), totalPages);
+    const from = total === 0 ? 0 : (page - 1) * PAGE + 1;
+    const to = Math.min(page * PAGE, total);
+    const pageRows = sorted.slice((page - 1) * PAGE, page * PAGE);
+
+    const rows = pageRows.map(d => ({
+      id: d.id, factory: d.factory, code: d.code, type: TY[d.type],
+      plan: PL[d.plan], planClass: PC[d.plan], op: OL[d.op], opClass: OC[d.op],
+      inspector: inspName(d.insp), window: d.window,
+      updated: d.updated || t.notSourceBacked,
+      open: e => { if (e && e.preventDefault) e.preventDefault(); this.setState({ dossier: d }); }
+    }));
+
+    const cnt = k => scope.filter(d => k === "draft" ? (d.plan === "draft" || d.plan === "validated") : d.plan === k).length;
+    const kpiDefs = [["draft", t.kpiDraft, t.kpiNoteDraft], ["published", t.kpiPublished, t.kpiNote], ["returned", t.kpiReturned, t.kpiNote], ["cancelled", t.kpiCancelled, t.kpiNote], ["expired", t.kpiExpired, t.kpiNote]];
+    const kpis = kpiDefs.map(([k, label, note]) => {
+      const active = f.plan === k;
+      return {
+        key: k, label, note, active,
+        value: isDataUnavailable ? t.unavailableValue : String(cnt(k)),
+        valueSize: isDataUnavailable ? "15px" : "26px",
+        style: "min-inline-size:0; overflow-wrap:anywhere; text-align:start; cursor:pointer; font:inherit; color:inherit; background:var(--surface-primary); border:1px solid " +
+          (active ? "var(--action-primary)" : "var(--border-subtle)") +
+          "; box-shadow:var(--shadow-card); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:2px;" +
+          (active ? "outline:1px solid var(--action-primary); outline-offset:-2px;" : ""),
+        on: () => this.setState(s => ({ f: { ...s.f, plan: s.f.plan === k ? "" : k }, page: 1, dossier: null }))
+      };
+    });
+
+    const mkOpts = (anyLabel, list) => [{ value: "", label: anyLabel }].concat(list);
+    const regionOpts = Object.keys(REG).map(k => ({ value: k, label: REG[k][ar ? 1 : 0] }));
+    const cityList = f.region ? (CITY[f.region] || []) : [];
+    const cityOpts = cityList.map(c => ({ value: c[0], label: c[ar ? 2 : 1] }));
+    const set = (key, v) => this.setState(s => ({
+      f: { ...s.f, [key]: v, ...(key === "region" ? { city: "" } : {}) }, page: 1, dossier: null
+    }));
+    const ev = key => e => set(key, e.target.value);
+
+    const filters = [
+      { id: "vl-f-plan", label: t.fPlan, key: "plan", value: f.plan, options: mkOpts(t.anyPlan, [["draft", t.kpiDraft], ["published", t.kpiPublished], ["returned", t.kpiReturned], ["cancelled", t.kpiCancelled], ["expired", t.kpiExpired]].map(x => ({ value: x[0], label: x[1] }))), help: t.helpCombine, disabled: false },
+      { id: "vl-f-type", label: t.fType, key: "type", value: f.type, options: mkOpts(t.anyType, ["bulk", "single", "immediate", "follow"].map(k => ({ value: k, label: TY[k] }))), help: t.helpCombine, disabled: false },
+      { id: "vl-f-region", label: t.fRegion, key: "region", value: f.region, options: mkOpts(t.anyRegion, regionOpts), help: t.helpCombine, disabled: false },
+      { id: "vl-f-city", label: t.fCity, key: "city", value: f.city, options: mkOpts(t.anyCity, cityOpts), help: f.region ? t.helpCity : t.helpCityLocked, disabled: !f.region },
+      { id: "vl-f-win", label: t.fWin, key: "win", value: f.win, options: mkOpts(t.anyWin, WIN.map(w => ({ value: w[0], label: w[ar ? 2 : 1] }))), help: t.helpCombine, disabled: false },
+      { id: "vl-f-insp", label: t.fInsp, key: "insp", value: f.insp, options: mkOpts(t.anyInsp, INSP.map(i => ({ value: i[0], label: i[ar ? 2 : 1] }))), help: t.helpCombine, disabled: false }
+    ].map(x => ({ ...x, helpId: x.id + "-help", ok: !isOptionsBroken, broken: isOptionsBroken, on: ev(x.key) }));
+
+    const colDefs = [["id", t.colRef], ["factory", t.colFactory], ["type", t.colType], ["plan", t.colPlan], ["op", t.colOp], ["inspector", t.colInspector], ["window", t.colWindow], ["updated", t.colUpdated]];
+    const columns = colDefs.map(([key, label]) => ({
+      key, label,
+      ariaSort: S.sortKey === key ? (S.sortDir === "asc" ? "ascending" : "descending") : "none",
+      arrow: S.sortKey === key ? (S.sortDir === "asc" ? "▲" : "▼") : "",
+      on: () => this.setState(s => ({ sortKey: key, sortDir: s.sortKey === key && s.sortDir === "asc" ? "desc" : "asc", page: 1 }))
+    }));
+
+    const isNarrow = S.vw <= 412;
+    const btn = active => "font:inherit; font-size:11px; padding:3px 8px; border-radius:5px; cursor:pointer; border:1px solid " +
+      (active ? "#6ea8fe" : "#39414d") + "; background:" + (active ? "#22314a" : "#1c222b") + "; color:" + (active ? "#dce8ff" : "#a9b6c7") + ";";
+    const opt = (list, cur, setter) => list.map(o => ({ label: o[1], active: cur === o[0], style: btn(cur === o[0]), on: () => setter(o[0]) }));
+
+    const d = S.dossier;
+
+    return {
+      t, dir: ar ? "rtl" : "ltr", theme: S.theme, isWide: !isNarrow, isNarrow,
+      frameStyle: `width:${S.vw}px; height:${H}px; transform:scale(${scale}); transform-origin:top left; position:relative; display:flex; overflow:hidden; border:1px solid #2a323d; border-radius:8px; background:var(--surface-canvas); color:var(--text-primary); box-shadow:0 18px 48px rgba(0,0,0,.45);`,
+      scaleStyle: `width:${Math.round(S.vw * scale)}px; height:${Math.round(H * scale)}px; position:relative;`,
+      vwOpts: opt([[1440, "1440×900"], [1024, "1024×768"], [412, "412×900"], [390, "390×844"], [320, "320×800"]], S.vw, v => this.setState({ vw: v, dossier: null })),
+      locOpts: opt([["en", "EN / LTR"], ["ar", "AR / RTL"]], S.locale, v => this.setState({ locale: v })),
+      themeOpts: opt([["light", "Light"], ["dark", "Dark"]], S.theme, v => this.setState({ theme: v })),
+      stateOpts: opt([["ready", "Ready"], ["loading", "Loading"], ["rlszero", "RLS zero"], ["nomatch", "No match"], ["unavailable", "Data unavailable"], ["options", "Options unavailable"], ["unauthorized", "Unauthorized"], ["outofrange", "Out of range"]], S.hard, v => this.setState({ hard: v, page: 1, dossier: null })),
+
+      isUnauthorized, showWorkspace: !isUnauthorized,
+      isLoading, isReady: !isLoading,
+      isDataUnavailable, isOutOfRange,
+      isNoMatch: !isDataUnavailable && !isRlsZeroState && total === 0,
+      isRlsZero: !isDataUnavailable && isRlsZeroState,
+      showList: !isDataUnavailable && total > 0,
+      isTable: !isNarrow, isCards: isNarrow,
+
+      kpis, filters, columns, rows, q: S.q, sortKey: S.sortKey,
+      onQ: e => this.setState({ q: e.target.value, page: 1, dossier: null }),
+      onSortSelect: e => this.setState({ sortKey: e.target.value, page: 1 }),
+      onReset: () => this.setState({ q: "", f: { plan: "", type: "", region: "", city: "", win: "", insp: "" }, page: 1, hard: S.hard === "nomatch" ? "ready" : S.hard }),
+      pageSummary: t.pageSummary(from, to, total, page, totalPages),
+      onPrev: () => this.setState({ page: Math.max(1, page - 1), dossier: null }),
+      onNext: () => this.setState({ page: Math.min(totalPages, page + 1), dossier: null }),
+      prevDisabled: page <= 1, nextDisabled: page >= totalPages,
+
+      skFive: [1, 2, 3, 4, 5], skSeven: [1, 2, 3, 4, 5, 6, 7], skTen: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+
+      hasDossier: !!d, closeDossier: () => this.setState({ dossier: null }),
+      dossier: d ? {
+        id: d.id, factory: d.factory, code: d.code, type: TY[d.type],
+        plan: PL[d.plan], planClass: PC[d.plan], op: OL[d.op], opClass: OC[d.op],
+        inspector: inspName(d.insp), window: d.window, updated: d.updated || t.notSourceBacked,
+        region: REG[d.region][ar ? 1 : 0], city: (CITY[d.region].find(c => c[0] === d.city) || ["", "", ""])[ar ? 2 : 1]
+      } : { id: "", factory: "", code: "", type: "", plan: "", planClass: "", op: "", opClass: "", inspector: "", window: "", updated: "", region: "", city: "" }
+    };
+  }
+}
+</script>
+</body>
+</html>

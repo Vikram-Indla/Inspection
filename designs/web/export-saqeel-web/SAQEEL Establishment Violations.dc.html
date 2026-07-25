@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- App route this bulk violation-issuance flow maps to: /establishment-management/violations -->
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .ev-wrap { max-width: 900px; margin: 0 auto; padding: 20px 18px 100px; display:flex; flex-direction:column; gap:14px; }
+  .ev-card { background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:14px; box-shadow:var(--shadow-card); padding:16px 18px; }
+  .ev-row { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border-subtle); border-radius:10px; }
+  .ev-row[aria-pressed="true"] { border-color:var(--action-primary); background:var(--accent-soft); }
+  .ev-box { width:18px; height:18px; border-radius:5px; border:1.5px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .ev-box.on { background:var(--action-primary); border-color:var(--action-primary); }
+  .ev-tag { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font-size:12.5px; cursor:pointer; }
+  .ev-tag[aria-pressed="true"] { background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" data-route="/establishment-management/violations" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:14px 20px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:16px;">{{ t.title }}</div><div class="t-caption">{{ stepLabel }}</div></div>
+    <span class="t-caption id-code" style="opacity:.7;">/establishment-management/violations</span>
+    <button class="btn btn-ghost btn-sm" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="ev-wrap">
+    <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+      <div class="ev-card" style="display:flex; gap:8px; align-items:flex-start; background:var(--accent-soft); border:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" stroke-width="1.7" style="width:15px;height:15px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span style="font-size:12.5px;">{{ t.step1Hint }}</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ establishments }}" as="e" hint-placeholder-count="6">
+          <button class="ev-row" aria-pressed="{{ e.selected }}" onClick="{{ e.toggle }}" style="width:100%; text-align:start; background:var(--surface-primary);">
+            <span class="ev-box {{ e.boxCls }}"><sc-if value="{{ e.selected }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>
+            <span style="flex:1; min-width:0;"><span style="display:block; font-weight:600; font-size:13.5px;">{{ e.name }}</span><span class="t-caption id-code">{{ e.license }} · {{ e.city }}</span></span>
+            <span class="badge {{ e.badge }}" style="height:18px;">{{ e.status }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost" style="flex:1;" onClick="{{ clearSelection }}">{{ t.deselect }}</button>
+        <button class="btn btn-primary" style="flex:1;" onClick="{{ goStep2 }}" disabled="{{ noneSelected }}">{{ t.determineViolations }}</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+      <div class="ev-card" style="display:flex; gap:8px; align-items:flex-start; background:var(--accent-soft); border:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-text)" stroke-width="1.7" style="width:15px;height:15px; flex:none; margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span style="font-size:12.5px;">{{ t.step2Hint }} — {{ selectedCount }} {{ t.establishmentsWord }}</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <sc-for list="{{ filterTags }}" as="ft" hint-placeholder-count="4">
+          <button class="ev-tag" aria-pressed="{{ ft.active }}" onClick="{{ ft.pick }}">{{ ft.label }}</button>
+        </sc-for>
+      </div>
+      <input class="input" placeholder="{{ t.searchViolation }}">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ violations }}" as="v" hint-placeholder-count="4">
+          <button class="ev-row" aria-pressed="{{ v.selected }}" onClick="{{ v.toggle }}" style="width:100%; text-align:start; background:var(--surface-primary); flex-direction:column; align-items:flex-start; gap:8px;">
+            <div style="display:flex; width:100%; align-items:center; gap:10px;"><span class="ev-box {{ v.boxCls }}"><sc-if value="{{ v.selected }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span><span style="flex:1; font-weight:600; font-size:13.5px;">{{ v.title }}</span><span class="badge {{ v.sevBadge }}" style="height:17px;">{{ v.severity }}</span></div>
+            <div class="t-caption" style="padding-inline-start:28px;">{{ v.regulation }} · {{ t.itemLabel }}: {{ v.item }} · {{ t.penaltyLabel }}: {{ v.penalty }}</div>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost" style="flex:1;" onClick="{{ backStep1 }}">{{ t.back }}</button>
+        <button class="btn btn-primary" style="flex:1;" onClick="{{ goStep3 }}" disabled="{{ noViolationSelected }}">{{ t.confirmViolation }}</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+      <div class="ev-card" style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:12px; padding:32px 20px;">
+        <span style="width:48px; height:48px; border-radius:50%; background:var(--status-compliant-soft); color:var(--status-compliant-text); display:grid; place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:22px;height:22px;"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <div style="font-weight:700; font-size:16px;">{{ t.doneTitle }}</div>
+        <div class="t-caption">{{ selectedCount }} {{ t.establishmentsWord }} · {{ t.violationApplied }}</div>
+        <button class="btn btn-secondary" onClick="{{ backStep1 }}">{{ t.startOver }}</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  // App route: /establishment-management/violations — bulk violation-issuance flow
+  // (Figma Establishment-Management / Select-violations 1632:67130). Step1 select establishments
+  // → Step2 violation catalog → Step3 confirm; selection semantics are bulk (many establishments).
+  state = { theme: "dark", lang: "en", step: 1, estSel: {}, tagFilter: null, violSel: null };
+
+  ESTS() {
+    return [
+      { id: "e1", nameAr: "مؤسسة النخبة التجارية", nameEn: "Al-Nokhba Commercial Est.", license: "#2A88C1", city: "جدة", statusAr: "معتمد", statusEn: "Approved", badge: "badge-compliant" },
+      { id: "e2", nameAr: "مصنع الخليج للمنسوجات", nameEn: "Gulf Textiles Factory", license: "IL-39820", city: "جدة", statusAr: "غير معتمد", statusEn: "Not approved", badge: "badge-warning" },
+      { id: "e3", nameAr: "شركة الرياض للأسمنت", nameEn: "Riyadh Cement Co.", license: "IL-40771", city: "الرياض", statusAr: "معتمد", statusEn: "Approved", badge: "badge-compliant" },
+    ];
+  }
+  VIOLATIONS() {
+    return [
+      { id: "v1", tagAr: "بيئة", tagEn: "Environment", titleAr: "عدم الالتزام بارتداء معدات السلامة", titleEn: "Failure to wear safety equipment", regAr: "لائحة نظام حماية البيئة", regEn: "Environmental Protection System Regulation", item: "3", penaltyAr: "إنذار كتابي", penaltyEn: "Written warning", sevAr: "متوسطة", sevEn: "Medium", sevBadge: "badge-warning" },
+      { id: "v2", tagAr: "سلامة", tagEn: "Safety", titleAr: "عدم وجود لوحة خارجية تحمل اسم المصنع", titleEn: "No exterior sign bearing the factory name", regAr: "لائحة التراخيص الصناعية", regEn: "Industrial Licensing Regulation", item: "1", penaltyAr: "غرامة 250 ريال", penaltyEn: "SAR 250 fine", sevAr: "منخفضة", sevEn: "Low", sevBadge: "badge-compliant" },
+      { id: "v3", tagAr: "عمالة", tagEn: "Labor", titleAr: "عدم توفير معدات الحماية اللازمة", titleEn: "Failure to provide required protective equipment", regAr: "لائحة السلامة المهنية", regEn: "Occupational Safety Regulation", item: "3", penaltyAr: "تدريب العاملين", penaltyEn: "Worker training", sevAr: "متوسطة", sevEn: "Medium", sevBadge: "badge-warning" },
+      { id: "v4", tagAr: "بيئة", tagEn: "Environment", titleAr: "عدم توفر طفايات حريق صالحة", titleEn: "No valid fire extinguishers available", regAr: "لائحة الدفاع المدني", regEn: "Civil Defense Regulation", item: "5", penaltyAr: "إشعار تصحيحي", penaltyEn: "Corrective notice", sevAr: "عالية", sevEn: "High", sevBadge: "badge-critical" },
+    ];
+  }
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { title:"إصدار مخالفة", langBtnLabel:"EN", back:"رجوع",
+        step1Hint:"حدد المنشآت التي تريد إصدار مخالفة عليها.", deselect:"إلغاء الاختيار", determineViolations:"تحديد المخالفات",
+        step2Hint:"يرجى اختيار المخالفات المناسبة للمنشآت المختارة", establishmentsWord:"منشأة", searchViolation:"البحث عن المخالفة",
+        itemLabel:"البند", penaltyLabel:"الجزاء", confirmViolation:"تأكيد المخالفة",
+        doneTitle:"تم تطبيق المخالفة بنجاح", violationApplied:"تم تسجيل المخالفة وإشعار المنشآت", startOver:"البدء من جديد",
+        stepLabels:["الخطوة 1 من 3: تحديد المنشآت","الخطوة 2 من 3: اختيار المخالفة","الخطوة 3 من 3: التأكيد"] },
+      en: { title:"Issue a Violation", langBtnLabel:"AR", back:"Back",
+        step1Hint:"Select the establishments to issue a violation against.", deselect:"Deselect", determineViolations:"Determine Violations",
+        step2Hint:"Please select the appropriate violations for the selected establishments", establishmentsWord:"establishments", searchViolation:"Search for a violation",
+        itemLabel:"Item", penaltyLabel:"Penalty", confirmViolation:"Confirm Violation",
+        doneTitle:"Violation applied successfully", violationApplied:"The violation was recorded and establishments notified", startOver:"Start Over",
+        stepLabels:["Step 1 of 3: Select establishments","Step 2 of 3: Choose violation","Step 3 of 3: Confirm"] },
+    };
+    const t = STR[lang];
+    const estSel = this.state.estSel;
+    const establishments = this.ESTS().map(e => ({
+      name: ar ? e.nameAr : e.nameEn, license: e.license, city: e.city, status: ar ? e.statusAr : e.statusEn, badge: e.badge,
+      selected: !!estSel[e.id], boxCls: estSel[e.id] ? "on" : "",
+      toggle: () => this.setState(s => ({ estSel: { ...s.estSel, [e.id]: !s.estSel[e.id] } })),
+    }));
+    const selectedCount = Object.values(estSel).filter(Boolean).length;
+    const tags = ar ? ["الكل", "بيئة", "سلامة", "عمالة"] : ["All", "Environment", "Safety", "Labor"];
+    const filterTags = tags.map(label => ({ label, active: (this.state.tagFilter || tags[0]) === label, pick: () => this.setState({ tagFilter: label }) }));
+    const activeTag = this.state.tagFilter || tags[0];
+    const violations = this.VIOLATIONS()
+      .filter(v => activeTag === tags[0] || (ar ? v.tagAr : v.tagEn) === activeTag)
+      .map(v => ({
+        title: ar ? v.titleAr : v.titleEn, regulation: ar ? v.regAr : v.regEn, item: v.item,
+        penalty: ar ? v.penaltyAr : v.penaltyEn, severity: ar ? v.sevAr : v.sevEn, sevBadge: v.sevBadge,
+        selected: this.state.violSel === v.id, boxCls: this.state.violSel === v.id ? "on" : "",
+        toggle: () => this.setState({ violSel: v.id }),
+      }));
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      stepLabel: t.stepLabels[this.state.step - 1],
+      isStep1: this.state.step === 1, isStep2: this.state.step === 2, isStep3: this.state.step === 3,
+      establishments, selectedCount, noneSelected: selectedCount === 0,
+      clearSelection: () => this.setState({ estSel: {} }),
+      goStep1: () => this.setState({ step: 1 }), backStep1: () => this.setState({ step: 1 }),
+      goStep2: () => this.setState({ step: 2 }), goStep3: () => this.setState({ step: 3 }),
+      filterTags, violations, noViolationSelected: !this.state.violSel,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

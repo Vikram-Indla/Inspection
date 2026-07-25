@@ -1,0 +1,1782 @@
+{
+  "revision": "SB-r3",
+  "updated": "2026-07-25",
+  "updatedBy": "claude-design",
+  "branch": "feature/ipad-field-channel-delivery",
+  "committed": false,
+  "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
+  "channels": [
+    {
+      "id": "web",
+      "label": "Web — console",
+      "note": "Business users. Desktop shell: rail + top nav. WA-SHELL-r5."
+    },
+    {
+      "id": "admin",
+      "label": "Admin — control panel",
+      "note": "Configuration and governance. Same shell, Administration group."
+    },
+    {
+      "id": "pwa",
+      "label": "PWA — iPad inspector",
+      "note": "Field channel. Installable, offline-first, sticky header + persistent tab bar. No console chrome, no atlas."
+    }
+  ],
+  "groups": [
+    {
+      "id": "shell",
+      "channel": "web",
+      "label": "Shared shell & identity"
+    },
+    {
+      "id": "console",
+      "channel": "web",
+      "label": "Console modules"
+    },
+    {
+      "id": "m6",
+      "channel": "web",
+      "label": "M6 Compliance / Enforcement"
+    },
+    {
+      "id": "exec",
+      "channel": "web",
+      "label": "Executive & insight"
+    },
+    {
+      "id": "webref",
+      "channel": "web",
+      "label": "Reference artefacts (not shippable)"
+    },
+    {
+      "id": "admincore",
+      "channel": "admin",
+      "label": "Control Panel core"
+    },
+    {
+      "id": "adminbuild",
+      "channel": "admin",
+      "label": "Builders & execution config"
+    },
+    {
+      "id": "admindata",
+      "channel": "admin",
+      "label": "Data, integrations & lookups"
+    },
+    {
+      "id": "adminaccess",
+      "channel": "admin",
+      "label": "Access, security & devices"
+    },
+    {
+      "id": "admingeo",
+      "channel": "admin",
+      "label": "Geo & platform ops"
+    },
+    {
+      "id": "pwashell",
+      "channel": "pwa",
+      "label": "PWA shell & navigation"
+    },
+    {
+      "id": "pwacore",
+      "channel": "pwa",
+      "label": "Daily driver screens"
+    },
+    {
+      "id": "pwaexec",
+      "channel": "pwa",
+      "label": "Inspection execution"
+    },
+    {
+      "id": "pwareport",
+      "channel": "pwa",
+      "label": "Reports & statements"
+    },
+    {
+      "id": "pwaoffline",
+      "channel": "pwa",
+      "label": "Offline, sync & device trust"
+    },
+    {
+      "id": "pwagap",
+      "channel": "pwa",
+      "label": "Designed, no route in repo"
+    },
+    {
+      "id": "pwaref",
+      "channel": "pwa",
+      "label": "Reference artefacts (not shippable)"
+    }
+  ],
+  "cards": [
+    {
+      "id": "shell-f0",
+      "channel": "web",
+      "group": "shell",
+      "name": "Shared authenticated shell",
+      "design": 95,
+      "code": 88,
+      "wiring": 90,
+      "designPage": "SAQEEL Web Shell v5.dc.html (WA-SHELL-r5)",
+      "route": "web/src/components/ShellClient.tsx · lib/shell-navigation.ts · app/astryx.css",
+      "pwa": {
+        "state": "ok",
+        "note": "PWA has its own shell; no shared chrome."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "Remove the Insights group (insights → ai-insights → /ai/suggestions) from SHELL_NAVIGATION — not sponsor-agreed (O-28). Top-nav AI entry stays."
+        },
+        {
+          "lane": "design",
+          "text": "Pixel diff of the r5 rail against the shipped rail never run — no automated diff exists (BS-1)."
+        },
+        {
+          "lane": "wiring",
+          "text": "13 design pages have no rail route, so the shipped rail cannot reach them (O-31)."
+        }
+      ],
+      "phase": 1,
+      "complexity": "M",
+      "dependsOn": [
+        "brand"
+      ]
+    },
+    {
+      "id": "brand",
+      "channel": "web",
+      "group": "shell",
+      "name": "Brand identity WA-BRAND-r1",
+      "design": 100,
+      "code": 0,
+      "wiring": 100,
+      "designPage": "SAQEEL Brand Identity Proof.dc.html",
+      "route": "web/src/components/ShellClient.tsx (.ax-shell__brand-wordmark + __brand-sub)",
+      "pwa": {
+        "state": "ok",
+        "note": "PWA keeps its own sticky-header identity by design."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "DEFECT — repo still renders the retired split صقيل / صناعي lockup. Replace with saqeel-wordmark-dark-mode.svg expanded, saqeel-favicon.svg collapsed, wordmark in mobile drawer. Both SVGs already in web/public/. Fingerprint 9dbf9042…6cf5dc05 (O-26)."
+        }
+      ],
+      "phase": 1,
+      "complexity": "S",
+      "dependsOn": []
+    },
+    {
+      "id": "dashboard",
+      "channel": "web",
+      "group": "console",
+      "name": "M1 Dashboard",
+      "design": 85,
+      "code": 95,
+      "wiring": 80,
+      "designPage": "SAQEEL M1 Dashboard.dc.html",
+      "route": "web/src/app/(app)/dashboard · lib/dashboard-kpi/*",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Strategic/Operational split and the 21-entry KPI workbook not diffed against KpiGrid + MetricStrip."
+        },
+        {
+          "lane": "wiring",
+          "text": "Blocked KPIs render 'Not configured' — no approved targets. Fail-closed is correct; closure needs a sponsor decision."
+        }
+      ],
+      "phase": 8,
+      "complexity": "L",
+      "dependsOn": [
+        "visits",
+        "m6-enforcement"
+      ]
+    },
+    {
+      "id": "tasks",
+      "channel": "web",
+      "group": "console",
+      "name": "Tasks",
+      "design": 80,
+      "code": 100,
+      "wiring": 90,
+      "designPage": "SAQEEL Tasks.dc.html",
+      "route": "web/src/app/(app)/tasks · TaskBoard.tsx · lib/workflow/tasks.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Board columns and card density not diffed against TaskBoard.tsx."
+        },
+        {
+          "lane": "code",
+          "text": "No rail route — unreachable from the shipped navigation (O-31)."
+        }
+      ],
+      "phase": 3,
+      "complexity": "M",
+      "dependsOn": [
+        "visits"
+      ]
+    },
+    {
+      "id": "visits",
+      "channel": "web",
+      "group": "console",
+      "name": "M2 Visits",
+      "design": 70,
+      "code": 100,
+      "wiring": 90,
+      "designPage": "SAQEEL Visits.dc.html (WA-DES-045)",
+      "route": "web/src/app/(app)/visits (+ [id], calendar, map, workload) · actions.ts",
+      "pwa": {
+        "state": "shared",
+        "note": "Visit records are the same rows the PWA executes against."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "M2-VS-002 BLOCKED_DUE_TO_MISSING_CONTRACT — predecessor byte/hash mismatch unreconciled, no exported successor hash."
+        },
+        {
+          "lane": "design",
+          "text": "Seven hard states designed; not verified against the route's real RLS-zero / no-match / unauthorized responses."
+        },
+        {
+          "lane": "code",
+          "text": "No rail route (O-31)."
+        }
+      ],
+      "phase": 3,
+      "complexity": "L",
+      "dependsOn": [
+        "planning"
+      ]
+    },
+    {
+      "id": "planning",
+      "channel": "web",
+      "group": "console",
+      "name": "Planning (single / bulk / immediate)",
+      "design": 75,
+      "code": 100,
+      "wiring": 95,
+      "designPage": "SAQEEL Planning.dc.html · SAQEEL Planning Identity.dc.html",
+      "route": "web/src/app/(app)/planning/* · draft-actions.ts · export-actions.ts · lib/planning/*",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Identity step (single vs bulk) not diffed against planning/single + planning/bulk."
+        }
+      ],
+      "phase": 3,
+      "complexity": "L",
+      "dependsOn": [
+        "m6-library",
+        "factories"
+      ]
+    },
+    {
+      "id": "reviews",
+      "channel": "web",
+      "group": "console",
+      "name": "Review & Approval",
+      "design": 75,
+      "code": 100,
+      "wiring": 90,
+      "designPage": "SAQEEL Review & Approval.dc.html",
+      "route": "web/src/app/(app)/reviews (+ [id]) · DecisionPanel.tsx",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Decision panel layout not pixel-diffed; maker≠checker copy not compared."
+        }
+      ],
+      "phase": 6,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-completion"
+      ]
+    },
+    {
+      "id": "cases",
+      "channel": "web",
+      "group": "console",
+      "name": "Cases",
+      "design": 75,
+      "code": 100,
+      "wiring": 90,
+      "designPage": "SAQEEL Cases.dc.html",
+      "route": "web/src/app/(app)/cases · actions.ts · lib/cases/spine.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Case spine timeline not diffed against lib/cases/spine.ts output."
+        },
+        {
+          "lane": "code",
+          "text": "Rail maps Cases to /enforcement ('Violation Cases') as nearest route — confirm or mark inactive (O-31)."
+        }
+      ],
+      "phase": 6,
+      "complexity": "M",
+      "dependsOn": [
+        "m6-enforcement"
+      ]
+    },
+    {
+      "id": "operations",
+      "channel": "web",
+      "group": "console",
+      "name": "M3 Operations Center + Live",
+      "design": 55,
+      "code": 100,
+      "wiring": 85,
+      "designPage": "SAQEEL M3 Operations Center - WA-DES-033-C3.dc.html · …Live - WA-DES-034-C3.dc.html",
+      "route": "web/src/app/(app)/operations (+ live, exceptions) · OpsMap.tsx · sla.ts · region-posture.ts",
+      "pwa": {
+        "state": "shared",
+        "note": "Reads inspector location recorded by the PWA — provenance states must stay mutually exclusive."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "ACTIVE_PARTIAL_NOT_ACCEPTED — P1 open: scannable Active-inspector list, source-backed detail hierarchy, fail-closed timestamps, locale-specific person names, distinct hard states."
+        },
+        {
+          "lane": "design",
+          "text": "Fixture-heavy rows and projected-route disclosure still visible in runtime."
+        }
+      ],
+      "phase": 8,
+      "complexity": "XL",
+      "dependsOn": [
+        "pwa-dashboard",
+        "admin-risk",
+        "visits"
+      ]
+    },
+    {
+      "id": "factories",
+      "channel": "web",
+      "group": "console",
+      "name": "M4 Factories + Factory 360",
+      "design": 35,
+      "code": 100,
+      "wiring": 85,
+      "designPage": "SAQEEL Factories.dc.html · SAQEEL Factory 360.dc.html (WA-DES-026/027)",
+      "route": "web/src/app/(app)/factories (+ [id], cr) · lib/factory360/* · api/field/factory-360",
+      "pwa": {
+        "state": "shared",
+        "note": "Same Factory-360 projection powers the PWA Establishment File — changes must be mirrored."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "BLOCK — WA-DES-027 restored predecessor carries the unapproved Arabic-only صناعي brand plus fabricated MODON / version / timestamp claims."
+        },
+        {
+          "lane": "design",
+          "text": "No responsive / AR-RTL / theme / hard-state evidence; bounded correction stalled mid-render. Do not implement from the live design."
+        }
+      ],
+      "phase": 3,
+      "complexity": "L",
+      "dependsOn": [
+        "admin-data"
+      ]
+    },
+    {
+      "id": "portal",
+      "channel": "web",
+      "group": "console",
+      "name": "Portal (external)",
+      "design": 70,
+      "code": 100,
+      "wiring": 85,
+      "designPage": "SAQEEL Portal.dc.html",
+      "route": "web/src/app/(app)/portal · actions.ts · lib/portal/self-assessment.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Self-assessment flow not diffed."
+        },
+        {
+          "lane": "code",
+          "text": "No rail route (O-31)."
+        }
+      ],
+      "phase": 7,
+      "complexity": "M",
+      "dependsOn": [
+        "m6-enforcement"
+      ]
+    },
+    {
+      "id": "profile",
+      "channel": "web",
+      "group": "console",
+      "name": "Profile",
+      "design": 80,
+      "code": 100,
+      "wiring": 95,
+      "designPage": "SAQEEL Profile.dc.html",
+      "route": "web/src/app/(app)/profile · NotificationPrefsForm.tsx",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Notification preference matrix not diffed."
+        },
+        {
+          "lane": "code",
+          "text": "No rail route (O-31)."
+        }
+      ],
+      "phase": 7,
+      "complexity": "S",
+      "dependsOn": [
+        "shell-f0"
+      ]
+    },
+    {
+      "id": "virtual",
+      "channel": "web",
+      "group": "console",
+      "name": "Virtual visits (console side)",
+      "design": 60,
+      "code": 90,
+      "wiring": 55,
+      "designPage": "SAQEEL Virtual.dc.html",
+      "route": "web/src/app/(app)/virtual (+ [id]) · ScheduleForm.tsx · lib/providers/video.ts",
+      "pwa": {
+        "state": "break",
+        "note": "Inspector-side virtual visit has NO repo route — the console can schedule a session the field app cannot join."
+      },
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
+        },
+        {
+          "lane": "code",
+          "text": "No rail route (O-31)."
+        }
+      ],
+      "phase": 3,
+      "complexity": "M",
+      "dependsOn": [
+        "visits"
+      ]
+    },
+    {
+      "id": "m6-requests",
+      "channel": "web",
+      "group": "m6",
+      "name": "Compliance requests + approval queue",
+      "design": 65,
+      "code": 90,
+      "wiring": 80,
+      "designPage": "SAQEEL M6 Compliance Control Plane.dc.html · SAQEEL Compliance Requests.dc.html",
+      "route": "web/src/app/(app)/admin/compliance-requests · admin/compliance-approvals",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "RPC and grant names in the M6 handoff are shape-correct placeholders — bind to real Supabase RPC/policy names and write the mapping back (O-25)."
+        },
+        {
+          "lane": "wiring",
+          "text": "SLA windows, ageing bands and escalation targets remain 'Not configured' — no approved values."
+        },
+        {
+          "lane": "design",
+          "text": "Request lifecycle list + detail (WA-M6-AC-001) has no confirmed repo route — /admin/compliance-approvals covers the checker side only."
+        }
+      ],
+      "phase": 3,
+      "complexity": "L",
+      "dependsOn": [
+        "m6-library",
+        "admin-access"
+      ]
+    },
+    {
+      "id": "m6-library",
+      "channel": "web",
+      "group": "m6",
+      "name": "Inspection Rules library",
+      "design": 60,
+      "code": 90,
+      "wiring": 80,
+      "designPage": "SAQEEL M6 Compliance Control Plane.dc.html",
+      "route": "web/src/app/(app)/admin/regulations · admin/items · admin/packages",
+      "pwa": {
+        "state": "shared",
+        "note": "Published instrument versions are what the PWA checklist executes — version drift breaks field execution."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Instrument detail screen not diffed against admin/items + admin/packages."
+        }
+      ],
+      "phase": 3,
+      "complexity": "L",
+      "dependsOn": [
+        "shell-f0"
+      ]
+    },
+    {
+      "id": "m6-enforcement",
+      "channel": "web",
+      "group": "m6",
+      "name": "Violations, recommendations, bulk",
+      "design": 60,
+      "code": 85,
+      "wiring": 75,
+      "designPage": "SAQEEL M6 Compliance Control Plane.dc.html · SAQEEL Enforcement.dc.html · SAQEEL Establishment Violations.dc.html",
+      "route": "web/src/app/(app)/enforcement · admin/violations · admin/bulk-violations · admin/enforcement-recommendations",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "code",
+          "text": "/enforcement has page.tsx only — no actions.ts, so it reads but records no decision."
+        },
+        {
+          "lane": "wiring",
+          "text": "Enforcement measure catalogue and legal-basis wording are source-governed — still unsupplied."
+        }
+      ],
+      "phase": 6,
+      "complexity": "L",
+      "dependsOn": [
+        "pwa-completion",
+        "m6-library"
+      ]
+    },
+    {
+      "id": "m6-committee",
+      "channel": "web",
+      "group": "m6",
+      "name": "Committee handoff",
+      "design": 65,
+      "code": 95,
+      "wiring": 70,
+      "designPage": "SAQEEL Committee.dc.html",
+      "route": "web/src/app/(app)/committee · actions.ts · RecordSignature.tsx · lib/committee/signature.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "Signature transport is a provider fact (lib/providers/signature-docusign.ts present, not confirmed live)."
+        },
+        {
+          "lane": "wiring",
+          "text": "Quorum / voting rule not configured — no approved committee rule."
+        },
+        {
+          "lane": "design",
+          "text": "No committee route in SHELL_NAVIGATION; rail points at /enforcement instead."
+        }
+      ],
+      "phase": 6,
+      "complexity": "L",
+      "dependsOn": [
+        "m6-enforcement"
+      ]
+    },
+    {
+      "id": "exec",
+      "channel": "web",
+      "group": "exec",
+      "name": "Executive Overview",
+      "design": 70,
+      "code": 60,
+      "wiring": 60,
+      "designPage": "SAQEEL Executive Overview.html",
+      "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "code",
+          "text": "No dedicated executive route — renders as a dashboard persona view. Confirm that is the intended shape."
+        },
+        {
+          "lane": "design",
+          "text": "Must run inside the normal web shell (rail + top nav), not a stripped frame — verify in code."
+        },
+        {
+          "lane": "wiring",
+          "text": "AI Composer (Gemini predictive/intent prompts) not confirmed wired."
+        }
+      ],
+      "phase": 8,
+      "complexity": "L",
+      "dependsOn": [
+        "dashboard"
+      ]
+    },
+    {
+      "id": "ai",
+      "channel": "web",
+      "group": "exec",
+      "name": "AI Studio & advisory",
+      "design": 55,
+      "code": 70,
+      "wiring": 70,
+      "designPage": "SAQEEL AI Studio.dc.html · SAQEEL Evidence OCR.dc.html",
+      "route": "web/src/app/(app)/ai/suggestions · evidence-ocr · lib/ai/* · lib/providers/ai-gemini.ts · ocr-gemini.ts",
+      "pwa": {
+        "state": "ok",
+        "note": "Arabic AI briefing is live on the PWA dashboard (DailyBriefingCard.tsx)."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "AI Studio has no matching route — only /ai/suggestions exists, and its rail entry is being removed (O-28)."
+        },
+        {
+          "lane": "wiring",
+          "text": "Advisory AI must stay human-disposition and fail-closed — assert in review."
+        }
+      ],
+      "phase": 8,
+      "complexity": "L",
+      "dependsOn": [
+        "dashboard"
+      ]
+    },
+    {
+      "id": "reports",
+      "channel": "web",
+      "group": "exec",
+      "name": "Reports & packages",
+      "design": 60,
+      "code": 85,
+      "wiring": 75,
+      "designPage": "SAQEEL Inspection Report.dc.html · Report Inventory · Report Deltas · Report Package Foundation",
+      "route": "web/src/app/reports/inspection/[id] · report.css · admin/packages",
+      "pwa": {
+        "state": "shared",
+        "note": "Inspection PDF is generated from the submitted field record."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Four report designs, one repo route — inventory / deltas / package-foundation have no shipped surface."
+        }
+      ],
+      "phase": 7,
+      "complexity": "L",
+      "dependsOn": [
+        "pwa-completion"
+      ]
+    },
+    {
+      "id": "feedback",
+      "channel": "web",
+      "group": "exec",
+      "name": "Feedback module",
+      "design": 90,
+      "code": 35,
+      "wiring": 10,
+      "designPage": "SAQEEL Feedback.dc.html",
+      "route": "web/src/app/(app)/field/feedback/page.tsx · components/field/FieldQrPlaceholder.tsx",
+      "pwa": {
+        "state": "gap",
+        "note": "Repo has a field/feedback route and a QR PLACEHOLDER component — no real token issuance, so the establishment cannot actually scan."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "FieldQrPlaceholder.tsx is a placeholder, not a QR. Needs inspector_qr_token issuance per inspector/visit and a public token-scoped scan route (no auth)."
+        },
+        {
+          "lane": "wiring",
+          "text": "No schema for feedback / feedback_aspect / inspector_qr_token; no PDF hand-off on submit."
+        },
+        {
+          "lane": "design",
+          "text": "Admin analytics view (avg satisfaction, response rate, per-aspect bars, top inspectors) has no route."
+        }
+      ],
+      "phase": 7,
+      "complexity": "XL",
+      "dependsOn": [
+        "pwa-completion",
+        "reports"
+      ]
+    },
+    {
+      "id": "webref",
+      "channel": "web",
+      "group": "webref",
+      "name": "Design System, States, Parity Grid, Index",
+      "design": 100,
+      "code": null,
+      "wiring": null,
+      "designPage": "SAQEEL Design System · States System · Figma Parity Grid · Web-Index · START HERE · Status Board",
+      "route": "web/src/app/reference/web-admin/f0 (reference only)",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Reference artefacts — no shippable route, excluded from the rollup."
+        }
+      ],
+      "phase": 1,
+      "complexity": "S",
+      "dependsOn": []
+    },
+    {
+      "id": "admin-core",
+      "channel": "admin",
+      "group": "admincore",
+      "name": "Control Panel core (21 sections)",
+      "design": 60,
+      "code": 95,
+      "wiring": 85,
+      "designPage": "SAQEEL Control Panel.dc.html · SAQEEL Admin.dc.html · Admin Extended · Admin Detail",
+      "route": "web/src/app/(app)/admin (21 sections) · app/admin/execution · app/admin/dashboard-config",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Section-by-section diff of the 21 repo admin sections against the design's section list not done."
+        },
+        {
+          "lane": "design",
+          "text": "Card-operations rule not audited: every registry must expose create / add-row / add-endpoint / edit / retire."
+        }
+      ],
+      "phase": 2,
+      "complexity": "L",
+      "dependsOn": [
+        "shell-f0"
+      ]
+    },
+    {
+      "id": "admin-kpi",
+      "channel": "admin",
+      "group": "admincore",
+      "name": "KPI management & dashboard config",
+      "design": 60,
+      "code": 90,
+      "wiring": 70,
+      "designPage": "SAQEEL KPI Management.dc.html · SAQEEL Dashboard Config.dc.html",
+      "route": "web/src/app/admin/dashboard-config · lib/dashboard-kpi/registry.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "KPI targets unsupplied — blocked KPIs stay fail-closed."
+        },
+        {
+          "lane": "code",
+          "text": "No rail route for either design page (O-31)."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-core",
+        "dashboard"
+      ]
+    },
+    {
+      "id": "admin-builders",
+      "channel": "admin",
+      "group": "adminbuild",
+      "name": "Form & workflow builders",
+      "design": 55,
+      "code": 90,
+      "wiring": 80,
+      "designPage": "SAQEEL Admin Form Builder.dc.html · Admin Workflow Builder · Item Execution",
+      "route": "web/src/app/(app)/admin/templates · admin/workflows · app/admin/execution · lib/workflow/*",
+      "pwa": {
+        "state": "shared",
+        "note": "Templates and workflows authored here are what the PWA inspection form executes."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Builder canvases not diffed against admin/templates + admin/workflows."
+        }
+      ],
+      "phase": 2,
+      "complexity": "XL",
+      "dependsOn": [
+        "admin-core",
+        "m6-library"
+      ]
+    },
+    {
+      "id": "admin-exec",
+      "channel": "admin",
+      "group": "adminbuild",
+      "name": "Execution settings",
+      "design": 60,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "SAQEEL Admin Execution.dc.html",
+      "route": "web/src/app/admin/execution · lib/execution/*",
+      "pwa": {
+        "state": "shared",
+        "note": "Governs the field execution state machine — a rule change alters inspector behaviour."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Not diffed against the shipped execution-settings surface."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-builders"
+      ]
+    },
+    {
+      "id": "admin-data",
+      "channel": "admin",
+      "group": "admindata",
+      "name": "SENAI data, integrations, lookups",
+      "design": 55,
+      "code": 90,
+      "wiring": 65,
+      "designPage": "SAQEEL Admin SENAI Data.dc.html · Admin Integrations · Admin Integrations Data · Admin Lookups",
+      "route": "web/src/app/(app)/admin/integrations · admin/items · admin/localization · lib/integrations/senaei",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Duplicate design file 'SAQEEL Admin Lookups copy.dc.html' must be reconciled or deleted."
+        },
+        {
+          "lane": "wiring",
+          "text": "Senaei contract endpoints exist in lib/integrations/senaei — live-call verification not recorded."
+        },
+        {
+          "lane": "wiring",
+          "text": "FND-007: no Senaei write-back. Establishment-data form stays pending-integration scaffolding."
+        }
+      ],
+      "phase": 2,
+      "complexity": "L",
+      "dependsOn": [
+        "admin-core"
+      ]
+    },
+    {
+      "id": "admin-access",
+      "channel": "admin",
+      "group": "adminaccess",
+      "name": "Users, roles, delegation",
+      "design": 55,
+      "code": 85,
+      "wiring": 80,
+      "designPage": "SAQEEL Users Roles.dc.html · SAQEEL Admin Role Override.dc.html · SAQEEL Delegation.dc.html",
+      "route": "web/src/app/(app)/admin/access · admin/security-access · lib/persona.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "code",
+          "text": "No /delegation route — absence-cover delegation is design-only."
+        },
+        {
+          "lane": "design",
+          "text": "Roles is a LOCKED rail item (administrator access required) — design must show that state."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "shell-f0"
+      ]
+    },
+    {
+      "id": "admin-devices",
+      "channel": "admin",
+      "group": "adminaccess",
+      "name": "Trusted devices & biometric",
+      "design": 70,
+      "code": 90,
+      "wiring": 75,
+      "designPage": "SAQEEL Users Roles.dc.html (devices section)",
+      "route": "web/src/app/(app)/admin/devices · lib/field-biometric-unlock.ts",
+      "pwa": {
+        "state": "shared",
+        "note": "Devices registered here are what the PWA unlocks against (WebAuthn/passkey)."
+      },
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "WebAuthn / passkey binding to Trusted Devices not verified live."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-access"
+      ]
+    },
+    {
+      "id": "admin-geo",
+      "channel": "admin",
+      "group": "admingeo",
+      "name": "Geofence & GIS",
+      "design": 55,
+      "code": 90,
+      "wiring": 75,
+      "designPage": "SAQEEL Admin Geofence.dc.html",
+      "route": "web/src/app/(app)/admin/gis · lib/gis/spatial.ts · lib/providers/map.ts",
+      "pwa": {
+        "state": "gap",
+        "note": "Dual-pin registered-vs-actual view is design-only — the field app records position but the admin comparison is unbuilt."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "Dual-pin registered-vs-actual view not built."
+        },
+        {
+          "lane": "wiring",
+          "text": "Real KSA basemap + real Saudi regions required — no synthetic geo data."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-core"
+      ]
+    },
+    {
+      "id": "admin-platform",
+      "channel": "admin",
+      "group": "admingeo",
+      "name": "Platform ops, audit, notifications",
+      "design": 50,
+      "code": 90,
+      "wiring": 80,
+      "designPage": "SAQEEL Admin Extended.dc.html · SAQEEL Risk.dc.html (audit section)",
+      "route": "web/src/app/(app)/admin/operations · admin/audit · admin/notifications · lib/audit.ts · audit-replay.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Activity Log / status-history screen is design-only, not diffed against admin/audit."
+        },
+        {
+          "lane": "wiring",
+          "text": "Audit retention period governed by source policy — unset."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-core"
+      ]
+    },
+    {
+      "id": "admin-risk",
+      "channel": "admin",
+      "group": "admingeo",
+      "name": "Risk settings",
+      "design": 65,
+      "code": 95,
+      "wiring": 60,
+      "designPage": "SAQEEL Risk.dc.html",
+      "route": "web/src/app/(app)/admin/risk · lib/risk/model.ts",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "CONFLICT — design renders risk band and composite score as 'Not configured'; repo ships lib/risk/model.ts. Decide which is authority before either ships."
+        },
+        {
+          "lane": "wiring",
+          "text": "Health ≠ Risk must hold; no client-side scoring or banding."
+        }
+      ],
+      "phase": 2,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-core"
+      ]
+    },
+    {
+      "id": "pwa-shell",
+      "channel": "pwa",
+      "group": "pwashell",
+      "name": "Shell: sticky header + tab bar",
+      "design": 90,
+      "code": 70,
+      "wiring": 85,
+      "designPage": "pwa/pwa-tabbar.js applied to 35 field pages",
+      "route": "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · field-home.module.css",
+      "pwa": {
+        "state": "ok",
+        "note": "Design side complete: fixed tab bar, safe-area aware, page action bars stack above it, scroll space reserved."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "FieldNav.tsx not verified as fixed-position + safe-area aware to match the design's persistent tab bar."
+        },
+        {
+          "lane": "design",
+          "text": "Tab bar not applied to Login / Biometric (correct — pre-auth) or the 2 iPad frame pages (bar sits inside the bezel)."
+        }
+      ],
+      "phase": 4,
+      "complexity": "M",
+      "dependsOn": [
+        "shell-f0"
+      ]
+    },
+    {
+      "id": "pwa-connectivity",
+      "channel": "pwa",
+      "group": "pwashell",
+      "name": "Connectivity & sync chips",
+      "design": 85,
+      "code": 95,
+      "wiring": 90,
+      "designPage": "pwa/SAQEEL PWA-Field Dashboard.dc.html (header band)",
+      "route": "components/field/FieldConnectivityBanner.tsx · FieldHeaderSync.tsx · FieldSyncChips.tsx · lib/offline.ts",
+      "pwa": {
+        "state": "ok",
+        "note": "Real online/offline + pending-outbox count."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Chip wording and placement not pixel-diffed."
+        }
+      ],
+      "phase": 4,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-dashboard",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "Dashboard / home",
+      "design": 90,
+      "code": 95,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Dashboard.dc.html · App · App EN",
+      "route": "web/src/app/(app)/field/page.tsx · components/field/FieldHome.tsx · DailyBriefingCard.tsx · FieldMetricStrip.tsx",
+      "pwa": {
+        "state": "ok",
+        "note": "Rebuilt to the design with real data; ungoverned values (Health Score, Est. Finish, SLA window, distance) deliberately omitted."
+      },
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "Assignments 1000-row cap crowds real data with fixtures — durable fix is DB-level exclusion or pagination (perf-sensitive, G11)."
+        }
+      ],
+      "phase": 4,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-shell",
+        "visits"
+      ]
+    },
+    {
+      "id": "pwa-tasks",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "My Tasks",
+      "design": 90,
+      "code": 95,
+      "wiring": 90,
+      "designPage": "pwa/SAQEEL PWA-Field My Tasks.dc.html",
+      "route": "web/src/app/(app)/field/my-tasks/page.tsx",
+      "pwa": {
+        "state": "ok",
+        "note": "Live assignment data."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Row density and grouping not pixel-diffed."
+        }
+      ],
+      "phase": 4,
+      "complexity": "S",
+      "dependsOn": [
+        "pwa-dashboard"
+      ]
+    },
+    {
+      "id": "pwa-visits",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "Visits list & travel",
+      "design": 75,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Visits.dc.html · Journey · Travel",
+      "route": "web/src/app/(app)/field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
+      "pwa": {
+        "state": "ok",
+        "note": "Field task map live-verified on staging with inspector@mim.gov.sa."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Journey / route-overview design has no standalone repo route — folded into travel + map."
+        },
+        {
+          "lane": "wiring",
+          "text": "No synthetic map data — real KSA basemap and real zones only."
+        }
+      ],
+      "phase": 4,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-dashboard"
+      ]
+    },
+    {
+      "id": "pwa-establishments",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "Establishments & Establishment File",
+      "design": 70,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Establishments.dc.html · Establishment File · Factory 360",
+      "route": "web/src/app/(app)/field/establishments · field/factory-360 (+ [id]) · Factory360Offline.tsx",
+      "pwa": {
+        "state": "shared",
+        "note": "Same Factory-360 projection as the console — a console change must be mirrored here."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Establishment photo-capture and chemical-materials detail fields are design-only."
+        },
+        {
+          "lane": "design",
+          "text": "Offline Factory-360 variant (Factory360Offline.tsx) has no matching design state."
+        }
+      ],
+      "phase": 4,
+      "complexity": "M",
+      "dependsOn": [
+        "factories",
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-search",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "Global search",
+      "design": 80,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Global Search.dc.html",
+      "route": "web/src/app/(app)/field/search/page.tsx",
+      "pwa": {
+        "state": "ok",
+        "note": "Route exists and is reachable from the tab bar."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Result grouping and empty/error states not diffed."
+        }
+      ],
+      "phase": 4,
+      "complexity": "S",
+      "dependsOn": [
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-notifications",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "Notifications (+ detail)",
+      "design": 85,
+      "code": 95,
+      "wiring": 90,
+      "designPage": "pwa/SAQEEL PWA-Field Notifications.dc.html",
+      "route": "web/src/app/(app)/field/notifications (+ [id])",
+      "pwa": {
+        "state": "ok",
+        "note": "List and detail both shipped."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Detail screen has no dedicated design page — only the list is designed."
+        }
+      ],
+      "phase": 4,
+      "complexity": "S",
+      "dependsOn": [
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-account",
+      "channel": "pwa",
+      "group": "pwacore",
+      "name": "Account & settings",
+      "design": 85,
+      "code": 95,
+      "wiring": 90,
+      "designPage": "pwa/SAQEEL PWA-Field Account.dc.html · Settings",
+      "route": "web/src/app/(app)/field/account · field/settings (+ FieldSettingsClient.tsx)",
+      "pwa": {
+        "state": "ok",
+        "note": "Both shipped."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Settings sections not pixel-diffed."
+        }
+      ],
+      "phase": 4,
+      "complexity": "S",
+      "dependsOn": [
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-startup",
+      "channel": "pwa",
+      "group": "pwaexec",
+      "name": "Startup & pre-execution",
+      "design": 50,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Preparation.dc.html · Execution Shell",
+      "route": "web/src/app/(app)/field/[visitId]/Startup.tsx · PreExecution.tsx · preparation-actions.ts · PreInspectionPackSheet.tsx",
+      "pwa": {
+        "state": "gap",
+        "note": "Converted to the DS idiom, NOT a strict per-.dc.html pixel match."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Pixel pass outstanding on Startup and PreExecution."
+        },
+        {
+          "lane": "design",
+          "text": "'Completion' design page has no repo counterpart — confirm whether it folds into Workspace submit."
+        }
+      ],
+      "phase": 5,
+      "complexity": "L",
+      "dependsOn": [
+        "pwa-visits",
+        "admin-builders"
+      ]
+    },
+    {
+      "id": "pwa-workspace",
+      "channel": "pwa",
+      "group": "pwaexec",
+      "name": "Inspection workspace & form",
+      "design": 50,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Inspection Form.dc.html · Inspection · Visit Results",
+      "route": "web/src/app/(app)/field/inspection/[id]/Workspace.tsx · runtime.ts · GatedRepeaterSection.tsx",
+      "pwa": {
+        "state": "gap",
+        "note": "DS-idiom conversion, not a pixel match. Form widths were corrected design-side; repo not re-diffed."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Pixel pass outstanding on Workspace and the repeater/gated sections."
+        },
+        {
+          "lane": "wiring",
+          "text": "Immutable submit and the M04 source-vs-observed model must stay untouched by any presentation change."
+        }
+      ],
+      "phase": 5,
+      "complexity": "XL",
+      "dependsOn": [
+        "pwa-startup",
+        "m6-library",
+        "admin-exec"
+      ]
+    },
+    {
+      "id": "pwa-verification",
+      "channel": "pwa",
+      "group": "pwaexec",
+      "name": "Factory verification & signature",
+      "design": 50,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Visit Statement.dc.html (signature block)",
+      "route": "web/src/app/(app)/field/inspection/[id]/FactoryVerification.tsx · SignaturePad.tsx",
+      "pwa": {
+        "state": "gap",
+        "note": "Both components shipped but never pixel-diffed against a design page."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "No dedicated design page for FactoryVerification; SignaturePad only appears as a block inside Visit Statement."
+        }
+      ],
+      "phase": 5,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-workspace"
+      ]
+    },
+    {
+      "id": "pwa-samples",
+      "channel": "pwa",
+      "group": "pwaexec",
+      "name": "Samples & seizure",
+      "design": 60,
+      "code": 85,
+      "wiring": 80,
+      "designPage": "pwa/SAQEEL PWA-Field Seizure Records.dc.html",
+      "route": "components/field/SamplesSection.tsx · SeizureSection.tsx · samplesSeizureStrings.ts",
+      "pwa": {
+        "state": "gap",
+        "note": "Components exist inside the workspace, but there is NO standalone /field/seizure-records route the design implies."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "Design shows a Seizure Records screen; repo has only in-workspace sections. Decide: screen or section."
+        }
+      ],
+      "phase": 5,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-workspace"
+      ]
+    },
+    {
+      "id": "pwa-incident",
+      "channel": "pwa",
+      "group": "pwareport",
+      "name": "Incident & immediate reports",
+      "design": 75,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Immediate and Incident.dc.html",
+      "route": "web/src/app/(app)/field/incident-reports/* (page, form, actions)",
+      "pwa": {
+        "state": "ok",
+        "note": "Route, form and actions all present."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Immediate vs Incident split not diffed against the single shipped form."
+        }
+      ],
+      "phase": 5,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-workspace"
+      ]
+    },
+    {
+      "id": "pwa-ocr",
+      "channel": "pwa",
+      "group": "pwareport",
+      "name": "OCR evidence capture",
+      "design": 65,
+      "code": 70,
+      "wiring": 70,
+      "designPage": "pwa/SAQEEL PWA-Field OCR Capture.dc.html",
+      "route": "lib/providers/ocr-gemini.ts (no /field/ocr route)",
+      "pwa": {
+        "state": "gap",
+        "note": "Provider exists; no dedicated field capture route — capture happens inside evidence upload."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "No field OCR route. Confirm whether the design screen is a real destination or an in-form affordance."
+        }
+      ],
+      "phase": 5,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-workspace"
+      ]
+    },
+    {
+      "id": "pwa-reports",
+      "channel": "pwa",
+      "group": "pwareport",
+      "name": "Reports library & challenge report",
+      "design": 60,
+      "code": 0,
+      "wiring": 0,
+      "designPage": "pwa/SAQEEL PWA-Field Reports.dc.html · Reports Library · Challenge Report",
+      "route": "none — no /field/reports route in the repo",
+      "pwa": {
+        "state": "break",
+        "note": "Three designed report screens with NO repo route. Inspectors cannot reach their own report history in the app."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "Build /field/reports (library + detail). Challenge Report has no route and no schema reference."
+        },
+        {
+          "lane": "design",
+          "text": "Confirm whether Reports Library duplicates Drafts or is a separate submitted-history surface."
+        }
+      ],
+      "phase": 7,
+      "complexity": "L",
+      "dependsOn": [
+        "reports",
+        "pwa-completion"
+      ]
+    },
+    {
+      "id": "pwa-reopening",
+      "channel": "pwa",
+      "group": "pwareport",
+      "name": "Reopening notices",
+      "design": 60,
+      "code": 0,
+      "wiring": 0,
+      "designPage": "pwa/SAQEEL PWA-Field Reopening Notices.dc.html",
+      "route": "none",
+      "pwa": {
+        "state": "break",
+        "note": "Designed screen with no repo route and no confirmed enforcement link."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "No route. Confirm the governing rule — reopening is an enforcement outcome, not a field decision."
+        }
+      ],
+      "phase": 7,
+      "complexity": "M",
+      "dependsOn": [
+        "m6-enforcement"
+      ]
+    },
+    {
+      "id": "pwa-drafts",
+      "channel": "pwa",
+      "group": "pwaoffline",
+      "name": "Drafts & outbox",
+      "design": 85,
+      "code": 95,
+      "wiring": 90,
+      "designPage": "pwa/SAQEEL PWA-Field Drafts.dc.html",
+      "route": "web/src/app/(app)/field/drafts · FieldDraftList.tsx · lib/offline.ts",
+      "pwa": {
+        "state": "ok",
+        "note": "Real outbox wired."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Draft row states not pixel-diffed."
+        }
+      ],
+      "phase": 5,
+      "complexity": "M",
+      "dependsOn": [
+        "pwa-workspace"
+      ]
+    },
+    {
+      "id": "pwa-conflicts",
+      "channel": "pwa",
+      "group": "pwaoffline",
+      "name": "Conflict resolution",
+      "design": 85,
+      "code": 95,
+      "wiring": 90,
+      "designPage": "pwa/SAQEEL PWA-Field Conflict Resolution.dc.html",
+      "route": "web/src/app/(app)/field/settings/conflicts/* (page + ConflictResolutionClient.tsx)",
+      "pwa": {
+        "state": "ok",
+        "note": "keep-server / keep-mine both wired against the real conflict store."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Side-by-side diff presentation not pixel-diffed."
+        }
+      ],
+      "phase": 5,
+      "complexity": "L",
+      "dependsOn": [
+        "pwa-drafts"
+      ]
+    },
+    {
+      "id": "pwa-devices",
+      "channel": "pwa",
+      "group": "pwaoffline",
+      "name": "Trusted devices & biometric unlock",
+      "design": 80,
+      "code": 90,
+      "wiring": 75,
+      "designPage": "pwa/SAQEEL PWA-Field Trusted Devices.dc.html · Biometric",
+      "route": "web/src/app/(app)/field/settings/devices/* · lib/field-biometric-unlock.ts",
+      "pwa": {
+        "state": "ok",
+        "note": "Route and client shipped."
+      },
+      "pending": [
+        {
+          "lane": "wiring",
+          "text": "WebAuthn / passkey enrolment and unlock not verified on a real registered device."
+        }
+      ],
+      "phase": 4,
+      "complexity": "M",
+      "dependsOn": [
+        "admin-devices",
+        "pwa-account"
+      ]
+    },
+    {
+      "id": "pwa-login",
+      "channel": "pwa",
+      "group": "pwaoffline",
+      "name": "Field login (no atlas)",
+      "design": 80,
+      "code": 90,
+      "wiring": 85,
+      "designPage": "pwa/SAQEEL PWA-Field Login.dc.html",
+      "route": "web/src/app/login/field/* (field-login.css, separate from console login)",
+      "pwa": {
+        "state": "ok",
+        "note": "Correctly separate from the console login — the field channel has no Saudi atlas by design."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Field login not pixel-diffed against field-login.css."
+        }
+      ],
+      "phase": 4,
+      "complexity": "S",
+      "dependsOn": [
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-virtual",
+      "channel": "pwa",
+      "group": "pwagap",
+      "name": "Virtual visit & session (inspector)",
+      "design": 60,
+      "code": 0,
+      "wiring": 0,
+      "designPage": "pwa/SAQEEL PWA-Field Virtual Visit.dc.html · Virtual Session",
+      "route": "none — no field virtual route",
+      "pwa": {
+        "state": "break",
+        "note": "The console can schedule a virtual visit the inspector cannot join. Hard disconnect between channels."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "Build the inspector-side virtual session screen; bind to lib/providers/video.ts."
+        },
+        {
+          "lane": "wiring",
+          "text": "Teams / Zoom / premium Twilio are provider facts — flagged, not assumed."
+        }
+      ],
+      "phase": 5,
+      "complexity": "L",
+      "dependsOn": [
+        "virtual",
+        "pwa-shell"
+      ]
+    },
+    {
+      "id": "pwa-ops-console",
+      "channel": "pwa",
+      "group": "pwagap",
+      "name": "Field Ops Console",
+      "design": 60,
+      "code": 0,
+      "wiring": 0,
+      "designPage": "pwa/SAQEEL PWA-Field Ops Console.dc.html",
+      "route": "none",
+      "pwa": {
+        "state": "break",
+        "note": "Supervisor-in-the-field surface with no repo route. Overlaps the console Operations Center — may be redundant."
+      },
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Decide: build it, or retire the design as covered by the web Operations Center."
+        }
+      ],
+      "phase": 5,
+      "complexity": "L",
+      "dependsOn": [
+        "operations"
+      ]
+    },
+    {
+      "id": "pwa-completion",
+      "channel": "pwa",
+      "group": "pwagap",
+      "name": "Completion & visit statement",
+      "design": 65,
+      "code": 40,
+      "wiring": 40,
+      "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html · Visit Statement · Visit Results",
+      "route": "partially covered by field/inspection/[id] submit path",
+      "pwa": {
+        "state": "gap",
+        "note": "No dedicated completion or statement route; the design implies distinct post-submit screens."
+      },
+      "pending": [
+        {
+          "lane": "code",
+          "text": "Confirm whether Completion and Visit Statement are routes or post-submit states of Workspace."
+        },
+        {
+          "lane": "wiring",
+          "text": "Immutable submit — a statement view must never allow edit."
+        }
+      ],
+      "phase": 5,
+      "complexity": "L",
+      "dependsOn": [
+        "pwa-workspace",
+        "pwa-verification"
+      ]
+    },
+    {
+      "id": "pwaref",
+      "channel": "pwa",
+      "group": "pwaref",
+      "name": "Architecture, journey & iPad frames",
+      "design": 100,
+      "code": null,
+      "wiring": null,
+      "designPage": "pwa/SAQEEL PWA-Index · Inspector Architecture · Golden Journey · Journey Mindmap · Inspector iPad (+ Field) · iPad Dashboard",
+      "route": "reference only",
+      "pwa": null,
+      "pending": [
+        {
+          "lane": "design",
+          "text": "Reference artefacts — no shippable route, excluded from the rollup."
+        }
+      ],
+      "phase": 1,
+      "complexity": "S",
+      "dependsOn": []
+    }
+  ],
+  "blindspots": [
+    {
+      "id": "BS-1",
+      "text": "No automated pixel diff. Design % is a judgement, not a measurement. Fix: a Playwright job that renders each route at its declared widths × EN/AR, diffs against the .dc.html, and writes the score back here."
+    },
+    {
+      "id": "BS-2",
+      "text": "Codex cannot reach this board. It must either edit status/saqeel-status.json in the repo worktree or end every task with a status-update block that gets pasted into Claude Design."
+    },
+    {
+      "id": "BS-3",
+      "text": "Two writers, one file. Claude Code and Codex can clobber each other. Rule: one card per edit, never rewrite the whole file, always bump revision + updated."
+    },
+    {
+      "id": "BS-4",
+      "text": "Nothing is committed on feature/ipad-field-channel-delivery (~60 files). Any percentage here can vanish on a branch reset."
+    },
+    {
+      "id": "BS-5",
+      "text": "Three competing stylesheets in the repo (astryx.css, saqeel-components.css, v2-components.css + a legacy file). Until one is named authority, 'matches the design' is ambiguous."
+    },
+    {
+      "id": "BS-6",
+      "text": ".dc.html files are prototypes, not route maps — one design page can cover several routes and vice versa. The route field is the only join key."
+    },
+    {
+      "id": "BS-7",
+      "text": "No test-evidence lane. web/e2e specs exist but their pass/fail is not surfaced, so 'wired' is not 'verified'."
+    },
+    {
+      "id": "BS-8",
+      "text": "PWA breakage is only visible where a card declares it. An undeclared token, instrument-version or tab-route change can break the iPad app silently."
+    },
+    {
+      "id": "BS-9",
+      "text": "The PWA runs inside the same Next app under /field, not as a separate deployable. An install/offline regression in the web build breaks the field channel with no separate signal."
+    }
+  ],
+  "phases": [
+    {
+      "id": 1,
+      "label": "Foundation — shell & identity"
+    },
+    {
+      "id": 2,
+      "label": "Configure — admin sets the rules"
+    },
+    {
+      "id": 3,
+      "label": "Plan — instruments, factories, visits"
+    },
+    {
+      "id": 4,
+      "label": "Field arrival — inspector opens the app"
+    },
+    {
+      "id": 5,
+      "label": "Execute — the inspection itself"
+    },
+    {
+      "id": 6,
+      "label": "Decide — review, enforcement, committee"
+    },
+    {
+      "id": 7,
+      "label": "Close out — reports, feedback, portal"
+    },
+    {
+      "id": 8,
+      "label": "Oversee — dashboards, ops, insight"
+    }
+  ],
+  "complexityScale": {
+    "S": 1,
+    "M": 2,
+    "L": 3,
+    "XL": 5
+  },
+  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first."
+}

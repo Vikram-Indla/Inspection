@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/industry-8e4a2650-1744-4dbd-ab57-6bdc1c9ff76e/styles.css">
+  <script src="_ds/industry-8e4a2650-1744-4dbd-ab57-6bdc1c9ff76e/_ds_bundle.js"></script>
+  <style>
+    body { background: var(--color-bg); }
+    .ri-wrap { max-width: 1080px; margin: 0 auto; padding: 40px 32px 96px; display: flex; flex-direction: column; gap: 34px; }
+    .ri-tbl { width: 100%; border-collapse: collapse; }
+    .ri-tbl th, .ri-tbl td { text-align: start; vertical-align: top; padding: 11px 14px; border-block-end: 1px solid var(--color-neutral-300); font-size: 13.5px; line-height: 1.5; }
+    .ri-tbl th { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; font-size: 11.5px; color: var(--color-accent-700); background: var(--color-accent-100); }
+    .ri-tbl td:first-child { white-space: nowrap; font-weight: 600; }
+    .ri-pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; font-size: 11.5px; font-weight: 600; font-family: var(--font-heading); letter-spacing: .04em; border: 1px solid; }
+    .ri-dot { width: 8px; height: 8px; border-radius: 50%; }
+  </style>
+</helmet>
+<div class="ri-wrap">
+  <header style="display:flex; flex-direction:column; gap:10px;">
+    <div style="font-family:var(--font-heading); text-transform:uppercase; letter-spacing:.12em; font-size:13px; color:var(--color-accent-700);">SAQEEL · Figma → Requirements</div>
+    <h1 style="font-family:var(--font-heading); font-weight:600; font-size:38px; line-height:1.05; margin:0;">Report &amp; Record Inventory</h1>
+    <p style="max-width:760px; margin:0; font-size:14.5px; color:var(--color-neutral-700); text-wrap:pretty;">Every report / notice / record artifact found in <strong>MIM iPad Inspector App.fig</strong>, enumerated with its Figma node as evidence and its status in the current implementation. Source of truth is the file; sample values are illustrative.</p>
+    <div style="display:flex; gap:16px; flex-wrap:wrap; margin-block-start:6px;">
+      <span class="ri-pill" style="border-color:var(--color-neutral-400); color:var(--color-neutral-700);"><span class="ri-dot" style="background:#2f9e5f;"></span>Implemented</span>
+      <span class="ri-pill" style="border-color:var(--color-neutral-400); color:var(--color-neutral-700);"><span class="ri-dot" style="background:#c94a3b;"></span>Missing</span>
+      <span class="ri-pill" style="border-color:var(--color-neutral-400); color:var(--color-neutral-700);"><span class="ri-dot" style="background:#d69a2d;"></span>Partial / verify</span>
+    </div>
+  </header>
+
+  <section class="card blueprint elev-sm" style="padding:0; overflow:hidden;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="padding:18px 20px 6px;">
+      <h2 style="font-family:var(--font-heading); font-weight:600; font-size:21px; margin:0;">{{ titleA }}</h2>
+      <p style="margin:6px 0 0; font-size:13px; color:var(--color-neutral-700); text-wrap:pretty;">{{ noteA }}</p>
+    </div>
+    <div style="padding:8px 8px 12px; overflow-x:auto;">
+      <table class="ri-tbl">
+        <thead><tr><th style="width:64px;">ID</th><th style="min-width:210px;">Report</th><th style="min-width:230px;">Figma evidence</th><th style="width:120px;">Status</th><th style="min-width:260px;">Requirement / notes</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ rowsA }}" as="r" hint-placeholder-count="7">
+            <tr>
+              <td>{{ r.id }}</td>
+              <td style="white-space:normal;">{{ r.name }}</td>
+              <td style="font-family:var(--font-body); font-size:12.5px; color:var(--color-neutral-700);">{{ r.evidence }}</td>
+              <td><span class="ri-pill" style="border-color:{{ r.statusBorder }}; color:{{ r.statusText }}; background:{{ r.statusBg }};"><span class="ri-dot" style="background:{{ r.statusDot }};"></span>{{ r.statusLabel }}</span></td>
+              <td style="font-weight:400; color:var(--color-neutral-800);">{{ r.req }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card blueprint elev-sm" style="padding:0; overflow:hidden;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="padding:18px 20px 6px;">
+      <h2 style="font-family:var(--font-heading); font-weight:600; font-size:21px; margin:0;">{{ titleB }}</h2>
+      <p style="margin:6px 0 0; font-size:13px; color:var(--color-neutral-700); text-wrap:pretty;">{{ noteB }}</p>
+    </div>
+    <div style="padding:8px 8px 12px; overflow-x:auto;">
+      <table class="ri-tbl">
+        <thead><tr><th style="width:64px;">ID</th><th style="min-width:210px;">Report</th><th style="min-width:230px;">Figma evidence</th><th style="width:120px;">Status</th><th style="min-width:260px;">Requirement / notes</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ rowsB }}" as="r" hint-placeholder-count="5">
+            <tr>
+              <td>{{ r.id }}</td>
+              <td style="white-space:normal;">{{ r.name }}</td>
+              <td style="font-family:var(--font-body); font-size:12.5px; color:var(--color-neutral-700);">{{ r.evidence }}</td>
+              <td><span class="ri-pill" style="border-color:{{ r.statusBorder }}; color:{{ r.statusText }}; background:{{ r.statusBg }};"><span class="ri-dot" style="background:{{ r.statusDot }};"></span>{{ r.statusLabel }}</span></td>
+              <td style="font-weight:400; color:var(--color-neutral-800);">{{ r.req }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card blueprint elev-sm" style="padding:0; overflow:hidden;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="padding:18px 20px 6px;">
+      <h2 style="font-family:var(--font-heading); font-weight:600; font-size:21px; margin:0;">{{ titleC }}</h2>
+      <p style="margin:6px 0 0; font-size:13px; color:var(--color-neutral-700); text-wrap:pretty;">{{ noteC }}</p>
+    </div>
+    <div style="padding:8px 8px 12px; overflow-x:auto;">
+      <table class="ri-tbl">
+        <thead><tr><th style="width:64px;">ID</th><th style="min-width:210px;">Report</th><th style="min-width:230px;">Figma evidence</th><th style="width:120px;">Status</th><th style="min-width:260px;">Requirement / notes</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ rowsC }}" as="r" hint-placeholder-count="3">
+            <tr>
+              <td>{{ r.id }}</td>
+              <td style="white-space:normal;">{{ r.name }}</td>
+              <td style="font-family:var(--font-body); font-size:12.5px; color:var(--color-neutral-700);">{{ r.evidence }}</td>
+              <td><span class="ri-pill" style="border-color:{{ r.statusBorder }}; color:{{ r.statusText }}; background:{{ r.statusBg }};"><span class="ri-dot" style="background:{{ r.statusDot }};"></span>{{ r.statusLabel }}</span></td>
+              <td style="font-weight:400; color:var(--color-neutral-800);">{{ r.req }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card blueprint elev-sm" style="padding:0; overflow:hidden;">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="padding:18px 20px 6px;">
+      <h2 style="font-family:var(--font-heading); font-weight:600; font-size:21px; margin:0;">{{ titleD }}</h2>
+      <p style="margin:6px 0 0; font-size:13px; color:var(--color-neutral-700); text-wrap:pretty;">{{ noteD }}</p>
+    </div>
+    <div style="padding:8px 8px 12px; overflow-x:auto;">
+      <table class="ri-tbl">
+        <thead><tr><th style="width:64px;">ID</th><th style="min-width:210px;">Report</th><th style="min-width:230px;">Figma evidence</th><th style="width:120px;">Status</th><th style="min-width:260px;">Requirement / notes</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ rowsD }}" as="r" hint-placeholder-count="5">
+            <tr>
+              <td>{{ r.id }}</td>
+              <td style="white-space:normal;">{{ r.name }}</td>
+              <td style="font-family:var(--font-body); font-size:12.5px; color:var(--color-neutral-700);">{{ r.evidence }}</td>
+              <td><span class="ri-pill" style="border-color:{{ r.statusBorder }}; color:{{ r.statusText }}; background:{{ r.statusBg }};"><span class="ri-dot" style="background:{{ r.statusDot }};"></span>{{ r.statusLabel }}</span></td>
+              <td style="font-weight:400; color:var(--color-neutral-800);">{{ r.req }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card blueprint" style="padding:20px 22px; border-color:var(--color-accent-500);">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <h2 style="font-family:var(--font-heading); font-weight:600; font-size:19px; margin:0 0 8px;">Key structural gap</h2>
+    <p style="margin:0; font-size:14px; line-height:1.6; color:var(--color-neutral-800); text-wrap:pretty;">Figma models a <strong>report-type selector (نوع التقرير)</strong> at plan creation that branches the entire flow — Visit Report vs. Customs Exemption vs. Chemical Clearance vs. Safety. The current implementation flattens records into a single Visit Report accordion. Requirement: plan creation must expose report type, and the downstream record set + fields must switch on it.</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const S = {
+      done:    { statusLabel: "Implemented", statusDot: "#2f9e5f", statusText: "#1f6e42", statusBorder: "#9cccb0", statusBg: "#eaf6ef" },
+      missing: { statusLabel: "Missing",     statusDot: "#c94a3b", statusText: "#9c3527", statusBorder: "#e3aba2", statusBg: "#fbeeec" },
+      partial: { statusLabel: "Verify",      statusDot: "#d69a2d", statusText: "#8a6417", statusBorder: "#e4cd93", statusBg: "#fbf4e4" },
+    };
+    const row = (id, name, evidence, status, req) => ({ id, name, evidence, req, ...S[status] });
+
+    const rowsA = [
+      row("R1", "Summons Notice — محضر/مذكرة استدعاء", "Components/Reports (l.38); SummonsNotice/*; Property1SignatureFile8", "done", "Verify Figma's establishment-action (close / reopen) is present in impl."),
+      row("R2", "Fact-Finding / Incident Report — محضر إثبات واقعة", "Components/Reports (l.62 “Incident Report”); Accordion prop “محضر إثبات واقعة”", "done", "Impl “Fact-Finding Record”."),
+      row("R3", "Violation Report — محضر ضبط مخالفة", "Components/Reports/ViolationReport; Report-Details/ViolationReport(+2); Components/Violation-Report", "done", "Figma has Report-1 / Report-2 sub-variants — confirm both states in impl."),
+      row("R4", "Sample Collection Report — محضر سحب عينة", "Components/Reports/SampleCollectionReport; SampleCard(+2)", "done", "Multi-sample cards: add / delete rows required."),
+      row("R5", "Products Destruction Report — محضر إتلاف منتجات مخالفة", "node 362:40186; Safety-Report/…", "done", "Impl “Violating Products Destruction Record”."),
+      row("R6", "Products Seizure Record — محضر حجز منتجات", "impl Record 6", "partial", "In impl; confirm dedicated Figma source frame (EXTRACT)."),
+      row("R7", "Lift-Seizure Notification — إشعار برفع الحجز", "impl Record 7", "partial", "In impl; confirm Figma source frame (EXTRACT)."),
+    ];
+    const rowsB = [
+      row("R8", "Production Line Report — تقرير خط الإنتاج", "Visit-Reports/…/ProductionLineReport (node 369:51109); 4× in Safety-Report", "missing", "Add as a Step-4 record type. Slotted via frame1984078718_facilityReportSlot. EXTRACT field list."),
+      row("R9", "Facility Report — تقرير المنشأة", "“Facility Report” family — 4 variants (Property 1: 4); Property1SignatureFile8", "missing", "Add as record type. Body: summons memo + establishment action + attendance/signature. EXTRACT per variant."),
+      row("R10", "Customs Exemption Report — تقرير الإعفاء الجمركي", "Customs-Report/Inspection-Management (SECTION)", "missing", "A full report-type plan flow: plan → establishment file → item data (raw/final) → benefit details → item photo. Field + remote variants."),
+      row("R11", "Chemical Clearance Report — تقرير فسح كيميائي", "Customs-Report/Inspection-Management l.441", "missing", "A نوع التقرير option branching the plan. Report-type selector must drive record set."),
+      row("R12", "Safety Report — تقرير السلامة", "Safety-Report/Safety-Report; page3/Safety-Report", "missing", "Top-level inspection flow variant with own establishment / inspection-items / records + modals."),
+    ];
+    const rowsC = [
+      row("V1", "Reports (list)", "Components/Reports/index (data-name “Reports”)", "missing", "Per-visit record library; entry points into each record."),
+      row("V2", "Report Details", "Components/Report-Details/index; Report-Details2/index", "missing", "Read-only document viewer (Violation Report + Summons + Sample cards)."),
+      row("V3", "View Visit Reports", "Establishment-Management/View-Visit-Reports/index", "partial", "Establishment-file tab listing prior visit reports; confirm impl coverage."),
+    ];
+    const rowsD = [
+      row("C1", "Signature File", "Property1SignatureFile ×8 variants", "partial", "Attendance + signature + upload PNG/JPG/PDF. Present in impl signatureBlock — reconcile variants."),
+      row("C2", "Report Date block", "Property1ReportDate (Property 1=Report Date)", "partial", "Used by destruction / seizure records."),
+      row("C3", "Sample Card", "“Sample Card” standalone + variants", "done", "Add/delete rows inside Sample Collection Report."),
+      row("C4", "Violation Details", "“Violation Details” standalone; Modal / Modal2", "partial", "Modal used by Violation Record + Report Details."),
+      row("C5", "Accordion", "“Accordion” — 240 variants", "done", "Section container for every record."),
+    ];
+    return {
+      rowsA, rowsB, rowsC, rowsD,
+      titleA: "A · Records the implementation already generates",
+      noteA: "Rendered as accordion records in SAQEEL Field Reports (Step 4 of 4 · Visit Report · Records).",
+      titleB: "B · Records in Figma MISSING from the implementation",
+      noteB: "Present in the file but not in the impl record set — the core of the gap you flagged.",
+      titleC: "C · Report-viewing surfaces (read-only)",
+      noteC: "Distinct from creation — libraries and document viewers.",
+      titleD: "D · Shared report sub-components (build once, compose)",
+      noteD: "Atoms every record composes from.",
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .rp-wrap { max-width: 900px; margin: 0 auto; padding: 18px 18px 130px; display:flex; flex-direction:column; gap:14px; }
+  .rt-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+  .rt-tab { display:flex; flex-direction:column; gap:3px; align-items:flex-start; flex:1 1 190px; padding:12px 14px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; text-align:start; color:var(--text-primary); min-height:64px; }
+  .rt-tab[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); box-shadow:0 0 0 1px var(--action-primary) inset; }
+  .rt-tab .k { font-size:12px; color:var(--text-secondary); letter-spacing:.02em; }
+  .rt-tab .n { font-size:14.5px; font-weight:600; }
+  .rp-acc { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); overflow:hidden; box-shadow:var(--shadow-card); }
+  .rp-head { display:flex; align-items:center; gap:12px; width:100%; padding:15px 17px; border:0; background:none; cursor:pointer; font:inherit; text-align:start; color:var(--text-primary); }
+  .rp-num { width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; font-size:13px; font-weight:600; flex:none; }
+  .rp-body { padding:8px 17px 20px; border-block-start:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:16px; }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .fld-row.three { grid-template-columns:1fr 1fr 1fr; }
+  @media (max-width:600px){ .fld-row, .fld-row.three { grid-template-columns:1fr; } .rp-wrap { padding:14px 12px 130px; } }
+  .rp-opt { display:flex; align-items:center; gap:9px; flex:1 1 150px; padding:11px 14px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:48px; color:var(--text-primary); }
+  .rp-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .rp-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .rp-opt[aria-pressed="true"] .rp-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .rp-radios { display:flex; gap:10px; flex-wrap:wrap; }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); }
+  .rp-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .it-tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
+  .it-tbl th, .it-tbl td { border:1px solid var(--border-subtle); padding:7px 9px; text-align:start; }
+  .it-tbl th { background:var(--surface-sunken); font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+  .it-tbl td input { width:100%; border:0; background:none; font:inherit; color:var(--text-primary); }
+  .it-del { border:0; background:none; cursor:pointer; color:var(--status-critical-text); padding:4px; }
+  .doc { border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-primary); box-shadow:var(--shadow-card); overflow:hidden; }
+  .doc-hd { padding:16px 20px; border-block-end:1px solid var(--border-subtle); display:flex; align-items:flex-start; gap:14px; }
+  .doc-sec { padding:14px 20px; border-block-end:1px solid var(--border-subtle); }
+  .doc-sec:last-child { border-block-end:0; }
+  .doc-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+  .doc-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 22px; margin-top:8px; }
+  .doc-grid .v { font-size:13.5px; font-weight:600; }
+  .extract { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; background:var(--status-warning-soft); color:var(--status-warning-text); }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.deltaTag }}</span>
+    <button class="rp-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <input id="rd-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+
+  <div class="rp-wrap">
+    <div style="display:flex; flex-direction:column; gap:5px;">
+      <span class="doc-k">{{ t.selectorLabel }}</span>
+      <p class="t-caption" style="margin:0;">{{ t.selectorHint }}</p>
+    </div>
+    <div class="rt-tabs">
+      <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="4">
+        <button class="rt-tab" aria-pressed="{{ tab.active }}" onClick="{{ tab.select }}"><span class="k">{{ tab.kicker }}</span><span class="n">{{ tab.name }}</span></button>
+      </sc-for>
+    </div>
+
+    <div class="panel" style="padding:12px 15px; display:flex; align-items:flex-start; gap:10px; background:var(--status-info-soft); border-color:color-mix(in srgb,var(--status-info) 26%,transparent); box-shadow:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <span class="t-compact" style="color:var(--status-info-text);">{{ t.flowNote }}</span>
+    </div>
+
+    <sc-if value="{{ isViewer }}" hint-placeholder-val="{{ false }}">
+      <div class="doc">{{ viewerDoc }}</div>
+    </sc-if>
+
+    <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="5">
+          <div class="rp-acc">
+            <button class="rp-head" onClick="{{ sec.toggle }}" aria-expanded="{{ sec.open }}"><span class="rp-num">{{ sec.numDisp }}</span><span style="font-weight:600; font-size:15px; flex:1;">{{ sec.title }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="width:18px;height:18px;flex:none;">{{ sec.chevron }}</svg></button>
+            <sc-if value="{{ sec.open }}" hint-placeholder-val="{{ false }}"><div class="rp-body">{{ sec.body }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.pendingSync }}</span>
+    <span class="grow" style="flex:1;"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary">{{ t.primaryAction }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:1100}}">
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "ar", type: "customs", open: 1, facProc: "reopen", facAtt: "absent" };
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const type = this.state.type;
+    const pickFile = () => { const el = document.getElementById("rd-filepick"); if (el) el.click(); };
+    const h = React.createElement;
+
+    const t = ar ? {
+      back:"رجوع", headerTitle:"محرّر أنواع التقارير", headerSub:"شركة الأمل لتدريب العمال", deltaTag:"دلتا فيغما",
+      theme:"الوضع", langBtnLabel:"EN", pendingSync:"بانتظار المزامنة · 3", saveDraft:"حفظ كمسودة", primaryAction:"متابعة",
+      selectorLabel:"نوع التقرير", selectorHint:"يحدّد نوع التقرير مسار الخطة ومجموعة البنود والمحاضر المطلوبة — هذه هي نقطة التفرّع في فيغما.",
+      flowNote:"تبدأ الخطة الخاصة بإعداد هذا التقرير هنا؛ على «التالي» ينضم المسار إلى مسار ملف المنشأة القياسي.",
+    } : {
+      back:"Back", headerTitle:"Report-type builder", headerSub:"Al-Amal Worker Training Co.", deltaTag:"Figma delta",
+      theme:"Theme", langBtnLabel:"AR", pendingSync:"Pending sync · 3", saveDraft:"Save as draft", primaryAction:"Continue",
+      selectorLabel:"Report type", selectorHint:"The report type drives the plan path, the item list and the required records — this is the branch point in Figma.",
+      flowNote:"The plan for preparing this report starts here; on “Next” the path joins the standard establishment-file path.",
+    };
+
+    const TABS = [
+      { id:"customs",  kicker: ar?"إعفاء جمركي":"Customs",   name: ar?"تقرير الإعفاء الجمركي":"Customs Exemption Report" },
+      { id:"chemical", kicker: ar?"فسح كيميائي":"Chemical",  name: ar?"تقرير الفسح الكيميائي":"Chemical Clearance Report" },
+      { id:"safety",   kicker: ar?"سلامة":"Safety",          name: ar?"تقرير السلامة":"Safety Report" },
+      { id:"facility", kicker: ar?"المنشأة":"Facility",       name: ar?"محضر المنشأة":"Facility Report" },
+      { id:"details",  kicker: ar?"عرض":"Viewer",            name: ar?"تفاصيل التقرير (عرض)":"Report Details (viewer)" },
+    ];
+
+    const down = h("path", { d: "m6 9 6 6 6-6" });
+    const up   = h("path", { d: "m6 15 6-6 6 6" });
+
+    // ── field helpers ────────────────────────────────
+    const fld = (label, val, opts={}) => h("label", { className: "fld" },
+      h("span", null, label, opts.req ? h("span", { className: "req" }, " *") : null),
+      opts.select
+        ? h("select", { className: "select" }, (opts.select).map((o,i)=>h("option",{key:i},o)))
+        : opts.area
+          ? h("textarea", { className: "input", rows: opts.rows||2, defaultValue: val })
+          : h("input", { className: "input", type: opts.type||"text", defaultValue: val, disabled: opts.disabled, style: opts.disabled?{color:"var(--text-muted)"}:null }));
+    const row = (...kids) => h("div", { className: "fld-row" }, ...kids);
+    const row3 = (...kids) => h("div", { className: "fld-row three" }, ...kids);
+    const banner = (text, tone="info") => h("div", { className:"panel", style:{ padding:"11px 14px", background:`var(--status-${tone}-soft)`, borderColor:`color-mix(in srgb,var(--status-${tone}) 26%,transparent)`, boxShadow:"none" } }, h("span",{className:"t-compact", style:{color:`var(--status-${tone}-text)`}}, text));
+    const yesno = (label, yesText, noText, yes=true) => h("div", null,
+      h("div",{style:{fontSize:"13px",color:"var(--text-secondary)",marginBlockEnd:"8px"}}, label),
+      h("div",{className:"rp-radios"},
+        h("button",{className:"rp-opt","aria-pressed":yes?"true":"false"}, h("span",{className:"rp-ind"}, yes?h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"})):null), yesText),
+        h("button",{className:"rp-opt","aria-pressed":!yes?"true":"false"}, h("span",{className:"rp-ind"}, !yes?h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"})):null), noText)));
+    const upload = (label, file) => h("label",{className:"fld"}, h("span",null,label),
+      h("button",{className:"up-btn", onClick:pickFile}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), file));
+
+    // item table grounded in Plant Production Line API fields
+    const itemTable = (rows) => {
+      const cols = ar
+        ? ["المنتج","الوحدة","الكمية","الإنتاج الفعلي","الإنتاج الأقصى","السعر",""]
+        : ["Product","Unit","Quantity","Real production","Max production","Price",""];
+      return h("div",{style:{overflowX:"auto"}},
+        h("table",{className:"it-tbl"},
+          h("thead",null, h("tr",null, cols.map((c,i)=>h("th",{key:i, style: i===6?{width:"34px"}:null}, c)))),
+          h("tbody",null, rows.map((r,i)=>h("tr",{key:i},
+            r.slice(0,6).map((v,j)=>h("td",{key:j}, h("input",{defaultValue:v}))),
+            h("td",null, h("button",{className:"it-del","aria-label":ar?"حذف":"Delete"}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"})))))))),
+        h("button",{className:"up-btn", style:{marginTop:"10px",borderStyle:"solid",borderColor:"var(--action-primary)",color:"var(--action-primary)"}, onClick:(e)=>e.preventDefault()},
+          h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.9,style:{width:15,height:15}},h("path",{d:"M12 5v14M5 12h14"})), ar?"إضافة صنف":"Add item"));
+    };
+    const apiFlag = (text) => h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}}, h("span",{className:"extract"},"EXTRACT"), h("span",{className:"t-caption"}, text));
+
+    // ── Regulation-driven checklist item (real shape from InspectionItemsViewModel) ──
+    const sevClass = (sev) => (sev === (ar?"أمنية":"Security") ? "badge-critical" : "badge-major");
+    const complianceRow = (qtype, sel) => {
+      const opts = qtype === "validity"
+        ? (ar ? ["ساري","منتهي","لا يوجد"] : ["Valid","Expired","Not available"])
+        : (ar ? ["ينطبق","لا ينطبق"] : ["Applies","Does not apply"]);
+      return h("div",{className:"rp-radios"}, opts.map((o,i)=>h("button",{key:i, className:"rp-opt", style:{flex:"1 1 110px"}, "aria-pressed": i===sel?"true":"false"},
+        h("span",{className:"rp-ind"}, i===sel?h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"})):null), o)));
+    };
+    const citem = (it) => h("div",{style:{border:"1px solid var(--border-subtle)", borderRadius:"10px", padding:"13px 14px", display:"flex", flexDirection:"column", gap:"11px", background:"var(--surface-primary)"}},
+      h("div",{style:{display:"flex", alignItems:"flex-start", gap:"10px"}},
+        h("span",{className:"rp-num"}, ar?String(it.n):String(it.n)),
+        h("div",{style:{flex:1, minWidth:0}},
+          h("div",{style:{display:"flex", gap:"6px", flexWrap:"wrap", marginBottom:"3px"}},
+            h("span",{className:"tag"}, it.cat), h("span",{className:"tag"}, it.w)),
+          h("div",{style:{fontSize:"13.5px", fontWeight:600, lineHeight:1.5}}, it.title)),
+        h("label",{className:"switch", style:{flex:"none"}}, h("input",{type:"checkbox", defaultChecked: it.on}), h("span",null, ar?"يُطبَّق":"Applied"))),
+      it.on ? h(React.Fragment, null,
+        h("div",null, h("div",{style:{fontSize:"12.5px", color:"var(--text-secondary)", marginBottom:"6px"}}, ar?"حالة البند":"Item state"), complianceRow(it.type, it.sel)),
+        h("label",{className:"fld"}, h("span",null, ar?"ملاحظات":"Notes"), h("textarea",{className:"input", rows:2, defaultValue: it.notes||""})),
+        h("button",{className:"up-btn", onClick:pickFile}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), ar?"إرفاق دليل (لكل بند)":"Attach evidence (per item)"),
+        it.sel !== 0 ? h("div",{style:{border:"1px solid color-mix(in srgb,var(--status-critical) 30%,transparent)", background:"var(--status-critical-soft)", borderRadius:"8px", padding:"11px 13px", display:"flex", flexDirection:"column", gap:"7px"}},
+          h("div",{style:{display:"flex", alignItems:"center", gap:"8px"}}, h("span",{className:"badge "+sevClass(it.sev)}, it.sev), h("span",{style:{fontSize:"13px", fontWeight:600, color:"var(--status-critical-text)"}}, it.alert)),
+          h("div",{style:{fontSize:"12.5px", lineHeight:1.55}}, it.desc),
+          h("div",{style:{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6px 16px", fontSize:"12px", marginTop:"2px"}},
+            h("div",null, h("span",{className:"doc-k"}, ar?"الإجراء التصحيحي":"Corrective action"), h("div",{style:{fontWeight:600}}, it.corr)),
+            h("div",null, h("span",{className:"doc-k"}, ar?"العقوبة":"Penalty"), h("div",{style:{fontWeight:600}}, it.pen)),
+            h("div",null, h("span",{className:"doc-k"}, ar?"المهلة التصحيحية":"Corrective period"), h("div",{style:{fontWeight:600}}, it.period)))) : null) : null);
+    const CHECK = ar ? [
+      { n:1, cat:"التراخيص والتصاريح", w:"20%", title:"عدم وجود لوحة خارجية تحمل اسم المصنع ورقم الترخيص مطابق للترخيص الصناعي", type:"yesNo", on:true, sel:1, sev:"جسيمة", alert:"عدم الالتزام بمتطلبات اللوحات", desc:"المنشأة لا تملك لوحة خارجية تحمل اسم المصنع ورقم الترخيص الصناعي مطابق للترخيص.", corr:"تركيب لوحة خارجية تحمل اسم المصنع ورقم الترخيص.", pen:"إنذار.", period:"15 يوماً", notes:"" },
+      { n:2, cat:"التراخيص والتصاريح", w:"20%", title:"انتهاء سريان الترخيص الصناعي", type:"validity", on:true, sel:1, sev:"جسيمة", alert:"عدم تجديد الترخيص الصناعي", desc:"الترخيص الصناعي للمنشأة منتهي الصلاحية ولم يتم تجديده.", corr:"تجديد الترخيص الصناعي فوراً.", pen:"غرامة مالية.", period:"30 يوماً", notes:"مرفق ملف قائمة المنتجات المسيطرة." },
+      { n:3, cat:"التراخيص والتصاريح", w:"20%", title:"عدم وجود رخصة تشغيل", type:"yesNo", on:true, sel:0, sev:"جسيمة", alert:"عدم الالتزام بارتداء معدات السلامة", desc:"المنشأة لا تمتلك رخصة بلدية سارية المفعول للتشغيل، أو رفضت إبرازها للمفتش عند الطلب.", corr:"مراجعة البلدية المختصة وإصدار أو تجديد الرخصة فوراً.", pen:"إيقاف النشاط.", period:"30 يوماً", notes:"" },
+      { n:4, cat:"التراخيص والتصاريح", w:"20%", title:"عدم وجود تصريح سلامة", type:"validity", on:true, sel:1, sev:"جسمية", alert:"مخالفة متطلبات السلامة", desc:"المنشأة لا تملك تصريح سلامة ساري المفعول من الدفاع المدني.", corr:"الحصول على تصريح سلامة من الدفاع المدني.", pen:"إيقاف النشاط.", period:"15 يوماً", notes:"" },
+      { n:5, cat:"التراخيص والتصاريح", w:"20%", title:"الإنتاج دون وجود رخصة من الجهات العسكرية", type:"yesNo", on:false, sel:0, sev:"أمنية", alert:"إنتاج غير مرخص", desc:"المنشأة تقوم بالإنتاج دون الحصول على رخصة من الجهات العسكرية المختصة.", corr:"إيقاف الإنتاج والحصول على الرخصة اللازمة.", pen:"إيقاف النشاط وإحالة للجهات المختصة.", period:"فوري", notes:"" },
+    ] : [
+      { n:1, cat:"Licenses & permits", w:"20%", title:"No external signboard bearing the factory name and a license number matching the industrial license", type:"yesNo", on:true, sel:1, sev:"Major", alert:"Non-compliance with signage requirements", desc:"The establishment has no external signboard bearing the factory name and an industrial-license number matching the license.", corr:"Install an external signboard with the factory name and license number.", pen:"Warning.", period:"15 days", notes:"" },
+      { n:2, cat:"Licenses & permits", w:"20%", title:"Industrial license expired", type:"validity", on:true, sel:1, sev:"Major", alert:"Industrial license not renewed", desc:"The establishment's industrial license has expired and has not been renewed.", corr:"Renew the industrial license immediately.", pen:"Financial fine.", period:"30 days", notes:"Controlled-products list file attached." },
+      { n:3, cat:"Licenses & permits", w:"20%", title:"No operating license", type:"yesNo", on:true, sel:0, sev:"Major", alert:"Failure to wear safety equipment", desc:"The establishment holds no valid municipal operating license, or refused to present it to the inspector on request.", corr:"Refer to the competent municipality and issue/renew the license immediately.", pen:"Suspend activity.", period:"30 days", notes:"" },
+      { n:4, cat:"Licenses & permits", w:"20%", title:"No safety permit", type:"validity", on:true, sel:1, sev:"Major", alert:"Breach of safety requirements", desc:"The establishment holds no valid Civil Defense safety permit.", corr:"Obtain a safety permit from Civil Defense.", pen:"Suspend activity.", period:"15 days", notes:"" },
+      { n:5, cat:"Licenses & permits", w:"20%", title:"Production without a license from military authorities", type:"yesNo", on:false, sel:0, sev:"Security", alert:"Unlicensed production", desc:"The establishment produces without obtaining a license from the competent military authorities.", corr:"Halt production and obtain the required license.", pen:"Suspend activity and refer to competent authorities.", period:"Immediate", notes:"" },
+    ];
+
+    const flagChip = (label, on) => h("span",{style:{display:"inline-flex",alignItems:"center",gap:"4px",padding:"2px 9px",borderRadius:"999px",fontSize:"11px",fontWeight:600, background: on?"var(--status-compliant-soft)":"var(--surface-sunken)", color: on?"var(--status-compliant-text)":"var(--text-muted)"}}, on?"✓":"—", label);
+    const joinTable = (rows) => {
+      const cols = ar ? ["المنتج","الرمز المنسق","الوحدة","الكمية","الإنتاج الفعلي","الإنتاج الأقصى","نسبة الإعفاء %"] : ["Product","HS code","Unit","Quantity","Real prod.","Max prod.","Exempt %"];
+      return h("div",{style:{overflowX:"auto"}},
+        h("table",{className:"it-tbl"},
+          h("thead",null, h("tr",null, cols.map((c,i)=>h("th",{key:i}, c)))),
+          h("tbody",null, rows.map((r,i)=>[
+            h("tr",{key:"c"+i}, r.cells.map((v,j)=>h("td",{key:j}, h("input",{defaultValue:v})))),
+            h("tr",{key:"f"+i}, h("td",{colSpan:7, style:{background:"var(--surface-sunken)"}},
+              h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}},
+                flagChip(ar?"مستفيد من الإعفاء":"Customs-exempt", r.exempt),
+                flagChip(ar?"مستفيد من الفسح الكيميائي":"Chemical-cleared", r.chem),
+                flagChip(ar?"خاضع للائحة":"Regulated", r.reg),
+                flagChip(ar?"موجودة في المنشأة":"Present on site", r.present))))])),
+          ),
+        h("button",{className:"up-btn", style:{marginTop:"10px",borderStyle:"solid",borderColor:"var(--action-primary)",color:"var(--action-primary)"}, onClick:(e)=>e.preventDefault()},
+          h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.9,style:{width:15,height:15}},h("path",{d:"M12 5v14M5 12h14"})), ar?"إضافة صنف من خط الإنتاج":"Add item from production line"));
+    };
+
+    // ── CUSTOMS EXEMPTION flow ───────────────────
+    const customs = [
+      { title: ar?"خطة التقرير":"Report plan", num:"١", en:"1", body: h(React.Fragment, null,
+        banner(ar?"تبدأ الخطة الخاصة بإعداد تقرير الإعفاء الجمركي.":"The dedicated Customs Exemption plan starts here."),
+        row(fld(ar?"نوع التقرير":"Report type", ar?"تقرير الإعفاء الجمركي":"Customs Exemption Report", {disabled:true}),
+            fld(ar?"رقم الخطة":"Plan number", "CX-2026-00418", {req:true})),
+        yesno(ar?"نمط التنفيذ":"Execution mode", ar?"ميداني":"On-site", ar?"عن بُعد":"Remote", true),
+        row(fld(ar?"المنشأة":"Establishment", ar?"شركة الأمل لتدريب العمال":"Al-Amal Worker Training Co.", {disabled:true}),
+            fld(ar?"رقم الترخيص":"License number", "IL-118824", {disabled:true})),
+        row(fld(ar?"تاريخ الخطة":"Plan date", "", {type:"date"}), fld(ar?"المفتّش":"Inspector", ar?"عبدالله بن صالح الشهري":"Abdullah bin Saleh Al-Shehri", {disabled:true}))) },
+      { title: ar?"ملف المنشأة":"Establishment file", num:"٢", en:"2", body: h(React.Fragment, null,
+        banner(ar?"يُقرأ من بيانات صناعي — لا يُعدّل هنا.":"Read from Senaei master data — not edited here.", "info"),
+        row(fld(ar?"رقم المنشأة":"Establishment no.", "EST-77219", {disabled:true}), fld(ar?"النشاط":"Activity", ar?"تدريب مهني":"Vocational training", {disabled:true})),
+        row3(fld(ar?"المنطقة":"Region", ar?"الرياض":"Riyadh", {disabled:true}), fld(ar?"المدينة":"City", ar?"الرياض":"Riyadh", {disabled:true}), fld(ar?"المدينة الصناعية":"Industrial city", ar?"الثانية":"Second City", {disabled:true})),
+        fld(ar?"العنوان":"Address", ar?"طريق الخرج، المدينة الصناعية الثانية":"Kharj Rd, 2nd Industrial City", {disabled:true})) },
+      { title: ar?"بيانات الأصناف · الربط بخط الإنتاج":"Item data · production-line join", num:"٣", en:"3", body: h(React.Fragment, null,
+        banner(ar?"يختار المفتّش الأصناف من خط إنتاج المصنع (كل صنف يحمل الرمز المنسق ونسبة الإعفاء من صناعي)، ويحدّد لكل صنف: مستفيد من الإعفاء / مستفيد من الفسح الكيميائي / خاضع للائحة / موجود في المنشأة.":"The inspector picks items from the plant's production line (each carries an HS code and exempted percentage from Senaei) and flags per item: customs-exempt / chemical-cleared / regulated / present on site.", "info"),
+        yesno(ar?"تصنيف الصنف":"Item classification", ar?"مادة خام":"Raw material", ar?"منتج نهائي":"Final product", true),
+        joinTable(ar
+          ? [
+              { cells:["حبيبات بولي إيثيلين (PE) خام","390110","طن","5٬000","4٬600","6٬000","100"], exempt:true, chem:true, reg:true, present:true },
+              { cells:["أحبار طباعة صناعية سائلة","390110","طن","200","180","240","100"], exempt:true, chem:false, reg:true, present:false },
+              { cells:["أسلاك نحاس كهربائية معزولة","390110","طن","200","185","250","50"], exempt:true, chem:true, reg:true, present:false },
+            ]
+          : [
+              { cells:["Polyethylene (PE) raw granules","390110","Ton","5,000","4,600","6,000","100"], exempt:true, chem:true, reg:true, present:true },
+              { cells:["Industrial liquid printing ink","390110","Ton","200","180","240","100"], exempt:true, chem:false, reg:true, present:false },
+              { cells:["Insulated copper electrical wire","390110","Ton","200","185","250","50"], exempt:true, chem:true, reg:true, present:false },
+            ]),
+        h("div",{style:{fontSize:"12px",color:"var(--text-muted)",lineHeight:1.6}},
+          ar?"الربط موثّق: من Plant Production Line → product.hs_code، product.exempted_percentage، is_industrial_auditing_product؛ ومن Submit Inspection → selected_products[][id/name/hs_code/is_regulated] + products_images[]. سجل الإعفاء الحكومي في Factory 360 (عرض) هو الجزء الوحيد بحالة CONTRACT_NOT_SUPPLIED.":"Join is documented: Plant Production Line → product.hs_code, product.exempted_percentage, is_industrial_auditing_product; Submit Inspection → selected_products[][id/name/hs_code/is_regulated] + products_images[]. Only the Factory-360 government exemption *record* display is CONTRACT_NOT_SUPPLIED.")) },
+      { title: ar?"تفاصيل الاستفادة":"Benefit details", num:"٤", en:"4", body: h(React.Fragment, null,
+        yesno(ar?"هل تم الاستفادة من الإعفاء بشكل صحيح؟":"Was the exemption used correctly?", ar?"نعم":"Yes", ar?"لا":"No", true),
+        row(fld(ar?"رقم البيان الجمركي":"Customs declaration no.", "CD-90118", {req:true}), fld(ar?"رقم قرار الإعفاء":"Exemption decision no.", "EX-55120")),
+        fld(ar?"ملاحظات الاستفادة":"Benefit notes", ar?"طابقت الكميات المستوردة الإنتاج الفعلي المرصود.":"Imported quantities matched observed real production.", {area:true, rows:3})) },
+      { title: ar?"صور الأصناف":"Item photography", num:"٥", en:"5", body: h(React.Fragment, null,
+        banner(ar?"تُلتقط صورة لكل صنف مُعفى وتُرفق بالتقرير.":"A photo is captured for each exempted item and attached to the report.", "info"),
+        upload(ar?"صورة الصنف 1":"Item 1 photo", ar?"ألواح_ألمنيوم.jpg":"aluminum_sheets.jpg"),
+        upload(ar?"صورة الصنف 2":"Item 2 photo", ar?"حبيبات.jpg":"granules.jpg")) },
+    ];
+
+    // ── CHEMICAL CLEARANCE flow (3 sections, no workforce/machinery) ──
+    const chemical = [
+      { title: ar?"قائمة البنود":"Items list", num:"١", en:"1", body: h(React.Fragment, null,
+        banner(ar?"سؤال امتثال خاص بالفسح الكيميائي:":"Chemical-clearance compliance question:", "warning"),
+        yesno(ar?"هل يتم استخدام مواد مقيّدة في اتفاقيات دولية ضمن المنشأة؟":"Are internationally-restricted materials used in the establishment?", ar?"نعم":"Yes", ar?"لا":"No", false),
+        fld(ar?"الاتفاقية / القائمة المرجعية":"Convention / reference list", ar?"اتفاقية روتردام":"Rotterdam Convention", {select:[ar?"اتفاقية روتردام":"Rotterdam Convention", ar?"اتفاقية استكهولم":"Stockholm Convention", ar?"بروتوكول مونتريال":"Montreal Protocol"]}),
+        fld(ar?"بنود التفتيش الكيميائي":"Chemical inspection items", ar?"مطابقة بطاقات السلامة (SDS)، شروط التخزين، التهوية":"SDS matching, storage conditions, ventilation", {area:true, rows:2})) },
+      { title: ar?"المواد الخام":"Raw materials", num:"٢", en:"2", body: h(React.Fragment, null,
+        itemTable(ar
+          ? [["حمض الكبريتيك","لتر","1٬200","1٬100","1٬500","٢٫١"],["هيدروكسيد الصوديوم","كجم","800","760","1٬000","١٫٨"]]
+          : [["Sulfuric acid","L","1,200","1,100","1,500","2.1"],["Sodium hydroxide","Kg","800","760","1,000","1.8"]])) },
+      { title: ar?"المنتجات":"Products", num:"٣", en:"3", body: h(React.Fragment, null,
+        itemTable(ar
+          ? [["مطهّر صناعي","لتر","3٬000","2٬800","3٬500","٥٫٠"]]
+          : [["Industrial disinfectant","L","3,000","2,800","3,500","5.0"]]),
+        banner(ar?"لا تظهر أقسام القوى العاملة أو الآلات في تقرير الفسح الكيميائي.":"Workforce and machinery sections do not appear in the chemical-clearance report.", "info")) },
+    ];
+
+    // ── SAFETY flow ──────────────────────────────────
+    const safety = [
+      { title: ar?"ملف المنشأة":"Establishment file", num:"١", en:"1", body: h(React.Fragment, null,
+        row(fld(ar?"المنشأة":"Establishment", ar?"شركة الأمل لتدريب العمال":"Al-Amal Worker Training Co.", {disabled:true}), fld(ar?"رقم الترخيص":"License number", "IL-118824", {disabled:true})),
+        yesno(ar?"حالة الإنتاج":"Production status", ar?"قيد الإنتاج":"In production", ar?"متوقف / مغلق / إصلاح / نقل":"Stopped / closed / repair / relocated", false),
+        fld(ar?"مبرّر التوقف":"Stoppage justification", ar?"إغلاق مؤقت لأعمال صيانة السلامة.":"Temporary closure for safety maintenance.", {area:true, rows:2}),
+        fld(ar?"الجهة الحكومية التي قامت بالإغلاق":"Government body that closed it", ar?"الدفاع المدني":"Civil Defense", {select:[ar?"الدفاع المدني":"Civil Defense", ar?"البلدية":"Municipality", ar?"وزارة الصناعة":"Ministry of Industry"]})) },
+      { title: ar?"بنود التفتيش (السلامة)":"Inspection items (safety)", num:"٢", en:"2", body: h(React.Fragment, null,
+        h("div",{style:{display:"flex", alignItems:"center", justifyContent:"space-between", gap:"10px", flexWrap:"wrap"}},
+          h("div",{style:{fontSize:"13px", color:"var(--text-secondary)"}}, ar?"القسم: التراخيص والتصاريح":"Section: Licenses & permits"),
+          h("span",{className:"badge badge-info"}, ar?"الوزن 20%":"Weight 20%")),
+        banner(ar?"البنود مدفوعة باللوائح: تُحمَّل من GET /regulations مُرشَّحة بـ report_kind، وتفعيل البند يكشف حالة الامتثال ومعاينة المخالفة المرتبطة. كل بند: قابلية التطبيق + ينطبق/لا ينطبق أو ساري/منتهي + ملاحظات + مرفقات لكل بند.":"Items are regulation-driven: loaded from GET /regulations filtered by report_kind. Enabling an item reveals its compliance state and the linked violation preview. Each item: applicability + applies/doesn't-apply or valid/expired + notes + per-item attachments.", "info"),
+        ...CHECK.map(citem),
+        apiFlag(ar?"البنود الخمسة أعلاه مأخوذة حرفيًا من InspectionItemsViewModel (فئة التراخيص والتصاريح). فئات السلامة الإضافية (السلامة، البيئة، العمالة) تُحمَّل من /regulations وقت التشغيل ولا توجد كقائمة ثابتة.":"The five items above are verbatim from InspectionItemsViewModel (Licenses & permits category). Additional safety categories (safety, environment, labor) load from /regulations at runtime and do not exist as a static list.")) },
+      { title: ar?"المحاضر":"Records", num:"٣", en:"3", body: h(React.Fragment, null,
+        banner(ar?"يُنشئ تقرير السلامة مجموعة محاضره الخاصة (إثبات واقعة، ضبط مخالفة، إتلاف) بنفس نمط تقرير الزيارة.":"The Safety Report generates its own record set (fact-finding, violation, destruction) in the same pattern as the Visit Report.", "info"),
+        row(fld(ar?"رقم المحضر":"Record number", "SR-47072332", {req:true}), fld(ar?"تاريخ المحضر":"Record date", "", {type:"date"})),
+        fld(ar?"ملاحظات":"Notes", "", {area:true, rows:2})) },
+    ];
+
+    // ── FACILITY REPORT (محضر المنشأة) — 4 variants: action × attendance ──
+    const ck = h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const facProc = this.state.facProc, facAtt = this.state.facAtt;
+    const drv = (label, opts, val, key) => h("div",null,
+      h("div",{style:{fontSize:"13px",color:"var(--text-secondary)",marginBlockEnd:"8px"}}, label),
+      h("div",{className:"rp-radios"}, opts.map(o=>{ const on = val===o.v; return h("button",{key:o.v, className:"rp-opt", "aria-pressed":on?"true":"false", onClick:()=>this.setState({[key]:o.v})}, h("span",{className:"rp-ind"}, on?ck:null), o.l); })));
+    const varNum = facProc==="reopen" ? (facAtt==="attended"?1:2) : (facAtt==="attended"?3:4);
+    const procName = facProc==="reopen" ? (ar?"إعادة فتح المنشأة":"Reopen establishment") : (ar?"إغلاق المنشأة":"Close establishment");
+    const attName = facAtt==="attended" ? (ar?"حضر ممثل المنشأة":"Representative attended") : (ar?"لم يحضر ممثل المنشأة":"Representative absent");
+    const fv = (k,v) => h("div",null, h("div",{className:"doc-k"}, k), h("div",{style:{fontSize:"13.5px",fontWeight:600}}, v||"—"));
+    const facilityDoc = h("div",{className:"doc"},
+      h("div",{className:"doc-hd"},
+        h("div",{style:{flex:1}}, h("div",{className:"doc-k"}, ar?"تفاصيل مذكرة استدعاء":"Summons memo details"),
+          h("div",{style:{fontSize:"18px",fontWeight:700,marginTop:"2px"}}, ar?"محضر المنشأة":"Facility Report"),
+          h("div",{className:"t-caption",style:{marginTop:"2px"}}, procName+" · "+attName)),
+        h("span",{className:"badge badge-info"}, ar?("المتغيّر "+varNum+" من 4"):("Variant "+varNum+" of 4"))),
+      h("div",{className:"doc-sec"}, h("div",{className:"doc-grid",style:{gridTemplateColumns:"1fr 1fr 1fr"}},
+        fv(ar?"رقم المحضر":"Record no.","47072332"), fv(ar?"يوم المحضر":"Record day", ar?"الأحد":"Sunday"), fv(ar?"تاريخ المحضر":"Record date","2026-07-20"),
+        fv(ar?"وقت المحضر":"Record time","11:00"))),
+      h("div",{className:"doc-sec"}, h("div",{className:"doc-grid",style:{gridTemplateColumns:"1fr 1fr 1fr"}},
+        fv(ar?"مالك المصنع":"Factory owner", ar?"فهد بن عبدالله":"Fahd bin Abdullah"), fv(ar?"اسم المصنع":"Factory name", ar?"شركة الأمل لتدريب العمال":"Al-Amal Worker Training Co."), fv(ar?"رقم السجل التجاري":"CR number","1010112233"),
+        fv(ar?"رقم المنشأة":"Establishment no.","EST-77219"), fv(ar?"رقم الترخيص":"License no.","IL-118824"), fv(ar?"تاريخ انتهاء الترخيص":"License expiry","2027-03-01"))),
+      h("div",{className:"doc-sec"}, h("div",{className:"doc-grid",style:{gridTemplateColumns:"1fr 1fr"}},
+        fv(ar?"المنطقة":"Region", ar?"الرياض":"Riyadh"), fv(ar?"المدينة":"City", ar?"الرياض":"Riyadh"),
+        fv(ar?"الجوال":"Mobile","+966 5X XXX XXXX"), fv(ar?"البريد الإلكتروني":"Email","ops@alamal.example"))),
+      h("div",{className:"doc-sec"},
+        h("div",{className:"doc-k"}, ar?"الحضور والمستندات المطلوبة":"Attendance & required documents"),
+        h("div",{style:{fontSize:"12.5px",marginTop:"6px",lineHeight:1.65,color:"var(--text-secondary)",whiteSpace:"pre-line"}}, ar
+          ? "إشارة إلى الوضع التنظيمي: طلب استكمال وثائق الترخيص.\nنأمل حضوركم أو من ينوب عنكم إلى الإدارة العامة للامتثال الصناعي — فرع الوزارة بمنطقة الرياض، يوم الأحد 10/03/2026 الساعة 10:00 صباحاً، وإحضار المستندات التالية:"
+          : "Regarding the regulatory status: request to complete the licensing documents.\nPlease attend, in person or by proxy, at the General Directorate of Industrial Compliance — Ministry Riyadh branch, on Sunday 10/03/2026 at 10:00 AM, and bring the following documents:"),
+        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px 16px",marginTop:"10px"}},
+          (ar
+            ? ["شهادات الجودة والمطابقة","عقد الإيجار للموقع","رخصة هيئة الغذاء والدواء","التصريح البيئي","الرخصة المكانية","إثبات الشخصية (للمالك أو الوكيل)","رخصة الدفاع المدني"]
+            : ["Quality & conformity certificates","Site lease contract","SFDA license","Environmental permit","Premises (location) license","ID proof (owner or agent)","Civil Defense license"]
+          ).map((d,i)=>h("label",{key:i,className:"check"}, h("input",{type:"checkbox",defaultChecked:true}), h("span",null,d)))),
+        h("div",{style:{marginTop:"12px"}}, fv(ar?"ملاحظات":"Notes", ar
+          ? "يرجى الحضور في الوقت المحدد وإحضار أصل المستندات مع نسخ واضحة سارية المفعول؛ وعند حضور الوكيل يجب إحضار وكالة/تفويض رسمي معتمد من الغرفة التجارية. وفي حال عدم استكمال المتطلبات في الموعد تُتخذ الإجراءات وفق الأنظمة المعتمدة."
+          : "Please attend on time with original documents plus clear valid copies; a proxy must bring an official Chamber-of-Commerce-certified authorization. If requirements are not completed on time, action is taken per the approved regulations."))),
+      h("div",{className:"doc-sec"},
+        h("div",{className:"doc-k"}, ar?"مستلم التبليغ":"Delivery recipient"),
+        h("div",{className:"doc-grid",style:{gridTemplateColumns:"1fr 1fr 1fr",marginTop:"8px"}},
+          fv(ar?"الاسم":"Name", facAtt==="attended"?(ar?"سعود بن ناصر":"Saud bin Nasser"):(ar?"—":"—")), fv(ar?"الصفة":"Role", facAtt==="attended"?(ar?"مدير المصنع":"Plant manager"):"—"), fv(ar?"رقم الهوية":"ID number", facAtt==="attended"?"10XXXXXXXX":"—"),
+          fv(ar?"وقت التبليغ":"Notified at", facAtt==="attended"?"11:15":"—"), fv(ar?"تاريخ التبليغ":"Notified on", facAtt==="attended"?"2026-07-20":"—")),
+        h("div",{style:{marginTop:"10px"}}, fv(attName, facAtt==="absent"?(ar?"تم تحديث بيانات الترخيص الصناعي مؤخراً؛ يرجى مراجعة بيانات المنشأة والتأكد من سريان الترخيص وصحة رقمه قبل تنفيذ الزيارة.":"Industrial-license data was recently updated; review the establishment data and confirm the license validity and number before executing the visit."):(ar?"حضر ووافق على استلام التبليغ.":"Attended and accepted the delivery.")))),
+      h("div",{className:"doc-sec",style:{display:"flex",alignItems:"flex-end",justifyContent:"space-between",gap:"14px",flexWrap:"wrap"}},
+        fv(ar?"اسم ممثل الوزارة":"Ministry representative", ar?"عبدالله بن صالح الشهري":"Abdullah bin Saleh Al-Shehri"),
+        h("div",null, h("div",{className:"doc-k"}, ar?"التوقيع":"Signature"), h("div",{style:{width:"142px",height:"56px",border:"1px dashed var(--border-strong)",borderRadius:"6px",display:"grid",placeItems:"center",color:"var(--text-muted)",fontSize:"12px",marginTop:"4px"}}, ar?"توقيع":"Signed"))),
+      h("div",{className:"doc-sec",style:{display:"flex",gap:"10px",flexWrap:"wrap"}},
+        h("button",{className:"btn btn-secondary"}, ar?"تنزيل PDF":"Download PDF"), h("button",{className:"btn btn-secondary"}, ar?"طباعة":"Print")));
+
+    const facility = [
+      { title: ar?"المحضر":"Record", num:"١", en:"1", body: h(React.Fragment, null,
+        row(fld(ar?"رقم محضر":"Record number","47072332",{req:true}), fld(ar?"تاريخ المحضر":"Record date","",{type:"date"})),
+        row(fld(ar?"رقم الاستدعاء":"Summons number","47072332",{req:true}), fld(ar?"تاريخ الاستدعاء":"Summons date","",{type:"date"}))) },
+      { title: ar?"إجراء المنشأة والحضور":"Establishment action & attendance", num:"٢", en:"2", body: h(React.Fragment, null,
+        h("div",{style:{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}},
+          h("span",{className:"badge badge-info"}, ar?("المتغيّر "+varNum+" من 4"):("Variant "+varNum+" of 4")),
+          h("span",{className:"t-caption"}, procName+" · "+attName)),
+        drv(ar?"إجراء المنشأة":"Establishment action", [{v:"reopen",l:ar?"إعادة فتح المنشأة":"Reopen establishment"},{v:"close",l:ar?"إغلاق المنشأة":"Close establishment"}], facProc, "facProc"),
+        drv(ar?"حضور ممثل المنشأة":"Representative attendance", [{v:"attended",l:ar?"حضر":"Attended"},{v:"absent",l:ar?"لم يحضر":"Absent"}], facAtt, "facAtt"),
+        facAtt==="absent"
+          ? fld(ar?"سبب عدم الحضور / ملاحظات":"Reason for absence / notes", ar?"تم تحديث بيانات الترخيص الصناعي مؤخراً؛ يرجى مراجعة بيانات المنشأة والتأكد من سريان الترخيص وصحة رقمه قبل تنفيذ الزيارة.":"Industrial-license data was recently updated; review the establishment data and confirm the license validity and number before executing the visit.", {area:true, rows:3})
+          : h(React.Fragment,null,
+              h("label",{className:"fld"}, h("span",null, ar?"ملف التوقيع":"Signature file"), h("button",{className:"up-btn",onClick:pickFile}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), "signature.png")),
+              banner(ar?"حضر ممثل المنشأة ووافق على التوقيع.":"The representative attended and approved the signature.","info"))) },
+      { title: ar?"مستند المحضر (عرض)":"Record document (read view)", num:"٣", en:"3", body: h(React.Fragment, null,
+        banner(ar?"يتبدّل نص المستند حسب المتغيّر المختار أعلاه (الإجراء × الحضور).":"The document copy switches with the selected variant above (action × attendance).","info"),
+        facilityDoc) },
+    ];
+
+    const setsByType = { customs, chemical, safety, facility };
+    const activeSet = setsByType[type] || customs;
+    const isViewer = type === "details";
+    const isForm = !isViewer;
+
+    // ── REPORT DETAILS viewer (read-only document) ───
+    const dl = (k,v) => h(React.Fragment,null, h("div",null,h("div",{className:"doc-k"},k),h("div",{className:"v"},v)));
+    const viewerDoc = h(React.Fragment, null,
+      h("div",{className:"doc-hd"},
+        h("div",{style:{flex:1}}, h("div",{className:"doc-k"}, ar?"تفاصيل التقرير":"Report details"),
+          h("div",{style:{fontSize:"18px",fontWeight:700,marginTop:"2px"}}, ar?"محضر ضبط مخالفة":"Violation Report"),
+          h("div",{className:"t-caption",style:{marginTop:"2px"}}, ar?"شركة الأمل لتدريب العمال · VS-40219":"Al-Amal Worker Training Co. · VS-40219")),
+        h("span",{className:"badge badge-completed"}, ar?"موقّع":"Signed")),
+      h("div",{className:"doc-sec"},
+        h("div",{className:"doc-grid"}, dl(ar?"رقم المحضر":"Record no.","47072332"), dl(ar?"التاريخ":"Date","2026-07-20"), dl(ar?"المفتّش":"Inspector", ar?"عبدالله الشهري":"Abdullah Al-Shehri"), dl(ar?"الإدارة":"Department", ar?"فرع الرياض":"Riyadh branch"))),
+      h("div",{className:"doc-sec"},
+        h("div",{className:"doc-k"}, ar?"بنود المخالفة":"Violation items"),
+        h("ul",{style:{margin:"8px 0 0",paddingInlineStart:"18px",fontSize:"13.5px",lineHeight:1.6}},
+          h("li",null, ar?"تشغيل عمالة دون عقود موثّقة — المادة ٣٩":"Employing workers without documented contracts — Art. 39"),
+          h("li",null, ar?"عدم توفّر معدات الوقاية — المادة ١٢١":"Missing protective equipment — Art. 121"))),
+      h("div",{className:"doc-sec"},
+        h("div",{className:"doc-k"}, ar?"محضر سحب عينة (مرفق)":"Sample collection (attached)"),
+        h("div",{className:"doc-grid"}, dl(ar?"المختبر":"Lab", ar?"مختبر هيئة المدن الصناعية":"Ind. Cities Authority Lab"), dl(ar?"رقم العينة":"Sample no.","A-001245"))),
+      h("div",{className:"doc-sec"},
+        h("div",{className:"doc-k"}, ar?"الحضور والتوقيع":"Attendance & signature"),
+        h("div",{style:{marginTop:"6px",fontSize:"13.5px"}}, ar?"حضر ممثل المنشأة ووافق على التوقيع.":"The establishment representative attended and approved the signature.")),
+      h("div",{className:"doc-sec",style:{display:"flex",gap:"10px",flexWrap:"wrap"}},
+        h("button",{className:"btn btn-secondary"}, ar?"تنزيل PDF":"Download PDF"),
+        h("button",{className:"btn btn-secondary"}, ar?"طباعة":"Print")));
+
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: ar ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      isViewer, isForm, viewerDoc,
+      tabs: TABS.map(tb => ({ ...tb, active: type === tb.id ? "true" : "false", select: () => this.setState({ type: tb.id, open: 1 }) })),
+      sections: activeSet.map((s, idx) => {
+        const i = idx + 1; const open = this.state.open === i;
+        return { title: s.title, numDisp: ar ? s.num : s.en, open, chevron: open ? up : down, toggle: () => this.setState(st => ({ open: st.open === i ? null : i })), body: s.body };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

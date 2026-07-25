@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .jr-wrap { max-width:900px; width:100%; margin:0 auto; padding:16px 18px 130px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:15px 16px; display:flex; flex-direction:column; gap:12px; }
+  .jr-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; flex-wrap:wrap; }
+  .jr-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:12px; padding:8px 12px; cursor:pointer; color:var(--text-secondary); border-inline-end:1px solid var(--border-input); }
+  .jr-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .jr-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .jr-metrics { display:flex; gap:8px; flex-wrap:wrap; }
+  .jr-metric { flex:1 1 90px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--surface-sunken); padding:10px 12px; }
+  .jr-metric .n { font-size:19px; font-weight:700; } .jr-metric .l { font-size:11px; color:var(--text-muted); }
+  .jr-fence { position:relative; height:190px; border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-sunken); overflow:hidden; display:grid; place-items:center; }
+  .jr-ring { position:absolute; border-radius:50%; border:2px dashed var(--action-primary); opacity:.6; }
+  .jr-pin { position:absolute; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; font-weight:600; transform:translate(-50%,-50%); }
+  .jr-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--surface-primary); box-shadow:var(--shadow-card); }
+  .jr-opt { display:flex; align-items:center; gap:9px; padding:11px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:46px; color:var(--text-primary); text-align:start; width:100%; }
+  .jr-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .jr-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .jr-opt[aria-pressed="true"] .jr-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); align-self:flex-start; }
+  .jr-h { margin:0; font-size:15px; font-weight:600; }
+  .jr-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.3;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge {{ opBadgeClass }}"><span class="dot"></span>{{ opState }}</span>
+    <button class="jr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="jr-wrap">
+    <div class="card" style="gap:9px;">
+      <span class="jr-k">{{ t.demoLabel }}</span>
+      <div class="jr-seg">
+        <sc-for list="{{ situations }}" as="s" hint-placeholder-count="4"><button aria-pressed="{{ s.active }}" onClick="{{ s.go }}">{{ s.label }}</button></sc-for>
+      </div>
+      <label class="check" style="display:flex; gap:8px; align-items:center; font-size:12.5px;"><input type="checkbox" checked="{{ online }}" onChange="{{ toggleOnline }}"> <span>{{ t.onlineToggle }}</span></label>
+    </div>
+
+    <sc-if value="{{ recovered }}" hint-placeholder-val="{{ false }}">
+      <div class="card" style="flex-direction:row; gap:10px; align-items:flex-start; background:var(--status-info-soft); border-color:color-mix(in srgb,var(--status-info) 26%,transparent); box-shadow:none; padding:11px 14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg>
+        <span class="t-compact" style="color:var(--status-info-text);">{{ t.recoveredNote }}</span>
+      </div>
+    </sc-if>
+
+    {{ panel }}
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:10px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge {{ footBadgeClass }}"><span class="dot"></span>{{ footStatus }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary" onClick="{{ openUnable }}">{{ t.unableBtn }}</button>
+    <button class="btn btn-primary" aria-disabled="{{ startDisabled }}" style="{{ startStyle }}">{{ t.startExec }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:1150}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", sit:"traveling", online:true, override:"none", unable:"none",
+    ovReason:"", ovExplain:"", ovSafety:false, ovEvidence:false, arrEvidence:false, showCorrection:false, corrReason:"", cancelReason:"", cancelComment:"" };
+
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? {
+      back:"رجوع", headerTitle:"الرحلة والوصول", headerSub:"شركة الأمل لتدريب العمال", theme:"الوضع", langBtnLabel:"EN",
+      demoLabel:"حالة العرض (تحاكي مصدر GPS الحقيقي)", onlineToggle:"متصل بالإنترنت",
+      sit_travel:"أثناء التنقل", sit_inside:"وصول داخل النطاق", sit_outside:"وصول خارج النطاق", sit_unable:"تعذّر الوصول",
+      recoveredNote:"استُؤنفت الجلسة بعد إعادة التشغيل؛ استُرجعت آخر عملية تحقق موقع من قائمة المزامنة.",
+      opNew:"جديدة", opWay:"في الطريق", opArrived:"وصل", opBlocked:"محظور",
+      etaH:"الرحلة إلى المنشأة", eta:"الوقت المقدّر", dist:"المسافة المتبقية", speed:"السرعة", prog:"تقدّم الرحلة", min:"دقيقة", km:"كم", kmh:"كم/س",
+      etaStale:"تقدير مخزّن — قد لا يكون محدّثاً (تعذّر مزوّد المسار).",
+      fenceH:"نطاق التحقّق الجغرافي", official:"الموقع الرسمي", you:"موقعك", fence:"النطاق 150م", within:"ضمن النطاق · {d}م", beyond:"خارج النطاق · {d}م",
+      arriveInside:"تأكيد الوصول", arrivedOk:"تم تسجيل الوصول داخل النطاق.", accGate:"دقّة GPS ضمن الحد المسموح.",
+      outsideH:"الوصول خارج النطاق", outsideBody:"لم يُسجَّل الوصول تلقائياً. لا يتغيّر شيء على الخادم — يلزم طلب اعتماد محكوم للوصول خارج النطاق.",
+      ovReasonL:"سبب الوصول خارج النطاق", ovExplainL:"التفسير", ovSafety:"استثناء سلامة/أمن", ovEvidence:"إرفاق دليل (صورة)", ovSubmit:"إرسال طلب الاعتماد",
+      ovPending:"طلب الاعتماد قيد المراجعة لدى العمليات.", ovApproved:"اعتُمد الوصول خارج النطاق — يمكن بدء التنفيذ.", ovRejected:"رُفض الطلب — تواصل مع العمليات.",
+      arrEvidenceH:"دليل الوصول (مطلوب)", arrPhoto:"صورة الوصول", arrComment:"ملاحظة", arrSave:"حفظ دليل الوصول", arrSaved:"حُفظ دليل الوصول.",
+      corrToggle:"تصحيح موقع المنشأة", corrH:"تصحيح الموقع (لهذه الزيارة فقط)", corrOriginal:"الموقع الأصلي", corrCorrected:"الموقع المصحّح", corrReasonL:"سبب التصحيح", corrPhoto:"إرفاق صورة (اختياري)", corrSave:"حفظ التصحيح", corrOnlineOnly:"التصحيح متاح فقط عند الاتصال بالإنترنت.", corrNote:"يبقى الأصلي والمصحّح ظاهرين معاً؛ لا يُستبدل مصدر الحقيقة.",
+      unableBtn:"تعذّر الوصول", startExec:"بدء التنفيذ",
+      unableH:"تعذّر تنفيذ الزيارة", unableBody:"لا يُلغي المفتش الزيارة مباشرة — تُرسل طلباً وتقرّره العمليات. السبب إلزامي.", unableReasonL:"سبب التعذّر", unableComment:"تعليق", unableCommentReq:"التعليق إلزامي عند اختيار «أخرى».", unableEvidence:"إرفاق دليل", unableSubmit:"إرسال الطلب", unableCancel:"إلغاء",
+      unablePending:"طلب تعذّر الوصول قيد قرار العمليات.", unableApproved:"اعتُمد التعذّر — أُنهيت الزيارة.", unableRejected:"رُفض الطلب — تابع التنفيذ.",
+      footTravel:"الرحلة جارية", footArrived:"وصل — جاهز", footBlocked:"بدء التنفيذ محظور",
+      startBlockOutside:"يلزم اعتماد الوصول خارج النطاق.", startBlockArr:"يلزم حفظ دليل الوصول.", startBlockUnable:"طلب تعذّر قيد المراجعة.",
+      reasons:[["factory_closed","المصنع مغلق عند الوصول"],["access_denied","رفض المصنع السماح بالدخول"],["rep_unavailable","ممثل المصنع غير متوفر"],["safety_risk","خطر على السلامة في الموقع"],["wrong_location","موقع خاطئ أو يتعذر الوصول إليه"],["other","أخرى (التعليق إلزامي)"]],
+      ovReasons:[["gps_inaccurate","دقّة GPS ضعيفة"],["alt_gate","دخول من بوابة بديلة"],["safety_security","سلامة/أمن"],["pin_wrong","دبوس الموقع الرسمي خاطئ"]],
+    } : {
+      back:"Back", headerTitle:"Journey & arrival", headerSub:"Al-Amal Worker Training Co.", theme:"Theme", langBtnLabel:"AR",
+      demoLabel:"Demo state (stands in for the real GPS source)", onlineToggle:"Online",
+      sit_travel:"Travelling", sit_inside:"Arrival inside fence", sit_outside:"Arrival outside fence", sit_unable:"Unable to access",
+      recoveredNote:"Session resumed after restart; the last location check was restored from the sync queue.",
+      opNew:"New", opWay:"On the way", opArrived:"Arrived", opBlocked:"Blocked",
+      etaH:"Journey to establishment", eta:"ETA", dist:"Distance left", speed:"Speed", prog:"Journey progress", min:"min", km:"km", kmh:"km/h",
+      etaStale:"Cached estimate — may be out of date (route provider unavailable).",
+      fenceH:"Geofence check", official:"Official location", you:"You", fence:"Fence 150m", within:"Within fence · {d}m", beyond:"Outside fence · {d}m",
+      arriveInside:"Confirm arrival", arrivedOk:"Arrival recorded inside the fence.", accGate:"GPS accuracy within the allowed limit.",
+      outsideH:"Arrival outside the fence", outsideBody:"Arrival was not auto-recorded. Nothing mutates server-side — a governed outside-geofence approval request is required.",
+      ovReasonL:"Reason for outside-fence arrival", ovExplainL:"Explanation", ovSafety:"Safety/security exception", ovEvidence:"Attach evidence (photo)", ovSubmit:"Submit approval request",
+      ovPending:"Approval request is pending with Operations.", ovApproved:"Outside-fence arrival approved — execution can start.", ovRejected:"Request rejected — contact Operations.",
+      arrEvidenceH:"Arrival evidence (required)", arrPhoto:"Arrival photo", arrComment:"Note", arrSave:"Save arrival evidence", arrSaved:"Arrival evidence saved.",
+      corrToggle:"Correct establishment location", corrH:"Location correction (this visit only)", corrOriginal:"Original location", corrCorrected:"Corrected location", corrReasonL:"Correction reason", corrPhoto:"Attach photo (optional)", corrSave:"Save correction", corrOnlineOnly:"Correction is available only when online.", corrNote:"Original and corrected stay visible together; the source of truth is not overwritten.",
+      unableBtn:"Unable to access", startExec:"Start execution",
+      unableH:"Unable to complete the visit", unableBody:"The inspector never cancels directly — you submit a request and Operations decides. Reason is mandatory.", unableReasonL:"Reason", unableComment:"Comment", unableCommentReq:"Comment is mandatory when “Other” is selected.", unableEvidence:"Attach evidence", unableSubmit:"Submit request", unableCancel:"Cancel",
+      unablePending:"Unable-to-access request is pending an Operations decision.", unableApproved:"Approved — the visit was ended.", unableRejected:"Request rejected — continue execution.",
+      footTravel:"Journey in progress", footArrived:"Arrived — ready", footBlocked:"Start execution blocked",
+      startBlockOutside:"Outside-fence approval required.", startBlockArr:"Arrival evidence required.", startBlockUnable:"Unable request under review.",
+      reasons:[["factory_closed","Factory closed at arrival"],["access_denied","Access denied by factory"],["rep_unavailable","Factory representative unavailable"],["safety_risk","Safety risk on site"],["wrong_location","Wrong or unreachable location"],["other","Other (comment mandatory)"]],
+      ovReasons:[["gps_inaccurate","GPS inaccurate"],["alt_gate","Entry via alternate gate"],["safety_security","Safety/security"],["pin_wrong","Official pin is wrong"]],
+    };
+    const sett=(p)=>this.setState(p);
+    const chip=(c,x)=>h("span",{className:"badge "+c},x);
+    const field=(label,val,opts={})=>h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}},h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}},label), opts.area?h("textarea",{className:"input",rows:opts.rows||2,defaultValue:val,onChange:opts.onChange}):h("input",{className:"input",defaultValue:val,disabled:opts.dis,style:opts.dis?{color:"var(--text-muted)"}:null,onChange:opts.onChange}));
+    const upload=(label)=>h("button",{className:"up-btn",onClick:e=>e.preventDefault()},h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})),label);
+    const ck=h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const banner=(txt,tone)=>h("div",{className:"card",style:{flexDirection:"row",gap:"10px",alignItems:"flex-start",background:`var(--status-${tone}-soft)`,borderColor:`color-mix(in srgb,var(--status-${tone}) 26%,transparent)`,boxShadow:"none",padding:"11px 14px"}},h("span",{className:"t-compact",style:{color:`var(--status-${tone}-text)`}},txt));
+
+    const sit=st.sit, inside=sit==="inside", outside=sit==="outside";
+    const dist = inside?68: outside?240: null;
+
+    // fence diagram (schematic geofence — the Mapbox geofence card in impl)
+    const fence=(youInside)=>h("div",{className:"jr-fence"},
+      h("div",{className:"jr-ring",style:{width:"150px",height:"150px"}}),
+      h("div",{className:"jr-ring",style:{width:"90px",height:"90px",borderStyle:"solid",opacity:.35}}),
+      h("div",{className:"jr-pin",style:{insetInlineStart:"50%",top:"50%"}}, h("span",{className:"jr-dot",style:{background:"var(--action-primary)"}}), h("span",null,t.official)),
+      h("div",{className:"jr-pin",style:{insetInlineStart: youInside?"62%":"84%", top: youInside?"40%":"24%"}}, h("span",{className:"jr-dot",style:{background: youInside?"var(--status-compliant)":"var(--status-critical)"}}), h("span",null,t.you)),
+      h("div",{style:{position:"absolute",insetBlockEnd:"8px",insetInlineStart:"10px",fontSize:"10.5px",color:"var(--text-muted)"}},t.fence));
+
+    let panel;
+    if(sit==="traveling"){
+      panel=h(React.Fragment,null,
+        h("div",{className:"card"}, h("h3",{className:"jr-h"},t.etaH),
+          h("div",{className:"jr-metrics"},
+            h("div",{className:"jr-metric"},h("div",{className:"n"},"14"),h("div",{className:"l"},t.eta+" ("+t.min+")")),
+            h("div",{className:"jr-metric"},h("div",{className:"n"},"6.2"),h("div",{className:"l"},t.dist+" ("+t.km+")")),
+            h("div",{className:"jr-metric"},h("div",{className:"n"},"48"),h("div",{className:"l"},t.speed+" ("+t.kmh+")"))),
+          h("div",null, h("div",{className:"jr-k",style:{marginBottom:"5px"}},t.prog),
+            h("div",{style:{height:"8px",borderRadius:"4px",background:"var(--surface-sunken)",overflow:"hidden"}},h("div",{style:{height:"100%",width:"62%",background:"var(--action-primary)"}}))),
+          st.online?null:banner(t.etaStale,"warning")),
+        h("div",{className:"card"}, h("h3",{className:"jr-h"},t.fenceH), fence(false)));
+    } else if(inside){
+      panel=h(React.Fragment,null,
+        h("div",{className:"card"}, h("h3",{className:"jr-h"},t.fenceH), fence(true),
+          h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}, chip("badge-compliant",t.within.replace("{d}",dist)), h("span",{className:"t-caption",style:{color:"var(--status-compliant-text)"}},t.accGate))),
+        h("div",{className:"card"}, h("h3",{className:"jr-h"},t.arrEvidenceH),
+          upload(t.arrPhoto), field(t.arrComment,"",{area:true,rows:2}),
+          st.arrEvidence?chip("badge-compliant","✓ "+t.arrSaved):h("button",{className:"btn btn-primary",style:{alignSelf:"flex-start"},onClick:()=>sett({arrEvidence:true})},t.arrSave)),
+        correctionCard());
+    } else if(outside){
+      panel=h(React.Fragment,null,
+        h("div",{className:"card"}, h("h3",{className:"jr-h"},t.fenceH), fence(false),
+          chip("badge-critical",t.beyond.replace("{d}",dist))),
+        st.override==="none"?h("div",{className:"card"}, h("h3",{className:"jr-h"},t.outsideH), banner(t.outsideBody,"warning"),
+          h("div",null, h("div",{className:"jr-k",style:{marginBottom:"6px"}},t.ovReasonL),
+            h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}}, t.ovReasons.map(([k,l])=>{const on=st.ovReason===k;return h("button",{key:k,className:"jr-opt","aria-pressed":on,onClick:()=>sett({ovReason:k,ovSafety:k==="safety_security"})},h("span",{className:"jr-ind"},on?ck:null),l);}))),
+          field(t.ovExplainL,"",{area:true,rows:2}),
+          h("label",{className:"check",style:{display:"flex",gap:"8px",alignItems:"center"}},h("input",{type:"checkbox",checked:st.ovSafety,onChange:e=>sett({ovSafety:e.target.checked})}),h("span",null,t.ovSafety)),
+          upload(t.ovEvidence),
+          h("button",{className:"btn btn-primary",style:{alignSelf:"flex-start"},"aria-disabled": st.ovReason?"false":"true",style:st.ovReason?{alignSelf:"flex-start"}:{alignSelf:"flex-start",opacity:.5,pointerEvents:"none"},onClick:()=>sett({override:"pending"})},t.ovSubmit))
+          : banner(st.override==="approved"?t.ovApproved:st.override==="rejected"?t.ovRejected:t.ovPending, st.override==="approved"?"compliant":st.override==="rejected"?"critical":"info"),
+        st.override==="pending"?h("div",{style:{display:"flex",gap:"8px"}}, h("button",{className:"btn btn-secondary",onClick:()=>sett({override:"approved"})},ar?"محاكاة الاعتماد":"Simulate approve"), h("button",{className:"btn btn-secondary",onClick:()=>sett({override:"rejected"})},ar?"محاكاة الرفض":"Simulate reject")):null,
+        correctionCard());
+    } else {
+      panel=unableCard();
+    }
+    function correctionCard(){
+      return h("div",{className:"card"},
+        h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"10px",flexWrap:"wrap"}}, h("h3",{className:"jr-h"},t.corrToggle),
+          h("button",{className:"btn btn-secondary",onClick:()=>sett({showCorrection:!st.showCorrection})}, st.showCorrection?"−":"+")),
+        st.showCorrection?h(React.Fragment,null,
+          !st.online?banner(t.corrOnlineOnly,"warning"):null,
+          h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}},
+            h("div",null,h("div",{className:"jr-k"},t.corrOriginal),h("div",{className:"input-mono",style:{fontSize:"12px"}},"24.7136° N, 46.6753° E")),
+            h("div",null,h("div",{className:"jr-k"},t.corrCorrected),h("div",{className:"input-mono",style:{fontSize:"12px",color:"var(--status-compliant-text)"}},"24.7141° N, 46.6749° E"))),
+          field(t.corrReasonL,"",{area:true,rows:2}), upload(t.corrPhoto),
+          h("button",{className:"btn btn-primary",style:{alignSelf:"flex-start"},"aria-disabled":st.online?"false":"true",onClick:()=>{}},t.corrSave),
+          h("div",{className:"t-caption"},t.corrNote)):null);
+    }
+    function unableCard(){
+      if(st.unable!=="none") return banner(st.unable==="approved"?t.unableApproved:st.unable==="rejected"?t.unableRejected:t.unablePending, st.unable==="approved"?"compliant":st.unable==="rejected"?"info":"warning");
+      const needComment=st.cancelReason==="other";
+      return h("div",{className:"card"}, h("h3",{className:"jr-h"},t.unableH), banner(t.unableBody,"info"),
+        h("div",null, h("div",{className:"jr-k",style:{marginBottom:"6px"}},t.unableReasonL),
+          h("div",{style:{display:"flex",flexDirection:"column",gap:"6px"}}, t.reasons.map(([k,l])=>{const on=st.cancelReason===k;return h("button",{key:k,className:"jr-opt","aria-pressed":on,onClick:()=>sett({cancelReason:k})},h("span",{className:"jr-ind"},on?ck:null),l);}))),
+        field(t.unableComment,"",{area:true,rows:2}),
+        needComment?h("div",{className:"t-caption",style:{color:"var(--status-warning-text)"}},t.unableCommentReq):null,
+        upload(t.unableEvidence),
+        h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}},
+          h("button",{className:"btn btn-primary","aria-disabled": (st.cancelReason&&!(needComment))?"false":"true", style:(st.cancelReason)?{}:{opacity:.5,pointerEvents:"none"}, onClick:()=>sett({unable:"pending"})},t.unableSubmit),
+          st.unable==="none"?h("button",{className:"btn btn-secondary",onClick:()=>sett({sit:"traveling",cancelReason:""})},t.unableCancel):null),
+        h("div",{style:{display:"flex",gap:"8px"}}, h("button",{className:"btn btn-secondary",onClick:()=>sett({unable:"approved"})},ar?"محاكاة الاعتماد":"Simulate approve"), h("button",{className:"btn btn-secondary",onClick:()=>sett({unable:"rejected"})},ar?"محاكاة الرفض":"Simulate reject")));
+    }
+
+    // op state + start gating
+    const opMap = sit==="traveling"?[t.opWay,"badge-onhold"]: (inside||outside)?[t.opArrived,"badge-completed"]:[t.opNew,"badge-draft"];
+    let startBlock=null;
+    if(outside && st.override!=="approved") startBlock=t.startBlockOutside;
+    else if((inside||outside) && !st.arrEvidence && sit!=="unable") startBlock=t.startBlockArr;
+    if(st.unable==="pending") startBlock=t.startBlockUnable;
+    const blocked=!!startBlock || sit==="traveling" || sit==="unable";
+
+    const SITS=[["traveling",t.sit_travel],["inside",t.sit_inside],["outside",t.sit_outside],["unable",t.sit_unable]];
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      situations: SITS.map(([k,l])=>({label:l, active: sit===k?"true":"false", go:()=>sett({sit:k, override:"none", unable:"none", arrEvidence:false, ovReason:"", cancelReason:""})})),
+      online:st.online, toggleOnline:()=>this.setState(s=>({online:!s.online})),
+      recovered: sit==="outside" && !st.online,
+      panel,
+      opState: opMap[0], opBadgeClass: opMap[1],
+      openUnable:()=>sett({sit:"unable"}),
+      footStatus: startBlock ? startBlock : (sit==="traveling"?t.footTravel: t.footArrived),
+      footBadgeClass: startBlock?"badge-critical": sit==="traveling"?"badge-onhold":"badge-completed",
+      startDisabled: blocked?"true":"false", startStyle: blocked?"opacity:.5; pointer-events:none;":"",
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .fl-langbtn { padding:6px 12px; border-radius:999px; border:1px solid color-mix(in srgb, var(--nav-text) 30%, transparent); background:transparent; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--nav-text-active); }
+  .fl-pill { display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:600; }
+  .fl-bio { transition: transform 160ms cubic-bezier(.2,.8,.2,1), background 160ms; }
+  .fl-bio:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--nav-indicator) 20%, transparent); }
+  .fl-in { width:100%; min-height:48px; border-radius:var(--radius-md); border:1px solid var(--border-input); background:var(--surface-primary); color:var(--text-primary); font:inherit; font-size:15px; padding:0 14px; box-sizing:border-box; }
+  .fl-in:focus-visible { outline:2px solid var(--action-primary); outline-offset:1px; }
+  @keyframes fl-blink { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  .fl-live { animation: fl-blink 2.2s ease-in-out infinite; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--nav-bg); color:var(--nav-text-active); font-family:var(--font-body);">
+
+  <!-- top utility row -->
+  <div style="display:flex; align-items:center; gap:8px; padding:16px 20px 0;">
+    <span class="fl-pill" style="background:{{ netBg }}; color:{{ netColor }};"><span class="{{ netDotCls }}" style="width:7px; height:7px; border-radius:50%; background:currentColor; display:inline-block;"></span>{{ t.netLabel }}</span>
+    <span class="grow"></span>
+    <button class="fl-langbtn" onClick="{{ toggleLang }}">{{ t.langBtn }}</button>
+    <button class="fl-langbtn" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}" style="min-width:40px;">{{ themeGlyph }}</button>
+  </div>
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 24px 12px; text-align:center;">
+    <div style="width:100%; max-width:400px; display:flex; flex-direction:column; align-items:center;">
+
+      <!-- brand lockup -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:52px; height:52px; margin-block-end:14px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+      <div style="display:flex; align-items:baseline; gap:10px;"><span style="font-weight:700; font-size:28px; letter-spacing:.06em; color:var(--nav-text-active);">{{ t.brand1 }}</span><span lang="ar" style="font-weight:700; font-size:24px; color:var(--nav-text-active);">صقيل</span></div>
+      <div class="t-caption" style="color:var(--nav-text); margin-block-start:6px;">{{ t.tagline }}</div>
+
+      <!-- trusted device path -->
+      <sc-if value="{{ trusted }}" hint-placeholder-val="{{ true }}">
+        <div class="fl-pill" style="margin-block-start:18px; background:color-mix(in srgb, var(--nav-indicator) 14%, transparent); color:var(--nav-indicator);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px;height:14px;"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          {{ t.trustedDevice }} · <span class="id-code">DVC-77120</span>
+        </div>
+        <button class="fl-bio" style="margin-block-start:24px; width:88px; height:88px; border-radius:24px; border:2px solid var(--nav-indicator); background:color-mix(in srgb, var(--nav-indicator) 10%, transparent); display:grid; place-items:center; cursor:pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.6" style="width:42px;height:42px;"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01M9.5 15c.9.7 4.1.7 5 0"/></svg>
+        </button>
+        <div style="font-size:15px; font-weight:600; margin-block-start:12px; color:var(--nav-text-active);">{{ t.faceUnlock }}</div>
+        <div class="t-caption" style="color:var(--nav-text); margin-block-start:4px; max-width:32ch;">{{ t.faceDesc }}</div>
+        <div style="display:flex; align-items:center; gap:12px; width:100%; margin-block:22px 2px;">
+          <span style="flex:1; height:1px; background:color-mix(in srgb, var(--nav-text) 22%, transparent);"></span>
+          <span class="t-label" style="color:var(--nav-text);">{{ t.orPassword }}</span>
+          <span style="flex:1; height:1px; background:color-mix(in srgb, var(--nav-text) 22%, transparent);"></span>
+        </div>
+      </sc-if>
+
+      <!-- untrusted device notice -->
+      <sc-if value="{{ untrusted }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-block-start:18px; width:100%; display:flex; gap:10px; align-items:flex-start; text-align:start; padding:12px 14px; border-radius:var(--radius-md); background:color-mix(in srgb, var(--status-warning-text, #b0770a) 12%, transparent); border:1px solid color-mix(in srgb, var(--status-warning-text, #b0770a) 34%, transparent);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-warning-text, #b0770a)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-block-start:1px;"><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <div>
+            <div style="font-weight:600; font-size:13.5px; color:var(--nav-text-active);">{{ t.newDeviceTitle }}</div>
+            <div class="t-caption" style="color:var(--nav-text); margin-block-start:3px;">{{ t.newDeviceDesc }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- credential form -->
+      <div style="width:100%; text-align:start; display:flex; flex-direction:column; gap:14px; margin-block-start:14px;">
+        <label style="display:flex; flex-direction:column; gap:7px;">
+          <span class="t-label" style="color:var(--nav-text);">{{ t.idLabel }}</span>
+          <input class="fl-in" type="text" inputmode="numeric" value="1082 447 913">
+        </label>
+        <label style="display:flex; flex-direction:column; gap:7px;">
+          <span class="t-label" style="color:var(--nav-text);">{{ t.password }}</span>
+          <div style="position:relative; display:flex; align-items:center;">
+            <input class="fl-in" type="{{ pwType }}" value="inspection2026" style="padding-inline-end:44px;">
+            <button onClick="{{ togglePw }}" aria-label="{{ t.showPw }}" style="position:absolute; inset-inline-end:8px; border:0; background:none; padding:6px; cursor:pointer; color:var(--text-muted); display:grid; place-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </label>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <label class="check" style="font-size:13px; color:var(--nav-text); display:flex; align-items:center; gap:7px;"><input type="checkbox" checked>{{ t.keepSignedIn }}</label>
+          <a href="#" style="font-size:13px; color:var(--nav-indicator);">{{ t.forgot }}</a>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-block" style="margin-block-start:20px;" onClick="{{ submitCreds }}">{{ submitLabel }}</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ══ OTP CHALLENGE (untrusted device) ══ -->
+  <sc-if value="{{ isOtp }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 24px 12px; text-align:center;">
+    <div style="width:100%; max-width:400px; display:flex; flex-direction:column; align-items:center;">
+      <div style="width:72px; height:72px; border-radius:22px; border:2px solid var(--nav-indicator); background:color-mix(in srgb, var(--nav-indicator) 10%, transparent); display:grid; place-items:center; margin-block-end:16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.6" style="width:34px;height:34px;"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      </div>
+      <h1 style="font-size:20px; font-weight:700; margin:0; color:var(--nav-text-active);">{{ t.otpTitle }}</h1>
+      <p class="t-caption" style="color:var(--nav-text); margin:8px 0 0; max-width:34ch;">{{ t.otpDesc }} <span class="id-code" dir="ltr">{{ t.otpDest }}</span></p>
+
+      <div dir="ltr" style="display:flex; gap:10px; justify-content:center; margin-block:26px 6px;">
+        <sc-for list="{{ otpCells }}" as="c" hint-placeholder-count="6">
+          <input class="fl-in" inputmode="numeric" maxlength="1" value="{{ c.v }}" style="width:48px; height:56px; text-align:center; font-size:22px; font-weight:700; padding:0;">
+        </sc-for>
+      </div>
+
+      <div class="t-caption" style="color:var(--nav-text); margin-block-start:10px;">{{ t.otpResendIn }} <span class="id-code">00:{{ resendSec }}</span></div>
+      <button style="margin-block-start:6px; background:none; border:0; color:var(--nav-indicator); font:inherit; font-size:13px; font-weight:600; cursor:pointer;">{{ t.otpResend }}</button>
+
+      <div style="width:100%; display:flex; flex-direction:column; gap:10px; margin-block-start:24px;">
+        <button class="btn btn-primary btn-lg btn-block">{{ t.otpVerify }}</button>
+        <button class="btn btn-ghost btn-block" onClick="{{ backToLogin }}" style="color:var(--nav-text);">{{ t.otpBack }}</button>
+      </div>
+
+      <div style="margin-block-start:18px; display:flex; align-items:center; gap:7px;" class="t-caption">
+        <input type="checkbox" id="fl-trust-this"><label for="fl-trust-this" style="color:var(--nav-text);">{{ t.otpTrustThis }}</label>
+      </div>
+      <div class="t-caption" style="color:var(--text-muted); margin-block-start:12px; max-width:34ch;">{{ t.otpTransportNote }}</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- footer: offline-first assurance -->
+  <div style="padding:0 24px 24px; max-width:440px; width:100%; margin:0 auto; box-sizing:border-box;">
+    <div style="display:flex; align-items:flex-start; gap:9px; padding:12px 14px; border-radius:var(--radius-md); background:color-mix(in srgb, var(--nav-text-active) 5%, transparent); border:1px solid color-mix(in srgb, var(--nav-text) 18%, transparent);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.6" style="width:16px;height:16px;flex:none;margin-block-start:1px;"><path d="M5 12.55a11 11 0 0 1 14 0M8.5 16.05a6 6 0 0 1 7 0M2 8.82a15 15 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg>
+      <span class="t-compact" style="color:var(--nav-text); line-height:1.55;">{{ t.offlineNote }}</span>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-block-start:12px;">
+      <span class="t-caption" style="color:var(--nav-text);">{{ t.copyright }}</span>
+      <span class="t-caption fl-live" style="color:var(--nav-text); display:flex; align-items:center; gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:var(--status-compliant-text);"></span>{{ t.synced }}</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:820,&quot;height&quot;:1180},&quot;locale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ar&quot;,&quot;en&quot;],&quot;default&quot;:&quot;ar&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;App&quot;},&quot;online&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;App&quot;},&quot;trusted&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;App&quot;}}">
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "ar", showPw: false, online: true, step: "login" };
+
+  renderVals() {
+    const lang = this.state.lang;
+    const trusted = this.props.trusted ?? true;
+    const STR = {
+      ar: {
+        brand1:"SAQEEL", tagline:"تطبيق المفتّش الميداني · وزارة الصناعة والثروة المعدنية", theme:"الوضع", langBtn:"EN",
+        netLabel: this.state.online ? "متصل" : "دون اتصال — يعمل محلياً", trustedDevice:"جهاز موثوق",
+        faceUnlock:"افتح بالتعرف على الوجه", faceDesc:"التحقق يتم على جهازك عبر Face ID — لا تُرسل بياناتك الحيوية إلى الخادم.",
+        orPassword:"أو بكلمة المرور", idLabel:"الهوية الوطنية / رقم المنسوب", password:"كلمة المرور", showPw:"إظهار كلمة المرور",
+        keepSignedIn:"إبقائي مسجّلاً", forgot:"نسيت كلمة المرور؟", signIn:"تسجيل الدخول", verifyContinue:"متابعة والتحقق",
+        offlineNote:"التطبيق يعمل دون اتصال: تُحفظ زياراتك وأدلّتك محلياً وتُزامَن تلقائياً عند عودة الشبكة. القفل الحيوي متاح فقط على هذا الجهاز الموثوق.",
+        copyright:"صقيل © 2026", synced:"آخر مزامنة 08:41",
+        newDeviceTitle:"جهاز غير معروف", newDeviceDesc:"لم نتعرّف على هذا الجهاز. بعد إدخال بياناتك سنرسل رمز تحقّق لمرة واحدة لتأكيد هويتك.",
+        otpTitle:"أدخل رمز التحقّق", otpDesc:"أرسلنا رمزاً من 6 أرقام إلى", otpDest:"•••• 4471",
+        otpResendIn:"يمكن إعادة الإرسال خلال", otpResend:"إعادة إرسال الرمز", otpVerify:"تحقّق وتسجيل الدخول", otpBack:"رجوع",
+        otpTrustThis:"الوثوق بهذا الجهاز على هذا الجهاز مستقبلاً", otpTransportNote:"قناة الإرسال (رسالة نصية / بريد / تطبيق مصادقة) تُحدَّد أثناء الربط — غير مفعّلة في هذا النموذج.",
+      },
+      en: {
+        brand1:"SAQEEL", tagline:"Field Inspector App · Ministry of Industry & Mineral Resources", theme:"Theme", langBtn:"AR",
+        netLabel: this.state.online ? "Online" : "Offline — working locally", trustedDevice:"Trusted device",
+        faceUnlock:"Unlock with Face ID", faceDesc:"Verification happens on your device via Face ID — your biometric data is never sent to the server.",
+        orPassword:"or use password", idLabel:"National ID / Staff number", password:"Password", showPw:"Show password",
+        keepSignedIn:"Keep me signed in", forgot:"Forgot password?", signIn:"Sign in", verifyContinue:"Continue & verify",
+        offlineNote:"The app works offline: your visits and evidence are saved locally and sync automatically when the network returns. Biometric unlock is available only on this trusted device.",
+        copyright:"SAQEEL © 2026", synced:"Last sync 08:41",
+        newDeviceTitle:"Unrecognized device", newDeviceDesc:"We don't recognize this device. After your credentials we'll send a one-time code to confirm your identity.",
+        otpTitle:"Enter verification code", otpDesc:"We sent a 6-digit code to", otpDest:"•••• 4471",
+        otpResendIn:"Resend available in", otpResend:"Resend code", otpVerify:"Verify & sign in", otpBack:"Back",
+        otpTrustThis:"Trust this device for future sign-ins", otpTransportNote:"Delivery channel (SMS / email / authenticator) is set during enrollment — not wired in this mockup.",
+      },
+    };
+    const t = STR[lang];
+    const step = this.state.step;
+    return {
+      trusted, untrusted: !trusted,
+      isLogin: step === "login", isOtp: step === "otp",
+      submitLabel: trusted ? t.signIn : t.verifyContinue,
+      submitCreds: () => this.setState({ step: trusted ? "login" : "otp" }),
+      backToLogin: () => this.setState({ step: "login" }),
+      otpCells: [{v:"4"},{v:"9"},{v:""},{v:""},{v:""},{v:""}],
+      resendSec: "27",
+      theme: this.state.theme,
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      themeGlyph: this.state.theme === "dark" ? "☾" : "☀",
+      lang, dir: lang === "ar" ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })),
+      t,
+      pwType: this.state.showPw ? "text" : "password",
+      togglePw: () => this.setState(s => ({ showPw: !s.showPw })),
+      netBg: this.state.online ? "color-mix(in srgb, var(--status-compliant-text) 16%, transparent)" : "color-mix(in srgb, var(--status-warning-text, #b0770a) 20%, transparent)",
+      netColor: this.state.online ? "var(--status-compliant-text)" : "var(--status-warning-text, #b0770a)",
+      netDotCls: this.state.online ? "fl-live" : "",
+    };
+  }
+}
+</script>
+</body>
+</html>

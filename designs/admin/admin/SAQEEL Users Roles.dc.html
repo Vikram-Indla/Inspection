@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style> html, body { height: 100%; margin: 0; } </style>
+</helmet>
+<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="../SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="../SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="../SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="../SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item is-active" href="SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <main id="main-content" tabindex="-1" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); padding:14px 24px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;">
+      <div><h1 style="font-family:var(--font-body); font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Roles &amp; permissions</h1><div class="t-caption" style="margin-block-start:3px;">RBAC — access is enforced by Row Level Security, not UI</div></div>
+      <span class="badge badge-info">..014 · EXE-ACCESS</span>
+      <span class="grow"></span>
+      <div class="seg"><button class="seg-opt" aria-pressed="{{ isUsers }}" onClick="{{ pickUsers }}">Users</button><button class="seg-opt" aria-pressed="{{ isRoles }}" onClick="{{ pickRoles }}">Roles</button></div>
+    </header>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div style="padding:20px 24px 80px; max-width:1080px; width:100%; display:flex; flex-direction:column; gap:16px;">
+      <div class="panel" style="padding:16px 18px; border-inline-start:3px solid var(--action-primary);">
+        <div style="font-weight:600; font-size:13.5px;">Access is enforced by Row Level Security, not UI.</div>
+        <p class="t-caption" style="margin:4px 0 0;">54 policies realize the frozen RBAC matrix; role grants are audited automatically (this roster itself passed through RLS to render). Menu visibility is never authorization.</p>
+      </div>
+
+      <!-- ═══ USERS ═══ -->
+      <sc-if value="{{ isUsers }}" hint-placeholder-val="{{ true }}">
+        <div class="table-wrap"><table class="table"><thead><tr><th>User</th><th>Email</th><th>Region</th><th>Roles</th><th></th></tr></thead><tbody>
+          <sc-for list="{{ users }}" as="u" hint-placeholder-count="5">
+            <tr style="background:{{ u.bg }};"><td><strong>{{ u.name }}</strong></td><td class="t-caption"><span class="id-code">{{ u.email }}</span></td><td>{{ u.region }}</td>
+              <td><span style="display:inline-flex; gap:6px; flex-wrap:wrap;"><sc-for list="{{ u.roles }}" as="r" hint-placeholder-count="2"><span class="badge {{ r.badge }}">{{ r.key }}</span></sc-for></span></td>
+              <td><button class="btn btn-ghost btn-sm" onClick="{{ u.pick }}">Manage access</button></td></tr>
+          </sc-for>
+        </tbody></table></div>
+        <p class="t-caption" style="margin:0; color:var(--text-muted);">This roster is filtered to your access: users outside your visibility are absent, not hidden rows. The panel below changes access only through the governed RPCs.</p>
+
+        <!-- AccessManager -->
+        <div class="panel" style="padding:20px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Access management — {{ sel.name }}</h2>
+          <p class="t-caption" style="margin:0 0 16px; max-width:78ch;">Grant or revoke roles and direct capability overrides. Every change runs through the governed RPCs: the <strong>self-escalation guard</strong> blocks changes to your own access, the <strong>last remaining security administrator cannot be revoked</strong>, and every change is recorded in the activity log.</p>
+
+          <sc-if value="{{ sel.isSelf }}" hint-placeholder-val="{{ false }}">
+            <div class="panel" style="padding:12px 14px; background:var(--status-warning-soft); border-color:transparent; margin-block-end:16px;"><span style="font-size:13px; color:var(--status-warning-text);">⚠ This is your own user. The self-escalation guard refuses access changes you make to yourself — another security administrator must make them.</span></div>
+          </sc-if>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;">
+            <div>
+              <div class="t-label" style="margin-block-end:10px;">Roles</div>
+              <div class="stack" style="gap:8px;">
+                <sc-for list="{{ sel.roles }}" as="r" hint-placeholder-count="2">
+                  <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:8px;">
+                    <span class="badge {{ r.badge }}">{{ r.key }}</span>
+                    <span style="flex:1; min-width:0;" class="t-caption">granted <span class="id-code">{{ r.at }}</span></span>
+                    <button class="btn btn-ghost btn-sm" aria-disabled="{{ sel.selfDisabled }}" style="opacity:{{ sel.selfOpacity }};">Revoke</button>
+                  </div>
+                </sc-for>
+                <div style="display:flex; gap:8px; align-items:end; margin-block-start:4px;">
+                  <label class="stack" style="gap:4px; flex:1;"><span class="t-label">Grant role</span><select class="select"><sc-for list="{{ grantableRoles }}" as="g" hint-placeholder-count="4"><option>{{ g }}</option></sc-for></select></label>
+                  <button class="btn btn-primary" aria-disabled="{{ sel.selfDisabled }}" style="opacity:{{ sel.selfOpacity }};">Grant role</button>
+                </div>
+                <div class="panel" style="padding:10px 12px; background:var(--surface-sunken); border-style:dashed; margin-block-start:4px;">
+                  <span class="t-caption">Granting an <strong>admin</strong> role prompts: “Grant the administrator role “{key}” to this user? This gives them admin-level access and is recorded.” → Confirm / Cancel.</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="t-label" style="margin-block-end:10px;">Effective capabilities</div>
+              <p class="t-caption" style="margin:0 0 10px;">Role-derived capabilities plus direct grant overrides, each labelled with its source.</p>
+              <div class="stack" style="gap:6px;">
+                <sc-for list="{{ sel.caps }}" as="c" hint-placeholder-count="4">
+                  <div style="display:flex; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--border-subtle); border-radius:7px;">
+                    <span class="id-code" style="flex:1; font-size:12px;">{{ c.key }}</span>
+                    <span class="badge {{ c.badge }}" style="height:18px;">{{ c.source }}</span>
+                    <sc-if value="{{ c.isDirect }}" hint-placeholder-val="{{ false }}"><button class="btn btn-ghost btn-sm">Revoke</button></sc-if>
+                  </div>
+                </sc-for>
+                <div style="display:flex; gap:8px; align-items:end; margin-block-start:4px;">
+                  <label class="stack" style="gap:4px; flex:1;"><span class="t-label">Grant capability override</span><select class="select"><option>view_factory_360</option><option>create_inspection</option><option>approve_l2</option><option>export_factory</option></select></label>
+                  <button class="btn btn-secondary">Grant</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="t-caption" style="margin:16px 0 0; padding-block-start:14px; border-block-start:1px solid var(--border-subtle); color:var(--text-muted);">Role and capability changes take effect on the target’s next request. Nothing is applied silently: every change is confirmed here and recorded in the activity log with the actor, before/after state and requirement reference <span class="id-code">EXE-ACCESS</span>.</p>
+        </div>
+      </sc-if>
+
+      <!-- ═══ ROLES ═══ -->
+      <sc-if value="{{ isRoles }}" hint-placeholder-val="{{ false }}">
+        <div class="panel" style="padding:14px 16px; display:flex; gap:12px; align-items:flex-start;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.6" style="width:18px; height:18px; flex:none; margin-block-start:2px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+          <p class="t-caption" style="margin:0;"><strong style="color:var(--text-primary);">Roles are the frozen RBAC matrix</strong> — the role set and role→capability mapping are governed platform configuration (..014), not free-form CRUD. This screen shows the catalogue and mapping; net-new roles change through the governed matrix, not an ad-hoc “add role” form.</p>
+        </div>
+        <div class="table-wrap"><table class="table"><thead><tr><th>Role</th><th>Title</th><th>Type</th><th class="cell-num">Capabilities</th><th>Key capabilities (role_capabilities)</th></tr></thead><tbody>
+          <sc-for list="{{ roleRows }}" as="r" hint-placeholder-count="6">
+            <tr><td><span class="id-code" style="font-weight:600;">{{ r.key }}</span></td><td>{{ r.title }}</td><td><span class="badge {{ r.badge }}">{{ r.type }}</span></td><td class="cell-num">{{ r.count }}</td><td class="t-caption">{{ r.caps }}</td></tr>
+          </sc-for>
+        </tbody></table></div>
+        <p class="t-caption" style="margin:0; color:var(--text-muted);">Assigning any of these roles to a user happens on the <a href="#" onClick="{{ pickUsers }}">Users</a> tab through the governed grant RPC — with the self-escalation and sole-security_admin guards.</p>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: "dark", view: "users", user: 1 };
+
+  renderVals() {
+    const users = this.state.view === "users";
+    const ADMIN = "badge-warning", BIZ = "badge-info";
+    const USERS = [
+      { name: "Sara Al-Dossari", email: "s.aldossari@mim.gov.sa", region: "HQ", roles: [["security_admin", ADMIN]], self: true },
+      { name: "Mansour Al-Harbi", email: "m.alharbi@mim.gov.sa", region: "Eastern", roles: [["reviewer", BIZ]], self: false },
+      { name: "Khalid Al-Otaibi", email: "k.alotaibi@mim.gov.sa", region: "Riyadh", roles: [["inspector", BIZ]], self: false },
+      { name: "Noura Al-Qahtani", email: "n.alqahtani@mim.gov.sa", region: "Makkah", roles: [["planner", BIZ], ["ops", BIZ]], self: false },
+      { name: "Faisal Al-Ghamdi", email: "f.alghamdi@mim.gov.sa", region: "HQ", roles: [["compliance_admin", ADMIN]], self: false },
+    ];
+    const SEL_CAPS = [
+      { key: "view_factory_360", source: "via role: reviewer", badge: "badge-neutral", isDirect: false },
+      { key: "review_inspection", source: "via role: reviewer", badge: "badge-neutral", isDirect: false },
+      { key: "decide_l2", source: "via role: reviewer", badge: "badge-neutral", isDirect: false },
+      { key: "export_factory", source: "direct grant", badge: "badge-compliant", isDirect: true },
+    ];
+    const ROLES = [
+      ["security_admin", "Security Administrator", "admin", ADMIN, 14, "manage_users · manage_roles · view_audit · manage_devices"],
+      ["compliance_admin", "Compliance Administrator", "admin", ADMIN, 11, "publish_regulation · manage_packages · approve_config"],
+      ["form_admin", "Form Administrator", "admin", ADMIN, 6, "manage_items · edit_package_draft"],
+      ["workflow_admin", "Workflow Administrator", "admin", ADMIN, 7, "manage_workflows · manage_integrations"],
+      ["gis_admin", "GIS Administrator", "admin", ADMIN, 4, "manage_gis · manage_spatial_layers"],
+      ["risk_owner", "Risk Owner", "admin", ADMIN, 3, "configure_risk · publish_risk_model"],
+      ["planner", "Planner", "business", BIZ, 6, "create_plan · bulk_target · publish_visit"],
+      ["inspector", "Inspector", "business", BIZ, 5, "execute_inspection · capture_evidence (field channel)"],
+      ["reviewer", "Reviewer", "business", BIZ, 5, "review_inspection · decide_l2 · view_factory_360"],
+      ["ops", "Operations", "business", BIZ, 7, "approve_override · manage_exceptions · bulk_violations"],
+      ["leadership", "Leadership", "business", BIZ, 4, "view_dashboard · view_operations (read)"],
+    ];
+    const su = USERS[this.state.user];
+    const set = (k, v) => () => this.setState({ [k]: v });
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      isUsers: users, isRoles: !users,
+      usersActive: users ? "is-active" : "", rolesActive: users ? "" : "is-active",
+      pickUsers: set("view", "users"), pickRoles: set("view", "roles"),
+      users: USERS.map((u, i) => ({
+        name: u.name, email: u.email, region: u.region,
+        roles: u.roles.map(([key, badge]) => ({ key, badge })),
+        bg: i === this.state.user ? "var(--accent-soft)" : "transparent",
+        pick: () => this.setState({ user: i, view: "users" }),
+      })),
+      sel: {
+        name: su.name, isSelf: su.self,
+        selfDisabled: su.self ? "true" : "false", selfOpacity: su.self ? ".45" : "1",
+        roles: su.roles.map(([key, badge]) => ({ key, badge, at: "2026-05-14" })),
+        caps: SEL_CAPS,
+      },
+      grantableRoles: ["planner", "reviewer", "ops", "leadership", "compliance_admin", "security_admin"],
+      roleRows: ROLES.map(([key, title, type, badge, count, caps]) => ({ key, title, type, badge, count, caps })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .es-wrap { max-width: 960px; margin: 0 auto; width:100%; padding: 18px 18px 100px; display:flex; flex-direction:column; gap:16px; }
+  @media (max-width:560px){ .es-wrap { padding:14px 12px 100px; } }
+  .es-tabs { display:flex; gap:8px; }
+  .es-tab { flex:1; padding:11px 14px; border-radius:10px; border:1px solid var(--border-subtle); background:var(--surface-primary); font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; color:var(--text-secondary); }
+  .es-tab[aria-pressed="true"]{ background:var(--accent-soft); border-color:var(--action-primary); color:var(--accent-text); }
+  .es-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
+  .es-card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:15px 16px; text-align:start; cursor:pointer; font:inherit; color:var(--text-primary); transition:box-shadow .12s, transform .12s; }
+  .es-card:hover { box-shadow:var(--shadow-card-hover); transform:translateY(-2px); }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .es-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:16px;">{{ t.establishments }}</div><div class="t-caption">{{ t.authorityScope }}</div></div>
+    <button class="btn btn-primary btn-sm" onClick="{{ openCreate }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px;"><path d="M12 5v14M5 12h14"/></svg>{{ t.addUnlicensed }}</button>
+    <span style="display:flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px; border:1px solid var(--status-compliant-text); background:var(--status-compliant-soft); color:var(--status-compliant-text); font-size:12px; font-weight:600; white-space:nowrap;"><span style="width:7px;height:7px;border-radius:50%;background:currentColor;"></span>{{ t.online }}</span>
+    <button class="btn btn-icon btn-ghost" onClick="{{ syncNow }}" aria-label="{{ t.syncNow }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>
+    <button class="es-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <input id="sw-filepick" type="file" accept="image/*" style="display:none">
+
+  <div class="es-wrap">
+    <div class="es-tabs">
+      <button class="es-tab" aria-pressed="{{ licTab }}" onClick="{{ pickLic }}">{{ t.licensedTab }}</button>
+      <button class="es-tab" aria-pressed="{{ unlicTab }}" onClick="{{ pickUnlic }}">{{ t.unlicensedTab }}</button>
+    </div>
+
+    <sc-if value="{{ showEmptyHint }}" hint-placeholder-val="{{ false }}">
+      <div class="panel" style="padding:12px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:17px;height:17px;flex:none;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span class="t-compact" style="color:var(--text-secondary); flex:1;">{{ t.noLicensedFoundNote }}</span><button class="btn btn-primary btn-sm" onClick="{{ openCreate }}">{{ t.addUnlicensed }}</button></div>
+    </sc-if>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div class="input-affix" style="flex:1;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="{{ t.searchPlaceholder }}" style="border-radius:var(--radius-full);" onInput="{{ onSearch }}"></div>
+      <button class="btn btn-secondary" onClick="{{ openFilter }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M3 5h18M6 12h12M10 19h4"/></svg>{{ t.filter }}</button>
+    </div>
+
+    <div class="es-grid">
+      <sc-for list="{{ rows }}" as="e" hint-placeholder-count="6">
+        <button class="es-card">
+          <div style="display:flex; gap:10px;">
+            <span class="avatar" style="background:var(--accent-soft); color:var(--accent-text); flex:none; align-self:flex-start;">{{ e.initial }}</span>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:flex-start; gap:8px;"><span style="flex:1; font-weight:600; font-size:14.5px;">{{ e.company }}</span><span class="badge {{ e.badge }}" style="height:19px;">{{ e.status }}</span></div>
+              <div class="t-caption" style="margin-block-start:4px;"><span class="id-code">{{ e.estId }}</span> · <span class="id-code">{{ e.license }}</span></div>
+              <div class="t-caption" style="margin-block-start:3px;">{{ t.lastVisitOn }} <span class="id-code">{{ e.lastVisit }}</span></div>
+              <div style="display:flex; gap:14px; margin-block-start:10px;"><span class="t-caption">{{ e.city }}</span><span class="grow"></span><span class="exc-chip {{ e.riskExc }}" style="height:22px;"><span class="exc-mark"></span>{{ e.risk }}</span></div>
+            </div>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <sc-if value="{{ filterOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeFilter }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:40;"></div>
+    <div class="drawer" style="width:min(460px,94vw); z-index:41;">
+      <div class="drawer-header"><div class="panel-title" style="font-size:16px;">{{ t.filterEst }}</div><button class="btn btn-ghost btn-icon" onClick="{{ closeFilter }}" aria-label="{{ t.close }}">✕</button></div>
+      <div class="drawer-body" style="display:flex; flex-direction:column; gap:14px;">
+        <label class="fld"><span>{{ t.tradeName }}</span><input class="input" placeholder="{{ t.estName }}"></label>
+        <label class="fld"><span>{{ t.licenseNo }}</span><input class="input id-code" placeholder="IL-…"></label>
+        <label class="fld"><span>{{ t.visitStatus }}</span><select class="select"><option>{{ t.all }}</option><option>{{ t.approved }}</option><option>{{ t.draft }}</option><option>{{ t.notApproved }}</option><option>{{ t.cannotExecute }}</option></select></label>
+        <label class="fld"><span>{{ t.riskClass }}</span><select class="select"><option>{{ t.all }}</option><option>{{ t.low }}</option><option>{{ t.medium }}</option><option>{{ t.high }}</option></select></label>
+        <label class="fld"><span>{{ t.region }}</span><select class="select"><option>{{ t.all }}</option><option>{{ t.riyadh }}</option><option>{{ t.makkah }}</option><option>{{ t.eastern }}</option></select></label>
+        <label class="fld"><span>{{ t.city }}</span><select class="select"><option>{{ t.all }}</option><option>{{ t.riyadh }}</option><option>{{ t.jeddah }}</option><option>{{ t.dammam }}</option><option>{{ t.khobar }}</option></select></label>
+      </div>
+      <div style="display:flex; gap:10px; padding:14px 16px; border-block-start:1px solid var(--border-subtle);"><button class="btn btn-ghost" style="flex:1;" onClick="{{ closeFilter }}">{{ t.clear }}</button><button class="btn btn-primary" style="flex:1;" onClick="{{ closeFilter }}">{{ t.apply }}</button></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ createOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCreate }}" style="position:fixed; inset:0; background:var(--surface-overlay); z-index:40;"></div>
+    <div class="drawer" style="width:min(540px,96vw); z-index:41;">
+      <div class="drawer-header"><div><div class="panel-title" style="font-size:16px;">{{ t.addUnlicensed }}</div><div class="t-caption">{{ t.autoFlagged }}</div></div><button class="btn btn-ghost btn-icon" onClick="{{ closeCreate }}" aria-label="{{ t.close }}">✕</button></div>
+      <div class="drawer-body" style="display:flex; flex-direction:column; gap:16px;">
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:6px;">{{ t.estPhoto }}</div><button class="btn btn-secondary btn-sm" onClick="{{ pickFile }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/></svg>{{ t.takePhoto }}</button></div>
+        <label class="fld"><span>{{ t.estNameReq }} <span style="color:var(--status-critical-text);">*</span></span><input class="input"></label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"><label class="fld"><span>{{ t.responsiblePerson }}</span><input class="input"></label><label class="fld"><span>{{ t.responsibleMobile }}</span><input class="input id-code"></label></div>
+        <label class="fld"><span>{{ t.crNumber }}</span><input class="input id-code"></label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"><label class="fld"><span>{{ t.region }}</span><select class="select"><option>{{ t.riyadh }}</option><option>{{ t.eastern }}</option><option>{{ t.makkah }}</option></select></label><label class="fld"><span>{{ t.city }}</span><select class="select"><option>{{ t.riyadh }}</option><option>{{ t.dammam }}</option><option>{{ t.jeddah }}</option></select></label></div>
+        <label class="fld"><span>{{ t.inspector }}</span><select class="select"><option>ناصر بن فيصل الدوسري</option><option>محمد عبدالله</option></select></label>
+        <label class="fld"><span>{{ t.actionDecision }}</span><select class="select"><option>{{ t.immediateClosure }}</option><option>{{ t.finalWarning }}</option><option>{{ t.referToCommittee }}</option><option>{{ t.fine }}</option></select></label>
+        <div><div style="font-size:13px; color:var(--text-secondary); margin-block-end:6px;">{{ t.attachments }}</div><span style="display:inline-flex; align-items:center; gap:6px; padding:8px 12px; background:var(--surface-sunken); border-radius:8px; font-size:12.5px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.7" style="width:14px;height:14px;"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg>{{ t.targetListFile }}</span></div>
+        <label class="fld"><span>{{ t.visitNotes }}</span><textarea class="input" rows="2"></textarea></label>
+      </div>
+      <div style="display:flex; gap:10px; padding:14px 16px; border-block-start:1px solid var(--border-subtle);"><button class="btn btn-ghost" style="flex:1;" onClick="{{ closeCreate }}">{{ t.cancel }}</button><button class="btn btn-primary" style="flex:1;" onClick="{{ closeCreate }}">{{ t.addEst }}</button></div>
+    </div>
+  </sc-if>
+  <div aria-hidden="true" style="height:58px; flex:none;"></div>
+  <nav style="position:fixed; inset-inline:0; bottom:0; z-index:30; display:flex; background:var(--nav-bg); color:var(--nav-text); padding-block-end:env(safe-area-inset-bottom);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span style="font-size:11px;">{{ t.navHome }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20My%20Tasks.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h6"/></svg><span style="font-size:11px;">{{ t.navTasks }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Establishments.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text-active);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/></svg><span style="font-size:11px;">{{ t.navEst }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Notifications.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span style="font-size:11px;">{{ t.navNotif }}</span></a>
+    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; text-decoration:none; color:var(--nav-text);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg><span style="font-size:11px;">{{ t.navAccount }}</span></a>
+  </nav>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", tab: 0, filter: false, create: false, lang: "en", noResults: false };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        establishments:"المنشآت", authorityScope:"نطاق محكوم بالصلاحية", addUnlicensed:"منشأة غير مرخصة", feedbackQr:"رمز التقييم", theme:"الوضع", langBtnLabel:"EN",
+        licensedTab:"المنشآت المرخصة (128)", unlicensedTab:"المنشآت غير المرخصة (14)",
+        searchPlaceholder:"بحث بالاسم أو رقم الرخصة أو المدينة", filter:"تصفية",
+        filterEst:"تصفية المنشآت", close:"إغلاق", tradeName:"الاسم التجاري", estName:"اسم المنشأة", licenseNo:"رقم الرخصة",
+        visitStatus:"حالة الزيارة", all:"الكل", approved:"معتمد", draft:"مسودة", notApproved:"غير معتمد", cannotExecute:"تعذر التنفيذ",
+        riskClass:"تصنيف الخطورة", low:"منخفضة", medium:"متوسطة", high:"عالية",
+        region:"المنطقة", riyadh:"الرياض", makkah:"مكة المكرمة", eastern:"الشرقية",
+        city:"المدينة", jeddah:"جدة", dammam:"الدمام", khobar:"الخبر",
+        clear:"مسح", apply:"تطبيق",
+        autoFlagged:"يُسجَل النظام أنها غير مرخصة تلقائياً", estPhoto:"صورة المنشأة", takePhoto:"التقاط صورة",
+        estNameReq:"اسم المنشأة", responsiblePerson:"الشخص المسؤول", responsibleMobile:"جوال المسؤول", crNumber:"رقم السجل",
+        inspector:"المفتش", actionDecision:"قرار الإجراء", immediateClosure:"إغلاق فوري", finalWarning:"إنذار نهائي", referToCommittee:"تحويل للجنة", fine:"غرامة مالية",
+        attachments:"المرفقات", targetListFile:"ملف قائمة المنشآت المستهدفة.PDF", visitNotes:"ملاحظات الزيارة", cancel:"إلغاء", addEst:"إضافة المنشأة",
+        navHome:"الرئيسية", navTasks:"مهامي", navEst:"المنشآت", navNotif:"الإشعارات", navAccount:"حسابي", online:"متصل", syncNow:"مزامنة الآن",
+        noLicensedFoundNote:"في حال عدم وجود منشأة مرخّصة مطابقة للبحث، يمكن إنشاء منشأة جديدة (غير مرخصة).",
+        lastVisitOn:"آخر زيارة:",
+      },
+      en: {
+        establishments:"Establishments", authorityScope:"Authority-scoped", addUnlicensed:"Unlicensed establishment", feedbackQr:"Feedback QR", theme:"Theme", langBtnLabel:"AR",
+        licensedTab:"Licensed establishments (128)", unlicensedTab:"Unlicensed establishments (14)",
+        searchPlaceholder:"Search by name, license no., or city", filter:"Filter",
+        filterEst:"Filter Establishments", close:"Close", tradeName:"Trade name", estName:"Establishment name", licenseNo:"License number",
+        visitStatus:"Visit status", all:"All", approved:"Approved", draft:"Draft", notApproved:"Not approved", cannotExecute:"Could not execute",
+        riskClass:"Risk classification", low:"Low", medium:"Medium", high:"High",
+        region:"Region", riyadh:"Riyadh", makkah:"Makkah", eastern:"Eastern",
+        city:"City", jeddah:"Jeddah", dammam:"Dammam", khobar:"Khobar",
+        clear:"Clear", apply:"Apply",
+        autoFlagged:"The system automatically flags it as unlicensed", estPhoto:"Establishment photo", takePhoto:"Take photo",
+        estNameReq:"Establishment name", responsiblePerson:"Responsible person", responsibleMobile:"Responsible mobile", crNumber:"CR number",
+        inspector:"Inspector", actionDecision:"Action decision", immediateClosure:"Immediate closure", finalWarning:"Final warning", referToCommittee:"Refer to committee", fine:"Fine",
+        attachments:"Attachments", targetListFile:"Target-establishments-list.PDF", visitNotes:"Visit notes", cancel:"Cancel", addEst:"Add establishment",
+        navHome:"Home", navTasks:"My Tasks", navEst:"Establishments", navNotif:"Notifications", navAccount:"Account", online:"Online", syncNow:"Sync Now",
+        noLicensedFoundNote:"If no licensed establishment matches the search, a new (unlicensed) establishment can be created.",
+        lastVisitOn:"Last visit:",
+      },
+    };
+    const t = STR[lang];
+    const LIC = lang === "ar" ? [
+      { company: "شركة الأمل لتدريب العمال", license: "IL-44718", estId: "#192001", lastVisit: "22/04/2026", city: "الرياض", status: "معتمد", badge: "badge-compliant", risk: "منخفضة", riskExc: "exc-compliant" },
+      { company: "مصنع الخليج للمنسوجات", license: "IL-39820", estId: "#192014", lastVisit: "10/03/2026", city: "جدة", status: "غير معتمد", badge: "badge-warning", risk: "عالية", riskExc: "exc-critical" },
+      { company: "مصنع نجد للألبان", license: "IL-41002", estId: "#192027", lastVisit: "05/02/2026", city: "الرياض", status: "مسودة", badge: "badge-neutral", risk: "منخفضة", riskExc: "exc-compliant" },
+      { company: "شركة الرياض للأسمنت", license: "IL-40771", estId: "#192033", lastVisit: "18/01/2026", city: "الرياض", status: "معتمد", badge: "badge-compliant", risk: "متوسطة", riskExc: "exc-warning" },
+      { company: "مصنع تبوك للبلاستيك", license: "IL-38110", estId: "#192041", lastVisit: "—", city: "تبوك", status: "تعذر التنفيذ", badge: "badge-critical", risk: "عالية", riskExc: "exc-critical" },
+      { company: "مصنع الشرقية للحديد", license: "IL-44902", estId: "#192058", lastVisit: "29/12/2025", city: "الدمام", status: "معتمد", badge: "badge-compliant", risk: "متوسطة", riskExc: "exc-warning" },
+    ] : [
+      { company: "Al-Amal Worker Training Co.", license: "IL-44718", estId: "#192001", lastVisit: "2026/04/22", city: "Riyadh", status: "Approved", badge: "badge-compliant", risk: "Low", riskExc: "exc-compliant" },
+      { company: "Gulf Textiles Factory", license: "IL-39820", estId: "#192014", lastVisit: "2026/03/10", city: "Jeddah", status: "Not approved", badge: "badge-warning", risk: "High", riskExc: "exc-critical" },
+      { company: "Najd Dairy Factory", license: "IL-41002", estId: "#192027", lastVisit: "2026/02/05", city: "Riyadh", status: "Draft", badge: "badge-neutral", risk: "Low", riskExc: "exc-compliant" },
+      { company: "Riyadh Cement Co.", license: "IL-40771", estId: "#192033", lastVisit: "2026/01/18", city: "Riyadh", status: "Approved", badge: "badge-compliant", risk: "Medium", riskExc: "exc-warning" },
+      { company: "Tabuk Plastics Factory", license: "IL-38110", estId: "#192041", lastVisit: "—", city: "Tabuk", status: "Could not execute", badge: "badge-critical", risk: "High", riskExc: "exc-critical" },
+      { company: "Eastern Iron Factory", license: "IL-44902", estId: "#192058", lastVisit: "2025/12/29", city: "Dammam", status: "Approved", badge: "badge-compliant", risk: "Medium", riskExc: "exc-warning" },
+    ];
+    const UNLIC = lang === "ar" ? [
+      { company: "ورشة معدنية غير مرخصة — حي السلي", license: "بدون رخصة", city: "الرياض", status: "إغلاق فوري", badge: "badge-critical", risk: "عالية", riskExc: "exc-critical" },
+      { company: "منشأة تعبئة غير مرخصة", license: "بدون رخصة", city: "الدمام", status: "إنذار نهائي", badge: "badge-warning", risk: "متوسطة", riskExc: "exc-warning" },
+      { company: "مصنع بلاستيك غير مرخص", license: "بدون رخصة", city: "جدة", status: "تحويل للجنة", badge: "badge-neutral", risk: "عالية", riskExc: "exc-critical" },
+    ] : [
+      { company: "Unlicensed metal workshop — Al-Sulai district", license: "No license", city: "Riyadh", status: "Immediate closure", badge: "badge-critical", risk: "High", riskExc: "exc-critical" },
+      { company: "Unlicensed packaging facility", license: "No license", city: "Dammam", status: "Final warning", badge: "badge-warning", risk: "Medium", riskExc: "exc-warning" },
+      { company: "Unlicensed plastics factory", license: "No license", city: "Jeddah", status: "Referred to committee", badge: "badge-neutral", risk: "High", riskExc: "exc-critical" },
+    ];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      syncNow: () => {},
+      pickFile: () => { const el = document.getElementById("sw-filepick"); if (el) el.click(); },
+      licTab: this.state.tab === 0, unlicTab: this.state.tab === 1,
+      pickLic: () => this.setState({ tab: 0 }), pickUnlic: () => this.setState({ tab: 1 }),
+      rows: (this.state.tab === 0 && this.state.noResults ? [] : (this.state.tab === 0 ? LIC : UNLIC)).map(r => ({ ...r, initial: r.company.trim().charAt(0) })),
+      showEmptyHint: this.state.tab === 0 && this.state.noResults,
+      onSearch: e => { const q = e.target.value.trim().toLowerCase(); this.setState({ noResults: q.length > 0 && !LIC.some(r => r.company.toLowerCase().includes(q)) }); },
+      filterOpen: this.state.filter, openFilter: () => this.setState({ filter: true }), closeFilter: () => this.setState({ filter: false }),
+      createOpen: this.state.create, openCreate: () => this.setState({ create: true }), closeCreate: () => this.setState({ create: false }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

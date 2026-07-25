@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .st-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 16px 18px 60px; display:flex; flex-direction:column; gap:16px; }
+  .st-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); overflow:hidden; }
+  .st-row { display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle); }
+  .st-row:first-child { border-block-start:none; }
+  .st-label { padding:10px 18px 6px; font-size:12px; color:var(--text-muted); font-weight:600; }
+  .st-link { display:flex; align-items:center; gap:12px; padding:14px 18px; border-block-start:1px solid var(--border-subtle); text-decoration:none; color:inherit; cursor:pointer; width:100%; font:inherit; text-align:start; background:none; border-inline:none; }
+  .st-link:first-child { border-block-start:none; }
+  .st-link:hover { background:var(--surface-sunken); }
+  .st-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .st-toggle { position:relative; width:42px; height:24px; border-radius:999px; border:none; cursor:pointer; flex:none; }
+  .st-toggle::after { content:""; position:absolute; top:2px; inset-inline-start:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .15s; }
+  .st-toggle[aria-pressed="true"] { background:var(--action-primary); }
+  .st-toggle[aria-pressed="true"]::after { transform:translateX(18px); }
+  .st-toggle[aria-pressed="false"] { background:var(--border-subtle); }
+  [dir="rtl"] .st-toggle[aria-pressed="true"]::after { transform:translateX(-18px); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; font-weight:700; font-size:16px;">{{ t.title }}</div>
+    <button class="st-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="st-wrap">
+
+    <div class="st-label">{{ t.secGeneral }}</div>
+    <div class="st-card">
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.appearance }}</span><div class="seg"><button class="seg-opt" aria-pressed="{{ isLight }}" onClick="{{ setLight }}">{{ t.light }}</button><button class="seg-opt" aria-pressed="{{ isDark }}" onClick="{{ setDark }}">{{ t.dark }}</button></div></div>
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.language }}</span><div class="seg"><button class="seg-opt" aria-pressed="{{ isAr }}" onClick="{{ setAr }}">العربية</button><button class="seg-opt" aria-pressed="{{ isEn }}" onClick="{{ setEn }}">English</button></div></div>
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.textSize }}</span><div class="seg"><button class="seg-opt" aria-pressed="{{ textStd }}" onClick="{{ setTextStd }}">{{ t.standard }}</button><button class="seg-opt" aria-pressed="{{ textLg }}" onClick="{{ setTextLg }}">{{ t.large }}</button></div></div>
+    </div>
+
+    <div class="st-label">{{ t.secNotif }}</div>
+    <div class="st-card">
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.notifTasks }}</span><button class="st-toggle" aria-pressed="{{ notifTasks }}" onClick="{{ toggleNotifTasks }}"></button></div>
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.notifUrgent }}</span><button class="st-toggle" aria-pressed="{{ notifUrgent }}" onClick="{{ toggleNotifUrgent }}"></button></div>
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.notifSound }}</span><button class="st-toggle" aria-pressed="{{ notifSound }}" onClick="{{ toggleNotifSound }}"></button></div>
+    </div>
+
+    <div class="st-label">{{ t.secSecurity }}</div>
+    <div class="st-card">
+      <a href="SAQEEL%20PWA-Field%20Trusted%20Devices.dc.html" target="_top" class="st-link">
+        <span style="flex:1; font-size:14px;">{{ t.biometric }}</span><span class="t-caption" style="color:var(--status-compliant-text);">{{ t.enabledTag }}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; color:var(--text-muted);"><path d="{{ t.chevron }}"/></svg>
+      </a>
+      <a href="../SAQEEL%20Delegation.dc.html" target="_top" class="st-link">
+        <span style="flex:1; font-size:14px;">{{ t.delegation }}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; color:var(--text-muted);"><path d="{{ t.chevron }}"/></svg>
+      </a>
+      <div class="st-row"><span style="flex:1; font-size:13.5px;">{{ t.sessionNote }}</span></div>
+    </div>
+
+    <div class="st-label">{{ t.secConnectivity }}</div>
+    <div class="st-card">
+      <div class="st-row">
+        <span style="width:9px; height:9px; border-radius:50%; background:{{ syncStatusColor }}; flex:none;"></span>
+        <span style="flex:1; font-size:14px;">{{ t.connStatus }}</span><span class="t-caption">{{ syncStatusLabel }}</span>
+      </div>
+      <a href="SAQEEL%20PWA-Field%20Conflict%20Resolution.dc.html" target="_top" class="st-link">
+        <span style="flex:1; font-size:14px;">{{ t.conflictResolution }}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; color:var(--text-muted);"><path d="{{ t.chevron }}"/></svg>
+      </a>
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.autoSync }}</span><button class="st-toggle" aria-pressed="{{ autoSync }}" onClick="{{ toggleAutoSync }}"></button></div>
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.offlineMaps }}</span><button class="st-toggle" aria-pressed="{{ offlineMaps }}" onClick="{{ toggleOfflineMaps }}"></button></div>
+      <button class="st-link" onClick="{{ syncNow }}"><span style="flex:1; font-size:14px; color:var(--action-primary); font-weight:600;">{{ t.syncNow }}</span></button>
+    </div>
+
+    <div class="st-label">{{ t.secData }}</div>
+    <div class="st-card">
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.cacheUsed }}</span><span class="t-caption id-code">142 MB</span></div>
+      <button class="st-link" onClick="{{ clearCache }}"><span style="flex:1; font-size:14px; color:var(--status-critical);">{{ t.clearCache }}</span></button>
+    </div>
+
+    <div class="st-label">{{ t.secAbout }}</div>
+    <div class="st-card">
+      <div class="st-row"><span style="flex:1; font-size:14px;">{{ t.appVersion }}</span><span class="t-caption id-code">2.4.1 (7731)</span></div>
+      <a href="#" class="st-link"><span style="flex:1; font-size:14px;">{{ t.helpSupport }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; color:var(--text-muted);"><path d="{{ t.chevron }}"/></svg></a>
+      <a href="#" class="st-link"><span style="flex:1; font-size:14px;">{{ t.privacyPolicy }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px; color:var(--text-muted);"><path d="{{ t.chevron }}"/></svg></a>
+    </div>
+
+    <button class="btn btn-danger btn-block">{{ t.logout }}</button>
+    <div class="t-caption" style="text-align:center;">{{ t.footer }}</div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en", textSize: "standard", notifTasks: true, notifUrgent: true, notifSound: false, autoSync: true, offlineMaps: true, syncStatus: "synced" };
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", title:"الإعدادات", langBtnLabel:"EN", backArrow:"M15 6l-6 6 6 6", chevron:"M9 6l6 6-6 6",
+        secGeneral:"عام", appearance:"المظهر", light:"فاتح", dark:"داكن", language:"اللغة", textSize:"حجم النص", standard:"عادي", large:"كبير",
+        secNotif:"الإشعارات", notifTasks:"إشعارات المهام والمواعيد", notifUrgent:"التنبيهات العاجلة", notifSound:"صوت الإشعارات",
+        secSecurity:"الأمان", biometric:"القفل الحيوي والأجهزة الموثوقة", enabledTag:"مُفعّل", delegation:"تفويض الغياب",
+        sessionNote:"كل إجراء داخل جلستك موثّق ومراجَع · اتصال مشفّر",
+        secConnectivity:"الاتصال والمزامنة", connStatus:"حالة المزامنة", conflictResolution:"حل التعارضات", autoSync:"مزامنة تلقائية", offlineMaps:"خرائط بدون اتصال", syncNow:"مزامنة الآن",
+        secData:"البيانات والتخزين", cacheUsed:"المساحة المستخدمة", clearCache:"مسح الذاكرة المؤقتة",
+        secAbout:"حول", appVersion:"إصدار التطبيق", helpSupport:"المساعدة والدعم", privacyPolicy:"سياسة الخصوصية",
+        logout:"تسجيل الخروج", footer:"صقيل — وزارة الصناعة والثروة المعدنية © 2026",
+        syncedLabel:"محدّثة الآن", offlineLabel:"غير متصل — بانتظار المزامنة" },
+      en: { back:"Back", title:"Settings", langBtnLabel:"AR", backArrow:"M9 6l6 6-6 6", chevron:"m9 18 6-6-6-6",
+        secGeneral:"General", appearance:"Appearance", light:"Light", dark:"Dark", language:"Language", textSize:"Text size", standard:"Standard", large:"Large",
+        secNotif:"Notifications", notifTasks:"Task & appointment notifications", notifUrgent:"Urgent alerts", notifSound:"Notification sound",
+        secSecurity:"Security", biometric:"Biometric lock & trusted devices", enabledTag:"Enabled", delegation:"Absence delegation",
+        sessionNote:"Every action in your session is logged and audited · Encrypted connection",
+        secConnectivity:"Connectivity & Sync", connStatus:"Sync status", conflictResolution:"Conflict Resolution", autoSync:"Auto-sync", offlineMaps:"Offline maps", syncNow:"Sync now",
+        secData:"Data & Storage", cacheUsed:"Storage used", clearCache:"Clear cache",
+        secAbout:"About", appVersion:"App version", helpSupport:"Help & Support", privacyPolicy:"Privacy Policy",
+        logout:"Sign out", footer:"SAQEEL — Ministry of Industry and Mineral Resources © 2026",
+        syncedLabel:"Synced just now", offlineLabel:"Offline — pending sync" },
+    };
+    const t = STR[lang];
+    const synced = this.state.syncStatus === "synced";
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      setLight: () => this.setState({ theme: "light" }), setDark: () => this.setState({ theme: "dark" }),
+      lang, dir: ar ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      isAr: ar, isEn: !ar, setAr: () => this.setState({ lang: "ar" }), setEn: () => this.setState({ lang: "en" }),
+      textStd: this.state.textSize === "standard", textLg: this.state.textSize === "large",
+      setTextStd: () => this.setState({ textSize: "standard" }), setTextLg: () => this.setState({ textSize: "large" }),
+      notifTasks: this.state.notifTasks, toggleNotifTasks: () => this.setState(s => ({ notifTasks: !s.notifTasks })),
+      notifUrgent: this.state.notifUrgent, toggleNotifUrgent: () => this.setState(s => ({ notifUrgent: !s.notifUrgent })),
+      notifSound: this.state.notifSound, toggleNotifSound: () => this.setState(s => ({ notifSound: !s.notifSound })),
+      autoSync: this.state.autoSync, toggleAutoSync: () => this.setState(s => ({ autoSync: !s.autoSync })),
+      offlineMaps: this.state.offlineMaps, toggleOfflineMaps: () => this.setState(s => ({ offlineMaps: !s.offlineMaps })),
+      syncStatusColor: synced ? "var(--status-compliant-text)" : "var(--status-warning-text)",
+      syncStatusLabel: synced ? t.syncedLabel : t.offlineLabel,
+      syncNow: () => this.setState({ syncStatus: "synced" }),
+      clearCache: () => {},
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .ds-scroll { scroll-behavior: smooth; }
+  .ds-sec { scroll-margin-top: 20px; }
+  .ds-navlink { transition: background 120ms, color 120ms; }
+  .brand-ar { display: none; }
+  [dir="rtl"] .brand-en { display: none; }
+  [dir="rtl"] .brand-ar { display: inline; }
+
+  /* ── Tweak: Accent reskin (whole accent family) ── */
+  [data-accent="steel"] { --action-primary:#35617f; --action-primary-hover:#2c5069; --action-primary-pressed:#244155; --accent-soft:#e4ecf2; --accent-soft-hover:#d3e0ea; --accent-text:#274b64; --focus-ring:#2c5470; --nav-bg-selected:#17303f; --nav-indicator:#4a86b5; --text-link:#274b64; }
+  [data-theme="dark"][data-accent="steel"] { --action-primary:#5b96d1; --action-primary-hover:#6ea4d8; --action-primary-pressed:#83b2e0; --accent-soft:#1d2b3b; --accent-soft-hover:#243447; --accent-text:#9dc2e8; --focus-ring:#4f8ec9; --nav-bg-selected:#182a3a; --nav-indicator:#5b96d1; --text-link:#9dc2e8; }
+  [data-accent="indigo"] { --action-primary:#4b4b9e; --action-primary-hover:#3f3f88; --action-primary-pressed:#343472; --accent-soft:#e8e7f4; --accent-soft-hover:#dbd9ee; --accent-text:#3a3a80; --focus-ring:#3f3f88; --nav-bg-selected:#20203f; --nav-indicator:#6d6dc0; --text-link:#3a3a80; }
+  [data-theme="dark"][data-accent="indigo"] { --action-primary:#8b86d9; --action-primary-hover:#9a95e0; --action-primary-pressed:#aaa5e8; --accent-soft:#24233a; --accent-soft-hover:#2c2b46; --accent-text:#b8b4e8; --focus-ring:#8b86d9; --nav-bg-selected:#1f1e38; --nav-indicator:#8b86d9; --text-link:#b8b4e8; }
+
+  /* ── Tweak: Character (blueprint-precise corners vs rounded) ── */
+  [data-character="precise"] { --radius-xs:1px; --radius-sm:2px; --radius-md:3px; --radius-lg:4px; }
+
+  /* ── Tweak: Elevation (flat = borders do the work) ── */
+  [data-elevation="flat"] .panel, [data-elevation="flat"] .kpi, [data-elevation="flat"] .card, [data-elevation="flat"] .metric-strip, [data-elevation="flat"] .map-panel { box-shadow: none; border-color: var(--border-strong); }
+  [data-elevation="flat"] .kpi:hover { box-shadow: none; transform: none; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" data-density="{{ density }}" data-accent="{{ accent }}" data-character="{{ character }}" data-elevation="{{ elevation }}" style="height:100vh; display:grid; grid-template-columns:252px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" style="height:100vh;">
+    <div class="sidebar-brand" style="flex-direction:column; align-items:flex-start; gap:8px;">
+      <div style="display:flex; align-items:center; gap:11px;">
+        <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+        <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      </div>
+      <div style="font-size:11.5px; color:var(--nav-text);">Inspection Design System</div>
+    </div>
+    <nav style="flex:1; overflow-y:auto; padding-block:8px 24px;">
+      <div class="sidebar-group">Foundations</div>
+      <a class="nav-item" data-spy-link href="#overview"><span class="nav-label">Overview</span></a>
+      <a class="nav-item" data-spy-link href="#lineage"><span class="nav-label">Lineage &amp; influences</span></a>
+      <a class="nav-item" data-spy-link href="#brand"><span class="nav-label">Brand &amp; wordmark</span></a>
+      <a class="nav-item" data-spy-link href="#color"><span class="nav-label">Color</span></a>
+      <a class="nav-item" data-spy-link href="#type"><span class="nav-label">Typography</span></a>
+      <a class="nav-item" data-spy-link href="#space"><span class="nav-label">Space, radius &amp; elevation</span></a>
+      <a class="nav-item" data-spy-link href="#motion"><span class="nav-label">Motion, density &amp; focus</span></a>
+      <div class="sidebar-group">Components</div>
+      <a class="nav-item" data-spy-link href="#actions"><span class="nav-label">Actions</span></a>
+      <a class="nav-item" data-spy-link href="#inputs"><span class="nav-label">Inputs &amp; selection</span></a>
+      <a class="nav-item" data-spy-link href="#status"><span class="nav-label">Status &amp; badges</span></a>
+      <a class="nav-item" data-spy-link href="#data"><span class="nav-label">Cards &amp; data</span></a>
+      <a class="nav-item" data-spy-link href="#table"><span class="nav-label">Tables</span></a>
+      <a class="nav-item" data-spy-link href="#navigation"><span class="nav-label">Navigation</span></a>
+      <a class="nav-item" data-spy-link href="#feedback"><span class="nav-label">Feedback</span></a>
+      <a class="nav-item" data-spy-link href="#overlays"><span class="nav-label">Overlays &amp; menus</span></a>
+      <div class="sidebar-group">Domain</div>
+      <a class="nav-item" data-spy-link href="#inspection"><span class="nav-label">Inspection domain</span></a>
+      <div class="sidebar-group">Signatures</div>
+      <a class="nav-item" data-spy-link href="#patterns"><span class="nav-label">Inspection patterns</span></a>
+      <a class="nav-item" data-spy-link href="#map"><span class="nav-label">Map workspace</span></a>
+    </nav>
+  </aside>
+
+  <main class="ds-scroll" style="height:100vh; overflow-y:auto;">
+    <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 32px; background:color-mix(in srgb, var(--surface-canvas) 88%, transparent); backdrop-filter:blur(8px); border-block-end:1px solid var(--border-subtle);">
+      <div style="font-size:13px; color:var(--text-secondary);">Design system reference</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div class="seg"><button class="seg-opt" aria-pressed="{{ isLight }}" onClick="{{ setLight }}">Light</button><button class="seg-opt" aria-pressed="{{ isDark }}" onClick="{{ setDark }}">Dark</button></div>
+        <div class="seg"><button class="seg-opt" aria-pressed="{{ isLtr }}" onClick="{{ setLtr }}">LTR</button><button class="seg-opt" aria-pressed="{{ isRtl }}" onClick="{{ setRtl }}">RTL · ع</button></div>
+        <div class="seg"><button class="seg-opt" aria-pressed="{{ isComfortable }}" onClick="{{ setComfortable }}">Comfortable</button><button class="seg-opt" aria-pressed="{{ isCompact }}" onClick="{{ setCompact }}">Compact</button><button class="seg-opt" aria-pressed="{{ isField }}" onClick="{{ setField }}">Field</button></div>
+      </div>
+    </header>
+
+    <div style="max-width:1080px; padding:32px 32px 120px; display:flex; flex-direction:column; gap:8px;">
+
+      <!-- OVERVIEW -->
+      <section id="overview" data-spy class="ds-sec" style="padding-block-end:40px; border-block-end:1px solid var(--border-subtle);">
+        <div style="font-size:11.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--action-primary); margin-block-end:8px;">Foundations</div>
+        <h1 style="font-size:32px; line-height:1.15; font-weight:600; letter-spacing:-0.02em; max-width:20ch;">A quiet, dense, bilingual system for national inspection work</h1>
+        <p style="margin-block-start:14px; font-size:15px; line-height:1.6; color:var(--text-secondary); max-width:64ch;">SAQEEL serves field inspectors, supervisors and government stakeholders from one contract. Authority comes from hierarchy and restraint, not decoration. Colour is semantic, borders do the structural work, and Arabic is composed intentionally rather than mirrored mechanically. Use the controls above to preview every specimen in dark mode, RTL and the field-density profile.</p>
+        <div style="margin-block-start:24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+          <div class="panel" style="padding:16px;"><div style="font-weight:600; font-size:14px; margin-block-end:4px;">Quiet confidence</div><div style="font-size:13px; color:var(--text-secondary); line-height:1.5;">Restraint over decoration. One emerald accent.</div></div>
+          <div class="panel" style="padding:16px;"><div style="font-weight:600; font-size:14px; margin-block-end:4px;">Colour means something</div><div style="font-size:13px; color:var(--text-secondary); line-height:1.5;">Emerald is interaction; status colours are semantics.</div></div>
+          <div class="panel" style="padding:16px;"><div style="font-weight:600; font-size:14px; margin-block-end:4px;">Density with dignity</div><div style="font-size:13px; color:var(--text-secondary); line-height:1.5;">Compact but never cramped. Whitespace is purposeful.</div></div>
+          <div class="panel" style="padding:16px;"><div style="font-weight:600; font-size:14px; margin-block-end:4px;">Two languages, one system</div><div style="font-size:13px; color:var(--text-secondary); line-height:1.5;">Arabic has its own leading; identifiers stay LTR.</div></div>
+        </div>
+      </section>
+
+      <!-- LINEAGE -->
+      <section id="lineage" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <div style="font-size:11.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--action-primary); margin-block-end:8px;">Foundations</div>
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Lineage & influences</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:66ch;">SAQEEL draws on two systems as <em>references, not identities</em>. Industry contributed structural discipline; Nocturne informed the dark theme. Neither system's visual identity — Industry's steel-blue, Barlow and blueprint registration marks; Nocturne's blurple accent and lighten-blend glow — survives here. What was borrowed is structure and behaviour, re-expressed in SAQEEL's own emerald-on-warm-neutral voice.</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:24px; align-items:start;">
+
+          <!-- INDUSTRY -->
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Industry → structural discipline</div><span class="badge badge-outline">Reference</span></div>
+            <div class="panel-body" style="display:flex; flex-direction:column; gap:16px;">
+              <div>
+                <div class="t-label" style="margin-block-end:6px;">Applied</div>
+                <ul style="margin:0; padding-inline-start:18px; font-size:13px; color:var(--text-secondary); line-height:1.6;">
+                  <li>Modular grid rhythm — equal cells, strong horizontal &amp; vertical structure</li>
+                  <li>Compact controls (28–40px) and a dense, purposeful spacing scale</li>
+                  <li>Data-table architecture — sticky headers, row rules, tabular numerals</li>
+                  <li>Borders do the structural work, not fills or shadows</li>
+                </ul>
+              </div>
+              <div>
+                <div class="t-label" style="margin-block-end:6px;">Deliberately left behind</div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <span class="badge badge-disabled">Steel-blue accent</span>
+                  <span class="badge badge-disabled">Barlow Condensed</span>
+                  <span class="badge badge-disabled">Blueprint + marks</span>
+                  <span class="badge badge-disabled">Duotone imagery</span>
+                </div>
+              </div>
+              <div>
+                <div class="t-label" style="margin-block-end:8px;">Proof — modular grid &amp; compact table, in SAQEEL's voice</div>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-block-end:10px;">
+                  <div style="border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; text-align:center; font-size:12px; color:var(--text-muted);">Cell</div>
+                  <div style="border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; text-align:center; font-size:12px; color:var(--text-muted);">Cell</div>
+                  <div style="border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; text-align:center; font-size:12px; color:var(--text-muted);">Cell</div>
+                </div>
+                <div class="table-wrap">
+                  <table class="table">
+                    <thead><tr><th>Reference</th><th class="cell-num">Findings</th><th>Status</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="id-code">INS-2026-004821</span></td><td class="cell-num">4</td><td><span class="badge badge-major"><span class="dot"></span>Major</span></td></tr>
+                      <tr><td><span class="id-code">INS-2026-004822</span></td><td class="cell-num">0</td><td><span class="badge badge-compliant"><span class="dot"></span>Compliant</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NOCTURNE -->
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Nocturne → dark-mode layering</div><span class="badge badge-outline">Reference</span></div>
+            <div class="panel-body" style="display:flex; flex-direction:column; gap:16px;">
+              <div>
+                <div class="t-label" style="margin-block-end:6px;">Applied</div>
+                <ul style="margin:0; padding-inline-start:18px; font-size:13px; color:var(--text-secondary); line-height:1.6;">
+                  <li>Layered charcoal surfaces — depth from tonal steps, not inversion</li>
+                  <li>Elevation as edge + ambient darkness, never glow</li>
+                  <li>Selection &amp; hover contrast tuned from ramps, not saturation</li>
+                  <li>Dark mode is designed on its own terms, not derived from light</li>
+                </ul>
+              </div>
+              <div>
+                <div class="t-label" style="margin-block-end:6px;">Deliberately left behind</div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <span class="badge badge-disabled">Blurple accent</span>
+                  <span class="badge badge-disabled">Lighten-blend photos</span>
+                  <span class="badge badge-disabled">Outlined primary</span>
+                  <span class="badge badge-disabled">Fading rules</span>
+                </div>
+              </div>
+              <div>
+                <div class="t-label" style="margin-block-end:8px;">Proof — layered charcoal &amp; edge elevation (shown dark regardless of theme)</div>
+                <div data-theme="dark" style="background:var(--surface-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; display:flex; flex-direction:column; gap:10px;">
+                  <div style="background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px; color:var(--text-primary); font-size:12px;">Primary surface
+                    <div style="margin-block-start:8px; background:var(--surface-secondary); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; color:var(--text-secondary);">Secondary
+                      <div style="margin-block-start:8px; background:var(--surface-raised); border-radius:var(--radius-sm); padding:10px; box-shadow:var(--shadow-md); color:var(--text-primary);">Raised — edge + ambient, no glow</div>
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn btn-primary btn-sm">Emerald primary</button>
+                    <span class="badge badge-compliant"><span class="dot"></span>Selection contrast</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BRAND -->
+      <section id="brand" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <div style="font-size:11.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--action-primary); margin-block-end:8px;">Foundations</div>
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Brand &amp; logo</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:66ch;">The logo is symbol-first: a hexagonal <strong>inspection seal</strong> carrying a verification check — the language of certification and authority, in SAQEEL emerald. The wordmark is set in the system's own IBM Plex Sans at 600 with generous tracking; the name <span class="id-code">صقيل</span> (ṣaqīl, &ldquo;polished / burnished&rdquo;) speaks to precision. The symbol always leads and can stand alone; the wordmark never appears as decoration.</p>
+
+        <!-- PRIMARY LOCKUP on cream -->
+        <div style="margin-block-start:24px; background:var(--surface-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:48px; display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+          <svg viewBox="0 0 72 72" width="72" height="72" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div>
+            <span style="font-family:var(--font-body); font-weight:600; font-size:30px; letter-spacing:0.16em; color:var(--text-primary);">SAQEEL</span>
+            <div style="margin-block-start:12px; font-size:12px; font-weight:500; letter-spacing:0.28em; text-transform:uppercase; color:var(--text-muted);">Inspection platform</div>
+          </div>
+        </div>
+
+        <!-- SYMBOL CONCEPTS -->
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Symbol directions</h4>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+          <div class="panel" style="padding:28px 16px 16px; display:flex; flex-direction:column; align-items:center; gap:14px;">
+            <svg viewBox="0 0 72 72" width="56" height="56"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="text-align:center;"><div style="font-size:13px; font-weight:600;">Inspection seal <span class="badge badge-compliant" style="height:18px; margin-inline-start:4px;">Primary</span></div><div class="t-caption" style="margin-block-start:2px;">Certification hexagon + verify check — authority.</div></div>
+          </div>
+          <div class="panel" style="padding:28px 16px 16px; display:flex; flex-direction:column; align-items:center; gap:14px;">
+            <svg viewBox="0 0 72 72" width="56" height="56"><circle cx="31" cy="31" r="21" fill="none" stroke="var(--action-primary)" stroke-width="7"/><path d="M46 46 L64 64" stroke="var(--action-primary)" stroke-width="8" stroke-linecap="round"/><path d="M22 31 l6 7 l13 -15" fill="none" stroke="var(--action-primary)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="text-align:center;"><div style="font-size:13px; font-weight:600;">Focus lens</div><div class="t-caption" style="margin-block-start:2px;">Magnifier + check — the act of inspecting.</div></div>
+          </div>
+          <div class="panel" style="padding:28px 16px 16px; display:flex; flex-direction:column; align-items:center; gap:14px;">
+            <svg viewBox="0 0 72 72" width="56" height="56"><path d="M36 5 L62 15 V34 C62 50 36 66 36 66 C36 66 10 50 10 34 V15 Z" fill="var(--action-primary)"/><path d="M25 35 l7 8 l16 -18" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="text-align:center;"><div style="font-size:13px; font-weight:600;">Compliance shield</div><div class="t-caption" style="margin-block-start:2px;">Shield + check — protection &amp; conformance.</div></div>
+          </div>
+        </div>
+
+        <!-- CONSTRUCTION -->
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Symbol construction (Industry lineage)</h4>
+        <div class="panel" style="padding:28px; display:flex; gap:28px; align-items:center; flex-wrap:wrap;">
+          <svg viewBox="-10 -10 92 92" style="width:180px; height:180px; flex:none;">
+            <g stroke="var(--border-subtle)" stroke-width="1"><circle cx="36" cy="36" r="34" fill="none"/><line x1="-10" y1="36" x2="82" y2="36"/><line x1="36" y1="-10" x2="36" y2="82"/></g>
+            <g stroke="var(--border-strong)" stroke-width="1"><path d="M-10 7 h6 M-10 7 v6 M76 65 h6 M82 59 v6"/></g>
+            <path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="none" stroke="var(--action-primary)" stroke-width="4"/>
+            <path d="M24 37 l8 9 l17 -20" fill="none" stroke="var(--action-primary)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div style="min-width:220px;">
+            <div class="t-body" style="color:var(--text-secondary); max-width:44ch;">The hexagon is inscribed in a single guide circle; the check sits on the horizontal axis. Registration crosshairs mark the bounding box — the mark is drawn, not sketched.</div>
+            <div class="row" style="gap:16px; margin-block-start:12px; flex-wrap:wrap;"><span class="t-caption">Circle-inscribed hexagon</span><span class="t-caption">Check on centre axis</span><span class="t-caption">Rounded check joins only</span></div>
+          </div>
+        </div>
+
+        <!-- BILINGUAL + REVERSED -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px; align-items:start;">
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Bilingual lockup</div></div>
+            <div class="panel-body" style="display:flex; flex-direction:column; gap:20px; align-items:flex-start; padding-block:28px;">
+              <div style="display:flex; align-items:center; gap:16px;"><svg viewBox="0 0 72 72" width="40" height="40" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span dir="rtl" style="font-family:var(--font-body); font-size:38px; font-weight:700; color:var(--action-primary); line-height:1;">صقيل</span></div>
+              <div style="display:flex; align-items:center; gap:16px;"><svg viewBox="0 0 72 72" width="30" height="30" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-family:var(--font-body); font-weight:600; font-size:22px; letter-spacing:0.16em; color:var(--text-primary);">SAQEEL</span></div>
+              <div class="t-caption">Arabic leads in RTL; the seal never mirrors. Each script sits on its own baseline.</div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Reversed — charcoal (Nocturne lineage)</div></div>
+            <div data-theme="dark" style="background:var(--surface-canvas); padding:36px 24px; display:flex; flex-direction:column; gap:22px; align-items:center;">
+              <div style="display:flex; align-items:center; gap:14px;"><svg viewBox="0 0 72 72" width="40" height="40" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-family:var(--font-body); font-weight:600; font-size:24px; letter-spacing:0.16em; color:var(--text-primary);">SAQEEL</span></div>
+              <div style="display:flex; align-items:center; gap:14px;"><svg viewBox="0 0 72 72" width="30" height="30" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span dir="rtl" style="font-family:var(--font-body); font-size:28px; font-weight:700; color:var(--text-primary); line-height:1;">صقيل</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GROUNDS + APP ICON -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px; align-items:start;">
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">App icon</div></div>
+            <div class="panel-body" style="display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;">
+              <div style="width:64px; height:64px; border-radius:14px; background:var(--action-primary); display:grid; place-items:center; flex:none;"><svg viewBox="0 0 72 72" width="40" height="40" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="#ffffff"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="var(--action-primary)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="width:40px; height:40px; border-radius:9px; background:var(--action-primary); display:grid; place-items:center; flex:none;"><svg viewBox="0 0 72 72" width="26" height="26" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="#ffffff"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="var(--action-primary)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div style="width:24px; height:24px; border-radius:5px; background:var(--action-primary); display:grid; place-items:center; flex:none;"><svg viewBox="0 0 72 72" width="16" height="16" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="#ffffff"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="var(--action-primary)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+          </div>
+          <div class="panel" style="padding:0; overflow:hidden;">
+            <div class="panel-header"><div class="panel-title">Grounds</div></div>
+            <div class="panel-body" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div style="background:var(--surface-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; display:flex; align-items:center; gap:10px; justify-content:center;"><svg viewBox="0 0 72 72" width="24" height="24" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-family:var(--font-body); font-weight:600; font-size:15px; letter-spacing:0.16em; color:var(--text-primary);">SAQEEL</span></div>
+              <div style="background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; display:flex; align-items:center; gap:10px; justify-content:center;"><svg viewBox="0 0 72 72" width="24" height="24" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--action-primary)"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-family:var(--font-body); font-weight:600; font-size:15px; letter-spacing:0.16em; color:var(--text-primary);">SAQEEL</span></div>
+              <div style="background:var(--action-primary); border-radius:var(--radius-sm); padding:14px; display:flex; align-items:center; gap:10px; justify-content:center;"><svg viewBox="0 0 72 72" width="24" height="24" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="#ffffff"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="var(--action-primary)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-family:var(--font-body); font-weight:600; font-size:15px; letter-spacing:0.16em; color:#ffffff;">SAQEEL</span></div>
+              <div style="background:#17191d; border-radius:var(--radius-sm); padding:14px; display:flex; align-items:center; gap:10px; justify-content:center;"><svg viewBox="0 0 72 72" width="24" height="24" style="flex:none;"><path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="#2e9e77"/><path d="M24 37 l8 9 l17 -20" fill="none" stroke="#08120e" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-family:var(--font-body); font-weight:600; font-size:15px; letter-spacing:0.16em; color:#e8eaec;">SAQEEL</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLEAR SPACE + MISUSE -->
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Clear space &amp; misuse</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
+          <div class="panel" style="padding:14px;"><div class="t-label" style="margin-block-end:8px;">Clear space</div><div class="t-caption">Keep one seal-height of clear space on every side; minimum seal 16px, wordmark 14px cap.</div></div>
+          <div class="panel" style="padding:14px;"><span class="exc exc-critical" style="margin-block-end:8px;"><span class="exc-mark"></span>Don't recolour</span><div class="t-caption">No steel-blue or blurple — the seal is emerald.</div></div>
+          <div class="panel" style="padding:14px;"><span class="exc exc-critical" style="margin-block-end:8px;"><span class="exc-mark"></span>Don't restyle the type</span><div class="t-caption">Wordmark is IBM Plex Sans 600 — never a display face.</div></div>
+          <div class="panel" style="padding:14px;"><span class="exc exc-critical" style="margin-block-end:8px;"><span class="exc-mark"></span>Don't add glow</span><div class="t-caption">No shadow or blur; this system uses edges.</div></div>
+        </div>
+      </section>
+
+      <!-- COLOR -->
+      <section id="color" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Color</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:60ch;">Components consume semantic tokens only. Dark mode is layered charcoal, composed on its own terms — never an inversion.</p>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Surfaces</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px;">
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--surface-canvas);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Canvas</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--surface-canvas</div></div>
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--surface-primary);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Primary</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--surface-primary</div></div>
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--surface-secondary);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Secondary</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--surface-secondary</div></div>
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--surface-sunken);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Sunken</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--surface-sunken</div></div>
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--surface-raised); box-shadow:var(--shadow-md);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Raised</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--surface-raised</div></div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Action — restrained emerald</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px;">
+          <div><div style="height:60px; border-radius:6px; background:var(--action-primary);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Primary</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--action-primary</div></div>
+          <div><div style="height:60px; border-radius:6px; background:var(--action-primary-hover);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Primary hover</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--action-primary-hover</div></div>
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--accent-soft);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Accent soft</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--accent-soft</div></div>
+          <div><div style="height:60px; border-radius:6px; background:var(--action-danger);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Danger</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--action-danger</div></div>
+          <div><div style="height:60px; border-radius:6px; border:1px solid var(--border-strong); background:var(--focus-ring);"></div><div style="margin-block-start:6px; font-size:12.5px; font-weight:500;">Focus ring</div><div class="id-code" style="font-size:11px; color:var(--text-muted);">--focus-ring</div></div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Text & borders</h4>
+        <div class="panel" style="padding:20px; background:var(--surface-primary); display:flex; flex-direction:column; gap:6px;">
+          <div style="color:var(--text-primary); font-size:15px;">Primary text — findings, values, titles <span class="id-code" style="color:var(--text-muted); font-size:11px;">--text-primary</span></div>
+          <div style="color:var(--text-secondary); font-size:15px;">Secondary text — supporting copy, labels <span class="id-code" style="color:var(--text-muted); font-size:11px;">--text-secondary</span></div>
+          <div style="color:var(--text-muted); font-size:15px;">Muted text — meta, timestamps <span class="id-code" style="font-size:11px;">--text-muted</span></div>
+          <div style="color:var(--text-disabled); font-size:15px;">Disabled text <span class="id-code" style="font-size:11px;">--text-disabled</span></div>
+          <div style="color:var(--text-link); font-size:15px;">Link text — inspection reference <span class="id-code" style="color:var(--text-muted); font-size:11px;">--text-link</span></div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Navigation — deep graphite in both themes</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:14px;">
+          <div><div style="height:56px; border-radius:6px; background:var(--nav-bg);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">--nav-bg</div></div>
+          <div><div style="height:56px; border-radius:6px; background:var(--nav-bg-selected);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">--nav-bg-selected</div></div>
+          <div><div style="height:56px; border-radius:6px; background:var(--nav-indicator);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">--nav-indicator</div></div>
+          <div><div style="height:56px; border-radius:6px; border:1px solid var(--nav-border); background:var(--nav-bg-hover);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">--nav-bg-hover</div></div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Chart categories</h4>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="width:52px; height:52px; border-radius:6px; background:var(--chart-1);"></div>
+          <div style="width:52px; height:52px; border-radius:6px; background:var(--chart-2);"></div>
+          <div style="width:52px; height:52px; border-radius:6px; background:var(--chart-3);"></div>
+          <div style="width:52px; height:52px; border-radius:6px; background:var(--chart-4);"></div>
+          <div style="width:52px; height:52px; border-radius:6px; background:var(--chart-5);"></div>
+          <div style="width:52px; height:52px; border-radius:6px; background:var(--chart-6);"></div>
+        </div>
+      </section>
+
+      <!-- TYPOGRAPHY -->
+      <section id="type" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Typography</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:60ch;">IBM Plex Sans for English, IBM Plex Sans Arabic for Arabic, IBM Plex Mono strictly for machine identifiers. Weights: 400 content · 500 controls · 600 headings · 700 hero metrics.</p>
+        <div class="panel" style="margin-block-start:20px; padding:8px 20px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0; border-block-end:1px solid var(--border-subtle);"><div class="t-display">Display heading</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-display · 28/600</div></div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0; border-block-end:1px solid var(--border-subtle);"><div class="t-page-title">Page title</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-page-title · 22/600</div></div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0; border-block-end:1px solid var(--border-subtle);"><div class="t-section">Section heading</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-section · 17/600</div></div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0; border-block-end:1px solid var(--border-subtle);"><div class="t-body-lg">Body large — comfortable reading for detail panels and briefs.</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-body-lg · 15</div></div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0; border-block-end:1px solid var(--border-subtle);"><div class="t-body">Body — the default operational text size across the product.</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-body · 14</div></div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0; border-block-end:1px solid var(--border-subtle);"><div class="t-label">Field label</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-label · 12/500</div></div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; padding:14px 0;"><div class="t-metric">1,284</div><div class="id-code" style="color:var(--text-muted); font-size:11px;">.t-metric · 30/700</div></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px;">
+          <div class="panel" style="padding:20px;"><div class="t-label" style="margin-block-end:8px;">Identifiers — mono, always LTR</div><div class="t-mono" style="display:block; margin-block-end:4px;">INS-2026-004821</div><div class="t-mono" style="display:block; margin-block-end:4px;">PRM-88213</div><div class="t-mono" style="display:block;">24.7136° N, 46.6753° E</div></div>
+          <div class="panel" style="padding:20px;"><div class="t-label" style="margin-block-end:8px;">Arabic — own leading, no tracking</div><div lang="ar" dir="rtl" style="font-size:15px; line-height:1.7;">تُعرض عمليات التفتيش الميدانية باللغة العربية مع مسافات مناسبة، ويظل المعرّف <span class="t-mono">INS-2026-004821</span> بالاتجاه اللاتيني.</div></div>
+        </div>
+      </section>
+
+      <!-- SPACE / RADIUS / ELEVATION -->
+      <section id="space" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Space, radius & elevation</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:60ch;">A 4px base scale. Radii stay small on purpose — this is an operational tool. Borders do the structural work; shadows are reserved for genuinely floating layers.</p>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Spacing scale</h4>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-1 · 4</div><div style="height:14px; width:4px; background:var(--action-primary); border-radius:2px;"></div></div>
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-2 · 8</div><div style="height:14px; width:8px; background:var(--action-primary); border-radius:2px;"></div></div>
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-3 · 12</div><div style="height:14px; width:12px; background:var(--action-primary); border-radius:2px;"></div></div>
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-4 · 16</div><div style="height:14px; width:16px; background:var(--action-primary); border-radius:2px;"></div></div>
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-6 · 24</div><div style="height:14px; width:24px; background:var(--action-primary); border-radius:2px;"></div></div>
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-8 · 32</div><div style="height:14px; width:32px; background:var(--action-primary); border-radius:2px;"></div></div>
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:120px; font-size:12px; color:var(--text-muted);" class="id-code">--space-12 · 48</div><div style="height:14px; width:48px; background:var(--action-primary); border-radius:2px;"></div></div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Radius</h4>
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+          <div style="text-align:center;"><div style="width:72px; height:56px; background:var(--surface-primary); border:1px solid var(--border-strong); border-radius:var(--radius-xs);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">xs · 2</div></div>
+          <div style="text-align:center;"><div style="width:72px; height:56px; background:var(--surface-primary); border:1px solid var(--border-strong); border-radius:var(--radius-sm);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">sm · 3</div></div>
+          <div style="text-align:center;"><div style="width:72px; height:56px; background:var(--surface-primary); border:1px solid var(--border-strong); border-radius:var(--radius-md);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">md · 4</div></div>
+          <div style="text-align:center;"><div style="width:72px; height:56px; background:var(--surface-primary); border:1px solid var(--border-strong); border-radius:var(--radius-lg);"></div><div class="id-code" style="margin-block-start:6px; font-size:11px; color:var(--text-muted);">lg · 6</div></div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Elevation</h4>
+        <div style="display:flex; gap:24px; flex-wrap:wrap; padding:8px 4px;">
+          <div style="width:120px; height:70px; background:var(--surface-raised); border-radius:6px; box-shadow:var(--shadow-xs); display:grid; place-items:center; font-size:11px; color:var(--text-muted);">xs</div>
+          <div style="width:120px; height:70px; background:var(--surface-raised); border-radius:6px; box-shadow:var(--shadow-sm); display:grid; place-items:center; font-size:11px; color:var(--text-muted);">sm</div>
+          <div style="width:120px; height:70px; background:var(--surface-raised); border-radius:6px; box-shadow:var(--shadow-md); display:grid; place-items:center; font-size:11px; color:var(--text-muted);">md</div>
+          <div style="width:120px; height:70px; background:var(--surface-raised); border-radius:6px; box-shadow:var(--shadow-lg); display:grid; place-items:center; font-size:11px; color:var(--text-muted);">lg</div>
+        </div>
+      </section>
+
+      <!-- MOTION / DENSITY / FOCUS -->
+      <section id="motion" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Motion, density & focus</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:20px;">
+          <div class="panel" style="padding:20px;">
+            <h4 style="font-size:14px; font-weight:600; margin-block-end:10px;">Motion</h4>
+            <p style="font-size:13px; color:var(--text-secondary); margin-block-end:12px;">One standard easing, 120–260ms, functional only. Reduced motion collapses all of it.</p>
+            <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;"><span class="id-code">--motion-fast · 120ms</span><span class="id-code">--motion-base · 180ms</span><span class="id-code">--motion-slow · 260ms</span><span class="id-code">--ease-standard · cubic-bezier(.2,0,0,1)</span></div>
+          </div>
+          <div class="panel" style="padding:20px;">
+            <h4 style="font-size:14px; font-weight:600; margin-block-end:10px;">Focus</h4>
+            <p style="font-size:13px; color:var(--text-secondary); margin-block-end:14px;">A single visible ring on every interactive element: 2px solid, offset 2. Tab into the field below to see it.</p>
+            <input class="input" placeholder="Focus me" style="max-width:220px;">
+          </div>
+        </div>
+        <div class="panel" style="padding:20px; margin-block-start:16px;">
+          <h4 style="font-size:14px; font-weight:600; margin-block-end:6px;">Density</h4>
+          <p style="font-size:13px; color:var(--text-secondary); margin-block-end:14px;">Comfortable by default; compact tightens rows, field grows every control to a 44px+ touch target. Toggle density in the header — this control row responds live.</p>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary">Primary</button>
+            <button class="btn btn-secondary">Secondary</button>
+            <input class="input" placeholder="Search inspections" style="max-width:220px;">
+            <span class="badge badge-compliant"><span class="dot"></span>Compliant</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACTIONS -->
+      <section id="actions" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Actions</h2>
+        <div class="panel" style="padding:24px; margin-block-start:20px; display:flex; flex-direction:column; gap:20px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-primary">Assign inspector</button>
+            <button class="btn btn-secondary">Reassign</button>
+            <button class="btn btn-tertiary">Add note</button>
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-danger">Reject with reason</button>
+            <button class="btn btn-primary" disabled>Disabled</button>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm">Small</button>
+            <button class="btn btn-primary">Medium</button>
+            <button class="btn btn-primary btn-lg">Large</button>
+            <button class="btn btn-primary is-loading">Submitting</button>
+            <div class="btn-group"><button class="btn btn-secondary">Day</button><button class="btn btn-secondary">Week</button><button class="btn btn-secondary">Month</button></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="btn-group"><button class="btn btn-primary">Approve</button><button class="btn btn-primary btn-icon" aria-label="More options"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button></div>
+            <button class="btn btn-secondary btn-icon" aria-label="Filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg></button>
+            <button class="btn btn-ghost btn-icon" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            <button class="btn btn-primary btn-block" style="max-width:240px;">Submit for review</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- INPUTS -->
+      <section id="inputs" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Inputs & selection</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:20px;">
+          <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+            <div class="field"><label>Inspection title</label><input class="input" placeholder="e.g. Fire-safety audit"></div>
+            <div class="field"><label>Facility<span class="req">*</span></label><select class="select"><option>Riyadh Central Depot</option><option>Jeddah Port Terminal</option></select></div>
+            <div class="field is-error"><label>Permit number</label><input class="input input-mono" value="PRM-000"><div class="field-error">Permit not found in registry</div></div>
+            <div class="field"><label>Notes</label><textarea class="input" placeholder="Observed conditions…"></textarea></div>
+          </div>
+          <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:18px;">
+            <label class="check"><input type="checkbox" checked>Photograph every finding</label>
+            <label class="check"><input type="checkbox">Require supervisor sign-off</label>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <label class="radio"><input type="radio" name="sev" checked>Routine</label>
+              <label class="radio"><input type="radio" name="sev">Priority</label>
+            </div>
+            <label class="switch"><input type="checkbox" checked>Offline capture</label>
+            <div class="seg"><button class="seg-opt is-active">All</button><button class="seg-opt">Open</button><button class="seg-opt">Closed</button></div>
+            <div class="combo"><div class="combo-control"><span class="combo-chip">Electrical<button>×</button></span><span class="combo-chip">Structural<button>×</button></span><input placeholder="Add tag"></div></div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-block-start:16px;">
+          <div class="field"><label>Scheduled date</label><input class="input" type="date" value="2026-07-24"></div>
+          <div class="field"><label>Date range</label><div style="display:flex; align-items:center; gap:8px;"><input class="input" type="date" value="2026-07-01"><svg data-directional viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="flex:none;"><path d="M5 12h14M13 6l6 6-6 6"/></svg><input class="input" type="date" value="2026-07-31"></div></div>
+          <div class="field"><label>Search register</label><span class="input-affix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search"></span></div>
+          <div class="field"><label>Read-only</label><input class="input" readonly value="Al Olaya district"></div>
+          <div class="field"><label>Status selector</label><button class="select" style="display:flex; align-items:center; text-align:start;"><span class="badge badge-pending"><span class="dot"></span>Pending</span></button></div>
+          <div class="field"><label>Assignee (disabled)</label><select class="select" disabled><option>Unassigned</option></select></div>
+        </div>
+        <div style="margin-block-start:16px; border:1px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-secondary); padding:24px; text-align:center;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin:0 auto 6px;"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M20 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/></svg>
+          <div style="font-size:13px; font-weight:500;">Add evidence — photos or PDF</div>
+          <div class="t-caption">Drag files here or click to browse · JPG, PNG, PDF up to 20 MB</div>
+        </div>
+      </section>
+
+      <!-- STATUS / BADGES -->
+      <section id="status" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Status & badges</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:60ch;">Ten fixed status roles. Status is always colour + label — never colour alone.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-block-start:20px;">
+          <span class="badge badge-critical"><span class="dot"></span>Critical</span>
+          <span class="badge badge-major"><span class="dot"></span>Major</span>
+          <span class="badge badge-warning"><span class="dot"></span>Warning</span>
+          <span class="badge badge-compliant"><span class="dot"></span>Compliant</span>
+          <span class="badge badge-info"><span class="dot"></span>Info</span>
+          <span class="badge badge-pending"><span class="dot"></span>Pending</span>
+          <span class="badge badge-draft"><span class="dot"></span>Draft</span>
+          <span class="badge badge-onhold"><span class="dot"></span>On hold</span>
+          <span class="badge badge-completed"><span class="dot"></span>Completed</span>
+          <span class="badge badge-disabled"><span class="dot"></span>Disabled</span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-block-start:16px; align-items:center;">
+          <span class="tag">Electrical</span>
+          <span class="tag">Structural</span>
+          <span class="badge badge-outline">Outline</span>
+          <span class="id-code">INS-2026-004821</span>
+        </div>
+      </section>
+
+      <!-- CARDS / DATA -->
+      <section id="data" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Cards & data</h2>
+
+        <h4 style="margin-block:20px 12px; font-size:14px; font-weight:600;">AI advisory panel</h4>
+        <div class="panel" style="border-inline-start:3px solid var(--action-primary); padding:0; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:14px 18px; border-block-end:1px solid var(--border-subtle);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--action-primary)" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/></svg>
+            <span style="font-weight:600; font-size:13.5px;">Strategic AI summary</span>
+            <span class="badge badge-info" style="margin-inline-start:auto;">Advisory only · traceable</span>
+          </div>
+          <div>
+            <div style="display:flex; gap:12px; padding:11px 18px; border-block-end:1px solid var(--border-subtle); align-items:baseline;"><span style="width:7px; height:7px; border-radius:50%; background:var(--status-critical); flex:none; position:relative; top:5px;"></span><span style="flex:1; font-size:13px; line-height:1.55; color:var(--text-secondary);">Compliance decreased <b style="color:var(--status-critical-text);">4%</b> in the Chemical sector — concentrated across Jubail and Dammam.</span><a href="#data" style="font-size:11.5px; font-weight:600; white-space:nowrap;">Verify records →</a></div>
+            <div style="display:flex; gap:12px; padding:11px 18px; border-block-end:1px solid var(--border-subtle); align-items:baseline;"><span style="width:7px; height:7px; border-radius:50%; background:var(--status-warning); flex:none; position:relative; top:5px;"></span><span style="flex:1; font-size:13px; line-height:1.55; color:var(--text-secondary);">Fire-safety violations are rising for a third straight month (12 → 18 → 25).</span><a href="#data" style="font-size:11.5px; font-weight:600; white-space:nowrap;">Verify records →</a></div>
+            <div style="display:flex; gap:12px; padding:11px 18px; align-items:baseline;"><span style="width:7px; height:7px; border-radius:50%; background:var(--status-compliant); flex:none; position:relative; top:5px;"></span><span style="flex:1; font-size:13px; line-height:1.55; color:var(--text-secondary);">Approval rate improved to <b style="color:var(--status-compliant-text);">98%</b> — returned submissions fell by a third.</span><a href="#data" style="font-size:11.5px; font-weight:600; white-space:nowrap;">Verify records →</a></div>
+          </div>
+        </div>
+
+        <h4 style="margin-block:24px 12px; font-size:14px; font-weight:600;">KPI — governed metric</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px;">
+          <div class="kpi">
+            <div style="font-size:11px; color:var(--text-muted); line-height:1.4;">Are we achieving the national inspection strategy?</div>
+            <div style="font-weight:600; font-size:13px; margin-block-start:2px;">Inspection coverage vs annual target</div>
+            <div class="kpi-value" style="margin-block-start:8px;">85%</div>
+            <div class="progress" style="margin-block-start:10px;"><i style="width:85%;"></i></div>
+            <div class="id-code" style="font-size:10.5px; color:var(--text-muted); margin-block-start:10px;">(Completed ÷ annual target) × 100</div>
+            <div style="font-size:11.5px; color:var(--text-secondary); font-style:italic; margin-block-start:4px;">42,500 completed of 50,000 target</div>
+          </div>
+          <div class="kpi">
+            <div style="font-size:11px; color:var(--text-muted); line-height:1.4;">How compliant is the industrial sector?</div>
+            <div style="font-weight:600; font-size:13px; margin-block-start:2px;">National compliance rate</div>
+            <div class="kpi-value" style="margin-block-start:8px;">92%</div>
+            <div class="kpi-delta down" style="margin-block-start:10px;">▼ 1.2 pts vs previous period</div>
+            <div class="id-code" style="font-size:10.5px; color:var(--text-muted); margin-block-start:10px;">(Compliant ÷ answered items) × 100 · N/A excluded</div>
+            <div style="font-size:11.5px; color:var(--text-secondary); font-style:italic; margin-block-start:4px;">92,000 compliant of 100,000 answered</div>
+          </div>
+          <div class="kpi">
+            <div style="font-size:11px; color:var(--text-muted); line-height:1.4;">Are reports approved without excessive rework?</div>
+            <div style="font-weight:600; font-size:13px; margin-block-start:2px;">Inspection approval rate</div>
+            <div class="kpi-value" style="margin-block-start:8px;">98%</div>
+            <div class="kpi-delta up" style="margin-block-start:10px;">▲ 2 pts vs previous period</div>
+            <div class="id-code" style="font-size:10.5px; color:var(--text-muted); margin-block-start:10px;">(Approved ÷ submitted reports) × 100</div>
+            <div style="font-size:11.5px; color:var(--text-secondary); font-style:italic; margin-block-start:4px;">980 approved of 1,000 submitted</div>
+          </div>
+        </div>
+
+        <h4 style="margin-block:24px 12px; font-size:14px; font-weight:600;">Metric strip</h4>
+        <div class="metric-strip" style="margin-block-start:0;">
+          <div><div class="kpi-label">Open inspections</div><div class="kpi-value">248</div><div class="kpi-delta up">▲ 12 this week</div></div>
+          <div><div class="kpi-label">Overdue</div><div class="kpi-value">17</div><div class="kpi-delta down">▲ 3</div></div>
+          <div><div class="kpi-label">Compliance rate</div><div class="kpi-value">91.4%</div><div class="kpi-delta up">▲ 1.2%</div></div>
+          <div><div class="kpi-label">Avg. resolution</div><div class="kpi-value">4.2d</div></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px;">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Inspection detail</div><span class="badge badge-major"><span class="dot"></span>Major</span></div>
+            <div class="panel-body">
+              <dl class="desc">
+                <dt>Reference</dt><dd><span class="id-code">INS-2026-004821</span></dd>
+                <dt>Facility</dt><dd>Riyadh Central Depot</dd>
+                <dt>Inspector</dt><dd><span class="user-chip"><span class="avatar avatar-sm">HA</span>Huda Al-Amri</span></dd>
+                <dt>Due</dt><dd>12 Jul 2026</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="panel" style="padding:20px;">
+            <div class="panel-title" style="margin-block-end:14px;">Activity</div>
+            <ul class="timeline">
+              <li><span class="tl-dot is-accent"></span><div class="tl-title">Report submitted for review</div><div class="tl-meta">Huda Al-Amri · 2h ago</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">Evidence attached (6 photos)</div><div class="tl-meta">Huda Al-Amri · 3h ago</div></li>
+              <li><span class="tl-dot"></span><div class="tl-title">Inspection started</div><div class="tl-meta">Yesterday · 09:14</div></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABLE -->
+      <section id="table" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Tables</h2>
+        <div class="table-wrap" style="margin-block-start:20px;">
+          <div class="grid-toolbar">
+            <div class="input-affix" style="max-width:240px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" placeholder="Search"></div>
+            <span class="filter-chip is-set">Status: Open<button>×</button></span>
+            <span class="filter-chip">+ Facility</span>
+            <button class="btn btn-secondary btn-sm grow" style="flex:none; margin-inline-start:auto;">Export</button>
+          </div>
+          <table class="table">
+            <thead><tr><th style="width:34px;"></th><th>Reference</th><th>Facility</th><th>Inspector</th><th>Status</th><th class="cell-num">Findings</th><th>Due</th></tr></thead>
+            <tbody>
+              <tr class="is-selected"><td><input type="checkbox" checked style="accent-color:var(--action-primary);"></td><td><span class="id-code">INS-2026-004821</span></td><td>Riyadh Central Depot</td><td>Huda Al-Amri</td><td><span class="badge badge-major"><span class="dot"></span>Major</span></td><td class="cell-num">4</td><td>12 Jul</td></tr>
+              <tr><td><input type="checkbox" style="accent-color:var(--action-primary);"></td><td><span class="id-code">INS-2026-004822</span></td><td>Jeddah Port Terminal</td><td>Omar Nasser</td><td><span class="badge badge-compliant"><span class="dot"></span>Compliant</span></td><td class="cell-num">0</td><td>14 Jul</td></tr>
+              <tr><td><input type="checkbox" style="accent-color:var(--action-primary);"></td><td><span class="id-code">INS-2026-004823</span></td><td>Dammam Refinery</td><td>Sara Qahtani</td><td><span class="badge badge-critical"><span class="dot"></span>Critical</span></td><td class="cell-num">9</td><td>Overdue</td></tr>
+              <tr><td><input type="checkbox" style="accent-color:var(--action-primary);"></td><td><span class="id-code">INS-2026-004824</span></td><td>Medina Warehouse</td><td>Faisal Otaibi</td><td><span class="badge badge-pending"><span class="dot"></span>Pending</span></td><td class="cell-num">2</td><td>18 Jul</td></tr>
+            </tbody>
+          </table>
+          <div class="grid-footer"><span>4 of 248 inspections</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn is-active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div></div>
+        </div>
+      </section>
+
+      <!-- NAVIGATION -->
+      <section id="navigation" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Navigation</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:20px; align-items:start;">
+          <div class="panel" style="padding:20px; display:flex; flex-direction:column; gap:20px;">
+            <div class="breadcrumb"><a href="#navigation">Inspections</a><span class="sep">/</span><a href="#navigation">Riyadh Central Depot</a><span class="sep">/</span><span style="color:var(--text-primary);">INS-2026-004821</span></div>
+            <div class="tabs"><button class="tab is-active">Overview</button><button class="tab">Findings<span class="tab-count">4</span></button><button class="tab">Evidence<span class="tab-count">6</span></button><button class="tab">History</button></div>
+            <div class="steps"><div class="step is-done"><span class="step-dot">✓</span>Assigned</div><span class="step-line"></span><div class="step is-current"><span class="step-dot">2</span>In progress</div><span class="step-line"></span><div class="step"><span class="step-dot">3</span>Review</div></div>
+          </div>
+          <div style="border-radius:6px; overflow:hidden; border:1px solid var(--nav-border); height:400px;">
+            <div class="sidebar" style="height:100%; inline-size:100%;">
+              <div class="sidebar-brand" style="gap:10px;"><img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40"><img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32"></div>
+              <div class="sidebar-group">Operations</div>
+              <a class="nav-item is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="nav-label">Inspections</span><span class="nav-count">248</span></a>
+              <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span class="nav-label">Planning</span></a>
+              <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5.5 3.5 9.5 8 11 4.5-1.5 8-5.5 8-11V5z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span class="nav-label">Findings</span><span class="nav-count">17</span></a>
+              <div class="sidebar-group">Compliance</div>
+              <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 11h6M9 15h6"/></svg><span class="nav-label">Library</span></a>
+              <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="m8 12 3 3 6-6"/></svg><span class="nav-label">Approvals</span><span class="nav-count" style="background:var(--status-critical); color:#fff;">3</span></a>
+              <div style="margin-block-start:auto; padding:8px 0 4px; border-block-start:1px solid var(--nav-border);">
+                <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.36a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.64 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.64a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.36 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg><span class="nav-label">Administration</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Command bar</h4>
+        <div class="topbar" style="border:1px solid var(--border-subtle); border-radius:var(--radius-md); gap:10px; flex-wrap:wrap; height:auto; padding-block:10px;">
+          <button class="btn btn-ghost btn-icon" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+          <div class="input-affix" style="flex:0 1 300px; min-width:160px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search factories, visits, inspections…"></div>
+          <button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>Last 30 days</button>
+          <button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 6 6 10 6 13a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg>All regions</button>
+          <div class="grow"></div>
+          <span class="id-code" style="font-size:11px; color:var(--text-muted); white-space:nowrap;">Source refreshed 2 min ago · Access-controlled</span>
+          <div style="position:relative; display:inline-flex;"><button class="btn btn-ghost btn-icon" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button><span style="position:absolute; top:6px; inset-inline-end:6px; width:7px; height:7px; border-radius:50%; background:var(--status-critical); border:1.5px solid var(--surface-primary);"></span></div>
+          <button class="btn btn-icon" aria-label="AI assistant" style="background:var(--accent-soft); color:var(--accent-text); border-color:transparent;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/></svg></button>
+          <span class="avatar">AZ</span>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Page header</h4>
+        <div class="panel" style="padding:16px 20px;">
+          <div class="breadcrumb"><a href="#navigation">Inspections</a><span class="sep">/</span><a href="#navigation">Register</a><span class="sep">/</span><span style="color:var(--text-primary);">INS-2026-004821</span></div>
+          <div class="page-header" style="margin-block-start:10px;">
+            <div><h3 style="font-size:20px; font-weight:600;">Inspection INS-2026-004821</h3><div class="row" style="gap:10px; margin-block-start:6px;"><span class="id-code">INS-2026-004821</span><span class="badge badge-pending"><span class="dot"></span>Pending review</span></div></div>
+            <div class="row"><button class="btn btn-secondary">Reassign</button><button class="btn btn-primary">Submit</button></div>
+          </div>
+          <div class="tabs" style="margin-block-start:14px;"><button class="tab is-active">Overview</button><button class="tab">Findings<span class="tab-count">4</span></button><button class="tab">Evidence<span class="tab-count">6</span></button></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px; align-items:start;">
+          <div>
+            <h4 style="margin-block:16px 12px; font-size:14px; font-weight:600;">Command palette</h4>
+            <div class="palette" style="width:100%; box-shadow:var(--shadow-md);">
+              <div class="palette-input"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="width:18px;height:18px;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search or run a command"></div>
+              <div class="palette-list">
+                <div class="menu-label">Actions</div>
+                <button class="palette-item is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;"><path d="M12 5v14M5 12h14"/></svg>New inspection<span class="kbd">N</span></button>
+                <button class="palette-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;"><path d="M16 21v-2a4 4 0 0 0-8 0v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8"/></svg>Assign inspector<span class="kbd">A</span></button>
+                <div class="menu-label">Inspections</div>
+                <button class="palette-item"><span class="id-code" style="font-size:11.5px;">INS-2026-004821</span> — Al Noor Food Processing</button>
+              </div>
+            </div>
+          </div>
+          <div class="stack" style="gap:16px;">
+            <div>
+              <h4 style="margin-block:16px 12px; font-size:14px; font-weight:600;">User menu</h4>
+              <div class="menu" style="position:static; box-shadow:var(--shadow-md);">
+                <div style="padding:8px 10px; border-block-end:1px solid var(--border-subtle); display:flex; gap:10px; align-items:center;"><span class="avatar avatar-lg">FA</span><div><div style="font-weight:600; font-size:13px;">Faisal Al-Harbi</div><div class="t-caption">Supervisor</div></div></div>
+                <button class="menu-item">Profile</button>
+                <button class="menu-item">Preferences</button>
+                <hr class="menu-sep">
+                <button class="menu-item is-danger">Sign out</button>
+              </div>
+            </div>
+            <div>
+              <h4 style="margin-block:16px 12px; font-size:14px; font-weight:600;">Column manager</h4>
+              <div class="menu" style="position:static; box-shadow:var(--shadow-md);">
+                <div class="menu-label">Columns</div>
+                <label class="menu-item"><input type="checkbox" checked disabled style="accent-color:var(--action-primary);">Reference<span class="t-caption" style="margin-inline-start:auto;">Pinned</span></label>
+                <label class="menu-item"><input type="checkbox" checked style="accent-color:var(--action-primary);">Facility</label>
+                <label class="menu-item"><input type="checkbox" checked style="accent-color:var(--action-primary);">Inspector</label>
+                <label class="menu-item"><input type="checkbox" style="accent-color:var(--action-primary);">Region</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEEDBACK -->
+      <section id="feedback" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Feedback</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:20px; align-items:start;">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="alert alert-critical"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><div><div class="alert-title">Critical finding overdue</div>Immediate-danger finding at Dammam Refinery is 3 days past due.</div></div>
+            <div class="alert alert-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><div>Two inspections approach their due date this week.</div></div>
+            <div class="alert alert-success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><div>Report accepted and archived.</div></div>
+            <div class="alert alert-immutable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><div>This audit record is immutable once submitted.</div></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="toast"><i class="toast-accent" style="background:var(--status-compliant);"></i><div><div style="font-weight:600;">Saved</div><div style="color:var(--text-secondary);">Draft saved to this device.</div></div></div>
+            <div class="progress"><i style="width:64%;"></i></div>
+            <div style="display:flex; gap:10px; align-items:center;"><div class="skeleton" style="width:36px; height:36px; border-radius:50%;"></div><div style="flex:1; display:flex; flex-direction:column; gap:6px;"><div class="skeleton" style="height:10px; width:60%;"></div><div class="skeleton" style="height:10px; width:40%;"></div></div></div>
+            <div class="menu" style="position:static; box-shadow:var(--shadow-md);"><div class="menu-label">Actions</div><button class="menu-item">Assign inspector</button><button class="menu-item is-selected">Mark reviewed</button><hr class="menu-sep"><button class="menu-item is-danger">Reject</button></div>
+          </div>
+        </div>
+        <div class="panel empty" style="margin-block-start:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><div class="empty-title">No findings recorded</div><p>This inspection has no findings yet. Add the first observation to begin the report.</p><button class="btn btn-primary btn-sm">Add finding</button></div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Sync &amp; offline status</h4>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <span class="badge badge-compliant"><span class="dot"></span>Synced</span>
+          <span class="badge badge-info"><span class="dot"></span>Syncing…</span>
+          <span class="badge badge-pending"><span class="dot"></span>Offline · 3 changes queued</span>
+          <span class="badge badge-critical"><span class="dot"></span>Sync conflict</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px; align-items:start;">
+          <div>
+            <h4 style="margin-block:12px 12px; font-size:14px; font-weight:600;">Version diff / conflict</h4>
+            <div class="panel" style="overflow:hidden;">
+              <div class="panel-header" style="padding-block:8px;"><div class="panel-title" style="font-size:13px;">Cold-room 2 temperature</div><span class="t-caption">Edited offline · A. Al-Zahrani 13:41</span></div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; font-size:13px;">
+                <div style="padding:12px 16px; background:var(--status-critical-soft); color:var(--status-critical-text); border-inline-end:1px solid var(--border-subtle);"><div class="t-label" style="color:inherit; opacity:0.75;">Before</div><span style="text-decoration:line-through;">7.4°C</span></div>
+                <div style="padding:12px 16px; background:var(--status-compliant-soft); color:var(--status-compliant-text);"><div class="t-label" style="color:inherit; opacity:0.75;">After</div>9.1°C</div>
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap:8px; padding:10px 16px; border-block-start:1px solid var(--border-subtle);"><button class="btn btn-secondary btn-sm">Keep mine</button><button class="btn btn-primary btn-sm">Keep server</button></div>
+            </div>
+          </div>
+          <div>
+            <h4 style="margin-block:12px 12px; font-size:14px; font-weight:600;">Accordion</h4>
+            <div class="accordion">
+              <details open><summary>Inspection scope</summary><div class="accordion-body t-compact" style="color:var(--text-secondary);">Fire safety, electrical and structural checks across warehouses A–C.</div></details>
+              <details><summary>Corrective actions</summary><div class="accordion-body t-compact" style="color:var(--text-secondary);">Two open actions with a 14-day remediation window.</div></details>
+              <details><summary>Attachments</summary><div class="accordion-body t-compact" style="color:var(--text-secondary);">6 photos, 1 PDF permit.</div></details>
+            </div>
+            <h4 style="margin-block:20px 12px; font-size:14px; font-weight:600;">Tooltip &amp; popover</h4>
+            <div style="display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap;">
+              <div style="position:relative; padding-block-start:30px;"><span class="tooltip" style="position:absolute; top:0; inset-inline-start:0;">Overdue by 2 days</span><button class="btn btn-secondary btn-sm">Hover target</button></div>
+              <div class="popover" style="position:static; max-width:220px;"><div class="t-label" style="margin-block-end:4px;">Assign inspector</div><div class="t-caption">Pick a certified inspector for this region.</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OVERLAYS -->
+      <section id="overlays" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Overlays</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:60ch;">Modal dialogs and the side drawer float above the app on <span class="id-code">--surface-raised</span>, over a dimmed <span class="id-code">--surface-overlay</span> backdrop.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:20px; align-items:start;">
+          <div style="position:relative; height:260px; border-radius:var(--radius-md); overflow:hidden; background:var(--surface-overlay); display:grid; place-items:center; border:1px solid var(--border-subtle);">
+            <div class="dialog" style="width:min(360px,90%);">
+              <div class="dialog-title">Reject inspection?</div>
+              <div class="dialog-body">The inspector will be asked to revise and resubmit. A reason is required.</div>
+              <div class="dialog-actions"><button class="btn btn-ghost">Cancel</button><button class="btn btn-danger">Reject</button></div>
+            </div>
+          </div>
+          <div style="position:relative; height:260px; border-radius:var(--radius-md); overflow:hidden; background:var(--surface-overlay); border:1px solid var(--border-subtle);">
+            <div class="drawer" style="position:absolute; box-shadow:none;">
+              <div class="drawer-header"><div class="panel-title" style="font-size:14px;">Finding detail</div><button class="btn btn-ghost btn-sm btn-icon" aria-label="Close">✕</button></div>
+              <div class="drawer-body stack" style="gap:12px;">
+                <span class="badge badge-critical"><span class="dot"></span>Critical</span>
+                <div style="font-weight:600;">Blocked emergency exit — warehouse B</div>
+                <div class="t-caption">Requirement: Civil Defense Code 4.2.1</div>
+                <button class="btn btn-secondary btn-sm">Add corrective action</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INSPECTION DOMAIN -->
+      <section id="inspection" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <div style="font-size:11.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--action-primary); margin-block-end:8px;">Domain</div>
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Inspection domain</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:62ch;">Components composed specifically for inspection work — cards, findings, checklist, compliance, review, evidence and the immutable audit trail.</p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-block-start:20px;">
+          <div class="panel" style="padding:16px;">
+            <div class="t-label" style="margin-block-end:12px;">Severity indicator</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <span class="row" style="gap:8px;"><span style="display:inline-flex; gap:2px; align-items:flex-end;"><i style="width:4px; height:7px; background:var(--status-critical);"></i><i style="width:4px; height:11px; background:var(--status-critical);"></i><i style="width:4px; height:15px; background:var(--status-critical);"></i><i style="width:4px; height:19px; background:var(--status-critical);"></i></span><span style="font-size:13px; font-weight:500; color:var(--status-critical-text);">Critical</span></span>
+              <span class="row" style="gap:8px;"><span style="display:inline-flex; gap:2px; align-items:flex-end;"><i style="width:4px; height:7px; background:var(--status-major);"></i><i style="width:4px; height:11px; background:var(--status-major);"></i><i style="width:4px; height:15px; background:var(--status-major);"></i><i style="width:4px; height:19px; background:var(--border-subtle);"></i></span><span style="font-size:13px; font-weight:500; color:var(--status-major-text);">Major</span></span>
+              <span class="row" style="gap:8px;"><span style="display:inline-flex; gap:2px; align-items:flex-end;"><i style="width:4px; height:7px; background:var(--status-warning);"></i><i style="width:4px; height:11px; background:var(--status-warning);"></i><i style="width:4px; height:15px; background:var(--border-subtle);"></i><i style="width:4px; height:19px; background:var(--border-subtle);"></i></span><span style="font-size:13px; font-weight:500; color:var(--status-warning-text);">Warning</span></span>
+              <span class="row" style="gap:8px;"><span style="display:inline-flex; gap:2px; align-items:flex-end;"><i style="width:4px; height:7px; background:var(--status-pending);"></i><i style="width:4px; height:11px; background:var(--border-subtle);"></i><i style="width:4px; height:15px; background:var(--border-subtle);"></i><i style="width:4px; height:19px; background:var(--border-subtle);"></i></span><span style="font-size:13px; font-weight:500; color:var(--text-secondary);">Minor</span></span>
+            </div>
+          </div>
+          <div class="panel" style="padding:16px;">
+            <div class="t-label" style="margin-block-end:12px;">Due date</div>
+            <div class="stack" style="gap:10px;">
+              <span style="color:var(--status-critical-text); font-weight:500; font-size:13px;">Overdue by 2 days · 24 Jul</span>
+              <span style="color:var(--status-warning-text); font-weight:500; font-size:13px;">Due in 3 days · 27 Jul</span>
+              <span style="color:var(--text-secondary); font-size:13px;">Due 12 Aug</span>
+            </div>
+          </div>
+          <div class="panel" style="padding:16px; display:flex; gap:14px; align-items:center;">
+            <div>
+              <div class="t-label" style="margin-block-end:12px;">Compliance score</div>
+              <svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="none" stroke="var(--surface-sunken)" stroke-width="6"/><circle cx="32" cy="32" r="27" fill="none" stroke="var(--status-warning)" stroke-width="6" stroke-dasharray="169.6" stroke-dashoffset="37" transform="rotate(-90 32 32)" stroke-linecap="round"/><text x="50%" y="55%" text-anchor="middle" style="font:600 15px var(--font-body); fill:var(--text-primary);">78%</text></svg>
+            </div>
+            <span class="badge badge-warning"><span class="dot"></span>Needs attention</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:16px; align-items:start;">
+          <div class="stack" style="gap:16px;">
+            <div class="panel" style="padding:14px 16px; display:flex; flex-direction:column; gap:8px;">
+              <div class="row" style="justify-content:space-between;"><span class="id-code">INS-2026-004821</span><span class="badge badge-pending"><span class="dot"></span>Pending</span></div>
+              <div style="font-weight:600; font-size:15px;">Al Noor Food Processing</div>
+              <div class="row t-meta" style="justify-content:space-between;"><span>Food safety · A. Al-Zahrani</span><span style="color:var(--status-warning-text); font-weight:500;">Due 24 Jul</span></div>
+            </div>
+            <div class="panel" style="padding:16px;">
+              <div class="t-label" style="margin-block-end:10px;">Checklist question</div>
+              <div class="row" style="align-items:flex-start; gap:8px;"><span class="id-code" style="min-width:26px;">4.2</span><span style="font-weight:500; font-size:13px;">Emergency exits unobstructed and signposted</span></div>
+              <div class="row" style="margin-block-start:10px; padding-inline-start:34px; gap:8px; flex-wrap:wrap;"><div class="seg"><button class="seg-opt">Compliant</button><button class="seg-opt" aria-pressed="true" style="background:var(--status-critical-soft); color:var(--status-critical-text);">Violation</button><button class="seg-opt">N/A</button></div><button class="btn btn-ghost btn-sm">Evidence (3)</button></div>
+            </div>
+          </div>
+          <div class="stack" style="gap:16px;">
+            <div class="panel" style="border-inline-start:3px solid var(--status-critical);">
+              <div class="panel-header" style="padding-block:8px;"><span class="row"><span class="t-label" style="text-transform:uppercase; letter-spacing:0.05em;">Violation</span><span class="id-code">VIO-2026-0122</span></span><span class="row" style="gap:6px; font-size:12px; font-weight:500; color:var(--status-critical-text);"><span style="display:inline-flex; gap:2px; align-items:flex-end;"><i style="width:4px; height:10px; background:var(--status-critical);"></i><i style="width:4px; height:13px; background:var(--status-critical);"></i><i style="width:4px; height:16px; background:var(--status-critical);"></i></span>Critical</span></div>
+              <div class="panel-body stack" style="gap:6px; padding-block:10px;"><div style="font-weight:600;">Blocked emergency exit — warehouse B</div><div class="t-caption">Requirement: Civil Defense Code 4.2.1</div><div class="row t-meta" style="gap:16px;"><span>Due 28 Jul</span><span>3 evidence items</span></div><div class="row"><button class="btn btn-secondary btn-sm">Add corrective action</button></div></div>
+            </div>
+            <div class="panel"><div class="panel-header"><span class="panel-title">Supervisor review</span></div><div class="panel-body stack" style="gap:10px;"><div class="field"><label>Decision note<span class="req">*</span></label><textarea class="input" placeholder="Required for rejection or escalation"></textarea></div><div class="row" style="justify-content:flex-end;"><button class="btn btn-secondary">Escalate</button><button class="btn btn-danger" disabled>Reject</button><button class="btn btn-primary">Approve</button></div></div></div>
+          </div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Evidence</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;">
+          <div class="panel" style="padding:14px 16px;">
+            <div class="row" style="gap:12px; align-items:flex-start;">
+              <div style="width:56px; height:56px; border-radius:3px; background:var(--surface-sunken); border:1px solid var(--border-subtle); display:grid; place-items:center; color:var(--text-disabled); flex:none;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div class="stack" style="gap:2px; min-width:0;">
+                <div class="row" style="justify-content:space-between; gap:8px;"><span style="font-weight:500; font-size:13px;">Blocked exit, warehouse B</span><span class="badge badge-compliant" style="height:18px;"><span class="dot"></span>Verified</span></div>
+                <div class="t-caption">20 Jul 13:58 · A. Al-Zahrani</div>
+                <div class="t-caption id-code">24.7136° N, 46.6753° E</div>
+                <div class="t-caption">Linked <span class="id-code">VIO-2026-0122</span> · TAB-114 · SHA-256 sealed</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+            <div><div style="aspect-ratio:1; border-radius:3px; background:var(--surface-sunken); border:1px solid var(--border-subtle); display:grid; place-items:center; color:var(--text-disabled);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div><div class="t-caption" style="margin-block-start:4px;">13:58</div></div>
+            <div><div style="aspect-ratio:1; border-radius:3px; background:var(--surface-sunken); border:1px solid var(--border-subtle); display:grid; place-items:center; color:var(--text-disabled);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div><div class="t-caption" style="margin-block-start:4px;">14:02</div></div>
+            <div><div style="aspect-ratio:1; border-radius:3px; background:var(--surface-sunken); border:1px solid var(--border-subtle); display:grid; place-items:center; color:var(--text-disabled);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="t-caption" style="margin-block-start:4px;">Permit.pdf</div></div>
+          </div>
+        </div>
+
+        <h4 style="margin-block:28px 12px; font-size:14px; font-weight:600;">Audit trail (immutable)</h4>
+        <div class="panel" style="padding:20px;">
+          <ul class="timeline">
+            <li><span class="tl-dot is-accent"></span><div class="tl-title">Approved by F. Al-Harbi</div><div class="tl-meta">12 Jul 09:14</div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">Submitted for review by A. Al-Zahrani</div><div class="tl-meta">11 Jul 17:02</div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">Finding VIO-2026-0122 recorded</div><div class="tl-meta">11 Jul 14:20</div></li>
+            <li><span class="tl-dot"></span><div class="tl-title">Inspection assigned</div><div class="tl-meta">10 Jul 08:00</div></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PATTERNS -->
+      <section id="patterns" data-spy class="ds-sec" style="padding-block:40px; border-block-end:1px solid var(--border-subtle);">
+        <div style="font-size:11.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--action-primary); margin-block-end:8px;">Signature patterns</div>
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Inspection patterns</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:60ch;">Patterns original to SAQEEL: the Status Spine, the Exception Rail severity grammar, and status-coloured map markers.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-block-start:20px; align-items:start;">
+          <div class="panel" style="padding:24px;">
+            <h4 style="font-size:14px; font-weight:600; margin-block-end:16px;">Inspection Status Spine</h4>
+            <ul class="spine">
+              <li class="spine-node is-done"><span class="spine-dot">✓</span><div class="spine-body"><div class="spine-title">Assigned</div><div class="spine-meta">Huda Al-Amri · 10 Jul</div></div></li>
+              <li class="spine-node is-done"><span class="spine-dot">✓</span><div class="spine-body"><div class="spine-title">Field inspection complete</div><div class="spine-meta">11 Jul · 6 findings</div></div></li>
+              <li class="spine-node is-current"><span class="spine-dot">●</span><div class="spine-body"><div class="spine-title">Awaiting supervisor review</div><div class="spine-meta">Submitted 2h ago</div></div></li>
+              <li class="spine-node is-blocked"><span class="spine-dot">!</span><div class="spine-body"><div class="spine-title">Correction requested</div><div class="spine-meta">Blocked — evidence missing</div></div></li>
+              <li class="spine-node"><span class="spine-dot"></span><div class="spine-body"><div class="spine-title">Closed</div><div class="spine-meta">Pending</div></div></li>
+            </ul>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="panel" style="padding:24px;">
+              <h4 style="font-size:14px; font-weight:600; margin-block-end:14px;">Exception Rail — severity grammar</h4>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <span class="exc exc-critical"><span class="exc-mark"></span>Critical — immediate danger</span>
+                <span class="exc exc-major"><span class="exc-mark"></span>Major — escalation required</span>
+                <span class="exc exc-warning"><span class="exc-mark"></span>Warning — attention needed</span>
+                <span class="exc exc-onhold"><span class="exc-mark"></span>On hold — deliberately paused</span>
+                <span class="exc exc-completed"><span class="exc-mark"></span>Completed — closed, terminal</span>
+              </div>
+            </div>
+            <div class="panel" style="padding:24px;">
+              <h4 style="font-size:14px; font-weight:600; margin-block-end:16px;">Map markers</h4>
+              <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
+                <div class="map-marker" style="background:var(--status-critical);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4M12 17h.01"/></svg></div>
+                <div class="map-marker" style="background:var(--status-warning);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v5"/></svg></div>
+                <div class="map-marker" style="background:var(--status-compliant);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <div class="map-cluster">24</div>
+                <div class="map-panel" style="padding:8px 12px;"><div class="map-legend-row"><span class="swatch" style="background:var(--status-critical);"></span>Critical zone</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAP WORKSPACE -->
+      <section id="map" data-spy class="ds-sec" style="padding-block:40px;">
+        <div style="font-size:11.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--action-primary); margin-block-end:8px;">Signature patterns</div>
+        <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em;">Map workspace</h2>
+        <p style="margin-block-start:6px; font-size:14px; color:var(--text-secondary); max-width:62ch;">The Geospatial Command Workspace — SAQEEL's strongest signature. The basemap is never tinted; controls float on <span class="id-code">--map-panel</span>, zones use <span class="id-code">--map-zone-*</span>, and markers are status-coloured with white keylines. It re-themes for dark mode without inverting the map.</p>
+
+        <div style="margin-block-start:20px; position:relative; height:440px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); overflow:hidden; background:linear-gradient(120deg, var(--surface-sunken), var(--surface-secondary) 55%, var(--surface-sunken));">
+          <!-- basemap grid + roads + zone -->
+          <div style="position:absolute; inset:0; background-image:repeating-linear-gradient(0deg, transparent, transparent 39px, color-mix(in srgb, var(--border-subtle) 70%, transparent) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, color-mix(in srgb, var(--border-subtle) 70%, transparent) 40px);"></div>
+          <svg style="position:absolute; inset:0; width:100%; height:100%;" viewBox="0 0 900 440" preserveAspectRatio="none"><path d="M0 280 C160 250 260 320 430 290 S 740 220 900 255" fill="none" stroke="var(--border-strong)" stroke-width="16" opacity="0.55"/><path d="M300 0 C312 130 288 260 330 440" fill="none" stroke="var(--border-strong)" stroke-width="11" opacity="0.5"/><path d="M540 60 l200 55 26 120 -160 40 -92 -80 z" fill="var(--map-zone-fill)" stroke="var(--map-zone-stroke)" stroke-width="1.5" stroke-dasharray="5 4"/></svg>
+
+          <!-- centered toolbar -->
+          <div class="map-panel row" style="position:absolute; top:12px; left:50%; transform:translateX(-50%); padding:4px; gap:4px; z-index:2;">
+            <div class="input-affix" style="width:240px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" placeholder="Search zones or facilities" style="height:28px; border-color:transparent; background:transparent;"></div>
+            <button class="btn btn-secondary btn-sm">Filters</button>
+            <button class="btn btn-primary btn-sm">Assign area</button>
+          </div>
+
+          <!-- layers + legend panel -->
+          <div class="map-panel" style="position:absolute; top:62px; inset-inline-start:12px; width:190px; padding:12px; z-index:2;">
+            <div class="t-label" style="margin-block-end:8px;">Layers</div>
+            <div class="stack" style="gap:8px; margin-block-end:12px;">
+              <label class="switch" style="font-size:12px;"><input type="checkbox" checked>Facilities</label>
+              <label class="switch" style="font-size:12px;"><input type="checkbox" checked>Inspection zones</label>
+              <label class="switch" style="font-size:12px;"><input type="checkbox">Field vehicles</label>
+            </div>
+            <div class="t-label" style="margin-block-end:6px;">Legend</div>
+            <div class="stack" style="gap:5px;">
+              <div class="map-legend-row"><span class="swatch" style="background:var(--status-critical);"></span>Critical finding</div>
+              <div class="map-legend-row"><span class="swatch" style="background:var(--status-warning);"></span>Due soon</div>
+              <div class="map-legend-row"><span class="swatch" style="background:var(--status-compliant);"></span>Compliant</div>
+              <div class="map-legend-row"><span class="swatch" style="background:var(--status-info);"></span>Vehicle</div>
+            </div>
+          </div>
+
+          <!-- selected-context panel -->
+          <div class="map-panel" style="position:absolute; top:62px; inset-inline-end:12px; width:236px; padding:0; z-index:2; overflow:hidden;">
+            <div style="padding:12px 14px; border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <div class="t-label" style="color:var(--text-primary); font-weight:600;">Selected inspection</div>
+              <span class="badge badge-critical"><span class="dot"></span>Critical</span>
+            </div>
+            <div style="padding:12px 14px;">
+              <dl class="desc" style="grid-template-columns:auto 1fr; gap:6px 12px; font-size:12px;">
+                <dt>Reference</dt><dd><span class="id-code" style="font-size:11.5px;">INS-2026-004823</span></dd>
+                <dt>Facility</dt><dd>Dammam Refinery</dd>
+                <dt>Findings</dt><dd>9 open</dd>
+                <dt>Location</dt><dd><span class="id-code" style="font-size:11.5px;">26.4207° N, 50.0888° E</span></dd>
+              </dl>
+              <button class="btn btn-primary btn-sm btn-block" style="margin-block-start:12px;">Open inspection</button>
+            </div>
+          </div>
+
+          <!-- markers -->
+          <span class="map-marker" style="background:var(--status-critical); position:absolute; top:210px; inset-inline-start:330px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+          <span class="map-marker" style="background:var(--status-warning); position:absolute; top:300px; inset-inline-start:250px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+          <span class="map-marker" style="background:var(--status-compliant); position:absolute; top:280px; inset-inline-start:470px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+          <span class="map-marker" style="background:var(--status-info); position:absolute; top:230px; inset-inline-start:560px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17V8h9l4 4h3v5M6 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg></span>
+          <span class="map-cluster" style="position:absolute; top:150px; inset-inline-start:640px;">24</span>
+
+          <!-- zoom / locate stack -->
+          <div class="map-panel" style="position:absolute; bottom:12px; inset-inline-end:12px; display:flex; flex-direction:column; padding:2px; gap:2px; z-index:2;">
+            <button class="btn btn-ghost btn-sm btn-icon" aria-label="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button class="btn btn-ghost btn-sm btn-icon" aria-label="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+            <button class="btn btn-ghost btn-sm btn-icon" aria-label="Locate me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+          </div>
+
+          <!-- scale note -->
+          <div style="position:absolute; bottom:12px; inset-inline-start:12px; font-size:11px; color:var(--text-muted); background:var(--map-panel); padding:3px 8px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">Riyadh Province · 1:120,000</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;emerald&quot;,&quot;options&quot;:[&quot;emerald&quot;,&quot;steel&quot;,&quot;indigo&quot;],&quot;tsType&quot;:&quot;'emerald'|'steel'|'indigo'&quot;,&quot;section&quot;:&quot;Feel&quot;},&quot;character&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;rounded&quot;,&quot;options&quot;:[&quot;rounded&quot;,&quot;precise&quot;],&quot;tsType&quot;:&quot;'rounded'|'precise'&quot;,&quot;section&quot;:&quot;Feel&quot;},&quot;elevation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;lifted&quot;,&quot;options&quot;:[&quot;lifted&quot;,&quot;flat&quot;],&quot;tsType&quot;:&quot;'lifted'|'flat'&quot;,&quot;section&quot;:&quot;Feel&quot;}}">
+class Component extends DCLogic {
+  state = { theme: 'light', dir: 'ltr', density: 'comfortable' };
+
+  renderVals() {
+    const s = this.state;
+    const set = (k) => (v) => this.setState({ [k]: v });
+    return {
+      theme: s.theme, dir: s.dir, density: s.density,
+      accent: this.props.accent ?? 'emerald',
+      character: this.props.character ?? 'rounded',
+      elevation: this.props.elevation ?? 'lifted',
+      isLight: s.theme === 'light', isDark: s.theme === 'dark',
+      isLtr: s.dir === 'ltr', isRtl: s.dir === 'rtl',
+      isComfortable: s.density === 'comfortable', isCompact: s.density === 'compact', isField: s.density === 'field',
+      setLight: () => set('theme')('light'), setDark: () => set('theme')('dark'),
+      setLtr: () => set('dir')('ltr'), setRtl: () => set('dir')('rtl'),
+      setComfortable: () => set('density')('comfortable'),
+      setCompact: () => set('density')('compact'),
+      setField: () => set('density')('field'),
+    };
+  }
+
+  componentDidMount() {
+    const root = this.el || document;
+    const scroller = root.querySelector('main');
+    const sections = Array.from(root.querySelectorAll('[data-spy]'));
+    const links = Array.from(root.querySelectorAll('[data-spy-link]'));
+    if (!scroller || !sections.length) return;
+    const activate = (id) => {
+      links.forEach((a) => a.classList.toggle('is-active', a.getAttribute('href') === '#' + id));
+    };
+    const io = new IntersectionObserver((entries) => {
+      const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis[0]) activate(vis[0].target.id);
+    }, { root: scroller, rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+    sections.forEach((s) => io.observe(s));
+    this._io = io;
+    activate('overview');
+  }
+
+  componentWillUnmount() { if (this._io) this._io.disconnect(); }
+}
+</script>
+</body>
+</html>

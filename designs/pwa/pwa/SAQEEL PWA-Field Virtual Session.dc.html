@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .vs-wrap { max-width:900px; width:100%; margin:0 auto; padding:16px 18px 130px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:15px 16px; display:flex; flex-direction:column; gap:12px; }
+  .vs-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; flex-wrap:wrap; }
+  .vs-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:11.5px; padding:7px 11px; cursor:pointer; color:var(--text-secondary); border-inline-end:1px solid var(--border-input); }
+  .vs-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .vs-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .vs-path { display:flex; gap:6px; flex-wrap:wrap; }
+  .vs-node { display:flex; align-items:center; gap:6px; font-size:12px; padding:6px 10px; border-radius:999px; background:var(--surface-sunken); color:var(--text-muted); }
+  .vs-node.done { color:var(--status-compliant-text); } .vs-node.now { background:var(--accent-soft); color:var(--accent-text); font-weight:600; }
+  .vs-ndot { width:8px; height:8px; border-radius:50%; background:currentColor; flex:none; }
+  .vs-link { display:flex; gap:10px; padding:10px 0; border-block-end:1px solid var(--border-subtle); }
+  .vs-link:last-child { border-block-end:0; }
+  .vs-ln { width:22px; height:22px; border-radius:50%; background:var(--surface-sunken); display:grid; place-items:center; font-size:11px; font-weight:700; flex:none; color:var(--text-secondary); }
+  .vs-room { height:170px; border:1px dashed var(--border-strong); border-radius:12px; background:var(--surface-sunken); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--text-muted); }
+  .vs-in { height:var(--control-h-md); padding-inline:var(--space-3); background:var(--surface-primary); color:var(--text-primary); border:1.5px solid var(--border-input); border-radius:var(--radius-md); font:inherit; width:120px; text-align:center; letter-spacing:.3em; font-family:var(--font-mono); }
+  .vs-h { margin:0; font-size:15px; font-weight:600; }
+  .vs-k { font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); align-self:flex-start; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.3;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ stateLabel }}</span>
+    <button class="vs-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="vs-wrap">
+    <div class="card" style="gap:9px;">
+      <span class="vs-k">{{ t.demoLabel }}</span>
+      <div class="vs-seg"><sc-for list="{{ stateTabs }}" as="s" hint-placeholder-count="6"><button aria-pressed="{{ s.active }}" onClick="{{ s.go }}">{{ s.label }}</button></sc-for></div>
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <label class="check" style="display:flex; gap:8px; align-items:center; font-size:12.5px;"><input type="checkbox" checked="{{ online }}" onChange="{{ toggleOnline }}"> <span>{{ t.online }}</span></label>
+        <label class="check" style="display:flex; gap:8px; align-items:center; font-size:12.5px;"><input type="checkbox" checked="{{ stale }}" onChange="{{ toggleStale }}"> <span>{{ t.staleTgl }}</span></label>
+        <label class="check" style="display:flex; gap:8px; align-items:center; font-size:12.5px;"><input type="checkbox" checked="{{ sim }}" onChange="{{ toggleSim }}"> <span>{{ t.simTgl }}</span></label>
+      </div>
+    </div>
+
+    {{ banners }}
+
+    <div class="card">
+      <h3 class="vs-h">{{ t.statePath }}</h3>
+      <div class="vs-path">{{ pathNodes }}</div>
+    </div>
+
+    <div class="card">
+      <h3 class="vs-h">{{ t.contract }}</h3>
+      <p class="t-caption" style="margin:0;">{{ t.contractHint }}</p>
+      {{ links }}
+    </div>
+
+    {{ participantsCard }}
+    {{ roomCard }}
+    {{ closeCard }}
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:10px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge {{ nextBadgeClass }}"><span class="dot"></span>{{ nextWhy }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary" aria-disabled="{{ reschedDisabled }}" style="{{ reschedStyle }}">{{ t.reschedule }}</button>
+    <button class="btn btn-primary" aria-disabled="{{ nextDisabled }}" style="{{ nextStyle }}" onClick="{{ onNext }}">{{ nextLabel }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:1180}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", sState:"waiting", repJoined:true, repVerified:false,
+    otpSent:false, otpCode:"", otpMsg:"", attempts:0, resends:0, locked:false, exhausted:false,
+    online:true, stale:false, sim:false, devCode:"" };
+
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const t = ar ? {
+      back:"رجوع", headerTitle:"جلسة تفتيش عن بُعد", headerSub:"شركة الأمل لتدريب العمال", theme:"الوضع", langBtnLabel:"EN",
+      demoLabel:"حالة الجلسة (عرض)", online:"متصل", staleTgl:"تغيّر متزامن (قديم)", simTgl:"مزوّد تجريبي (محاكاة)",
+      statePath:"مسار حالة الجلسة", contract:"عقد الجاهزية", contractHint:"سلسلة أدلة مرتبة تُفضي إلى إجراء تالٍ واحد محكوم.",
+      s_scheduled:"مجدولة", s_waiting:"غرفة الانتظار", s_joined:"انضم", s_verified:"تم التحقق", s_inprogress:"قيد التنفيذ", s_closed:"مغلقة",
+      l_appt:"الموعد والنطاق", l_time:"التوقيت", l_part:"المشاركون والهوية", l_state:"الحالة", l_trans:"الانتقال", l_fb:"البديل",
+      ready:"جاهز", pending:"قيد الانتظar", missing:"ناقص", blocked:"محظور",
+      factory:"المنشأة", pkg:"الحزمة", appt:"الموعد المخزّن",
+      apptVal:"تقرير زيارة · نسخة 3", apptTime:"2026-07-23 10:00", scopeOk:"النطاق مطابق", tzNote:"يُعرض التوقيت كما هو مخزّن (لا يوجد ضبط منطقة زمنية مخدوم).",
+      partHint:"يجب التحقق من هوية ممثل المنشأة عبر OTP قبل بدء التفتيش (لا تجاوز).",
+      inspector:"المفتش", rep:"ممثل المنشأة", joined:"انضم — بانتظار التحقق", notJoined:"لم ينضم", verified:"تم التحقق",
+      markJoined:"تسجيل الانضمام", sendOtp:"إرسال رمز", resendOtp:"إعادة الإرسال", devCode:"رمز التطوير", code:"الرمز", verify:"تحقّق",
+      otpSent:"أُرسل الرمز · {n} محاولات إعادة متبقية", otpVerified:"تم التحقق من الهوية.", otpWrong:"رمز خاطئ · {n} محاولات متبقية", otpLocked:"مقفل — أعد الإرسال أو صعّد.", otpExhausted:"استُنفدت الإعادة — تحقّق يدوي معتمد من المشرف (استثناء مُدقّق).",
+      counters:"المحاولات {a}/{b} · الإعادة {c}/{d}", provRelease:"الإرسال عبر Unifonic في الإصدار؛ حالياً وحدة تطوير.",
+      roomH:"غرفة الجلسة", roomTag:"محكومة", roomPending:"محوّل المزوّد قيد الإعداد — لا سطح مكالمة.", roomBody:"لا يُرسم فيديو وهمي. عند توفر عقد المزوّد يُفتح المزوّد المُهيّأ.", simBadge:"جلسة محاكاة — لا اتصال حقيقي",
+      roomContinue:"عند البدء يُحوَّل المفتش إلى محرّك التنفيذ المشترك (نفس الحزمة والبنود والأدلة والإرسال كالميداني).",
+      fbH:"البديل", fbBody:"عند تعذّر المزوّد: إعادة/إعادة جدولة/تصعيد — دون تجاوز. أو التحويل لزيارة ميدانية.",
+      noOnway:"لا يوجد «في الطريق» ولا «وصل» — لا حضور مادي في الزيارة عن بُعد.",
+      begin:"بدء التفتيش عن بُعد", beginGated:"تحقّق من المشاركين أولاً", openWaiting:"فتح غرفة الانتظar", continueExec:"متابعة إلى التنفيذ", reschedule:"إعادة جدولة",
+      closeH:"إغلاق الجلسة", closeReason:"سبب الإغلاق", closeComment:"تعليقات", closeSubmit:"إغلاق الجلسة", closeReq:"السبب إلزامي.",
+      immutableTitle:"الجلسة مغلقة", immutableBody:"للقراءة فقط — يُحفظ السبب؛ المتابعة تسليم إلى المحرّك المشترك.",
+      offlineTitle:"غير متصل", offlineBody:"الإجراءات المُغيِّرة معطّلة؛ لا شيء في قائIn الانتظار.", staleTitle:"تغيّر متزامن", staleBody:"رفض الحارس الكتابة — أعد التحميل لعرض الحالة الحقيقية.", reload:"إعادة تحميل",
+      nextReady:"جاهز للانتقال", transHint:"إجراء واحد محكوم متاح.",
+    } : {
+      back:"Back", headerTitle:"Remote inspection session", headerSub:"Al-Amal Worker Training Co.", theme:"Theme", langBtnLabel:"AR",
+      demoLabel:"Session state (demo)", online:"Online", staleTgl:"Concurrent change (stale)", simTgl:"Stub provider (simulate)",
+      statePath:"Session state path", contract:"Readiness contract", contractHint:"An ordered evidence chain resolving to exactly one governed next action.",
+      s_scheduled:"Scheduled", s_waiting:"Waiting room", s_joined:"Joined", s_verified:"Verified", s_inprogress:"In progress", s_closed:"Closed",
+      l_appt:"Appointment & scope", l_time:"Timing", l_part:"Participants & identity", l_state:"State", l_trans:"Transition", l_fb:"Fallback",
+      ready:"Ready", pending:"Pending", missing:"Missing", blocked:"Blocked",
+      factory:"Factory", pkg:"Package", appt:"Stored appointment",
+      apptVal:"Visit Report · v3", apptTime:"2026-07-23 10:00", scopeOk:"Scope matches", tzNote:"Time shown as stored (no served time-zone normalization).",
+      partHint:"The factory representative must be OTP-verified before the inspection can begin (no bypass).",
+      inspector:"Inspector", rep:"Factory representative", joined:"Joined — awaiting verification", notJoined:"Not joined", verified:"Verified",
+      markJoined:"Mark joined", sendOtp:"Send OTP", resendOtp:"Resend OTP", devCode:"Dev code", code:"Code", verify:"Verify",
+      otpSent:"OTP sent · {n} resends left", otpVerified:"Identity verified.", otpWrong:"Wrong code · {n} attempts left", otpLocked:"Locked — resend or escalate.", otpExhausted:"Resends exhausted — supervisor-approved manual verification (audited exception).",
+      counters:"Attempts {a}/{b} · resends {c}/{d}", provRelease:"Dispatch via Unifonic at release; DEV console for now.",
+      roomH:"Session room", roomTag:"Governed", roomPending:"Provider adapter pending — no call surface.", roomBody:"No fake video is drawn. When a provider contract exists the configured provider opens.", simBadge:"Simulated session — no real connection",
+      roomContinue:"On begin, the inspector is redirected to the shared execution engine (same package/items/evidence/submission as physical).",
+      fbH:"Fallback", fbBody:"On provider failure: retry / reschedule / escalate — never bypass. Or convert to a physical visit.",
+      noOnway:"No “On the way” and no “Arrived” — a remote visit has no physical presence.",
+      begin:"Begin remote inspection", beginGated:"Verify participants first", openWaiting:"Open waiting room", continueExec:"Continue to execution", reschedule:"Reschedule",
+      closeH:"Close session", closeReason:"Close reason", closeComment:"Comments", closeSubmit:"Close session", closeReq:"Reason is mandatory.",
+      immutableTitle:"Session closed", immutableBody:"Read-only — the reason is preserved; continuation hands off to the shared engine.",
+      offlineTitle:"Offline", offlineBody:"Mutating actions disabled; nothing is queued.", staleTitle:"Concurrent change", staleBody:"The guard refused the write — reload to see the true state.", reload:"Reload",
+      nextReady:"Ready to transition", transHint:"One governed action available.",
+    };
+    const OTP={digits:6, expiry:5, attemptsMax:3, resendMax:3, cooldown:60};
+    const set=(p)=>this.setState(p);
+    const chip=(c,x)=>h("span",{className:"badge "+c},x);
+    const banner=(title,body,tone,extra)=>h("div",{className:"card",style:{flexDirection:"row",gap:"10px",alignItems:"center",background:`var(--status-${tone}-soft)`,borderColor:`color-mix(in srgb,var(--status-${tone}) 26%,transparent)`,boxShadow:"none",padding:"11px 14px"}}, h("span",{className:"t-compact",style:{color:`var(--status-${tone}-text)`,flex:1}}, h("strong",null,title+" — "), body), extra||null);
+
+    const ORDER=["scheduled","waiting","joined","verified","in_progress","closed"];
+    const lbl={scheduled:t.s_scheduled,waiting:t.s_waiting,joined:t.s_joined,verified:t.s_verified,in_progress:t.s_inprogress,closed:t.s_closed};
+    const cur=ORDER.indexOf(st.sState);
+    const closed=st.sState==="closed";
+    const serverReady = st.sState==="verified" || st.sState==="in_progress";
+
+    // banners (S12/S13/S15)
+    const bl=[];
+    if(closed) bl.push(banner(t.immutableTitle,t.immutableBody,"completed"));
+    if(!st.online) bl.push(banner(t.offlineTitle,t.offlineBody,"warning"));
+    if(st.stale) bl.push(banner(t.staleTitle,t.staleBody,"warning", h("button",{className:"btn btn-secondary",onClick:()=>set({stale:false})},t.reload)));
+    const banners = bl.length?h(React.Fragment,null,bl):null;
+
+    const pathNodes = ORDER.map((s,i)=>h("div",{key:s,className:"vs-node "+(i<cur?"done":i===cur?"now":"")}, h("span",{className:"vs-ndot"}), i<cur?"✓ ":"", lbl[s]));
+
+    // 6-link readiness contract
+    const linkRow=(n,title,state,body)=>{const map={ready:"badge-compliant",pending:"badge-warning",missing:"badge-critical",blocked:"badge-critical"};const lm={ready:t.ready,pending:t.pending,missing:t.missing,blocked:t.blocked};
+      return h("div",{className:"vs-link"}, h("span",{className:"vs-ln"},String(n)), h("div",{style:{flex:1}}, h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginBottom:"3px"}}, h("strong",{style:{fontSize:"13.5px"}},title), chip(map[state],lm[state])), body));};
+    const partState = st.repVerified?"ready": st.repJoined?"pending":"missing";
+    const transState = closed?"blocked": serverReady?"ready":"pending";
+    const links = h(React.Fragment,null,
+      linkRow(1,t.l_appt,"ready", h("div",{className:"t-caption"}, t.factory+": "+t.headerSub+" · "+t.pkg+": "+t.apptVal+" · ", chip("badge-compliant",t.scopeOk))),
+      linkRow(2,t.l_time,"ready", h("div",{className:"t-caption"}, t.appt+": ", h("span",{className:"input-mono"},t.apptTime), " — ", t.tzNote)),
+      linkRow(3,t.l_part,partState, h("div",{className:"t-caption"}, t.partHint)),
+      linkRow(4,t.l_state,closed?"blocked":"ready", h("div",{className:"t-caption"}, chip("badge-info",lbl[st.sState]))),
+      linkRow(5,t.l_trans,transState, h("div",{className:"t-caption"}, serverReady?t.begin:(closed?t.immutableTitle:t.beginGated))),
+      linkRow(6,t.l_fb,"pending", h("div",{className:"t-caption"}, t.fbBody)));
+
+    // participants + OTP (migration 0009 vp_request_otp / vp_verify_otp)
+    const genCode=()=>String(Math.floor(100000+Math.random()*900000));
+    const sendOtp=()=>{ if(st.resends>=OTP.resendMax){set({exhausted:true,otpMsg:t.otpExhausted});return;} const c=genCode(); set({otpSent:true,devCode:c,resends:st.resends+1,attempts:0,locked:false,otpMsg:t.otpSent.replace("{n}",OTP.resendMax-st.resends-1)}); };
+    const verifyOtp=()=>{ if(st.locked||st.exhausted)return; if(st.otpCode===st.devCode){ set({repVerified:true,otpMsg:t.otpVerified,sState: st.sState==="joined"||st.sState==="waiting"?"verified":st.sState}); } else { const a=st.attempts+1; if(a>=OTP.attemptsMax){set({attempts:a,locked:true,otpMsg:t.otpLocked});} else {set({attempts:a,otpMsg:t.otpWrong.replace("{n}",OTP.attemptsMax-a)});} } };
+    const repRow = h("div",{style:{display:"flex",flexDirection:"column",gap:"10px"}},
+      h("div",{style:{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}, h("strong",{style:{fontSize:"13.5px"}}, ar?"سعود بن ناصر":"Saud bin Nasser"), h("span",{className:"t-caption"},t.rep),
+        st.repVerified?chip("badge-compliant",t.verified): st.repJoined?chip("badge-warning",t.joined):chip("badge-outline",t.notJoined)),
+      !st.repJoined ? h("button",{className:"btn btn-secondary",style:{alignSelf:"flex-start"},disabled:!st.online,onClick:()=>set({repJoined:true,sState: st.sState==="waiting"?"joined":st.sState})},t.markJoined)
+      : !st.repVerified ? h("div",{style:{display:"flex",flexDirection:"column",gap:"8px"}},
+          h("div",{style:{display:"flex",gap:"8px",alignItems:"flex-end",flexWrap:"wrap"}},
+            h("button",{className:"btn btn-secondary",disabled:!st.online||st.locked||st.exhausted,onClick:sendOtp}, st.resends>0?t.resendOtp:t.sendOtp),
+            st.devCode?chip("badge-warning",t.devCode+" "+st.devCode):null,
+            h("input",{className:"vs-in",maxLength:6,value:st.otpCode,placeholder:"------",onChange:e=>set({otpCode:e.target.value})}),
+            h("button",{className:"btn btn-primary",disabled:!st.online||st.locked||st.exhausted||!st.otpSent,onClick:verifyOtp},t.verify)),
+          st.otpSent?h("div",{className:"t-caption input-mono"}, t.counters.replace("{a}",st.attempts).replace("{b}",OTP.attemptsMax).replace("{c}",st.resends).replace("{d}",OTP.resendMax)):null,
+          st.otpMsg?h("div",{className:"t-caption",style:{color: st.repVerified?"var(--status-compliant-text)": (st.locked||st.exhausted)?"var(--status-critical-text)":"var(--text-secondary)"}}, st.otpMsg):null,
+          h("div",{className:"t-caption"},t.provRelease))
+      : chip("badge-compliant","✓ "+t.otpVerified));
+    const participantsCard = h("div",{className:"card"}, h("h3",{className:"vs-h"},t.l_part),
+      h("div",{style:{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",paddingBlockEnd:"10px",borderBlockEnd:"1px solid var(--border-subtle)"}}, h("strong",{style:{fontSize:"13.5px"}}, ar?"عبدالله الشهري":"Abdullah Al-Shehri"), h("span",{className:"t-caption"},t.inspector), chip("badge-compliant",t.verified)),
+      repRow);
+
+    const roomCard = h("div",{className:"card"}, h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}}, h("h3",{className:"vs-h"},t.roomH), chip("badge-outline",t.roomTag)),
+      st.sim && st.sState==="in_progress"
+        ? h(React.Fragment,null, chip("badge-warning",t.simBadge), h("div",{className:"vs-room",style:{borderStyle:"solid"}}, h("span",{style:{fontSize:"26px"}},"▲"), h("span",null,"degraded"), h("span",{className:"t-caption"},"camera: on · mic: on · SIMULATED")))
+        : h("div",{className:"vs-room"}, h("span",{style:{fontSize:"26px"}},"▲"), h("span",null,t.roomPending)),
+      h("p",{className:"t-caption",style:{margin:0}},t.roomBody),
+      h("p",{className:"t-caption",style:{margin:0}},t.roomContinue),
+      banner("",t.noOnway,"info"),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:"3px"}}, h("div",{className:"vs-k"},t.fbH), h("p",{className:"t-caption",style:{margin:0}},t.fbBody)));
+
+    const closeCard = closed ? null : h("div",{className:"card"}, h("h3",{className:"vs-h"},t.closeH),
+      h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}}, t.closeReason+" *"), h("input",{className:"input",disabled:!st.online})),
+      h("label",{className:"fld",style:{display:"flex",flexDirection:"column",gap:"5px"}}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}},t.closeComment), h("textarea",{className:"input",rows:2,disabled:!st.online})),
+      h("button",{className:"btn btn-secondary",style:{alignSelf:"flex-start",color:"var(--status-critical-text)",borderColor:"color-mix(in srgb,var(--status-critical) 40%,transparent)"},disabled:!st.online},t.closeSubmit));
+
+    // single gated next action (mirrors Room.tsx `next`)
+    let nextLabel,nextBlocked=false,nextWhy=t.nextReady;
+    if(closed){ nextLabel=t.s_closed; nextBlocked=true; nextWhy=t.immutableTitle; }
+    else if(st.sState==="scheduled"){ nextLabel=t.openWaiting; }
+    else if(st.sState==="in_progress"){ nextLabel=t.continueExec; }
+    else if(serverReady){ nextLabel=t.begin; }
+    else { nextLabel=t.beginGated; nextBlocked=true; nextWhy=t.beginGated; }
+    const nextDisabled = nextBlocked || !st.online;
+    const onNext=()=>{ if(nextBlocked||!st.online)return; if(st.sState==="scheduled")set({sState:"waiting"}); else if(st.sState==="verified")set({sState:"in_progress"}); };
+    const canReschedule=["scheduled","waiting"].includes(st.sState) && st.online;
+
+    const TABS=ORDER.map(s=>[s,lbl[s]]);
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      stateLabel: lbl[st.sState],
+      stateTabs: TABS.map(([k,l])=>({label:l, active: st.sState===k?"true":"false", go:()=>set({sState:k, repVerified: ORDER.indexOf(k)>=3, repJoined: ORDER.indexOf(k)>=2, otpSent:false, otpMsg:"", attempts:0, resends:0, locked:false, exhausted:false, devCode:"", otpCode:""})})),
+      online:st.online, toggleOnline:()=>this.setState(s=>({online:!s.online})),
+      stale:st.stale, toggleStale:()=>this.setState(s=>({stale:!s.stale})),
+      sim:st.sim, toggleSim:()=>this.setState(s=>({sim:!s.sim})),
+      banners, pathNodes, links, participantsCard, roomCard, closeCard,
+      nextLabel, nextWhy, nextBadgeClass: nextBlocked?"badge-critical":"badge-completed",
+      nextDisabled: nextDisabled?"true":"false", nextStyle: nextDisabled?"opacity:.5; pointer-events:none;":"",
+      onNext,
+      reschedDisabled: canReschedule?"false":"true", reschedStyle: canReschedule?"":"opacity:.5; pointer-events:none;",
+    };
+  }
+}
+</script>
+</body>
+</html>

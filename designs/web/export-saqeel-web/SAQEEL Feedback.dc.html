@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .fb-wrap { max-width: 720px; margin: 0 auto; width:100%; padding: 20px 18px 60px; display:flex; flex-direction:column; gap:16px; }
+  .fb-seg { display:flex; gap:6px; padding:10px 18px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); overflow-x:auto; }
+  .fb-seg button { padding:7px 14px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; cursor:pointer; white-space:nowrap; color:var(--text-secondary); }
+  .fb-seg button[aria-pressed="true"]{ background:var(--action-primary); border-color:var(--action-primary); color:#fff; }
+  .qr { display:grid; grid-template-columns:repeat(21,1fr); width:196px; height:196px; gap:0; background:#fff; padding:10px; border-radius:12px; }
+  .qr > i { display:block; }
+  .fb-stars { display:flex; gap:6px; }
+  .fb-star { width:38px; height:38px; cursor:pointer; }
+  .fb-aspect { display:flex; align-items:center; gap:12px; }
+  .fb-bar { height:8px; border-radius:4px; background:var(--surface-sunken); overflow:hidden; flex:1; }
+  .fb-bar > i { display:block; height:100%; background:var(--action-primary); border-radius:4px; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <div class="fb-seg">
+    <button aria-pressed="{{ isQr }}" onClick="{{ goQr }}">{{ t.tabQr }}</button>
+    <button aria-pressed="{{ isForm }}" onClick="{{ goForm }}">{{ t.tabForm }}</button>
+    <button aria-pressed="{{ isAdmin }}" onClick="{{ goAdmin }}">{{ t.tabAdmin }}</button>
+    <span class="grow"></span>
+    <button aria-pressed="false" onClick="{{ toggleLang }}" style="border-radius:999px; font-weight:700;">{{ t.langBtnLabel }}</button>
+    <button aria-pressed="false" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}" style="border-radius:999px;">{{ themeLabel }}</button>
+  </div>
+
+  <sc-if value="{{ isQr }}" hint-placeholder-val="{{ true }}">
+    <div class="fb-wrap" style="align-items:center; text-align:center;">
+      <div class="panel" style="padding:26px; display:flex; flex-direction:column; align-items:center; gap:16px; width:100%; max-width:400px;">
+        <span class="avatar avatar-lg" style="background:var(--action-primary); color:#fff; width:56px; height:56px; font-size:20px;">{{ t.avatarLetter }}</span>
+        <div><div style="font-weight:700; font-size:17px;">{{ t.inspectorName }}</div><div class="t-caption">{{ t.inspectorRole }} · <span class="id-code">INS-3391</span></div></div>
+        <div class="qr">
+          <sc-for list="{{ qrCells }}" as="c" hint-placeholder-count="441"><i style="background:{{ c }};"></i></sc-for>
+        </div>
+        <div style="font-weight:600; font-size:15px;">{{ t.scanToRate }}</div>
+        <p class="t-caption" style="max-width:34ch; margin:0;">{{ t.scanDesc }}</p>
+        <div class="badge badge-info"><span class="dot"></span>{{ t.visit }} <span class="id-code">VS-40219</span> · {{ t.validOnSite }}</div>
+      </div>
+      <p class="t-caption" style="color:var(--text-muted);">{{ t.qrFooter }}</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+    <div class="fb-wrap">
+      <div class="panel" style="padding:18px; text-align:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.6" style="width:34px;height:34px;margin:0 auto 8px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+        <div style="font-weight:700; font-size:17px;">{{ t.visitRatingTitle }}</div>
+        <div class="t-caption" style="margin-block-start:4px;">{{ t.visitRatingSub }}</div>
+      </div>
+
+      <div class="panel" style="padding:20px; display:flex; flex-direction:column; gap:8px; align-items:center;">
+        <div style="font-weight:600; font-size:15px;">{{ t.overallSatisfaction }}</div>
+        <div class="fb-stars"><sc-for list="{{ overallStars }}" as="s" hint-placeholder-count="5"><svg class="fb-star" viewBox="0 0 24 24" fill="{{ s }}" stroke="var(--action-primary)" stroke-width="1.4"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9z"/></svg></sc-for></div>
+        <div class="t-caption">{{ t.excellentRating }}</div>
+      </div>
+
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div style="display:flex; align-items:center; gap:10px; padding:14px 18px; border-block-end:1px solid var(--border-subtle);">
+          <span style="flex:1; font-weight:600; font-size:14px;">{{ t.stepQuestionLabel }} {{ qStepNum }}/{{ qStepTotal }}</span>
+          <span class="badge badge-info" style="height:20px;">{{ qStepPct }}</span>
+        </div>
+        <div style="height:4px; background:var(--surface-sunken);"><div style="height:100%; width:{{ qStepPct }}; background:var(--action-primary); transition:width .2s;"></div></div>
+
+        <div style="padding:18px;">
+          <div style="font-weight:600; font-size:15.5px; margin-block-end:4px;">{{ curAspect.label }}</div>
+          <div class="t-caption" style="margin-block-end:14px;">{{ curAspect.labelEn }}</div>
+          <div class="fb-stars" style="margin-block-end:14px;">{{ curAspect.stars }}</div>
+          <a href="SAQEEL%20Field%20Reports.dc.html" target="_top" style="display:inline-flex; align-items:center; gap:5px; color:var(--action-primary); font-size:12.5px; font-weight:600; text-decoration:none; margin-block-end:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:13px;height:13px;"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>{{ t.sanctionsLink }}</a>
+          <label class="fld" style="display:flex; flex-direction:column; gap:6px; margin-block-start:10px;"><span style="font-size:12.5px; font-weight:600;">{{ t.notesAndAttachments }}</span><textarea class="input" rows="2" placeholder="{{ t.shareThoughts }}"></textarea></label>
+          <div style="display:flex; gap:10px; margin-block-start:14px;">
+            <button class="btn btn-secondary" style="flex:1;" onClick="{{ prevAspect }}" disabled="{{ isFirstAspect }}">{{ t.prevQuestion }}</button>
+            <button class="btn btn-primary" style="flex:1;" onClick="{{ nextAspect }}">{{ nextBtnLabel }}</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:16px;">
+        <div style="font-size:13.5px; font-weight:600; margin-block-end:8px;">{{ t.repSignature }}</div>
+        <div style="height:110px; border:1.5px dashed var(--border-strong); border-radius:10px; display:grid; place-items:center; color:var(--text-muted); font-size:13px;">{{ t.signHere }}</div>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg">{{ t.submitRating }}</button>
+      <button class="btn btn-secondary btn-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:16px;height:16px;"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg>{{ t.downloadPdf }}</button>
+      <p class="t-caption" style="text-align:center; color:var(--text-muted);">{{ t.confidentialNote }}</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+    <div class="fb-wrap" style="max-width:920px;">
+      <div style="display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;"><div><h1 style="font-size:22px; font-weight:700; margin:0;">{{ t.adminTitle }}</h1><div class="t-caption" style="margin-block-start:3px;">{{ t.adminSub }}</div></div><span class="grow"></span><span class="badge badge-info">{{ t.last30 }}</span></div>
+
+      <div class="panel" style="padding:12px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <select class="select" style="min-width:130px;"><option>{{ t.allRegions }}</option><option>{{ t.riyadh }}</option><option>{{ t.eastern }}</option><option>{{ t.makkah }}</option></select>
+        <select class="select" style="min-width:150px;"><option>{{ t.allInspectors }}</option><option>عبدالله الشهري</option><option>نايف الدوسري</option><option>سارة القحطاني</option><option>خالد العتيبي</option></select>
+        <div class="seg"><button class="seg-opt" aria-pressed="false">{{ t.days7 }}</button><button class="seg-opt" aria-pressed="true">{{ t.days30 }}</button><button class="seg-opt" aria-pressed="false">{{ t.quarter }}</button></div>
+        <span class="grow"></span>
+        <button class="btn btn-secondary btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:14px;height:14px;"><path d="M12 3v13m0 0 4-4m-4 4-4-4M4 21h16"/></svg>{{ t.exportCsv }}</button>
+      </div>
+
+      <div class="panel" style="padding:18px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-block-end:12px;"><div style="font-weight:600; font-size:14px;">{{ t.satisfactionTrend }}</div><span class="t-caption">{{ t.weeklyLast8 }}</span></div>
+        <svg viewBox="0 0 560 120" style="width:100%; height:110px; overflow:visible;">
+          <polyline points="0,58 80,50 160,54 240,38 320,42 400,26 480,22 560,14" fill="none" stroke="var(--action-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <sc-for list="{{ trendPoints }}" as="p" hint-placeholder-count="8"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="3.5" fill="var(--action-primary)"></circle></sc-for>
+          <line x1="0" y1="110" x2="560" y2="110" stroke="var(--border-subtle)" stroke-width="1"></line>
+        </svg>
+        <div style="display:flex; justify-content:space-between; margin-block-start:4px;"><span class="t-caption">3.9</span><span class="t-caption">4.3 ({{ t.current }})</span></div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">{{ t.avgSatisfaction }}</div><div class="kpi-value">4.3<span class="unit">/5</span></div><div class="kpi-delta up">▲ 0.2 {{ t.vsPrevPeriod }}</div></div>
+        <div class="kpi"><div class="kpi-label">{{ t.ratingCount }}</div><div class="kpi-value">218</div><div class="kpi-delta">{{ t.outOf296 }}</div></div>
+        <div class="kpi"><div class="kpi-label">{{ t.responseRate }}</div><div class="kpi-value">74<span class="unit">%</span></div><div class="kpi-delta">{{ t.viaQrScan }}</div></div>
+        <div class="kpi"><div class="kpi-label">{{ t.avgRatingTime }}</div><div class="kpi-value">1.8<span class="unit">{{ t.min }}</span></div><div class="kpi-delta">{{ t.afterVisitEnd }}</div></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;">
+        <div class="panel" style="padding:18px;">
+          <div style="font-weight:600; font-size:14px; margin-block-end:14px;">{{ t.topAspects }}</div>
+          <div class="stack" style="gap:13px;">
+            <sc-for list="{{ aspectStats }}" as="a" hint-placeholder-count="5">
+              <div class="fb-aspect"><span style="width:150px; font-size:13px;">{{ a.label }}</span><div class="fb-bar"><i style="width:{{ a.pct }};"></i></div><span class="t-caption id-code" style="width:36px;">{{ a.score }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <div class="panel" style="padding:18px;">
+          <div style="font-weight:600; font-size:14px; margin-block-end:14px;">{{ t.topInspectors }}</div>
+          <div class="stack" style="gap:10px;">
+            <sc-for list="{{ inspectors }}" as="i" hint-placeholder-count="4">
+              <div style="display:flex; align-items:center; gap:10px;"><span class="avatar" style="background:var(--accent-soft); color:var(--accent-text);">{{ i.initial }}</span><span style="flex:1; font-size:13.5px;">{{ i.name }}</span><span class="badge badge-compliant" style="height:20px;">{{ i.score }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div style="padding:14px 18px; border-block-end:1px solid var(--border-subtle); font-weight:600; font-size:14px;">{{ t.recentComments }}</div>
+        <sc-for list="{{ comments }}" as="c" hint-placeholder-count="3">
+          <div class="fb-row" onClick="{{ c.open }}" style="padding:14px 18px; border-block-end:1px solid var(--border-subtle); display:flex; gap:12px; cursor:pointer;">
+            <span class="badge {{ c.badge }}" style="height:22px; flex:none;">{{ c.rating }}★</span>
+            <div style="flex:1; min-width:0;"><div style="font-size:13.5px;">{{ c.text }}</div><div class="t-caption" style="margin-block-start:4px;">{{ c.factory }} · {{ t.inspectorLabel }} {{ c.inspector }} · <span class="id-code">{{ c.time }}</span></div></div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:16px;height:16px; flex:none; align-self:center; color:var(--text-muted);"><path d="m9 6 6 6-6 6"/></svg>
+          </div>
+        </sc-for>
+      </div>
+      <p class="t-caption" style="color:var(--text-muted);">{{ t.adminFooter }}</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; background:rgba(10,15,20,.45); z-index:40; display:flex; justify-content:flex-end;" onClick="{{ closeDrawer }}">
+      <div class="drawer" style="width:min(420px,92vw); background:var(--surface-primary); height:100%; padding:22px 20px; overflow-y:auto; box-shadow:var(--shadow-card-hover);" onClick="{{ stop }}">
+        <div style="display:flex; align-items:center; gap:10px; margin-block-end:16px;"><span style="font-weight:700; font-size:16px; flex:1;">{{ t.ratingDetails }}</span><button class="btn btn-icon btn-ghost" onClick="{{ closeDrawer }}" aria-label="{{ t.close }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="stack" style="gap:14px;">
+          <div class="panel" style="padding:14px;"><div class="t-caption">{{ t.establishment }}</div><div style="font-weight:600; font-size:14.5px; margin-block-start:2px;">{{ selected.factory }}</div><div class="t-caption" style="margin-block-start:6px;">{{ t.visit }} <span class="id-code">{{ selected.visit }}</span> · {{ t.inspectorLabel }} {{ selected.inspector }} · <span class="id-code">{{ selected.time }}</span></div></div>
+          <div class="panel" style="padding:14px;"><div class="t-caption" style="margin-block-end:8px;">{{ t.overallSatisfaction }}</div><span class="badge {{ selected.badge }}">{{ selected.rating }} / 5</span></div>
+          <div class="panel" style="padding:14px;">
+            <div class="t-caption" style="margin-block-end:10px;">{{ t.ratingAspects }}</div>
+            <div class="stack" style="gap:10px;">
+              <sc-for list="{{ selectedAspects }}" as="a" hint-placeholder-count="5"><div class="fb-aspect"><span style="width:140px; font-size:12.5px;">{{ a.label }}</span><div class="fb-bar"><i style="width:{{ a.pct }};"></i></div><span class="t-caption id-code" style="width:30px;">{{ a.score }}</span></div></sc-for>
+            </div>
+          </div>
+          <div class="panel" style="padding:14px;"><div class="t-caption" style="margin-block-end:6px;">{{ t.noteLabel }}</div><div style="font-size:13.5px;">{{ selected.text }}</div></div>
+          <div class="panel" style="padding:14px; display:flex; gap:10px; align-items:center;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info)" stroke-width="1.6" style="width:16px;height:16px; flex:none;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span class="t-caption">{{ t.confidentialNote2 }}</span></div>
+          <button class="btn btn-secondary btn-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:15px;height:15px;"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg>{{ t.viewVisitPdf }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", view: "qr", drawerIdx: null, lang: "en", aspectStep: 0 };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        tabQr:"رمز المفتش (الميدان)", tabForm:"تقييم المنشأة (بعد المسح)", tabAdmin:"لوحة التقييمات (الإدارة)", theme:"الوضع", langBtnLabel:"EN",
+        avatarLetter:"خ", inspectorName:"خالد العتيبي", inspectorRole:"مفتش · وزارة الصناعة والثروة المعدنية",
+        scanToRate:"امسح الرمز لتقييم الزيارة", scanDesc:"يمسح ممثل المنشأة هذا الرمز لتقييم الزيارة والحصول على نسخة PDF من تقرير التفتيش والمستندات مباشرة.",
+        visit:"زيارة", validOnSite:"صالح أثناء التواجد بالموقع", qrFooter:"الرمز معروض على كل شاشات المفتش أثناء الزيارة · رمز توضيحي يُولّد فعلياً وقت التشغيل.",
+        visitRatingTitle:"تقييم زيارة التفتيش", visitRatingSub:"شركة الأمل لتدريب العمال · زيارة VS-40219 · المفتش خالد العتيبي · 22 يوليو 2026",
+        overallSatisfaction:"رضاك العام عن الزيارة", excellentRating:"ممتاز — 4 من 5",
+        inspectorPerformance:"كيف كان أداء المفتش؟", notesOptional:"ملاحظات (اختياري)", shareThoughts:"شاركنا رأيك حول الزيارة",
+        repSignature:"توقيع ممثل المنشأة", signHere:"وقّع هنا", submitRating:"إرسال التقييم", downloadPdf:"تحميل تقرير التفتيش PDF",
+        stepQuestionLabel:"السؤال", sanctionsLink:"الجزاءات والمخالفات", notesAndAttachments:"إضافة ملاحظات ومرفقات",
+        prevQuestion:"السابق", nextQuestion:"التالي", finishQuestions:"إنهاء الأسئلة",
+        confidentialNote:"تقييمك سري ويُستخدم لتحسين الخدمة · لا يؤثر على نتيجة التفتيش.",
+        adminTitle:"تقييمات التفتيش", adminSub:"رضا المنشآت بعد الزيارة · النطاق حسب الصلاحية", last30:"آخر 30 يوماً",
+        allRegions:"كل المناطق", riyadh:"الرياض", eastern:"الشرقية", makkah:"مكة المكرمة", allInspectors:"كل المفتشين",
+        days7:"٧ أيام", days30:"٣٠ يوماً", quarter:"الربع", exportCsv:"تصدير CSV",
+        satisfactionTrend:"اتجاه الرضا العام", weeklyLast8:"أسبوعياً · آخر 8 أسابيع", current:"الحالي",
+        avgSatisfaction:"متوسط الرضا", vsPrevPeriod:"عن الفترة السابقة", ratingCount:"عدد التقييمات", outOf296:"من 296 زيارة",
+        responseRate:"نسبة الاستجابة", viaQrScan:"عبر مسح رمز المفتش", avgRatingTime:"متوسط وقت التقييم", min:"د", afterVisitEnd:"بعد انتهاء الزيارة",
+        topAspects:"أبرز محاور التقييم", topInspectors:"أعلى المفتشين رضاً", recentComments:"أحدث الملاحظات", inspectorLabel:"المفتش",
+        adminFooter:"القياسات مجمّعة · القرار النهائي وسمعة المفتش تُدار وفق سياسة الموارد البشرية، لا آلياً.",
+        ratingDetails:"تفاصيل التقييم", close:"إغلاق", establishment:"المنشأة", ratingAspects:"محاور التقييم", noteLabel:"الملاحظة",
+        confidentialNote2:"سري · لا يؤثر على نتيجة التفتيش · السمعة تُدار وفق سياسة الموارد البشرية", viewVisitPdf:"عرض تقرير الزيارة PDF",
+      },
+      en: {
+        tabQr:"Inspector QR (field)", tabForm:"Establishment Rating (post-scan)", tabAdmin:"Ratings Dashboard (admin)", theme:"Theme", langBtnLabel:"AR",
+        avatarLetter:"K", inspectorName:"Khaled Al-Otaibi", inspectorRole:"Inspector · Ministry of Industry and Mineral Resources",
+        scanToRate:"Scan to rate the visit", scanDesc:"The establishment representative scans this code to rate the visit and get a PDF copy of the inspection report and documents directly.",
+        visit:"Visit", validOnSite:"Valid while on site", qrFooter:"The code shows on all inspector screens during the visit · illustrative code, generated live at runtime.",
+        visitRatingTitle:"Inspection Visit Rating", visitRatingSub:"Al-Amal Worker Training Co. · Visit VS-40219 · Inspector Khaled Al-Otaibi · July 22, 2026",
+        overallSatisfaction:"Your overall satisfaction with the visit", excellentRating:"Excellent — 4 of 5",
+        inspectorPerformance:"How was the inspector's performance?", notesOptional:"Notes (optional)", shareThoughts:"Share your thoughts about the visit",
+        repSignature:"Representative signature", signHere:"Sign here", submitRating:"Submit rating", downloadPdf:"Download inspection report PDF",
+        stepQuestionLabel:"Question", sanctionsLink:"Sanctions & Violations", notesAndAttachments:"Add notes & attachments",
+        prevQuestion:"Previous", nextQuestion:"Next", finishQuestions:"Finish questions",
+        confidentialNote:"Your rating is confidential and used to improve service · does not affect the inspection outcome.",
+        adminTitle:"Inspection Ratings", adminSub:"Establishment satisfaction post-visit · authority-scoped", last30:"Last 30 days",
+        allRegions:"All regions", riyadh:"Riyadh", eastern:"Eastern", makkah:"Makkah", allInspectors:"All inspectors",
+        days7:"7 days", days30:"30 days", quarter:"Quarter", exportCsv:"Export CSV",
+        satisfactionTrend:"Overall Satisfaction Trend", weeklyLast8:"Weekly · last 8 weeks", current:"current",
+        avgSatisfaction:"Average satisfaction", vsPrevPeriod:"vs previous period", ratingCount:"Rating count", outOf296:"of 296 visits",
+        responseRate:"Response rate", viaQrScan:"via inspector QR scan", avgRatingTime:"Avg. rating time", min:"m", afterVisitEnd:"after visit end",
+        topAspects:"Top Rating Aspects", topInspectors:"Highest-Rated Inspectors", recentComments:"Recent Comments", inspectorLabel:"Inspector",
+        adminFooter:"Metrics are aggregated · the final decision and inspector reputation are governed by HR policy, not automated.",
+        ratingDetails:"Rating Details", close:"Close", establishment:"Establishment", ratingAspects:"Rating aspects", noteLabel:"Note",
+        confidentialNote2:"Confidential · does not affect the inspection outcome · reputation is governed by HR policy", viewVisitPdf:"View visit report PDF",
+      },
+    };
+    const t = STR[lang];
+    const v = this.state.view;
+    const set = val => () => this.setState({ view: val });
+    const A = "var(--action-primary)";
+    const N = 21, cells = [];
+    const finder = (r, c) => { const rr = r % 7, cc = c % 7; const edge = rr === 0 || rr === 6 || cc === 0 || cc === 6; const core = r % 7 >= 2 && r % 7 <= 4 && c % 7 >= 2 && c % 7 <= 4; return edge || core; };
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+      const inTL = r < 7 && c < 7, inTR = r < 7 && c >= N - 7, inBL = r >= N - 7 && c < 7;
+      let on;
+      if (inTL) on = finder(r, c);
+      else if (inTR) on = finder(r, c - (N - 7));
+      else if (inBL) on = finder(r - (N - 7), c);
+      else on = ((r * 7 + c * 13 + ((r * c) % 5)) % 3) === 0;
+      cells.push(on ? "#0d1b12" : "#fff");
+    }
+    const star = fill => React.createElement("svg", { viewBox: "0 0 24 24", fill, stroke: A, strokeWidth: 1.3, style: { width: "20px", height: "20px" } }, React.createElement("path", { d: "M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9z" }));
+    const stars = n => React.createElement(React.Fragment, null, [0,1,2,3,4].map(i => React.cloneElement(star(i < n ? A : "none"), { key: i })));
+    const ASPECTS_BOTH = [
+      ["الاحترافية والسلوك", "Professionalism & conduct", 5], ["وضوح الملاحظات", "Clarity of findings", 4],
+      ["الالتزام بالوقت", "Punctuality", 4], ["العدالة والحياد", "Fairness & neutrality", 5],
+      ["الشرح والتوجيه", "Guidance & explanation", 4],
+    ];
+    const ASPECTS = lang === "ar" ? ASPECTS_BOTH.map(([ar, , s]) => [ar, s]) : ASPECTS_BOTH.map(([, en, s]) => [en, s]);
+    const aspectStep = this.state.aspectStep;
+    const curA = ASPECTS_BOTH[aspectStep];
+    const curAspect = { label: lang === "ar" ? curA[0] : curA[1], labelEn: lang === "ar" ? curA[1] : curA[0], stars: stars(curA[2]) };
+    const ASTAT = lang === "ar" ? [["الاحترافية والسلوك", 4.6], ["العدالة والحياد", 4.5], ["الشرح والتوجيه", 4.2], ["وضوح الملاحظات", 4.1], ["الالتزام بالوقت", 3.9]]
+      : [["Professionalism & conduct", 4.6], ["Fairness & neutrality", 4.5], ["Guidance & explanation", 4.2], ["Clarity of findings", 4.1], ["Punctuality", 3.9]];
+    const TREND = [3.9, 4.0, 3.95, 4.1, 4.05, 4.2, 4.25, 4.3];
+    const trendPoints = TREND.map((val, i) => ({ x: (i / (TREND.length - 1)) * 560, y: 110 - ((val - 3.7) / (4.5 - 3.7)) * 96 }));
+    const COMMENTS = lang === "ar" ? [
+        { rating: 5, badge: "badge-compliant", text: "المفتش كان محترفاً وشرح الملاحظات بوضوح.", factory: "مصنع نجد للألبان", inspector: "عبدالله الشهري", time: "قبل ساعتين", visit: "VS-40190" },
+        { rating: 4, badge: "badge-compliant", text: "زيارة منظمة، نتمنى إشعاراً أبكر بالموعد.", factory: "شركة الخليج للنسيج", inspector: "نايف الدوسري", time: "أمس", visit: "VS-40175" },
+        { rating: 3, badge: "badge-warning", text: "الوقت كان ضيقاً بعض الشيء.", factory: "الراشد للصناعات", inspector: "خالد العتيبي", time: "قبل 3 أيام", visit: "VS-40219" },
+      ] : [
+        { rating: 5, badge: "badge-compliant", text: "The inspector was professional and explained the findings clearly.", factory: "Najd Dairy Factory", inspector: "Abdullah Al-Shehri", time: "2 hours ago", visit: "VS-40190" },
+        { rating: 4, badge: "badge-compliant", text: "Organized visit, we'd like earlier notice of the appointment.", factory: "Gulf Textiles Co.", inspector: "Nayef Al-Dosari", time: "Yesterday", visit: "VS-40175" },
+        { rating: 3, badge: "badge-warning", text: "Time was a bit tight.", factory: "Al-Rashid Industries", inspector: "Khaled Al-Otaibi", time: "3 days ago", visit: "VS-40219" },
+      ];
+    const sel = this.state.drawerIdx != null ? COMMENTS[this.state.drawerIdx] : null;
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      themeLabel: this.state.theme === "dark" ? "☾" : "☀",
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+      isQr: v === "qr", isForm: v === "form", isAdmin: v === "admin",
+      goQr: set("qr"), goForm: set("form"), goAdmin: set("admin"),
+      qrCells: cells,
+      overallStars: [A, A, A, A, "none"],
+      aspects: ASPECTS.map(([label, score]) => ({ label, score: score + "/5", stars: stars(score) })),
+      curAspect, qStepNum: aspectStep + 1, qStepTotal: ASPECTS_BOTH.length,
+      qStepPct: Math.round(((aspectStep + 1) / ASPECTS_BOTH.length) * 100) + "%",
+      isFirstAspect: aspectStep === 0, isLastAspect: aspectStep === ASPECTS_BOTH.length - 1,
+      nextBtnLabel: aspectStep === ASPECTS_BOTH.length - 1 ? t.finishQuestions : t.nextQuestion,
+      prevAspect: () => this.setState(s => ({ aspectStep: Math.max(0, s.aspectStep - 1) })),
+      nextAspect: () => this.setState(s => ({ aspectStep: Math.min(ASPECTS_BOTH.length - 1, s.aspectStep + 1) })),
+      aspectStats: ASTAT.map(([label, s]) => ({ label, score: s.toFixed(1), pct: (s / 5 * 100) + "%" })),
+      trendPoints,
+      drawerOpen: this.state.drawerIdx != null,
+      closeDrawer: () => this.setState({ drawerIdx: null }),
+      stop: e => e.stopPropagation(),
+      selected: sel || {},
+      selectedAspects: ASTAT.map(([label, s]) => ({ label, score: (s + (Math.random()*0.4-0.2)).toFixed(1), pct: Math.round(s/5*100) + "%" })),
+      inspectors: [["ع", "عبدالله الشهري", "4.8"], ["ن", "نايف الدوسري", "4.6"], ["س", "سارة القحطاني", "4.5"], ["خ", "خالد العتيبي", "4.3"]].map(([initial, name, score]) => ({ initial, name, score })),
+      comments: COMMENTS.map((c, i) => ({ ...c, open: () => this.setState({ drawerIdx: i }) })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

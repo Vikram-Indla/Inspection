@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style> html, body { height: 100%; margin: 0; }
+  .ad-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 12px 20px; margin: 0; }
+  .ad-facts dt { font-size: 11px; color: var(--text-muted); margin-block-end: 2px; }
+  .ad-facts dd { margin: 0; font-size: 13.5px; }
+  .ad-rule { border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; background: var(--surface-secondary); }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:256px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="../SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="../SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item" href="../SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="../SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child is-active" href="SAQEEL%20Control%20Panel.dc.html" data-route="/admin" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="../SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <main id="main-content" tabindex="-1" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); display:flex; align-items:center; gap:12px; padding:12px 24px;">
+      <span class="breadcrumb"><a href="#">Admin</a><span class="sep">/</span><span>{{ crumb }}</span></span>
+      <span class="grow"></span>
+    </header>
+
+    <a id="page-body" tabindex="-1"></a>
+    <div style="padding:20px 24px 80px; display:flex; flex-direction:column; gap:16px;">
+
+      <!-- REGULATION DETAIL -->
+      <sc-if value="{{ is_regulation }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;"><div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">FS-2019 · Fire Safety Code</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">regulation detail (?id= logical mode)</div></div><span class="grow"></span><span class="badge badge-compliant">published</span></div>
+        <div style="display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:16px; align-items:start;">
+          <div class="stack" style="gap:16px; min-width:0;">
+            <div class="panel" style="padding:18px 20px;"><div class="panel-title" style="margin-block-end:12px;">Identity &amp; lineage</div><dl class="ad-facts"><div><dt>Issuing authority</dt><dd>Civil Defense</dd></div><div><dt>Version</dt><dd class="id-code">v3</dd></div><div><dt>Effective from</dt><dd class="id-code">2024-01-01</dd></div><div><dt>Created by / approved by</dt><dd>a.saleh / m.qahtani</dd></div><div><dt>Supersedes</dt><dd class="id-code">FS-2016 · v2</dd></div><div><dt>Published at</dt><dd class="id-code">2023-12-18</dd></div></dl></div>
+            <div class="panel" style="padding:0; overflow:hidden;"><div class="panel-header"><div class="panel-title">Clauses → linked items</div><span class="badge badge-info">3 clauses · 9 items</span></div><div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Clause</th><th>Title</th><th>Applicability</th><th>Legal source</th><th class="cell-num">Items</th></tr></thead><tbody>
+              <tr><td class="id-code">§4.2</td><td>Emergency egress</td><td>All factories</td><td>Civil Defense</td><td class="cell-num">3</td></tr>
+              <tr><td class="id-code">§5.1</td><td>Extinguisher coverage</td><td>Area &gt; 500m²</td><td>Civil Defense</td><td class="cell-num">2</td></tr>
+              <tr><td class="id-code">§7.4</td><td>Alarm systems</td><td>All factories</td><td>Civil Defense</td><td class="cell-num">4</td></tr>
+            </tbody></table></div></div>
+            <div class="panel" style="padding:0; overflow:hidden;"><div class="panel-header"><div class="panel-title">Attachments (custody)</div></div><div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>File</th><th>Type</th><th>SHA-256</th><th>Added</th></tr></thead><tbody>
+              <tr><td>fire-safety-code-2019.pdf</td><td>application/pdf</td><td class="id-code">d41c8a9f77e0…</td><td class="id-code" style="font-size:12px;">2023-12-18</td></tr>
+            </tbody></table></div></div>
+          </div>
+          <div class="stack" style="gap:16px;">
+            <div class="panel" style="padding:18px 20px;"><div class="t-label" style="margin-block-end:10px;">Publish (maker-checker)</div><div class="ad-rule"><div class="row" style="gap:8px;"><span class="exc exc-compliant"><span class="exc-mark"></span></span><span style="font-size:12.5px;">created_by ≠ approved_by satisfied</span></div><div class="row" style="gap:8px; margin-block-start:8px;"><span class="exc exc-compliant"><span class="exc-mark"></span></span><span style="font-size:12.5px;">All clauses map to ≥1 active item</span></div></div><div class="alert alert-immutable" style="margin-block-start:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div>Published row is locked at the DB boundary (<span class="id-code">trg_guard_published_regulation</span>).</div></div></div>
+            <div class="panel" style="padding:18px 20px;"><div class="t-label" style="margin-block-end:10px;">Lifecycle</div><div class="stack" style="gap:8px;"><button class="btn btn-secondary btn-block">New version (draft)</button><button class="btn btn-ghost btn-block">Deactivate…</button></div></div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- PACKAGE VERSION EDITOR -->
+      <sc-if value="{{ is_package }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;"><div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Fire Safety Package · v4 draft</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">definition editor · frozen on publish</div></div><span class="grow"></span><button class="btn btn-secondary">Preview</button><button class="btn btn-primary">Approve &amp; publish</button></div>
+        <div style="display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:16px; align-items:start;">
+          <div class="stack" style="gap:16px; min-width:0;">
+            <div class="panel" style="padding:18px 20px;">
+              <div class="panel-title" style="margin-block-end:12px;">Definition — sections &amp; items</div>
+              <div class="ad-rule" style="margin-block-end:10px;">
+                <div class="row" style="gap:8px; justify-content:space-between; margin-block-end:8px;"><b style="font-size:13px;">§ Egress &amp; exits</b><span class="t-caption">3 items · mandatory</span></div>
+                <div class="stack" style="gap:6px;">
+                  <div class="row" style="gap:8px; font-size:12.5px;"><span class="id-code">FS-014</span> Emergency exit unobstructed <span class="tag">required</span> <span class="tag">photo on No</span> <span class="tag">weight 5</span></div>
+                  <div class="row" style="gap:8px; font-size:12.5px;"><span class="id-code">FS-016</span> Exit signage illuminated <span class="tag">required</span> <span class="tag">scored</span></div>
+                  <div class="row" style="gap:8px; font-size:12.5px;"><span class="id-code">FS-018</span> Secondary egress width <span class="tag tag-outline">conditional: visible when FS-014 = No</span></div>
+                </div>
+              </div>
+              <div class="ad-rule"><div class="row" style="gap:8px; justify-content:space-between; margin-block-end:8px;"><b style="font-size:13px;">§ Extinguishers</b><span class="t-caption">6 items</span></div><div class="t-caption">Response mapping: Fail → violation FS-021 · action form none</div></div>
+            </div>
+            <div class="panel" style="padding:18px 20px;"><div class="panel-title" style="margin-block-end:12px;">Action forms</div><div class="table-wrap"><table class="table"><thead><tr><th>Key</th><th>Title</th><th>Blocking</th><th>Fields</th></tr></thead><tbody>
+              <tr><td class="id-code">af.egress</td><td>Egress correction</td><td><span class="badge badge-warning">blocking</span></td><td class="t-caption">owner, due, correction</td></tr>
+              <tr><td class="id-code">af.note</td><td>General note</td><td><span class="badge">non-blocking</span></td><td class="t-caption">text</td></tr>
+            </tbody></table></div></div>
+          </div>
+          <div class="stack" style="gap:16px;">
+            <div class="panel" style="padding:18px 20px;"><div class="t-label" style="margin-block-end:10px;">Version lineage</div><div class="stack" style="gap:6px;"><div class="row" style="justify-content:space-between; font-size:13px;"><span><span class="id-code">v3</span> published</span><span class="t-caption">effective 2024-01-01</span></div><div class="row" style="justify-content:space-between; font-size:13px;"><span><span class="id-code">v4</span> draft</span><span class="badge badge-onhold">editing</span></div></div></div>
+            <div class="panel" style="padding:18px 20px;"><div class="t-label" style="margin-block-end:10px;">Impact of publishing v4</div><div class="stack" style="gap:8px; font-size:12.5px;"><div class="row" style="gap:8px;"><span class="exc exc-warning"><span class="exc-mark"></span></span>2 plans reference v3 · pinned to execution version</div><div class="row" style="gap:8px;"><span class="exc exc-info"><span class="exc-mark"></span></span>Diff: +2 items (§4.2), 1 requirement optional→required</div></div><div class="alert alert-immutable" style="margin-block-start:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div>A published version's definition is <b>frozen</b>; in-flight inspections keep scoring against their published version.</div></div></div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ITEM + RUNTIME PREVIEW -->
+      <sc-if value="{{ is_item }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">FS-014 · Emergency exit unobstructed</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">item config + runtime preview</div></div>
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:start;">
+          <div class="panel" style="padding:18px 20px;">
+            <div class="panel-title" style="margin-block-end:12px;">Configuration</div>
+            <dl class="ad-facts"><div><dt>Response model</dt><dd>Yes / No / N/A</dd></div><div><dt>Violation trigger</dt><dd>on “No” → FS-014 (Critical)</dd></div><div><dt>Evidence rule</dt><dd>photo · on No · required</dd></div><div><dt>Score weight</dt><dd>5 · excluded on N/A</dd></div><div><dt>Linked clause</dt><dd class="id-code">FS-2019 §4.2</dd></div><div><dt>Active</dt><dd><span class="badge badge-compliant">active</span></dd></div></dl>
+            <div class="t-label" style="margin:16px 0 6px;">Guidance</div>
+            <p class="t-caption" style="margin:0;" dir="ltr">EN: Confirm the exit path is fully clear of obstructions end to end.</p>
+            <p class="t-caption" style="margin:4px 0 0;" dir="rtl" lang="ar">AR: تأكد من خلو مسار المخرج من العوائق بالكامل.</p>
+          </div>
+          <div class="panel" style="padding:18px 20px; border-inline-start:3px solid var(--action-primary);">
+            <div class="row" style="gap:8px; justify-content:space-between; margin-block-end:12px;"><div class="panel-title">Runtime preview</div><span class="badge badge-info">as inspector sees it</span></div>
+            <div style="border:1px solid var(--border-subtle); border-radius:12px; padding:16px; box-shadow:var(--shadow-card);">
+              <div style="font-weight:600; font-size:14.5px;">Emergency exit unobstructed</div>
+              <div class="t-caption"><span class="id-code">FS-014</span> · FS-2019 §4.2</div>
+              <div class="seg" style="margin-block-start:12px; width:100%;"><button class="seg-opt" style="flex:1;">Yes</button><button class="seg-opt is-active" style="flex:1;">No</button><button class="seg-opt" style="flex:1;">N/A</button></div>
+              <div style="margin-block-start:12px; display:flex; gap:8px; flex-wrap:wrap;"><span class="exc-chip exc-critical"><span class="exc-mark"></span>Auto-violation FS-014</span></div>
+              <div style="margin-block-start:12px;"><button class="btn btn-secondary btn-sm">+ Photo <span class="id-code" style="color:var(--status-critical-text);">required</span></button></div>
+            </div>
+            <p class="t-caption" style="margin:12px 0 0;">Preview is computed from the item rules; it is not a live submission. Conditional items appear only when their condition is met.</p>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- RISK MODEL -->
+      <sc-if value="{{ is_risk }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;"><div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">Risk Engine configuration</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">Risk Studio · <span style="color:var(--text-secondary);">risk v4</span></div></div><span class="grow"></span><span class="badge badge-warning">risk_owner only</span></div>
+        <div class="alert alert-immutable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div>Weights and bands are <b>live configuration</b> in <span class="id-code">engine_settings</span> — scores must be reproducible from stored inputs + this version (EV-004). Writes require <b>risk_owner</b> (RLS rejects everyone else) and every save lands in the immutable audit trail. There is <b>no draft or approval step on this screen</b> — a successful save is effective immediately.</div></div>
+        <div style="display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:16px; align-items:start;">
+          <div class="panel" style="padding:18px 20px;">
+            <div class="row" style="gap:8px; justify-content:space-between; margin-block-end:12px;"><div class="panel-title">Factors &amp; weights <span class="t-caption" style="font-weight:400;">must sum to 1.00</span></div><span class="badge badge-compliant">Σ = 1.00 ✓</span></div>
+            <div class="stack" style="gap:10px;">
+              <div class="row" style="gap:10px;"><span style="width:170px; font-size:12.5px;">Open fire-safety findings</span><div class="progress grow"><i style="width:100%;"></i></div><input class="input" value="0.35" style="width:74px; height:30px; text-align:end;" readOnly="{{ true }}"></div>
+              <div class="row" style="gap:10px;"><span style="width:170px; font-size:12.5px;">Repeat violations (12mo)</span><div class="progress grow"><i style="width:71%;"></i></div><input class="input" value="0.25" style="width:74px; height:30px; text-align:end;" readOnly="{{ true }}"></div>
+              <div class="row" style="gap:10px;"><span style="width:170px; font-size:12.5px;">Licence exposure</span><div class="progress grow"><i style="width:57%;"></i></div><input class="input" value="0.20" style="width:74px; height:30px; text-align:end;" readOnly="{{ true }}"></div>
+              <div class="row" style="gap:10px;"><span style="width:170px; font-size:12.5px;">Days since inspection</span><div class="progress grow"><i style="width:57%;"></i></div><input class="input" value="0.20" style="width:74px; height:30px; text-align:end;" readOnly="{{ true }}"></div>
+            </div>
+            <div class="t-label" style="margin:18px 0 8px;">Bands</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-block-end:10px;">
+              <div class="field" style="width:130px;"><label>Low ends at</label><input class="input" value="39" style="text-align:end;" readOnly="{{ true }}"></div>
+              <div class="field" style="width:130px;"><label>Medium ends at</label><input class="input" value="69" style="text-align:end;" readOnly="{{ true }}"></div>
+              <div class="field" style="width:130px;"><label>High</label><input class="input" value="70–100" style="text-align:end;" readOnly="{{ true }}"></div>
+            </div>
+            <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:11.5px; color:var(--text-secondary);"><span class="row" style="gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--status-compliant);"></span>Low 0–39</span><span class="row" style="gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--status-warning);"></span>Medium 40–69</span><span class="row" style="gap:5px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--status-critical);"></span>High 70–100</span></div>
+            <div class="row" style="justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-block-start:16px; border-block-start:1px solid var(--border-subtle); padding-block-start:14px;"><span class="t-caption id-code">last updated 2026-07-19 08:41</span><button class="btn btn-primary">Save configuration (risk_owner only)</button></div>
+            <p class="t-caption" style="margin:8px 0 0;">Saving writes factors and bands to <span class="id-code">engine_settings</span> after the weights-sum check, effective immediately for new score calculations. Save is disabled until Σ = 1.00.</p>
+          </div>
+          <div class="stack" style="gap:16px;">
+            <div class="panel" style="padding:0; overflow:hidden;">
+              <div class="panel-header"><div class="panel-title">Risk models</div><span class="badge badge-info">governed transitions</span></div>
+              <div style="padding:14px 16px; border-block-end:1px solid var(--border-subtle);">
+                <div class="field" style="margin-block-end:8px;"><label>New version label</label><input class="input" placeholder="e.g. v5"></div>
+                <div class="field" style="margin-block-end:10px;"><label>Payload (JSON)</label><textarea class="input" rows="3" style="font-family:var(--font-mono); font-size:11px;">{"factors":[{"key":"a","weight":1}],"bands":{"low":[0,39],"medium":[40,69],"high":[70,100]}}</textarea></div>
+                <button class="btn btn-secondary btn-sm">Create draft</button>
+              </div>
+              <div class="stack" style="gap:0;">
+                <div style="padding:11px 16px; border-block-end:1px solid var(--border-subtle);"><div class="row" style="gap:8px; justify-content:space-between;"><span><b style="font-size:13px;">v4</b> <span class="id-code" style="color:var(--text-muted);">row v3</span></span><span class="badge badge-compliant">active</span></div></div>
+                <div style="padding:11px 16px;"><div class="row" style="gap:8px; justify-content:space-between; margin-block-end:8px;"><span><b style="font-size:13px;">v5</b> <span class="id-code" style="color:var(--text-muted);">row v1</span></span><span class="badge badge-onhold">draft</span></div><div class="row" style="gap:8px; flex-wrap:wrap;"><select class="select" style="width:130px; height:32px;"><option>draft → review</option></select><input class="input" placeholder="reason" style="height:32px; flex:1; min-width:90px;"><button class="btn btn-primary btn-sm">Apply</button></div></div>
+              </div>
+            </div>
+            <div class="panel empty" style="padding:20px 18px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 12l5-3M12 7v5"/></svg><div class="empty-title">Why this factory? — worked trace</div><p>A line-by-line score trace isn't shown here — this screen configures the model, not individual factories. Needs a selected factory and its stored per-factor scoring inputs.</p></div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- PLAN DETAIL -->
+      <sc-if value="{{ is_plan }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;"><div><h1 style="font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">PLN-2207 · Eastern high-risk sweep</h1><div class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:4px;">plan detail · bulk method</div></div><span class="grow"></span><span class="badge badge-info">published</span></div>
+        <div class="panel" style="padding:18px 20px;"><div class="panel-title" style="margin-block-end:12px;">Plan facts</div><dl class="ad-facts"><div><dt>Method</dt><dd>Bulk</dd></div><div><dt>Criteria</dt><dd>Eastern · High/Critical · (Chemicals OR Metals)</dd></div><div><dt>Package</dt><dd>Fire Safety <span class="id-code">v3</span></dd></div><div><dt>Generated visits</dt><dd>128</dd></div><div><dt>Planner</dt><dd>a.saleh</dd></div><div><dt>Published</dt><dd class="id-code">2026-07-14</dd></div></dl></div>
+        <div class="panel" style="padding:0; overflow:hidden;"><div class="panel-header"><div class="panel-title">Targeted factories → visits</div><span class="badge badge-compliant">128 eligible at publish</span></div><div class="table-wrap" style="border:0;"><table class="table"><thead><tr><th>Factory</th><th>Risk</th><th>Visit</th><th>Operational</th></tr></thead><tbody>
+          <tr><td>Al Rasheed Steel · <span class="id-code">F-2231</span></td><td><span class="badge badge-critical">High</span></td><td class="id-code">VS-40219</td><td><span class="badge badge-warning">arrived</span></td></tr>
+          <tr><td>Jubail Chemicals · <span class="id-code">F-1120</span></td><td><span class="badge badge-critical">High</span></td><td class="id-code">VS-39980</td><td><span class="badge badge-completed">submitted</span></td></tr>
+          <tr><td>Eastern Plastics · <span class="id-code">F-1450</span></td><td><span class="badge badge-warning">Medium</span></td><td class="id-code">VS-40088</td><td><span class="badge badge-pending">not started</span></td></tr>
+        </tbody></table></div></div>
+        <div class="alert alert-immutable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div>Eligibility was re-checked at publish; ineligible factories were dropped with a per-item reason. Each generated visit carries an immutable ID and its own dual state.</div></div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: "dark", screen: "regulation" };
+  renderVals() {
+    const S = ["regulation", "package", "item", "risk", "plan"];
+    const CRUMB = { regulation: "Compliance Library / FS-2019", package: "Packages / Fire Safety v4", item: "Items / FS-014", risk: "Risk / model v4", plan: "Planning / PLN-2207" };
+    const out = {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      crumb: CRUMB[this.state.screen],
+    };
+    S.forEach(id => {
+      out["is_" + id] = this.state.screen === id;
+      out["cls_" + id] = this.state.screen === id ? "nav-item is-active" : "nav-item";
+      out["go_" + id] = () => this.setState({ screen: id });
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>

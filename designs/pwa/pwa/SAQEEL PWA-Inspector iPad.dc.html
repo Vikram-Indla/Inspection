@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .ins-item { border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--surface-primary); box-shadow: var(--shadow-card); padding: 16px; }
+  .ins-opt { min-height: 48px; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" data-density="field" style="height:100vh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); overflow:hidden;">
+
+  <!-- FIELD TOP -->
+  <header style="display:flex; align-items:center; gap:14px; padding:12px 20px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:30px; height:30px; flex:none; color:var(--action-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+    <div style="line-height:1.2; min-width:0;"><div style="font-weight:600; font-size:15px;">Al Rasheed Steel Works</div><div class="t-caption"><span class="id-code">VS-40219</span> · Bulk · window 09:00–12:00</div></div>
+    <span class="grow"></span>
+    <span class="badge badge-warning"><span class="dot"></span>Offline — 3 queued</span>
+    <span class="badge badge-info"><span class="dot"></span>Synced 13:41</span>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="Toggle theme">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+    <span class="avatar avatar-lg">KA</span>
+  </header>
+
+  <!-- STAGE SWITCHER -->
+  <div style="display:flex; align-items:center; gap:12px; padding:12px 20px 0;">
+    <div class="seg" style="height:40px;">
+      <button class="seg-opt ins-opt" style="padding-inline:16px;" aria-pressed="{{ is_checkin }}" onClick="{{ go_checkin }}">1 · Check-in</button>
+      <button class="seg-opt ins-opt" style="padding-inline:16px;" aria-pressed="{{ is_inspect }}" onClick="{{ go_inspect }}">2 · Inspect</button>
+      <button class="seg-opt ins-opt" style="padding-inline:16px;" aria-pressed="{{ is_signoff }}" onClick="{{ go_signoff }}">3 · Sign-off</button>
+      <button class="seg-opt ins-opt" style="padding-inline:16px;" aria-pressed="{{ is_f360 }}" onClick="{{ go_f360 }}">Factory 360</button>
+    </div>
+    <span class="grow"></span>
+    <span class="badge badge-info"><span class="dot"></span>Health 62 · needs attention</span>
+    <span class="badge badge-critical"><span class="dot"></span>Risk High</span>
+  </div>
+
+  <div style="flex:1; min-height:0; overflow-y:auto; padding:14px 20px 16px;">
+
+    <!-- ═══ CHECK-IN ═══ -->
+    <sc-if value="{{ is_checkin }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:14px; align-items:start;">
+      <div class="panel" style="padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:420px;">
+        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-block-end:1px solid var(--border-subtle);"><span style="font-weight:600; font-size:14px;">Arrival &amp; geofence</span><span class="grow"></span><span class="id-code" style="font-size:11px; color:var(--text-muted);">GPS ±12m · 40s ago</span></div>
+        <div style="position:relative; flex:1; background:var(--surface-sunken); background-image:radial-gradient(var(--border-subtle) 1px, transparent 1px); background-size:24px 24px;">
+          <div style="position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:24px;"><div><div style="font-size:14px; font-weight:500; color:var(--text-secondary);">Live position vs official pin (Mapbox GL)</div><div class="t-caption" style="max-width:40ch; margin-block-start:6px;">Your location with accuracy ring, the official licence pin, and the 150m geofence. Actual path only — no invented routes.</div></div></div>
+          <div class="map-panel" style="position:absolute; top:12px; inset-inline-start:12px; padding:10px 12px;"><div class="map-legend-row"><span class="swatch" style="background:var(--status-info);"></span>Your location</div><div class="map-legend-row" style="margin-block-start:5px;"><span class="swatch" style="background:var(--status-compliant);"></span>Official pin</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; padding:12px 16px; border-block-start:1px solid var(--border-subtle);"><span class="exc exc-warning"><span class="exc-mark"></span></span><span style="flex:1; font-size:13px;">Observed 172m from official pin — <b>outside 150m geofence</b>.</span><button class="btn btn-secondary">Request GPS override</button></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="panel" style="padding:16px;">
+          <div class="t-label" style="margin-block-end:10px;">Visit</div>
+          <dl class="desc" style="grid-template-columns:auto 1fr; gap:6px 12px; font-size:13px;"><dt>CR / licence</dt><dd><span class="id-code">1010445213</span><span class="id-code">IL-44718</span></dd><dt>Type / mode</dt><dd>Bulk · Scheduled</dd><dt>Package</dt><dd>Fire Safety <span class="id-code">v3 (locked)</span></dd></dl>
+        </div>
+        <div class="panel" style="padding:16px;">
+          <div class="t-label" style="margin-block-end:10px;">Start-readiness</div>
+          <label class="check" style="min-height:44px;"><input type="checkbox" checked="{{ true }}" readOnly="{{ true }}">Package cached offline</label>
+          <label class="check" style="min-height:44px;"><input type="checkbox" checked="{{ true }}" readOnly="{{ true }}">Factory 360 snapshot cached</label>
+          <label class="check" style="min-height:44px;"><input type="checkbox" checked="{{ ready }}" onChange="{{ toggleReady }}">I have reviewed repeat findings <span class="id-code" style="color:var(--status-critical-text);">required</span></label>
+        </div>
+        <div class="panel" style="padding:14px 16px; border-inline-start:3px solid var(--status-critical);">
+          <div class="row" style="gap:8px;"><span class="exc exc-critical"><span class="exc-mark"></span></span><span style="font-size:13px;">Repeat: blocked emergency exit — failed 2× / 12 mo</span></div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ═══ INSPECT ═══ -->
+    <sc-if value="{{ is_inspect }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid; grid-template-columns:210px 1.7fr 1fr; gap:14px; align-items:start;">
+      <!-- section list -->
+      <div class="panel" style="padding:10px;">
+        <div class="t-label" style="padding:6px 8px;">Sections</div>
+        <div class="stack" style="gap:4px;">
+          <button style="text-align:start; background:var(--accent-soft); border:0; border-radius:8px; padding:10px 12px; cursor:pointer; font:inherit; min-height:48px;"><div style="font-size:13px; font-weight:600;">Egress &amp; exits</div><div class="progress" style="margin-block-start:6px;"><i style="width:60%;"></i></div></button>
+          <button style="text-align:start; background:transparent; border:0; border-radius:8px; padding:10px 12px; cursor:pointer; font:inherit; min-height:48px;"><div style="font-size:13px;">Extinguishers</div><div class="progress" style="margin-block-start:6px;"><i style="width:100%; background:var(--status-compliant);"></i></div></button>
+          <button style="text-align:start; background:transparent; border:0; border-radius:8px; padding:10px 12px; cursor:pointer; font:inherit; min-height:48px;"><div style="font-size:13px;">Alarms</div><div class="progress" style="margin-block-start:6px;"><i style="width:0%;"></i></div></button>
+          <button style="text-align:start; background:transparent; border:0; border-radius:8px; padding:10px 12px; cursor:pointer; font:inherit; min-height:48px;"><div class="row" style="gap:6px;"><span class="exc exc-critical"><span class="exc-mark"></span></span><span style="font-size:13px;">Electrical</span></div><div class="progress" style="margin-block-start:6px;"><i style="width:30%; background:var(--status-warning);"></i></div></button>
+        </div>
+      </div>
+      <!-- items -->
+      <div class="stack" style="gap:12px; min-width:0;">
+        <div class="ins-item">
+          <div class="row" style="gap:8px; justify-content:space-between; align-items:flex-start;"><div><div style="font-weight:600; font-size:14.5px;">Emergency exit unobstructed</div><div class="t-caption"><span class="id-code">FS-014</span> · FS-2019 §4.2</div></div><button class="btn btn-ghost btn-sm">Guidance</button></div>
+          <div class="seg" style="margin-block-start:12px; width:100%;"><button class="seg-opt ins-opt" style="flex:1;">Yes</button><button class="seg-opt ins-opt is-active" style="flex:1;">No</button><button class="seg-opt ins-opt" style="flex:1;">N/A</button></div>
+          <div style="margin-block-start:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;"><span class="exc-chip exc-critical"><span class="exc-mark"></span>Auto-violation FS-014</span><span class="badge badge-warning">Action form required · blocking</span></div>
+          <div style="margin-block-start:12px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-secondary">+ Photo <span class="id-code" style="color:var(--status-critical-text);">required</span></button><button class="btn btn-ghost">+ Note</button></div>
+        </div>
+        <div class="ins-item">
+          <div class="row" style="gap:8px; justify-content:space-between; align-items:flex-start;"><div><div style="font-weight:600; font-size:14.5px;">Exit signage illuminated</div><div class="t-caption"><span class="id-code">FS-016</span> · FS-2019 §4.3</div></div><button class="btn btn-ghost btn-sm">Guidance</button></div>
+          <div class="seg" style="margin-block-start:12px; width:100%;"><button class="seg-opt ins-opt is-active" style="flex:1;">Yes</button><button class="seg-opt ins-opt" style="flex:1;">No</button><button class="seg-opt ins-opt" style="flex:1;">N/A</button></div>
+          <div style="margin-block-start:10px;"><span class="badge badge-compliant"><span class="dot"></span>Compliant · 1 photo attached</span></div>
+        </div>
+        <div class="ins-item" style="opacity:.6;">
+          <div class="row" style="gap:8px; justify-content:space-between; align-items:flex-start;"><div><div style="font-weight:600; font-size:14.5px;">Secondary egress width</div><div class="t-caption"><span class="id-code">FS-018</span> · conditional · <span class="badge" style="height:18px;">shown when No above</span></div></div></div>
+          <div class="seg" style="margin-block-start:12px; width:100%;"><button class="seg-opt ins-opt" style="flex:1;">Yes</button><button class="seg-opt ins-opt" style="flex:1;">No</button><button class="seg-opt ins-opt" style="flex:1;">N/A</button></div>
+        </div>
+      </div>
+      <!-- summary rail -->
+      <div class="stack" style="gap:12px;">
+        <div class="panel" style="padding:16px;">
+          <div class="t-label" style="margin-block-end:8px;">Health Score</div>
+          <div style="display:flex; align-items:baseline; gap:8px;"><span class="kpi-value" style="font-size:34px; color:var(--status-warning);">62</span><span style="font-weight:600; font-size:13px;">needs attention</span></div>
+          <p class="t-caption" style="margin:6px 0 0;">Computed from scored answers on the locked package. Distinct from Risk Score.</p>
+        </div>
+        <div class="panel" style="padding:16px;">
+          <div class="t-label" style="margin-block-end:10px;">Progress &amp; summary</div>
+          <dl class="desc" style="grid-template-columns:1fr auto; gap:6px 12px; font-size:13px;"><dt>Answered</dt><dd>28 / 42</dd><dt>Compliant</dt><dd>21</dd><dt>Non-compliant</dt><dd style="color:var(--status-critical-text);">7</dd><dt>Violations</dt><dd>3</dd><dt>Evidence</dt><dd>11</dd></dl>
+        </div>
+        <div class="panel" style="padding:14px 16px; border-inline-start:3px solid var(--status-critical);">
+          <div class="t-label" style="margin-block-end:8px;">Blockers</div>
+          <div class="stack" style="gap:6px; font-size:12.5px;">
+            <div class="row" style="gap:8px;"><span class="exc exc-critical"><span class="exc-mark"></span></span>1 mandatory photo missing (FS-014)</div>
+            <div class="row" style="gap:8px;"><span class="exc exc-warning"><span class="exc-mark"></span></span>1 blocking action form incomplete</div>
+            <div class="row" style="gap:8px;"><span class="exc exc-pending"><span class="exc-mark"></span></span>14 items unanswered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ═══ SIGN-OFF ═══ -->
+    <sc-if value="{{ is_signoff }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; max-width:1000px;">
+      <div class="stack" style="gap:12px;">
+        <div class="panel" style="padding:18px 20px;">
+          <div class="panel-title" style="margin-block-end:12px;">Submission summary</div>
+          <dl class="desc" style="grid-template-columns:1fr auto; gap:7px 12px; font-size:13.5px;"><dt>Items answered</dt><dd>42 / 42</dd><dt>Compliant / non-compliant</dt><dd>33 / 9</dd><dt>Violations raised</dt><dd>3</dd><dt>Action forms</dt><dd>2 complete · 1 blocking</dd><dt>Evidence captured</dt><dd>16</dd><dt>Health Score</dt><dd>62 · needs attention</dd></dl>
+        </div>
+        <div class="panel" style="padding:14px 16px; border-inline-start:3px solid var(--status-warning);">
+          <div class="row" style="gap:8px;"><span class="exc exc-warning"><span class="exc-mark"></span></span><span style="font-size:13px;">1 blocking action form must be completed before submit.</span></div>
+        </div>
+      </div>
+      <div class="panel" style="padding:18px 20px;">
+        <div class="panel-title" style="margin-block-end:12px;">Inspector attestation</div>
+        <div style="height:150px; border:1.5px dashed var(--border-strong); border-radius:10px; display:grid; place-items:center; color:var(--text-muted); background:var(--surface-sunken);">Sign here</div>
+        <label class="check" style="min-height:44px; margin-block-start:12px;"><input type="checkbox">I attest the findings and evidence are accurate and complete</label>
+        <label class="check" style="min-height:44px;"><input type="checkbox">Recorded at official location · GPS attached</label>
+        <div style="display:flex; gap:10px; margin-block-start:14px;"><button class="btn btn-secondary grow">Save draft</button><button class="btn btn-primary grow" aria-disabled="true" style="opacity:.5; pointer-events:none;">Submit — blocked</button></div>
+        <p class="t-caption" style="margin:10px 0 0;">On submit the answers freeze as an immutable version scored against package v3. Returned sections reopen only their scope.</p>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ═══ OFFLINE FACTORY 360 ═══ -->
+    <sc-if value="{{ is_f360 }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;">
+      <div class="stack" style="gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;"><h2 style="font-size:18px; font-weight:700; margin:0;">Factory 360</h2><span class="badge badge-info"><span class="dot"></span>Cached · offline ready</span><span class="id-code" style="font-size:11px; color:var(--text-muted);">freshness 12 min</span></div>
+        <div class="panel" style="padding:18px 20px;">
+          <div class="panel-title" style="margin-block-end:12px;">Identity &amp; licence</div>
+          <dl class="desc" style="grid-template-columns:auto 1fr; gap:6px 12px; font-size:13px;"><dt>CR</dt><dd><span class="id-code">1010445213</span></dd><dt>Licence</dt><dd><span class="id-code">IL-44718</span> · Active · expires 2027-03-01</dd><dt>Plant</dt><dd><span class="id-code">P-118</span> · Al Rasheed Steel — Line A</dd><dt>Coordinates</dt><dd><span class="id-code">26.3421, 50.1032</span></dd></dl>
+        </div>
+        <div class="panel" style="padding:18px 20px;">
+          <div class="panel-title" style="margin-block-end:10px;">Previous approved inspection</div>
+          <p style="margin:0; font-size:13.5px;"><b>2026-03-18</b>78% compliant · 3 findings closed.</p>
+          <p class="t-caption" style="margin:6px 0 0;">Returned/rejected context is shown separately and never affects the approved rate.</p>
+        </div>
+      </div>
+      <div class="stack" style="gap:12px;">
+        <div class="panel" style="padding:18px 20px; border-inline-start:3px solid var(--status-critical);">
+          <div class="panel-title" style="margin-block-end:10px;">Repeat findings &amp; open actions</div>
+          <div class="stack" style="gap:8px; font-size:13px;">
+            <div class="row" style="gap:8px;"><span class="exc exc-critical"><span class="exc-mark"></span></span>Blocked emergency exit — failed 2× / 12 mo</div>
+            <div class="row" style="gap:8px;"><span class="exc exc-warning"><span class="exc-mark"></span></span>Corrective action <span class="id-code">CA-3391</span> due 28 Jul</div>
+          </div>
+        </div>
+        <div class="panel" style="padding:18px 20px;">
+          <div class="panel-title" style="margin-block-end:10px;">Health &amp; Risk drivers</div>
+          <div class="row" style="gap:24px;"><div><div class="t-caption">Health Score</div><div style="font-weight:600; font-size:16px;">62 · attention</div></div><div><div class="t-caption">Risk Score</div><div style="font-weight:600; font-size:16px; color:var(--status-critical-text);">High</div></div></div>
+          <p class="t-caption" style="margin:8px 0 0;">Distinct governed concepts · driver: 2 open fire-safety findings.</p>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div style="display:flex; align-items:center; gap:12px; padding:12px 20px; background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <sc-if value="{{ is_checkin }}" hint-placeholder-val="{{ true }}">
+      <span class="id-code" style="font-size:12px; color:var(--text-muted);">Next: Al Rasheed Steel · geofence 150m</span><span class="grow"></span>
+      <button class="btn btn-secondary btn-lg">Open directions</button>
+      <sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}"><button class="btn btn-primary btn-lg">Check in &amp; start</button></sc-if>
+      <sc-if value="{{ notReady }}" hint-placeholder-val="{{ true }}"><button class="btn btn-primary btn-lg" aria-disabled="true" style="opacity:.5; pointer-events:none;">Check in — review blockers</button></sc-if>
+    </sc-if>
+    <sc-if value="{{ is_inspect }}" hint-placeholder-val="{{ false }}">
+      <span class="badge badge-warning"><span class="dot"></span>3 blockers</span><span class="id-code" style="font-size:12px; color:var(--text-muted);">autosaved locally</span><span class="grow"></span>
+      <button class="btn btn-secondary btn-lg">Save &amp; exit</button><button class="btn btn-primary btn-lg" onClick="{{ go_signoff }}">Review &amp; sign off</button>
+    </sc-if>
+    <sc-if value="{{ is_signoff }}" hint-placeholder-val="{{ false }}">
+      <span class="grow"></span><button class="btn btn-secondary btn-lg" onClick="{{ go_inspect }}">Back to inspection</button>
+    </sc-if>
+    <sc-if value="{{ is_f360 }}" hint-placeholder-val="{{ false }}">
+      <span class="id-code" style="font-size:12px; color:var(--text-muted);">Cached snapshot · does not overwrite source truth</span><span class="grow"></span><button class="btn btn-secondary btn-lg" onClick="{{ go_checkin }}">Back to check-in</button>
+    </sc-if>
+  </div>
+
+  <!-- BOTTOM TABS -->
+  <nav style="display:flex; background:var(--nav-bg); color:var(--nav-text);">
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; min-height:56px; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span style="font-size:11px;">Today</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text-active); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5.5 3.5 9.5 8 11 4.5-1.5 8-5.5 8-11V5z"/><path d="m9.5 12 2 2 3.5-4"/></svg><span style="font-size:11px;">Inspect</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/></svg><span style="font-size:11px;">Map</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V10l7 4v-4l7 4V6l4-2v17"/><path d="M3 21h18"/></svg><span style="font-size:11px;">Factory 360</span></button>
+    <button style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 0; border:0; background:none; color:var(--nav-text); cursor:pointer; font:inherit; position:relative;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span style="font-size:11px;">Sync</span><span style="position:absolute; top:8px; inset-inline-end:28px; width:7px; height:7px; border-radius:50%; background:var(--status-critical);"></span></button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1194,&quot;height&quot;:834}}">
+class Component extends DCLogic {
+  state = { theme: "dark", screen: "checkin", ready: false };
+
+  renderVals() {
+    const SCREENS = ["checkin", "inspect", "signoff", "f360"];
+    const out = {
+      theme: this.state.theme,
+      isLight: this.state.theme === "light",
+      isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      ready: this.state.ready,
+      notReady: !this.state.ready,
+      toggleReady: () => this.setState(s => ({ ready: !s.ready })),
+    };
+    SCREENS.forEach(id => {
+      out["is_" + id] = this.state.screen === id;
+      out["go_" + id] = () => this.setState({ screen: id });
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>

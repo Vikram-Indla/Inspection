@@ -1,0 +1,65 @@
+/* Inspection — spacing, radius, borders, elevation names, motion, density, z.
+   4px base scale. Radii are small on purpose: this is an operational tool. */
+
+:root {
+  --space-0: 0; --space-1: 4px; --space-2: 8px; --space-3: 12px;
+  --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px;
+  --space-10: 40px; --space-12: 48px;
+
+  --radius-xs: 2px;   /* checkboxes, badges */
+  --radius-sm: 3px;   /* buttons, inputs, chips */
+  --radius-md: 4px;   /* cards, panels, popovers */
+  --radius-lg: 6px;   /* modals, drawers */
+  --radius-full: 999px; /* avatars, map markers, dots */
+
+  --border-w: 1px;
+
+  /* Motion — quick and functional; no decorative animation */
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 260ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Density & control metrics (comfortable default) */
+  --control-h-sm: 28px;
+  --control-h-md: 32px;
+  --control-h-lg: 40px;
+  --row-h: 44px;          /* data-grid comfortable row */
+  --row-h-compact: 34px;
+  --touch-target: 44px;   /* minimum on field/tablet surfaces */
+
+  /* Layout */
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 60px;
+  --topbar-h: 52px;
+  --page-pad: var(--space-6);
+
+  /* Z scale */
+  --z-sticky: 20; --z-drawer: 40; --z-modal: 50; --z-popover: 60;
+  --z-toast: 70; --z-tooltip: 80;
+
+  /* Breakpoints (reference values — use in media queries)
+     --bp-tablet: 1024px; --bp-compact: 768px; */
+}
+
+/* Field profile — iPad/touch field work: every control is a touch target. */
+[data-density="field"] {
+  --control-h-sm: 40px; --control-h-md: 44px; --control-h-lg: 52px;
+  --row-h: 52px; --page-pad: var(--space-4);
+  --type-body-size: 15px; --type-compact-size: 14px; --type-table-size: 14px;
+  --type-button-size: 14px; --type-label-size: 13px;
+}
+
+[data-density="compact"] {
+  --control-h-sm: 24px; --control-h-md: 28px; --control-h-lg: 36px;
+  --row-h: 34px; --page-pad: var(--space-4);
+  --type-body-size: 13px; --type-table-size: 12.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-fast: 0ms; --motion-base: 0ms; --motion-slow: 0ms; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

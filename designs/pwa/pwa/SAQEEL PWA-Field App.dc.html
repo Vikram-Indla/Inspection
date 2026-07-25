@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .fx-wrap { max-width: 1000px; margin: 0 auto; width:100%; padding: 22px 20px 80px; display:flex; flex-direction:column; gap:26px; }
+  .fx-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+  .fx-card { display:flex; flex-direction:column; gap:6px; padding:16px 17px; border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); text-decoration:none; color:var(--text-primary); transition:box-shadow .15s, transform .15s, border-color .15s; }
+  .fx-card:hover { box-shadow:var(--shadow-card-hover); transform:translateY(-3px); border-color:var(--border-strong); }
+  .fx-ico { width:38px; height:38px; border-radius:10px; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; margin-block-end:4px; }
+  .fx-ico svg { width:20px; height:20px; }
+  .fx-step { display:flex; align-items:stretch; gap:0; flex-wrap:wrap; }
+  .fx-arrow { display:grid; place-items:center; color:var(--text-disabled); padding:0 4px; }
+  .fx-arrow svg { width:22px; height:22px; }
+  @media (max-width:720px){ .fx-arrow { transform:rotate(90deg); width:100%; height:26px; } }
+  .fx-num { position:absolute; inset-block-start:12px; inset-inline-end:14px; font-size:12px; font-weight:700; color:var(--text-disabled); font-variant-numeric:tabular-nums; }
+  .fx-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:12px; padding:14px 22px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:28px; height:28px; color:var(--nav-indicator);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+    <div style="flex:1; line-height:1.3;"><div style="font-weight:700; font-size:17px;">{{ t.appTitle }}</div><div class="t-caption">{{ t.appSub }}</div></div>
+    <button class="fx-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="fx-wrap">
+    <div>
+      <h2 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--text-secondary);">{{ t.section1 }}</h2>
+      <div class="fx-grid">
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top"><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.card1Title }}</span><span class="t-caption">{{ t.card1Sub }}</span></a>
+      </div>
+    </div>
+
+    <div>
+      <h2 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--text-secondary);">{{ t.section2 }}</h2>
+      <div class="fx-grid">
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top"><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.card2Title }}</span><span class="t-caption">{{ t.card2Sub }}</span></a>
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20My%20Tasks.dc.html" target="_top"><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.card3Title }}</span><span class="t-caption">{{ t.card3Sub }}</span></a>
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Establishments.dc.html" target="_top"><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21V8l6-3v4l6-3v4l6-3v14z"/><path d="M3 21h18"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.card4Title }}</span><span class="t-caption">{{ t.card4Sub }}</span></a>
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Account.dc.html" target="_top"><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.card5Title }}</span><span class="t-caption">{{ t.card5Sub }}</span></a>
+      </div>
+    </div>
+
+    <div>
+      <h2 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--text-secondary);">{{ t.section3 }} <span class="t-caption" style="font-weight:400;">{{ t.section3Sub }}</span></h2>
+      <div class="fx-step">
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Establishment%20File.dc.html" target="_top" style="position:relative; flex:1 1 200px;"><span class="fx-num">{{ t.num1 }}</span><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21V8l6-3v4l6-3v4l6-3v14z"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.step1Title }}</span><span class="t-caption">{{ t.step1Sub }}</span></a>
+        <span class="fx-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></span>
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Inspection.dc.html" target="_top" style="position:relative; flex:1 1 200px;"><span class="fx-num">{{ t.num2 }}</span><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8 12 3 3 5-6"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.step2Title }}</span><span class="t-caption">{{ t.step2Sub }}</span></a>
+        <span class="fx-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></span>
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Reports.dc.html" target="_top" style="position:relative; flex:1 1 200px;"><span class="fx-num">{{ t.num3 }}</span><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3v5h5M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.step3Title }}</span><span class="t-caption">{{ t.step3Sub }}</span></a>
+        <span class="fx-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></span>
+        <a class="fx-card" href="SAQEEL%20PWA-Field%20Visit%20Results.dc.html" target="_top" style="position:relative; flex:1 1 200px;"><span class="fx-num">{{ t.num4 }}</span><span class="fx-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 6 9 17l-5-5"/></svg></span><span style="font-weight:600; font-size:14.5px;">{{ t.step4Title }}</span><span class="t-caption">{{ t.step4Sub }}</span></a>
+        <span class="fx-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></span>
+        </div>
+    </div>
+
+    <div class="panel" style="padding:14px 16px; display:flex; gap:11px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-block-start:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <span class="t-compact" style="color:var(--text-secondary);">{{ t.footerNote }}</span>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en" };
+  renderVals() {
+    const lang = this.state.lang;
+    const STR = {
+      ar: {
+        appTitle:"تطبيق المفتش الميداني", appSub:"التدفق الكامل — اضغط أي شاشة لفتحها · تطبيق ويب متجاوب قابل للتثبيت", theme:"الوضع", langBtnLabel:"EN",
+        section1:"١ · الدخول", card1Title:"البداية وتسجيل الدخول", card1Sub:"شاشة البداية · الدخول · الإشعارات · الحساب",
+        section2:"٢ · يومك",
+        card2Title:"الرئيسية", card2Sub:"ملخص اليوم الاستشاري · خريطة · إجراءات سريعة",
+        card3Title:"مهامي", card3Sub:"قائمة المهام المسندة + التفاصيل",
+        card4Title:"المنشآت", card4Sub:"مرخصة/غير مرخصة · فلترة · إنشاء غير مرخصة",
+        card5Title:"الإشعارات والحساب", card5Sub:"الإشعارات · الملف الشخصي · الإعدادات",
+        section3:"٣ · تنفيذ الزيارة", section3Sub:"— بالتسلسل",
+        num1:"٣.١", num2:"٣.٢", num3:"٣.٣", num4:"٣.٤", num5:"٣.٥",
+        step1Title:"ملف المنشأة", step1Sub:"البيانات · جهات التواصل · بنود التفتيش",
+        step2Title:"بنود التفتيش", step2Sub:"قائمة محكومة · مخالفة تلقائية · أدلة",
+        step3Title:"المحاضر", step3Sub:"٩ محاضر · مرتبطة بالمخالفة والمادة",
+        step4Title:"نتائج الزيارة", step4Sub:"التخصص · العينات · الإرسال النهائي",
+        step5Title:"رمز التقييم (QR)", step5Sub:"يعرض للمنشأة بعد الإرسال — تقييم + محضر PDF",
+        footerNote:"تدفق واحد يربط كل شاشات المفتش. الترتيب من ١ إلى ٣ يمثل رحلة الزيارة الفعلية، وينتهي برمز تقييم المنشأة (٣.٥). كل شاشة تحافظ على القواعد المحكومة: النطاق حسب الصلاحية، الإرسال غير قابل للتعديل، والعمل بلا اتصال مع مزامنة آمنة. القرار النهائي بشري. التقييم سري ولا يؤثر على نتيجة التفتيش.",
+      },
+      en: {
+        appTitle:"Field Inspector App", appSub:"Full flow — tap any screen to open it · installable responsive web app", theme:"Theme", langBtnLabel:"AR",
+        section1:"1 · Entry", card1Title:"Splash & Sign-in", card1Sub:"Splash screen · Login · Notifications · Account",
+        section2:"2 · Your Day",
+        card2Title:"Home", card2Sub:"Advisory daily brief · map · quick actions",
+        card3Title:"My Tasks", card3Sub:"Assigned task list + details",
+        card4Title:"Establishments", card4Sub:"Licensed/unlicensed · filter · create unlicensed",
+        card5Title:"Notifications & Account", card5Sub:"Notifications · profile · settings",
+        section3:"3 · Visit Execution", section3Sub:"— sequential",
+        num1:"3.1", num2:"3.2", num3:"3.3", num4:"3.4", num5:"3.5",
+        step1Title:"Establishment File", step1Sub:"Data · contacts · inspection items",
+        step2Title:"Inspection Items", step2Sub:"Governed checklist · automatic violation · evidence",
+        step3Title:"Records", step3Sub:"9 records · linked to violation and statute",
+        step4Title:"Visit Results", step4Sub:"Specialty · samples · final submission",
+        step5Title:"Feedback QR", step5Sub:"Shown to the establishment after submission — rating + PDF record",
+        footerNote:"A single flow links every inspector screen. Steps 1 through 3 represent the actual visit journey, ending with the establishment feedback code (3.5). Every screen preserves the governed rules: authority scoping, immutable submission, and offline work with secure sync. The final decision is human. The rating is confidential and does not affect the inspection outcome.",
+      },
+    };
+    const t = STR[lang];
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      lang, dir: lang === "ar" ? "rtl" : "ltr", toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

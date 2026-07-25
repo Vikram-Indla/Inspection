@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .ii-wrap { max-width:820px; width:100%; margin:0 auto; padding:16px 18px 120px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 17px; display:flex; flex-direction:column; gap:13px; }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .fld-row { grid-template-columns:1fr; } }
+  .ii-seg { display:inline-flex; border:1px solid var(--border-input); border-radius:var(--radius-md); overflow:hidden; }
+  .ii-seg button { border:0; background:var(--surface-primary); font:inherit; font-size:13px; padding:9px 15px; cursor:pointer; color:var(--text-secondary); border-inline-end:1px solid var(--border-input); min-height:42px; }
+  .ii-seg button:last-child { border-inline-end:0; }
+  .ii-seg button[aria-pressed="true"]{ background:var(--action-primary); color:var(--text-on-action); }
+  .ii-opt { display:flex; align-items:center; gap:9px; flex:1 1 140px; padding:11px 13px; border:1.5px solid var(--border-input); border-radius:var(--radius-md); background:var(--surface-primary); cursor:pointer; font:inherit; min-height:46px; color:var(--text-primary); }
+  .ii-opt[aria-pressed="true"]{ border-color:var(--action-primary); background:var(--accent-soft); }
+  .ii-ind { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-strong); flex:none; display:grid; place-items:center; }
+  .ii-opt[aria-pressed="true"] .ii-ind{ border-color:var(--action-primary); background:var(--action-primary); }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); align-self:flex-start; }
+  .ii-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }}</div></div>
+    <button class="ii-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+  <div class="ii-wrap">
+    <div class="ii-seg"><button aria-pressed="{{ isImm }}" onClick="{{ showImm }}">{{ t.tImm }}</button><button aria-pressed="{{ isInc }}" onClick="{{ showInc }}">{{ t.tInc }}</button></div>
+    {{ body }}
+  </div>
+  <input id="ii-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-info"><span class="dot"></span>{{ footTag }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary">{{ primary }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:820,&quot;height&quot;:760}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", tab:"imm", target:"registered", mode:"physical" };
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const pick=()=>{ const el=document.getElementById("ii-filepick"); if(el)el.click(); };
+    const t = ar ? {
+      back:"رجوع", headerTitle:"التفتيش الفوري ورصد الحادث", headerSub:"مسارات إضافية للمفتش", theme:"الوضع", langBtnLabel:"EN", saveDraft:"حفظ كمسودة",
+      tImm:"تفتيش فوري", tInc:"رصد حادث أثناء الزيارة",
+      immNote:"يبدأ المفتش زيارة فورية في الموقع دون إسناد مسبق. تُنشأ الزيارة عبر create_immediate_visit مع تدقيق المحاولة وحارس تداخل الإسناد، وتُقفل الحزمة كأي زيارة.",
+      target:"المنشأة", registered:"مسجّلة على صناعي", unreg:"غير مرخّصة (إدخال يدوي)",
+      estName:"اسم المنشأة", estNo:"رقم المنشأة/الترخيص", reason:"سبب التفتيش الفوري", reportType:"نوع التقرير", mode:"نمط التنفيذ", physical:"ميداني", virtual:"عن بُعد",
+      lockNote:"عند البدء تُقفل الحزمة (لقطة غير قابلة للتعديل) — لا يتجاوز التفتيش الفوري قفل الحزمة.", startImm:"بدء التفتيش الفوري", footImm:"مسار فوري",
+      incNote:"رصد حادث أثناء زيارة نشطة — قدرة مستقلة عن المخالفة. يُوثّق ويظهر ضمن مخرجات الزيارة.",
+      incTime:"وقت البلاغ", incDate:"تاريخ الحادث", incDesc:"وصف الحادث", incImpact:"الأثر", incLoc:"الموقع داخل المنشأة", incEvidence:"أدلة (صور/مستندات)", incSubmit:"تسجيل الحادث", footInc:"أثناء الزيارة",
+      impactOpts:["إصابة/سلامة","بيئي","إنتاج متوقف","أخرى"],
+    } : {
+      back:"Back", headerTitle:"Immediate inspection & incident", headerSub:"Inspector alternate paths", theme:"Theme", langBtnLabel:"AR", saveDraft:"Save draft",
+      tImm:"Immediate inspection", tInc:"Mid-visit incident",
+      immNote:"The inspector starts an on-site visit with no prior assignment. The visit is created via create_immediate_visit with attempt-audit + assignment-overlap guard, and the package locks like any visit.",
+      target:"Establishment", registered:"Registered on Senaei", unreg:"Unlicensed (manual entry)",
+      estName:"Establishment name", estNo:"Establishment / license no.", reason:"Reason for immediate inspection", reportType:"Report type", mode:"Execution mode", physical:"Physical", virtual:"Virtual",
+      lockNote:"On start the package locks (immutable snapshot) — Immediate Inspection does NOT bypass package locking.", startImm:"Start immediate inspection", footImm:"Immediate path",
+      incNote:"Log an incident during an active visit — a capability distinct from a violation. It is documented and surfaces in the visit outputs.",
+      incTime:"Report time", incDate:"Incident date", incDesc:"Incident description", incImpact:"Impact", incLoc:"Location within establishment", incEvidence:"Evidence (photos/docs)", incSubmit:"Log incident", footInc:"During visit",
+      impactOpts:["Injury / safety","Environmental","Production halted","Other"],
+    };
+    const ck=h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"#fff",strokeWidth:3,style:{width:11,height:11}},h("path",{d:"m5 12 5 5 9-10"}));
+    const set=(p)=>this.setState(p);
+    const banner=(txt,tone)=>h("div",{className:"card",style:{flexDirection:"row",gap:"10px",alignItems:"flex-start",background:`var(--status-${tone}-soft)`,borderColor:`color-mix(in srgb,var(--status-${tone}) 26%,transparent)`,boxShadow:"none",padding:"12px 14px"}},h("span",{className:"t-compact",style:{color:`var(--status-${tone}-text)`}},txt));
+    const field=(label,val,opts={})=>h("label",{className:"fld"},h("span",null,label,opts.req?h("span",{className:"req"}," *"):null), opts.area?h("textarea",{className:"input",rows:opts.rows||2,defaultValue:val}):opts.sel?h("select",{className:"select"},opts.sel.map((o,i)=>h("option",{key:i},o))):h("input",{className:"input",type:opts.type||"text",defaultValue:val}));
+    const yn=(label,opts,val,key)=>h("div",null,h("div",{style:{fontSize:"13px",color:"var(--text-secondary)",marginBottom:"6px"}},label),h("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap"}},opts.map(([v,l])=>{const on=val===v;return h("button",{key:v,className:"ii-opt","aria-pressed":on,onClick:()=>set({[key]:v})},h("span",{className:"ii-ind"},on?ck:null),l);})));
+
+    let body,footTag,primary;
+    if(st.tab==="imm"){
+      footTag=t.footImm; primary=t.startImm;
+      body=h(React.Fragment,null, banner(t.immNote,"info"),
+        h("div",{className:"card"},
+          yn(t.target,[["registered",t.registered],["unreg",t.unreg]],st.target,"target"),
+          st.target==="registered"
+            ? h("div",{className:"fld-row"}, field(t.estName,"شركة الأمل لتدريب العمال",{}), field(t.estNo,"IL-118824",{}))
+            : h("div",{className:"fld-row"}, field(t.estName,"",{req:true}), field(t.estNo,"",{})),
+          field(t.reason,"",{area:true,rows:2,req:true}),
+          h("div",{className:"fld-row"}, field(t.reportType,null,{sel:[ar?"تقرير الزيارة":"Visit Report",ar?"فسح كيميائي":"Chemical Clearance",ar?"إعفاء جمركي":"Customs Exemption",ar?"سلامة":"Safety"]}), yn(t.mode,[["physical",t.physical],["virtual",t.virtual]],st.mode,"mode")),
+          banner(t.lockNote,"warning")));
+    } else {
+      footTag=t.footInc; primary=t.incSubmit;
+      body=h(React.Fragment,null, banner(t.incNote,"info"),
+        h("div",{className:"card"},
+          h("div",{className:"fld-row"}, field(t.incDate,"",{type:"date"}), field(t.incTime,ar?"11:20 صباحاً":"11:20 AM",{})),
+          field(t.incDesc,"",{area:true,rows:3,req:true}),
+          field(t.incImpact,null,{sel:t.impactOpts}),
+          field(t.incLoc,"",{}),
+          h("label",{className:"fld"},h("span",null,t.incEvidence),h("button",{className:"up-btn",onClick:pick},h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})),ar?"إضافة أدلة":"Add evidence"))));
+    }
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t,
+      isImm: st.tab==="imm"?"true":"false", isInc: st.tab==="inc"?"true":"false",
+      showImm:()=>set({tab:"imm"}), showInc:()=>set({tab:"inc"}),
+      body, footTag, primary,
+    };
+  }
+}
+</script>
+</body>
+</html>

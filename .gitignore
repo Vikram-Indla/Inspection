@@ -93,3 +93,12 @@ tmp/node_modules
 # Sanitized Postman collection still contains business examples; keep it local.
 product-contract/factory-360/source/Inspection_API_documentation.sanitized.json
 apps/web/e2e/perf/.auth/
+
+# Design channel exports (designs/): the .dc.html pages are the code-ready
+# design authority and ARE tracked. The heavy atlas/scene raster art shipped
+# alongside them is binary documentation per docs/DOCUMENTATION_STORAGE_POLICY.md
+# and is re-extracted from the channel zips instead of committed.
+designs/**/*.png
+designs/**/*.jpg
+designs/**/*.mp4
+designs/**/*.zip

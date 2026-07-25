@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .au-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--border-subtle); border-top-color: var(--action-primary); animation: au-spin 0.9s linear infinite; }
+  @keyframes au-spin { to { transform: rotate(360deg); } }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="min-height:100vh; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); display:flex; flex-direction:column;">
+  <header style="display:flex; align-items:center; gap:12px; padding:16px 22px; border-block-end:1px solid var(--border-subtle);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:26px; height:26px; flex:none; color:var(--action-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+    <span style="display:flex; align-items:baseline; gap:8px;"><span lang="ar" style="font-weight:600; font-size:19px;">صقيل</span><span style="color:var(--text-muted);">|</span><span lang="ar" style="font-size:13px; color:var(--text-secondary);">صناعي</span></span>
+    <span class="grow"></span>
+    <div class="seg"><button class="seg-opt" aria-pressed="{{ isLaunch }}" onClick="{{ pickLaunch }}">Launch</button><button class="seg-opt" aria-pressed="{{ isNone }}" onClick="{{ pickNone }}">No workspace</button><button class="seg-opt" aria-pressed="{{ isReset }}" onClick="{{ pickReset }}">Reset</button></div>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="Toggle theme">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <main style="flex:1; display:grid; place-items:center; padding:40px 22px;">
+
+    <!-- LAUNCH SPLASH -->
+    <sc-if value="{{ isLaunch }}" hint-placeholder-val="{{ true }}">
+      <div style="text-align:center; max-width:44ch;">
+        <div class="au-spin" style="margin:0 auto 20px;"></div>
+        <h1 style="font-size:20px; font-weight:600; margin:0 0 8px;">Taking you to your workspace…</h1>
+        <p class="t-caption" style="margin:0;">Routing by your assigned role. An unrecognised or absent role is <strong>never</strong> silently dropped into admin — you'll be told plainly if no workspace is assigned.</p>
+        <p class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:16px;">CD003-SEC-001</p>
+      </div>
+    </sc-if>
+
+    <!-- NO WORKSPACE -->
+    <sc-if value="{{ isNone }}" hint-placeholder-val="{{ false }}">
+      <div class="panel" style="padding:32px; max-width:460px; width:100%; text-align:center;">
+        <div style="width:52px; height:52px; border-radius:50%; background:var(--surface-sunken); display:grid; place-items:center; margin:0 auto 18px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" style="width:26px; height:26px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <h1 style="font-size:18px; font-weight:600; margin:0 0 10px;">No workspace is assigned to your account yet</h1>
+        <p class="t-caption" style="margin:0 0 18px;">Your sign-in was successful, but no role has been assigned to your account. Contact your administrator to request access.</p>
+        <div style="padding:12px; background:var(--surface-sunken); border-radius:8px; margin-block-end:20px;"><div class="t-label">Signed in as</div><div class="id-code" style="font-size:13px; margin-block-start:2px;">inspector@mim.gov.sa</div></div>
+        <div style="display:flex; flex-direction:column; gap:10px;"><button class="btn btn-primary btn-lg btn-block">Check again</button><a class="btn btn-ghost btn-sm">Sign out</a></div>
+        <p class="t-caption" style="margin:16px 0 0; color:var(--text-muted);">No nav, no module or role names are shown — just identity, a safe explanation, a way to re-check, and sign-out.</p>
+      </div>
+    </sc-if>
+
+    <!-- RESET PASSWORD -->
+    <sc-if value="{{ isReset }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:440px; width:100%;">
+        <div class="seg" style="width:100%; margin-block-end:20px;"><button class="seg-opt" aria-pressed="{{ rVerify }}" onClick="{{ pickVerify }}">Verifying</button><button class="seg-opt" aria-pressed="{{ rForm }}" onClick="{{ pickForm }}">Set password</button><button class="seg-opt" aria-pressed="{{ rDone }}" onClick="{{ pickDone }}">Done</button><button class="seg-opt" aria-pressed="{{ rInvalid }}" onClick="{{ pickInvalid }}">Invalid</button></div>
+
+        <div class="panel" style="padding:30px;">
+          <sc-if value="{{ rVerify }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;"><div class="au-spin" style="margin:0 auto 16px;"></div><p style="font-size:15px; margin:0;">Verifying your reset link…</p></div>
+          </sc-if>
+
+          <sc-if value="{{ rForm }}" hint-placeholder-val="{{ true }}">
+            <h1 style="font-size:19px; font-weight:600; margin:0 0 6px;">Set a new password</h1>
+            <p class="t-caption" style="margin:0 0 20px;">Choose a new password for your account.</p>
+            <label class="stack" style="gap:5px; margin-block-end:14px;"><span class="t-label">New password</span><div class="input-affix"><input class="input" type="password" placeholder="Enter a new password"><button class="btn btn-icon btn-ghost btn-sm" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>
+            <label class="stack" style="gap:5px; margin-block-end:8px;"><span class="t-label">Confirm new password</span><input class="input" type="password" placeholder="Re-enter the password"></label>
+            <p class="t-caption" style="margin:0 0 18px; color:var(--status-critical-text);">The passwords don't match</p>
+            <button class="btn btn-primary btn-lg btn-block">Save new password</button>
+          </sc-if>
+
+          <sc-if value="{{ rDone }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;">
+              <div style="width:48px; height:48px; border-radius:50%; background:var(--status-compliant-soft); display:grid; place-items:center; margin:0 auto 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-compliant-text)" stroke-width="2" style="width:24px; height:24px;"><path d="m5 13 4 4L19 7"/></svg></div>
+              <h1 style="font-size:18px; font-weight:600; margin:0 0 8px;">Password updated</h1>
+              <p class="t-caption" style="margin:0 0 20px;">You've been signed out of the recovery session. You can now sign in with your new password.</p>
+              <button class="btn btn-primary btn-lg btn-block">Go to sign in</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ rInvalid }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;">
+              <div style="width:48px; height:48px; border-radius:50%; background:var(--status-critical-soft); display:grid; place-items:center; margin:0 auto 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-critical-text)" stroke-width="1.8" style="width:24px; height:24px;"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg></div>
+              <h1 style="font-size:18px; font-weight:600; margin:0 0 8px;">This reset link is invalid or has expired.</h1>
+              <p class="t-caption" style="margin:0 0 6px;">Request a new link from the sign-in page.</p>
+              <p class="t-caption" style="margin:0 0 20px; color:var(--text-muted);">Select "Forgot your password?" on the sign-in page to request a new link.</p>
+              <button class="btn btn-secondary btn-lg btn-block">Go to sign in</button>
+            </div>
+          </sc-if>
+        </div>
+        <p class="t-caption" style="text-align:center; margin:16px 0 0;"> (reset leg) · recovery token establishes a short-lived session · <a href="#">English</a></p>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:960,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { theme: "dark", view: "launch", reset: "form" };
+  renderVals() {
+    const v = this.state.view, r = this.state.reset;
+    return {
+      theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      isLaunch: v === "launch", isNone: v === "none", isReset: v === "reset",
+      pickLaunch: () => this.setState({ view: "launch" }),
+      pickNone: () => this.setState({ view: "none" }),
+      pickReset: () => this.setState({ view: "reset" }),
+      rVerify: r === "verify", rForm: r === "form", rDone: r === "done", rInvalid: r === "invalid",
+      pickVerify: () => this.setState({ view: "reset", reset: "verify" }),
+      pickForm: () => this.setState({ view: "reset", reset: "form" }),
+      pickDone: () => this.setState({ view: "reset", reset: "done" }),
+      pickInvalid: () => this.setState({ view: "reset", reset: "invalid" }),
+    };
+  }
+}
+</script>
+</body>
+</html>

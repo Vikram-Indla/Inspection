@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  a { color: var(--action-primary); }
+  a:hover { color: var(--action-primary); text-decoration: underline; text-underline-offset: 3px; }
+  .sb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 12px; }
+  .sb-card { text-align: start; background: var(--surface-primary); border: 1px solid var(--border-subtle);
+    border-radius: 10px; padding: 14px; cursor: pointer; font: inherit; color: inherit;
+    box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 10px; }
+  .sb-card:hover { border-color: var(--action-primary); }
+  .sb-card:focus-visible { outline: 2px solid var(--action-primary); outline-offset: 2px; }
+  .sb-meter { block-size: 5px; border-radius: 3px; background: var(--surface-sunken); overflow: hidden; }
+  .sb-meter > i { display: block; block-size: 100%; border-radius: 3px; }
+  .sb-lane { display: grid; grid-template-columns: 74px 1fr 34px; gap: 8px; align-items: center; font-size: 11px; }
+  .sb-mono { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); }
+  .sb-tab { display: flex; flex-direction: column; gap: 3px; padding: 10px 16px; border: 1px solid var(--border-subtle);
+    border-radius: 9px 9px 0 0; border-block-end: 0; background: transparent; color: var(--text-secondary);
+    font: inherit; cursor: pointer; text-align: start; min-inline-size: 190px; }
+  .sb-tab:hover { color: var(--text-primary); background: var(--surface-sunken); }
+  .sb-tab[aria-selected="true"] { background: var(--surface-primary); color: var(--text-primary); border-color: var(--action-primary); }
+  .sb-tab:focus-visible { outline: 2px solid var(--action-primary); outline-offset: 2px; }
+  .sb-drawer { position: fixed; inset-block: 0; inset-inline-end: 0; inline-size: min(560px, 100%);
+    background: var(--surface-primary); border-inline-start: 1px solid var(--border-subtle);
+    box-shadow: -18px 0 44px -22px rgba(0,0,0,.6); z-index: 80; display: flex; flex-direction: column; }
+  .sb-scrim { position: fixed; inset: 0; background: rgba(8,10,14,.5); z-index: 79; border: 0; }
+</style>
+</helmet>
+<div data-theme="dark" dir="ltr" lang="en" style="min-height:100vh; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); padding:26px 24px 80px;">
+
+  <div style="max-inline-size:1320px; margin:0 auto; display:flex; flex-direction:column; gap:16px;">
+
+    <header style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+      <div style="min-inline-size:0;">
+        <div style="display:flex; align-items:center; gap:11px; margin-block-end:6px;">
+          <img src="export-wordmark-icons/saqeel-favicon.svg" alt="" width="26" height="26">
+          <h1 style="font-size:23px; font-weight:700; letter-spacing:-0.02em; margin:0;">Delivery Status Board</h1>
+          <span class="badge badge-neutral">canonical</span>
+        </div>
+        <p style="margin:0; font-size:13px; color:var(--text-secondary); max-inline-size:88ch;">Three channels, three lanes per card: <strong>Design ↔ code parity</strong>, <strong>Code built</strong>, <strong>Backend wired</strong>. Click a card for what is pending. Agents update <span class="id-code">status/saqeel-status.json</span>; this page only renders it.</p>
+      </div>
+      <span class="grow"></span>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div class="panel" style="padding:10px 14px; min-inline-size:92px;"><div class="t-label">Overall</div><div style="font-size:25px; font-weight:700; line-height:1.1;">{{ rollAll }}<span style="font-size:13px; color:var(--text-muted);">%</span></div></div>
+        <div class="panel" style="padding:10px 14px; min-inline-size:92px;"><div class="t-label">Design</div><div style="font-size:25px; font-weight:700; line-height:1.1;">{{ rollDesign }}<span style="font-size:13px; color:var(--text-muted);">%</span></div></div>
+        <div class="panel" style="padding:10px 14px; min-inline-size:92px;"><div class="t-label">Code</div><div style="font-size:25px; font-weight:700; line-height:1.1;">{{ rollCode }}<span style="font-size:13px; color:var(--text-muted);">%</span></div></div>
+        <div class="panel" style="padding:10px 14px; min-inline-size:92px;"><div class="t-label">Wiring</div><div style="font-size:25px; font-weight:700; line-height:1.1;">{{ rollWiring }}<span style="font-size:13px; color:var(--text-muted);">%</span></div></div>
+      </div>
+    </header>
+
+    <section class="panel" style="padding:13px 16px;">
+      <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+        <span class="badge badge-info">rev {{ revision }}</span>
+        <span class="sb-mono">updated {{ updated }} by {{ updatedBy }}</span>
+        <span class="sb-mono">branch {{ branch }}</span>
+        <span class="badge badge-warning">{{ commitState }}</span>
+        <span class="grow"></span>
+        <span class="badge badge-critical">{{ breakCount }} cross-channel breaks</span>
+        <span class="badge badge-warning">{{ gapCount }} gaps</span>
+      </div>
+      <p style="margin:9px 0 0; font-size:12.5px; color:var(--text-secondary);"><strong>Design law.</strong> {{ law }}</p>
+    </section>
+
+    <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+      <div class="panel" style="padding:18px;" aria-busy="true">
+        <div class="stack" style="gap:10px;"><div class="skeleton" style="height:16px; width:32%;"></div><div class="skeleton" style="height:74px;"></div><div class="skeleton" style="height:74px;"></div></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ failed }}" hint-placeholder-val="{{ false }}">
+      <div class="panel" style="padding:18px; border-color:var(--status-critical-border);" role="alert">
+        <span class="exc exc-critical"><span class="exc-mark"></span>Status file unreadable</span>
+        <p class="t-caption" style="margin:8px 0 0;"><span class="id-code">status/saqeel-status.json</span> could not be read. Nothing is substituted — fix the file rather than trusting a stale number.</p>
+      </div>
+    </sc-if>
+
+    <div role="tablist" aria-label="Delivery channel" style="display:flex; gap:6px; flex-wrap:wrap; border-block-end:1px solid var(--border-subtle); padding-block-end:0;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+        <button class="sb-tab" role="tab" type="button" aria-selected="{{ t.selected }}" onClick="{{ t.pick }}">
+          <span style="display:flex; align-items:baseline; gap:8px;"><strong style="font-size:14px;">{{ t.label }}</strong><span style="font-size:17px; font-weight:700;">{{ t.pct }}<span style="font-size:10px; color:var(--text-muted);">%</span></span></span>
+          <span class="sb-mono">{{ t.summary }}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <p style="margin:0; font-size:12.5px; color:var(--text-secondary); flex:1; min-inline-size:220px;">{{ channelNote }}</p>
+      <div class="seg" role="group" aria-label="Card order">
+        <button class="seg-opt" aria-pressed="{{ byWork }}" onClick="{{ sortWork }}">Remaining work</button>
+        <button class="seg-opt" aria-pressed="{{ byJourney }}" onClick="{{ sortJourney }}">User journey</button>
+      </div>
+      <span class="badge badge-critical">{{ blockedCount }} blocked</span>
+      <span class="badge badge-compliant">{{ readyCount }} ready to build</span>
+    </div>
+    <p class="sb-mono" style="margin:0;">{{ sortLaw }}</p>
+
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+      <section style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; align-items:baseline; gap:10px; border-block-end:1px solid var(--border-subtle); padding-block-end:8px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0;">{{ g.label }}</h2>
+          <span class="sb-mono">{{ g.count }} cards · {{ g.pct }}%</span>
+        </div>
+        <div class="sb-cards">
+          <sc-for list="{{ g.cards }}" as="c" hint-placeholder-count="4">
+            <button class="sb-card" type="button" onClick="{{ c.open }}" aria-label="{{ c.aria }}">
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="min-inline-size:0; flex:1;">
+                  <div style="font-size:14.5px; font-weight:600; line-height:1.3;">{{ c.name }}</div>
+                  <div class="sb-mono" style="margin-block-start:3px;">{{ c.route }}</div>
+                </div>
+                <div style="text-align:end; flex:none;">
+                  <div style="font-size:20px; font-weight:700; line-height:1;">{{ c.overall }}<span style="font-size:11px; color:var(--text-muted);">%</span></div>
+                  <div class="sb-mono" style="margin-block-start:2px;">{{ c.effort }}</div>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px;">
+                <div class="sb-lane"><span style="color:var(--text-muted);">Design</span><span class="sb-meter"><i style="{{ c.dStyle }}"></i></span><span class="sb-mono" style="text-align:end;">{{ c.dTxt }}</span></div>
+                <div class="sb-lane"><span style="color:var(--text-muted);">Code</span><span class="sb-meter"><i style="{{ c.cStyle }}"></i></span><span class="sb-mono" style="text-align:end;">{{ c.cTxt }}</span></div>
+                <div class="sb-lane"><span style="color:var(--text-muted);">Wiring</span><span class="sb-meter"><i style="{{ c.wStyle }}"></i></span><span class="sb-mono" style="text-align:end;">{{ c.wTxt }}</span></div>
+              </div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                <span class="{{ c.gateClass }}">{{ c.gateTxt }}</span>
+                <span class="{{ c.pendClass }}">{{ c.pendTxt }}</span>
+                <sc-if value="{{ c.hasPwa }}" hint-placeholder-val="{{ false }}"><span class="{{ c.pwaClass }}">{{ c.pwaTxt }}</span></sc-if>
+              </div>
+              <sc-if value="{{ c.hasDeps }}" hint-placeholder-val="{{ false }}">
+                <div class="sb-mono" style="border-block-start:1px solid var(--border-subtle); padding-block-start:8px;">after: {{ c.depTxt }}</div>
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <section class="panel" style="padding:18px;">
+      <div class="panel-header" style="padding:0 0 12px;"><span class="panel-title">Blind spots — fix these or the numbers lie</span><span class="badge badge-warning">{{ bsCount }}</span></div>
+      <ol style="margin:0; padding-inline-start:20px; display:flex; flex-direction:column; gap:9px; font-size:12.5px; color:var(--text-secondary);">
+        <sc-for list="{{ blindspots }}" as="b" hint-placeholder-count="4">
+          <li><span class="id-code">{{ b.id }}</span> {{ b.text }}</li>
+        </sc-for>
+      </ol>
+    </section>
+
+  </div>
+
+  <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+    <button class="sb-scrim" type="button" aria-label="Close details" onClick="{{ closeDrawer }}"></button>
+    <aside class="sb-drawer" role="dialog" aria-modal="true" aria-label="Card detail">
+      <div style="padding:18px 20px; border-block-end:1px solid var(--border-subtle); display:flex; align-items:flex-start; gap:12px;">
+        <div style="min-inline-size:0; flex:1;">
+          <div class="t-label">{{ sel.channel }} · {{ sel.group }}</div>
+          <h2 style="font-size:18px; font-weight:600; margin:4px 0 0;">{{ sel.name }}</h2>
+        </div>
+        <div style="text-align:end;"><div style="font-size:24px; font-weight:700; line-height:1;">{{ sel.overall }}<span style="font-size:12px; color:var(--text-muted);">%</span></div></div>
+        <button class="btn btn-icon btn-ghost" onClick="{{ closeDrawer }}" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div style="padding:18px 20px 60px; overflow-y:auto; display:flex; flex-direction:column; gap:16px;">
+        <dl style="display:grid; grid-template-columns:112px 1fr; gap:8px 14px; margin:0; font-size:12.5px;">
+          <dt style="color:var(--text-muted);">Design page</dt><dd style="margin:0;"><span class="id-code">{{ sel.designPage }}</span></dd>
+          <dt style="color:var(--text-muted);">Code path</dt><dd style="margin:0;"><span class="id-code">{{ sel.route }}</span></dd>
+          <dt style="color:var(--text-muted);">Journey stage</dt><dd style="margin:0;">{{ sel.phaseLabel }}</dd>
+          <dt style="color:var(--text-muted);">Build size</dt><dd style="margin:0;">{{ sel.complexity }} · remaining-work score {{ sel.effort }}</dd>
+        </dl>
+        <div class="panel" style="padding:14px;">
+          <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+            <span class="{{ sel.gateClass }}">{{ sel.gateTxt }}</span>
+            <span class="t-caption">{{ sel.gateWhy }}</span>
+          </div>
+          <sc-if value="{{ sel.hasDeps }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-block-start:12px;">
+              <div class="t-label" style="margin-block-end:7px;">Must be built first</div>
+              <ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px;">
+                <sc-for list="{{ sel.deps }}" as="dep" hint-placeholder-count="2">
+                  <li style="display:flex; align-items:center; gap:9px; font-size:12.5px;">
+                    <span class="{{ dep.badge }}">{{ dep.pct }}%</span>
+                    <span>{{ dep.name }}</span>
+                    <span class="sb-mono">{{ dep.channel }}</span>
+                  </li>
+                </sc-for>
+              </ol>
+            </div>
+          </sc-if>
+          <sc-if value="{{ sel.hasBlocks }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-block-start:12px;">
+              <div class="t-label" style="margin-block-end:7px;">Unblocks when this lands</div>
+              <ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px;">
+                <sc-for list="{{ sel.blocks }}" as="b2" hint-placeholder-count="2">
+                  <li style="display:flex; align-items:center; gap:9px; font-size:12.5px;">
+                    <span class="badge badge-neutral">{{ b2.pct }}%</span>
+                    <span>{{ b2.name }}</span>
+                    <span class="sb-mono">{{ b2.channel }}</span>
+                  </li>
+                </sc-for>
+              </ol>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+          <div class="panel" style="padding:12px;"><div class="t-label">Design parity</div><div style="font-size:20px; font-weight:700; margin-block-start:2px;">{{ sel.dTxt }}</div></div>
+          <div class="panel" style="padding:12px;"><div class="t-label">Code built</div><div style="font-size:20px; font-weight:700; margin-block-start:2px;">{{ sel.cTxt }}</div></div>
+          <div class="panel" style="padding:12px;"><div class="t-label">Wired</div><div style="font-size:20px; font-weight:700; margin-block-start:2px;">{{ sel.wTxt }}</div></div>
+        </div>
+        <sc-if value="{{ sel.hasPwa }}" hint-placeholder-val="{{ false }}">
+          <div class="panel" style="padding:14px;">
+            <span class="{{ sel.pwaClass }}">{{ sel.pwaTxt }}</span>
+            <p class="t-caption" style="margin:8px 0 0;">{{ sel.pwaNote }}</p>
+          </div>
+        </sc-if>
+        <div>
+          <div class="t-label" style="margin-block-end:8px;">Pending — {{ sel.pendCount }}</div>
+          <ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px;">
+            <sc-for list="{{ sel.pending }}" as="p" hint-placeholder-count="3">
+              <li class="panel" style="padding:11px 12px; display:flex; gap:10px; align-items:flex-start;">
+                <span class="{{ p.badge }}">{{ p.lane }}</span>
+                <span style="font-size:12.5px; line-height:1.55; color:var(--text-secondary);">{{ p.text }}</span>
+              </li>
+            </sc-for>
+          </ol>
+        </div>
+        <p class="t-caption" style="margin:0;">Closing an item requires evidence — the file, route or test that proves it. Agents edit <span class="id-code">status/saqeel-status.json</span>, never this page.</p>
+      </div>
+    </aside>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:980}}">
+const LANE_BADGE = { design: "badge badge-info", code: "badge badge-warning", wiring: "badge badge-neutral" };
+const PWA_BADGE = { ok: "badge badge-compliant", shared: "badge badge-info", gap: "badge badge-warning", break: "badge badge-critical" };
+const PWA_TXT = { ok: "integration ok", shared: "shared dependency", gap: "gap", break: "BROKEN" };
+
+function bar(pct) {
+  if (pct === null || pct === undefined) return "inline-size:0%; background:var(--border-subtle)";
+  var color = pct >= 90 ? "var(--status-compliant-text)" : pct >= 60 ? "var(--status-warning-text)" : "var(--status-critical-text)";
+  return "inline-size:" + pct + "%; background:" + color;
+}
+function txt(pct) { return pct === null || pct === undefined ? "n/a" : pct + "%"; }
+function avg(list) {
+  var vals = list.filter(function (v) { return typeof v === "number"; });
+  if (!vals.length) return 0;
+  return Math.round(vals.reduce(function (a, b) { return a + b; }, 0) / vals.length);
+}
+function overall(c) { return avg([c.design, c.code, c.wiring]); }
+
+var WEIGHT = { S: 1, M: 2, L: 3, XL: 5 };
+var DEP_READY = 70; // a dependency below this blocks its dependents
+
+/* Remaining work: how much is left, scaled by how big the card is. */
+function effort(c) {
+  if (c.design === null && c.code === null) return 0;
+  var left = 300 - (c.design || 0) - (c.code || 0) - (c.wiring || 0);
+  return Math.round(left * (WEIGHT[c.complexity] || 2) / 10);
+}
+function byId(cards, id) {
+  for (var i = 0; i < cards.length; i++) if (cards[i].id === id) return cards[i];
+  return null;
+}
+function blockers(cards, c) {
+  return (c.dependsOn || []).map(function (id) { return byId(cards, id); })
+    .filter(function (x) { return x && overall(x) < DEP_READY; });
+}
+
+class Component extends DCLogic {
+  state = { data: null, failed: false, sel: null, channel: "web", sort: "work" };
+
+  componentDidMount() {
+    var self = this;
+    this._onKey = function (e) {
+      if (e.key === "Escape" && self.state.sel) { e.preventDefault(); self.closeCard(); }
+    };
+    document.addEventListener("keydown", this._onKey);
+    fetch("status/saqeel-status.json", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("read failed"); return r.json(); })
+      .then(function (d) { self.setState({ data: d }); })
+      .catch(function () { self.setState({ failed: true }); });
+  }
+
+  componentWillUnmount() {
+    if (this._onKey) document.removeEventListener("keydown", this._onKey);
+    if (this._trap) document.removeEventListener("keydown", this._trap, true);
+  }
+
+  focusables(drawer) {
+    return drawer.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  }
+
+  openCard(id, trigger) {
+    var self = this;
+    this._returnTo = trigger || document.activeElement;
+    this.setState({ sel: id });
+    if (!this._trap) {
+      this._trap = function (e) {
+        if (e.key !== "Tab" || !self.state.sel) return;
+        var drawer = document.querySelector('[role="dialog"]');
+        if (!drawer) return;
+        var f = self.focusables(drawer);
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (!drawer.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      };
+      document.addEventListener("keydown", this._trap, true);
+    }
+    var tries = 0;
+    var land = function () {
+      var drawer = document.querySelector('[role="dialog"]');
+      var close = drawer && drawer.querySelector('button[aria-label="Close"]');
+      if (close) { close.focus(); if (document.activeElement === close) return; }
+      if (++tries < 12) setTimeout(land, 40);
+    };
+    setTimeout(land, 0);
+  }
+
+  closeCard() {
+    var back = this._returnTo;
+    this._returnTo = null;
+    this.setState({ sel: null });
+    setTimeout(function () { if (back && back.focus) back.focus(); }, 0);
+  }
+
+  renderVals() {
+    var d = this.state.data;
+    var self = this;
+    if (!d) {
+      return { loading: !this.state.failed, failed: this.state.failed, tabs: [], groups: [], blindspots: [],
+        bsCount: 0, rollAll: "—", rollDesign: "—", rollCode: "—", rollWiring: "—", revision: "—",
+        updated: "—", updatedBy: "—", branch: "—", commitState: "—", breakCount: 0, gapCount: 0,
+        law: "", channelNote: "", drawerOpen: false, sel: null,
+        blockedCount: 0, readyCount: 0, sortLaw: "",
+        byWork: this.state.sort === "work", byJourney: this.state.sort === "journey",
+        sortWork: function () {}, sortJourney: function () {} };
+    }
+
+    var ch = this.state.channel;
+    var inChannel = d.cards.filter(function (c) { return c.channel === ch; });
+    var shippable = inChannel.filter(function (c) { return c.group.indexOf("ref") === -1; });
+
+    var tabs = d.channels.map(function (t) {
+      var cards = d.cards.filter(function (c) { return c.channel === t.id; });
+      var ship = cards.filter(function (c) { return c.group.indexOf("ref") === -1; });
+      var breaks = cards.filter(function (c) { return c.pwa && c.pwa.state === "break"; }).length;
+      var gaps = cards.filter(function (c) { return c.pwa && c.pwa.state === "gap"; }).length;
+      return {
+        id: t.id, label: t.label, selected: t.id === ch,
+        pct: avg(ship.map(overall)),
+        summary: ship.length + " cards · " + breaks + " broken · " + gaps + " gaps",
+        pick: function () { self.setState({ channel: t.id, sel: null }); }
+      };
+    });
+
+    var all = d.cards;
+    var phaseLabel = function (n) {
+      var p = (d.phases || []).filter(function (x) { return x.id === n; })[0];
+      return p ? p.label : "Unstaged";
+    };
+
+    var view = function (c) {
+      var pend = (c.pending || []).length;
+      var blk = blockers(all, c);
+      var isRef = c.group.indexOf("ref") !== -1;
+      return {
+        id: c.id, name: c.name, route: c.route, overall: overall(c), _card: c,
+        effort: isRef ? "—" : effort(c) + " left",
+        dStyle: bar(c.design), cStyle: bar(c.code), wStyle: bar(c.wiring),
+        dTxt: txt(c.design), cTxt: txt(c.code), wTxt: txt(c.wiring),
+        pendTxt: pend + (pend === 1 ? " pending item" : " pending items"),
+        pendClass: pend === 0 ? "badge badge-compliant" : pend > 2 ? "badge badge-warning" : "badge badge-neutral",
+        gateTxt: isRef ? "reference" : blk.length ? "blocked ×" + blk.length : "ready to build",
+        gateClass: isRef ? "badge badge-neutral" : blk.length ? "badge badge-critical" : "badge badge-compliant",
+        hasDeps: (c.dependsOn || []).length > 0,
+        depTxt: (c.dependsOn || []).map(function (id) {
+          var dep = byId(all, id);
+          return dep ? dep.name + " (" + overall(dep) + "%)" : id;
+        }).join(" · "),
+        hasPwa: !!c.pwa,
+        pwaClass: c.pwa ? PWA_BADGE[c.pwa.state] : "badge badge-neutral",
+        pwaTxt: c.pwa ? PWA_TXT[c.pwa.state] : "",
+        aria: c.name + ", " + overall(c) + " percent, " + pend + " pending, " +
+              (isRef ? "reference artefact, excluded from the rollup"
+                     : blk.length ? "blocked by " + blk.length : "ready to build"),
+        open: function (e) { self.openCard(c.id, e && e.currentTarget); }
+      };
+    };
+
+    var groups;
+    if (this.state.sort === "journey") {
+      groups = (d.phases || []).map(function (p) {
+        var cards = all.filter(function (c) {
+          return c.channel === ch && c.phase === p.id && c.group.indexOf("ref") === -1;
+        });
+        cards.sort(function (a, b) { return effort(b) - effort(a); });
+        return { id: "phase-" + p.id, label: p.id + " · " + p.label, count: cards.length,
+          pct: avg(cards.map(overall)), cards: cards.map(view) };
+      }).filter(function (g) { return g.count > 0; });
+      var refsJ = inChannel.filter(function (c) { return c.group.indexOf("ref") !== -1; });
+      if (refsJ.length) {
+        groups.push({ id: "refs-journey", label: "Reference — excluded from the rollup",
+          count: refsJ.length, pct: avg(refsJ.map(overall)), cards: refsJ.map(view) });
+      }
+    } else {
+      var cards = inChannel.slice();
+      cards.sort(function (a, b) {
+        var ar = a.group.indexOf("ref") !== -1, br = b.group.indexOf("ref") !== -1;
+        if (ar !== br) return ar ? 1 : -1;
+        var ab = blockers(all, a).length === 0, bb = blockers(all, b).length === 0;
+        if (ab !== bb) return ab ? -1 : 1;          // ready before blocked
+        return effort(b) - effort(a);               // most work left first
+      });
+      var ready = cards.filter(function (c) { return c.group.indexOf("ref") === -1 && blockers(all, c).length === 0; });
+      var blocked = cards.filter(function (c) { return c.group.indexOf("ref") === -1 && blockers(all, c).length > 0; });
+      var refs = cards.filter(function (c) { return c.group.indexOf("ref") !== -1; });
+      groups = [
+        { id: "ready", label: "Ready to build — most work left first", count: ready.length, pct: avg(ready.map(overall)), cards: ready.map(view) },
+        { id: "blocked", label: "Blocked — a dependency is under " + DEP_READY + "%", count: blocked.length, pct: avg(blocked.map(overall)), cards: blocked.map(view) },
+        { id: "refs", label: "Reference — excluded from the rollup", count: refs.length, pct: avg(refs.map(overall)), cards: refs.map(view) }
+      ].filter(function (g) { return g.count > 0; });
+    }
+
+    var selCard = d.cards.filter(function (c) { return c.id === self.state.sel; })[0] || null;
+    var grpLabel = selCard ? (d.groups.filter(function (g) { return g.id === selCard.group; })[0] || {}).label : "";
+    var chLabel = selCard ? (d.channels.filter(function (t) { return t.id === selCard.channel; })[0] || {}).label : "";
+    var chNote = (d.channels.filter(function (t) { return t.id === ch; })[0] || {}).note;
+    var selBlockers = selCard ? blockers(all, selCard) : [];
+    var selDependents = selCard ? all.filter(function (c) {
+      return (c.dependsOn || []).indexOf(selCard.id) !== -1; }) : [];
+
+    return {
+      loading: false, failed: false,
+      revision: d.revision, updated: d.updated, updatedBy: d.updatedBy, branch: d.branch, law: d.law,
+      commitState: d.committed ? "committed" : "uncommitted branch",
+      channelNote: chNote,
+      rollAll: avg(shippable.map(overall)),
+      rollDesign: avg(shippable.map(function (c) { return c.design; })),
+      rollCode: avg(shippable.map(function (c) { return c.code; })),
+      rollWiring: avg(shippable.map(function (c) { return c.wiring; })),
+      breakCount: inChannel.filter(function (c) { return c.pwa && c.pwa.state === "break"; }).length,
+      gapCount: inChannel.filter(function (c) { return c.pwa && c.pwa.state === "gap"; }).length,
+      tabs: tabs, groups: groups,
+      sortLaw: d.sortLaw || "",
+      byWork: this.state.sort === "work",
+      byJourney: this.state.sort === "journey",
+      sortWork: function () { self.setState({ sort: "work" }); },
+      sortJourney: function () { self.setState({ sort: "journey" }); },
+      blockedCount: inChannel.filter(function (c) {
+        return c.group.indexOf("ref") === -1 && blockers(d.cards, c).length > 0; }).length,
+      readyCount: inChannel.filter(function (c) {
+        return c.group.indexOf("ref") === -1 && blockers(d.cards, c).length === 0; }).length,
+      blindspots: d.blindspots || [], bsCount: (d.blindspots || []).length,
+      drawerOpen: !!selCard,
+      closeDrawer: function () { self.closeCard(); },
+      sel: selCard ? {
+        name: selCard.name, group: grpLabel, channel: chLabel, overall: overall(selCard),
+        designPage: selCard.designPage, route: selCard.route,
+        dTxt: txt(selCard.design), cTxt: txt(selCard.code), wTxt: txt(selCard.wiring),
+        hasPwa: !!selCard.pwa,
+        pwaClass: selCard.pwa ? PWA_BADGE[selCard.pwa.state] : "",
+        pwaTxt: selCard.pwa ? PWA_TXT[selCard.pwa.state] : "",
+        pwaNote: selCard.pwa ? selCard.pwa.note : "",
+        pendCount: (selCard.pending || []).length,
+        pending: (selCard.pending || []).map(function (p) {
+          return { lane: p.lane, text: p.text, badge: LANE_BADGE[p.lane] || "badge badge-neutral" };
+        }),
+        phaseLabel: phaseLabel(selCard.phase),
+        complexity: selCard.complexity || "M",
+        effort: effort(selCard),
+        gateTxt: selBlockers.length ? "blocked ×" + selBlockers.length : "ready to build",
+        gateClass: selBlockers.length ? "badge badge-critical" : "badge badge-compliant",
+        gateWhy: selBlockers.length
+          ? "Waiting on " + selBlockers.map(function (b) { return b.name; }).join(", ") + " — each must reach " + DEP_READY + "%."
+          : "Every dependency is at " + DEP_READY + "% or better. Safe to start.",
+        hasDeps: (selCard.dependsOn || []).length > 0,
+        deps: (selCard.dependsOn || []).map(function (id) {
+          var dep = byId(all, id);
+          if (!dep) return { name: id, pct: 0, channel: "?", badge: "badge badge-critical" };
+          var p = overall(dep);
+          return { name: dep.name, pct: p, channel: dep.channel,
+            badge: p >= DEP_READY ? "badge badge-compliant" : "badge badge-critical" };
+        }),
+        hasBlocks: selDependents.length > 0,
+        blocks: selDependents.map(function (dep) {
+          return { name: dep.name, pct: overall(dep), channel: dep.channel };
+        })
+      } : null
+    };
+  }
+}
+</script>
+</body>
+</html>

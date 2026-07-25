@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .f360-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 13px 20px; margin: 0; }
+  .f360-facts dt { font-size: 11px; color: var(--text-muted); margin-block-end: 2px; }
+  .f360-facts dd { margin: 0; font-size: 13.5px; color: var(--text-primary); }
+  .f360-trend { display: flex; align-items: flex-end; gap: 12px; height: 92px; margin-block-start: 14px; }
+  .f360-trend > div { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .f360-trend i { display: block; width: 30px; background: var(--action-primary); border-radius: 3px 3px 0 0; }
+  .f360-ws { display: grid; grid-template-columns: 250px minmax(0,1fr) 320px; gap: 16px; align-items: start; }
+  @media (max-width: 1280px) { .f360-ws { grid-template-columns: minmax(0,1fr) 320px; } .f360-ws > aside:first-child { grid-column: 1 / -1; position: static; } }
+  @media (max-width: 900px) { .f360-ws { grid-template-columns: 1fr; } .f360-ws > aside { position: static; } }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <!-- SHELL SIDEBAR -->
+  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
+    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    </div>
+    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+        <a class="nav-item is-active" href="SAQEEL%20Factory%20360.dc.html" data-route="/factories" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+        <div role="group" aria-labelledby="r5-p-inspection">
+          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+        </div>
+      </details>
+      <details class="r5-group" open="open">
+        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+        <a class="nav-item" href="SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+        <a class="nav-item" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+      </details>
+    </div>
+    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+      <details class="r5-group r5-group--admin">
+        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
+        <a class="nav-item" href="admin/SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
+        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
+        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
+        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
+        <a class="nav-item" href="admin/SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
+        <div role="group" aria-labelledby="r5-p-advanced-administration">
+          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
+          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
+          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
+          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
+          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
+          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
+          <a class="nav-item r5-child" href="admin/SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main-content" tabindex="-1" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <a class="r5-skip" href="#page-body">Skip to content</a>
+    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
+    <div class="r5-topbar">
+      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <details class="r5-search">
+        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
+        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
+      </details>
+      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
+      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+      <span class="r5-spacer"></span>
+      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
+      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
+      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
+    </div>
+    <!-- GLOBAL TOP BAR -->
+    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+      <div style="display:flex; align-items:center; gap:12px; padding:12px 24px;">
+        <button class="btn btn-secondary" style="border-radius:var(--radius-full);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="1.5"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>Last 30 days</button>
+        <button class="btn btn-secondary" style="border-radius:var(--radius-full);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 6 6 10 6 13a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg>All Regions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px; height:14px;"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button class="btn btn-icon btn-ghost" style="position:relative;" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span style="position:absolute; top:1px; inset-inline-end:0; min-width:17px; height:15px; padding:0 3px; border-radius:8px; background:var(--status-critical); color:#fff; font-size:9px; font-weight:700; display:grid; place-items:center; line-height:1;">99+</span></button>
+        <button class="btn btn-icon btn-ghost" aria-label="Analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V10M10 20V4M16 20v-8M4 20h16"/></svg></button>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; padding:2px 24px 16px; flex-wrap:wrap;">
+        <div class="breadcrumb"><a href="#">Factories</a><span class="sep">/</span><span>CR 1010445213</span></div>
+        <span class="grow"></span>
+      </div>
+      <div style="display:flex; align-items:flex-end; gap:14px; padding:0 24px 16px; flex-wrap:wrap;">
+        <div>
+          <h1 style="font-family:var(--font-body); font-size:24px; font-weight:700; letter-spacing:-0.02em; margin:0;">Al Rasheed Steel Works Co.</h1>
+          <div class="t-caption" style="margin-block-start:4px;" lang="ar" dir="rtl">شركة الراشد للصناعات الفولاذية</div>
+        </div>
+        <span class="badge badge-info">Factory 360</span>
+        <span class="grow"></span>
+        <span class="id-code" style="font-size:11px; color:var(--text-muted);">source MODON · recorded 2026-07-20</span>
+      </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <div class="f360-ws" style="padding:18px 24px 80px;">
+
+      <!-- LEFT: licenses & plants -->
+      <aside class="panel" style="padding:16px; position:sticky; top:132px;">
+        <h2 style="font-size:14px; font-weight:600; margin:0 0 2px;">Licenses &amp; plants</h2>
+        <p class="t-caption" style="margin:0 0 12px;"><span class="id-code">1010445213</span> · 3 licenses</p>
+        <div class="stack" style="gap:6px;">
+          <sc-for list="{{ licenses }}" as="l" hint-placeholder-count="3">
+            <button onClick="{{ l.pick }}" style="display:block; width:100%; text-align:start; background:{{ l.bg }}; border:1px solid var(--border-subtle); border-radius:8px; padding:10px 12px; cursor:pointer; font:inherit;">
+              <strong class="id-code" style="font-size:13px; color:var(--text-primary);">{{ l.number }}</strong>
+              <div class="t-caption" style="margin-block-start:2px;">Plant <span class="id-code">{{ l.plant }}</span> · {{ l.status }}</div>
+            </button>
+          </sc-for>
+        </div>
+        <p class="t-caption" style="margin:12px 0 0;">Selected license drives the plant, address and observed-snapshot sections.</p>
+      </aside>
+
+      <!-- MAIN: dossier sections -->
+      <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:14px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Commercial registration &amp; legal identity</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <dl class="f360-facts">
+            <div><dt>CR number</dt><dd><span class="id-code">1010445213</span></dd></div>
+            <div><dt>Unified number</dt><dd><span class="id-code">7001234567</span></dd></div>
+            <div><dt>Legal name (English)</dt><dd lang="en" dir="ltr">Al Rasheed Steel Works Co.</dd></div>
+            <div><dt>Legal name (Arabic)</dt><dd lang="ar" dir="rtl">شركة الراشد للصناعات الفولاذية</dd></div>
+            <div><dt>Status</dt><dd>Active</dd></div>
+            <div><dt>Issued / expires</dt><dd><span class="id-code">2016-03-02 → 2027-03-01</span></dd></div>
+            <div><dt>Owner details</dt><dd>Al Rasheed Holding Co.</dd></div>
+          </dl>
+          <h3 style="font-size:12.5px; font-weight:600; margin:18px 0 10px; color:var(--text-secondary);">License portfolio</h3>
+          <dl class="f360-facts">
+            <div><dt>Total licenses</dt><dd>3</dd></div>
+            <div><dt>Active / expired / suspended</dt><dd><span class="id-code">1 / 1 / 1</span></dd></div>
+            <div><dt>Highest-risk license</dt><dd><span class="id-code">IL-44718</span> · 78 · High</dd></div>
+            <div><dt>Approved inspections</dt><dd>9</dd></div>
+            <div><dt>Open violations</dt><dd class="t-caption">Not Available — no governed open/closed state</dd></div>
+            <div><dt>Active penalties</dt><dd class="t-caption">Not Available — statuses do not define Active/Expired</dd></div>
+          </dl>
+          <p class="t-caption" style="margin:12px 0 0;">Portfolio facts only. No CR-level risk score or compliance rate is calculated.</p>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:14px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Selected license, plant &amp; address</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <dl class="f360-facts">
+            <div><dt>Industrial license</dt><dd><span class="id-code">{{ sel.number }}</span></dd></div>
+            <div><dt>Plant number</dt><dd><span class="id-code">{{ sel.plant }}</span></dd></div>
+            <div><dt>Factory</dt><dd>{{ sel.factory }} · <span class="id-code">{{ sel.code }}</span></dd></div>
+            <div><dt>Status / stage</dt><dd>{{ sel.status }}</dd></div>
+            <div><dt>Issued / expires</dt><dd><span class="id-code">{{ sel.dates }}</span></dd></div>
+            <div><dt>License holder</dt><dd>{{ sel.holder }}</dd></div>
+            <div><dt>Address</dt><dd>{{ sel.addr }}</dd></div>
+            <div><dt>Coordinates</dt><dd><span class="id-code">{{ sel.coords }}</span></dd></div>
+          </dl>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:8px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Official vs latest approved observed snapshot</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <p class="t-caption" style="margin:0 0 12px;">The observed column is the immutable official-hierarchy snapshot captured with a submission that later became an approved report. It never overwrites current source truth.</p>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Field</th><th>Current official</th><th>Observed at submission</th><th>Comparison</th></tr></thead><tbody>
+            <tr><td>CR number</td><td><span class="id-code">1010445213</span></td><td><span class="id-code">1010445213</span></td><td><span class="badge badge-compliant">unchanged</span></td></tr>
+            <tr><td>Industrial license</td><td><span class="id-code">{{ sel.number }}</span></td><td><span class="id-code">{{ sel.number }}</span></td><td><span class="badge badge-compliant">unchanged</span></td></tr>
+            <tr><td>Plant number</td><td><span class="id-code">{{ sel.plant }}</span></td><td><span class="id-code">{{ sel.plant }}</span></td><td><span class="badge badge-compliant">unchanged</span></td></tr>
+            <tr><td>Region</td><td>Eastern</td><td>Eastern</td><td><span class="badge badge-compliant">unchanged</span></td></tr>
+            <tr><td>City</td><td>Dammam</td><td>Al Khobar</td><td><span class="badge badge-warning">changed</span></td></tr>
+          </tbody></table></div>
+          <p class="t-caption" style="margin:12px 0 0;">Captured 2026-05-18 · SHA-256 <span class="id-code">9f2c41ab77e0…</span><a href="#">origin approved report</a></p>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:8px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Approved inspection compliance</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <p class="t-caption" style="margin:0 0 10px;">Calculated only from the latest immutable submitted version of approved inspections and its frozen package. Returned or rejected inspections stay visible below but never affect this rate.</p>
+          <div style="display:flex; align-items:baseline; gap:10px;"><span class="kpi-value" style="font-size:34px;">84<span class="unit">%</span></span><span class="t-caption">126 / 150 scored answers · Health-distinct</span></div>
+          <div class="f360-trend" aria-label="Approved compliance trend">
+            <div><i style="height:60px;"></i><span class="t-caption id-code">78%</span></div>
+            <div><i style="height:66px;"></i><span class="t-caption id-code">81%</span></div>
+            <div><i style="height:72px;"></i><span class="t-caption id-code">84%</span></div>
+          </div>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:12px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Inspection reports</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Inspection</th><th>Date</th><th>Status</th><th>Latest immutable version</th><th class="cell-num">Approved compliance</th><th></th></tr></thead><tbody>
+            <tr><td><span class="id-code">INS-88213</span></td><td><span class="id-code">2026-05-18</span></td><td><span class="badge badge-compliant">approved</span></td><td>v3</td><td class="cell-num">84%</td><td><a href="#">Open report</a></td></tr>
+            <tr><td><span class="id-code">INS-87740</span></td><td><span class="id-code">2026-02-11</span></td><td><span class="badge badge-warning">returned</span></td><td>v2</td><td class="cell-num">—</td><td><a href="#">Open report</a></td></tr>
+            <tr><td><span class="id-code">INS-86502</span></td><td><span class="id-code">2025-11-03</span></td><td><span class="badge badge-compliant">approved</span></td><td>v4</td><td class="cell-num">81%</td><td><a href="#">Open report</a></td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:12px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Approved violations &amp; corrective actions</h2><span class="badge badge-warning"><span class="dot"></span>2 open</span></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Violation</th><th>Severity</th><th>Corrective action</th><th>Grace period</th><th>Originating report</th></tr></thead><tbody>
+            <tr><td><span class="id-code">FS-014</span> · Blocked emergency exit</td><td><span class="badge badge-critical">Critical</span></td><td>Clear &amp; re-certify egress</td><td class="cell-num">7 days</td><td><a href="#">INS-88213</a></td></tr>
+            <tr><td><span class="id-code">EL-233</span> · Unlabelled panel</td><td><span class="badge badge-warning">Major</span></td><td>Label &amp; inspect</td><td class="cell-num">30 days</td><td><a href="#">INS-86502</a></td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:12px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Industrial information</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Type</th><th>Name</th><th>HS / activity</th><th class="cell-num">Qty / capacity</th><th class="cell-num">Real / max production</th><th>Source</th></tr></thead><tbody>
+            <tr><td>Product</td><td>Hot-rolled coil</td><td><span class="id-code">7208.10</span></td><td class="cell-num">120k / 180k t</td><td class="cell-num">104k / 180k</td><td class="t-caption">MODON · v6</td></tr>
+            <tr><td>Line</td><td>Rolling line A</td><td><span class="id-code">C-2201</span></td><td class="cell-num">1 / 1</td><td class="cell-num">— / —</td><td class="t-caption">MODON · v6</td></tr>
+            <tr><td>Raw material</td><td>Steel billet</td><td><span class="id-code">7207.20</span></td><td class="cell-num">200k t</td><td class="cell-num">— / —</td><td class="t-caption">MODON · v6</td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="panel" style="padding:18px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:12px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Documents &amp; factory media</h2><span class="badge badge-compliant"><span class="dot"></span>available</span></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>Category</th><th>Title</th><th>Reference</th><th>Validity</th><th></th></tr></thead><tbody>
+            <tr><td>Licence</td><td>Industrial licence certificate</td><td><span class="id-code">DOC-4471</span></td><td><span class="id-code">2016-03-02 → 2027-03-01</span></td><td><a href="#">Download</a></td></tr>
+            <tr><td>Safety</td><td>Civil Defence certificate</td><td></td><td><span class="id-code">2025-09-14 → 2026-09-13</span></td><td><a href="#">Download</a></td></tr>
+          </tbody></table></div>
+          <p class="t-caption" style="margin:12px 0 0;">Only official factory/profile media appears here. Inspection evidence stays linked to its report and is never merged into this gallery.</p>
+        </section>
+      </div>
+
+      <!-- RIGHT: context, source, risk, actions -->
+      <aside style="display:flex; flex-direction:column; gap:14px; position:sticky; top:132px; min-width:0;">
+        <section class="panel" style="padding:16px;">
+          <h2 style="font-size:14px; font-weight:600; margin:0 0 12px;">Selected context</h2>
+          <div class="stack" style="gap:10px;">
+            <div><div class="t-caption">CR</div><div class="id-code" style="font-size:14px;">1010445213</div></div>
+            <div><div class="t-caption">License</div><div class="id-code" style="font-size:14px;">{{ sel.number }}</div></div>
+            <div><div class="t-caption">Plant</div><div class="id-code" style="font-size:14px;">{{ sel.plant }}</div></div>
+          </div>
+        </section>
+        <section class="panel" style="padding:16px;">
+          <h2 style="font-size:14px; font-weight:600; margin:0 0 10px;">Source status &amp; freshness</h2>
+          <span class="badge badge-compliant"><span class="dot"></span>available</span>
+          <p class="t-caption" style="margin:10px 0 0;">Source system <strong style="color:var(--text-primary);">MODON</strong></p>
+          <p class="t-caption" style="margin:4px 0 0;">Recorded sync <span class="id-code">2026-07-20 08:41</span></p>
+          <p class="t-caption" style="margin:8px 0 0;">Freshness is shown as a source fact; no unapproved staleness threshold is inferred.</p>
+        </section>
+        <section class="panel" style="padding:16px; border-inline-start:3px solid var(--action-primary);">
+          <h2 style="font-size:14px; font-weight:600; margin:0 0 10px;">Saved risk</h2>
+          <div style="display:flex; align-items:baseline; gap:8px;"><span class="kpi-value" style="font-size:30px; color:{{ sel.riskColor }};">{{ sel.risk }}</span><span style="font-weight:600; font-size:13px;">{{ sel.band }}</span></div>
+          <p class="t-caption" style="margin:6px 0 0;">Model v4 · <span class="id-code">2026-07-19</span> · 6 saved snapshots</p>
+          <div style="margin-block-start:12px; padding:12px; background:var(--surface-sunken); border-radius:8px;">
+            <div class="row" style="gap:8px; margin-block-end:6px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--action-primary)" stroke-width="1.7"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8"/></svg><span style="font-size:12.5px; font-weight:600;">Explain saved risk</span></div>
+            <p class="t-caption" style="margin:0;">Advisory only. Restricted to saved Risk Engine facts; cannot recalculate or change risk. Human decision required.</p>
+            <button class="btn btn-secondary btn-sm" style="margin-block-start:10px;">Explain recorded factors</button>
+          </div>
+        </section>
+        <section class="panel" style="padding:16px;">
+          <h2 style="font-size:14px; font-weight:600; margin:0 0 10px;">Penalty lineage</h2>
+          <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;">
+            <li style="font-size:13px;"><span class="id-code">PN-2231</span><span class="badge badge-warning" style="height:18px;">issued</span><span class="id-code">2026-06-02</span></li>
+          </ul>
+        </section>
+        <section class="panel" style="padding:16px;">
+          <h2 style="font-size:14px; font-weight:600; margin:0 0 12px;">Actions</h2>
+          <div class="stack" style="gap:8px;">
+            <a class="btn btn-secondary btn-block">Open map</a>
+            <a class="btn btn-primary btn-block">Create inspection</a>
+            <a class="btn btn-ghost btn-block">Print / Save permitted PDF</a>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { theme: "dark", license: 0 };
+
+  renderVals() {
+    const CRIT = "var(--status-critical)", WARN = "var(--status-warning)", MUTE = "var(--text-muted)";
+    const DETAIL = [
+      { number: "IL-44718", plant: "P-118", factory: "Al Rasheed Steel — Line A", code: "F-2231", status: "Active · Operating", dates: "2016-03-02 → 2027-03-01", holder: "Al Rasheed Holding Co.", addr: "Dammam 2nd Industrial City · Eastern", coords: "26.3421, 50.1032", risk: "78", band: "High", riskColor: CRIT },
+      { number: "IL-44902", plant: "P-119", factory: "Al Rasheed Steel — Line B", code: "F-2232", status: "Suspended · Under review", dates: "2018-06-11 → 2026-06-10", holder: "Al Rasheed Holding Co.", addr: "Dammam 2nd Industrial City · Eastern", coords: "26.3419, 50.1041", risk: "64", band: "Medium", riskColor: WARN },
+      { number: "IL-39805", plant: "P-090", factory: "Al Rasheed Coatings", code: "F-1980", status: "Expired · Closed", dates: "2012-01-20 → 2024-01-19", holder: "Al Rasheed Holding Co.", addr: "Jubail Industrial City · Eastern", coords: "27.0112, 49.6602", risk: "—", band: "Not Available", riskColor: MUTE },
+    ];
+    const STATUS = ["Active", "Suspended", "Expired"];
+    return {
+      theme: this.state.theme,
+      isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
+      sel: DETAIL[this.state.license],
+      licenses: DETAIL.map((d, i) => ({
+        number: d.number, plant: d.plant, status: STATUS[i],
+        bg: this.state.license === i ? "var(--accent-soft)" : "var(--surface-primary)",
+        pick: () => this.setState({ license: i }),
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height:100%; margin:0; }
+  .sz-wrap { max-width:840px; width:100%; margin:0 auto; padding:16px 18px 120px; display:flex; flex-direction:column; gap:12px; }
+  .sz-acc { border:1px solid var(--border-subtle); border-radius:12px; background:var(--surface-primary); overflow:hidden; box-shadow:var(--shadow-card); }
+  .sz-head { display:flex; align-items:center; gap:12px; width:100%; padding:15px 17px; border:0; background:none; cursor:pointer; font:inherit; text-align:start; color:var(--text-primary); }
+  .sz-num { width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; font-size:13px; font-weight:600; flex:none; }
+  .sz-body { padding:8px 17px 20px; border-block-start:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:14px; }
+  .fld { display:flex; flex-direction:column; gap:5px; }
+  .fld > span { font-size:13px; color:var(--text-secondary); }
+  .req { color:var(--status-critical-text); }
+  .ret { font-size:11px; color:var(--text-muted); border:1px solid var(--border-subtle); border-radius:999px; padding:1px 8px; }
+  .rowlabel { display:flex; align-items:center; gap:8px; justify-content:space-between; }
+  .fld-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .fld-row { grid-template-columns:1fr; } }
+  .sz-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .sz-tbl { width:100%; border-collapse:collapse; font-size:12px; }
+  .sz-tbl th, .sz-tbl td { border:1px solid var(--border-subtle); padding:7px 9px; text-align:start; }
+  .sz-tbl th { background:var(--surface-sunken); font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+  .sz-check { display:flex; align-items:center; gap:9px; font-size:13px; cursor:pointer; }
+  .sz-check input, .sz-tbl input[type=checkbox] { width:18px; height:18px; accent-color:var(--action-primary); }
+  .up-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); font:inherit; font-size:13px; cursor:pointer; color:var(--text-secondary); align-self:flex-start; }
+  .sigbox { height:110px; border:1.5px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--surface-sunken); display:grid; place-items:center; color:var(--text-muted); font-size:12.5px; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);" data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}">
+
+  <header style="position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-start:max(12px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <button class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:20px;height:20px;"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div style="flex:1; min-width:0; line-height:1.35;"><div style="font-weight:600; font-size:15px;">{{ t.headerTitle }}</div><div class="t-caption" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.headerSub }} · <span class="id-code">VS-40219</span></div></div>
+    <span class="badge badge-info">{{ t.recordsTag }}</span>
+    <button class="sz-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+    <button class="btn btn-icon btn-ghost" onClick="{{ toggleTheme }}" aria-label="{{ t.theme }}">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+    </button>
+  </header>
+
+  <div class="sz-wrap">
+    <div style="padding:11px 15px; display:flex; gap:10px; align-items:flex-start; border:1px solid color-mix(in srgb,var(--status-info) 26%,transparent); border-radius:12px; background:var(--status-info-soft);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--status-info-text)" stroke-width="1.7" style="width:18px;height:18px;flex:none;margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <span class="t-compact" style="color:var(--status-info-text);">{{ t.note }}</span>
+    </div>
+
+    <sc-for list="{{ records }}" as="r" hint-placeholder-count="2">
+      <div class="sz-acc">
+        <button class="sz-head" onClick="{{ r.toggle }}" aria-expanded="{{ r.open }}"><span class="sz-num">{{ r.num }}</span><span style="font-weight:600; font-size:15px; flex:1;">{{ r.title }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="width:18px;height:18px;flex:none;">{{ r.chevron }}</svg></button>
+        <sc-if value="{{ r.open }}" hint-placeholder-val="{{ true }}"><div class="sz-body">{{ r.body }}</div></sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+  <input id="sz-filepick" type="file" accept="image/*,application/pdf" style="display:none">
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <span class="badge badge-warning"><span class="dot"></span>{{ t.pendingSync }}</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-secondary">{{ t.saveDraft }}</button>
+    <button class="btn btn-primary">{{ t.submit }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:840,&quot;height&quot;:780}}">
+class Component extends DCLogic {
+  state = { theme:"dark", lang:"ar", open:1, r6Absent:false, r7Absent:false, disposition:"all", rows:{p1:true,p2:false} };
+  renderVals(){
+    const ar=this.state.lang==="ar", h=React.createElement, st=this.state;
+    const pickFile=()=>{ const el=document.getElementById("sz-filepick"); if(el)el.click(); };
+    const t = ar ? {
+      back:"رجوع", headerTitle:"محاضر الحجز", headerSub:"شركة الأمل لتدريب العمال", recordsTag:"محاضر", theme:"الوضع", langBtnLabel:"EN",
+      pendingSync:"بانتظار المزامنة · 2", saveDraft:"حفظ كمسودة", submit:"إرسال",
+      note:"محضر حجز المنتجات وإشعار رفع الحجز — يظهران في الزيارة الميدانية عند طلب الحجز أو رفعه.",
+      r6:"محضر حجز منتجات", r7:"إشعار تبليغ برفع الحجز عن المنتجات أو المواد",
+      reportNo:"رقم المحضر", date:"التاريخ", retrieved:"مُسترجع", attachments:"مرفقات", attachBtn:"إضافة أو استعراض الملفات",
+      absent:"عدم وجود ممثل للمنشأة أو اعتراضه على التوقيع", reason:"السبب", signature:"التوقيع", signHint:"وقّع في الإطار (يظهر عند حضور الممثل وموافقته).",
+      disposition:"التصرف بـ", dispAll:"كامل المنتجات المضبوطة", dispSome:"المنتجات التالية فقط",
+      gridNote:"تُسحب أسماء المنتجات آلياً من النظام؛ الاختيار على مستوى كل سطر.",
+      cChoose:"اختيار", cProduct:"المنتج", cType:"النوع", cQty:"الكمية", cComm:"بيانات المنتج التجارية", cNotes:"الملاحظات",
+      rowsData:[["ألواح ألمنيوم","مادة خام","200 طن","علامة: ALPRO · بلد المنشأ: السعودية","—"],["أحبار طباعة","منتج نهائي","5٬000 لتر","تشغيلة: B-2041","عينة مسحوبة"]],
+    } : {
+      back:"Back", headerTitle:"Seizure records", headerSub:"Al-Amal Worker Training Co.", recordsTag:"Records", theme:"Theme", langBtnLabel:"AR",
+      pendingSync:"Pending sync · 2", saveDraft:"Save as draft", submit:"Submit",
+      note:"Product Seizure Record and Lift-Seizure Notification — shown on a field visit when a seizure is requested or released.",
+      r6:"Product Seizure Report", r7:"Unsealing (Lift-Seizure) Notification",
+      reportNo:"Report number", date:"Date", retrieved:"Retrieved", attachments:"Attachments", attachBtn:"Add or browse files",
+      absent:"No factory representative present or refused to sign", reason:"Reason", signature:"Signature", signHint:"Sign in the box (shown when the representative attends and agrees).",
+      disposition:"Disposition", dispAll:"All seized products", dispSome:"The following products only",
+      gridNote:"Product names are pulled from the system; selection is per row.",
+      cChoose:"Select", cProduct:"Product", cType:"Type", cQty:"Quantity", cComm:"Product commercial info", cNotes:"Notes",
+      rowsData:[["Aluminum sheets","Raw material","200 t","Brand: ALPRO · Origin: KSA","—"],["Printing ink","Final product","5,000 L","Batch: B-2041","Sample taken"]],
+    };
+    const down=h("path",{d:"m6 9 6 6 6-6"}), up=h("path",{d:"m6 15 6-6 6 6"});
+    const field=(label,opts={})=>h("label",{className:"fld"}, h("span",opts.ret?{className:"rowlabel"}:null, h("span",null,label, opts.req?h("span",{className:"req"}," *"):null), opts.ret?h("span",{className:"ret"},t.retrieved):null), opts.type==="date"?h("input",{className:"input",type:"date",disabled:opts.ret,style:opts.ret?{color:"var(--text-muted)"}:null}):h("input",{className:"input",defaultValue:opts.val||"",disabled:opts.ret,style:opts.ret?{color:"var(--text-muted)"}:null}));
+    const upload=(label,req)=>h("label",{className:"fld"}, h("span",null,label, req?h("span",{className:"req"}," *"):null), h("button",{className:"up-btn",onClick:pickFile}, h("svg",{viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.7,style:{width:15,height:15}},h("path",{d:"M12 16V4M8 8l4-4 4 4M4 20h16"})), t.attachBtn));
+    const attendance=(absent,key)=>h("div",{style:{display:"flex",flexDirection:"column",gap:"10px",borderBlockStart:"1px solid var(--border-subtle)",paddingBlockStart:"12px"}},
+      h("label",{className:"sz-check"}, h("input",{type:"checkbox",checked:absent,onChange:e=>this.setState({[key]:e.target.checked})}), h("span",null,t.absent)),
+      absent ? h("label",{className:"fld"}, h("span",null,t.reason), h("textarea",{className:"input",rows:2}))
+             : h("div",{className:"fld"}, h("span",{style:{fontSize:"13px",color:"var(--text-secondary)"}},t.signature), h("div",{className:"sigbox"},t.signHint)));
+
+    const r6Body=h(React.Fragment,null,
+      h("div",{className:"fld-row"}, field(t.reportNo,{req:true,val:"47072332"}), field(t.date,{type:"date",ret:true})),
+      upload(t.attachments,true),
+      attendance(st.r6Absent,"r6Absent"));
+
+    const r7Body=h(React.Fragment,null,
+      h("div",{className:"fld-row"}, field(t.reportNo,{req:true,val:"47072332"}), field(t.date,{type:"date",ret:true})),
+      h("label",{className:"fld"}, h("span",null,t.disposition, h("span",{className:"req"}," *")),
+        h("select",{className:"select",value:st.disposition,onChange:e=>this.setState({disposition:e.target.value})},
+          h("option",{value:"all"},t.dispAll), h("option",{value:"following"},t.dispSome))),
+      st.disposition==="following" ? h("div",null,
+        h("div",{style:{overflowX:"auto"}},
+          h("table",{className:"sz-tbl"},
+            h("thead",null,h("tr",null,[t.cChoose,t.cProduct,t.cType,t.cQty,t.cComm,t.cNotes].map((c,i)=>h("th",{key:i},c)))),
+            h("tbody",null, t.rowsData.map((r,i)=>{ const key="p"+(i+1);
+              return h("tr",{key:i},
+                h("td",null,h("input",{type:"checkbox",checked:!!st.rows[key],onChange:e=>this.setState(s=>({rows:{...s.rows,[key]:e.target.checked}}))})),
+                r.map((v,j)=>h("td",{key:j,style:{color:"var(--text-muted)"}},v))); }))) ),
+        h("div",{className:"t-caption",style:{marginTop:"6px"}},t.gridNote)) : null,
+      attendance(st.r7Absent,"r7Absent"));
+
+    const RECS=[{num:"٦",en:"6",title:t.r6,body:r6Body},{num:"٧",en:"7",title:t.r7,body:r7Body}];
+    return {
+      theme:st.theme, isLight:st.theme==="light", isDark:st.theme==="dark",
+      toggleTheme:()=>this.setState(s=>({theme:s.theme==="dark"?"light":"dark"})),
+      lang:st.lang, dir:ar?"rtl":"ltr", toggleLang:()=>this.setState(s=>({lang:s.lang==="ar"?"en":"ar"})), t, pickFile,
+      records: RECS.map((r,idx)=>{ const i=idx+1; const open=st.open===i; return { num: ar?r.num:r.en, title:r.title, open, chevron: open?up:down, toggle:()=>this.setState(s=>({open:s.open===i?null:i})), body:r.body }; }),
+    };
+  }
+}
+</script>
+</body>
+</html>

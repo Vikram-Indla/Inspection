@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .s5-trigger { inline-size:100%; display:flex; align-items:center; gap:8px; padding:8px 12px 5px; border:0; background:none; color:color-mix(in srgb, var(--nav-text) 65%, transparent); cursor:pointer; font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; text-align:start; border-radius:6px; }
+  .s5-trigger:hover { color:var(--nav-text-active); background:var(--nav-bg-hover); }
+  .s5-trigger:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .s5-chev { margin-inline-start:auto; transition:transform 140ms; }
+  .s5-trigger[aria-expanded="false"] .s5-chev { transform:rotate(-90deg); }
+  [dir="rtl"] .s5-trigger[aria-expanded="false"] .s5-chev { transform:rotate(90deg); }
+  .s5-sub-label { display:flex; align-items:center; gap:12px; min-block-size:36px; padding-inline:12px; color:var(--nav-text-active); font-size:13px; font-weight:600; }
+  .s5-child { margin-inline-start:24px; inline-size:calc(100% - 24px); }
+  .s5-lock { display:grid; place-items:center; margin-inline-start:auto; flex:none; }
+  .nav-item.is-locked { opacity:.5; cursor:not-allowed; }
+  .nav-item.is-locked:hover { background:transparent; color:var(--nav-text); }
+  .s5-collapse { display:flex; align-items:center; justify-content:center; margin-inline-start:auto; flex:none; inline-size:30px; block-size:30px; padding:0; border:0; border-radius:6px; background:transparent; color:var(--nav-text); cursor:pointer; }
+  .s5-collapse:hover { color:var(--nav-text-active); background:var(--nav-bg-hover); }
+  .s5-collapse:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
+  [dir="rtl"] .s5-collapse svg { transform:scaleX(-1); }
+  .sidebar.is-collapsed .s5-collapse svg { transform:scaleX(-1); }
+  [dir="rtl"] .sidebar.is-collapsed .s5-collapse svg { transform:none; }
+  .s5-scope { position:relative; display:flex; align-items:center; gap:8px; min-block-size:36px; padding-inline:12px; border:1px solid var(--border-subtle); border-radius:8px; background:var(--surface-sunken); color:var(--text-secondary); font-size:12px; white-space:nowrap; }
+  .s5-scope.is-off { opacity:.5; cursor:not-allowed; }
+  .s5-scope select { border:0; background:none; color:inherit; font:inherit; }
+  .s5-results { position:absolute; inset-block-start:calc(100% + 8px); inset-inline:0; z-index:40; padding:8px; border:1px solid var(--border-subtle); border-radius:8px; background:var(--surface-primary); box-shadow:var(--shadow-overlay,var(--shadow-card)); }
+  .s5-results a { display:flex; align-items:center; gap:9px; padding:8px; color:var(--text-primary); text-decoration:none; border-radius:6px; }
+  .s5-results a:hover { background:var(--surface-sunken); }
+  .s5-results small { display:block; color:var(--text-muted); font-size:10.5px; }
+  .s5-prog { position:absolute; inset-block-start:0; inset-inline:0; block-size:2px; background:var(--nav-indicator); animation:s5slide 900ms linear infinite; }
+  @keyframes s5slide { 0%{clip-path:inset(0 100% 0 0);} 50%{clip-path:inset(0 0 0 0);} 100%{clip-path:inset(0 0 0 100%);} }
+  .s5-skip { position:absolute; inset-inline-start:-9999px; }
+  .s5-skip:focus { position:static; display:inline-block; margin:8px; }
+  .s5-drawerbg { position:absolute; inset:0; z-index:45; background:rgba(0,0,0,.5); border:0; }
+</style>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="height:100vh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body); overflow:hidden;">
+
+  <div style="display:flex; align-items:center; gap:8px; padding:9px 14px; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); flex-wrap:wrap; flex:none;">
+    <span class="badge badge-info">WA-SHELL-r5</span>
+    <span class="id-code" style="font-size:11px; color:var(--text-muted);">reconciled to repo · ShellClient.tsx + shell-navigation.ts + astryx.css</span>
+    <span class="grow"></span>
+    <div class="seg" role="group" aria-label="Navigation state">
+      <button class="seg-opt" aria-pressed="{{ n_expanded }}" onClick="{{ set_expanded }}">Expanded</button>
+      <button class="seg-opt" aria-pressed="{{ n_collapsed }}" onClick="{{ set_collapsed }}">Collapsed</button>
+      <button class="seg-opt" aria-pressed="{{ n_drawer }}" onClick="{{ set_drawer }}">Mobile drawer</button>
+    </div>
+    <div class="seg" role="group" aria-label="Route">
+      <button class="seg-opt" aria-pressed="{{ r_dash }}" onClick="{{ go_dash }}">/dashboard</button>
+      <button class="seg-opt" aria-pressed="{{ r_ops }}" onClick="{{ go_ops }}">/operations</button>
+      <button class="seg-opt" aria-pressed="{{ r_reg }}" onClick="{{ go_reg }}">/admin/regulations</button>
+    </div>
+    <div class="seg" role="group" aria-label="Persona">
+      <button class="seg-opt" aria-pressed="{{ p_web }}" onClick="{{ set_web }}">Console persona</button>
+      <button class="seg-opt" aria-pressed="{{ p_field }}" onClick="{{ set_field }}">Field-only persona</button>
+    </div>
+    <div class="seg" role="group" aria-label="Search state">
+      <button class="seg-opt" aria-pressed="{{ q_closed }}" onClick="{{ set_q_closed }}">Search idle</button>
+      <button class="seg-opt" aria-pressed="{{ q_ready }}" onClick="{{ set_q_ready }}">Results</button>
+      <button class="seg-opt" aria-pressed="{{ q_loading }}" onClick="{{ set_q_loading }}">Loading</button>
+      <button class="seg-opt" aria-pressed="{{ q_empty }}" onClick="{{ set_q_empty }}">No match</button>
+      <button class="seg-opt" aria-pressed="{{ q_error }}" onClick="{{ set_q_error }}">Unavailable</button>
+    </div>
+    <button class="btn btn-secondary btn-sm" onClick="{{ toggleNavigating }}">{{ navLabel }}</button>
+    <button class="btn btn-secondary btn-sm" onClick="{{ toggleLocale }}">{{ localeLabel }}</button>
+    <button class="btn btn-secondary btn-sm" onClick="{{ toggleTheme }}">{{ themeLabel }}</button>
+  </div>
+
+  <div style="flex:1; min-height:0; display:flex; position:relative; overflow:hidden;">
+
+    <sc-if value="{{ showBackdrop }}" hint-placeholder-val="{{ false }}">
+      <button class="s5-drawerbg" aria-label="Close menu" onClick="{{ set_expanded }}"></button>
+    </sc-if>
+
+    <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+      <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="{{ navStyle }}">
+        <div class="sidebar-brand" style="gap:11px; min-height:64px;">
+          <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
+          <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
+          <sc-if value="{{ n_drawer }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-icon btn-ghost" aria-label="Close menu" style="margin-inline-start:auto;" onClick="{{ set_expanded }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+          </sc-if>
+          <sc-if value="{{ showCollapseBtn }}" hint-placeholder-val="{{ true }}">
+            <button class="s5-collapse" type="button" aria-label="{{ collapseLabel }}" aria-expanded="{{ n_expanded }}" onClick="{{ toggleCollapsed }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+          </sc-if>
+        </div>
+
+        <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+          <section>
+            <button class="s5-trigger" aria-expanded="{{ g_overview }}" aria-controls="g-overview" onClick="{{ t_overview }}"><span class="nav-label">Overview</span><svg class="s5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></button>
+            <sc-if value="{{ g_overview }}" hint-placeholder-val="{{ true }}">
+              <div id="g-overview">
+                <a class="nav-item" href="#dashboard" aria-current="{{ cur_dash }}" onClick="{{ go_dash }}"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
+                <a class="nav-item" href="#operations" aria-current="{{ cur_ops }}" onClick="{{ go_ops }}"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
+                <a class="nav-item" href="#factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
+              </div>
+            </sc-if>
+          </section>
+
+          <section>
+            <button class="s5-trigger" aria-expanded="{{ g_operations }}" aria-controls="g-operations" onClick="{{ t_operations }}"><span class="nav-label">Operations</span><svg class="s5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></button>
+            <sc-if value="{{ g_operations }}" hint-placeholder-val="{{ true }}">
+              <div id="g-operations">
+                <a class="nav-item" href="#planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
+                <div role="group" aria-labelledby="s5-parent-inspection">
+                  <div class="s5-sub-label" id="s5-parent-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+                  <a class="nav-item s5-child" href="#field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
+                  <a class="nav-item s5-child" href="#reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+                </div>
+              </div>
+            </sc-if>
+          </section>
+
+          <section>
+            <button class="s5-trigger" aria-expanded="{{ g_compliance }}" aria-controls="g-compliance" onClick="{{ t_compliance }}"><span class="nav-label">Compliance</span><svg class="s5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></button>
+            <sc-if value="{{ g_compliance }}" hint-placeholder-val="{{ true }}">
+              <div id="g-compliance">
+                <a class="nav-item" href="#regulations" aria-current="{{ cur_reg }}" onClick="{{ go_reg }}"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
+                <a class="nav-item" href="#approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
+                <a class="nav-item" href="#violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
+              </div>
+            </sc-if>
+          </section>
+
+        </div>
+
+        <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
+          <section>
+            <button class="s5-trigger" aria-expanded="{{ g_admin }}" aria-controls="g-admin" onClick="{{ t_admin }}"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14H3a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="s5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></button>
+            <sc-if value="{{ g_admin }}" hint-placeholder-val="{{ false }}">
+              <div id="g-admin" style="max-block-size:210px; overflow-y:auto;">
+                <a class="nav-item" href="#access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
+                <span class="nav-item is-locked" role="link" aria-disabled="true" aria-label="Roles. Administrator access required." title="Roles — Administrator access required." tabindex="0"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="s5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
+                <a class="nav-item" href="#lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></span><span class="nav-label">Reference Lists</span></a>
+                <a class="nav-item" href="#risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
+                <a class="nav-item" href="#packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
+                <div role="group" aria-labelledby="s5-parent-adv">
+                  <div class="s5-sub-label" id="s5-parent-adv"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
+                  <a class="nav-item s5-child" href="#exec-settings"><span class="nav-label">Execution Settings</span></a>
+                  <a class="nav-item s5-child" href="#workflows"><span class="nav-label">Workflow Settings</span></a>
+                  <a class="nav-item s5-child" href="#gis"><span class="nav-label">Map Settings</span></a>
+                  <a class="nav-item s5-child" href="#audit"><span class="nav-label">Activity Log</span></a>
+                  <a class="nav-item s5-child" href="#bulk-violations"><span class="nav-label">Issue Multiple Violations</span></a>
+                </div>
+              </div>
+            </sc-if>
+          </section>
+        </div>
+      </aside>
+    </sc-if>
+
+    <main id="main-content" style="flex:1; min-inline-size:0; display:flex; flex-direction:column; overflow:hidden; position:relative;">
+      <sc-if value="{{ navigating }}" hint-placeholder-val="{{ false }}">
+        <div class="s5-prog" role="status"><span class="sr-only">Loading destination…</span></div>
+      </sc-if>
+      <a class="s5-skip btn btn-secondary btn-sm" href="#s5-content">Skip to content</a>
+
+      <header style="position:sticky; top:0; z-index:30; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); padding:9px 20px 12px; display:flex; flex-direction:column; gap:8px; flex:none;">
+        <div style="display:flex; align-items:center; gap:12px; min-block-size:36px;">
+          <sc-if value="{{ showHamburger }}" hint-placeholder-val="{{ false }}">
+            <button class="btn btn-icon btn-ghost" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="{{ n_drawer }}" onClick="{{ set_drawer }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          </sc-if>
+
+          <div style="position:relative; inline-size:min(420px,38vw);">
+            <span style="position:absolute; inset-inline-start:12px; inset-block-start:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span>
+            <input class="input" type="search" role="combobox" aria-autocomplete="list" aria-expanded="{{ searchOpen }}" aria-controls="s5-search-results" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits" value="{{ query }}" style="inline-size:100%; padding-inline:38px 12px; border-radius:999px; background:var(--surface-sunken);">
+            <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+              <div class="s5-results" id="s5-search-results" role="listbox" aria-label="Search results">
+                <sc-if value="{{ q_ready }}" hint-placeholder-val="{{ true }}">
+                  <div>
+                    <a role="option" href="#regulations"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg><span><strong>Inspection Rules</strong><small>Navigation</small></span></a>
+                    <a role="option" href="#factory"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/></svg><span><strong>Al Rasheed Steel Works Co.</strong><small>CR 1010445213</small></span></a>
+                    <a role="option" href="#visit"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h14v18H5zM8 7h8M8 11h8"/></svg><span><strong>Visit VIS-88213</strong><small>Scheduled · Riyadh</small></span></a>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ q_loading }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0; padding:8px; color:var(--text-muted); font-size:12px;">Searching…</p></sc-if>
+                <sc-if value="{{ q_empty }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0; padding:8px; color:var(--text-muted); font-size:12px;">No matches. Nothing is guessed or partially matched.</p></sc-if>
+                <sc-if value="{{ q_error }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0; padding:8px; color:var(--status-critical-text); font-size:12px;">Search unavailable — read failed. Navigation matches are also withheld rather than shown alone.</p></sc-if>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ scopeDate }}" hint-placeholder-val="{{ true }}">
+            <details class="s5-scope">
+              <summary aria-label="Date scope"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Last 30 days</span></summary>
+              <div class="panel" style="position:absolute; inset-block-start:calc(100% + 8px); inset-inline-start:0; z-index:40; padding:12px; display:flex; flex-direction:column; gap:8px; min-inline-size:220px;">
+                <label class="stack" style="gap:4px;"><span class="t-label">From</span><input class="input" type="date" value="2026-06-26"></label>
+                <label class="stack" style="gap:4px;"><span class="t-label">To</span><input class="input" type="date" value="2026-07-25"></label>
+                <button class="btn btn-secondary btn-sm">Apply</button>
+              </div>
+            </details>
+          </sc-if>
+          <sc-if value="{{ scopeDateOff }}" hint-placeholder-val="{{ false }}">
+            <button class="s5-scope is-off" type="button" disabled aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Last 30 days</span></button>
+          </sc-if>
+
+          <label class="s5-scope" style="{{ regionStyle }}"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="{{ regionOff }}"><option>All regions</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
+
+          <span class="grow"></span>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn btn-icon btn-ghost" aria-label="{{ themeAria }}" onClick="{{ toggleTheme }}">
+              <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></sc-if>
+              <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+            </button>
+            <sc-if value="{{ p_web }}" hint-placeholder-val="{{ true }}">
+              <button class="btn btn-icon btn-ghost" aria-label="Notifications" style="position:relative;"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="badge badge-critical" style="position:absolute; inset-block-start:-2px; inset-inline-end:-2px; padding:0 5px; font-size:9.5px;">4</span></button>
+            </sc-if>
+            <a class="btn btn-icon btn-ghost" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
+            <sc-if value="{{ p_web }}" hint-placeholder-val="{{ true }}">
+              <div style="position:relative;">
+                <button class="btn btn-ghost btn-sm" aria-label="Account" aria-expanded="{{ accountOpen }}" onClick="{{ toggleAccount }}" style="display:flex; align-items:center; gap:9px; padding-inline:6px;">
+                  <span aria-hidden="true" style="display:grid; place-items:center; inline-size:30px; block-size:30px; border-radius:50%; background:var(--action-primary); color:#fff; font-size:11.5px; font-weight:700;">FA</span>
+                  <span style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.2;"><strong style="font-size:12.5px;">f.admin</strong><small style="font-size:10.5px; color:var(--text-muted);">compliance_admin · ops</small></span>
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg>
+                </button>
+                <sc-if value="{{ accountOpen }}" hint-placeholder-val="{{ false }}">
+                  <div class="panel" role="dialog" aria-label="Account" style="position:absolute; inset-block-start:calc(100% + 8px); inset-inline-end:0; z-index:40; padding:12px; min-inline-size:250px; display:flex; flex-direction:column; gap:7px;">
+                    <strong style="font-size:13px;">f.admin@mim.gov.sa</strong>
+                    <span class="t-caption">Roles: compliance_admin, ops</span>
+                    <div style="block-size:1px; background:var(--border-subtle); margin-block:4px;"></div>
+                    <a href="#locale" style="font-size:13px;">العربية</a>
+                    <a href="#profile" style="font-size:13px;">Profile &amp; settings</a>
+                    <a href="#signout" style="font-size:13px; color:var(--status-critical-text);">Sign out</a>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </header>
+
+      <div id="s5-content" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:14px;">
+        <sc-if value="{{ p_field }}" hint-placeholder-val="{{ false }}">
+          <section class="panel" style="padding:18px; border-color:var(--status-warning-border);">
+            <span class="exc exc-warning"><span class="exc-mark"></span>Field-only persona</span>
+            <h2 style="font-size:15px; font-weight:600; margin:10px 0 6px;">Console chrome is absent, not hidden</h2>
+            <p class="t-caption" style="margin:0; max-inline-size:74ch;">For a persona whose every role is field-channel, the rail, the hamburger, notifications and the account menu are not rendered at all — the nav column collapses so content spans full width. Theme and the AI entry remain. This mirrors the repo's <span class="id-code">is-field-nav-hidden</span> branch; it is a persona rule, not a breakpoint.</p>
+          </section>
+        </sc-if>
+
+        <section class="panel" style="padding:18px;">
+          <div class="panel-header" style="padding:0 0 12px;"><span class="panel-title">Reconciliation — repo is the authority on shell structure</span></div>
+          <dl style="display:grid; grid-template-columns:230px 1fr; gap:9px 18px; margin:0; font-size:12.5px;">
+            <dt style="color:var(--text-muted);">Nav groups</dt><dd style="margin:0;">Collapsible with chevron + <span class="id-code">aria-expanded</span> — Overview, Operations, Compliance, Administration</dd>
+            <dt style="color:var(--text-muted);">Collapse control</dt><dd style="margin:0;">Icon-only, in the brand row beside the wordmark (repo <span class="id-code">.ax-shell__collapse</span> inside <span class="id-code">.ax-shell__brand</span>); label lives in <span class="id-code">aria-label</span> only, hidden on narrow</dd>
+            <dt style="color:var(--text-muted);">Insights group</dt><dd style="margin:0;"><strong>Removed — not agreed.</strong> Repo still ships <span class="id-code">insights → AI Insights</span> at <span class="id-code">/ai/suggestions</span>; that group must come out of <span class="id-code">shell-navigation.ts</span> (defect O-28). The top-nav AI entry is unaffected.</dd>
+            <dt style="color:var(--text-muted);">Administration</dt><dd style="margin:0;">Pinned below the scroll region, gear icon, <strong>collapsed by default</strong></dd>
+            <dt style="color:var(--text-muted);">Sub-groups</dt><dd style="margin:0;">Inspection → Execution / Review &amp; Approval · Advanced Administration → 11 items</dd>
+            <dt style="color:var(--text-muted);">Locked items</dt><dd style="margin:0;">Lock glyph, <span class="id-code">aria-disabled</span>, reason in title + screen-reader text (Roles, above)</dd>
+            <dt style="color:var(--text-muted);">Collapsed width</dt><dd style="margin:0;">60px (repo token) — corrected from 68px</dd>
+            <dt style="color:var(--text-muted);">Scope controls</dt><dd style="margin:0;">Route-aware: <span class="id-code">/dashboard</span> date+region · <span class="id-code">/operations</span> region only · elsewhere both “Not applicable”, disabled not hidden</dd>
+            <dt style="color:var(--text-muted);">Search</dt><dd style="margin:0;">Combobox; navigation matches + backend results; loading / no-match / unavailable states</dd>
+            <dt style="color:var(--text-muted);">Route progress</dt><dd style="margin:0;">2px indicator + <span class="id-code">aria-busy</span> while a destination commits</dd>
+            <dt style="color:var(--text-muted);">Identity</dt><dd style="margin:0;">WA-BRAND-r1 retained — the repo's <span lang="ar">صقيل / صناعي</span> split lockup is a defect, logged as O-26</dd>
+          </dl>
+        </section>
+
+        <section class="panel" style="padding:18px;">
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 4px;">Route label corrections carried into M6</h2>
+          <p class="t-caption" style="margin:0 0 12px;">The repo's routes and labels win over the earlier M6 handoff.</p>
+          <div class="table-wrap"><table class="table">
+            <thead><tr><th scope="col">Repo label</th><th scope="col">Repo route</th><th scope="col">Superseded design route</th></tr></thead>
+            <tbody>
+              <tr><td>Inspection Rules</td><td><span class="id-code">/admin/regulations</span></td><td><span class="id-code">/compliance/regulations</span></td></tr>
+              <tr><td>Awaiting Approval</td><td><span class="id-code">/admin/compliance-approvals</span></td><td><span class="id-code">/compliance/approvals</span></td></tr>
+              <tr><td>Violations &amp; Penalties</td><td><span class="id-code">/admin/violations</span></td><td><span class="id-code">/enforcement/violations</span></td></tr>
+              <tr><td>Enforcement Recommendations</td><td><span class="id-code">/admin/enforcement-recommendations</span></td><td>—</td></tr>
+              <tr><td>Issue Multiple Violations</td><td><span class="id-code">/admin/bulk-violations</span></td><td>—</td></tr>
+              <tr><td>Violation Cases</td><td><span class="id-code">/enforcement</span></td><td>—</td></tr>
+              <tr><td>Activity Log</td><td><span class="id-code">/admin/audit</span></td><td><span class="id-code">/compliance/audit</span></td></tr>
+              <tr><td>Risk Settings</td><td><span class="id-code">/admin/risk</span></td><td><span class="id-code">/risk/facts</span></td></tr>
+            </tbody>
+          </table></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = {
+    nav: "expanded", route: "dashboard", persona: "web", q: "closed",
+    locale: "en", theme: "dark", navigating: false, account: false,
+    groups: { overview: true, operations: true, compliance: true, admin: false }
+  };
+
+  set(k, v) { this.setState({ [k]: v }); }
+  toggleGroup(id) {
+    this.setState(s => ({ groups: { ...s.groups, [id]: !s.groups[id] } }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const field = s.persona === "field";
+    const drawer = s.nav === "drawer";
+    const collapsed = s.nav === "collapsed";
+    const scopeDate = s.route === "dashboard";
+    const scopeRegion = s.route === "dashboard" || s.route === "operations";
+    const navStyle = collapsed
+      ? "height:100%; inline-size:60px;"
+      : drawer
+        ? "height:100%; inline-size:min(300px,88vw); position:absolute; inset-block:0; inset-inline-start:0; z-index:50; box-shadow:var(--shadow-card);"
+        : "height:100%; inline-size:248px;";
+    const go = route => () => this.setState({ route, navigating: false });
+    return {
+      theme: s.theme, isDark: s.theme === "dark", isLight: s.theme === "light",
+      dir: s.locale === "ar" ? "rtl" : "ltr", lang: s.locale,
+      localeLabel: s.locale === "ar" ? "EN / LTR" : "AR / RTL",
+      themeLabel: s.theme === "dark" ? "Light theme" : "Dark theme",
+      themeAria: s.theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+      toggleLocale: () => this.set("locale", s.locale === "ar" ? "en" : "ar"),
+      toggleTheme: () => this.set("theme", s.theme === "dark" ? "light" : "dark"),
+
+      n_expanded: s.nav === "expanded", n_collapsed: collapsed, n_drawer: drawer,
+      set_expanded: () => this.set("nav", "expanded"),
+      set_collapsed: () => this.set("nav", "collapsed"),
+      set_drawer: () => this.set("nav", "drawer"),
+      toggleCollapsed: () => this.set("nav", collapsed ? "expanded" : "collapsed"),
+      collapseLabel: collapsed ? "Expand navigation" : "Collapse navigation",
+      showCollapseBtn: !drawer,
+      navStyle,
+      showNav: !field,
+      showBackdrop: drawer && !field,
+      showHamburger: !field && drawer,
+
+      p_web: !field, p_field: field,
+      set_web: () => this.set("persona", "web"),
+      set_field: () => this.set("persona", "field"),
+
+      r_dash: s.route === "dashboard", r_ops: s.route === "operations", r_reg: s.route === "regulations",
+      go_dash: go("dashboard"), go_ops: go("operations"), go_reg: go("regulations"),
+      cur_dash: s.route === "dashboard" ? "page" : null,
+      cur_ops: s.route === "operations" ? "page" : null,
+      cur_reg: s.route === "regulations" ? "page" : null,
+
+      g_overview: s.groups.overview, g_operations: s.groups.operations,
+      g_compliance: s.groups.compliance, g_admin: s.groups.admin,
+      t_overview: () => this.toggleGroup("overview"),
+      t_operations: () => this.toggleGroup("operations"),
+      t_compliance: () => this.toggleGroup("compliance"),
+      t_admin: () => this.toggleGroup("admin"),
+
+      scopeDate, scopeDateOff: !scopeDate,
+      regionOff: !scopeRegion,
+      regionStyle: scopeRegion ? "" : "opacity:.5; cursor:not-allowed;",
+
+      query: s.q === "closed" ? "" : "insp",
+      searchOpen: s.q !== "closed",
+      q_closed: s.q === "closed", q_ready: s.q === "ready", q_loading: s.q === "loading",
+      q_empty: s.q === "empty", q_error: s.q === "error",
+      set_q_closed: () => this.set("q", "closed"),
+      set_q_ready: () => this.set("q", "ready"),
+      set_q_loading: () => this.set("q", "loading"),
+      set_q_empty: () => this.set("q", "empty"),
+      set_q_error: () => this.set("q", "error"),
+
+      navigating: s.navigating,
+      navLabel: s.navigating ? "Stop route progress" : "Show route progress",
+      toggleNavigating: () => this.set("navigating", !s.navigating),
+
+      accountOpen: s.account,
+      toggleAccount: () => this.set("account", !s.account)
+    };
+  }
+}
+</script>
+</body>
+</html>

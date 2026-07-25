@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<link rel="stylesheet" href="saqeel/styles.css">
+<style>
+  html, body { height: 100%; margin: 0; }
+  .pr-wrap { max-width: 760px; margin: 0 auto; width:100%; padding: 16px 18px 100px; display:flex; flex-direction:column; gap:14px; }
+  .pr-card { border:1px solid var(--border-subtle); border-radius:14px; background:var(--surface-primary); box-shadow:var(--shadow-card); padding:16px 18px; }
+  .pr-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  .pr-row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; border-block-start:1px solid var(--border-subtle); font-size:13px; }
+  .pr-row:first-child { border-block-start:none; }
+</style>
+<script src="./pwa-tabbar.js"></script>
+</helmet>
+<div data-theme="{{ theme }}" dir="{{ dir }}" lang="{{ lang }}" style="min-height:100dvh; display:flex; flex-direction:column; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+
+  <header style="display:flex; align-items:center; gap:10px; padding:14px 18px; padding-block-start:max(14px,env(safe-area-inset-top)); background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20Dashboard.dc.html" target="_top" class="btn btn-icon btn-ghost" aria-label="{{ t.back }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="{{ t.backArrow }}"/></svg></a>
+    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:15px;">{{ t.title }}</div><div class="t-caption">{{ v.factory }}</div></div>
+    <span class="badge badge-info">{{ t.step }}</span>
+    <button class="pr-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
+  </header>
+
+  <div class="pr-wrap">
+
+    <div class="pr-card">
+      <div class="t-label" style="margin-block-end:10px;">{{ t.visitDetails }}</div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.visitType }}</span><span class="id-code" style="font-weight:600;">{{ v.visitType }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.executionMode }}</span><span class="id-code" style="font-weight:600;">{{ v.executionMode }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.window }}</span><span class="id-code" style="font-weight:600;">{{ v.window }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.priority }}</span><span class="id-code" style="font-weight:600;">{{ v.priority }}</span></div>
+    </div>
+
+    <div class="pr-card">
+      <div class="t-label" style="margin-block-end:10px;">{{ t.factorySnapshot }}</div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.crNumber }}</span><span class="id-code" style="font-weight:600;">{{ v.crNumber }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.licenseNumber }}</span><span class="id-code" style="font-weight:600;">{{ v.licenseNumber }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.activityClass }}</span><span class="id-code" style="font-weight:600;">{{ v.activityClass }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.riskBand }}</span><span class="id-code" style="font-weight:600;">{{ v.riskBand }} · {{ v.riskScore }}</span></div>
+      <div class="pr-row"><span style="color:var(--text-secondary);">{{ t.employees }}</span><span class="id-code" style="font-weight:600;">{{ v.employeesTotal }} ({{ v.employeesSaudi }} {{ t.saudi }})</span></div>
+    </div>
+
+    <div class="pr-card">
+      <div class="t-label" style="margin-block-end:10px;">{{ t.previousInspections }}</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ prevInspections }}" as="pi" hint-placeholder-count="2">
+          <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:10px;">
+            <span style="flex:1; font-size:13px;">{{ pi.type }}</span>
+            <span class="t-caption id-code">{{ pi.date }}</span>
+            <span class="badge {{ pi.badge }}" style="height:17px;">{{ pi.result }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="pr-card" style="display:flex; gap:9px; align-items:flex-start;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" stroke-width="1.7" style="width:16px;height:16px; flex:none; margin-block-start:2px;"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z"/></svg>
+      <div><div class="t-label" style="margin-block-end:4px;">{{ t.aiBrief }}</div><span style="font-size:13px; line-height:1.55;">{{ t.aiBriefNote }}</span></div>
+    </div>
+
+    <div class="pr-card">
+      <div class="t-label" style="margin-block-end:10px;">{{ t.requiredDocs }}</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ requiredDocs }}" as="d" hint-placeholder-count="3">
+          <label class="ef-chk" style="display:flex; align-items:center; gap:9px; font-size:13px;"><span style="width:17px; height:17px; border-radius:5px; border:1.5px solid var(--border-strong); display:grid; place-items:center; flex:none;"><sc-if value="{{ d.ready }}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" fill="none" stroke="var(--status-compliant-text)" stroke-width="3" style="width:11px;height:11px;"><path d="m5 12 5 5 9-10"/></svg></sc-if></span>{{ d.title }}</label>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:sticky; bottom:0; display:flex; align-items:center; gap:12px; padding:12px 18px; padding-block-end:max(12px,env(safe-area-inset-bottom)); background:var(--surface-primary); border-block-start:1px solid var(--border-subtle);">
+    <a href="SAQEEL%20PWA-Field%20My%20Tasks.dc.html" target="_top" class="btn btn-secondary">{{ t.back }}</a>
+    <span class="grow"></span>
+    <a href="SAQEEL%20PWA-Field%20Virtual%20Visit.dc.html" target="_top" class="btn btn-primary">{{ t.startJourney }}</a>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = { theme: "dark", lang: "en" };
+
+  renderVals() {
+    const lang = this.state.lang, ar = lang === "ar";
+    const STR = {
+      ar: { back:"رجوع", title:"التحضير للزيارة", backArrow:"M15 6l-6 6 6 6", step:"قبل التنفيذ", langBtnLabel:"EN",
+        visitDetails:"تفاصيل الزيارة", visitType:"نوع الزيارة", executionMode:"وضع التنفيذ", window:"النافذة الزمنية", priority:"الأولوية",
+        factorySnapshot:"لمحة المنشأة", crNumber:"رقم السجل التجاري", licenseNumber:"رقم الترخيص الصناعي", activityClass:"النشاط", riskBand:"فئة الخطورة", employees:"العمالة", saudi:"سعودي",
+        previousInspections:"عمليات التفتيش السابقة", aiBrief:"موجز الذكاء الاصطناعي",
+        aiBriefNote:"بناءً على آخر تفتيش، ركّز على سلامة الحريق وتخزين المواد الكيميائية — كانت هذه أعلى نقاط المخالفة سابقاً.",
+        requiredDocs:"المستندات المطلوبة", startJourney:"بدء الرحلة",
+      },
+      en: { back:"Back", title:"Visit Preparation", backArrow:"M9 6l6 6-6 6", step:"Pre-execution", langBtnLabel:"AR",
+        visitDetails:"Visit Details", visitType:"Visit Type", executionMode:"Execution Mode", window:"Window", priority:"Priority",
+        factorySnapshot:"Factory Snapshot", crNumber:"CR Number", licenseNumber:"Industrial License No.", activityClass:"Activity", riskBand:"Risk Band", employees:"Employees", saudi:"Saudi",
+        previousInspections:"Previous Inspections", aiBrief:"AI Brief",
+        aiBriefNote:"Based on the last inspection, focus on Fire Safety and Chemical Storage — these were the highest violation points previously.",
+        requiredDocs:"Required Documents", startJourney:"Start Journey",
+      },
+    };
+    const t = STR[lang];
+    const v = ar ? {
+      factory: "شركة معادن الخليج — الدمام", visitType: "زيارة روتينية", executionMode: "ميدانية", window: "08:30 - 09:25", priority: "عالية",
+      crNumber: "7018452291", licenseNumber: "IND-2024-88321", activityClass: "صناعات معدنية", riskBand: "مرتفع", riskScore: "82", employeesTotal: "1000", employeesSaudi: "410",
+    } : {
+      factory: "Gulf Metal Industries — Dammam", visitType: "Routine", executionMode: "Field", window: "08:30 - 09:25", priority: "High",
+      crNumber: "7018452291", licenseNumber: "IND-2024-88321", activityClass: "Metal Industries", riskBand: "High", riskScore: "82", employeesTotal: "1000", employeesSaudi: "410",
+    };
+    const prevInspections = ar ? [
+      { type: "تفتيش روتيني", date: "2026/04/22", result: "3 مخالفات", badge: "badge-warning" },
+      { type: "زيارة متابعة", date: "2025/11/03", result: "مطابق", badge: "badge-compliant" },
+    ] : [
+      { type: "Routine Inspection", date: "2026/04/22", result: "3 violations", badge: "badge-warning" },
+      { type: "Follow-up Visit", date: "2025/11/03", result: "Compliant", badge: "badge-compliant" },
+    ];
+    const requiredDocs = ar ? [
+      { title: "نسخة من الترخيص الصناعي", ready: true },
+      { title: "تقرير التفتيش السابق", ready: true },
+      { title: "خطة السلامة المحدثة للمنشأة", ready: false },
+    ] : [
+      { title: "Industrial license copy", ready: true },
+      { title: "Previous inspection report", ready: true },
+      { title: "Establishment's updated safety plan", ready: false },
+    ];
+    return {
+      theme: this.state.theme, lang, dir: ar ? "rtl" : "ltr",
+      toggleLang: () => this.setState(s => ({ lang: s.lang === "ar" ? "en" : "ar" })), t, v, prevInspections, requiredDocs,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
