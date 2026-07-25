@@ -11,9 +11,21 @@ import styles from "./reports.module.css";
 // CR-327 / WA-AC-0327, CR-328 / WA-AC-0328, CR-334 / WA-AC-0334:
 // submitted inspection history is a read-only surface over the same immutable
 // submission_versions consumed by the canonical official report reader.
+// The 24 clean factories. The database holds 1,964 rows, the rest being legacy
+// and clutter that must never surface in the field channel.
+// Verified against the live factories table: this is exactly the set matching
+// ^F-[0-9]{4}$ — 24 of 1,964. Listed explicitly rather than by pattern so a
+// future legacy row that happens to match the shape cannot leak in.
+// An earlier revision of this list held only 12 codes, which silently hid half
+// of an inspector's own submitted reports.
 const CLEAN_FACTORY_CODES = [
-  "F-1101", "F-1102", "F-2201", "F-2202", "F-3301", "F-3302",
-  "F-4401", "F-4402", "F-5501", "F-5502", "F-6601", "F-6602",
+  "F-1101", "F-1102", "F-1103", "F-1104", "F-1105",
+  "F-2201", "F-2202", "F-2203", "F-2204",
+  "F-2214", "F-2215", "F-2216", "F-2217",
+  "F-3301", "F-3302", "F-3303", "F-3304", "F-3305",
+  "F-4401", "F-4402",
+  "F-5501", "F-5502",
+  "F-6601", "F-6602",
 ] as const;
 
 type Submission = {
