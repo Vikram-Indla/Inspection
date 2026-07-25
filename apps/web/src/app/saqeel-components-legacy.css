@@ -873,11 +873,6 @@ button.sq-shell-scope { cursor: pointer; }
 .sq-sr-only { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 [hidden] { display: none !important; }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
-
 /* ============================================================================
    LIVE OPERATIONS (SCR-WEB-500 prototype) — national FlightRadar view
    ========================================================================== */

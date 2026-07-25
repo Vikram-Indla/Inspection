@@ -83,6 +83,13 @@
   --status-completed: #256d5f; --status-completed-soft: #e0eeeb; --status-completed-text: #1b544a;
   --status-disabled:  #a4aab0; --status-disabled-soft:  #efeeea; --status-disabled-text:  #71787e;
 
+  /* Status borders — design system addition (saqeel/tokens/colors.css), reconciliation step 2 */
+  --status-critical-border:  color-mix(in oklab, var(--status-critical) 55%, var(--border-subtle));
+  --status-major-border:     color-mix(in oklab, var(--status-major) 55%, var(--border-subtle));
+  --status-warning-border:   color-mix(in oklab, var(--status-warning) 55%, var(--border-subtle));
+  --status-compliant-border: color-mix(in oklab, var(--status-compliant) 55%, var(--border-subtle));
+  --status-pending-border:   color-mix(in oklab, var(--status-pending) 55%, var(--border-subtle));
+
   /* Charts (categorical; 1 = accent) */
   --chart-1: #115c44; --chart-2: #4a7396; --chart-3: #b08334;
   --chart-4: #6b7280; --chart-5: #8a5f8f; --chart-6: #3f8d84;
@@ -199,6 +206,12 @@
   --status-onhold:    #c09a52; --status-onhold-soft:    #322817; --status-onhold-text:    #dcc08a;
   --status-completed: #4aa896; --status-completed-soft: #1b322e; --status-completed-text: #90cec2;
   --status-disabled:  #565c63; --status-disabled-soft:  #22262b; --status-disabled-text:  #82888f;
+
+  --status-critical-border:  color-mix(in oklab, var(--status-critical) 55%, var(--border-subtle));
+  --status-major-border:     color-mix(in oklab, var(--status-major) 55%, var(--border-subtle));
+  --status-warning-border:   color-mix(in oklab, var(--status-warning) 55%, var(--border-subtle));
+  --status-compliant-border: color-mix(in oklab, var(--status-compliant) 55%, var(--border-subtle));
+  --status-pending-border:   color-mix(in oklab, var(--status-pending) 55%, var(--border-subtle));
 
   --chart-1: #3aa87d; --chart-2: #6c96bd; --chart-3: #cfa14e;
   --chart-4: #8b93a0; --chart-5: #a985ae; --chart-6: #5cab9f;
