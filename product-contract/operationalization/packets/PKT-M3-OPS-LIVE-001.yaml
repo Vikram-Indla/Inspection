@@ -90,11 +90,12 @@ write_lease:
   rule: "Codex alone may grant the lease. One write lease maximum for M3; the queued successor holds none."
   allowed_paths:
     - "apps/web/src/app/(app)/operations/live/page.tsx"
-    - "apps/web/src/app/(app)/operations/live/loading.tsx"
-    - "apps/web/src/lib/operations/live.ts"
+    - "apps/web/src/app/(app)/operations/live/LiveOps.tsx"
     - "apps/web/e2e/web-admin-m3-operations.spec.ts"
     - "product-contract/evidence/PKT-M3-OPS-LIVE-001.md"
   prohibited_paths:
+    - "apps/web/src/app/(app)/operations/live/loading.tsx"
+    - "apps/web/src/lib/operations/live.ts"
     - "apps/web/src/app/(app)/operations/page.tsx"
     - "apps/web/src/app/(app)/operations/exceptions/**"
     - "apps/web/src/app/(app)/layout.tsx"
@@ -113,7 +114,7 @@ write_lease:
 dependencies:
   required:
     - "F0 shared shell remains the accepted inherited foundation."
-    - "Existing M3 branch codex/m3-operations-reconciliation at recorded HEAD b38930d4 is reconciled by Codex before lease grant; its dirty Live Operations and focused-test paths must not be overwritten."
+    - "Codex read-only reconciliation at branch codex/m3-operations-reconciliation HEAD b38930d4 proves one coherent uncommitted slice in page.tsx, LiveOps.tsx and the focused M3 test; the lease must preserve and complete those exact paths without overwrite or expansion."
     - "Repository-authenticated Operations persona and deterministic, clearly labelled test data."
   open_decisions:
     - id: "DEC-002"
@@ -138,7 +139,7 @@ evidence_required:
 
 stop_conditions:
   - "STOP THE LINE for suspected auth/RLS bypass, unauthorized inspector location, secret/PII exposure, data corruption or silent requirement loss."
-  - "Stop before implementation if Codex cannot reconcile the recorded dirty M3 paths or cannot grant the single M3 lease without overlap."
+  - "Stop before implementation if the proven dirty paths move, gain an overlapping owner or no longer match the reconciled page.tsx + LiveOps.tsx + focused-test slice."
   - "Stop and return if an exact source timestamp, permission boundary or existing freshness policy cannot be proven; do not infer one."
   - "Stop completion claims if any required state, locale, viewport or evidence leg is absent or stale."
   - "Stop completion claims while any P0/P1 defect remains."
@@ -156,7 +157,7 @@ estimated_size:
   points: 5
   class: "M"
   target_elapsed: "one bounded implementation cycle plus independent review"
-  rationale: "One route and focused service adapter/test surface; no DDL, provider change, shared shell or adjacent Operations screen."
+  rationale: "One existing coherent route-local page/client/test slice plus evidence; no new helper, loading edit, DDL, provider change, shared shell or adjacent Operations screen."
 
 queued_successor:
   packet_id: "PKT-M3-OPS-CENTER-002"
