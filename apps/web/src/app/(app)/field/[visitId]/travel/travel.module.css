@@ -105,6 +105,12 @@
   margin-block-start: var(--space-3);
 }
 
+.privacyNote {
+  margin: var(--space-3) 0 0;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
 .footer {
   position: sticky;
   inset-block-end: 0;
