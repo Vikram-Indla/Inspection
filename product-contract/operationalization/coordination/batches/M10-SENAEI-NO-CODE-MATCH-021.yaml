@@ -1,0 +1,469 @@
+schema_version: "1.0"
+packet_id: M10-SENAEI-NO-CODE-MATCH-021
+status: REVIEWER_READY_READ_ONLY_NO_CODE_MATCH_PROVIDER_CONTRACT_BLOCKED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_writes_performed: false
+mapping_writes_performed: false
+application_writes_performed: false
+test_writes_performed: false
+data_writes_performed: false
+computer_use_performed: false
+browser_use_performed: false
+
+business_function: >-
+  Resolve WA-DES-012, the registered Senaei administration design, against the
+  real repository. Prevent a design-only route, invented provider health,
+  undocumented endpoints, editable mappings, synchronization or reconciliation
+  actions from being mistaken for implemented capability. Preserve the real
+  fail-closed typed adapter, integration registry, CSV custody and read-only
+  Factory 360 source boundaries.
+
+lock_safe_boundary:
+  state: MAC_LOCKED_OR_UI_UNAVAILABLE
+  allowed:
+    - "Read canonical requirements, decisions, design export, routes, source, schema and tests."
+    - "Create and validate this owned no-code-match packet."
+  prohibited:
+    - "Desktop, browser, Computer Use or live Claude Design."
+    - "Design, mapping, application, test, data, seed, provider, credential or Supabase mutation."
+    - "main, setup/Inspection and stash mutation."
+
+session:
+  bootstrap: product-contract/operationalization/SAQEEL_SESSION_START_COMMAND.md
+  operating_system: product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: 67887dc8334a631384b3513cca8be01ab29e42c8
+  dirty_paths_observed:
+    - product-contract/operationalization/coordination/batches/CODEX-M3-OPERATIONS-AUTHORIZATION-NEGATIVE-ACCEPTANCE-MATRIX-004.csv
+    - product-contract/operationalization/coordination/batches/KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017.yaml
+    - product-contract/operationalization/coordination/batches/M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019.yaml
+    - product-contract/operationalization/coordination/batches/M10-SPATIAL-CANVAS-DESIGN-AUTHORITY-020.yaml
+  dirty_path_ownership: "Other active/preceding lanes; preserved and not modified."
+  task: M10-SENAEI-NO-CODE-MATCH-021
+  process_ids: ["G2-P00", "G2-P12"]
+  screen_ids: []
+  requirement_ids:
+    direct_phase_1_admin: NONE
+    transferred_primary: ["MVP2-REQ-0073", "MVP2-REQ-0239", "MVP2-REQ-0241"]
+    transferred_contextual: ["MVP2-REQ-0227", "MVP2-REQ-0238", "MVP2-REQ-0256"]
+    factory_360_contextual: ["CR-410..CR-418", "CR-425", "CR-426", "CR-428", "CR-429"]
+    ipad_deferred_contextual: ["CR-208..CR-225"]
+  acceptance_ids:
+    transferred: ["MVP2-AC-0073", "MVP2-AC-0227", "MVP2-AC-0238", "MVP2-AC-0239", "MVP2-AC-0241", "MVP2-AC-0256"]
+    design_family: ["WA-M10-AC-001..006"]
+  dependencies:
+    - SENAEI_API_CONTRACT_NOT_SUPPLIED
+    - "SENAEI_* runtime credentials and approved environment"
+    - "Approved provider-specific route and ownership decision if the surface is retained"
+    - M10-FACTORY-DATA-INTEGRATION-DESIGN-READINESS-016
+    - M10-INTEGRATION-HUB-DESIGN-READINESS-017
+  do_not_touch:
+    - "WA-DES-012, every other design and every frozen mapping/requirement artifact."
+    - "Integration, Factory 360, iPad, provider, application and test code."
+    - "Provider configuration, credentials, migrations, shared data and seeds."
+    - "main, setup/Inspection and every stash."
+
+authority:
+  design_map: product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  route_inventory: product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  requirement_baseline: product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  screen_catalogue: product-contract/screens/screen_route_catalogue.csv
+  mvp3_register: product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+  external_contract_register: product-contract/seeding-discovery/EXTERNAL_SOURCE_CONTRACT_REGISTER.csv
+  provider_fixture_register: product-contract/seeding-discovery/FRONTEND_MOCK_AND_FIXTURE_REGISTER.csv
+  related_pages:
+    - apps/web/src/app/(app)/admin/integrations/page.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/layout.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/page.tsx
+    - apps/web/src/app/(app)/admin/integrations/factory-data/actions.ts
+    - apps/web/src/app/(app)/factories/[id]/page.tsx
+  provider_implementation:
+    - apps/web/src/lib/integrations/senaei/client.ts
+    - apps/web/src/lib/integrations/senaei/errors.ts
+    - apps/web/src/lib/integrations/senaei/types.ts
+    - apps/web/src/lib/integrations/senaei/schemas.ts
+    - apps/web/src/lib/integrations/senaei/adapters/auth.ts
+    - apps/web/src/lib/integrations/senaei/adapters/factory360.ts
+    - apps/web/src/lib/integrations/senaei/adapters/inspection-submission.ts
+    - apps/web/src/lib/integrations/senaei/adapters/production-line.ts
+    - apps/web/src/lib/integrations/senaei/adapters/profile.ts
+    - apps/web/src/lib/integrations/senaei/adapters/regulations.ts
+    - apps/web/src/lib/integrations/senaei/adapters/task-detail.ts
+    - apps/web/src/lib/integrations/senaei/adapters/tasks.ts
+    - apps/web/src/lib/factory360/dossier.ts
+  schema:
+    - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+    - supabase/migrations/20260720010000_factory360_v2_foundation.sql
+  tests:
+    - apps/web/e2e/senaei-integration-contract.spec.ts
+    - apps/web/e2e/factory360-admin-control-plane.spec.ts
+    - apps/web/e2e/factory360-cr-dossier-contract.spec.ts
+    - apps/web/e2e/factory360-cross-provider-contract.spec.ts
+  predecessor:
+    path: "/Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin SENAI Data.dc.html"
+    logical_id: WA-DES-012
+    filename: "SAQEEL Admin SENAI Data.dc.html"
+    bytes: 16212
+    sha256: "022f61284e1aef160f917f7ba29d6609793abad4794b4b2c282af327b819846e"
+    viewport: "1120x840"
+
+independent_mapping_result:
+  proposed_route: /admin/integrations/senaei
+  route_exists: false
+  component_exists: false
+  registered_screen: NONE
+  claude_code_mapping_classification: NEW_ROUTE_REQUIRED
+  codex_validation: NO_CODE_MATCH
+  design_logical_id: WA-DES-012
+  nearest_real_surfaces:
+    - route: /admin/integrations
+      component: apps/web/src/app/(app)/admin/integrations/page.tsx
+      match: PARTIAL_READ_ONLY_GENERIC
+      design_authority: WA-DES-008
+      real_capability: "RLS-visible generic endpoint registry, API events and export jobs."
+      exclusion: "No provider-specific endpoint editing, testing, health or synchronization."
+    - route: /admin/integrations/factory-data
+      component: apps/web/src/app/(app)/admin/integrations/factory-data/page.tsx
+      match: PARTIAL_FACTORY_DATA_CONTROL_PLANE
+      design_authority: WA-DES-007
+      real_capability: "Provider-unverified truth, strict CSV staging, run/import custody, rejected rows, reconciliation history and bounded local master-data operations."
+      exclusion: "No remote provider call, endpoint/mapping editor, live sync or reconciliation resolution."
+    - route: /factories/[id]
+      component: apps/web/src/app/(app)/factories/[id]/page.tsx
+      match: DOWNSTREAM_CONSUMER_ONLY
+      design_authority: "Factory 360 authority, not WA-DES-012."
+      real_capability: "Permission-filtered dossier; typed Senaei chemical-permit/customs-exemption reads when plant and provider configuration exist."
+      exclusion: "Not an integration administration route."
+    - route: NONE
+      component: apps/web/src/lib/integrations/senaei
+      match: SERVER_ONLY_PROVIDER_BOUNDARY
+      real_capability: "Typed, allowlisted, bounded, fail-closed Senaei client and adapters."
+      exclusion: "A library is not a page, role, admin workflow or proof of live provider availability."
+  final: >-
+    No one real route or component represents the four-tab WA-DES-012 business
+    capability. Reassigning it to either existing route would create competing
+    design authority and misstate the current provider contract.
+  recommended_action: BLOCK
+
+mapping_and_requirement_corrections:
+  current_requirement_claim: CR-001..CR-478
+  verdict: INCORRECTLY_OVERBROAD
+  correction:
+    - "No Phase 1 requirement directly owns a Senaei administration page."
+    - "CR-410..418, 425, 426, 428 and 429 remain contextual to Factory 360/source custody."
+    - "CR-208..225 are iPad inspection-source/observation requirements and remain deferred/cross-channel."
+    - "MVP2-REQ-0073 and 0239 are the closest primary integration-contract rows."
+    - "MVP2-REQ-0241 and 0256 require exact security/privacy boundaries, not a fictional Technical Admin."
+    - "MVP2-REQ-0227 and 0238 are contextual Admin Studio and bilingual obligations."
+  persona:
+    design_claim: Technical Admin
+    verdict: FICTIONAL_ROLE
+    real_boundaries:
+      factory_data_route: [security_admin, workflow_admin, compliance_admin]
+      integration_registry_read: [security_admin, workflow_admin]
+      integration_registry_write: [security_admin]
+      api_event_read: [security_admin, ops, auditor]
+      provider_adapter: "Server-only caller context; no standalone UI role."
+    rule: "Do not collapse distinct route/table permissions into one invented persona."
+  mapping_write_boundary: "No frozen design, route, screen, persona or requirement map change is authorized here."
+
+real_provider_contract:
+  canonical_name: Senaei
+  design_spelling: SENAI
+  accepted_contract_status: REAL_CONTRACT_PARTIAL
+  runtime_credentials_status: NOT_CONFIGURED_IN_REPOSITORY_EVIDENCE
+  live_availability: UNKNOWN_NOT_CERTIFIED
+  missing_or_required_environment:
+    - SENAEI_AUTH_MODE
+    - SENAEI_BASE_URL
+    - SENAEI_ALLOWED_HOST_SUFFIX
+    - "SENAEI_API_KEY or SENAEI_BEARER_TOKEN"
+    - "SENAEI_PUBLIC_ENDPOINT_AUTH_MODE where public authentication calls are used"
+    - "SENAEI_PRODUCTION_LINE_MODE=get_query before production-line GET is enabled"
+  client_guards:
+    - "Server-only implementation."
+    - "HTTPS and explicit DNS suffix enforcement."
+    - "No credentials or path in base URL."
+    - "Allowlisted request paths and methods."
+    - "Bounded response size and timeout."
+    - "GET-only bounded retry; no automatic POST retry."
+    - "No-store network requests."
+    - "Typed schema parsing; invalid responses fail closed."
+    - "No console logging of credentials or provider payloads."
+  available_result_states: [available, not_configured, degraded, failed]
+  safe_error_codes:
+    - SENAEI_API_CONTRACT_NOT_SUPPLIED
+    - SENAEI_AUTH_MODE_REQUIRED
+    - SENAEI_PUBLIC_AUTH_MODE_UNCONFIRMED
+    - SENAEI_CREDENTIAL_MISSING
+    - SENAEI_BASE_URL_INVALID
+    - SENAEI_HOST_NOT_ALLOWED
+    - SENAEI_PATH_NOT_ALLOWED
+    - SENAEI_REQUEST_INVALID
+    - SENAEI_TIMEOUT
+    - SENAEI_NETWORK_ERROR
+    - SENAEI_HTTP_ERROR
+    - SENAEI_RESPONSE_TOO_LARGE
+    - SENAEI_INVALID_JSON
+    - SENAEI_INVALID_RESPONSE
+    - SENAEI_PRODUCTION_LINE_METHOD_UNCONFIRMED
+    - BLOCKED_TRIGGER_DECISION
+  documented_adapter_domains:
+    authenticated:
+      - "Login, logout, forgot password and reset password."
+      - "Profile."
+      - "Regulation list/detail."
+      - "Task list/detail."
+      - "Production-line GET only after explicit method confirmation."
+    public_v3:
+      - "Chemical permits by plant."
+      - "Customs exemptions by plant."
+    submission:
+      state: BLOCKED_TRIGGER_DECISION
+      rule: "Prepared local multipart payload is never forwarded without a governed trigger decision."
+  undocumented_factory_360_domains:
+    - "Commercial-registration portfolio search."
+    - "Incentives."
+    - "Approved government services beyond the two documented public v3 reads."
+    - "Land-provider history."
+    - "Factory document retrieval."
+    - "Risk history/explanation."
+    - "Inspection/report/compliance history."
+    - "Violations and penalties."
+    - "Factory 360 PDF export."
+  hold_truth: >-
+    There is no numbered Senaei provider hold in MVP3_PROVIDER_POLICY_HOLDS.csv.
+    The binding block is the external contract register plus fail-closed code:
+    runtime configuration is absent/unknown and undocumented domains return
+    SENAEI_API_CONTRACT_NOT_SUPPLIED. Do not invent a hold identifier.
+
+design_versus_code_delta:
+  design_only_not_implemented:
+    - "Dedicated /admin/integrations/senaei route."
+    - "Four-tab Sources, Endpoints, Field mapping and Sync & reconcile workspace."
+    - "Register source, add/edit/test endpoint and add/edit mapping actions."
+    - "Run sync now, resolve divergence and open reconciliation queue actions."
+    - "Versioned/audited configuration workflow behind the generic Save & test drawer."
+    - "Provider-specific source registry and field-mapping user interface."
+    - "Live health, freshness, record totals, schedules and last-call evidence."
+  real_code_not_represented_safely:
+    - "Strict environment validation and host/path/method allowlists."
+    - "Typed available/not_configured/degraded/failed result contract."
+    - "Timeout, size, retry and invalid-JSON/shape failure boundaries."
+    - "Blocked inspection submission trigger."
+    - "CSV staging custody that never imports or overwrites source truth."
+    - "Rejected staged rows and record-backed reconciliation history."
+    - "Generic endpoint/event/export registry with distinct RLS scopes."
+    - "Permission-filtered Factory 360 downstream consumption."
+  overlap_defect: >-
+    WA-DES-012 visually combines portions already owned by WA-DES-007 and
+    WA-DES-008 with provider actions that no component implements.
+
+predecessor_truth_findings:
+  correct_principles:
+    - "Senaei source values are read-only."
+    - "Observed inspection values remain separate and never overwrite source."
+    - "Provider failures should degrade dependent sections instead of fabricating values."
+  fabricated_or_unsupported:
+    - "SENAI / MODON combined provider identity; MODON has no repository integration contract."
+    - "Commercial Registration, Civil Defence and Environmental Authority provider rows."
+    - "8,420, 8,610 and 7,980 record counts."
+    - "08:41 today, 06:00 today and yesterday freshness."
+    - "Available, partial and not-connected provider states."
+    - "Endpoints /factories/{cr}, /factories/{cr}/licenses, /licenses/{id}/lines, /factories/{id}/address and /gov-records/{license}."
+    - "Last-call ages and 200, 429 and 503 health results."
+    - "Editable field mappings and transforms."
+    - "Scheduled daily synchronization, reconciled/divergence/source-partial KPIs."
+    - "Named factory divergences, source/current values and resolutions."
+    - "Run sync, reconciliation queue and Save & test action outcomes."
+  identity_and_language:
+    - "Arabic-only صقيل صناعي identity is invalid in the English shell."
+    - "Use canonical Senaei spelling unless an approved bilingual terminology authority says otherwise."
+    - "The predecessor contains English-only operational content and no proven AR/RTL state."
+
+route_ownership_decision:
+  wa_des_012_state: ORPHANED_DESIGN_NON_CONSUMABLE
+  retain_as: "Revision-stamped research/reference only."
+  preferred_sponsor_option: RETIRE_ROUTE_CLAIM_AND_SPLIT_REAL_CONCERNS
+  treatment:
+    - "Keep WA-DES-008 as sole authority for /admin/integrations."
+    - "Keep WA-DES-007 as sole authority for /admin/integrations/factory-data."
+    - "Keep Factory 360 designs as sole authority for /factories/[id]."
+    - "Treat server-only Senaei adapters as service evidence, never as a screen."
+    - "Do not create /admin/integrations/senaei until a separately approved route/task and provider administration contract exist."
+  alternative:
+    option: NEW_PROVIDER_ADMIN_ROUTE
+    conditions:
+      - "Sponsor-approved business need and exact requirement ownership."
+      - "Approved provider API/configuration, secret-custody, sandbox and data-owner contracts."
+      - "Exact real roles, maker-checker, audit/version and rollback model."
+      - "New component/action/test/evidence lease."
+      - "WA-DES-012 corrective successor accepted before implementation."
+    current_status: NOT_AUTHORIZED
+
+design_contract_if_retained_for_future:
+  state: NON_CONSUMABLE_UNTIL_ROUTE_AND_PROVIDER_DECISION
+  logical_id: WA-DES-012
+  proposed_revision: WA-DES-012-C1
+  filename: "SAQEEL Admin Senaei Data - WA-DES-012-C1.dc.html"
+  creation_authorized: false
+  no_new_id_required: true
+  identity: "Approved SAQEEL | صقيل wordmark; no صناعي/Industrial sub-brand."
+  information_architecture:
+    - "Provider contract/readiness summary sourced from approved configuration only."
+    - "Documented endpoint inventory from the typed allowlist; unavailable domains called out explicitly."
+    - "API event evidence separated from live health."
+    - "Synchronization/import custody separated from source configuration."
+    - "Field mappings shown only if a governed mapping store and version workflow exist."
+    - "Factory 360 downstream impact and source/observed separation."
+  truth_rules:
+    - "Configuration is not connectivity; connectivity is not source freshness."
+    - "An endpoint definition is not a successful live call."
+    - "No base URL, key, bearer token, credential or raw provider payload displays."
+    - "No provider name, endpoint, count, timestamp, status, schedule or health is invented."
+    - "No write-back to Senaei or silent overwrite of source truth."
+    - "No provider action is enabled while its contract or maker-checker boundary is unresolved."
+    - "Seeder fixtures may exercise typed failure states but never prove live provider success."
+
+required_state_and_error_evidence:
+  - ROUTE_NOT_IMPLEMENTED
+  - PROVIDER_NOT_CONFIGURED
+  - PROVIDER_CONFIG_INVALID
+  - CREDENTIAL_MISSING
+  - HOST_OR_PATH_DENIED
+  - PUBLIC_AUTH_MODE_UNCONFIRMED
+  - PRODUCTION_LINE_METHOD_UNCONFIRMED
+  - PROVIDER_TIMEOUT
+  - PROVIDER_NETWORK_ERROR
+  - PROVIDER_HTTP_DEGRADED
+  - RESPONSE_TOO_LARGE
+  - INVALID_JSON
+  - INVALID_RESPONSE_SHAPE
+  - UNDOCUMENTED_DOMAIN_CONTRACT_NOT_SUPPLIED
+  - SUBMISSION_TRIGGER_BLOCKED
+  - GENERIC_REGISTRY_EMPTY
+  - GENERIC_REGISTRY_RLS_HIDDEN
+  - GENERIC_REGISTRY_READ_ERROR
+  - CSV_STAGING_EMPTY
+  - CSV_STAGING_VALID
+  - CSV_STAGING_INVALID
+  - CSV_STAGING_PARTIAL_WRITE
+  - RECONCILIATION_HISTORY_EMPTY
+  - DOWNSTREAM_FACTORY_360_PARTIAL
+  - UNAUTHORIZED_ROUTE
+  - UNAUTHORIZED_DIRECT_ACTION
+  - STALE_OR_CONFLICT
+
+responsive_bidi_theme_accessibility:
+  viewports: ["1440x900", "1120x840", "1024x768", "768x1024", "412x915", "390x844", "320x568"]
+  locales:
+    - "EN/LTR."
+    - "AR/RTL with URLs, endpoint paths, codes, hashes, correlation IDs and versions isolated LTR."
+  themes: ["Light", "Dark"]
+  requirements:
+    - "One h1 and ordered section hierarchy."
+    - "Desktop tabs become labelled sections or an accessible tablist with persistent state."
+    - "Tables become labelled scroll regions/cards without losing status or source context."
+    - "No page-level horizontal overflow; long endpoint paths and codes wrap safely."
+    - "44px controls, visible focus and full keyboard operation."
+    - "Drawer traps and restores focus; Escape and an accessible close control work."
+    - "Status uses text/icon/shape, not colour alone."
+    - "Loading, degraded and action results use appropriate live-region semantics."
+    - "No Arabic wordmark or labels appear as the only identity in English mode."
+
+test_and_evidence_assessment:
+  current_contract_tests_prove:
+    - "One server-only fail-closed environment contract."
+    - "HTTPS/host/path/method, response-size, timeout and GET-retry bounds."
+    - "Typed result and safe error-state coverage."
+    - "Adapter endpoint allowlists and schema normalization."
+    - "Undocumented Factory 360 domains remain contract-not-supplied."
+    - "Factory Data page makes no remote Senaei call."
+    - "CSV staging does not apply source truth."
+  current_tests_do_not_prove:
+    - "The proposed /admin/integrations/senaei route or component."
+    - "Live provider connectivity, authentication or any successful sandbox response."
+    - "The design's source rows, endpoints, mappings, schedules, counts or health."
+    - "Provider configuration, endpoint, mapping, sync or reconciliation mutations."
+    - "A provider-specific admin authorization matrix or maker-checker lifecycle."
+    - "EN/AR RTL, light/dark, responsive, keyboard and accessibility for the nonexistent route."
+    - "End-to-end source lineage from provider response through persistence and Factory 360."
+  required_before_live_claim:
+    - "Approved staging credentials and provider sandbox contract."
+    - "Real response evidence for each documented endpoint with secret-safe capture."
+    - "Negative timeout, HTTP, malformed, oversize and denied-host/path evidence."
+    - "Audit/version/actor/timestamp/affected-object evidence for any admin mutation."
+    - "Unauthorized route and direct-action zero-disclosure evidence."
+    - "Real-browser proof for every supported locale, theme and viewport."
+
+risks:
+  - id: SEN-021-R01
+    severity: CRITICAL
+    risk: "Invented endpoint/health data is treated as live provider evidence."
+  - id: SEN-021-R02
+    severity: CRITICAL
+    risk: "A nonexistent route is counted as delivered from a static design."
+  - id: SEN-021-R03
+    severity: CRITICAL
+    risk: "Provider actions are enabled without contract, credential custody, maker-checker or rollback."
+  - id: SEN-021-R04
+    severity: HIGH
+    risk: "WA-DES-012 competes with WA-DES-007 and WA-DES-008 for the same real surfaces."
+  - id: SEN-021-R05
+    severity: HIGH
+    risk: "Technical Admin silently broadens real role and RLS boundaries."
+  - id: SEN-021-R06
+    severity: HIGH
+    risk: "Synthetic/seeded Senaei-shaped data is reported as synchronized source truth."
+  - id: SEN-021-R07
+    severity: HIGH
+    risk: "Provider failure is rendered as empty, fresh or healthy downstream."
+  - id: SEN-021-R08
+    severity: HIGH
+    risk: "Source and inspector-observed values are reconciled by overwrite."
+  - id: SEN-021-R09
+    severity: HIGH
+    risk: "Sensitive endpoint, credential, payload or personal data appears in the admin UI/evidence."
+
+do_not_build:
+  - "No /admin/integrations/senaei route or component."
+  - "No provider source, endpoint, mapping, sync, reconciliation or test-connection action."
+  - "No invented endpoint path, provider, status, count, timestamp, health, schedule or response."
+  - "No live success fixture, mock or seed presented as provider evidence."
+  - "No external source write-back or observation overwrite."
+  - "No Technical Admin role or collapsed permission model."
+  - "No design, mapping, application, test, schema, provider, credential, data, branch or stash mutation."
+
+reviewer_recommendation: BLOCK_DUE_TO_MISSING_CONTRACT
+recommended_sponsor_decision:
+  preferred: RETIRE_WA_DES_012_ROUTE_CLAIM_AS_NON_CONSUMABLE
+  rationale: >-
+    The design duplicates two accepted real routes and adds unsupported provider
+    administration behavior. The fastest safe path is to finish WA-DES-007 and
+    WA-DES-008 against their real components while retaining WA-DES-012 only as
+    revision-stamped reference.
+  future_reconsideration: >-
+    Reopen only if the sponsor explicitly approves a provider-specific admin
+    business capability and the real Senaei contract, sandbox, roles, secret
+    custody, mutation lifecycle and tests are supplied.
+
+rollback:
+  action: "Delete only this owned uncommitted packet if rejected."
+  other_dirty_paths_untouched: true
+
+safe_successor:
+  packet_id: M10-VIRTUAL-NO-CODE-MATCH-022
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  target:
+    design: WA-DES-013
+    proposed_route: /admin/virtual
+  objective: >-
+    Resolve the design-only Virtual Inspection administration surface against
+    the real virtual-session routes, provider stub/hold and OTP/media boundaries
+    without authorizing a new route or provider.
+  non_overlap:
+    - "No Senaei, Factory Data or Integration Hub design work."
+    - "No application, test, mapping, data, provider, credential, main, setup or stash mutation."
