@@ -1,0 +1,476 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047
+status: READ_ONLY_FUTURE_REDACTION_EXPORT_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze future M11 tests for raw-audit denial, safe-audit projection,
+  secret-sentinel exclusion, CSV/JSON export filtering, provider metadata,
+  before/after states, neutral resource scope and immutable evidence. This
+  specification creates no export, fixture, test, database query or product
+  change.
+
+frozen_authority:
+  KIMI-M11-TEST-EVIDENCE-GAP-MAP-032: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 920d500d5f2bdfa55da2fb2acac32b28346e3d668d7ac40f3ab88e00150d24fa
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, design, data, seed, export, branch or stash change."
+  - "No real or realistic secret, OTP, provider payload, credential, person, factory or application row."
+  - "No raw audit, function body, query text or provider response is collected in this specification."
+  - "Symbolic secret sentinels are never released or hashed into evidence."
+  - "No export or evidence path is authorized unless exact persona and scope authority exists."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+disclosure_invariants:
+  raw_audit:
+    - "No authenticated application persona can read raw participant before_state or after_state."
+    - "No raw verification_record, code_hash, dev_code or provider payload reaches an application surface."
+    - "Privileged isolated evidence inspection cannot be used as proof of application visibility."
+  safe_projection:
+    - "Only an explicit allowlist of safe facts is returned."
+    - "Unknown or additional fields fail closed."
+    - "One resource cannot disclose another resource's safe facts."
+  export:
+    - "CSV and JSON use the same semantic allowlist."
+    - "Nested JSON, CSV quoting, formula-like strings, alternate encodings and metadata cannot bypass filtering."
+    - "No empty-versus-denied artifact oracle exposes resource existence."
+  evidence:
+    - "Historical audit rows remain immutable."
+    - "Evidence contains approved fields and hashes only; no prohibited value or derivative."
+    - "Any redaction, checksum, scope, teardown or reviewer failure quarantines the entire bundle."
+
+persona_fixtures:
+  - id: FX-RED-ASSIGNED-INSPECTOR
+    authority: "Exact resource-scoped Inspector; no raw participant audit."
+  - id: FX-RED-UNASSIGNED-INSPECTOR
+    authority: "No relationship to the resource."
+  - id: FX-RED-REVIEWER
+    authority: "Safe view-only where exact authority exists."
+  - id: FX-RED-AUDITOR
+    authority: "Safe audit view-only where exact authority exists."
+  - id: FX-RED-PLANNER
+    authority: "Only exact planning scope; no raw participant audit."
+  - id: FX-RED-OPERATIONS
+    authority: "No inferred authority; no raw participant audit."
+  - id: FX-RED-SECURITY-ADMIN
+    authority: "Application administration only; no raw participant secret audit."
+  - id: FX-RED-COMPLIANCE-ADMIN
+    authority: "Safe compliance evidence only."
+  - id: FX-RED-LEADERSHIP
+    authority: "Safe aggregate evidence only."
+  - id: FX-RED-ANON
+    authority: "No M11 read or export."
+  - id: FX-RED-ISOLATED-EVIDENCE-REVIEWER
+    authority: "Privileged future evidence lane; never an application persona."
+
+symbolic_fixtures:
+  resources:
+    - FX-RED-RESOURCE-IN-SCOPE
+    - FX-RED-RESOURCE-OUT-OF-SCOPE
+    - FX-RED-RESOURCE-MISSING
+    - FX-RED-SECOND-RESOURCE
+  audit:
+    - FX-RED-HISTORICAL-AUDIT-SET
+    - FX-RED-NEW-SAFE-AUDIT-FACT
+    - FX-RED-RAW-PARTICIPANT-BEFORE
+    - FX-RED-RAW-PARTICIPANT-AFTER
+  sentinels:
+    - FX-RED-SENTINEL-PLAINTEXT-SECRET
+    - FX-RED-SENTINEL-SECRET-DERIVATIVE
+    - FX-RED-SENTINEL-PERSONAL-DATA
+    - FX-RED-SENTINEL-PROVIDER-PAYLOAD
+    - FX-RED-SENTINEL-RUNTIME-QUERY
+    - FX-RED-SENTINEL-RAW-FUNCTION-BODY
+  provider_metadata:
+    - FX-RED-PROVIDER-STATE-NOT-CONFIGURED
+    - FX-RED-PROVIDER-STATE-INDETERMINATE
+    - FX-RED-PROVIDER-STATE-REJECTED
+    - FX-RED-PROVIDER-TECHNICAL-METADATA
+  export_shapes:
+    - FX-RED-CSV
+    - FX-RED-JSON
+    - FX-RED-NESTED-JSON
+    - FX-RED-CSV-QUOTED-MULTILINE
+    - FX-RED-CSV-FORMULA-LIKE
+    - FX-RED-ALTERNATE-ENCODING
+    - FX-RED-EMPTY-RESULT
+    - FX-RED-DENIED-RESULT
+
+field_classes:
+  always_prohibited:
+    - dev_code
+    - plaintext_OTP
+    - OTP_or_secret_derivative
+    - verification_record
+    - code_hash
+    - raw_participant_before_state
+    - raw_participant_after_state
+    - raw_provider_payload
+    - provider_credential_or_endpoint
+    - runtime_query_text
+    - raw_function_or_view_body
+    - personal_contact_or_identity_value
+  conditionally_allowed_safe_facts:
+    - approved_resource_identifier
+    - approved_event_type
+    - approved_occurred_at
+    - approved_actor_class
+    - approved_state_transition_fact
+    - approved_requirement_reference
+    - approved_provider_outcome_class
+  rule: >-
+    The final safe field allowlist must come from accepted corrected contracts.
+    The labels above classify candidate safe facts but do not authorize a field.
+
+expected_result_vocabulary:
+  DENY: "No data or artifact returned and no resource-existence disclosure."
+  SAFE_VIEW_ONLY: "Only exact approved safe fields returned."
+  SAFE_EXPORT: "Artifact contains only exact approved fields and authorized rows."
+  QUARANTINE: "Entire candidate artifact/evidence bundle is withheld."
+  NEUTRAL: "Missing and out-of-scope outcomes have identical status, token, body and artifact behavior."
+  IMMUTABLE: "Historical row count and checksums remain unchanged."
+  ZERO_LEAK: "No prohibited sentinel, value, derivative, metadata or field name appears."
+
+test_groups:
+  RAW_AUDIT_DENIAL:
+    cases:
+      - id: M11-047-RAW-001
+        personas:
+          - FX-RED-ASSIGNED-INSPECTOR
+          - FX-RED-UNASSIGNED-INSPECTOR
+          - FX-RED-REVIEWER
+          - FX-RED-AUDITOR
+          - FX-RED-PLANNER
+          - FX-RED-OPERATIONS
+          - FX-RED-SECURITY-ADMIN
+          - FX-RED-COMPLIANCE-ADMIN
+          - FX-RED-LEADERSHIP
+        action: "Attempt direct raw participant audit read."
+        expected: DENY
+        evidence: [persona_raw_read_matrix, returned_row_count, normalized_denial]
+      - id: M11-047-RAW-002
+        personas: [FX-RED-ANON]
+        action: "Attempt raw and safe audit reads."
+        expected: DENY
+        evidence: [role_read_matrix, returned_row_count]
+      - id: M11-047-RAW-003
+        personas: [FX-RED-ISOLATED-EVIDENCE-REVIEWER]
+        action: "Inspect prohibited sentinel absence under isolated evidence governance."
+        expected: "Privileged result quarantined; only absence attestation and approved hashes released."
+        evidence: [absence_attestation, evidence_release_manifest]
+      - id: M11-047-RAW-004
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        action: "Attempt to request raw before_state/after_state through safe projection parameters or field expansion."
+        expected: DENY
+        evidence: [projection_parameter_matrix, returned_field_manifest]
+
+  SAFE_AUDIT_PROJECTION:
+    cases:
+      - id: M11-047-SAFE-001
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        fixtures: [FX-RED-RESOURCE-IN-SCOPE, FX-RED-NEW-SAFE-AUDIT-FACT]
+        action: "Read exact approved safe projection."
+        expected: SAFE_VIEW_ONLY
+        evidence: [returned_field_manifest, returned_row_scope, prohibited_field_scan]
+      - id: M11-047-SAFE-002
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        fixtures: [FX-RED-RESOURCE-IN-SCOPE, FX-RED-SECOND-RESOURCE]
+        action: "Attempt cross-resource projection read."
+        expected: DENY
+        evidence: [resource_scope_matrix, returned_row_count]
+      - id: M11-047-SAFE-003
+        personas: [FX-RED-SECURITY-ADMIN, FX-RED-COMPLIANCE-ADMIN, FX-RED-LEADERSHIP]
+        fixtures: [FX-RED-RESOURCE-IN-SCOPE]
+        action: "Read safe administrative evidence."
+        expected: "SAFE_VIEW_ONLY only for exact approved administrative scope."
+        evidence: [authority_scope_matrix, returned_field_manifest, prohibited_field_scan]
+      - id: M11-047-SAFE-004
+        personas: [FX-RED-ASSIGNED-INSPECTOR]
+        fixtures: [FX-RED-RESOURCE-IN-SCOPE]
+        action: "Read safe projection."
+        expected: "SAFE_VIEW_ONLY only if exact Inspector evidence authority exists; otherwise DENY."
+        evidence: [authority_citation, returned_field_manifest]
+      - id: M11-047-SAFE-005
+        personas: [FX-RED-REVIEWER]
+        fixtures: [FX-RED-NEW-SAFE-AUDIT-FACT]
+        action: "Inject an unknown extra field into a candidate projection contract."
+        expected: QUARANTINE
+        evidence: [schema_validation_result, artifact_release_count]
+
+  SECRET_SENTINEL_REDACTION:
+    cases:
+      - id: M11-047-SEC-001
+        fixtures:
+          - FX-RED-SENTINEL-PLAINTEXT-SECRET
+          - FX-RED-SENTINEL-SECRET-DERIVATIVE
+        action: "Exercise future participant/OTP transition and scan storage, projection, RPC, DOM, logs and export."
+        expected: ZERO_LEAK
+        evidence: [storage_scan, projection_scan, RPC_scan, DOM_scan, log_scan, export_scan]
+      - id: M11-047-SEC-002
+        fixtures:
+          - FX-RED-SENTINEL-PERSONAL-DATA
+          - FX-RED-SENTINEL-PROVIDER-PAYLOAD
+        action: "Scan safe projection and export surfaces."
+        expected: ZERO_LEAK
+        evidence: [projection_scan, CSV_scan, JSON_scan, evidence_scan]
+      - id: M11-047-SEC-003
+        fixtures:
+          - FX-RED-SENTINEL-RUNTIME-QUERY
+          - FX-RED-SENTINEL-RAW-FUNCTION-BODY
+        action: "Attempt to include prohibited technical body/query classes in released evidence."
+        expected: QUARANTINE
+        evidence: [collection_boundary_result, evidence_release_count]
+      - id: M11-047-SEC-004
+        fixtures: [FX-RED-SENTINEL-PLAINTEXT-SECRET]
+        action: "Attempt to replace prohibited value with a value-derived hash, suffix, prefix or equality token."
+        expected: QUARANTINE
+        evidence: [derivative_detection_result, evidence_release_count]
+
+  BEFORE_AFTER_STATE:
+    cases:
+      - id: M11-047-STA-001
+        fixtures: [FX-RED-RAW-PARTICIPANT-BEFORE, FX-RED-RAW-PARTICIPANT-AFTER]
+        action: "Inspect future safe participant audit fact after authorized transition."
+        expected: "No raw before_state or after_state; only exact approved transition facts."
+        evidence: [safe_projection_schema, returned_field_manifest]
+      - id: M11-047-STA-002
+        fixtures: [FX-RED-RAW-PARTICIPANT-BEFORE, FX-RED-RAW-PARTICIPANT-AFTER]
+        action: "Attempt nested or stringified state embedding in JSON export."
+        expected: ZERO_LEAK
+        evidence: [nested_JSON_scan, stringified_JSON_scan]
+      - id: M11-047-STA-003
+        fixtures: [FX-RED-RAW-PARTICIPANT-BEFORE, FX-RED-RAW-PARTICIPANT-AFTER]
+        action: "Attempt flattened state columns in CSV export."
+        expected: ZERO_LEAK
+        evidence: [CSV_header_scan, CSV_cell_scan]
+      - id: M11-047-STA-004
+        fixtures: [FX-RED-HISTORICAL-AUDIT-SET]
+        action: "Run projection/export tests and compare historical audit."
+        expected: IMMUTABLE
+        evidence: [historical_row_count_before_after, historical_checksum_before_after]
+
+  PROVIDER_METADATA:
+    cases:
+      - id: M11-047-PRO-001
+        fixtures: [FX-RED-PROVIDER-STATE-NOT-CONFIGURED]
+        action: "Read safe audit and export after blocked request."
+        expected: "Approved outcome class only if authorized; no provider identifier, endpoint, payload or false delivered state."
+        evidence: [safe_field_manifest, provider_metadata_scan, event_type_manifest]
+      - id: M11-047-PRO-002
+        fixtures: [FX-RED-PROVIDER-STATE-INDETERMINATE]
+        action: "Read safe audit and export."
+        expected: "No delivered fact; no technical metadata beyond an approved outcome class."
+        evidence: [safe_field_manifest, delivered_fact_count, provider_metadata_scan]
+      - id: M11-047-PRO-003
+        fixtures: [FX-RED-PROVIDER-STATE-REJECTED, FX-RED-PROVIDER-TECHNICAL-METADATA]
+        action: "Attempt to export raw provider error/metadata."
+        expected: QUARANTINE
+        evidence: [provider_field_scan, artifact_release_count]
+      - id: M11-047-PRO-004
+        fixtures: [FX-RED-PROVIDER-TECHNICAL-METADATA]
+        action: "Attempt provider metadata in CSV headers, JSON keys and evidence metadata."
+        expected: ZERO_LEAK
+        evidence: [CSV_header_scan, JSON_key_scan, evidence_metadata_scan]
+
+  CSV_EXPORT_FILTERING:
+    cases:
+      - id: M11-047-CSV-001
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        fixtures: [FX-RED-CSV, FX-RED-RESOURCE-IN-SCOPE]
+        action: "Export exact approved safe rows."
+        expected: SAFE_EXPORT
+        evidence: [CSV_header_manifest, CSV_row_scope, prohibited_field_scan]
+      - id: M11-047-CSV-002
+        fixtures: [FX-RED-CSV-QUOTED-MULTILINE, FX-RED-SENTINEL-PLAINTEXT-SECRET]
+        action: "Attempt sentinel inside quoted/multiline cells."
+        expected: QUARANTINE
+        evidence: [decoded_cell_scan, artifact_release_count]
+      - id: M11-047-CSV-003
+        fixtures: [FX-RED-CSV-FORMULA-LIKE, FX-RED-SENTINEL-PERSONAL-DATA]
+        action: "Attempt formula-like or control-prefixed content."
+        expected: QUARANTINE
+        evidence: [formula_like_scan, artifact_release_count]
+      - id: M11-047-CSV-004
+        fixtures: [FX-RED-ALTERNATE-ENCODING, FX-RED-SENTINEL-PROVIDER-PAYLOAD]
+        action: "Attempt encoding-based filter bypass."
+        expected: QUARANTINE
+        evidence: [canonical_decode_result, prohibited_field_scan, artifact_release_count]
+      - id: M11-047-CSV-005
+        fixtures: [FX-RED-SECOND-RESOURCE]
+        action: "Attempt export containing an unauthorized row among authorized rows."
+        expected: QUARANTINE
+        evidence: [row_scope_validation, artifact_release_count]
+
+  JSON_EXPORT_FILTERING:
+    cases:
+      - id: M11-047-JSON-001
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        fixtures: [FX-RED-JSON, FX-RED-RESOURCE-IN-SCOPE]
+        action: "Export exact approved safe rows."
+        expected: SAFE_EXPORT
+        evidence: [JSON_schema, JSON_row_scope, prohibited_field_scan]
+      - id: M11-047-JSON-002
+        fixtures: [FX-RED-NESTED-JSON, FX-RED-SENTINEL-PLAINTEXT-SECRET]
+        action: "Attempt sentinel in nested object, array and stringified JSON."
+        expected: QUARANTINE
+        evidence: [recursive_key_value_scan, artifact_release_count]
+      - id: M11-047-JSON-003
+        fixtures: [FX-RED-SENTINEL-RAW-FUNCTION-BODY]
+        action: "Attempt prohibited technical body in an unknown JSON field."
+        expected: QUARANTINE
+        evidence: [schema_validation_result, artifact_release_count]
+      - id: M11-047-JSON-004
+        fixtures: [FX-RED-SECOND-RESOURCE]
+        action: "Attempt mixed authorized/unauthorized resource array."
+        expected: QUARANTINE
+        evidence: [row_scope_validation, artifact_release_count]
+      - id: M11-047-JSON-005
+        fixtures: [FX-RED-ALTERNATE-ENCODING, FX-RED-SENTINEL-SECRET-DERIVATIVE]
+        action: "Attempt encoded or escaped derivative."
+        expected: QUARANTINE
+        evidence: [canonical_decode_result, derivative_scan, artifact_release_count]
+
+  SCOPE_NEUTRALITY:
+    cases:
+      - id: M11-047-NEU-001
+        personas:
+          - FX-RED-UNASSIGNED-INSPECTOR
+          - FX-RED-REVIEWER
+          - FX-RED-AUDITOR
+          - FX-RED-PLANNER
+          - FX-RED-OPERATIONS
+          - FX-RED-SECURITY-ADMIN
+          - FX-RED-COMPLIANCE-ADMIN
+        fixtures: [FX-RED-RESOURCE-MISSING, FX-RED-RESOURCE-OUT-OF-SCOPE]
+        action: "Compare safe projection responses."
+        expected: NEUTRAL
+        evidence: [status_pairs, token_pairs, body_byte_hash_pairs]
+      - id: M11-047-NEU-002
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        fixtures: [FX-RED-RESOURCE-MISSING, FX-RED-RESOURCE-OUT-OF-SCOPE, FX-RED-CSV]
+        action: "Compare CSV export behavior."
+        expected: "No empty-artifact versus denied-artifact existence oracle."
+        evidence: [export_result_pair, artifact_count_pair, filename_metadata_pair]
+      - id: M11-047-NEU-003
+        personas: [FX-RED-REVIEWER, FX-RED-AUDITOR]
+        fixtures: [FX-RED-RESOURCE-MISSING, FX-RED-RESOURCE-OUT-OF-SCOPE, FX-RED-JSON]
+        action: "Compare JSON export behavior."
+        expected: "Identical neutral result and artifact behavior."
+        evidence: [export_result_pair, artifact_count_pair, response_hash_pair]
+      - id: M11-047-NEU-004
+        personas: [FX-RED-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-RED-EMPTY-RESULT, FX-RED-DENIED-RESULT]
+        action: "Compare UI, API and export metadata."
+        expected: "No count, filename, size, timestamp or navigation oracle."
+        evidence: [API_metadata_pair, DOM_metadata_pair, export_metadata_pair]
+
+  EVIDENCE_IMMUTABILITY_AND_QUARANTINE:
+    cases:
+      - id: M11-047-EVD-001
+        fixtures: [FX-RED-HISTORICAL-AUDIT-SET]
+        action: "Attempt update/delete of historical audit through ordinary application personas."
+        expected: "DENY and IMMUTABLE."
+        evidence: [mutation_denial_matrix, historical_row_count_before_after, historical_checksum_before_after]
+      - id: M11-047-EVD-002
+        fixtures: [FX-RED-SENTINEL-PLAINTEXT-SECRET]
+        action: "Place one prohibited field in an otherwise valid candidate evidence bundle."
+        expected: QUARANTINE
+        evidence: [bundle_validation_result, released_file_count]
+      - id: M11-047-EVD-003
+        action: "Corrupt one candidate released-file checksum."
+        expected: QUARANTINE
+        evidence: [checksum_validation_result, released_file_count]
+      - id: M11-047-EVD-004
+        action: "Omit producer attestation or independent reviewer signoff."
+        expected: QUARANTINE
+        evidence: [attestation_validation_result, released_file_count]
+      - id: M11-047-EVD-005
+        action: "Verify canonical released-file bytes and bundle index."
+        expected: "Approved files only; exact hashes; no hidden/unindexed file."
+        evidence: [bundle_index, file_hash_manifest, unindexed_file_scan]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - code_commit
+    - migration_chain_hash
+    - fixture_graph_hash
+    - ordinary_persona_or_isolated_reviewer_class
+    - result
+    - producer_attestation
+    - independent_reviewer
+  required_outputs:
+    - returned_field_and_row_scope_manifest
+    - status_token_body_or_artifact_behavior_pairs
+    - CSV_and_JSON_schema_scan
+    - prohibited_sentinel_and_derivative_scan
+    - historical_audit_row_count_and_checksums
+    - artifact_bundle_index_and_hashes
+    - quarantine_or_release_result
+    - teardown_result
+  release_rule: >-
+    Release requires every allowlist, scope, redaction, canonicalization,
+    checksum, attestation, reviewer and teardown control to pass. Any single
+    failure quarantines the entire bundle.
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+    TEST-BROWSER: apps/web/e2e/m11-remediation-stack.spec.ts
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+  ownership_boundaries:
+    TEST-015: "Raw/safe audit, sentinel, scope neutrality, immutable audit and semantic disclosure."
+    TEST-BROWSER: "CSV/JSON/UI/API/export behavior and ordinary-persona disclosure."
+    TEST-CATALOG: "Policy, ACL, trigger/projection identities and safe schema proof."
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "No implementation worker edits a leased QA path."
+    - "Stop on path, migration, signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final safe projection, raw-policy, trigger, persona, export and evidence manifests."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+
+queued_next:
+  packet: KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Missing/out-of-scope, provider, RLS, SQL and function error normalization across RPC, browser and export."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  persona_fixture_count: 11
+  test_group_count: 9
+  test_case_count: 40
+  unique_test_case_ids: PASS
+  proposed_test_path_count: 3
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS

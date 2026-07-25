@@ -1,0 +1,289 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-REGULATIONS-RUNTIME-REMEDIATION-PREFLIGHT-033
+title: Collision-safe Admin Regulations authority and runtime remediation preflight
+status: PREFLIGHT_READY_AUTHORITY_DECISION_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-REGULATIONS-RUNTIME-PERMISSION-MAPPING-032
+  design_dependency: M9-ADMIN-REGULATIONS-DESIGN-AUTHORITY-REVIEW-051
+  routes: ["/admin/regulations", "/admin/regulations/:id"]
+  screen_ids: [SCR-ADM-010, SCR-ADM-011]
+  package: M9
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  primary_requirements:
+    - MVP1-M09-001
+    - CR-449
+    - WA-AC-0449
+    - WA-EV-0449
+    - REQ-R0C-01109 through REQ-R0C-01112
+  dependent_requirements:
+    - MVP1-M09-010 through MVP1-M09-015
+    - MVP1-M09-029 through MVP1-M09-030
+    - CR-458 through CR-463
+    - CR-477 through CR-478
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+authority_decisions:
+  - id: REG-DEC-001
+    question: Which record is the sole operational regulation authority?
+    recommended_answer: Immutable approved regulation versions resolved through one effective head, with no second writable legacy truth.
+  - id: REG-DEC-002
+    question: How does an approved Compliance Request regulation version project to item/package consumers?
+    required_output: Transactional compatibility contract preserving stable IDs and exact accepted version identity.
+  - id: REG-DEC-003
+    question: Which states distinguish approved future, active, superseded and manually deactivated regulations?
+  - id: REG-DEC-004
+    question: Which timezone/effective instant controls regulation activation and package eligibility?
+  - id: REG-DEC-005
+    question: Does deactivation require a distinct checker and may it be scheduled/cancelled?
+    recommended_answer: Distinct checker required; future deactivation remains pending until the approved instant.
+  - id: REG-DEC-006
+    question: What happens to draft packages, planned visits and active inspections when their regulation version is superseded/deactivated?
+    required_rule: Existing frozen/pinned work remains traceable and executable; new use resolves only the effective version.
+  - id: REG-DEC-007
+    question: Which exact regulation and attachment provenance must be frozen in package/inspection/report records?
+    recommended_minimum:
+      - regulation version ID, code and version label
+      - issuing authority
+      - effective interval
+      - clause ID/ref/legal source
+      - attachment IDs and SHA-256 hashes
+  - id: REG-DEC-008
+    question: Which personas may read regulation metadata, full source documents, version history and audit?
+  - id: REG-DEC-009
+    question: Can clauses or attachment metadata ever change parent after creation?
+    recommended_answer: NO after publication; any correction is a successor-version operation.
+  - id: REG-DEC-010
+    question: What predecessor revision must a successor draft bind to, and how are concurrent successors resolved?
+  - id: REG-DEC-011
+    question: Which MIME, size, scanning and retention rules govern source attachments?
+  - id: REG-DEC-012
+    question: Is form_admin an intended Regulation Management route persona?
+    required_output: One aligned route/action/RLS/persona decision.
+
+target_contract:
+  regulation_identity:
+    - Stable regulation identity/code with immutable accepted versions.
+    - Exact legal parent dependency for every inspection item version.
+    - Identity and accepted history are undeletable.
+  version_states:
+    - draft
+    - pending_approval
+    - approved_future
+    - active
+    - superseded
+    - deactivation_scheduled
+    - deactivated
+    - rejected
+  invariants:
+    - Only governed RPCs can publish, activate, supersede or deactivate.
+    - Checker identity equals auth.uid and differs from maker.
+    - The currently active version remains eligible until successor activation.
+    - At most one version is active for new use at an instant.
+    - Published regulation body, clauses, attachments and source objects are immutable.
+    - Package publication freezes exact regulation, clause and attachment provenance.
+    - Existing package/visit/inspection/report snapshots never change.
+    - New use rejects future, superseded or deactivated authority.
+    - Every transition and object-custody event is correlated and audited.
+  concurrency:
+    - Regulation-identity scoped lock for publication/activation/deactivation.
+    - Expected predecessor/head and draft revision CAS.
+    - Stable conflict outcome; no implicit rebase onto a different predecessor.
+
+proposed_lease_sequence:
+  - lease_id: REG-LEASE-CONTRACT-001
+    order: 1
+    owner: ONE_REGULATION_AUTHORITY_CONTRACT_OWNER
+    purpose: Decide REG-DEC-001..012 and freeze authority, effective-time, custody, dependency, actor and consumer contracts.
+    artifacts_only:
+      - regulation identity/version/state contract
+      - actor/capability matrix
+      - effective resolver contract
+      - clause/attachment custody contract
+      - package/runtime provenance schema
+      - migration and rollback-forward plan
+    do_not_touch: [product code, database, tests, data, design]
+  - lease_id: REG-LEASE-DB-001
+    order: 2
+    owner: ONE_DATABASE_REGULATION_ENGINEER
+    purpose: Establish non-bypassable lifecycle, effective heads, child/object immutability and governed projection.
+    proposed_paths:
+      - one new forward-only Supabase migration
+      - one new transactional regulation-governance negative probe
+      - one regulation-aware attachment custody service contract
+    entry_criteria:
+      - REG-DEC-001..012 approved.
+      - Migration, RPC, trigger, storage policy and table ownership recorded.
+      - Compliance Requests, Items, Packages and Audit leases reconciled.
+    exit_criteria:
+      - Direct REST cannot forge publication/approval, mutate accepted authority or delete history.
+      - Future approval does not remove the current effective version.
+      - Child parent identity and published source objects are immutable.
+      - Governed Compliance Request publication feeds the sole operational resolver.
+      - Deactivation is checker-approved, impact-aware and effective-time correct.
+      - Every conflict and transition is deterministic and audited.
+  - lease_id: REG-LEASE-PROVENANCE-001
+    order: 3
+    owner: ONE_REGULATION_RUNTIME_INTEGRATION_ENGINEER
+    purpose: Converge Items, Packages, Field, Review and Reports on exact regulation-version provenance.
+    proposed_scope:
+      - item-to-regulation version dependency
+      - package publication validation and regulation snapshot
+      - Field frozen legal-source resolution
+      - inspection report and review provenance
+      - regulation impact aggregation
+    collision_rule: >-
+      Items, Packages, Field, Review, Reports, Enforcement, Factory 360 and
+      Audit owners must consent before their paths are leased.
+    exit_criteria:
+      - Package snapshots carry exact accepted regulation, clause and attachment provenance.
+      - Prior execution remains byte-stable and fully traceable.
+      - New publication resolves the one effective regulation version.
+      - Impact names exact packages, visits, inspections, reports and overrides.
+  - lease_id: REG-LEASE-UI-001
+    order: 4
+    owner: ONE_M9_WEB_ENGINEER
+    purpose: Implement accepted Design 051 against frozen lifecycle, impact and custody services.
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/regulations/**
+      - route-local translations and styles only
+    entry_criteria:
+      - Stable accepted Design 051 revision.
+      - Regulation resolver/RPC/read models frozen.
+      - REG-DEC-001..012 approved.
+    exit_criteria:
+      - Register and dedicated detail route use one implementation.
+      - Maker and checker actions/queues are distinct.
+      - Future, active, superseded, scheduled and deactivated states are honest.
+      - Exact dependency/impact and immutable attachment custody are visible.
+      - Concurrent edit/approval conflicts preserve work and explain recovery.
+      - Route persona matches the approved permission matrix.
+  - lease_id: REG-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    purpose: Certify regulation governance, legal provenance, storage custody and browser evidence.
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-regulations-runtime.spec.ts
+      - new supabase/tests/m9_regulation_governance_negative_probe.sql
+      - evidence under approved INSPECTION_DOCS_ROOT
+
+seeder_and_fixture_plan:
+  owner: DEDICATED_SEEDER_LANE
+  isolation:
+    - unique seed_batch_id
+    - isolated regulation identity and version lineage
+    - isolated clauses, items and source documents
+    - isolated package versions before and after regulation successor
+    - isolated visits and inspections pinned to old/new versions
+    - isolated report provenance
+    - complete storage/database cleanup manifest
+    - transaction rollback for database-negative probes
+  personas:
+    - compliance_admin maker
+    - distinct compliance_admin checker
+    - form_admin writer subject to REG-DEC-012
+    - reviewer
+    - unauthorized administrator
+    - planner
+    - assigned inspector
+    - unassigned inspector
+    - anonymous
+  version_cases:
+    - mutable draft revision 1
+    - stale concurrent draft
+    - pending approval
+    - approved future successor
+    - currently active predecessor
+    - superseded version frozen in package/inspection
+    - scheduled deactivation with future package and active inspection
+    - rejected successor
+    - child re-parent attack
+    - published source-object delete attack
+  data_safety: No shared regulation, clause, item, package, visit, inspection or source document may be mutated.
+
+focused_test_matrix:
+  p0:
+    - id: REG-TST-001
+      proof: Direct writer INSERT/UPDATE cannot create published authority or forge approval provenance.
+    - id: REG-TST-002
+      proof: Maker cannot approve own regulation; checker identity is auth.uid and cannot be supplied.
+    - id: REG-TST-003
+      proof: Approved-future successor leaves current regulation eligible until atomic activation.
+    - id: REG-TST-004
+      proof: Exactly one regulation version is effective for new package use at every boundary instant.
+    - id: REG-TST-005
+      proof: Published clause/attachment cannot be re-parented, edited or deleted.
+    - id: REG-TST-006
+      proof: Published source object cannot be deleted/replaced and metadata checksum remains retrievable.
+    - id: REG-TST-007
+      proof: Governed Compliance Request regulation becomes the sole authority consumed by items/packages.
+    - id: REG-TST-008
+      proof: Package publication freezes exact regulation version, clause, authority, effective interval and attachment hashes.
+    - id: REG-TST-009
+      proof: Existing package, visit, inspection and report provenance remains unchanged after successor/deactivation.
+    - id: REG-TST-010
+      proof: Deactivation requires checker consent, reports exact impact and preserves approved pinned work.
+    - id: REG-TST-011
+      proof: Concurrent successors/deactivations yield one deterministic result with no implicit predecessor switch.
+  p1:
+    - id: REG-TST-012
+      proof: Draft CAS returns a stable conflict and preserves both client and server work.
+    - id: REG-TST-013
+      proof: Impact names exact package versions, future visits, pinned inspections, reports and attachment consumers.
+    - id: REG-TST-014
+      proof: Attachment type, size, scanning and orphan cleanup follow the approved policy.
+    - id: REG-TST-015
+      proof: Approved route persona matrix matches UI, action guards, RLS, RPC and storage policies.
+    - id: REG-TST-016
+      proof: Unauthorized personas cannot inspect restricted source documents, history or audit.
+    - id: REG-TST-017
+      proof: EN/AR, LTR/RTL, light/dark, register/detail responsive, keyboard and screen-reader evidence passes.
+
+protected_regression:
+  - apps/web/e2e/cd-005-006-regulations.spec.ts
+  - apps/web/e2e/cd-006-regulation-publish-provenance.spec.ts
+  - apps/web/e2e/cd-006-admin-backend-foundation.spec.ts
+  - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+  - apps/web/e2e/compliance-library.spec.ts
+  - apps/web/e2e/compliance-request-engine.spec.ts
+  - apps/web/e2e/cd-007-items.spec.ts
+  - apps/web/e2e/cd-008-009-packages.spec.ts
+  - apps/web/e2e/execution-crossmodule-contract.spec.ts
+  - apps/web/e2e/golden-journey.spec.ts
+  - supabase/tests/0032_m09_live_release_probe.sql
+  - accepted regulation, clause, attachment, item and package histories
+  - existing visit, inspection and report snapshots
+
+collision_register:
+  hotspots:
+    - regulations RLS, lifecycle guard and publish RPC
+    - compliance_entity_versions/heads and Compliance Request publication
+    - regulation_clauses and inspection_items dependencies
+    - regulation_attachments and regulation-documents storage policies
+    - package publication validation and frozen item/dependency snapshots
+    - Field, Review and Report legal-source consumers
+    - audit events and object-custody correlation
+    - shared shell/navigation
+  active_peer_packets:
+    - M9-ADMIN-REGULATIONS-DESIGN-AUTHORITY-REVIEW-051
+    - M9-ADMIN-ITEMS-RUNTIME-REMEDIATION-PREFLIGHT-031
+    - M9-ADMIN-PACKAGES-RUNTIME-REMEDIATION-PREFLIGHT-029
+    - KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046
+  touched_by_this_lane: false
+  rule: Recheck every path immediately before lease; one owner per file, migration, storage policy and shared database object.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the single-authority, effective-time, maker-checker, child/object
+    custody, exact legal-provenance and persona decisions first. Then lease
+    database governance, cross-module provenance, accepted Design 051 UI and
+    independent certification separately. Do not count the current native
+    publish RPC, immutable banner or reviewer screenshots as end-to-end
+    Regulation Management completion.

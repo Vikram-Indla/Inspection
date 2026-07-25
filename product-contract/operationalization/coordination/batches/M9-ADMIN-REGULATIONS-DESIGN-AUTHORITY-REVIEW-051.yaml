@@ -1,0 +1,702 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-REGULATIONS-DESIGN-AUTHORITY-REVIEW-051
+title: Independent Admin Regulation Library and Regulation Detail design authority review
+status: RETURN_FOR_SECURITY_GOVERNANCE_MAPPING_AND_LOCALIZATION_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The regulation register, dossier and intended publication RPC are
+    substantial real capabilities, but publication is bypassable through broad
+    table update, published file custody is bypassable through storage delete,
+    no exact accepted successor design exists, and current bilingual and
+    negative-path evidence is incomplete.
+
+task_contract:
+  task_id: M9-ADMIN-REGULATIONS-DESIGN-AUTHORITY-REVIEW-051
+  gate: M9 Admin Regulations design authority
+  routes:
+    - /admin/regulations
+    - /admin/regulations/:id
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_ids:
+    - M6
+    - M9
+  screen_ids:
+    - SCR-ADM-010
+    - SCR-ADM-011
+  screen_names:
+    - Regulation Library
+    - Regulation Detail and Version
+  engines:
+    - ENG-01
+    - ENG-05
+    - ENG-07
+    - ENG-08
+    - ENG-09
+    - ENG-10
+    - ENG-12
+  source_requirement_ids:
+    primary:
+      - CR-449
+    dependent:
+      - CR-450
+      - CR-458
+      - CR-462
+      - CR-463
+  atomic_requirement_ids:
+    - MVP1-M09-001
+    - MVP1-M09-002
+    - MVP1-M09-010
+    - MVP1-M09-014
+    - MVP1-M09-015
+  acceptance_ids:
+    - WA-AC-0449
+    - WA-AC-0450
+    - WA-AC-0458
+    - WA-AC-0462
+    - WA-AC-0463
+    - DSG-002
+    - DSG-003
+  dependencies:
+    - accepted WA-DES-015-C1 regulation-register successor
+    - accepted WA-DES-002-C1 regulation-detail successor
+    - current CD-005 and CD-006 design/browser evidence
+    - non-bypassable regulation publication boundary
+    - immutable published attachment binary custody
+    - one governed mutation and approval path
+    - draft and child-write concurrency contract
+    - bilingual regulation and clause content decision
+  do_not_touch:
+    - live Claude Design, WA-DES-015, WA-DES-002 or proposed C1 successors
+    - product application code, tests or evidence
+    - Supabase, migrations, storage, RPCs, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  sibling_paths_preserved:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-ITEMS-RUNTIME-PERMISSION-MAPPING-030.yaml
+    - product-contract/operationalization/coordination/batches/M9-ADMIN-ITEMS-RUNTIME-REMEDIATION-PREFLIGHT-031.yaml
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No product, design, database, test,
+    evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_screen_validation:
+  register:
+    route: /admin/regulations
+    page: apps/web/src/app/(app)/admin/regulations/page.tsx
+    controls: apps/web/src/app/(app)/admin/regulations/Controls.tsx
+    actions: apps/web/src/app/(app)/admin/regulations/actions.ts
+    layout: apps/web/src/app/(app)/admin/regulations/layout.tsx
+    screen_id: SCR-ADM-010
+    validation: CONFIRMED
+  detail:
+    route: /admin/regulations/:id
+    page: apps/web/src/app/(app)/admin/regulations/[id]/page.tsx
+    implementation: delegates to the current register page with id search parameter
+    screen_id: SCR-ADM-011
+    validation: CONFIRMED
+  dead_or_stale_component:
+    path: apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+    imported_by_live_route: false
+    stale_claims:
+      - detail is only a logical mode with no dedicated route
+      - route guard is unproven
+      - downstream audit and lineage legs are unproven
+    risk: >-
+      A future maintainer or mapping reviewer can mistake the unused component
+      for current runtime truth.
+    validation: REMOVE_OR_EXPLICITLY_ARCHIVE_AFTER_AUTHORIZATION
+  route_inventory:
+    register_requirement_claim: CR-449..CR-478
+    register_roles_claimed:
+      - compliance_admin
+      - form_admin
+      - ops
+      - planner
+      - reviewer
+      - security_admin
+    actual_inherited_boundary:
+      - compliance_admin
+      - reviewer
+    form_admin_writer_but_route_denied: true
+    detail_inventory_role: AUTHENTICATED_ROUTE_GROUP
+    actual_detail_inherited_boundary:
+      - compliance_admin
+      - reviewer
+    validation: INCORRECT_OVERBROAD_AND_ROLE_INCONSISTENT
+
+current_capability:
+  register:
+    - source-backed search and lifecycle filters
+    - lifecycle counts over the loaded records
+    - clause and mapped-item impact footprint
+    - verified-empty and unavailable distinction
+    - reviewer read-only disclosure
+    - draft regulation creation
+  detail:
+    - dedicated deep link with register back-navigation
+    - regulation identity, lifecycle, version and effective date
+    - source attachment upload, hash, metadata and signed download
+    - clause navigator and mapped-item dependencies
+    - draft metadata edit and clause addition
+    - dependency readiness
+    - intended maker-checker publication
+    - reasoned deactivation
+    - object-scoped audit timeline
+    - version lineage and successor relationship
+  data_sources:
+    - regulations
+    - regulation_clauses
+    - regulation_attachments
+    - inspection_items
+    - profiles
+    - user_roles
+    - audit_events
+    - regulation-documents
+
+requirement_mapping_review:
+  confirmed:
+    - requirement_ids: [CR-449]
+      capability: >-
+        Create, view, edit draft and deactivate regulations with status,
+        effective date, attachments and issuing authority.
+    - requirement_ids: [CR-450]
+      capability: regulation-clause parent relationship and item mapping
+    - requirement_ids: [CR-458]
+      capability: version label, successor lineage and immutable published row
+    - requirement_ids: [CR-462]
+      capability: reasoned deactivation that preserves history
+    - requirement_ids: [CR-463]
+      capability: regulation, clause and attachment metadata audit triggers
+  screen_contract_gaps:
+    SCR_ADM_010:
+      absent_or_incomplete:
+        - clone successor action
+        - archive distinction separate from deactivation
+        - submit-for-review state and action
+    SCR_ADM_011:
+      absent_or_incomplete:
+        - clause edit, applicability authoring and controlled removal
+        - compare versions
+        - explicit validation action separate from publication
+        - submit, return and pending-review workflow
+        - approver queue and decision evidence
+  overclaim:
+    - "The frozen route inventories attach broad CR-449..CR-478 or CR-001..CR-478 ranges rather than the exact regulation subset."
+    - "The current UI calls direct publication governed, but it has no submitted/review state and remains bypassable."
+  validation: CONFIRMED_WITH_MATERIAL_SCREEN_AND_GOVERNANCE_GAPS
+
+permissions_and_access:
+  table_read: any authenticated user
+  table_write:
+    - compliance_admin
+    - form_admin
+  server_writer_guard:
+    - compliance_admin
+    - form_admin
+  route_and_shell:
+    - compliance_admin
+    - reviewer
+  findings:
+    - "form_admin is authorized by RLS and every server action but denied by the route boundary."
+    - "Reviewer can view the route but cannot access the scoped audit RPC."
+    - "Other authenticated roles can query regulation, clause, attachment metadata and attachment files at the data layer even though the route is denied."
+    - "The register inventory claims multiple roles that the actual route rejects."
+  validation: FAIL_ROLE_CONSISTENCY_AND_DISCLOSURE_REVIEW
+
+publication_and_maker_checker:
+  intended_path:
+    application_action: publishRegulation
+    RPC: publish_regulation
+    authorization:
+      - compliance_admin
+      - form_admin
+    transaction:
+      - lock selected draft
+      - reject the recorded creator as approver
+      - require effective_from
+      - require at least one clause
+      - require every clause to map to an item
+      - lock and close the prior active version
+      - write supersedes_id
+      - publish with approved_by and published_at
+    one_open_governed_index: regulations_one_open_governed
+    validation: STRONG_AND_ATOMIC_ON_INTENDED_PATH
+  maker_checker_null_creator_gap:
+    RPC_condition: v_new.created_by = auth.uid()
+    null_creator_rejected: false
+    database_constraint_allows_null_creator: true
+    implication: >-
+      A legacy or malformed draft with created_by null can be published without
+      proven maker identity.
+    validation: FAIL
+  direct_table_bypass:
+    broad_update_policy: true
+    draft_to_published_database_trigger: no_full_publish_guard
+    dependency_validation_at_direct_transition: absent
+    approved_by_distinct_identity_constraint: present_but_identity_can_be_supplied
+    predecessor_window_transaction: absent
+    lineage_write: absent
+    implication: >-
+      An authorized writer can directly update a draft to published, supply a
+      different approved_by identity, and bypass clause dependency validation,
+      current-user approval provenance, predecessor closing and successor
+      lineage.
+    validation: CRITICAL_PUBLISH_BYPASS
+  governed_request_path:
+    route: /admin/compliance-requests
+    register_link: present
+    direct_legacy_controls: still active
+    page_warning: present_in_register_only
+    detail_warning: absent
+    maker_checker_unified: false
+    validation: CONTRADICTORY_PARALLEL_AUTHORITIES
+
+versioning_immutability_deactivation:
+  regulation_row:
+    published_content_mutation_blocked: true
+    published_delete_blocked: true
+    deactivated_mutation_blocked: true
+    allowed_transition: published_or_locked_to_deactivated
+    validation: STRONG_WITH_FIELD_GAPS
+  deactivation_guard_fields:
+    required:
+      - status deactivated
+      - deactivated_at
+      - deactivated_by
+      - deactivation_reason
+    effective_to_required_at_database_boundary: false
+    unchanged_not_checked:
+      - created_by
+      - approved_by
+      - published_at
+      - supersedes_id
+      - effective_to
+    implication: >-
+      A direct deactivation can omit the closed effective date and can alter
+      provenance or lineage fields in the same permitted transition.
+    validation: FAIL_FULL_ROW_IMMUTABILITY
+  child_content:
+    clauses_draft_only_trigger: present
+    attachment_metadata_draft_only_trigger: present
+    published_child_update_delete_blocked: true
+    validation: CONFIRMED_SEQUENTIALLY
+  successor:
+    code_version_unique: present
+    one_open_published_or_locked: present
+    predecessor_close: atomic_on_RPC
+    old_status: deactivated
+    lineage: supersedes_id
+    validation: CONFIRMED_ON_INTENDED_PATH
+  future_use:
+    new_package_publish_rejects_inactive_regulation: true
+    already_published_package_can_still_be_selected_for_new_visit: not_rejected_by_regulation_state
+    implication: >-
+      The code proves that a deactivated regulation cannot enter a newly
+      published package, but it does not prove the broader CR-449 promise that
+      deactivation prevents all future use through an already-published package.
+    validation: CONTRACT_SCOPE_AMBIGUITY_OR_GAP
+
+attachment_custody:
+  positive:
+    - private bucket
+    - random non-overwriting path
+    - computed SHA-256
+    - metadata uploaded_by
+    - metadata insert compensation removes uploaded binary on failure
+    - short-lived signed download link
+    - attachment metadata audit
+    - metadata child immutability after parent publish
+  storage_delete_policy:
+    roles:
+      - compliance_admin
+      - form_admin
+    parent_status_check: absent
+    metadata_join: absent
+    implication: >-
+      A configuration writer can delete the stored binary for a published or
+      deactivated regulation while its immutable metadata and audit history
+      remain, breaking source custody and the signed-link experience.
+    validation: CRITICAL_PUBLISHED_BINARY_CUSTODY_BYPASS
+  storage_read_policy:
+    scope: any authenticated user who can identify the object path
+    route_scope: narrower
+    validation: DISCLOSURE_SCOPE_REVIEW_REQUIRED
+  upload_validation:
+    server_size_limit: absent
+    media_allowlist: absent
+    malware_or_content_scan: absent
+    checksum: present
+    validation: PARTIAL
+
+concurrency:
+  publication:
+    draft_row_lock: present
+    active_predecessor_lock: present
+    one_open_unique_index: present
+    validation: STRONG_ON_INTENDED_PATH
+  draft_edit:
+    row_version: absent
+    updated_at_CAS: absent
+    expected_snapshot: absent
+    result: concurrent writers can silently overwrite title, authority or date
+    validation: FAIL
+  child_write_vs_publish:
+    parent_status_read_for_update_or_share: absent
+    child_insert_parent_lock: not_proven
+    risk: >-
+      A clause or attachment insert can observe draft while publication
+      concurrently evaluates and transitions the parent, allowing an
+      unevaluated or post-validation child to race the immutable boundary.
+    validation: FAIL_ATOMIC_CHILD_CLOSURE
+  deactivation:
+    expected_status_or_version: absent
+    impact_acknowledgement: absent
+    result: last compatible direct update wins without a stale-state explanation
+    validation: FAIL
+
+audit_and_dependency_review:
+  audit:
+    regulations_trigger: present
+    regulation_clauses_trigger: present
+    regulation_attachments_trigger: present
+    storage_binary_event_audit: not_proven
+    object_scoped_reader: regulation-row events only
+    clause_and_attachment_events_in_dossier_timeline: absent
+    reviewer_timeline: unavailable
+    validation: PARTIAL
+  dependencies:
+    publish_requires_clause: true
+    publish_requires_each_clause_to_have_item: true
+    active_item_requirement_at_regulation_publish: false
+    package_publication_rechecks_regulation_status_and effective date: true
+    dossier_exposes_item codes: true
+    detailed downstream package impact before deactivation: absent
+    validation: PARTIAL
+
+design_authority:
+  frozen_route_inventory:
+    register_designs:
+      - SAQEEL Compliance Requests.dc.html
+      - SAQEEL Enforcement.dc.html
+      - SAQEEL Committee.dc.html
+      - SAQEEL Risk.dc.html
+    validation: NO_EXACT_REGULATION_REGISTER_AUTHORITY
+  register_predecessor:
+    logical_id: WA-DES-015
+    filename: SAQEEL Admin.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+    bytes: 42071
+    lines: 366
+    sha256: d55f882c7fa83b7a70865de250a16e47e413a2f7742fb5d41233985304d853c3
+    regulation_mode_present: true
+    registered_route: /admin
+    validation: NEAREST_REGISTER_PATTERN_NOT_EXACT_ROUTE_AUTHORITY
+  detail_predecessor:
+    logical_id: WA-DES-002
+    filename: SAQEEL Admin Detail.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Detail.dc.html
+    bytes: 27541
+    lines: 214
+    sha256: 65b98dfc952d2737260c5c49f432c74cdb85a18f1fdec3e0f2af29ac9dea957d
+    registered_route: /admin/regulations/:id
+    validation: NEAREST_DETAIL_PATTERN_WITH_INVENTED_VALUES
+  proposed_register_successor:
+    revision: WA-DES-015-C1
+    exact_filename: SAQEEL Compliance Registries - WA-DES-015-C1.dc.html
+    local_export: absent
+    accepted_hash: absent
+    status: CONTRACT_ONLY_NON_CONSUMABLE
+  proposed_detail_successor:
+    revision: WA-DES-002-C1
+    exact_filename: SAQEEL Compliance Detail - WA-DES-002-C1.dc.html
+    local_export: absent
+    accepted_hash: absent
+    status: CONTRACT_ONLY_NON_CONSUMABLE
+  immutable_revision_evidence:
+    predecessor_export_hashes: present
+    live_cloud_revision_ids: absent
+    successor_exports: absent
+    accepted_successor_hashes: absent
+    exact_successor_frame_manifests: absent
+    validation: INSUFFICIENT
+
+CD_lineage:
+  CD_005:
+    screen: SCR-ADM-010
+    role: HISTORICAL_IMPLEMENTATION_AND_VISUAL_EVIDENCE
+    present_unregistered_frames:
+      - register-en-light-1440
+      - register-ar-rtl-1440
+    acceptance: DSG-002_not_started
+    validation: PARTIAL_NOT_AUTHORITY
+  CD_006:
+    screen: SCR-ADM-011
+    role: HISTORICAL_IMPLEMENTATION_AND_VISUAL_EVIDENCE
+    present_unregistered_frames:
+      - detail-blocked-en-light-1440
+      - detail-lineage-en-light-1440
+    acceptance: DSG-003_not_started
+    validation: PARTIAL_NOT_AUTHORITY
+  later_capture_manifest:
+    populated_EN_AR_light_dark_1440: present
+    selected_1024_variants: present
+    mutation_and_negative_states: absent
+    accepted_design_comparison: absent
+    validation: IMPLEMENTATION_CAPTURE_NOT_DESIGN_ACCEPTANCE
+
+design_versus_code_delta:
+  predecessor_designs_have_code_lacks:
+    - exact accepted register and detail compositions for the real routes
+    - explicit compare-version interaction
+    - complete submit, review, return and approval lifecycle
+  code_has_predecessor_designs_lack:
+    - fail-closed register read
+    - true-empty versus unknown impact counts
+    - real attachment upload, hash and signed retrieval
+    - atomic intended publication RPC
+    - current successor lineage
+    - scoped audit timeline
+  predecessor_defects_not_to_copy:
+    - invented regulation code, title, authority, clauses, people and dates
+    - false claims that fixed example values are live records
+    - Arabic-only wordmark and ADMIN label in English state
+    - incomplete unavailable, stale, conflict and storage-custody states
+  required_successor_delta:
+    - preserve only proven record fields and actions
+    - expose request/review/publish authority unambiguously
+    - expose dependency readiness without treating unavailable as zero
+    - expose attachment custody and broken-file state
+    - include version comparison only after its behavior is implemented
+  recommended_action: >-
+    Correct and accept the two C1 successors after the security and governance
+    boundary is resolved. Do not implement from the stale predecessors.
+
+language_theme_responsive_accessibility:
+  wordmark:
+    predecessor_English_states: ARABIC_ONLY_OR_UNAPPROVED_IDENTITY
+    required: English SAQEEL Industrial identity in EN and approved Arabic identity in AR.
+    validation: CORRECTION_REQUIRED
+  record_authoring:
+    regulation_title_ar: absent
+    issuing_authority_ar: absent
+    clause_title_ar: absent
+    applicability_authoring: absent
+    legal_source_ar: absent
+    validation: FAIL_BILINGUAL_CONTENT_PARITY
+  localized_truth_defects:
+    entries:
+      - key: admin.reg.clause.notAudited
+        stale_claim: Clause changes are not audit-tracked.
+        current_truth: Clause changes are audit-tracked.
+      - key: admin.reg.r1.detail.published.body
+        stale_claim: Published regulation locking does not exist.
+        current_truth: Published regulation content is database-locked.
+      - key: admin.reg.attachments.truth
+        stale_claim: The form records metadata but does not upload a file.
+        current_truth: The action uploads a real file, computes a hash and stores metadata.
+    implication: >-
+      The page fallbacks are current, but source-backed ui_strings can override
+      them with materially false English and Arabic statements.
+    validation: FAIL_TRUTHFUL_LOCALIZATION
+  EN_LTR:
+    implemented: true
+    complete_content_certification: false
+  AR_RTL:
+    document_direction_test: present
+    populated_capture: present
+    record_content_parity: absent
+    mutation_flow_certification: absent
+    validation: PARTIAL
+  themes:
+    later populated light_dark captures: present
+    accepted design registration: absent
+    error_validation_locked_states_all_themes: absent
+    validation: PARTIAL
+  responsive:
+    tested_width: 1024
+    narrow_412_or_390: absent
+    tables: horizontal wrapper
+    dense_register_operational_scale: no pagination_or_virtualization
+    validation: PARTIAL
+  accessibility:
+    positive:
+      - semantic search and lifecycle button group
+      - semantic tables and status words with glyphs
+      - native labelled fields
+      - LTR isolation for identifiers and dates in current page
+      - alerts and status roles
+      - 44px action classes
+    missing:
+      - complete keyboard register and dossier journey
+      - focus restoration after server actions
+      - field-level validation association and error summary
+      - upload progress, type/size error and broken-file semantics
+      - version comparison accessibility
+      - 200 percent zoom
+      - automated accessibility result
+      - Arabic screen-reader and bidi mutation journey
+    validation: INSUFFICIENT
+
+hard_state_review:
+  evidenced_or_implemented:
+    - loading
+    - register unavailable distinct from empty
+    - true empty register
+    - filtered empty
+    - reviewer read-only
+    - detail not found
+    - draft with no clauses
+    - unmapped-clause publish blocker
+    - maker-checker self-approval error mapping
+    - successor effective-date error mapping
+    - published immutable
+    - deactivated read-only
+    - audit unavailable distinct from zero
+    - attachment metadata empty
+    - signed-link unavailable by omission
+  missing_or_inadequate:
+    - direct publish bypass detection
+    - null-maker publish rejection
+    - concurrent draft overwrite
+    - child-write versus publish race
+    - attachment binary removed while metadata remains
+    - upload type, size and content rejection
+    - submit, pending review, return and rejection
+    - compare versions
+    - deactivation downstream impact
+    - existing-package future-use decision
+    - stale dossier conflict
+    - complete EN/AR, theme and narrow viewport matrix
+
+test_review:
+  focused:
+    - apps/web/e2e/cd-005-006-regulations.spec.ts
+    - apps/web/e2e/cd-006-regulation-publish-provenance.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/compliance-library.spec.ts
+    - apps/web/e2e/compliance-library-evidence.spec.ts
+    - apps/web/e2e/cd-006-admin-backend-foundation.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  strengths:
+    - reviewer register and read-only behavior
+    - true-empty versus unavailable source contract
+    - dedicated detail deep link
+    - lineage and dependency readiness wiring
+    - maker-checker RPC source contract
+    - non-admin live REST negative
+    - RTL direction and 1024 overflow
+  weaknesses:
+    - no live positive Compliance/Form Admin publication path
+    - no two-person maker-checker browser journey
+    - no direct authorized REST publish-bypass negative
+    - no null-created_by database negative
+    - no concurrent draft or child-write test
+    - no published storage-binary deletion negative
+    - no deactivation dependency impact test
+    - no exact accepted-design visual diff
+    - current tests rely heavily on source-text assertions
+
+bounded_delta:
+  frontend_only: false
+  remote_database_change_authorized: false
+  required_before_build:
+    - make publication non-bypassable at the database boundary
+    - reject null maker identity
+    - protect published attachment binaries from direct deletion
+    - reconcile route roles with RLS, server actions and shell navigation
+    - choose and enforce CCR versus direct legacy mutation authority
+    - add draft stale-write protection
+    - make child closure atomic with publication
+    - close full-row deactivation immutability gaps
+    - decide deactivated-regulation behavior for existing published packages
+    - correct stale localized truth strings
+    - decide and implement bilingual regulatory content scope
+    - accept exact WA-DES-015-C1 and WA-DES-002-C1 successors
+    - produce current browser and database negative evidence
+  implementation_boundary: >-
+    No implementation is authorized by this review. After sponsor consent, one
+    engineering owner may lease the regulation routes, storage policies,
+    publication/deactivation database boundary, localization keys and focused
+    tests. Claude Design retains the two C1 revisions; this reviewer remains
+    read-only.
+
+reviewer_recommendation:
+  decision: BLOCK_DUE_TO_MISSING_CONTRACT
+  secondary:
+    - RETURN_FOR_MAPPING_CORRECTION
+    - RETURN_FOR_DELTA_CORRECTION
+  rationale:
+    - authorized direct publication bypasses the intended guarded RPC
+    - published source binaries can be directly deleted
+    - null maker identity is not rejected
+    - route and data-layer roles conflict
+    - draft/child concurrency is not safe
+    - exact accepted successor designs are absent
+    - bilingual truth and evidence remain incomplete
+
+evidence:
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/domain/atomic_scope.csv
+  - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+  - design/claude-design-mvp1/operationalization/DESIGN-OPS-003_SCREEN_STATE_GAP_QUEUE.csv
+  - design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_ALL38_REUSE_AND_GAP_MANIFEST.csv
+  - design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_CAPTURE_MANIFEST.csv
+  - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-REGISTRIES-SUCCESSOR-015.yaml
+  - product-contract/operationalization/coordination/batches/M9-COMPLIANCE-DETAIL-SUCCESSOR-016.yaml
+  - apps/web/src/app/(app)/admin/regulations/page.tsx
+  - apps/web/src/app/(app)/admin/regulations/Controls.tsx
+  - apps/web/src/app/(app)/admin/regulations/actions.ts
+  - apps/web/src/app/(app)/admin/regulations/layout.tsx
+  - apps/web/src/app/(app)/admin/regulations/[id]/page.tsx
+  - apps/web/src/app/(app)/admin/regulations/RegulationDetail.tsx
+  - apps/web/src/lib/admin-configuration.ts
+  - apps/web/src/lib/shell-navigation.ts
+  - supabase/migrations/0002_rbac_audit.sql
+  - supabase/migrations/20260715100000_cd005_cd006_ar_strings.sql
+  - supabase/migrations/20260715173000_admin_configuration_audit.sql
+  - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+  - supabase/migrations/20260715210000_cd006_011_frontend_strings.sql
+  - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+  - supabase/migrations/20260721020000_plain_language_terminology_ar_strings.sql
+  - apps/web/e2e/cd-005-006-regulations.spec.ts
+  - apps/web/e2e/cd-006-regulation-publish-provenance.spec.ts
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin.dc.html
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Detail.dc.html
+
+next_non_overlapping_review:
+  task_id: M9-ADMIN-VIOLATIONS-DESIGN-AUTHORITY-REVIEW-052
+  owner: claude_design_live_watch
+  mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+  routes:
+    - /admin/violations
+  screens:
+    - SCR-ADM-040
+    - SCR-ADM-041
+  objective:
+    - validate violation catalogue and penalty-mapping route modes
+    - verify exact requirements, lifecycle, maker-checker and immutable versions
+    - verify response-trigger, legal-basis and runtime dependency truth
+    - verify permissions, audit, concurrency and EN/AR hard states
+    - reconcile WA-DES-015/002 and M9-VIOLATION-PENALTY-DESIGN-AUTHORITY-018
+  completion_credit: 0
