@@ -62,7 +62,7 @@ for (const journey of journeys) {
       // Axe's wcag22aa target-size rule evaluates compact checkbox/radio
       // targets together with their spacing exception. This supplemental
       // geometry check covers controls whose painted box is the target.
-      const undersized = await page.locator("button:visible, input:not([type=checkbox]):not([type=radio]):visible, select:visible, textarea:visible, summary:visible, a.sq-nav-item:visible")
+      const undersized = await page.locator("button:visible, input:not([type=checkbox]):not([type=radio]):visible, select:visible, textarea:visible, summary:visible, a:is(.sq-nav-item,.ax-nav-item):visible")
         .evaluateAll(elements => elements.flatMap(element => {
           const rect = element.getBoundingClientRect();
           if (element.hasAttribute("disabled") || rect.width === 0 || rect.height === 0) return [];
