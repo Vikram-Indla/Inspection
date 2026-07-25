@@ -1,0 +1,291 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-SCHEMAS-084
+status: READ_ONLY_BLANK_SCHEMAS_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Define machine-checkable blank proof-artifact schemas for all twelve M11
+  audit-redaction blocker-family routes and all five exposure/provider routes
+  in packet 083. This packet records structure only: every real proof value is
+  null and no route is closed.
+
+source_pins:
+  product_ref: origin/main
+  product_commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+  coordination_ref: origin/codex/orchestration-control-plane
+  coordination_commit: 480f686fd4d3280f9b0d45e5aa7adb224744fb71
+  lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+  route_authority_packet: KIMI-M11-AUDIT-REDACTION-NEXT-PROOF-ROUTER-083
+
+hard_boundary:
+  - "Read-only schema definition plus this one uniquely owned packet."
+  - "All real proof, identity, authority, hash, evidence, preservation, expiry and closure values remain null."
+  - "Structural route IDs and field names are not proof and convey no authority."
+  - "No answer selection, implementation, SQL, database, data, seed, test execution, evidence capture, design change, owner, lease, dispatch, branch, stash, commit, push or shared-control mutation."
+  - "A populated future instance must be independently validated against packet 083 before it can be considered admissible."
+
+blank_proof_fields: &blank_proof_fields
+  source_identity:
+    product_repository: null
+    product_ref: null
+    product_commit: null
+    coordination_repository: null
+    coordination_ref: null
+    coordination_commit: null
+    design_page_id: null
+    design_revision: null
+    environment_id: null
+    fixture_manifest_id: null
+    implementation_identity: null
+    qa_identity: null
+    data_identity: null
+    reviewer_identity: null
+  authority:
+    authority_type: null
+    authority_identity: null
+    delegated_by: null
+    authority_provenance_uri: null
+    authority_provenance_hash: null
+    accepted_by: null
+    accepted_at: null
+  hashes:
+    canonical_payload_sha256: null
+    source_sha256: null
+    artifact_sha256: null
+    evidence_bundle_sha256: null
+    preservation_copy_sha256: null
+  evidence:
+    artifact_id: null
+    artifact_uri: null
+    evidence_type: null
+    observed_at: null
+    collector_identity: null
+    environment: null
+    persona: null
+    fixture_ids: null
+    positive_result: null
+    negative_result: null
+    regression_result: null
+    forbidden_secret_scan_result: null
+    browser_or_api_trace_uri: null
+    reviewer_notes_uri: null
+  preservation:
+    immutable_copy_uri: null
+    immutable_copy_created_at: null
+    chain_of_custody_id: null
+    preservation_authority: null
+    retention_rule_id: null
+    cleanup_disposition_uri: null
+    mutation_detected: null
+  expiry:
+    issued_at: null
+    expires_at: null
+    freshness_window_rule: null
+    invalidated_at: null
+    invalidation_reason: null
+    refs_rechecked_at: null
+  non_closure:
+    validation_status: null
+    closure_claimed: null
+    blocker_closed: null
+    requirement_credit: null
+    missing_required_fields: null
+    conflicting_evidence: null
+    expiry_checked: null
+    non_closure_reason: null
+    validator_identity: null
+    validated_at: null
+
+schema_rules:
+  - rule_id: PS-084-01
+    rule: "Every leaf in a newly issued blank artifact is null; empty or placeholder strings are prohibited."
+  - rule_id: PS-084-02
+    rule: "Route metadata identifies the schema only and is never evidence."
+  - rule_id: PS-084-03
+    rule: "Every future proof instance pins exact product, coordination, design, environment and fixture identities when applicable."
+  - rule_id: PS-084-04
+    rule: "Human authority fields cannot be populated from agent inference."
+  - rule_id: PS-084-05
+    rule: "Hashes use SHA-256 and are recomputed by the independent validator."
+  - rule_id: PS-084-06
+    rule: "Evidence must contain the positive, negative, regression and forbidden-secret results required by its route; non-applicability requires explicit human-approved authority."
+  - rule_id: PS-084-07
+    rule: "Preservation proof is separate from evidence production and must make mutation detectable."
+  - rule_id: PS-084-08
+    rule: "Expired, stale-ref, conflicting, incomplete or unpreserved proof remains non-closing."
+  - rule_id: PS-084-09
+    rule: "No artifact grants ownership, a lease, dispatch, implementation permission or requirement credit."
+
+proof_route_schemas:
+  - schema_id: PROOF-SCHEMA-BF-082-01
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-01
+    proof_subject: FIVE_SPONSOR_DECISIONS_AND_RECEIPT
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-02
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-02
+    proof_subject: ACCEPTED_VIRTUAL_TIMELINE_DESIGN_AND_BOUNDS
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-03
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-03
+    proof_subject: IMPLEMENTATION_IDENTITY_AND_LEASE
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-04
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-04
+    proof_subject: INDEPENDENT_QA_IDENTITY_AND_LEASE
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-05
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-05
+    proof_subject: CONTROLLED_DATA_IDENTITY_AND_LEASE
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-06
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-06
+    proof_subject: FINAL_REVIEWER_IDENTITY
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-07
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-07
+    proof_subject: DIRECT_VERIFICATION_RECORD_EXPOSURE
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-08
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-08
+    proof_subject: SESSION_AUDIT_RAW_DETAIL_EXPOSURE
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-09
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-09
+    proof_subject: ADMIN_AUDIT_RAW_M11_EXPOSURE
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-10
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-10
+    proof_subject: VIRTUAL_UI_IMMUTABLE_AUDIT_CONSUMER
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-11
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-11
+    proof_subject: THIRTY_FIVE_CASES_AND_SEVEN_EVIDENCE_ROWS
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-BF-082-12
+    route_kind: BLOCKER_FAMILY
+    route_id: BF-082-12
+    proof_subject: PROVIDER_LIFECYCLE_CONTRACT
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-SECRET-082-01
+    route_kind: EXPOSURE_PROVIDER
+    route_id: SECRET-082-01
+    proof_subject: PROOF-DIRECT-QUERY-DENIAL
+    linked_blocker_family: BF-082-07
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-SECRET-082-02
+    route_kind: EXPOSURE_PROVIDER
+    route_id: SECRET-082-02
+    proof_subject: PROOF-SAFE-AUDIT-SEAM
+    linked_blocker_family: BF-082-08
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-SECRET-082-03
+    route_kind: EXPOSURE_PROVIDER
+    route_id: SECRET-082-03
+    proof_subject: PROOF-ADMIN-SERVER-REDACTION
+    linked_blocker_family: BF-082-09
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-SECRET-082-04
+    route_kind: EXPOSURE_PROVIDER
+    route_id: SECRET-082-04
+    proof_subject: PROOF-VIRTUAL-IMMUTABLE-CONSUMER
+    linked_blocker_family: BF-082-10
+    artifact:
+      <<: *blank_proof_fields
+
+  - schema_id: PROOF-SCHEMA-SECRET-082-05
+    route_kind: EXPOSURE_PROVIDER
+    route_id: SECRET-082-05
+    proof_subject: PROOF-PROVIDER-LIFECYCLE-CONTRACT
+    linked_blocker_family: BF-082-12
+    artifact:
+      <<: *blank_proof_fields
+
+issuance_contract:
+  future_instance_rules:
+    - "Copy exactly one route schema into a separately identified proof instance."
+    - "Populate only values observed from the named authority/evidence source."
+    - "Never copy credentials, raw secrets, OTP hashes/codes or provider secret material."
+    - "Run the independent validator after collection and again before closure review."
+    - "Keep closure false until every route-specific condition in packet 083 passes."
+  blank_instance_verdict: STRUCTURE_ONLY_NOT_EVIDENCE
+  routes_closed: 0
+  owners_assigned: 0
+  leases_created: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-VALIDATOR-085
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define a non-mutating validator contract that classifies future populated
+    proof instances as BLANK, INCOMPLETE, STALE, CONFLICTED, EXPIRED,
+    FORBIDDEN_SECRET_FOUND or READY_FOR_INDEPENDENT_REVIEW without closing any
+    blocker or granting authority.
+  prohibited:
+    - "No real proof collection, answer selection, identity, owner, lease, dispatch, code, SQL, database, data, test, evidence, design, branch, stash, commit, push or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  schema_rules: 9
+  blocker_family_schemas: 12
+  exposure_provider_schemas: 5
+  total_route_schemas: 17
+  blank_artifacts: 17
+  non_null_real_value_count: 0
+  routes_closed: 0
+  real_owners_assigned: 0
+  real_leases_created: 0
+  commits_created: 0
+  pushes_created: 0
+  credit_granted: 0
+  non_mutating_boundary_checked: PASS

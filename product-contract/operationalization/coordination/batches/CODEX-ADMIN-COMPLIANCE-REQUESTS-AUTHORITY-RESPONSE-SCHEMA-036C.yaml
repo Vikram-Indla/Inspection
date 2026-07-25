@@ -1,0 +1,732 @@
+schema_version: "1.0"
+packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-SCHEMA-036C
+title: Compliance Request authority-response deterministic blank schema
+prepared_on: "2026-07-25"
+prepared_by: codex_independent_delivery
+mode: READ_ONLY_CONTROL_PLANE
+status: ACK_BLANK_SCHEMA_READY_RESPONSES_NULL_IMPLEMENTATION_BLOCKED
+
+decision:
+  recommendation: ACK
+  packet_quality_gate: PASS
+  response_evaluation_gate: NOT_EVALUATED
+  implementation_gate: BLOCKED
+  response_bundle_state: BLANK_ALL_RESPONSE_VALUES_NULL
+  questions_defined: 9
+  questions_answered: 0
+  selections_recorded: 0
+  evidence_items_recorded: 0
+  lease_authority_granted: false
+  implementation_authority_granted: false
+  migration_authority_granted: false
+  remote_ddl_authority_granted: false
+  shared_data_authority_granted: false
+  provider_authority_granted: false
+  design_authority_granted: false
+  completion_credit:
+    canonical_requirement_rows: 0
+    acceptance_rows: 0
+    screens: 0
+  three_figure_status:
+    built_requirements_credited: 0
+    independently_verified_requirements_credited: 0
+    fully_accepted_requirements_credited: 0
+  rationale: >-
+    This packet defines a deterministic, machine-checkable envelope for later
+    authority responses to Q01 through Q09. Immutable schema metadata is
+    populated; every response-bearing value remains null. The schema defines
+    completeness, hashing, expiry, compatibility, preservation and
+    ACK/RETURN/BLOCK rules, but it supplies no answer and grants no authority.
+
+task_contract:
+  task_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-SCHEMA-036C
+  process_ids: [G2-P00, G2-P12]
+  package_id: M6
+  channel: ADMIN
+  business_function: >-
+    Receive future Compliance authority answers without ambiguity, silent
+    defaults or loss of provenance before any independent decision receipt or
+    serial remediation lease can be considered.
+  source_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B
+    source_sha256: 79ae921b8ce7241c362f1d6b074e274729b1537b39f3c948fc1bcd4009565923
+    source_status: ACK_QUESTION_PACK_READY_IMPLEMENTATION_BLOCKED
+  trace_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A
+    source_sha256: c65b9764c3d7983db674efd91aeb37131a15789b122ea67eaefc2c9e4a16ee2a
+  decision_packet:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+    source_sha256: 33e175516b95cc6f842d1dceb88f5c4395cd426ca735fc46c4545d55b960f668
+  dormant_receipt:
+    packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-RECEIPT-036
+    rule: >-
+      A populated response bundle must pass independent validation before it
+      may be recorded in the dormant receipt. Neither a populated bundle nor
+      an ACK receipt is itself an implementation or database lease.
+  only_writable_output:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-SCHEMA-036C.yaml
+  prohibited:
+    - product code, tests, migrations, database objects or business data
+    - designs, mappings or design authority
+    - branches, stashes, main, setup/Inspection, merge or deployment
+    - filling any response value or computing a response/evidence hash
+    - selecting, ranking, recommending or defaulting any answer
+    - granting a lease or inferring sponsor, legal, product, database, provider or records authority
+
+session:
+  actor: codex_independent_delivery
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  product_worktree: /Users/vikramindla/.codex/worktrees/0982/Inspection
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  product_branch: codex/admin-localization-lookups
+  product_head: 39cf73d3e5b50ec4b9b3df427ae34e4114e93951
+  product_status_before_packet: CLEAN
+  orchestration_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  orchestration_branch: codex/orchestration-control-plane
+  orchestration_head_before_packet: 480f686fc60996ad2d1aff74b30e8680496e0586
+  existing_untracked_source_preserved:
+    - product-contract/operationalization/coordination/batches/CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B.yaml
+  concurrent_orchestration_files_preserved:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-NEXT-PROOF-ROUTER-083.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-INTAKE-PACKET-081.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-EVIDENCE-DRY-RUN-054M.yaml
+  concurrent_orchestration_files_observed_during_validation:
+    - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-REDACTION-PROOF-ARTIFACT-SCHEMAS-084.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-DEVICE-COMMAND-MDM-ANSWER-INTAKE-SELF-CHECK-082.yaml
+    - product-contract/operationalization/coordination/batches/M10-ADMIN-GIS-WAVE-00-TARGET-ASSIGNMENT-DRY-RUN-COVERAGE-CERTIFICATE-054N.yaml
+  retired_checkout_accessed: false
+  product_mutation: false
+  test_mutation: false
+  design_mutation: false
+  database_or_business_data_mutation: false
+  branch_or_stash_mutation: false
+
+schema_contract:
+  schema_id: SAQEEL-CCR-AUTHORITY-RESPONSE-036C
+  schema_version: "1.0"
+  source_question_ids:
+    - CCR-036B-Q01
+    - CCR-036B-Q02
+    - CCR-036B-Q03
+    - CCR-036B-Q04
+    - CCR-036B-Q05
+    - CCR-036B-Q06
+    - CCR-036B-Q07
+    - CCR-036B-Q08
+    - CCR-036B-Q09
+  source_input_ids:
+    - UAI-001
+    - UAI-002
+    - UAI-003
+    - UAI-004
+    - UAI-005
+    - UAI-006
+    - UAI-007
+    - UAI-008
+    - UAI-009
+  null_policy:
+    blank_template: Every response-bearing leaf is null.
+    populated_bundle: >-
+      Null is prohibited for a required field. Conditional fields may remain
+      null only when the governing selection makes them inapplicable and a
+      signed NOT_APPLICABLE rationale is present.
+    no_empty_substitute: Empty string, empty object, empty array, zero, false or UNKNOWN may not substitute for null or a required answer.
+  type_contract:
+    identifier: uppercase or source-exact string
+    free_text: non-empty UTF-8 string with no hidden control characters
+    boolean_acknowledgement: true only; false is a preservation failure
+    timestamp: RFC3339 timestamp with explicit offset
+    date: ISO-8601 calendar date
+    sha256: exactly 64 lowercase hexadecimal characters
+    evidence_items: non-empty ordered array of evidence records
+    selection: exact option ID from the relevant allowed set
+  response_order:
+    - respondent_authority
+    - selections
+    - question_responses
+    - evidence_manifest
+    - validity
+    - incompatibility_results
+    - preservation_acknowledgements
+    - unresolved_points
+    - hashes
+    - submitted_attestation
+  deterministic_serialization:
+    format: canonical_json_projection
+    character_encoding: UTF-8
+    line_endings: LF
+    object_key_order: lexicographic_by_unicode_code_point
+    array_order: source-declared_order_unless_the_field_contract_declares_identifier_sort
+    nulls: retained
+    numbers: prohibited_unless_a_question_parameter_explicitly_declares_a_numeric_business_value
+    timestamps: normalized_to_RFC3339_with_original_offset_retained_in_a_sibling_field_when_business_relevant
+    unicode: preserve_normalized_NFC
+    excluded_from_response_hash:
+      - hashes.response_sha256
+      - hashes.bundle_sha256
+      - validator_output
+    rule: >-
+      The exact canonical JSON bytes are the hash input. YAML formatting,
+      comments, map insertion order and filesystem metadata are never hashed.
+
+selection_contract:
+  required_choice_sets:
+    D1_REPRESENTATION: [D1-O1, D1-O2, D1-O3]
+    D2_ACTIVATION: [D2-A1, D2-A2, D2-A3]
+    D2_TIME_BASIS: [D2-T1, D2-T2]
+    D2_BACKFILL: [D2-B1, D2-B2, D2-B3]
+    D3_ACTION_BOUNDARY: [D3-A1, D3-A2]
+    D3_ATTACHMENT_STORAGE: [D3-S1, D3-S2]
+    D3_ATTACHMENT_INTAKE: [D3-I1, D3-I2]
+    D4_SNAPSHOT_STORAGE: [D4-S1, D4-S2, D4-S3]
+    D4_SCHEDULED_ELIGIBILITY: [D4-E1, D4-E2, D4-E3]
+  rule: Exactly one source option is required per choice set; no value is preselected here.
+
+evidence_item_schema:
+  required_fields:
+    evidence_id: source-scoped unique identifier
+    question_ids: non-empty source-ordered subset of CCR-036B-Q01..Q09
+    evidence_type: signed_policy, manifest, matrix, architecture, report, fixture, test_map, or approval_record
+    title: non-empty descriptive title
+    issuer_name: recorded authority or evidence producer
+    issuer_role: recorded role
+    authority_basis: non-empty authority reference
+    issued_at: RFC3339 timestamp
+    valid_from: RFC3339 timestamp or explicit NOT_APPLICABLE basis
+    expires_at: RFC3339 timestamp or explicit no-expiry basis
+    source_reference: immutable repository path, governed record ID or approved evidence URI
+    content_sha256: SHA-256 of exact evidence bytes
+    metadata_sha256: SHA-256 of canonical metadata excluding both hash fields
+    confidentiality_class: explicit approved classification
+    supersedes_evidence_id: null or exact prior evidence ID
+  forbidden:
+    - unsigned chat implication
+    - mutable latest-only URL without immutable version identity
+    - missing or unverifiable hash
+    - secret, credential, service-role key or direct personal contact data
+    - evidence whose expiry precedes the response validity window
+
+hash_contract:
+  algorithm: SHA-256
+  hex_encoding: lowercase
+  response_hash:
+    scope: One question response including parameters, its evidence references, validity and acknowledgement; excludes its own hash.
+    required_when_populated: true
+  evidence_hash:
+    scope: Exact evidence file bytes and separately canonicalized evidence metadata.
+    required_for_every_item: true
+  bundle_hash:
+    scope: Entire canonical response projection including all nine response hashes and evidence manifest; excludes bundle_sha256 and validator_output.
+    required_when_submitted: true
+  source_hashes:
+    rule: Source packet hashes must exactly match this schema header before evaluation.
+  mismatch_result: BLOCK
+
+expiry_contract:
+  required_bundle_fields:
+    valid_from: required populated RFC3339 timestamp
+    expires_at: populated RFC3339 timestamp or explicit no_expiry_basis
+    no_expiry_basis: null when expires_at exists; otherwise signed authority basis
+    review_on: populated date no later than expiry when expiry exists
+    expiry_timezone: explicit IANA timezone
+    supersedes_bundle_id: null or exact prior bundle ID
+    change_triggers: non-empty list
+  mandatory_change_triggers:
+    - governing requirement or acceptance change
+    - selected option or parameter change
+    - authority scope or delegation change
+    - schema, provider, RLS, storage or runtime contract change
+    - evidence revocation, supersession or hash mismatch
+    - discovered incompatibility or preservation-floor conflict
+  rules:
+    - Expired, revoked or not-yet-valid authority cannot receive ACK.
+    - No-expiry is not inferred from a null expires_at.
+    - Supersession never deletes the prior signed response or audit record.
+
+incompatibility_check_catalogue:
+  checks:
+    - check_id: INC-001
+      condition: More or fewer than one option is supplied for any required choice set.
+      result_on_true: BLOCK
+    - check_id: INC-002
+      condition: D2-A1 coexists with a persisted database or worker activation authority.
+      result_on_true: BLOCK
+    - check_id: INC-003
+      condition: D2-T1 and D2-T2 both govern the same field or boundary.
+      result_on_true: BLOCK
+    - check_id: INC-004
+      condition: D1-O2 or D1-O3 is selected while Q02 is null, expired or unsupported by schema evidence.
+      result_on_true: RETURN
+    - check_id: INC-005
+      condition: Any D1 option is selected while Q01 field manifest is incomplete.
+      result_on_true: RETURN
+    - check_id: INC-006
+      condition: D3-A2 is selected while Q07 allow-list, role, reason or audit parameters are incomplete.
+      result_on_true: BLOCK
+    - check_id: INC-007
+      condition: D3-I2 or D3-S2 is selected while Q08 retention/orphan/access policy is incomplete.
+      result_on_true: BLOCK
+    - check_id: INC-008
+      condition: D4-E1 is selected while Package publication reads Scheduled components.
+      result_on_true: BLOCK
+    - check_id: INC-009
+      condition: D4-E2 or D4-E3 is selected without compatible Q03 time and D2 activation readiness.
+      result_on_true: BLOCK
+    - check_id: INC-010
+      condition: Any D4 option is selected while Q09 mapping or D1/D2 prerequisite response is incomplete.
+      result_on_true: RETURN
+    - check_id: INC-011
+      condition: A NOT_APPLICABLE response lacks an explicit incompatible-option selection and rationale.
+      result_on_true: RETURN
+    - check_id: INC-012
+      condition: Any answer conflicts with a prohibition or preservation floor in packets 035, 036A or 036B.
+      result_on_true: BLOCK
+    - check_id: INC-013
+      condition: Evidence is expired, revoked, unhashed, hash-mismatched or not linked to the relevant question.
+      result_on_true: BLOCK
+    - check_id: INC-014
+      condition: Respondent authority is absent, expired, out of scope or unsupported by an authority record.
+      result_on_true: BLOCK
+    - check_id: INC-015
+      condition: A response attempts to grant implementation, DDL, data, provider, merge or release authority.
+      result_on_true: BLOCK
+  evaluation_order: INC-001 through INC-015
+  severity_precedence: BLOCK_over_RETURN_over_ACK
+
+preservation_acknowledgement_catalogue:
+  acknowledgements:
+    - ACK-PRES-001: CCR-only create and modify remains mandatory.
+    - ACK-PRES-002: Maker-checker and self-approval prohibition remain mandatory.
+    - ACK-PRES-003: Future-effective content remains unavailable before its effective boundary.
+    - ACK-PRES-004: Prior approved truth remains until an approved successor is effective.
+    - ACK-PRES-005: Rejected, invalid or incomplete branches never publish.
+    - ACK-PRES-006: Historical Inspection, Enforcement, Package and attachment references never repoint.
+    - ACK-PRES-007: Published versions, evidence and Package projections remain immutable and auditable.
+    - ACK-PRES-008: Package publication remains transactional and concurrency-safe.
+    - ACK-PRES-009: Field and offline execution use only the pinned immutable Package version.
+    - ACK-PRES-010: RLS, grants, RPC guards and storage policies remain database-authoritative.
+    - ACK-PRES-011: No service-role client or client-supplied snapshot becomes business authority.
+    - ACK-PRES-012: A response or receipt does not itself grant implementation, migration, data, provider, merge or release authority.
+  rule: Every populated acknowledgement must be true; false or null at submission is BLOCK.
+
+blank_response_bundle:
+  immutable_schema_metadata:
+    schema_id: SAQEEL-CCR-AUTHORITY-RESPONSE-036C
+    schema_version: "1.0"
+    source_question_packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-UNTRACED-AUTHORITY-QUESTION-PACK-036B
+    source_question_packet_sha256: 79ae921b8ce7241c362f1d6b074e274729b1537b39f3c948fc1bcd4009565923
+    source_trace_packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-DECISION-TO-ACCEPTANCE-TRACE-036A
+    source_trace_packet_sha256: c65b9764c3d7983db674efd91aeb37131a15789b122ea67eaefc2c9e4a16ee2a
+    source_decision_packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-DECISION-PACK-035
+    source_decision_packet_sha256: 33e175516b95cc6f842d1dceb88f5c4395cd426ca735fc46c4545d55b960f668
+  response_identity:
+    response_bundle_id: null
+    response_version: null
+    response_status: null
+    submitted_at: null
+    supersedes_bundle_id: null
+  respondent_authority:
+    respondent_name: null
+    respondent_role: null
+    respondent_organization: null
+    authority_basis: null
+    authority_record_id: null
+    delegated_by: null
+    delegation_record_id: null
+    authority_scope_question_ids: null
+    authority_valid_from: null
+    authority_expires_at: null
+    signature_type: null
+    signature_reference: null
+    signature_sha256: null
+    signed_at: null
+  selections:
+    D1_REPRESENTATION: null
+    D2_ACTIVATION: null
+    D2_TIME_BASIS: null
+    D2_BACKFILL: null
+    D3_ACTION_BOUNDARY: null
+    D3_ATTACHMENT_STORAGE: null
+    D3_ATTACHMENT_INTAKE: null
+    D4_SNAPSHOT_STORAGE: null
+    D4_SCHEDULED_ELIGIBILITY: null
+  question_responses:
+    CCR-036B-Q01:
+      input_id: UAI-001
+      response_status: null
+      parameters:
+        entity_field_manifest: null
+        canonical_names_and_definitions: null
+        types_formats_units_and_vocabularies: null
+        required_optional_nullability_and_defaults: null
+        validation_rules: null
+        identities_versions_predecessors_and_cardinality: null
+        bilingual_value_behavior: null
+        additional_property_behavior: null
+        write_and_immutability_authority: null
+        downstream_projection_requirements: null
+        exact_version_reference_rules: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q02:
+      input_id: UAI-002
+      response_status: null
+      parameters:
+        schema_language_and_version: null
+        registry_location_and_owner: null
+        immutable_schema_identifier: null
+        required_nullable_and_additional_property_rules: null
+        compatibility_classification: null
+        old_schema_migration_or_projection: null
+        historical_schema_availability: null
+        database_vs_application_validation_boundary: null
+        governed_query_projection: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q03:
+      input_id: UAI-003
+      response_status: null
+      parameters:
+        time_basis_selection: null
+        database_type_and_canonical_representation: null
+        iana_timezone: null
+        start_end_inclusivity: null
+        trusted_clock_and_disagreement_handling: null
+        approval_vs_effective_time: null
+        bilingual_display_edit_export_and_audit: null
+        invalid_past_changed_and_conflicting_values: null
+        before_at_after_examples: null
+        package_dependency_date_comparison: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q04:
+      input_id: UAI-004
+      response_status: null
+      parameters:
+        activation_selection_or_not_applicable: null
+        runtime_provider_and_environment: null
+        deployment_and_operational_owner: null
+        authentication_role_and_least_privilege: null
+        trigger_and_clock_contract: null
+        idempotency_and_duplicate_behavior: null
+        stale_head_and_concurrency_locking: null
+        retry_backoff_terminal_failure_and_recovery: null
+        monitoring_alert_and_degraded_truth: null
+        authorized_availability_objective: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q05:
+      input_id: UAI-005
+      response_status: null
+      parameters:
+        eligible_entity_kinds: null
+        ccr_or_lifecycle_exception_boundary: null
+        initiator_reviewer_and_publisher_roles: null
+        reason_evidence_and_authority: null
+        immediate_or_scheduled_behavior: null
+        child_package_planning_and_visit_effects: null
+        historical_inspection_and_enforcement_preservation: null
+        reactivation_vs_new_version: null
+        emergency_path_and_controls: null
+        audit_notification_rollback_and_concurrency: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q06:
+      input_id: UAI-006
+      response_status: null
+      parameters:
+        lineage_classification_definitions: null
+        backfill_selection_and_cutover_unit: null
+        reconstruction_source_evidence: null
+        missing_value_treatment: null
+        read_only_legacy_anchor: null
+        manual_adjudication_authority: null
+        unresolved_record_withhold_behavior: null
+        parent_child_cutover_gate: null
+        historical_read_and_report_behavior: null
+        reconciliation_rollback_and_audit: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q07:
+      input_id: UAI-007
+      response_status: null
+      parameters:
+        allowed_entity_actions_and_fields: null
+        explicitly_denied_fields: null
+        initiator_reviewer_and_publisher_roles: null
+        maker_checker_and_self_action_rule: null
+        reason_evidence_vocabulary_and_authority: null
+        effective_boundary_validation: null
+        route_rpc_and_database_entry_points: null
+        rls_grants_triggers_and_storage_policy: null
+        audit_correlation_notification_and_rollback: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q08:
+      input_id: UAI-008
+      response_status: null
+      parameters:
+        record_classes_retention_basis_and_duration: null
+        legal_and_investigation_hold: null
+        quarantine_adoption_and_orphan_classification: null
+        view_adopt_supersede_revoke_and_dispose_roles: null
+        reference_count_and_last_reference: null
+        approved_reference_byte_deletion_rule: null
+        content_hash_path_and_replacement_rule: null
+        access_revocation_and_historical_custody: null
+        disposal_approval_evidence_and_audit: null
+        storage_region_or_provider_constraint: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+    CCR-036B-Q09:
+      input_id: UAI-009
+      response_status: null
+      parameters:
+        d4_storage_and_scheduled_eligibility_selections: null
+        ccr_revision_component_publication_and_correlation_ids: null
+        entity_version_schema_and_hash_identities: null
+        regulation_clause_and_legal_source_fields: null
+        item_response_visibility_evidence_scoring_and_exclusion: null
+        violation_penalty_and_template_version_mapping: null
+        package_section_order_report_placement_and_usage: null
+        null_unknown_unsupported_and_rejected_behavior: null
+        transactional_completeness_and_zero_partial_validation: null
+        package_effective_dependency_and_selectability: null
+        offline_serialization_integrity_and_missing_snapshot: null
+        downstream_consumer_signoffs: null
+      not_applicable_rationale: null
+      evidence_item_ids: null
+      response_valid_from: null
+      response_expires_at: null
+      authority_acknowledgement: null
+      unresolved_points: null
+      response_sha256: null
+  evidence_manifest:
+    evidence_items: null
+    evidence_item_count: null
+    evidence_manifest_sha256: null
+  validity:
+    valid_from: null
+    expires_at: null
+    no_expiry_basis: null
+    review_on: null
+    expiry_timezone: null
+    supersedes_bundle_id: null
+    change_triggers: null
+  incompatibility_results:
+    INC-001: null
+    INC-002: null
+    INC-003: null
+    INC-004: null
+    INC-005: null
+    INC-006: null
+    INC-007: null
+    INC-008: null
+    INC-009: null
+    INC-010: null
+    INC-011: null
+    INC-012: null
+    INC-013: null
+    INC-014: null
+    INC-015: null
+  preservation_acknowledgements:
+    ACK-PRES-001: null
+    ACK-PRES-002: null
+    ACK-PRES-003: null
+    ACK-PRES-004: null
+    ACK-PRES-005: null
+    ACK-PRES-006: null
+    ACK-PRES-007: null
+    ACK-PRES-008: null
+    ACK-PRES-009: null
+    ACK-PRES-010: null
+    ACK-PRES-011: null
+    ACK-PRES-012: null
+  unresolved_points: null
+  hashes:
+    response_sha256_by_question: null
+    evidence_manifest_sha256: null
+    bundle_sha256: null
+  submitted_attestation:
+    complete_and_accurate: null
+    no_inferred_values: null
+    no_lease_or_implementation_authority: null
+    signer_name: null
+    signer_role: null
+    signed_at: null
+    signature_reference: null
+    signature_sha256: null
+  validator_output:
+    evaluated_at: null
+    validator_identity: null
+    source_hash_check: null
+    authority_check: null
+    completeness_check: null
+    evidence_hash_check: null
+    expiry_check: null
+    incompatibility_check: null
+    preservation_check: null
+    unresolved_point_check: null
+    verdict: null
+    reason_codes: null
+    independent_review_reference: null
+
+ack_return_block_rules:
+  evaluation_precedence:
+    - BLOCK
+    - RETURN
+    - ACK
+  BLOCK:
+    conditions:
+      - Source packet hash does not match this schema.
+      - Respondent authority is absent, unverifiable, expired, revoked or out of scope.
+      - Bundle, response or evidence hash mismatches exact canonical content.
+      - Any INC check with result_on_true BLOCK is true.
+      - Any preservation acknowledgement is false.
+      - Evidence is tampered, revoked, expired for the response window or contains prohibited secrets.
+      - The response weakens maker-checker, RLS, audit, immutability, history, transactional publication or runtime locking.
+      - The response attempts to grant implementation, migration, data, provider, merge, deployment or release authority.
+    result:
+      receipt_action: Do not record an accepted decision receipt.
+      implementation_action: Remains BLOCKED.
+      correction_action: New authority response or formal change control is required.
+  RETURN:
+    conditions:
+      - No BLOCK condition is true.
+      - One or more required response, selection, parameter, evidence, hash, expiry or attestation values is null or structurally invalid.
+      - Conditional NOT_APPLICABLE lacks a complete rationale or incompatible-option selection.
+      - An evidence reference is missing, ambiguous or not linked to the relevant question.
+      - An incompatibility check is null, UNKNOWN or has result_on_true RETURN.
+      - Unresolved points are present.
+    result:
+      receipt_action: Return the response bundle for bounded correction.
+      implementation_action: Remains BLOCKED.
+      correction_action: Preserve the submitted record; issue a new version that supplies only the missing or corrected authority material.
+  ACK:
+    conditions:
+      - No BLOCK or RETURN condition is true.
+      - All nine questions are complete or validly NOT_APPLICABLE.
+      - Exactly one allowed option is selected in every choice set.
+      - Respondent authority is valid for every answered question.
+      - Every required evidence item and hash verifies.
+      - Bundle is currently valid and not expired or revoked.
+      - All INC checks are false.
+      - All preservation acknowledgements are true.
+      - Unresolved points are empty.
+      - Independent validator records the exact bundle hash and evidence manifest hash.
+    result:
+      receipt_action: Eligible for independent recording in dormant receipt packet 036.
+      implementation_action: Still BLOCKED pending contract change control and serial A-C lease preflights.
+      completion_credit: Zero until implementation, independent QA, browser proof and sponsor gates pass.
+  blank_template_expected_evaluation:
+    verdict: RETURN
+    reason: Required response-bearing values are null.
+    rule: This expected result is schema behavior, not a populated validator response.
+
+global_stop_conditions:
+  - Any null response value is filled in this packet.
+  - A default answer, selection, timezone, provider, retention value or mapping is inferred.
+  - A missing field is silently converted to empty, false, zero or UNKNOWN.
+  - A hash is computed over non-canonical bytes or excludes a response-bearing field.
+  - Expiry or no-expiry is inferred.
+  - An incompatibility or preservation failure is downgraded to preserve pace.
+  - ACK is treated as a product, database, provider, data, merge or release lease.
+  - Product, test, design, database, data, branch, stash, main or setup is modified.
+
+gate_check:
+  task_packet_result: PASS
+  response_bundle_result: RETURN
+  implementation_result: BLOCKED
+  reason: >-
+    The schema is complete, but the embedded response bundle is deliberately
+    blank. All respondent, selection, parameter, evidence, hash, expiry,
+    incompatibility, preservation and attestation values are null.
+  next_allowed_action: >-
+    Use the safe read-only validator preflight while no signed response exists.
+    If a signed response arrives, populate a separate response artifact and
+    independently validate it; do not edit this blank schema in place.
+  browser_readiness: NOT_READY_DECISION_ONLY
+
+rollback:
+  this_packet: Remove only this packet if returned; no product, test, design, database, data, branch or remote state changed.
+  populated_response_rule: >-
+    A submitted response is append-only evidence. Correction creates a new
+    response version and never overwrites the prior bundle, evidence hashes,
+    validator output or receipt audit.
+
+safe_successor:
+  packet_id: CODEX-ADMIN-COMPLIANCE-REQUESTS-AUTHORITY-RESPONSE-VALIDATOR-PREFLIGHT-036D
+  mode: READ_ONLY_CONTROL_PLANE
+  start_condition: No signed authority response is available.
+  scope: >-
+    Define the future validator's exact inputs, deterministic checks, reason
+    codes and synthetic fixture classes for ACK, RETURN and BLOCK without
+    populating a real response or selecting business answers. Do not implement
+    a validator, grant a lease or modify product, test, design, database, data,
+    branch, stash, main or setup state.
+  safe_because: >-
+    It makes later receipt review repeatable without guessing an answer or
+    overlapping implementation ownership.
+
+validation:
+  yaml_parse: PASS
+  source_sha_match: PASS
+  exact_question_and_input_ids_match_source: PASS
+  exact_nine_choice_sets_present: PASS
+  respondent_authority_all_null: PASS
+  all_selections_null: PASS
+  all_question_response_values_null: PASS
+  all_evidence_values_null: PASS
+  all_hash_values_null: PASS
+  all_expiry_values_null: PASS
+  all_incompatibility_results_null: PASS
+  all_preservation_acknowledgements_null: PASS
+  all_attestation_values_null: PASS
+  all_validator_output_values_null: PASS
+  deterministic_hash_contract_present: PASS
+  ack_return_block_rules_present: PASS
+  no_answer_or_lease_authority: PASS
+  completion_credit_zero: PASS
+  exact_packet_file_only: PASS
+  product_worktree_clean: PASS
+  concurrent_orchestration_work_preserved: PASS
