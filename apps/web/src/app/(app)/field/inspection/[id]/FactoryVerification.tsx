@@ -408,58 +408,65 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       )}
       {msg && <div className="alert alert-info"><div>{msg}</div></div>}
 
-      {/* M04-102/103/106 — Source vs Observed side-by-side, per field */}
-      <div className="table-wrap"><table className="table">
-        <thead><tr>
-          <th scope="col">{strings.colField}</th><th scope="col">{strings.colSource}</th><th scope="col">{strings.colObserved}</th><th scope="col">{strings.colStatus}</th><th scope="col">{strings.colEvidence}</th>
-        </tr></thead>
-        <tbody>
-          {fields.map(f => {
-            const c = checks[f.key];
-            const isUpdated = c?.status === "updated";
-            return (
-              <tr key={f.key} className={isUpdated ? styles.rowUpdated : undefined}>
-                {/* M04-107 — updated-field highlighting */}
-                <td className={isUpdated ? styles.cellUpdated : undefined}><strong>{f.label}</strong></td>
-                <td>
-                  <div>{f.source ?? "—"}</div>
-                  <div className="t-caption">{strings.sourceTag}</div>
-                </td>
-                <td>
-                  <input className={`input ${styles.observedInput}`} disabled={readOnly}
+      {/* M04-102/103/106 — Source vs Observed side-by-side, per field. The
+          responsive cards preserve the table semantics without forcing an
+          iPad inspector to horizontally scroll five dense columns. */}
+      <div className={styles.verificationList}>
+        {fields.map(f => {
+          const c = checks[f.key];
+          const isUpdated = c?.status === "updated";
+          return (
+            <article key={f.key} className={`${styles.verificationRow} ${isUpdated ? styles.rowUpdated : ""}`}>
+              <div className={styles.verificationHead}>
+                <strong>{f.label}</strong>
+                {c
+                  ? <span className={`${styles.statusChip} ${c.status === "verified" ? styles.statusVerified : styles.statusUpdated}`}>
+                      <span className={styles.statusDot} aria-hidden="true" />
+                      {c.status === "verified" ? strings.verified : strings.updated}
+                    </span>
+                  : <span className="t-caption">{strings.unchecked}</span>}
+              </div>
+
+              <div className={styles.valueGrid}>
+                <div className={styles.sourceValue}>
+                  <span className={styles.valueLabel}>{strings.colSource}</span>
+                  <strong>{f.source ?? "—"}</strong>
+                  <span className="t-caption">{strings.sourceTag}</span>
+                </div>
+                <div className={styles.observedValue}>
+                  <span className={styles.valueLabel}>{strings.colObserved}</span>
+                  <input className="input" disabled={readOnly}
                     value={observedDraft[f.key] ?? ""} placeholder={strings.observedPlaceholder}
                     onChange={e => setObservedDraft(d => ({ ...d, [f.key]: e.target.value }))}
                     onBlur={() => { const v = observedDraft[f.key] ?? ""; if (v.trim() && v.trim() !== (c?.observed_value ?? "")) persist(f, v); }} />
-                  <label className={`field ${styles.noteField}`}>
-                    <span className={styles.fieldLabel}>{strings.noteLabel}</span>
-                    <input className="input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
-                      onChange={e => setNotes(n => ({ ...n, [f.key]: e.target.value }))} onBlur={() => persistNote(f)} />
+                </div>
+              </div>
+
+              <label className={styles.noteField}>
+                <span className={styles.fieldLabel}>{strings.noteLabel}</span>
+                <input className="input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
+                  onChange={e => setNotes(n => ({ ...n, [f.key]: e.target.value }))} onBlur={() => persistNote(f)} />
+              </label>
+
+              <div className={styles.verificationActions}>
+                {!readOnly && (
+                  <button className="btn btn-secondary" onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
+                )}
+                {!readOnly && (
+                  <label className={styles.evidenceAttach}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                      <path d="M12 16V4M8 8l4-4 4 4M4 20h16" />
+                    </svg>
+                    {strings.evAttach}
+                    <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
                   </label>
-                </td>
-                <td>
-                  {!readOnly && (
-                    <button className={`btn btn-secondary ${styles.verifyBtn}`} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
-                  )}
-                  <div>
-                    {c
-                      ? <span className={`badge ${c.status === "verified" ? "badge-compliant" : "badge-warning"}`}>{c.status === "verified" ? strings.verified : strings.updated}</span>
-                      : <span className="t-caption">{strings.unchecked}</span>}
-                  </div>
-                </td>
-                <td>
-                  {!readOnly && (
-                    <label className="btn btn-secondary" style={{ cursor: "pointer" }}>
-                      {strings.evAttach}
-                      <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
-                    </label>
-                  )}
-                  {(evCountFor[f.key] ?? 0) > 0 && <div className="t-caption">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table></div>
+                )}
+                {(evCountFor[f.key] ?? 0) > 0 && <span className="t-caption">{fmt(strings.evCount, { n: evCountFor[f.key] })}</span>}
+              </div>
+            </article>
+          );
+        })}
+      </div>
 
       {/* M04-111 / M04-190 — change review list: every Updated field with before/after + evidence */}
       <div className={styles.section}>

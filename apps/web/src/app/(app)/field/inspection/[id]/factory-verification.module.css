@@ -233,17 +233,104 @@
   line-height: var(--type-label-lh);
 }
 
-/* Note field sits under the observed input inside the same cell. */
-.noteField { margin-block-start: var(--space-2); }
+/* Source-versus-observed verification cards. Geometry follows the Inspection
+   Form card/field idiom while keeping each governed pair visually inseparable. */
+.verificationList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.verificationRow {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--surface-primary);
+}
+.verificationHead,
+.verificationActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.verificationHead { justify-content: space-between; }
+.verificationHead > strong { font-size: 0.875rem; font-weight: 600; }
+.valueGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sourceValue,
+.observedValue {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+}
+.sourceValue {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+}
+.observedValue {
+  border: 1.5px solid var(--border-input);
+  background: var(--surface-primary);
+}
+.observedValue:focus-within { border-color: var(--action-primary); }
+.valueLabel {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+.noteField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.verificationActions { justify-content: flex-start; }
 
-.observedInput { min-inline-size: 140px; }
+/* Compact semantic chips mirror the design badge proportions while retaining
+   the verified/updated distinction from M04-104/105. */
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.statusDot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.statusVerified { color: var(--status-compliant-text); background: var(--status-compliant-soft); }
+.statusUpdated { color: var(--status-warning-text); background: var(--status-warning-soft); }
 
-/* Verify action stacks above the derived status badge in the status cell. */
-.verifyBtn { margin-block-end: var(--space-2); }
+/* Visit Statement / Inspection Form upload affordance. */
+.evidenceAttach {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 15px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.evidenceAttach svg { width: 15px; height: 15px; flex: none; }
 
-/* Updated-field row highlight (M04-107). */
-.rowUpdated { background: var(--surface-sunken); }
-.cellUpdated { border-inline-start: 4px solid var(--status-warning); }
+/* Updated-field highlight (M04-107). */
+.rowUpdated {
+  border-inline-start: 4px solid var(--status-warning);
+  background: var(--surface-sunken);
+}
+
+@media (max-width: 600px) {
+  .valueGrid { grid-template-columns: 1fr; }
+}
 
 /* Failure banner action row. */
 .bannerRow {
@@ -265,10 +352,28 @@
   border-radius: var(--radius-md);
 }
 
-/* Signature capture pad (DEC-009 / M04-197) — dashed well on a sunken surface. */
+/* Signature capture block (DEC-009 / M04-197). */
+.signatureBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.signatureBlock > p { margin: 0; }
+.signatureField {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.signatureCapture {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
 .signatureCanvas {
+  display: block;
   inline-size: 100%;
-  block-size: 180px;
+  block-size: 170px;
   touch-action: none;
   cursor: crosshair;
   background: var(--surface-sunken);
