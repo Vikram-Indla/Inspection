@@ -241,3 +241,69 @@ admin-persona-not-denied observation (flagged above, not this lease's file).
 Not claiming completion of the full acceptance matrix or self-certifying
 full browser acceptance — Round 4 substantially narrows, but does not close,
 that gap.
+
+## Round 5 (module recovery pass, lease renewed 17:35:28+03:00)
+
+Lease was found expired-in-progress at hand-off (renewal_count 0→1, new
+expiry 19:05:28+03:00). Before any file work, discovered a second agent
+("Codex", this lease's own `breaker`) actively running `next dev` and a
+Playwright run inside this exact worktree concurrently — a live instance of
+the lease's own "overlapping owner" stop condition. Stopped, reported it,
+waited for confirmation the overlap cleared, independently re-verified (no
+listeners on 3001/3002, no matching PIDs, clean `git status`) before
+resuming. No file in this worktree was written to during the overlap.
+
+Also discovered the runtime this round's task pointed at
+(`127.0.0.1:3001`/`3000`) was serving the **main repository's** checked-out
+branch (`codex/saqeel-v3-contract-reset`), not this leased worktree — a
+~1700-line divergence in `operations/page.tsx` alone. Built and served this
+worktree's own production/standalone bundle on `127.0.0.1:3001` instead
+(`next build` + manually staged `.next/standalone` static/public assets,
+since `next start` is incompatible with this repo's `output: standalone`
+config) so every finding below is against the leased branch's actual code.
+
+- **Live browser pass (own build)**: logged in as `ops` (`leadership · ops`)
+  in both AR/RTL (default fresh-session locale, confirmed mirrored layout,
+  focus ring visible on keyboard `Tab`) and EN/LTR (`/locale` toggle,
+  `Operations Map`/`National Performance` tabs correctly re-labelled, no
+  layout regression). Scrolled the full page in both locales: KPI grid,
+  geographic scope filter, override queue, cancellation queue, CSV export,
+  live map list. No console errors (only unrelated Chrome-extension
+  warnings). Region filter (`?region=Riyadh`) round-trips correctly
+  (chip updates, no error); all currently visible data is already
+  Riyadh-scoped, so — consistent with the Round 4 note above — this does
+  not exercise a true cross-region negative case.
+- **New observation, not a code defect**: on the AR/RTL render, several
+  strings fall back to English inside an otherwise fully Arabic page —
+  `ops.kpi.submittedContext`, `ops.kpi.alertContext`,
+  `ops.kpi.slaBreaches`/`actionsOverdue`/`notificationsFailed`/
+  `overridesPending`, and the entire `ops.cancellation.*` group (heading,
+  caption, empty state) plus `enum.on_the_way` and other enum labels in the
+  live map list. Verified in source: these use the exact same `t()`/
+  `local()`/`enumLabel()` mechanism as the correctly-Arabic strings right
+  next to them (e.g. `ops.override.*`, which **is** translated) — this is
+  the SB19-documented `ui_strings` DB catalogue missing rows for this
+  screen's keys, with the intended graceful English fallback firing exactly
+  as designed (`src/lib/i18n.ts`: "Missing Arabic falls back to English so
+  the app never breaks"). Populating those Arabic strings is a governed
+  `/admin/localization` content action, not a code change, and is outside
+  every allowed_path in this lease — flagging as a content-catalogue gap
+  for the ui_strings owner, not fixing it here.
+- **Resize tool did not affect the tab's rendered viewport** in this
+  session (`resize_window` to 820×1024 and 390×844 both reported success
+  but the screenshot stayed full-width) — a tooling limitation this round,
+  not re-tested against the Round 4 finding that mobile 390×844 rendered
+  cleanly.
+- **Typecheck**: `tsc --noEmit` — clean, no errors.
+- **e2e**: `playwright test e2e/web-admin-m3-operations.spec.ts --project=e2e`
+  — the shared `auth.setup` project times out (`page.waitForURL` after
+  login, 40s) before any of this spec's 26 tests run; all 26 report
+  skipped. Same systemic constraint already documented for
+  `PKT-M3-OPS-LIVE-001.md` and earlier rounds of this file (headless
+  Playwright auth against the live Supabase project does not complete in
+  this environment) — not re-diagnosed further this round.
+
+No in-scope code defect was reproduced this round that this lease's files
+(`page.tsx`, `loading.tsx`) could fix. No source changes made. This is an
+honest verification-only round, not a certification of the open items
+listed in Round 4's Verdict above, which still stand.
