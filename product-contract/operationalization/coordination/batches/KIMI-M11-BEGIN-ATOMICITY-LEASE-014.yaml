@@ -1,0 +1,158 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+status: REVIEWER_READY_QUEUED_NOT_DISPATCHED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+lease_type: READ_ONLY_IMPLEMENTATION_AND_ROLLBACK_SPECIFICATION
+
+business_function: >-
+  Make participant join and remote-inspection start truthful, inspector-only
+  transactional operations with no partial success or workflow bypass.
+
+authority:
+  requirement_ids:
+    - CR-354
+    - CR-355
+  acceptance_ids:
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+  permission_contracts:
+    - RBAC-009
+    - RBAC-011
+  transition_ids:
+    - STM-VIR-002
+    - STM-VIR-003
+  sources:
+    - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+    - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+    - product-contract/domain/rbac_matrix.csv
+    - product-contract/domain/state_transitions.csv
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - supabase/migrations/0018_w4_notifications_reviews.sql
+    - supabase/migrations/20260715170000_cd041_verified_transition_guard.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+
+prerequisites:
+  - "Corrected 009r independently reviewed and accepted."
+  - "013 permission policy boundaries agreed so transactional RPCs do not retain broad direct-DML bypasses."
+  - "011 execution-window lease remains separate and unchanged."
+  - "An implementation owner and exclusive file lease recorded before writes."
+
+confirmed_findings_owned:
+  - M11-PERM-004
+  - M11-PERM-007
+
+current_defects:
+  join_partial_success: >-
+    joinParticipant writes participant.joined_at first, then ignores the
+    virtual_sessions update error/zero-row result and can report success while
+    the session state did not advance.
+  begin_permission_bypass: >-
+    beginRemote catches the inspector-only RBAC-009 transition failure and uses
+    a Planner/Operations direct-CAS fallback, contrary to CR-355.
+  begin_partial_state: >-
+    inspection.started_at, visit state and virtual-session state are changed by
+    separate calls whose errors are not handled as one transaction. Reviewer,
+    authorization and transient failures can leave inconsistent state before
+    the action redirects.
+
+required_join_transaction:
+  caller: "Assigned Inspector only."
+  preconditions:
+    - "Authenticated profile and assigned visit/session scope."
+    - "Participant belongs to the governed session."
+    - "Canonical session state permits join."
+    - "Verification/readiness preconditions required by the accepted transition."
+  mutations:
+    - "Set participant joined_at idempotently."
+    - "Advance the session only through the accepted canonical transition."
+    - "Write the existing semantic join event through the governed transaction."
+  invariant: >-
+    Participant join fact, session state and semantic event all commit, or all
+    roll back. A no-row or failed state transition is never returned as success.
+
+required_begin_transaction:
+  caller: "Assigned Inspector only under CR-355 and RBAC-009."
+  preconditions:
+    - "Authenticated assigned Inspector."
+    - "Virtual and published visit."
+    - "Verified session and accepted readiness facts."
+    - "Canonical current states permit begin."
+    - "Execution-window enforcement remains exactly the separate 011 contract."
+  mutations:
+    - "Invoke or reuse the canonical set_operational_state guard in the same transaction."
+    - "Set or reuse the Ready-created inspection.started_at without inventing a parallel inspection."
+    - "Advance visit to executing through the canonical guarded transition."
+    - "Advance virtual session to in_progress."
+    - "Write the existing semantic begin event."
+  invariant: >-
+    Inspection, visit, session and semantic audit/event changes all commit, or
+    all roll back. Redirect and user-visible success occur only after commit.
+
+application_changes_required:
+  - "Replace sequential join writes with the transactional join RPC."
+  - "Replace beginRemote's direct writes and Planner/Operations fallback with the inspector-only transactional begin RPC."
+  - "Remove tolerant schema fallbacks and ignored update/CAS errors."
+  - "Map stable governed failures without exposing internal database details."
+  - "Create post-commit notifications only after a successful core transaction; report notification degradation honestly."
+
+prohibited:
+  - "Planner or Operations begin-inspection fallback."
+  - "Reviewer mutation."
+  - "Direct workflow status mutation outside canonical guards."
+  - "False success after zero-row update."
+  - "Compensating delete/update as a substitute for transactionality."
+  - "Changes to 011 execution-window semantics."
+  - "Changes to 010 creation, 013 direct permissions or 015 audit redaction."
+
+owned_files_proposed:
+  application:
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+  migration:
+    - "One new forward-only Supabase migration; filename allocated by the implementation owner at lease start."
+  tests:
+    - "SQL transaction and role-boundary tests for join and begin."
+    - "Corrected M11 negative-path browser specification after 009r acceptance."
+
+test_contract:
+  positive:
+    - "Assigned Inspector joins an eligible participant and all three join facts commit."
+    - "Assigned Inspector begins an eligible verified session and all inspection/visit/session/event facts commit."
+    - "Idempotent retry returns deterministic existing state without duplicate semantic events."
+  negative:
+    - "Planner, Operations, Reviewer and unassigned Inspector cannot begin; no state or audit/event mutation occurs."
+    - "Unauthorized or wrong-session participant join leaves participant, session and event history unchanged."
+    - "Unverified, stale-state or unready begin leaves all records unchanged."
+    - "An injected failure after any attempted mutation rolls the entire transaction back."
+    - "A zero-row guarded update is a governed failure, never success."
+  regression:
+    - "Canonical set_operational_state transition guards remain authoritative."
+    - "011's database-time inclusive execution-window contract is not altered."
+    - "No new policy value, threshold or workflow state is introduced."
+
+rollback_plan:
+  rule: >-
+    Use a forward-only migration/application revert. Preserve valid committed
+    sessions, inspections, visits and append-only audit history.
+  trigger: "Any P0 partial-state, role-bypass, state-machine or audit regression."
+
+lease_separation:
+  excludes:
+    - "Session creation and INSERT authorization, owned by 010."
+    - "Direct table/RPC permission hardening, owned by 013."
+    - "Execution-window semantics, owned by 011."
+    - "Audit-secret redaction, generic timeline hardening and neutral errors, owned by 015."
+    - "Representative access, blocked on DEC-005."
+
+dispatch:
+  dispatched: false
+  blocked_by: MANUAL_MAC_UNLOCK_AND_009R_ACCEPTANCE
+  kimi_active: false
+
+validation:
+  yaml_parse: PASS
+  source_paths_checked: PASS
+  scope_separation_checked: PASS

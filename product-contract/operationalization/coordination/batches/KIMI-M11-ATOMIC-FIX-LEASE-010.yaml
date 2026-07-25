@@ -45,6 +45,27 @@ current_defect:
     A failed participant insert can leave an unusable session that permanently
     blocks the visit from being scheduled again.
 
+session_create_authorization_boundary:
+  finding_id: M11-PERM-001
+  scope_owned_by_010: >-
+    Correct only authorization for creation of the session and its initial
+    participant set because those writes move into the same atomic RPC.
+  current_defect: >-
+    supabase/migrations/0002_rbac_audit.sql:79-80 defines virtual_sessions
+    FOR ALL with WITH CHECK (true). The later broad-RLS correction replaces
+    vs_read and vp_rw but does not replace the virtual_sessions INSERT check.
+  required_correction:
+    - "Enforce planner, operations or assigned-inspector authority inside the atomic creation RPC."
+    - "Replace the virtual_sessions INSERT policy with the same explicit row check in a forward-only migration."
+    - "Ensure an out-of-scope authenticated caller leaves no session, participant or audit row."
+  excluded_from_010:
+    - "Existing-session update/delete policies."
+    - "Participant DML after initial creation."
+    - "OTP RPC authorization."
+    - "Join/begin permissions."
+    - "Audit read/redaction."
+  routed_to: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+
 implementation_invariant:
   atomic_unit:
     - "Validate the authenticated caller and permitted virtual-session scope."
@@ -102,6 +123,7 @@ test_contract:
     - "Retry after success returns the existing-session failure and creates no duplicate."
   negative:
     - "Unauthorized caller creates no session, participant or audit row."
+    - "Unassigned inspector and Reviewer direct/session-action creation attempts are denied without disclosing visit/session facts."
     - "Non-virtual visit creates no session, participant or audit row."
     - "Non-published visit creates no session, participant or audit row."
     - "Missing required representative or inspector data creates no session, participant or audit row."
