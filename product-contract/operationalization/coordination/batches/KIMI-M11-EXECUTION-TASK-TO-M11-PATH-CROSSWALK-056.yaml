@@ -1,0 +1,256 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-EXECUTION-TASK-TO-M11-PATH-CROSSWALK-056
+status: READ_ONLY_CROSSWALK_COMPLETE_BLOCKED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Crosswalk TASK-EXECUTION-MODULE-001 against the M11 virtual remediation,
+  security and QA chain at capability, requirement, application path,
+  database object, migration, test and acceptance levels so a future
+  authorized control-plane decision can establish one non-conflicting owner.
+
+authority:
+  control_plane_reconciliation: KIMI-M11-CONTROL-PLANE-SCOPE-LEASE-RECONCILIATION-055
+  execution_task: product-contract/execution/CURRENT_SLICE.TASK-EXECUTION-MODULE-001.yaml
+  M11_implementation_packets:
+    - KIMI-M11-ATOMIC-FIX-LEASE-010
+    - KIMI-M11-EXECUTION-WINDOW-LEASE-011
+    - KIMI-M11-PERMISSION-HARDENING-LEASE-013
+    - KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+    - KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+    - KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+  M11_QA_authority:
+    - KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
+    - KIMI-M11-TEST-EVIDENCE-GAP-MAP-032
+    - KIMI-M11-CONSOLIDATED-QA-LEASE-READINESS-052
+    - KIMI-M11-FINAL-HANDOFF-SCORECARD-RECONCILIATION-053
+  active_lease_registry: product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+
+hard_boundary:
+  - "Read-only source and contract inspection plus this one owned coordination packet."
+  - "No product, test, SQL, migration, data, design, queue, slice, lease, branch or stash mutation."
+  - "No owner inference, lease issuance, supersession, runtime certification or requirement credit."
+
+capability_crosswalk:
+  - capability: "Virtual mode eligibility and gate"
+    execution_task: EXPLICIT
+    M11_chain: EXPLICIT
+    relationship: OVERLAP
+  - capability: "Virtual session creation and participant creation"
+    execution_task: EXPLICIT_VIRTUAL_EXECUTION
+    M11_chain: EXPLICIT_CR_338_ATOMIC_CREATION
+    relationship: OVERLAP
+  - capability: "Waiting room, join and begin"
+    execution_task: EXPLICIT_JOURNEY_VIRTUAL_GATE
+    M11_chain: EXPLICIT_CR_354_CR_355
+    relationship: OVERLAP
+  - capability: "Execution-window enforcement"
+    execution_task: EXPLICIT_PRE_EXECUTION_AND_VIRTUAL_GATE
+    M11_chain: EXPLICIT_CR_338
+    relationship: OVERLAP
+  - capability: "Virtual permissions and persona restrictions"
+    execution_task: EXPLICIT_ROLE_CAPABILITY_MODEL
+    M11_chain: EXPLICIT_CR_337_TO_CR_356_AND_M11_PERM
+    relationship: OVERLAP
+  - capability: "Virtual audit, OTP and verification"
+    execution_task: EXPLICIT_AUDIT_AND_VIRTUAL_HANDOFF
+    M11_chain: EXPLICIT_CR_348_TO_CR_356
+    relationship: OVERLAP
+  - capability: "Provider boundary and degraded behavior"
+    execution_task: EXPLICIT_PROVIDER_BOUNDARY
+    M11_chain: EXPLICIT_TEST_AND_BLOCKER_AUTHORITY
+    relationship: OVERLAP
+
+requirement_crosswalk:
+  M11_declared_range: "CR-337..CR-356"
+  M11_atomic_creation: [CR-338]
+  M11_begin_atomicity: [CR-354, CR-355]
+  M11_audit_boundary: [CR-348, CR-349, CR-350, CR-351, CR-352, CR-353, CR-356]
+  execution_task_declared_authority:
+    - "SAQEEL-EXE-CANONICAL-PLAN v1.0 sections 5-30"
+    - "EXE-GAP-001..018"
+    - "PRES-001..015"
+  relationship: CAPABILITY_OVERLAP_REQUIREMENT_ID_MAPPING_NOT_EXPLICIT
+  decision_effect: >-
+    The capabilities overlap, but TASK-EXECUTION-MODULE-001 does not explicitly
+    map its authority-pack rows to CR-337..CR-356 or declare that it supersedes
+    them. A future control-plane decision must preserve every CR row and record
+    the exact mapping; none may be silently absorbed or credited.
+
+application_path_crosswalk:
+  - path: apps/web/src/app/(app)/virtual/actions.ts
+    execution_task_scope: "Included by virtual execution objective and shared-state wiring; exact file not enumerated."
+    M11_owners: [KIMI-M11-ATOMIC-FIX-LEASE-010, KIMI-M11-EXECUTION-WINDOW-LEASE-011, KIMI-M11-PERMISSION-HARDENING-LEASE-013]
+    relationship: EXACT_M11_PATH_INSIDE_BROAD_EXECUTION_SCOPE
+    disposition: SINGLE_SEQUENTIAL_OWNER_REQUIRED
+  - path: apps/web/src/app/(app)/virtual/[id]/actions.ts
+    execution_task_scope: "Included by virtual execution objective; exact file not enumerated."
+    M11_owners: [KIMI-M11-EXECUTION-WINDOW-LEASE-011, KIMI-M11-PERMISSION-HARDENING-LEASE-013, KIMI-M11-BEGIN-ATOMICITY-LEASE-014, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    relationship: EXACT_M11_PATH_INSIDE_BROAD_EXECUTION_SCOPE
+    disposition: SINGLE_SEQUENTIAL_OWNER_REQUIRED
+  - path: apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    execution_task_scope: "Included by virtual execution objective; exact file not enumerated."
+    M11_owners: [KIMI-M11-EXECUTION-WINDOW-LEASE-011, KIMI-M11-BEGIN-ATOMICITY-LEASE-014, KIMI-M11-AUDIT-BOUNDARY-LEASE-015]
+    relationship: EXACT_M11_PATH_INSIDE_BROAD_EXECUTION_SCOPE
+    disposition: SINGLE_SEQUENTIAL_OWNER_REQUIRED
+  - path: apps/web/src/app/(app)/virtual/[id]/page.tsx
+    execution_task_scope: "Included by virtual execution objective; exact file not enumerated."
+    M11_owners: [KIMI-M11-EXECUTION-WINDOW-LEASE-011]
+    relationship: EXACT_M11_PATH_INSIDE_BROAD_EXECUTION_SCOPE
+    disposition: SINGLE_OWNER_REQUIRED
+
+database_crosswalk:
+  shared_objects:
+    - object: virtual_sessions
+      execution_task_scope: "Virtual lifecycle projection and virtual execution."
+      M11_scope: "Atomic create, window, join/begin, permissions, audit and close."
+      relationship: EXACT_OBJECT_OVERLAP
+    - object: virtual_participants
+      execution_task_scope: "Virtual execution and lifecycle."
+      M11_scope: "Atomic participant create, join/begin, ACL, audit and verification."
+      relationship: EXACT_OBJECT_OVERLAP
+    - object: "Virtual creation/window/join/begin/close/verify RPC signatures"
+      execution_task_scope: "Shared state-transition and capability services plus additive migrations."
+      M11_scope: "Packets 010, 011, 013, 014 and 015 allocate sequential future functions."
+      relationship: FUNCTION_SIGNATURE_COLLISION_RISK
+    - object: "Virtual RLS policies, grants, triggers and audit projection"
+      execution_task_scope: "Preserve RLS and audit while implementing virtual execution."
+      M11_scope: "Packets 013 and 015 change exact policy/ACL/audit boundaries."
+      relationship: POLICY_TRIGGER_COLLISION_RISK
+  existing_reference_migrations:
+    - supabase/migrations/0001_foundation.sql
+    - supabase/migrations/0002_rbac_audit.sql
+    - supabase/migrations/0018_w4_notifications_reviews.sql
+    - supabase/migrations/0021_fix_broad_rls.sql
+    - supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    - supabase/migrations/20260715170000_cd041_verified_transition_guard.sql
+    - supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    - supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    - supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    - supabase/migrations/20260721170000_execution_virtual_leg.sql
+  existing_migration_disposition: READ_ONLY_BASELINE_NEVER_EDIT
+  future_migration_collision:
+    execution_task: "supabase/migrations/2026-07-21+ additive execution migrations"
+    M11_chain: "Future monotonic expand/switch/contract migrations; names intentionally unallocated."
+    relationship: SAME_MIGRATION_STREAM_AND_OBJECTS
+    disposition: ONE_INTEGRATION_OWNER_ALLOCATES_NEXT_FILENAMES_AFTER_PREDECESSOR_CHECK
+
+test_path_crosswalk:
+  existing_reusable_candidates:
+    - apps/web/e2e/cd-041-virtual-backend.spec.ts
+    - apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+    - apps/web/e2e/cd-042-otp-status-authz.spec.ts
+    - apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    - apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+    - apps/web/e2e/web-admin-m11-virtual-list.spec.ts
+  future_M11_paths:
+    - supabase/tests/m11_010_creation_atomicity_security.sql
+    - supabase/tests/m11_011_window_actions_security.sql
+    - supabase/tests/m11_013_permission_otp_security.sql
+    - supabase/tests/m11_014_join_begin_atomicity.sql
+    - supabase/tests/m11_015_audit_neutral_security.sql
+    - supabase/tests/m11_stack_security_catalog.sql
+    - apps/web/e2e/m11-remediation-rollout-contract.spec.ts
+    - apps/web/e2e/m11-remediation-stack.spec.ts
+    - apps/web/e2e/m11-provider-truth.spec.ts
+  execution_task_acceptance: "Focused execution specs and Chrome persona/RLS/offline/Arabic/responsive certification."
+  relationship: QA_CAPABILITY_OVERLAP_WITHOUT_EXACT_PATH_OWNERSHIP
+  disposition: >-
+    No task may create, edit or claim these paths until one QA owner and an
+    exact test-path lease are recorded after the corrected implementation
+    stack and fixtures exist.
+
+acceptance_crosswalk:
+  M11_acceptance_ids:
+    - WA-M11-AC-001
+    - WA-M11-AC-002
+    - WA-M11-AC-005
+    - WA-M11-AC-006
+    - WA-M11-EV-001
+    - WA-M11-EV-002
+    - WA-M11-EV-005
+    - M11-MIGSEC-001..012
+  M11_test_case_count: 361
+  M11_proof_clusters: 18
+  M11_future_QA_paths: 9
+  execution_task_acceptance:
+    - "EXECUTION_ACCEPTANCE_AND_BROWSER_JOURNEYS.csv"
+    - "EXECUTION_IMPLEMENTATION_LEDGER.csv"
+    - "EXECUTION_DEFECT_PRIORITY_REGISTER.csv"
+  relationship: OVERLAPPING_OUTCOMES_NO_EXPLICIT_ACCEPTANCE_ID_MAPPING
+  disposition: >-
+    A future owner must map every M11 acceptance and test cluster to the
+    execution acceptance rows without dropping negative, audit, rollback,
+    provider, catalog, redaction, callback, owner-security or quiesce proof.
+
+blocker_crosswalk:
+  shared_blockers:
+    - "External provider credentials and approved provider/callback contract."
+    - "External submission activation trigger."
+    - "Sponsor-only policy/legal values."
+    - "Arabic human sign-off."
+    - "Exact non-overlapping implementation and QA ownership."
+  M11_additional_blockers:
+    - "Visible Kimi response capture after Mac unlock."
+    - "Corrected source packets and accepted review 025."
+    - "Live catalog/ACL/owner/extension evidence."
+    - "Approved deterministic fixtures and teardown."
+    - "Global audit consumer inventory."
+    - "Quiesce/drain rehearsal and full runtime evidence."
+  disposition: BLOCKERS_MUST_BE_UNIONED_NOT_REPLACED
+
+decision_matrix:
+  current_result: BLOCK
+  exact_reason: BLOCK_DUE_TO_PROVEN_SCOPE_OVERLAP_AND_ABSENT_EXACT_LEASE
+  safe_now:
+    Kimi: READ_ONLY_CHAT_ONLY_ANALYSIS
+    Codex: COORDINATION_PATHS_ONLY
+    product_implementation: BLOCKED
+    QA_execution: BLOCKED
+    requirement_credit: 0
+  future_safe_options:
+    - id: OPTION_EXECUTION_TASK_ABSORBS_M11
+      requirement: >-
+        Explicitly map and preserve CR-337..CR-356, WA-M11, MIGSEC, all 361
+        cases, 18 proof clusters, nine QA paths and 12 blockers; supersede the
+        M11 implementation packets by accepted change control; issue one exact
+        implementation lease and later one independent QA lease.
+    - id: OPTION_M11_CHAIN_OWNS_VIRTUAL
+      requirement: >-
+        Narrow TASK-EXECUTION-MODULE-001 to exclude all M11 virtual files,
+        functions, migrations and tests; accept corrected M11 packets and
+        blockers; issue one exact sequential M11 implementation lease and one
+        independent QA lease.
+    - id: OPTION_BOTH_REMAIN_BLOCKED
+      requirement: "Use when neither authority can be safely narrowed or superseded."
+  prohibited_option: "Parallel implementation or QA ownership on any intersecting path/object."
+
+queued_next:
+  packet: KIMI-M11-UNIFIED-AUTHORITY-DECISION-BRIEF-057
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Condense 055-056 into a sponsor/control-plane decision brief with the
+    exact choices, preserved requirements, lease fields and stop conditions.
+  prohibited:
+    - "No authority selection, lease issuance, queue/slice edit, implementation, QA execution or requirement credit."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  application_paths_crosswalked: 4
+  future_QA_paths_crosswalked: 9
+  M11_test_case_count_preserved: 361
+  M11_proof_cluster_count_preserved: 18
+  requirement_credit: 0
+  leases_issued: 0
+  implementation_authorized: false
+  non_mutating_boundary_checked: PASS
