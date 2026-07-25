@@ -209,6 +209,117 @@
   cursor: pointer;
 }
 
+/* pwa-ocr — in-form advisory OCR review after image annotation and before the
+   unchanged evidence enqueue/custody path. Geometry follows OCR Capture.dc.html. */
+.ocrOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  overflow-y: auto;
+  padding: var(--space-4);
+  background: var(--surface-overlay);
+}
+.ocrSheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  inline-size: min(100%, 720px);
+  margin-inline: auto;
+  padding: var(--space-4);
+  color: var(--text-primary);
+  background: var(--surface-canvas);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+}
+.ocrHeader,
+.ocrSectionHead,
+.ocrActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.ocrHeader h2 { margin: 0; font-size: var(--type-section-size); }
+.ocrAdvisory,
+.ocrPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 14px;
+}
+.ocrAdvisory { border-inline-start: 3px solid var(--action-primary); }
+.ocrAdvisory p,
+.ocrPanel p { margin: 0; }
+.ocrPreview {
+  inline-size: 100%;
+  max-block-size: 360px;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: var(--surface-sunken);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 12px;
+}
+.ocrDisabled,
+.ocrError,
+.ocrNotice {
+  padding: var(--space-3);
+  border-radius: 12px;
+}
+.ocrDisabled { color: var(--status-disabled-text); background: var(--status-disabled-soft); }
+.ocrError { color: var(--status-critical-text); background: var(--status-critical-soft); }
+.ocrNotice { color: var(--status-info-text); background: var(--status-info-soft); }
+.ocrField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.ocrField > span { color: var(--text-secondary); font-weight: 600; }
+.ocrField textarea {
+  min-block-size: 150px;
+  padding: var(--space-3);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: var(--border-w) solid var(--border-input);
+  border-radius: 12px;
+  font: inherit;
+  line-height: 1.8;
+  resize: vertical;
+}
+.ocrField small { color: var(--text-muted); }
+.ocrCheck {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 50px;
+  padding: var(--space-3);
+  background: var(--surface-sunken);
+  border: var(--border-w) solid var(--border-subtle);
+  border-radius: 12px;
+}
+.ocrCheck input { inline-size: 20px; block-size: 20px; }
+.ocrActions {
+  position: sticky;
+  inset-block-end: 0;
+  padding-block-start: var(--space-3);
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
+  background: var(--surface-canvas);
+  border-block-start: var(--border-w) solid var(--border-subtle);
+}
+.ocrActions button,
+.ocrPanel button { min-block-size: 50px; }
+
+@media (max-width: 600px) {
+  .ocrOverlay { padding: 0; }
+  .ocrSheet { min-block-size: 100dvh; border-radius: 0; }
+  .ocrHeader,
+  .ocrSectionHead { align-items: flex-start; flex-direction: column; }
+  .ocrActions > button { flex: 1; }
+}
+
 /* Per-section progress track (was inline blockSize/background). */
 .track { block-size: 4px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
 .trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }

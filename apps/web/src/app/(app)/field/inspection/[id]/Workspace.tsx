@@ -14,6 +14,7 @@ import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner"
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
+import OcrEvidenceCapture from "@/components/field/OcrEvidenceCapture";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
 import styles from "./workspace.module.css";
@@ -158,6 +159,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const [commentDrafts, setCommentDrafts] = useState({} as Record<string, string>);
   // F2 — captured photos awaiting the annotation overlay (pre-enqueue, offline-safe)
   const [pendingShots, setPendingShots] = useState([] as { item: Item; b64: string; mime: string; fname: string; replaceId?: string }[]);
+  const [ocrShot, setOcrShot] = useState(null as { item: Item; b64: string; mime: string; fname: string; replaceId?: string } | null);
   // F2 — local overlay for archive/delete applied before the server round-trip lands
   const [evState, setEvState] = useState({} as Record<string, { archived?: boolean; deleted?: boolean }>);
   const [deleting, setDeleting] = useState(null as { ev: SEv; reason: string } | null);
@@ -610,7 +612,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
   async function confirmShot(b64: string, mime: string) {
     const s = pendingShots[0]; if (!s) return;
     setPendingShots(q => q.slice(1));
-    await enqueueEvidence(s.item, b64, mime, s.fname, s.replaceId, "photo");
+    setOcrShot({ ...s, b64, mime });
+  }
+  async function attachOcrShot() {
+    if (!ocrShot) return;
+    const current = ocrShot;
+    setOcrShot(null);
+    await enqueueEvidence(current.item, current.b64, current.mime, current.fname, current.replaceId, "photo");
   }
 
   // --- Derived runtime views ---
@@ -1354,6 +1362,15 @@ export default function Workspace({ inspection, items, library, serverResponses,
       {shot && !submitted && (
         <ImageAnnotator srcB64={shot.b64} mime={shot.mime} strings={strings.annot}
           onCancel={() => setPendingShots(q => q.slice(1))} onConfirm={confirmShot} />
+      )}
+      {ocrShot && !submitted && (
+        <OcrEvidenceCapture
+          capture={ocrShot}
+          locale={locale}
+          classNames={styles}
+          onBack={() => setOcrShot(null)}
+          onAttach={attachOcrShot}
+        />
       )}
       {/* J-13 exit/draft: every answer already autosaves to the durable IndexedDB draft
           store the instant it's entered (FND-005) — there is no separate "unsaved buffer"
