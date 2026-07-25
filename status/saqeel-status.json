@@ -1,7 +1,7 @@
 {
-  "revision": "SB-r13",
-  "updated": "2026-07-25T23:29:59+03:00",
-  "updatedBy": "codex",
+  "revision": "SB-r14",
+  "updated": "2026-07-26T00:05:00+03:00",
+  "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
@@ -1019,22 +1019,22 @@
       "group": "pwashell",
       "name": "Shell: sticky header + tab bar",
       "design": 90,
-      "code": 70,
-      "wiring": 85,
+      "code": 88,
+      "wiring": 88,
       "designPage": "pwa/pwa-tabbar.js applied to 35 field pages",
       "route": "web/src/app/(app)/field/layout.tsx · components/field/FieldNav.tsx · FieldHeader.tsx · field-home.module.css",
       "pwa": {
         "state": "ok",
-        "note": "Design side complete: fixed tab bar, safe-area aware, page action bars stack above it, scroll space reserved."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "FieldNav.tsx not verified as fixed-position + safe-area aware to match the design's persistent tab bar."
+          "text": "CLOSED — FieldNav is now position:fixed with inset-inline:0, z-index 60, safe-area insets on all sides, and a .field-nav-spacer of calc(56px + env(safe-area-inset-bottom)) reserving scroll space so the bar can never cover a page's last element. Larger 60px targets at >=834px."
         },
         {
           "lane": "design",
-          "text": "Tab bar not applied to Login / Biometric (correct — pre-auth) or the 2 iPad frame pages (bar sits inside the bezel)."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1127,23 +1127,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Visits list & travel",
-      "design": 75,
-      "code": 90,
-      "wiring": 85,
+      "design": 85,
+      "code": 92,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Visits.dc.html · Journey · Travel",
       "route": "web/src/app/(app)/field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
       "pwa": {
         "state": "ok",
-        "note": "Field task map live-verified on staging with inspector@mim.gov.sa."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
-          "lane": "design",
-          "text": "Journey / route-overview design has no standalone repo route — folded into travel + map."
+          "lane": "wiring",
+          "text": "Geo stays real — Mapbox + real KSA basemap and zones. No synthetic coordinates or placeholder pins. Ungoverned ETA/distance/SLA render nothing."
         },
         {
-          "lane": "wiring",
-          "text": "No synthetic map data — real KSA basemap and real zones only."
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1157,27 +1157,23 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Establishments & Establishment File",
-      "design": 70,
+      "design": 82,
       "code": 90,
       "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Establishments.dc.html · Establishment File · Factory 360",
       "route": "web/src/app/(app)/field/establishments · field/factory-360 (+ [id]) · Factory360Offline.tsx",
       "pwa": {
-        "state": "shared",
-        "note": "Same Factory-360 projection as the console — a console change must be mirrored here."
+        "state": "ok",
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Establishment photo-capture and chemical-materials detail fields are design-only."
+          "text": "Still design-only, not invented: establishment photo-capture, chemical-materials detail fields, and the Factory360Offline state which has no matching design."
         },
         {
           "lane": "design",
-          "text": "Offline Factory-360 variant (Factory360Offline.tsx) has no matching design state."
-        },
-        {
-          "lane": "wiring",
-          "text": "Exact 24-factory allowlist is enforced across Establishments facets/list/counts, every Factory-360 resolver identifier, and direct dossier access. Typecheck and diff checks pass; runtime evidence is still pending because localhost:3000 refused the browser connection."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
@@ -1341,19 +1337,23 @@
       "channel": "pwa",
       "group": "pwaexec",
       "name": "Factory verification & signature",
-      "design": 50,
+      "design": 70,
       "code": 90,
       "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Visit Statement.dc.html (signature block)",
       "route": "web/src/app/(app)/field/inspection/[id]/FactoryVerification.tsx · SignaturePad.tsx",
       "pwa": {
         "state": "gap",
-        "note": "Both components shipped but never pixel-diffed against a design page."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "P1 latch preserved through the pixel pass: readOnly = serverReadOnly || useSubmittedInSession(inspectionId). Re-assert on any future edit to this file — collapsing it back to one prop reopens CR-205/242/264/299."
+        },
+        {
           "lane": "design",
-          "text": "No dedicated design page for FactoryVerification; SignaturePad only appears as a block inside Visit Statement."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1367,19 +1367,27 @@
       "channel": "pwa",
       "group": "pwaexec",
       "name": "Samples & seizure",
-      "design": 60,
-      "code": 85,
-      "wiring": 80,
+      "design": 78,
+      "code": 90,
+      "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Seizure Records.dc.html",
       "route": "components/field/SamplesSection.tsx · SeizureSection.tsx · samplesSeizureStrings.ts",
       "pwa": {
-        "state": "partial",
-        "note": "Seizure Records is resolved as a Step 3 report section, not a standalone route. Sample and seizure sections now match the supplied card, repeater, add/delete and photo-capture geometry in EN/LTR and AR/RTL; report-engine runtime evidence remains pending."
+        "state": "ok",
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
+          "lane": "code",
+          "text": "RESOLVED — section, not screen. Visit Results.dc.html is 'Step 3 of 4' and carries samples + seizure inline. No /field/seizure-records route created."
+        },
+        {
           "lane": "wiring",
-          "text": "Connect the user-entered sample and seizure drafts to the governed report engine and capture routed runtime evidence."
+          "text": "Nothing seeded: sections start at zero rows, 'Yes' reveals only the add control, every row blank. No invented units, sample types or product categories."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1393,19 +1401,27 @@
       "channel": "pwa",
       "group": "pwareport",
       "name": "Incident & immediate reports",
-      "design": 75,
-      "code": 90,
-      "wiring": 85,
+      "design": 86,
+      "code": 92,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Immediate and Incident.dc.html",
       "route": "web/src/app/(app)/field/incident-reports/* (page, form, actions)",
       "pwa": {
         "state": "ok",
-        "note": "Route, form and actions all present."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Immediate vs Incident split not diffed against the single shipped form."
+          "text": "Immediate vs Incident split built as a segment switch; the Immediate path HANDS OFF to the governed /planning/immediate (create_immediate_visit) rather than duplicating a weaker write path."
+        },
+        {
+          "lane": "wiring",
+          "text": "Not built for lack of a governed source: incident date, location-within-establishment, impact enum, evidence upload (evidence.inspection_id is NOT NULL and evidence_link has no incident member), save-draft, and the Immediate report-type/execution-mode selectors."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1506,19 +1522,19 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Drafts & outbox",
-      "design": 85,
+      "design": 92,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Drafts.dc.html",
       "route": "web/src/app/(app)/field/drafts · FieldDraftList.tsx · lib/offline.ts",
       "pwa": {
         "state": "ok",
-        "note": "Real outbox wired."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "design",
-          "text": "Draft row states not pixel-diffed."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1532,19 +1548,23 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Conflict resolution",
-      "design": 85,
+      "design": 92,
       "code": 95,
-      "wiring": 90,
+      "wiring": 95,
       "designPage": "pwa/SAQEEL PWA-Field Conflict Resolution.dc.html",
       "route": "web/src/app/(app)/field/settings/conflicts/* (page + ConflictResolutionClient.tsx)",
       "pwa": {
         "state": "ok",
-        "note": "keep-server / keep-mine both wired against the real conflict store."
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
+          "lane": "wiring",
+          "text": "FIXED — keep-mine enqueued the resolution but never flushed it, so it waited for the next surface running the reconnect runner. Now calls processOutbox right after, ordered so the enqueue and conflict-clear commit first. Conflict DETECTION untouched (STM-SYNC-002, lib/offline.ts never edited)."
+        },
+        {
           "lane": "design",
-          "text": "Side-by-side diff presentation not pixel-diffed."
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 5,
@@ -1558,19 +1578,23 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Trusted devices & biometric unlock",
-      "design": 80,
+      "design": 88,
       "code": 90,
-      "wiring": 75,
+      "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Trusted Devices.dc.html · Biometric",
       "route": "web/src/app/(app)/field/settings/devices/* · lib/field-biometric-unlock.ts",
       "pwa": {
-        "state": "ok",
-        "note": "Route and client shipped."
+        "state": "warn",
+        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
       },
       "pending": [
         {
           "lane": "wiring",
-          "text": "WebAuthn / passkey enrolment and unlock not verified on a real registered device."
+          "text": "HONEST, NOT WIRED. The WebAuthn ceremony is real but the challenge is client-generated, the public key is discarded, and credentials.get() reduces to 'assertion != null' — a device-local re-entry lock over an existing session, not a passkey or second factor. Verified live: mvp3_devices 0 rows, policies insert/read only, self-enrol migration 20260723090200 NOT applied. Every non-functional affordance now fails closed with a stated reason."
+        },
+        {
+          "lane": "design",
+          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
         }
       ],
       "phase": 4,
