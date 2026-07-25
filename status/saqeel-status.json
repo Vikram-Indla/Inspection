@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r7",
-  "updated": "2026-07-25T23:00:00+03:00",
+  "revision": "SB-r8",
+  "updated": "2026-07-25T23:29:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1608,18 +1608,18 @@
       "group": "pwagap",
       "name": "Virtual visit & session (inspector)",
       "design": 60,
-      "code": 0,
-      "wiring": 0,
+      "code": 75,
+      "wiring": 65,
       "designPage": "pwa/SAQEEL PWA-Field Virtual Visit.dc.html · Virtual Session",
-      "route": "none — no field virtual route",
+      "route": "/field/virtual · /field/virtual/[id]",
       "pwa": {
-        "state": "break",
-        "note": "The console can schedule a virtual visit the inspector cannot join. Hard disconnect between channels."
+        "state": "warn",
+        "note": "Inspector list/session routes now consume the canonical virtual session, participant, OTP and transition contracts. Video fails closed unless the existing provider adapter is explicitly configured; authenticated runtime acceptance remains pending."
       },
       "pending": [
         {
           "lane": "code",
-          "text": "Build the inspector-side virtual session screen; bind to lib/providers/video.ts."
+          "text": "Run authenticated EN/LTR and AR/RTL browser acceptance for assigned, empty, joined, verified, stale and provider-unavailable states."
         },
         {
           "lane": "wiring",
