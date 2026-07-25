@@ -464,11 +464,11 @@
       "pending": [
         {
           "lane": "wiring",
-          "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
+          "text": "No real video transport is configured: lib/providers/video.ts exposes only an opt-in non-production stub with default off; Teams, Zoom and Twilio Video adapters are absent. Console fails closed and never exposes the stub as joinable."
         },
         {
           "lane": "code",
-          "text": "No rail route (O-31)."
+          "text": "O-31 remains a governed navigation decision: /virtual is absent from both the accepted design rail and SHELL_NAVIGATION. No rail entry was added under this card lease."
         }
       ],
       "phase": 3,

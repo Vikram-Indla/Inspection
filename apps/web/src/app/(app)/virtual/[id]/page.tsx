@@ -28,11 +28,6 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     </Shell>;
   }
   const strings: RoomStrings = {
-    adapterTitle: t("virtual.room.adapterTitle", "Secure session room"),
-    adapterBody: t("virtual.room.adapterBody", "Live-video provider adapter — provider selection is a contract decision (DEC); everything around it (identity verification, state machine, timeline, audit) runs live."),
-    adapterPending: t("virtual.room.adapterPending", "video provider pending"),
-    videoPlaceholder: t("virtual.room.videoPlaceholder", "secure session room — video provider adapter (release integration); capture controls overlay here"),
-    simulatedSession: t("virtual.room.simulatedSession", "SIMULATED VIDEO SESSION"),
     roles: {
       factory_rep: t("enum.factory_rep", "factory rep"),
       inspector: t("enum.inspector", "inspector"),
@@ -115,10 +110,10 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     next: t("virtual.room.next", "next"),
     nowLabel: t("virtual.room.nowLabel", "Current state"),
     room: t("virtual.room.room", "Room"),
-    roomPending: t("virtual.room.roomPending", "Room provider pending"),
-    roomBody: t("virtual.room.roomBody", "The provider adapter is not connected; readiness and audit remain available."),
-    roomTag: t("virtual.room.roomTag", "provider handoff"),
-    roomContinue: t("virtual.room.roomContinue", "Continue when the provider is connected."),
+    roomPending: t("virtual.room.roomPending", "Not configured"),
+    roomBody: t("virtual.room.roomBody", "No Teams, Zoom or Twilio Video adapter is present. The available non-production stub is not a join transport and is not exposed here."),
+    roomTag: t("virtual.room.roomTag", "join unavailable"),
+    roomContinue: t("virtual.room.roomContinue", "Scheduling, identity, readiness and audit remain available. Joining stays disabled until a real provider is selected and configured."),
     transition: t("virtual.room.transition", "Next transition"),
     transHint: t("virtual.room.transHint", "Use the single allowed transition below."),
     actOpenSub: t("virtual.room.actOpenSub", "Open the governed waiting room."),
