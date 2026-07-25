@@ -87,6 +87,53 @@ for this route (unlike `/operations/live`).
     `"an authenticated admin-only persona is denied both Operations
     routes before data content"` — not duplicated.
 
+## Round 3 — live-browser attempt, genuine environment stop condition found
+
+The orchestrator reported a restored dev server at `127.0.0.1:3000`; it was
+not reachable from this session (`curl`: connection refused; browser:
+`ERR_CONNECTION_REFUSED` page). Rather than accept or dismiss the claim,
+started a dev server directly in this worktree
+(`apps/web`, `npm run dev`, `.env.local` present with real Supabase/Mapbox
+values) and drove it with the connected local Chrome browser.
+
+**Finding**: every route — `/login`, `/launch`, `/reference/web-admin/f0`,
+and by extension `/operations` and `/operations/live` — crashes on first
+client paint in **dev mode only** with a Next.js dev-overlay error:
+`Runtime TypeError: Cannot read properties of undefined (reading 'call')`,
+originating in `webpack.js` `options.factory` / `__webpack_require__`
+inside `react-server-dom-webpack-client.browser.development.js` (10-11
+instances of the identical error queued in the overlay). Diagnostic steps
+taken, in order, each verified not to be the cause:
+- Confirmed only one process bound to port 3000 (no port collision from a
+  second dev server).
+- Cleared and rebuilt `.next` from scratch (`find .next -delete` — `rm -rf`
+  is blocked by this sandbox — then restarted `next dev`); identical crash
+  on a byte-fresh cache.
+- Confirmed all requested JS chunks (`webpack.js`, `main-app.js`,
+  `app-pages-internals.js`, `app/layout.js`, `app/login/page.js`) return
+  `200`, so this is not a missing/404 chunk.
+- Confirmed exactly one `react` (19.2.7), one `react-dom` (19.2.7), and one
+  `next` (15.5.20) in the dependency tree (`npm ls react react-dom next`) —
+  not a duplicate-React-instance bug.
+- Confirmed `npm run build` (production) with the identical `node_modules`
+  compiles and serves `/operations` and `/operations/live` cleanly (see
+  Round 1/2 verification above) — the application source is not the fault;
+  this is specific to `next dev`'s RSC/webpack runtime.
+- Node is `v24.14.1` (no `.nvmrc`/`engines` pin in the repo). Next 15.5.20's
+  dev-mode RSC/webpack bundler is a plausible-but-unconfirmed mismatch with
+  a Node major version this new; this was not changed or further
+  investigated — swapping the active Node runtime is outside this lease's
+  `allowed_paths` and is a systemic environment change, not a page.tsx fix.
+
+This reproduces identically on a route this lease never touched
+(`/reference/web-admin/f0`), so it is not a regression introduced by this
+session's `/operations`/`/operations/live` diffs. Stopped pursuing further
+dev-server repair per the standing rule against changing systemic tooling
+(Node version, package manager) without it being the explicit, scoped ask;
+returning this as the exact blocker rather than self-certifying a browser
+pass that did not happen. Dev server stopped (`pkill next dev`) to leave no
+dangling process.
+
 ## Known gap — not evidenced this session
 
 - **Live Chrome/Playwright runtime evidence** (EN/AR, RTL, light/dark, the
