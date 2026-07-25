@@ -24,6 +24,8 @@ struct RootShellView: View {
                         tabContent(tab)
                     }
                     .background(theme.colors.canvas)
+                    .navigationBarHidden(true)
+                    .toolbar(.hidden, for: .navigationBar)
                 }
                 .tabItem { Label(tab.title, systemImage: tab.systemImage) }
                 .tag(tab)
