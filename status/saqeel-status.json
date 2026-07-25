@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r19",
-  "updated": "2026-07-26T01:40:00+03:00",
+  "revision": "SB-r20",
+  "updated": "2026-07-26T02:22:29+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1048,7 +1048,7 @@
       "channel": "pwa",
       "group": "pwashell",
       "name": "Connectivity & sync chips",
-      "design": 85,
+      "design": 89,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Dashboard.dc.html (header band)",
@@ -1060,7 +1060,7 @@
       "pending": [
         {
           "lane": "design",
-          "text": "Chip wording and placement not pixel-diffed."
+          "text": "MEASURED — 88.89 (stored 89), pixel-diff measurement from the BS-1 harness run under apps/web/e2e/pixel/, not a judgement. Replaces the prior 85 estimate. CAVEAT: the run measured the PRE-REBASE shell. origin/main's CC-SHELL-TABLET-001 ports the design nav CSS verbatim (56px tabs, 60px above 834px, 34x2px active indicator), so this number may move on re-measure."
         }
       ],
       "phase": 4,
@@ -1188,7 +1188,7 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Global search",
-      "design": 88,
+      "design": 40,
       "code": 92,
       "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Global Search.dc.html",
@@ -1204,7 +1204,7 @@
         },
         {
           "lane": "design",
-          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run (BS-1). Number rests on geometry verified against the .dc.html source plus a clean typecheck, not a rendered diff. The pixel-diff harness under apps/web/e2e/pixel/ is being built to replace this judgement with a measurement — some of these numbers may fall when it lands."
+          "text": "MEASURED — 40, pixel-diff measurement from the BS-1 harness run under apps/web/e2e/pixel/, not a judgement. The harness landed and the number fell, exactly as the prior entry warned it might: 88 was a geometry-plus-typecheck judgement, 40 is what the rendered diff actually scored. This is the largest gap on the board and is recorded unsoftened — not averaged with the old estimate, not split. The 48-point drop is the cost of having scored this surface without rendering it. CAVEAT: the run measured the PRE-REBASE shell. origin/main's CC-SHELL-TABLET-001 ports the design nav CSS verbatim (56px tabs, 60px above 834px, 34x2px active indicator), so this number may move on re-measure."
         }
       ],
       "phase": 4,
@@ -1534,7 +1534,7 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Drafts & outbox",
-      "design": 92,
+      "design": 72,
       "code": 95,
       "wiring": 90,
       "designPage": "pwa/SAQEEL PWA-Field Drafts.dc.html",
@@ -1546,7 +1546,7 @@
       "pending": [
         {
           "lane": "design",
-          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
+          "text": "MEASURED — 72.22 (stored 72), pixel-diff measurement from the BS-1 harness run under apps/web/e2e/pixel/, not a judgement. Replaces the prior 92 estimate; source-verified geometry scored 20 points above what the rendered diff returned. CAVEAT: the run measured the PRE-REBASE shell. origin/main's CC-SHELL-TABLET-001 ports the design nav CSS verbatim (56px tabs, 60px above 834px, 34x2px active indicator), so this number may move on re-measure."
         }
       ],
       "phase": 5,
@@ -1560,7 +1560,7 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Conflict resolution",
-      "design": 92,
+      "design": 70,
       "code": 95,
       "wiring": 95,
       "designPage": "pwa/SAQEEL PWA-Field Conflict Resolution.dc.html",
@@ -1576,7 +1576,7 @@
         },
         {
           "lane": "design",
-          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
+          "text": "MEASURED — 70, pixel-diff measurement from the BS-1 harness run under apps/web/e2e/pixel/, not a judgement. Replaces the prior 92 estimate; source-verified geometry scored 22 points above what the rendered diff returned. CAVEAT: the run measured the PRE-REBASE shell. origin/main's CC-SHELL-TABLET-001 ports the design nav CSS verbatim (56px tabs, 60px above 834px, 34x2px active indicator), so this number may move on re-measure."
         }
       ],
       "phase": 5,
@@ -1590,7 +1590,7 @@
       "channel": "pwa",
       "group": "pwaoffline",
       "name": "Trusted devices & biometric unlock",
-      "design": 88,
+      "design": 64,
       "code": 90,
       "wiring": 88,
       "designPage": "pwa/SAQEEL PWA-Field Trusted Devices.dc.html · Biometric",
@@ -1606,7 +1606,7 @@
         },
         {
           "lane": "design",
-          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
+          "text": "MEASURED — 64.44 (stored 64), pixel-diff measurement from the BS-1 harness run under apps/web/e2e/pixel/, not a judgement. Replaces the prior 88 estimate; source-verified geometry scored 24 points above what the rendered diff returned. CAVEAT: the run measured the PRE-REBASE shell. origin/main's CC-SHELL-TABLET-001 ports the design nav CSS verbatim (56px tabs, 60px above 834px, 34x2px active indicator), so this number may move on re-measure."
         }
       ],
       "phase": 4,
