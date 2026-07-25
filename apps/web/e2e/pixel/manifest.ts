@@ -17,7 +17,7 @@ interface Spine {
 const WEB_ROOT = resolve(__dirname, "../..");
 export const REPOSITORY_ROOT = resolve(WEB_ROOT, "../..");
 export const SPINE_PATH = join(REPOSITORY_ROOT, "status", "saqeel-status.json");
-export const DESIGNS_ROOT = join(REPOSITORY_ROOT, "designs", "pwa");
+export const DESIGNS_ROOT = join(REPOSITORY_ROOT, "designs", "pwa", "pwa");
 
 // These targets are keyed by the spine's exact route field. The field remains
 // the only code/design join key; card ids are labels and are never used to join.
@@ -146,6 +146,29 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
     ],
   ],
   [
+    "lib/providers/ocr-gemini.ts (no /field/ocr route)",
+    [
+      {
+        kind: "discover",
+        seedPath: "/field/my-tasks",
+        hrefPattern: "^/field/inspection/[^/]+$",
+        label: "in-form OCR state",
+      },
+    ],
+  ],
+  [
+    "web/src/app/(app)/field/reports/page.tsx · reports/[id]/page.tsx · reports.module.css",
+    [
+      { kind: "static", path: "/field/reports", label: "reports library" },
+      {
+        kind: "discover",
+        seedPath: "/field/reports",
+        hrefPattern: "^/field/reports/[^/]+$",
+        label: "submitted report detail",
+      },
+    ],
+  ],
+  [
     "web/src/app/(app)/field/drafts · FieldDraftList.tsx · lib/offline.ts",
     [{ kind: "static", path: "/field/drafts", label: "drafts and outbox" }],
   ],
@@ -160,6 +183,10 @@ const ROUTES_BY_JOIN_KEY = new Map<string, RouteTarget[]>([
   [
     "web/src/app/login/field/* (FieldLoginClient + field-login.css, rendered by /login)",
     [{ kind: "static", path: "/login", label: "field login" }],
+  ],
+  [
+    "web/src/app/login/field/* (field-login.css, separate from console login)",
+    [{ kind: "static", path: "/login", label: "consolidated field login presentation" }],
   ],
   [
     "/field/virtual · /field/virtual/[id]",
@@ -243,4 +270,3 @@ export function loadManifest(): ManifestCard[] {
       };
     });
 }
-

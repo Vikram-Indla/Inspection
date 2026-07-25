@@ -71,7 +71,9 @@ async function authenticatedState(browser: Browser): Promise<PixelStorageState> 
 async function resolveTarget(page: Page, target: RouteTarget): Promise<string> {
   if (target.kind === "static") return target.path;
   await page.goto(target.seedPath, { waitUntil: "domcontentloaded" });
-  await page.waitForLoadState("networkidle").catch(() => undefined);
+  // The live dev app keeps background channels open. A short deterministic
+  // settle is enough because route readiness is proven by DOM assertions.
+  await page.waitForTimeout(500);
   const candidates = await page.locator("a[href]").evaluateAll(anchors =>
     anchors.map(anchor => anchor.getAttribute("href")).filter((href): href is string => Boolean(href)),
   );
@@ -118,15 +120,16 @@ async function renderVariant(
     reducedMotion: "reduce",
   });
   const page = await context.newPage();
+  page.setDefaultNavigationTimeout(5_000);
   const browserErrors: string[] = [];
   page.on("pageerror", error => browserErrors.push(error.message));
   try {
     await page.goto(routePath, { waitUntil: "domcontentloaded" });
     await setLocale(context, page, locale);
     await page.reload({ waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("networkidle").catch(() => undefined);
-    await expect(page.locator("html")).toHaveAttribute("lang", locale);
-    await expect(page.locator("html")).toHaveAttribute("dir", direction);
+    await page.waitForTimeout(500);
+    await expect(page.locator("html")).toHaveAttribute("lang", locale, { timeout: 3_000 });
+    await expect(page.locator("html")).toHaveAttribute("dir", direction, { timeout: 3_000 });
     if (!new URL(page.url()).pathname.startsWith("/field") &&
         !new URL(page.url()).pathname.startsWith("/login")) {
       throw new Error(`Route redirected outside field channel to ${new URL(page.url()).pathname}`);
@@ -142,7 +145,7 @@ async function renderVariant(
     browserErrors.length = 0;
     const designUrl = `${prototypeOrigin}/${encodeURIComponent(designPage)}?lang=${locale}`;
     await page.goto(designUrl, { waitUntil: "domcontentloaded" });
-    await page.waitForSelector("#dc-root > .sc-host", { timeout: 15_000 });
+    await page.waitForSelector("#dc-root > .sc-host", { timeout: 5_000 });
     const renderedRoot = page.locator("#dc-root > .sc-host [dir]").first();
     let renderedDirection = await renderedRoot.getAttribute("dir");
     if (renderedDirection !== direction) {
@@ -153,7 +156,7 @@ async function renderVariant(
         throw new Error(`Design prototype has no locale control for ${locale}/${direction}`);
       }
       await languageControl.click();
-      await expect(renderedRoot).toHaveAttribute("dir", direction);
+      await expect(renderedRoot).toHaveAttribute("dir", direction, { timeout: 3_000 });
       renderedDirection = await renderedRoot.getAttribute("dir");
     }
     if (renderedDirection !== direction) {
@@ -321,6 +324,7 @@ test("BS-1 measures PWA structural parity and dry-runs spine updates", async ({ 
       }
       const discoveryContext = await browser.newContext({ storageState });
       const discoveryPage = await discoveryContext.newPage();
+      discoveryPage.setDefaultNavigationTimeout(5_000);
       const routePaths: string[] = [];
       const discoveryErrors: string[] = [];
       for (const target of card.routeTargets) {
