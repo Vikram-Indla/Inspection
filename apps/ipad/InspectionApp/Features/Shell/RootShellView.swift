@@ -12,6 +12,21 @@ struct RootShellView: View {
         }
     }
 
+    private static let dateFmt: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.timeZone = TimeZone(identifier: "Asia/Riyadh") ?? .current
+        f.dateFormat = "EEEE d MMM"
+        return f
+    }()
+
+    static func headerSubtitle(_ tab: InspectionTab) -> String? {
+        switch tab {
+        case .dashboard, .visits: return dateFmt.string(from: Date())
+        case .virtual, .profile: return nil
+        }
+    }
+
     @State private var selection: InspectionTab = .dashboard
     @EnvironmentObject private var theme: SaqeelTheme
 
@@ -20,7 +35,7 @@ struct RootShellView: View {
             ForEach(Self.tabs, id: \.self) { tab in
                 NavigationStack {
                     VStack(spacing: 0) {
-                        InspectionHeader(title: tab.title, sync: .synced)
+                        InspectionHeader(title: tab.title, subtitle: Self.headerSubtitle(tab), sync: .synced)
                         tabContent(tab)
                     }
                     .background(theme.colors.canvas)

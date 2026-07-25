@@ -30,7 +30,8 @@ struct DashboardView: View {
                     errorBanner(err)
                 }
 
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 168), spacing: SaqeelSpacing.md)],
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: SaqeelSpacing.md),
+                                         count: 4),
                           spacing: SaqeelSpacing.md) {
                     ForEach(kpis) { kpi in kpiCard(kpi) }
                 }
