@@ -3,6 +3,6 @@ import XCTest
 
 final class PackageBuildsTests: XCTestCase {
     func test_designSystemModuleLoads() {
-        XCTAssertEqual(DesignSystemMarker.name, "DesignSystem")
+        XCTAssertNotNil(SaqeelColorScheme.light)
     }
 }
