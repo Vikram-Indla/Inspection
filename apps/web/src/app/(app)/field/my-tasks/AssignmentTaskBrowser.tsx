@@ -11,6 +11,7 @@ import {
   type AssignmentSort,
   type AssignmentTask,
 } from "./assignment-task-model";
+import PrepareAssignmentAction from "./PrepareAssignmentAction";
 import styles from "./my-tasks.module.css";
 
 export type { AssignmentTask } from "./assignment-task-model";
@@ -22,6 +23,7 @@ type Copy = {
   active: string;
   upcoming: string;
   alerts: string;
+  alertsUnavailable: string;
   returned: string;
   expired: string;
   earliest: string;
@@ -33,6 +35,7 @@ type Copy = {
   open: string;
   prepare: string;
   continueAction: string;
+  preparing: string;
   returnAction: string;
   viewOnly: string;
   packageLinked: string;
@@ -53,11 +56,13 @@ function tone(task: AssignmentTask): string {
 export default function AssignmentTaskBrowser({
   tasks,
   selectedId,
+  alertSourceAvailable,
   locale,
   labels,
 }: {
   tasks: AssignmentTask[];
   selectedId: string | null;
+  alertSourceAvailable: boolean;
   locale: "en" | "ar";
   labels: Copy;
 }) {
@@ -88,7 +93,7 @@ export default function AssignmentTaskBrowser({
     { key: "today", label: labels.today },
     { key: "active", label: labels.active },
     { key: "upcoming", label: labels.upcoming },
-    { key: "alerts", label: labels.alerts },
+    ...(alertSourceAvailable ? [{ key: "alerts" as const, label: labels.alerts }] : []),
     { key: "returned", label: labels.returned },
     { key: "expired", label: labels.expired },
   ];
@@ -106,6 +111,9 @@ export default function AssignmentTaskBrowser({
           <span aria-hidden="true">!</span>
           {labels.alerts}: <span className="id-code">{counts.alerts}</span>
         </button>
+      ) : null}
+      {!alertSourceAvailable ? (
+        <div className={styles.alertUnavailable} role="status">{labels.alertsUnavailable}</div>
       ) : null}
 
       <div className={styles.taskTools}>
@@ -169,9 +177,13 @@ export default function AssignmentTaskBrowser({
                 </span>
               </Link>
               <div className={styles.taskActions}>
-                <Link className="btn btn-secondary" href={actionable ? `/field/${task.id}#preparation` : `/field/${task.id}`} prefetch={false}>
-                  {expired ? labels.viewOnly : returned ? labels.open : actionLabel}
-                </Link>
+                {actionable && task.assignmentStatus === "assigned" ? (
+                  <PrepareAssignmentAction visitId={task.id} label={actionLabel} working={labels.preparing} />
+                ) : (
+                  <Link className="btn btn-secondary" href={`/field/${task.id}`} prefetch={false}>
+                    {expired ? labels.viewOnly : returned ? labels.open : actionLabel}
+                  </Link>
+                )}
                 {!expired && !returned ? (
                   <Link className="btn btn-ghost" href={`/field/${task.id}#return-assignment`} prefetch={false}>
                     {labels.returnAction}

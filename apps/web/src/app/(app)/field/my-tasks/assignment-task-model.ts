@@ -12,6 +12,7 @@ export type AssignmentTask = {
   packageVersionId: string | null;
   inspectionId: string | null;
   inspectionStatus: string | null;
+  unreadAlertCount: number;
   factory: {
     name: string;
     code: string | null;
@@ -24,7 +25,6 @@ export type AssignmentFilter = "all" | "today" | "active" | "upcoming" | "alerts
 export type AssignmentSort = "asc" | "desc";
 
 const ACTIVE_OPERATIONAL_STATES = new Set(["prepared", "on_the_way", "arrived", "executing"]);
-const ALERT_PRIORITIES = new Set(["high", "urgent"]);
 
 export function riyadhDay(value: string | number | Date): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(new Date(value));
@@ -37,9 +37,7 @@ export function isActiveAssignment(task: AssignmentTask): boolean {
 }
 
 export function hasAssignmentAlert(task: AssignmentTask): boolean {
-  return task.planningStatus === "expired"
-    || task.assignmentStatus === "returned"
-    || ALERT_PRIORITIES.has(task.priority ?? "");
+  return task.unreadAlertCount > 0;
 }
 
 export function assignmentCounts(tasks: AssignmentTask[], now: string | number | Date) {

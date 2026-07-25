@@ -26,6 +26,7 @@ const task = (overrides: Partial<AssignmentTask> = {}): AssignmentTask => ({
   packageVersionId: null,
   inspectionId: null,
   inspectionStatus: null,
+  unreadAlertCount: 0,
   factory: { name: "Al Amal", code: "FAC-001", region: "Riyadh", city: "Riyadh" },
   ...overrides,
 });
@@ -50,14 +51,14 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
   test("search, filters, active grouping and order behave on the same task model", () => {
     const rows = [
       task({ id: "future", windowStart: "2026-07-27T07:00:00.000Z", factory: { name: "مصنع النور", code: "AR-9", region: "الرياض", city: "الخرج" } }),
-      task({ id: "active", operationalState: "on_the_way", priority: "high" }),
-      task({ id: "returned", assignmentStatus: "returned", returnReason: "factory unavailable" }),
+      task({ id: "active", operationalState: "on_the_way", priority: "high", unreadAlertCount: 2 }),
+      task({ id: "returned", assignmentStatus: "returned", returnReason: "factory unavailable", unreadAlertCount: 1 }),
       task({ id: "expired", planningStatus: "expired" }),
     ];
     expect(isActiveAssignment(rows[1])).toBe(true);
     expect(hasAssignmentAlert(rows[1])).toBe(true);
     expect(assignmentCounts(rows, "2026-07-25T12:00:00+03:00")).toMatchObject({
-      all: 4, active: 1, upcoming: 1, alerts: 3, returned: 1, expired: 1,
+      all: 4, active: 1, upcoming: 1, alerts: 2, returned: 1, expired: 1,
     });
     expect(filterAssignmentTasks(rows, {
       filter: "active", query: "", sort: "asc", locale: "en", now: "2026-07-25T12:00:00+03:00",
@@ -70,12 +71,27 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
     })[0].id).toBe("future");
   });
 
-  test("open and return actions preserve governed startup and return workflows", () => {
+  test("accept/prepare and return actions preserve governed workflows", () => {
     const browser = read("src/app/(app)/field/my-tasks/AssignmentTaskBrowser.tsx");
+    const prepare = read("src/app/(app)/field/my-tasks/actions.ts");
+    const prepareControl = read("src/app/(app)/field/my-tasks/PrepareAssignmentAction.tsx");
+    const prepareMigration = read("../../supabase/migrations/20260725152000_assignment_accept_prepare.sql");
     const startup = read("src/app/(app)/field/[visitId]/Startup.tsx");
     const actions = read("src/app/(app)/field/[visitId]/actions.ts");
     const visitPage = read("src/app/(app)/field/[visitId]/page.tsx");
-    expect(browser).toContain("`/field/${task.id}#preparation`");
+    expect(browser).toContain('task.assignmentStatus === "assigned"');
+    expect(browser).toContain("<PrepareAssignmentAction");
+    expect(prepareControl).toContain("useActionState(acceptPrepareAssignment");
+    expect(prepareControl).toContain("`/field/${state.visitId}#preparation`");
+    expect(prepare).toContain('sb.rpc("accept_prepare_assignment"');
+    expect(prepare).toContain("getVerifiedUser");
+    expect(prepareMigration).toContain("v_assignment.status <> 'assigned'");
+    expect(prepareMigration).toContain("v_planning_status <> 'published'");
+    expect(prepareMigration).toContain("a.inspector_id = v_actor");
+    expect(prepareMigration).toContain("raise insufficient_privilege");
+    expect(prepareMigration).toContain("set status = 'preparing'");
+    expect(prepareMigration).toContain("'accept_prepare'");
+    expect(prepareMigration).toContain("array['MVP1-M03-002', 'STM-ASG-001']");
     expect(browser).toContain("`/field/${task.id}#return-assignment`");
     expect(browser).toContain("!expired && !returned");
     expect(visitPage).toContain('id="preparation"');
@@ -83,6 +99,25 @@ test.describe("SCR-IPAD-600 Assigned Visits widgets", () => {
     expect(startup).toContain('id="return-assignment"');
     expect(actions).toContain('sb.rpc("request_visit_return"');
     expect(actions).toContain("Return reason is mandatory (M03-006)");
+  });
+
+  test("attention filter is sourced only from unread visit-linked notifications", () => {
+    const page = read("src/app/(app)/field/my-tasks/page.tsx");
+    const model = read("src/app/(app)/field/my-tasks/assignment-task-model.ts");
+    const highWithoutNotification = task({ id: "high", priority: "high", unreadAlertCount: 0 });
+    const ordinaryWithNotification = task({ id: "notified", priority: "low", unreadAlertCount: 1 });
+
+    expect(hasAssignmentAlert(highWithoutNotification)).toBe(false);
+    expect(hasAssignmentAlert(ordinaryWithNotification)).toBe(true);
+    expect(filterAssignmentTasks([highWithoutNotification, ordinaryWithNotification], {
+      filter: "alerts", query: "", sort: "asc", locale: "en", now: "2026-07-25T12:00:00+03:00",
+    }).map((row) => row.id)).toEqual(["notified"]);
+    expect(page).toContain('.from("notifications")');
+    expect(page).toContain('.eq("recipient", user.id)');
+    expect(page).toContain("payload?.visit_id");
+    expect(page).toContain("isNotificationUnread(row)");
+    expect(model).toContain("return task.unreadAlertCount > 0");
+    expect(model).not.toContain("ALERT_PRIORITIES");
   });
 
   test("Arabic/RTL and offline presentation remain truthful", () => {
