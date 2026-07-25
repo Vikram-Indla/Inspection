@@ -916,7 +916,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     // (submit_inspection computes max+1 under a row lock). This client-side
     // number is computed ONLY as the legacy-fallback payload for
     // pre-20260721160000 servers and for the optimistic queue message.
-    const legacyVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)) + 1;
+    const legacyVersion = loadedVersion + 1;
     const byCode = (id: string) => (items.find(i => i.id === id) ?? library.find(i => i.id === id))?.code ?? id;
     // Phase 6 (§21/§22, D-020/D-022) — the snapshot carries the frozen
     // contract the server enforces: per-section comparable sub-objects
