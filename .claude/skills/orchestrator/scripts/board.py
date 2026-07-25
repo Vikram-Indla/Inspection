@@ -170,22 +170,29 @@ def cmd_publish(a) -> None:
     print(f"payload bytes {len(payload.encode('utf-8'))}")
     print(f"last publish  {last.get('revision', '(never from this repo)')}"
           f"{'  at ' + last['at'] if last.get('at') else ''}")
+    kb = len(payload.encode("utf-8")) / 1024
     print(f"""
 TARGET  Claude Design project {DESIGN_PROJECT}
         path {DESIGN_PATH}
         (SAQEEL Status Board.dc.html only renders this file — never hand-edit
          the .dc.html, and never publish status to Google Drive.)
 
+write_files takes inline data only; its local_path returns "not yet implemented
+for server-side callers". At {kb:.0f} KB this payload CANNOT be safely inlined —
+hand-emitting it risks publishing a corrupted board. Use route A:
+
 1. mcp__claude-design__read_file  project_id={DESIGN_PROJECT}
                                   path={DESIGN_PATH}       -> capture the etag
-2. python3 {Path(__file__).name} publish --print-payload    -> the content
-3. mcp__claude-design__write_files project_id={DESIGN_PROJECT}
-                                  path={DESIGN_PATH}
-                                  if_match=<etag>
+2. mcp__claude-design__put_conversation  project_id={DESIGN_PROJECT}
+     Ask a Claude Design session to copy the repo file byte-for-byte onto
+     {DESIGN_PATH}, guarded by if_match=<etag>. Give it the branch, the
+     revision ({spine['revision']}), the byte count, and what changed.
+3. Re-read the project copy and confirm its revision is {spine['revision']}.
 4. python3 {Path(__file__).name} record-publish --revision {spine['revision']} \\
-       --etag <etag returned by the write>
+       --etag <etag of the published file>
 
-On an if_match conflict: STOP and reconcile card-by-card. Do not force.""")
+On an if_match conflict: STOP and reconcile card-by-card. Do not force.
+See references/PHASES.md §Publish.""")
 
 
 def cmd_record_publish(a) -> None:
