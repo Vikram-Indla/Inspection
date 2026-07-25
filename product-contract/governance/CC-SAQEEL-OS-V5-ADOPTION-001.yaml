@@ -1,12 +1,22 @@
 schema_version: "1.0"
 change_control_id: "CC-SAQEEL-OS-V5-ADOPTION-001"
 title: "Adopt SAQEEL Operating System V5 as the programme operating model"
-status: "PROPOSED_AWAITING_SPONSOR_SIGNATURE"
+status: "MERGE_AUTHORIZED_VIA_DELEGATION — operating gates still OPEN"
 authored_by: "claude-orchestrator (session operator: khan.jahanara@gmail.com)"
 authored_on: "2026-07-25"
 supersedes_ref: "CC-OPS-CONTROL-SYSTEM-001 (INSPECTION-MULTI-AGENT-OS-001, status PROPOSED_FOR_LIVE_TEST)"
-sponsor_signature: null            # Vikram Indla — REQUIRED before this CC takes effect
+sponsor_signature: null            # NOT signed by the sponsor directly. See delegated_merge_authority.
 sponsor_signed_on: null
+delegated_merge_authority:
+  granted_to: "khan.jahanara@gmail.com"
+  granted_by: "Vikram Indla (sponsor)"
+  scope: "Merge of PR #74 (this control-plane scaffolding) into setup/Inspection ONLY."
+  recorded_via: "Operator assertion of delegation, session 2026-07-25. Not a sponsor signature on the full adoption."
+  does_not_resolve:
+    - "GATE-SAMPLING-RATE — still OPEN; the packet queue remains BLOCKED (§0.1.8)."
+    - "GATE-INDEPENDENCE-ACCEPTANCE — still OPEN (§34.6)."
+    - "GATE-WORKFORCE-SESSIONS — still OPEN (§34.2)."
+  effect: "Lands the V5 control plane as git-authoritative. Does NOT start V5 delivery, issue packets, or retire the legacy protocol beyond the superseded-on-signature marker."
 
 summary: >-
   Replace the dormant Codex/Kimi multi-agent operating protocol with the
