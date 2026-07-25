@@ -1,0 +1,404 @@
+packet_id: M9-ADMIN-DASHBOARD-CONFIG-CONSUMER-INVENTORY-037
+title: Admin Dashboard Config consumer inventory and convergence order
+status: VALIDATED_NO_EFFECTIVE_POLICY_CONSUMER_BLOCK_P0
+mode: READ_ONLY
+owner: CODEX
+created_at: "2026-07-25"
+
+authority:
+  requirement_ids:
+    - CR-445
+  acceptance_ids:
+    - WA-AC-0445
+  module_ids:
+    - MVP1-M08-016
+  screen_ids:
+    - SCR-WEB-500
+  route_authority:
+    - /operations/**
+  required_outputs:
+    - visits planned
+    - visits completed
+    - visits cancelled
+    - visits overdue
+    - active inspectors
+    - average duration
+    - SLA breach rate
+  business_rule: KPI calculation period is configurable.
+  protected_existing_behavior:
+    - The accepted dashboard scorecard computes CR-445 values for a user-selected date window.
+    - Existing formulas and selected-window behavior must remain working during convergence.
+  interpretation_boundary:
+    - Configurable calculation period is not proven to mean arbitrary untyped JSON.
+    - No policy default, effective-date precedence rule, provider, threshold, SLA, or formula version may be invented.
+
+dependencies:
+  independent_audit:
+    expected_packet_id: CODEX-ADMIN-DASHBOARD-CONFIG-018
+    status: MISSING
+    handling: Do not invent or substitute it.
+  design_authority_review:
+    packet_id: M9-ADMIN-DASHBOARD-CONFIG-DESIGN-AUTHORITY-REVIEW-053
+    status: BLOCK_DUE_TO_UNAUTHENTICATED_ROUTE_AND_MISSING_TYPED_POLICY_CONTRACT
+    reconciled_findings:
+      - /admin/dashboard-config is outside the authenticated app route group.
+      - No governed screen ID proves the Admin Dashboard Configuration screen.
+      - WA-DES-021 is insufficient and WA-DES-031 is an incorrect query-view mapping.
+      - The raw JSON editor is not an approved typed policy contract.
+      - Current publication and effective-date behavior are unsafe.
+
+executive_finding:
+  verdict: BLOCK_DUE_TO_MISSING_CONTRACT
+  summary: >
+    The repository contains an Admin configuration writer, a head-only resolver, a
+    typed KPI projection layer, and several dashboards, but no production consumer
+    reads the effective Admin payload or uses it to calculate CR-445. The accepted
+    /dashboard implementation independently uses URL date scope with a hard-coded
+    30-day default. /operations uses separate ad hoc, mostly all-time counters.
+  completion_credit: 0
+  implementation_ready: false
+
+consumer_graph:
+  - node: admin_config_writer
+    source:
+      - apps/web/src/app/admin/dashboard-config/page.tsx
+      - apps/web/src/app/admin/dashboard-config/actions.ts
+      - apps/web/src/app/admin/dashboard-config/ActionForm.tsx
+      - supabase/migrations/20260721010000_dashboard_kpi_admin_foundation.sql
+    role: Writes arbitrary object payloads and publishes a selected version as the current head.
+    consumes_effective_payload: false
+    produces_effective_payload: unproven
+    refresh_behavior: Revalidates only /admin/dashboard-config.
+    risk: P0
+    evidence:
+      - Publication changes the head immediately, including for a future effective_from value.
+      - The page derives role options from the unfiltered user_roles roster.
+      - The page is outside the authenticated (app) route group.
+  - node: dashboard_policy_loader
+    source:
+      - apps/web/src/lib/dashboard-kpi/loader.ts
+    role: Resolves dashboard_config_heads.current_version_id for kpi_parameters.
+    production_callers: 0
+    consumes_effective_payload: false
+    risk: P0
+    evidence:
+      - It never reads dashboard_config_versions.payload or effective_from.
+      - Error and no-policy both return a null policyVersionId; only failedSources differentiates them.
+  - node: typed_projection_layer
+    source:
+      - apps/web/src/lib/dashboard-kpi/contract.ts
+      - apps/web/src/lib/dashboard-kpi/registry.ts
+      - apps/web/src/lib/dashboard-kpi/projection.ts
+      - apps/web/src/lib/dashboard-kpi/inspector-projection.ts
+      - apps/web/src/lib/dashboard-kpi/dashboard-format.ts
+      - apps/web/src/components/dashboard-kpi/MetricStrip.tsx
+      - apps/web/src/components/dashboard-kpi/DecisionCanvas.tsx
+    role: Defines typed metrics, static definitions, projection helpers, and presentation components.
+    production_callers: 0
+    consumes_effective_payload: false
+    risk: P1
+    evidence:
+      - buildDashboardKpiProjection is not imported by a production route.
+      - buildInspectorKpiProjection is not imported by the actual Field page.
+      - MetricStrip and DecisionCanvas are not mounted by the current dashboard.
+  - node: web_dashboard
+    route: /dashboard
+    source:
+      - apps/web/src/app/(app)/dashboard/page.tsx
+      - apps/web/src/app/(app)/dashboard/metrics.ts
+      - apps/web/src/app/(app)/dashboard/DashboardView.tsx
+    role: Accepted selected-window CR-445 calculation and presentation.
+    calculation_period: URL from/to, defaulting to 30 Riyadh calendar days.
+    consumes_effective_payload: false
+    consumes_policy_version: false
+    refresh_behavior: Force-dynamic; recalculates on navigation or reload.
+    permission_behavior: Explicitly filters user_roles by current user_id and checks BUSINESS_ROLE_KEYS.
+    risk: P0
+    evidence:
+      - It calls legacy buildDashboardMetrics directly.
+      - Formula and policy versions render as an em dash or Not stored.
+      - Invalid date values silently fall back to the hard-coded default window.
+  - node: operations_center
+    route: /operations
+    source:
+      - apps/web/src/app/(app)/operations/page.tsx
+      - apps/web/src/app/(app)/operations/Monitoring.tsx
+    role: Ad hoc operational monitoring, SLA watch, map, and pipeline.
+    calculation_period: No date scope; visit counters are calculated across loaded records.
+    consumes_effective_payload: false
+    consumes_policy_version: false
+    refresh_behavior: Only live monitoring rows poll every 30 seconds.
+    permission_behavior: Authenticated app shell and RLS; no equivalent explicit route persona guard was found.
+    risk: P0
+    evidence:
+      - Region and city filters are applied after headline state counts are calculated.
+      - SLA settings come from engine_settings.sla, not dashboard configuration.
+      - It is not the seven-output CR-445 scorecard.
+  - node: operations_live
+    route: /operations/live
+    source:
+      - apps/web/src/app/(app)/operations/live/page.tsx
+      - apps/web/src/app/(app)/operations/live/LiveOps.tsx
+    role: Live map and ad hoc en-route, executing, and factory counters.
+    calculation_period: None
+    consumes_effective_payload: false
+    refresh_behavior: Browser animation timer only; no periodic server data reload was found.
+    risk: P1
+  - node: operations_export
+    source:
+      - apps/web/src/app/(app)/operations/OpsExport.tsx
+    role: Client-side CSV export of live monitoring, SLA watch, and high-risk factory rows.
+    exports_cr445_scorecard: false
+    includes_policy_metadata: false
+    permission_behavior: Inherits server-rendered page data; no export-specific API, permission check, or audit event.
+    risk: P1
+    evidence:
+      - High-risk rows are selected globally and are not narrowed by the current region or city before export.
+  - node: dashboard_api
+    source: apps/web/src/app/api
+    role: No KPI or dashboard API consumer found.
+    consumes_effective_payload: false
+    risk: P1
+  - node: field_dashboard
+    route: /field
+    source:
+      - apps/web/src/app/(app)/field/page.tsx
+      - apps/web/src/lib/dashboard-kpi/inspector-projection.ts
+    role: Field dashboard with locally calculated counts and progress.
+    consumes_effective_payload: false
+    scope_boundary: Field and iPad are not part of this remediation lease.
+    risk: P1
+
+cr445_metric_matrix:
+  - metric: visits planned
+    dashboard: Computed for selected date window and shown in the pipeline.
+    operations: Ad hoc planned state count across loaded records.
+    policy_controlled: false
+  - metric: visits completed
+    dashboard: Computed for selected date window; not a consistently prominent headline card.
+    operations: Ad hoc completed state count across loaded records.
+    policy_controlled: false
+  - metric: visits cancelled
+    dashboard: Computed for selected date window and shown in the pipeline.
+    operations: Ad hoc cancelled state count across loaded records.
+    policy_controlled: false
+  - metric: visits overdue
+    dashboard: Computed for selected date window and shown.
+    operations: Calculated independently from current state and dates.
+    policy_controlled: false
+  - metric: active inspectors
+    dashboard: Computed from selected-window in-progress assignments.
+    operations: Inspector load is separately derived and not governed by dashboard configuration.
+    policy_controlled: false
+  - metric: average duration
+    dashboard: Computed for the selected window but presented as supporting footer text.
+    operations: Not the governed CR-445 selected-period calculation.
+    policy_controlled: false
+  - metric: SLA breach rate
+    dashboard: Computed for the selected window.
+    operations: Separate SLA watch uses engine_settings.sla.
+    policy_controlled: false
+
+schema_inventory:
+  admin_payload:
+    current_shape: Record<string, unknown>
+    validation: JSON object only
+    typed_calculation_period: absent
+    typed_formula_contract: absent
+    typed_effective_policy_contract: absent
+  shared_metric:
+    source: apps/web/src/lib/dashboard-kpi/contract.ts
+    status: Typed but not connected to a production consumer.
+  dashboard_legacy_metric:
+    source:
+      - apps/web/src/app/(app)/dashboard/metrics.ts
+      - apps/web/src/app/(app)/dashboard/KpiGrid.tsx
+      - apps/web/src/app/(app)/dashboard/DashboardView.tsx
+    status: Active production shape, separate from SharedMetric.
+
+failure_and_fallback_inventory:
+  - area: policy resolver
+    behavior: Null version on no policy or read failure; failedSources is available but unused.
+    implication: A consumer could silently run without policy authority.
+  - area: dashboard data collection
+    behavior: Failed sources become empty arrays while a partial-source banner is assembled.
+    implication: Affected KPI values can appear as zero instead of explicitly unavailable.
+  - area: dashboard scope parsing
+    behavior: Missing or invalid values fall back to the 30-day default.
+    implication: Misconfigured policy cannot be distinguished from user/default scope.
+  - area: operations
+    behavior: Most failures are surfaced; missing cancellation data intentionally degrades to empty.
+    implication: A counter can look valid while its source is unavailable.
+
+cache_and_refresh_inventory:
+  admin_publish:
+    current: revalidatePath for /admin/dashboard-config only
+    missing:
+      - consumer cache tag
+      - /dashboard invalidation
+      - /operations invalidation
+      - effective-date activation mechanism
+  dashboard:
+    current: force-dynamic and recalculated on navigation or reload
+    missing:
+      - policy-aware refresh
+      - effective version disclosure
+  operations:
+    current: monitoring rows poll every 30 seconds
+    missing:
+      - full-page KPI refresh
+      - policy-aware refresh
+  operations_live:
+    current: visual map animation timer only
+    missing:
+      - server data polling or realtime subscription
+
+permission_inventory:
+  admin_config:
+    finding: Page placement and role-roster query fail the required permission boundary.
+    severity: P0
+  dashboard:
+    finding: Explicit current-user business-role guard plus RLS.
+    severity: PROTECTED_BEHAVIOR
+  operations:
+    finding: Authenticated shell plus RLS, without the dashboard-equivalent explicit route persona guard.
+    severity: P1
+  exports:
+    finding: No export-specific permission or audit contract.
+    severity: P1
+
+time_and_effective_date_inventory:
+  admin_publication:
+    current: Publishing a future-effective version immediately changes current_version_id.
+    required_resolution: Effective selection semantics must be contract-authorized before implementation.
+    severity: P0
+  dashboard:
+    current: User-selected range; hard-coded 30 Riyadh calendar day default using fixed UTC+3 handling.
+    admin_controlled: false
+  operations:
+    current: No KPI calculation-period scope.
+    admin_controlled: false
+  sla:
+    current: Uses now/window values and engine_settings.sla independently.
+    admin_controlled: false
+
+test_and_evidence_inventory:
+  existing:
+    - test: apps/web/e2e/dashboard-business.spec.ts
+      coverage: Legacy formulas, hard-coded 30-day default, dashboard views, scope, locale, and auth.
+      missing: Admin publication, payload use, effective dates, precedence, and policy version.
+    - test: apps/web/e2e/dashboard-kpi-contract.spec.ts
+      coverage: Pure typed projection and formula checks.
+      missing: Production route consumption; tests pass policyVersionId as null.
+    - test: apps/web/e2e/dashboard-kpi-seed.spec.ts
+      coverage: Seed-backed Operations states, panels, and exports.
+      missing: Admin configuration consumption.
+    - test: apps/web/e2e/field-dashboard-presentation.spec.ts
+      coverage: Intended Field KPI projection checks.
+      defect: References non-existent src/app/field/page.tsx and asserts imports absent from the actual route.
+  absent:
+    - SQL tests for Dashboard Config RPC permissions, effective dates, and compare-and-swap publication.
+    - Browser tests for /admin/dashboard-config.
+    - A test proving that one authorized policy change alters a consumer result.
+    - API contract tests for dashboard configuration or KPI consumption.
+    - Evidence tying displayed KPI methodology to an effective policy and version.
+  evidence_boundary:
+    protected_claim: Existing TASK-WEB-DASHBOARD-002 evidence supports selected-window CR-445 behavior.
+    prohibited_expansion: It does not prove Admin-configured calculation-period consumption.
+
+convergence_breakage_order:
+  - order: 1
+    scope: authority_and_permissions
+    action: Obtain governed screen/contract authority and repair the Admin authentication and role boundary.
+    lease: AUTH
+  - order: 2
+    scope: typed_policy_contract
+    action: Define the minimum approved calculation-period and effective-policy schema without inventing values.
+    lease: CONTRACT
+  - order: 3
+    scope: persistence_semantics
+    action: Add authorized effective-date selection, publication concurrency, and least-privilege reads.
+    lease: DB
+  - order: 4
+    scope: resolver
+    action: Resolve an effective typed payload plus version and explicit unavailable/error states.
+    lease: CONSUMER
+  - order: 5
+    scope: dashboard_convergence
+    action: Wire /dashboard first while preserving all accepted selected-window formulas and behavior.
+    lease: CONSUMER
+  - order: 6
+    scope: operations_convergence
+    action: Reconcile only the CR-445-authorized portions of /operations; do not merge unrelated SLA policy.
+    lease: CONSUMER
+  - order: 7
+    scope: export_and_api
+    action: Add only contract-authorized policy metadata, scoped export, or API surfaces after authority exists.
+    lease: CONSUMER
+  - order: 8
+    scope: seed_and_verification
+    action: Seed deterministic period-boundary records and run SQL, unit, browser, permission, locale, and regression suites.
+    lease: SEED_AND_QA
+  - order: 9
+    scope: evidence
+    action: Capture runtime proof for policy version, period behavior, negative paths, and preserved CR-445 results.
+    lease: QA
+
+collision_and_ownership:
+  prohibited:
+    - Do not edit application, migration, seed, test, design, gate, lease, branch, or stash state from this packet.
+    - Do not touch Field or iPad files under this remediation.
+    - Do not overwrite peer untracked packets.
+    - Do not start implementation while Design Review 053 and the typed contract remain blocked.
+  future_lease_boundaries:
+    AUTH:
+      owns:
+        - Admin route authentication placement
+        - Admin persona authorization
+        - Least-privilege role lookup
+    CONTRACT:
+      owns:
+        - Typed Dashboard Config schema
+        - Calculation-period semantics
+        - Precedence and effective-date semantics
+    DB:
+      owns:
+        - RPC and RLS corrections
+        - Effective policy selection
+        - Publication concurrency
+    CONSUMER:
+      owns:
+        - Resolver
+        - Dashboard wiring
+        - Operations reconciliation
+        - Export/API convergence
+    SEED_AND_QA:
+      owns:
+        - Deterministic fixtures
+        - SQL, unit, E2E, negative-path, and regression proof
+    UI:
+      owns:
+        - Typed Admin editor only after design and contract approval
+
+decisions_required:
+  - Approve the governed screen identity and design authority for Admin Dashboard Configuration.
+  - Approve the typed calculation-period schema and whether URL scope overrides, inherits, or is constrained by Admin policy.
+  - Approve effective_from activation and publication precedence semantics.
+  - Approve which personas may read full policy payload versus reduced effective settings.
+  - Decide whether /operations must present the same seven CR-445 measures or only link to the governed scorecard.
+  - Decide whether exports and APIs must carry formula and policy-version metadata.
+
+next_queue:
+  packet_id: M9-ADMIN-DASHBOARD-CONFIG-TEST-EVIDENCE-MATRIX-038
+  mode: READ_ONLY
+  status: READY_TO_ASSIGN
+  objective: >
+    Produce a collision-safe test and evidence matrix covering authority, permissions,
+    effective dates, publication concurrency, typed schema validation, dashboard
+    consumption, operations reconciliation, exports, APIs, locale, failure states,
+    seed boundaries, and preservation of accepted CR-445 behavior.
+  constraints:
+    - Reconcile Design Review 053 as blocked.
+    - Preserve existing CR-445 selected-window evidence without overstating it.
+    - Do not invent CODEX-ADMIN-DASHBOARD-CONFIG-018.
+    - Do not modify product, data, tests, design, leases, branches, or stashes.

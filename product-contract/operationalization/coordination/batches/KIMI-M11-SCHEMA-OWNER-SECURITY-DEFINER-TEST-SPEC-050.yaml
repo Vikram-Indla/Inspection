@@ -1,0 +1,511 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-SCHEMA-OWNER-SECURITY-DEFINER-TEST-SPEC-050
+status: READ_ONLY_FUTURE_CATALOG_SECURITY_SPEC_COMPLETE_NOT_IMPLEMENTED
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Freeze future tests for M11 schema/table/function ownership, ACLs, default
+  privileges, SECURITY DEFINER safety, dependency identity, RLS enforcement
+  and privilege-escalation negatives. Catalog facts and ordinary-session
+  behavior must both pass; owner or privileged execution cannot substitute for
+  ordinary-persona proof.
+
+frozen_authority:
+  KIMI-M11-TEST-EVIDENCE-GAP-MAP-032: d077ac00db46f89ff311fa93b3ae19725463006dac41239584f8caf10a1a8aa2
+  KIMI-M11-CATALOG-SECURITY-NEGATIVE-PATH-042: 622ee4a5b841ffcda0a3716c65c5f582155264036ad242d76f94cf2a2b3e3847
+  KIMI-M11-CATALOG-ACL-NEGATIVE-TEST-SPEC-043: 135cb8ef831c661dfa599962f375bf1151c8856ed7bfc7efb4d6e4f8c719c877
+  KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044: 85c2cd392146b4b3c78b46ac14200f3d09533ec2be85ba3f0a474e5ab17799dd
+  KIMI-M11-CONCURRENCY-ROLLBACK-TEST-SPEC-045: 81b8f3a37ee6873ef5e82c2351126194205761e02fd62c265f8ce8c139eb30b4
+  KIMI-M11-UNAUTHORIZED-PERSONA-MATRIX-TEST-SPEC-046: 920d500d5f2bdfa55da2fb2acac32b28346e3d668d7ac40f3ab88e00150d24fa
+  KIMI-M11-REDACTION-EXPORT-TEST-SPEC-047: 782eba637010837658bb185cddda47c804b92f991cb504faced92bbb82c39b6a
+  KIMI-M11-ERROR-NEUTRALITY-TEST-SPEC-048: f54e977cd7f69182e4044a30884873f8eb67e7b5b723216287a9797874d190a0
+  KIMI-M11-PROVIDER-CALLBACK-AUTHENTICATION-TEST-SPEC-049: 2b056513d9f920c7d8fc48526ee2e77ccd2571a990eabf26afee1ea4353affd7
+
+hard_boundary:
+  - "No actual test, SQL, migration, product, application, database, design, data, seed, branch or stash change."
+  - "No live catalog query, connection, role creation, grant, policy, function, trigger or extension operation."
+  - "No owner role, schema, provider, extension namespace or privilege value is invented."
+  - "All expected identities must come from accepted corrected manifests and isolated catalog evidence."
+  - "No implementation or QA lease is issued and zero change is made to the 478-row completion count."
+  - "Kimi output remains unaccepted until the locked Mac is unlocked and its response is captured and validated."
+
+catalog_truth_required:
+  schemas:
+    - exact_schema_identity
+    - schema_owner
+    - CREATE_privilege_manifest
+    - USAGE_privilege_manifest
+    - default_privilege_sources
+  tables:
+    - exact_table_identity
+    - table_owner
+    - row_security_enabled
+    - row_security_forced_if_required_by_final_contract
+    - table_ACL_for_PUBLIC_anon_authenticated
+    - policy_command_role_permissive_predicate_manifest
+  functions:
+    - exact_identity_arguments
+    - return_type
+    - owner
+    - owner_superuser_flag
+    - owner_BYPASSRLS_flag
+    - owner_login_flag
+    - SECURITY_INVOKER_or_DEFINER
+    - leakproof
+    - accepted_function_settings
+    - EXECUTE_ACL_for_PUBLIC_anon_authenticated
+    - overload_manifest
+  dependencies:
+    - exact_function_table_type_helper_extension_graph
+    - extension_namespace
+    - fully_qualified_dependency_identity
+    - trigger_to_function_identity
+    - policy_helper_dependency
+  default_privileges:
+    - creator_role
+    - object_type
+    - grantee
+    - privilege
+    - scope
+
+identity_fixtures:
+  - id: FX-SEC-PUBLIC
+    class: database_role
+  - id: FX-SEC-ANON
+    class: client_role
+  - id: FX-SEC-AUTHENTICATED
+    class: client_role
+  - id: FX-SEC-ASSIGNED-INSPECTOR
+    class: ordinary_session
+  - id: FX-SEC-UNASSIGNED-INSPECTOR
+    class: ordinary_session
+  - id: FX-SEC-REVIEWER
+    class: ordinary_session
+  - id: FX-SEC-AUDITOR
+    class: ordinary_session
+  - id: FX-SEC-PLANNER
+    class: ordinary_session
+  - id: FX-SEC-OPERATIONS
+    class: ordinary_session
+  - id: FX-SEC-APPLICATION-ADMIN
+    class: ordinary_session
+  - id: FX-SEC-FUNCTION-OWNER
+    class: privileged_catalog_identity
+  - id: FX-SEC-SCHEMA-OWNER
+    class: privileged_catalog_identity
+  - id: FX-SEC-SERVICE-ROLE
+    class: privileged_fixture_identity
+  - id: FX-SEC-UNTRUSTED-OBJECT-CREATOR
+    class: negative_fixture_identity
+
+symbolic_fixtures:
+  catalog:
+    - FX-SEC-FINAL-SCHEMA-MANIFEST
+    - FX-SEC-FINAL-TABLE-MANIFEST
+    - FX-SEC-FINAL-FUNCTION-MANIFEST
+    - FX-SEC-FINAL-POLICY-MANIFEST
+    - FX-SEC-FINAL-TRIGGER-MANIFEST
+    - FX-SEC-FINAL-DEPENDENCY-MANIFEST
+    - FX-SEC-FINAL-DEFAULT-PRIVILEGE-MANIFEST
+    - FX-SEC-FINAL-EXTENSION-MANIFEST
+  functions:
+    - FX-SEC-CALLER-RPC
+    - FX-SEC-PRIVATE-HELPER
+    - FX-SEC-TRIGGER-FUNCTION
+    - FX-SEC-OBSOLETE-OVERLOAD
+    - FX-SEC-SAME-NAME-UNTRUSTED-FUNCTION
+  objects:
+    - FX-SEC-VIRTUAL-SESSION
+    - FX-SEC-VIRTUAL-PARTICIPANT
+    - FX-SEC-AUDIT-EVENT
+    - FX-SEC-UNTRUSTED-TABLE
+    - FX-SEC-UNTRUSTED-TYPE
+  attacks:
+    - FX-SEC-SEARCH-PATH-SHADOW
+    - FX-SEC-HELPER-SHADOW
+    - FX-SEC-TYPE-SHADOW
+    - FX-SEC-DEFAULT-PRIVILEGE-DRIFT
+    - FX-SEC-GRANT-OPTION-ESCALATION
+    - FX-SEC-ROLE-MEMBERSHIP-ESCALATION
+    - FX-SEC-SET-ROLE-ESCALATION
+    - FX-SEC-SECURITY-DEFINER-DIRECT-CALL
+
+expected_result_vocabulary:
+  CATALOG_EXACT: "Observed identity/owner/ACL/policy/dependency equals accepted manifest."
+  ORDINARY_ALLOW: "Exact ordinary persona succeeds only through reviewed caller-facing path."
+  DENY: "Privilege or operation denied without internal detail."
+  NO_BYPASS: "SECURITY DEFINER enforces auth, persona, resource, state, window and immutability internally."
+  NO_SHADOW: "Untrusted schema/object cannot alter dependency resolution."
+  NO_ESCALATION: "No grant, membership, SET ROLE, owner or default-privilege path widens authority."
+  ZERO_LEAK: "No owner, schema, policy, function, extension or raw SQL detail reaches client."
+  BLOCKED_CATALOG: "Cannot pass until isolated catalog evidence and accepted manifest exist."
+
+test_groups:
+  SCHEMA_AND_TABLE_OWNERSHIP:
+    cases:
+      - id: M11-050-OWN-001
+        fixtures: [FX-SEC-FINAL-SCHEMA-MANIFEST]
+        action: "Compare every governed schema identity and owner."
+        expected: CATALOG_EXACT
+        evidence: [schema_owner_manifest, catalog_snapshot_hash]
+      - id: M11-050-OWN-002
+        fixtures: [FX-SEC-FINAL-TABLE-MANIFEST]
+        action: "Compare virtual session, participant and audit table owners."
+        expected: CATALOG_EXACT
+        evidence: [table_owner_manifest, catalog_snapshot_hash]
+      - id: M11-050-OWN-003
+        identities: [FX-SEC-FUNCTION-OWNER, FX-SEC-SCHEMA-OWNER]
+        action: "Inspect superuser, BYPASSRLS and login attributes."
+        expected: "Exact accepted system-owner attributes; unresolved attributes BLOCKED_CATALOG."
+        evidence: [owner_attribute_manifest, catalog_snapshot_hash]
+      - id: M11-050-OWN-004
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        action: "Attempt CREATE in trusted governed schemas."
+        expected: DENY
+        evidence: [schema_CREATE_privilege_matrix, creation_result]
+      - id: M11-050-OWN-005
+        identities: [FX-SEC-PUBLIC, FX-SEC-ANON, FX-SEC-AUTHENTICATED]
+        action: "Inspect schema USAGE/CREATE privileges."
+        expected: "Only exact required USAGE; no CREATE."
+        evidence: [schema_privilege_matrix]
+
+  TABLE_ACL_AND_RLS:
+    cases:
+      - id: M11-050-RLS-001
+        fixtures: [FX-SEC-FINAL-TABLE-MANIFEST]
+        action: "Inspect table ACLs for PUBLIC, anon and authenticated."
+        expected: "Direct INSERT/UPDATE/DELETE revoked; only exact required SELECT."
+        evidence: [table_ACL_manifest, catalog_snapshot_hash]
+      - id: M11-050-RLS-002
+        fixtures: [FX-SEC-FINAL-POLICY-MANIFEST]
+        action: "Inspect policy command, role, permissive/restrictive mode and predicate hashes."
+        expected: "Exact per-command explicit-role policy set; no broad FOR ALL or unintended permissive OR."
+        evidence: [policy_manifest, predicate_hash_manifest]
+      - id: M11-050-RLS-003
+        identities: [FX-SEC-PUBLIC, FX-SEC-ANON, FX-SEC-AUTHENTICATED]
+        action: "Attempt direct INSERT, UPDATE and DELETE."
+        expected: DENY
+        evidence: [role_table_command_matrix, state_before_after]
+      - id: M11-050-RLS-004
+        identities: [FX-SEC-ASSIGNED-INSPECTOR, FX-SEC-UNASSIGNED-INSPECTOR]
+        action: "Attempt direct table write despite resource relationship."
+        expected: DENY
+        evidence: [persona_table_command_matrix, state_before_after]
+      - id: M11-050-RLS-005
+        identities: [FX-SEC-REVIEWER, FX-SEC-AUDITOR, FX-SEC-PLANNER, FX-SEC-OPERATIONS, FX-SEC-APPLICATION-ADMIN]
+        action: "Attempt direct participant mutation."
+        expected: DENY
+        evidence: [persona_table_command_matrix, state_before_after]
+      - id: M11-050-RLS-006
+        fixtures: [FX-SEC-FINAL-POLICY-MANIFEST]
+        action: "Inspect session/participant policy dependency direction and helper graph."
+        expected: "One-way non-recursive reviewed dependency."
+        evidence: [policy_dependency_graph, recursion_scan]
+
+  FUNCTION_IDENTITY_OWNER_AND_ACL:
+    cases:
+      - id: M11-050-FUN-001
+        fixtures: [FX-SEC-FINAL-FUNCTION-MANIFEST]
+        action: "Compare exact function identity arguments and return types."
+        expected: CATALOG_EXACT
+        evidence: [function_identity_manifest, catalog_snapshot_hash]
+      - id: M11-050-FUN-002
+        fixtures: [FX-SEC-FINAL-FUNCTION-MANIFEST]
+        action: "Compare owner and security mode for each function."
+        expected: CATALOG_EXACT
+        evidence: [function_owner_security_manifest]
+      - id: M11-050-FUN-003
+        fixtures: [FX-SEC-CALLER-RPC]
+        identities: [FX-SEC-PUBLIC, FX-SEC-ANON, FX-SEC-AUTHENTICATED]
+        action: "Inspect and exercise exact EXECUTE ACL."
+        expected: "PUBLIC/anon denied; authenticated allowed only for reviewed caller RPC."
+        evidence: [function_ACL_manifest, role_execute_matrix]
+      - id: M11-050-FUN-004
+        fixtures: [FX-SEC-PRIVATE-HELPER, FX-SEC-TRIGGER-FUNCTION]
+        identities: [FX-SEC-PUBLIC, FX-SEC-ANON, FX-SEC-AUTHENTICATED]
+        action: "Attempt direct EXECUTE."
+        expected: DENY
+        evidence: [role_execute_matrix]
+      - id: M11-050-FUN-005
+        fixtures: [FX-SEC-OBSOLETE-OVERLOAD]
+        action: "Search for obsolete or ambiguous overload."
+        expected: "Absent; no callable legacy signature."
+        evidence: [overload_manifest, execute_resolution_result]
+      - id: M11-050-FUN-006
+        identities: [FX-SEC-FUNCTION-OWNER, FX-SEC-SERVICE-ROLE]
+        action: "Execute positive path under privileged identity."
+        expected: "NOT_VALID_AUTHORIZATION_EVIDENCE."
+        evidence: [identity_classification, evidence_exclusion_attestation]
+
+  SECURITY_DEFINER_INTERNAL_AUTHORIZATION:
+    cases:
+      - id: M11-050-DEF-001
+        identities: [FX-SEC-ASSIGNED-INSPECTOR]
+        fixtures: [FX-SEC-CALLER-RPC]
+        action: "Call exact authorized action/resource/state/window."
+        expected: ORDINARY_ALLOW
+        evidence: [authority_matrix, state_before_after, audit_event]
+      - id: M11-050-DEF-002
+        identities: [FX-SEC-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-SEC-CALLER-RPC]
+        action: "Call same RPC against existing out-of-scope resource."
+        expected: NO_BYPASS
+        evidence: [neutral_result, state_before_after, audit_before_after]
+      - id: M11-050-DEF-003
+        identities: [FX-SEC-REVIEWER, FX-SEC-AUDITOR, FX-SEC-OPERATIONS, FX-SEC-APPLICATION-ADMIN]
+        fixtures: [FX-SEC-CALLER-RPC]
+        action: "Attempt mutation through definer."
+        expected: NO_BYPASS
+        evidence: [persona_RPC_matrix, state_before_after]
+      - id: M11-050-DEF-004
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-CALLER-RPC]
+        action: "Call without exact persona/resource relationship."
+        expected: NO_BYPASS
+        evidence: [authorization_result, neutral_result, mutation_count]
+      - id: M11-050-DEF-005
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-PRIVATE-HELPER, FX-SEC-SECURITY-DEFINER-DIRECT-CALL]
+        action: "Attempt direct helper invocation to bypass caller RPC."
+        expected: DENY
+        evidence: [execute_result, mutation_count]
+      - id: M11-050-DEF-006
+        identities: [FX-SEC-ASSIGNED-INSPECTOR]
+        fixtures: [FX-SEC-CALLER-RPC]
+        action: "Induce wrong state, stale revision or immutable submitted version."
+        expected: NO_BYPASS
+        evidence: [guard_result_matrix, state_before_after, audit_before_after]
+
+  SEARCH_PATH_AND_OBJECT_SHADOWING:
+    cases:
+      - id: M11-050-SPT-001
+        fixtures: [FX-SEC-FINAL-FUNCTION-MANIFEST]
+        action: "Inspect accepted function settings."
+        expected: "Exact safe search_path contract; all object references fully qualified."
+        evidence: [function_settings_manifest, definition_dependency_hash]
+      - id: M11-050-SPT-002
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        fixtures: [FX-SEC-SEARCH-PATH-SHADOW, FX-SEC-SAME-NAME-UNTRUSTED-FUNCTION]
+        action: "Attempt same-name function shadow."
+        expected: NO_SHADOW
+        evidence: [resolved_dependency_identity, state_before_after]
+      - id: M11-050-SPT-003
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        fixtures: [FX-SEC-HELPER-SHADOW]
+        action: "Attempt nested helper shadow."
+        expected: NO_SHADOW
+        evidence: [resolved_helper_identity, function_result]
+      - id: M11-050-SPT-004
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        fixtures: [FX-SEC-TYPE-SHADOW, FX-SEC-UNTRUSTED-TYPE]
+        action: "Attempt type/operator/cast shadow."
+        expected: NO_SHADOW
+        evidence: [resolved_type_identity, function_result]
+      - id: M11-050-SPT-005
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        fixtures: [FX-SEC-UNTRUSTED-TABLE]
+        action: "Attempt relation shadow."
+        expected: NO_SHADOW
+        evidence: [resolved_relation_identity, state_before_after]
+
+  DEPENDENCY_AND_EXTENSION_GRAPH:
+    cases:
+      - id: M11-050-DEP-001
+        fixtures: [FX-SEC-FINAL-DEPENDENCY-MANIFEST]
+        action: "Compare exact function-to-table/type/helper/auth dependency graph."
+        expected: CATALOG_EXACT
+        evidence: [dependency_graph, catalog_snapshot_hash]
+      - id: M11-050-DEP-002
+        fixtures: [FX-SEC-FINAL-EXTENSION-MANIFEST]
+        action: "Compare extension identity and namespace."
+        expected: CATALOG_EXACT
+        evidence: [extension_namespace_manifest, dependency_graph]
+      - id: M11-050-DEP-003
+        fixtures: [FX-SEC-FINAL-TRIGGER-MANIFEST]
+        action: "Compare trigger-to-function identities and enablement."
+        expected: CATALOG_EXACT
+        evidence: [trigger_function_manifest, catalog_snapshot_hash]
+      - id: M11-050-DEP-004
+        fixtures: [FX-SEC-FINAL-DEPENDENCY-MANIFEST]
+        action: "Detect unsafe dependency on legacy public-search-path helpers."
+        expected: "No unsafe legacy helper dependency."
+        evidence: [unsafe_dependency_scan]
+      - id: M11-050-DEP-005
+        fixtures: [FX-SEC-FINAL-DEPENDENCY-MANIFEST]
+        action: "Detect unexpected dependency or missing required dependency."
+        expected: BLOCKED_CATALOG
+        evidence: [dependency_diff, release_gate_result]
+
+  DEFAULT_PRIVILEGES:
+    cases:
+      - id: M11-050-DFP-001
+        fixtures: [FX-SEC-FINAL-DEFAULT-PRIVILEGE-MANIFEST]
+        action: "Compare default privileges by creator role, schema and object type."
+        expected: CATALOG_EXACT
+        evidence: [default_privilege_manifest, catalog_snapshot_hash]
+      - id: M11-050-DFP-002
+        identities: [FX-SEC-PUBLIC, FX-SEC-ANON, FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-DEFAULT-PRIVILEGE-DRIFT]
+        action: "Model future function creation under each relevant creator role."
+        expected: "No unintended EXECUTE or table privileges."
+        evidence: [effective_default_privilege_matrix]
+      - id: M11-050-DFP-003
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        fixtures: [FX-SEC-DEFAULT-PRIVILEGE-DRIFT]
+        action: "Attempt privilege inheritance through newly created object."
+        expected: NO_ESCALATION
+        evidence: [new_object_effective_ACL, role_access_matrix]
+      - id: M11-050-DFP-004
+        fixtures: [FX-SEC-FINAL-DEFAULT-PRIVILEGE-MANIFEST]
+        action: "Detect default privilege drift from accepted manifest."
+        expected: BLOCKED_CATALOG
+        evidence: [default_privilege_diff, release_gate_result]
+
+  PRIVILEGE_ESCALATION:
+    cases:
+      - id: M11-050-ESC-001
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-GRANT-OPTION-ESCALATION]
+        action: "Attempt to grant/regrant governed object privileges."
+        expected: NO_ESCALATION
+        evidence: [grant_attempt_result, effective_privilege_before_after]
+      - id: M11-050-ESC-002
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-ROLE-MEMBERSHIP-ESCALATION]
+        action: "Attempt role-membership escalation."
+        expected: NO_ESCALATION
+        evidence: [membership_attempt_result, role_graph_before_after]
+      - id: M11-050-ESC-003
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-SET-ROLE-ESCALATION]
+        action: "Attempt SET ROLE to owner or privileged technical role."
+        expected: NO_ESCALATION
+        evidence: [set_role_result, effective_identity]
+      - id: M11-050-ESC-004
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-SECURITY-DEFINER-DIRECT-CALL]
+        action: "Attempt privilege escalation through callable definer/helper chain."
+        expected: NO_ESCALATION
+        evidence: [call_chain, authorization_result, state_before_after]
+      - id: M11-050-ESC-005
+        identities: [FX-SEC-FUNCTION-OWNER, FX-SEC-SCHEMA-OWNER, FX-SEC-SERVICE-ROLE]
+        action: "Use privileged result as substitute for ordinary-session test."
+        expected: "Evidence rejected."
+        evidence: [identity_classification, evidence_acceptance_result]
+      - id: M11-050-ESC-006
+        identities: [FX-SEC-UNTRUSTED-OBJECT-CREATOR]
+        fixtures: [FX-SEC-SEARCH-PATH-SHADOW, FX-SEC-DEFAULT-PRIVILEGE-DRIFT]
+        action: "Combine object shadow and inherited privilege."
+        expected: [NO_SHADOW, NO_ESCALATION]
+        evidence: [resolved_dependency_identity, effective_privilege_matrix, state_before_after]
+
+  CLIENT_ERROR_REDACTION:
+    cases:
+      - id: M11-050-ERR-001
+        identities: [FX-SEC-UNASSIGNED-INSPECTOR]
+        fixtures: [FX-SEC-CALLER-RPC]
+        action: "Compare missing and out-of-scope function call."
+        expected: "Neutral public boundary; no owner/schema/function/policy detail."
+        evidence: [status_token_body_pair, forbidden_scan]
+      - id: M11-050-ERR-002
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-SAME-NAME-UNTRUSTED-FUNCTION]
+        action: "Induce dependency-resolution failure."
+        expected: ZERO_LEAK
+        evidence: [client_error_schema, forbidden_scan]
+      - id: M11-050-ERR-003
+        identities: [FX-SEC-AUTHENTICATED]
+        fixtures: [FX-SEC-OBSOLETE-OVERLOAD]
+        action: "Attempt obsolete signature."
+        expected: "Governed denial; no signature inventory disclosure."
+        evidence: [client_error_schema, forbidden_scan]
+
+evidence_contract:
+  required_metadata:
+    - run_id
+    - case_id
+    - frozen_authority_hashes
+    - accepted_catalog_manifest_hash
+    - code_commit
+    - migration_chain_hash
+    - catalog_snapshot_hash
+    - ordinary_or_privileged_identity_class
+    - result
+    - independent_reviewer
+  required_outputs:
+    - schema_table_function_owner_manifest
+    - owner_attribute_manifest
+    - schema_table_function_ACL_manifest
+    - policy_and_default_privilege_manifest
+    - function_settings_overload_and_dependency_manifest
+    - ordinary_session_behavior_matrix
+    - shadow_and_escalation_results
+    - client_forbidden_disclosure_scan
+    - teardown_result
+  redaction:
+    - "No raw function/view body, runtime query, connection, credential, secret, personal data or application row."
+    - "Catalog evidence uses approved fields and hashes only."
+    - "Privileged technical results are labeled and excluded from ordinary authorization proof."
+    - "Any catalog mismatch, redaction failure, teardown failure or missing reviewer signoff blocks release."
+
+future_collision_safe_test_paths:
+  status: PROPOSED_NOT_ISSUED
+  paths:
+    TEST-CATALOG: supabase/tests/m11_stack_security_catalog.sql
+    TEST-010: supabase/tests/m11_010_creation_atomicity_security.sql
+    TEST-011: supabase/tests/m11_011_window_actions_security.sql
+    TEST-013: supabase/tests/m11_013_permission_otp_security.sql
+    TEST-014: supabase/tests/m11_014_join_begin_atomicity.sql
+    TEST-015: supabase/tests/m11_015_audit_neutral_security.sql
+  ownership_boundaries:
+    TEST-CATALOG: "Owner/ACL/default privilege/security mode/settings/dependency/policy/trigger and escalation catalog proof."
+    TEST-010: "Creation RPC ordinary-session definer authorization and direct DML denial."
+    TEST-011: "Window RPC ordinary-session definer authorization and helper safety."
+    TEST-013: "Permission/OTP function owner/ACL/RLS/definer behavior."
+    TEST-014: "Join/begin function owner/ACL/definer behavior."
+    TEST-015: "Audit function/trigger owner/ACL/dependency and raw-policy safety."
+  lease_rules:
+    - "One exact path, one QA owner and one worktree."
+    - "Re-read active leases immediately before issuance."
+    - "No implementation worker edits a leased QA path."
+    - "Stop on path, migration, function signature, policy, trigger or application-file collision."
+    - "No lease is implied by this specification."
+
+execution_gate:
+  current_state: BLOCKED_NOT_EXECUTABLE
+  required_before_any_test_lease:
+    - "Captured and validated corrected Kimi payloads."
+    - "Review 025 allowed verdict."
+    - "Corrected 009r accepted with one QA owner."
+    - "Exact final schema/table/function owner, ACL, default privilege, policy, dependency and trigger manifests."
+    - "Isolated live-catalog capture approved under the evidence redaction contract."
+    - "Fresh collision preflight and sponsor-approved QA lease."
+
+queued_next:
+  packet: KIMI-M11-DEPLOYMENT-QUIESCE-TEST-SPEC-051
+  state: QUEUED_READ_ONLY_NOT_STARTED
+  boundary: "Expand, switch, OTP disable, traffic quiesce/drain, uninterrupted 013-to-015 contract, certify and roll-forward recovery."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+  rule: "Do not accept, materialize or review Kimi output until it is visibly captured and validated."
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  frozen_authority_only: PASS
+  identity_fixture_count: 14
+  test_group_count: 9
+  test_case_count: 46
+  unique_test_case_ids: PASS
+  referenced_identities_defined: PASS
+  proposed_test_path_count: 6
+  proposed_test_paths_unique: PASS
+  actual_test_files_created_or_edited: 0
+  leases_issued: 0
+  implementation_claimed: false
+  non_mutating_boundary_checked: PASS
