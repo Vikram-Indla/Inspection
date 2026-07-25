@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { loadFactory360Dossier, resolveFactory360Permissions } from "@/lib/factory360/dossier";
 import type { ProductionLine } from "@/lib/factory360/dossier";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
+import { isNotificationUnread } from "@/lib/notification-read";
 import AssignmentTaskBrowser, { type AssignmentTask } from "./AssignmentTaskBrowser";
 import styles from "./my-tasks.module.css";
 
@@ -100,10 +101,18 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
 
-  const { data: asg, error } = await sb.from("assignments")
-    .select("visit_id, status, return_reason, visits(id, planning_status, operational_state, window_start, window_end, visit_type, execution_mode, priority, package_version_id, factory_id, factories(id, name, factory_code, cr_number, region, city, official_lat, official_lng), inspections(id, status))")
-    .eq("inspector_id", user.id)
-    .order("created_at", { ascending: false });
+  const [assignmentRead, notificationRead] = await Promise.all([
+    sb.from("assignments")
+      .select("visit_id, status, return_reason, visits(id, planning_status, operational_state, window_start, window_end, visit_type, execution_mode, priority, package_version_id, factory_id, factories(id, name, factory_code, cr_number, region, city, official_lat, official_lng), inspections(id, status))")
+      .eq("inspector_id", user.id)
+      .order("created_at", { ascending: false }),
+    sb.from("notifications")
+      .select("payload, read_at, delivery_state")
+      .eq("recipient", user.id)
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+  const { data: asg, error } = assignmentRead;
 
   if (error) {
     console.error("[field my-tasks]", error.message);
@@ -129,6 +138,17 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     .map(a => a.visits)
     .filter((v): v is VisitRow => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status))
     .filter(v => !isTestFixtureEstablishment(v.factories));
+  const unreadAlertsByVisit = new Map<string, number>();
+  if (!notificationRead.error) {
+    for (const row of notificationRead.data ?? []) {
+      if (!isNotificationUnread(row)) continue;
+      const payload = row.payload as Record<string, unknown> | null;
+      const visitId = typeof payload?.visit_id === "string" ? payload.visit_id : null;
+      if (visitId) unreadAlertsByVisit.set(visitId, (unreadAlertsByVisit.get(visitId) ?? 0) + 1);
+    }
+  } else {
+    console.error("[field my-tasks notifications]", notificationRead.error.message);
+  }
 
   const browserTasks: AssignmentTask[] = assignments.map((a) => ({
     id: a.visits.id,
@@ -144,6 +164,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
     packageVersionId: a.visits.package_version_id,
     inspectionId: a.visits.inspections?.id ?? null,
     inspectionStatus: a.visits.inspections?.status ?? null,
+    unreadAlertCount: unreadAlertsByVisit.get(a.visits.id) ?? 0,
     factory: {
       name: a.visits.factories!.name,
       code: a.visits.factories!.factory_code,
@@ -317,6 +338,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
           <AssignmentTaskBrowser
             tasks={browserTasks}
             selectedId={selected?.id ?? null}
+            alertSourceAvailable={!notificationRead.error}
             locale={locale === "ar" ? "ar" : "en"}
             labels={{
               search: tr("field.myTasks.search", "Search factory, visit, city or region", "ابحث عن منشأة أو زيارة أو مدينة أو منطقة"),
@@ -325,6 +347,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
               active: tr("field.myTasks.filter.active", "Active", "النشطة"),
               upcoming: tr("field.myTasks.filter.upcoming", "Upcoming", "القادمة"),
               alerts: tr("field.myTasks.filter.alerts", "Needs attention", "تحتاج إلى انتباه"),
+              alertsUnavailable: tr("field.myTasks.alertsUnavailable", "Assignment alerts are temporarily unavailable. Other assignment data remains visible.", "تنبيهات المهام غير متاحة مؤقتاً. تبقى بيانات المهام الأخرى ظاهرة."),
               returned: tr("field.myTasks.filter.returned", "Returned", "المعادة"),
               expired: tr("field.myTasks.filter.expired", "Expired", "المنتهية"),
               earliest: tr("field.myTasks.sort.earliest", "Earliest first", "الأقرب أولاً"),
@@ -336,6 +359,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
               open: tr("field.myTasks.open", "Open assignment", "فتح المهمة"),
               prepare: tr("field.myTasks.prepare", "Accept / prepare", "قبول / تحضير"),
               continueAction: tr("field.myTasks.continue", "Continue", "متابعة"),
+              preparing: tr("field.myTasks.preparing", "Preparing…", "جارٍ التحضير…"),
               returnAction: tr("field.myTasks.return", "Return…", "إعادة…"),
               viewOnly: tr("field.myTasks.viewOnly", "View only", "عرض فقط"),
               packageLinked: tr("field.myTasks.packageLinked", "Package linked", "حزمة مرتبطة"),

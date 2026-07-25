@@ -40,6 +40,10 @@
   display: grid; place-items: center; inline-size: 20px; block-size: 20px; border-radius: 50%;
   background: var(--status-warning); color: var(--text-on-action); font-weight: 700;
 }
+.alertUnavailable {
+  padding: 10px 16px; border-block-end: 1px solid var(--border-subtle);
+  background: var(--status-warning-soft); color: var(--status-warning-text); font-size: 12px;
+}
 .taskTools { padding: 12px; border-block-end: 1px solid var(--border-subtle); display: grid; gap: 10px; }
 .search input, .sort {
   inline-size: 100%; min-block-size: 44px; border: 1px solid var(--border-subtle);
