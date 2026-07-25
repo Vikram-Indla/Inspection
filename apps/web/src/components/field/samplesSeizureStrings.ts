@@ -58,6 +58,24 @@ export function buildSamplesSectionStrings(t: T): SamplesSectionStrings {
   };
 }
 
+// VR-048 is captured with its ordinal baked into the string ("Product (1)" /
+// "المنتج (1)"). The governed row owns the wording, so the ordinal is
+// substituted rather than the label being re-authored. Arabic-Indic and extended
+// Arabic-Indic digits are matched as well, because ui_strings is editable and
+// the AR row may legitimately be renumbered in native digits. If an edit ever
+// removes the ordinal, it is appended instead of silently dropped — otherwise
+// every repeated row would render an identical header.
+// Escapes, not literals: a bidi digit range pasted into source reorders on
+// screen and is not reviewable. U+0660-0669 Arabic-Indic, U+06F0-06F9 extended.
+const ORDINAL = /[0-9\u0660-\u0669\u06F0-\u06F9]+/;
+
+export function seizureItemHeader(template: string, position: number): string {
+  const ordinal = String(position);
+  return ORDINAL.test(template)
+    ? template.replace(ORDINAL, ordinal)
+    : `${template} ${ordinal}`;
+}
+
 export function buildSeizureSectionStrings(t: T): SeizureSectionStrings {
   const locale = designLocale(t);
   return {
@@ -65,8 +83,12 @@ export function buildSeizureSectionStrings(t: T): SeizureSectionStrings {
     gate: t("figma.visitreports.vr039", "Were products seized?"),
     gateYes: t("field.ws.ctx.yes", "Yes"),
     gateNo: t("field.ws.ctx.no", "No"),
-    addCta: designString(locale, "Add seized product", "إضافة منتج محجوز"),
-    itemHeader: designString(locale, "Seized product (1)", "منتج محجوز (1)"),
+    // VR-048 and VR-049 are registered ui_strings for the seizure repeater, so
+    // they win over the Visit Results wording ("Seized product 1" / "Add seized
+    // product"). Samples has no equivalent registered header key — VR-043/044
+    // are sample DATA values, not labels — so its row badge stays design copy.
+    addCta: t("figma.visitreports.vr049", "Add New Products"),
+    itemHeader: t("figma.visitreports.vr048", "Product (1)"),
     deleteLabel: designString(locale, "Delete", "حذف"),
     productNameLabel: t("figma.establishmentmanagement.em101", "Product Name"),
     productNamePlaceholder: designString(locale, "Seized product name", "اسم المنتج المحجوز"),
