@@ -1,0 +1,256 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PACKAGES-RUNTIME-REMEDIATION-PREFLIGHT-029
+title: Collision-safe Admin Packages runtime-governance remediation preflight
+status: PREFLIGHT_READY_POLICY_DESIGN_AND_ALL_LEASES_BLOCKED
+prepared_by: codex_claude_code_live_watch
+prepared_on: "2026-07-25"
+completion_credit: 0
+
+authority:
+  predecessor: M9-ADMIN-PACKAGES-RUNTIME-PERMISSION-MAPPING-028
+  design_dependency: M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049
+  route: /admin/packages
+  screen_ids: [SCR-ADM-030, SCR-ADM-031]
+  package: M9
+  process_ids: [G2-P00, G2-P01, G2-P02, G2-P03]
+  requirements:
+    - MVP1-M09-006 through MVP1-M09-030
+    - CR-454 through CR-478
+    - WA-AC-0454 through WA-AC-0478
+    - REQ-R0C-01125 through REQ-R0C-01196
+  mode: READ_ONLY
+  no_mutation: true
+  no_lease_claimed: true
+
+policy_decisions:
+  - id: PKG-DEC-001
+    question: What creates a new package identity and which fields become immutable after its first published version?
+  - id: PKG-DEC-002
+    question: Does every publish and deactivation require a distinct checker?
+    recommended_answer: YES
+  - id: PKG-DEC-003
+    question: How are future-effective versions represented before activation?
+    recommended_answer: Approved future state distinct from currently usable published state.
+  - id: PKG-DEC-004
+    question: What happens to a visit already pinned to a version that is later superseded or manually deactivated?
+    required_rule: Existing active/previous work remains executable against its immutable pin; future selections cannot use it.
+  - id: PKG-DEC-005
+    question: May inspectors choose optional package sections/items during preparation, and which package metadata governs that choice?
+  - id: PKG-DEC-006
+    question: Which personas may inspect all package definitions and frozen legal/dependency snapshots?
+  - id: PKG-DEC-007
+    question: Which effective instant/timezone governs package availability?
+  - id: PKG-DEC-008
+    question: Must manual deactivation be immediate or scheduled, and how is it cancelled before taking effect?
+
+target_contract:
+  package_identity:
+    - Governed create RPC validates unique code, bilingual/title/scope requirements and creator.
+    - Identity cannot be deleted after any version exists.
+    - Identity changes are audited and version-safe.
+  version_states:
+    - draft
+    - pending_approval
+    - approved_future
+    - active
+    - superseded
+    - deactivated
+    - rejected
+  invariants:
+    - Only governed RPCs can change lifecycle status, approval, effective window or lineage.
+    - Checker identity equals auth.uid and differs from creator.
+    - At most one version is active for new use at an instant.
+    - Published, approved, active, superseded and deactivated records are immutable and undeletable.
+    - Full live dependency validation and frozen-snapshot generation commit with publication.
+    - Every future-use consumer resolves the same effective version contract.
+    - Existing visit/inspection pins continue on their immutable definition.
+    - Draft preview cannot be mistaken for exact published runtime preview.
+  concurrency:
+    - Package-scoped lock during publication/deactivation.
+    - Expected revision/CAS for draft saves.
+    - Stable conflict codes and preserved local draft on stale save.
+
+proposed_lease_sequence:
+  - lease_id: PKG-LEASE-CONTRACT-001
+    order: 1
+    owner: ONE_PACKAGE_CONTRACT_OWNER
+    purpose: Decide PKG-DEC-001..008 and freeze identity, lifecycle, effective-time, actor and pinned-work contracts.
+    artifacts_only:
+      - package identity contract
+      - version state/transition matrix
+      - complete dependency matrix
+      - actor/capability matrix
+      - consumer eligibility matrix
+      - migration and rollback-forward plan
+    do_not_touch: [product code, database, tests, data, design]
+  - lease_id: PKG-LEASE-DB-001
+    order: 2
+    owner: ONE_DATABASE_PACKAGE_ENGINEER
+    purpose: Establish non-bypassable identity/version lifecycle, full immutability and transactional dependency freeze.
+    proposed_paths:
+      - one new forward-only Supabase migration
+      - one new transactional package-governance probe
+    entry_criteria:
+      - PKG-DEC-001..008 approved.
+      - Migration name and database-object ownership recorded.
+      - Compliance Items/Templates/Violations and Planning leases reconciled.
+    exit_criteria:
+      - Direct REST cannot forge approval, publish, revert, mutate authority fields or delete history.
+      - Create, submit, approve, activate, supersede and deactivate transitions are explicit and audited.
+      - Complete regulation/item/response/violation/penalty/evidence/template/action-form validation runs inside publication.
+      - Frozen item, violation, penalty and template snapshots are transactionally complete.
+      - CAS and package-scoped locking have deterministic conflict behavior.
+  - lease_id: PKG-LEASE-RESOLVER-001
+    order: 3
+    owner: ONE_PACKAGE_RUNTIME_INTEGRATION_ENGINEER
+    purpose: Create one effective-version resolver and converge all Planning/Field consumers.
+    proposed_scope:
+      - Planning package selectors and publish checks
+      - visit repackage
+      - Field package chooser
+      - save/confirm readiness RPCs
+      - visit and inspection pinned-version reads
+      - package impact aggregation
+    collision_rule: >-
+      Planning, Visits, Field, Execution Preparation, Factory 360 and Reports
+      owners must consent before their paths are leased.
+    exit_criteria:
+      - Future/superseded/deactivated versions cannot be selected for new work.
+      - Existing pins remain runnable and traceable.
+      - Multi-package visit links participate in eligibility, impact and provenance.
+      - Every consumer returns explicit unavailable/ineligible states.
+  - lease_id: PKG-LEASE-UI-001
+    order: 4
+    owner: ONE_M9_WEB_ENGINEER
+    purpose: Implement accepted Design 049 against frozen package RPC/read contracts.
+    proposed_paths:
+      - apps/web/src/app/(app)/admin/packages/**
+      - route-local translations and styles only
+    entry_criteria:
+      - Stable accepted Design 049 revision.
+      - Package RPC/read-model contracts frozen.
+      - PKG-DEC-001..008 approved.
+    exit_criteria:
+      - New package identity can be created and audited.
+      - Maker and checker queues/actions are distinct.
+      - Draft conflicts preserve edits and offer reload/reconcile.
+      - Future, active, superseded, deactivated and unavailable states are honest.
+      - Published preview reads the exact frozen runtime; draft preview is labelled projection.
+      - Impact includes primary/secondary packages and pinned active/future work.
+  - lease_id: PKG-LEASE-QA-001
+    order: PARALLEL_AFTER_CONTRACT_FREEZE
+    owner: INDEPENDENT_QA_REVIEWER
+    purpose: Certify package governance, consumer parity and browser evidence.
+    proposed_paths:
+      - new apps/web/e2e/web-admin-m9-packages-runtime.spec.ts
+      - new supabase/tests/m9_package_governance_negative_probe.sql
+      - evidence under approved INSPECTION_DOCS_ROOT
+
+seeder_and_fixture_plan:
+  owner: DEDICATED_SEEDER_LANE
+  isolation:
+    - unique seed_batch_id
+    - isolated regulation, clauses, items, templates, violations and penalties
+    - isolated package family and version lineage
+    - isolated visits with primary and secondary package links
+    - isolated inspections before and after readiness snapshot
+    - complete cleanup manifest
+    - transaction rollback for database-negative probes
+  personas:
+    - compliance_admin maker
+    - distinct compliance_admin checker
+    - form_admin maker
+    - unauthorized admin
+    - planner
+    - assigned inspector
+    - unassigned inspector
+    - reviewer
+    - anonymous
+  version_cases:
+    - mutable draft revision 1
+    - stale concurrent draft revision
+    - pending approval
+    - future approved version
+    - currently active version
+    - superseded historical version pinned to active visit
+    - manually deactivated version pinned to prior inspection
+    - malformed dependency version for each dependency class
+  data_safety: No shared package, visit, inspection or dependency may be mutated by certification.
+
+focused_test_matrix:
+  p0:
+    - id: PKG-TST-001
+      proof: Direct REST forged approved_by/status publication fails with zero mutation.
+    - id: PKG-TST-002
+      proof: Published/active/superseded/deactivated rows reject every authority-field update, lifecycle bypass and delete.
+    - id: PKG-TST-003
+      proof: Maker cannot approve own draft; checker identity is auth.uid and cannot be supplied.
+    - id: PKG-TST-004
+      proof: Missing/inactive/future regulation, item, violation, penalty, template, evidence or action-form dependency blocks the database transaction.
+    - id: PKG-TST-005
+      proof: Publication atomically freezes every consumed dependency and closes/links the predecessor.
+    - id: PKG-TST-006
+      proof: New package identity creation validates, audits and produces a usable draft without seed SQL.
+    - id: PKG-TST-007
+      proof: Planning and Field reject future, superseded and deactivated versions for new selection.
+    - id: PKG-TST-008
+      proof: A visit/inspection pinned before supersession or deactivation completes using the exact frozen version.
+    - id: PKG-TST-009
+      proof: Visit readiness snapshot checksum and package version remain immutable through execution/review/report.
+    - id: PKG-TST-010
+      proof: Two concurrent publications/deactivations yield one deterministic winner and no split effective interval.
+  p1:
+    - id: PKG-TST-011
+      proof: Concurrent draft save returns a stale conflict and preserves both server and client work.
+    - id: PKG-TST-012
+      proof: Published Admin preview equals the Field renderer's frozen definition and dependency snapshots.
+    - id: PKG-TST-013
+      proof: Draft preview is read-only, non-publishing and explicitly labelled as a projection.
+    - id: PKG-TST-014
+      proof: Impact counts primary/secondary package links, pinned visits/inspections and future executions.
+    - id: PKG-TST-015
+      proof: Unauthorized personas cannot inspect restricted package/dependency configuration.
+    - id: PKG-TST-016
+      proof: EN/AR, LTR/RTL, light/dark, responsive, keyboard and screen-reader evidence passes.
+
+protected_regression:
+  - apps/web/e2e/cd-008-009-packages.spec.ts
+  - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+  - apps/web/e2e/cd-006-admin-backend-foundation.spec.ts
+  - apps/web/e2e/cd-021-bulk-targeting.spec.ts
+  - apps/web/e2e/cd-022-identity-lens.spec.ts
+  - apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
+  - apps/web/e2e/cd-025-plan-review-publish.spec.ts
+  - apps/web/e2e/cd-027-visit-detail.spec.ts
+  - apps/web/e2e/execution-preexecution-ui-contract.spec.ts
+  - apps/web/e2e/execution-crossmodule-contract.spec.ts
+  - apps/web/e2e/golden-journey.spec.ts
+  - supabase/tests/0032_m09_live_release_probe.sql
+  - package/item/template/violation/penalty immutable history
+
+collision_register:
+  hotspots:
+    - packages and package_versions RLS, triggers and RPCs
+    - package snapshot tables and audit events
+    - inspection_items, regulations, violation_codes, penalty_mappings and configuration_templates
+    - visits.package_version_id and visit_packages
+    - visit_preparations and visit_package_snapshots
+    - Planning bulk/single/immediate package selection
+    - Field pre-execution and inspection workspace
+    - reports and Factory 360 history
+    - shared shell/navigation
+  active_peer_packets:
+    - M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049
+    - M9-ADMIN-PLANNING-EXPIRY-RUNTIME-REMEDIATION-PREFLIGHT-027
+    - KIMI-M11-PROVIDER-DEGRADED-PATH-TEST-SPEC-044
+  touched_by_this_lane: false
+  rule: Recheck every path immediately before lease; one owner per file, migration and shared database object.
+
+decision:
+  implementation_ready: false
+  lease_ready: false
+  recommended_sponsor_action: >-
+    Approve the package identity, maker-checker, effective-time and pinned-work
+    decisions first. Then lease database governance, cross-module resolver,
+    accepted Design 049 UI and independent certification separately. Do not
+    count the current page or its immutable banner as end-to-end completion.

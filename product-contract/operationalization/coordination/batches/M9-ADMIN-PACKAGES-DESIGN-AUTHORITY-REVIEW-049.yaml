@@ -1,0 +1,612 @@
+schema_version: "1.0"
+packet_id: M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049
+title: Independent Admin Packages and embedded Designer authority and runtime-delta review
+status: RETURN_FOR_MAPPING_SECURITY_AND_SUCCESSOR_DESIGN_CORRECTION
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  designs_certified: 0
+  reason: >-
+    The package library and embedded designer are substantial real
+    capabilities, but the frozen route mapping is unresolved, the proposed C1
+    designs do not exist as consumable artifacts, direct table updates can
+    bypass the complete publish path, and draft concurrency is unguarded.
+
+task_contract:
+  task_id: M9-ADMIN-PACKAGES-DESIGN-AUTHORITY-REVIEW-049
+  gate: M9 Admin Packages design authority
+  route: /admin/packages
+  channel: ADMIN
+  process_ids: [G2-P00]
+  package_id: M9
+  screen_ids:
+    - SCR-ADM-030
+    - SCR-ADM-031
+  screen_names:
+    - Inspection Package Library
+    - Package and Form Designer
+  engines:
+    - ENG-05
+    - ENG-07
+    - ENG-08
+    - ENG-09
+    - ENG-10
+    - ENG-12
+  source_requirement_ids:
+    active:
+      - CR-454
+      - CR-455
+      - CR-456
+      - CR-457
+      - CR-458
+      - CR-459
+      - CR-460
+      - CR-461
+      - CR-462
+      - CR-463
+      - CR-464
+      - CR-465
+      - CR-466
+      - CR-467
+      - CR-468
+      - CR-469
+      - CR-470
+      - CR-473
+      - CR-475
+      - CR-476
+      - CR-477
+      - CR-478
+    mapping_conflict:
+      - CR-471
+      - CR-472
+  atomic_requirement_ids:
+    - MVP1-M09-006_THROUGH_MVP1-M09-030
+  acceptance_ids:
+    - AC-0454_THROUGH_AC-0478
+    - WA-M9-AC-001_THROUGH_WA-M9-AC-006
+  dependencies:
+    - sponsor-approved embedded SCR-ADM-031 route mapping
+    - accepted WA-DES-002-C1 page successor
+    - accepted WA-DES-005-C1 embedded component successor
+    - current CD-008 and CD-009 design evidence
+    - non-bypassable package publication boundary
+    - full published-row immutability decision
+    - optimistic draft concurrency
+    - scoring requirement and design-authority reconciliation
+    - complete current runtime and browser certification
+  do_not_touch:
+    - live Claude Design, WA-DES-002, WA-DES-005 or proposed C1 successors
+    - product application code, tests or evidence
+    - Supabase, migrations, RPCs, providers, seeds, credentials or shared data
+    - frozen route, screen, design, requirement, acceptance or evidence mappings
+    - branches, leases, main, setup/Inspection or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: >-
+    Read-only design-to-runtime review only. No product, design, database, test,
+    evidence, provider, mapping, branch, lease or stash is changed.
+
+route_and_screen_validation:
+  route_exists: true
+  page:
+    path: apps/web/src/app/(app)/admin/packages/page.tsx
+    validation: CONFIRMED
+  route_boundary:
+    path: apps/web/src/app/(app)/admin/packages/layout.tsx
+    roles:
+      - compliance_admin
+      - form_admin
+    validation: CONFIRMED
+  package_library:
+    screen_id: SCR-ADM-030
+    catalogue_route: /admin/packages
+    implementation_route: /admin/packages
+    validation: CONFIRMED
+  package_designer:
+    screen_id: SCR-ADM-031
+    catalogue_route: /admin/packages/:id/designer
+    dedicated_route_exists: false
+    implementation_route: /admin/packages
+    component: apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+    mode: EMBEDDED_SELECTED_DRAFT_VERSION
+    capability_exists: true
+    validation: CONFIRMED_WITH_MAPPING_CORRECTION
+  new_route_required: false
+  required_governance_action: >-
+    Approve SCR-ADM-031 as an embedded mode of /admin/packages and correct the
+    frozen route/design map without creating a duplicate designer route.
+  route_inventory_claim:
+    requirements: CR-001..CR-478
+    validation: INCORRECT_OVERBROAD_MAPPING
+
+current_capability:
+  package_library:
+    - list packages and versions
+    - derive current published version by effective window
+    - create successor draft
+    - show lifecycle, effective dates and predecessor lineage
+    - show definition diff and shared-item fan-out
+    - show aggregate prior-version active visit and inspection impact
+    - preview stored package definition as an inert field projection
+    - approve and publish a valid draft
+    - reasoned deactivation with effective-to date
+  embedded_designer:
+    - create, rename and reorder bilingual sections
+    - add, remove and reorder active item codes
+    - configure required, optional and conditional relationships
+    - configure visibility and mandatory-when-visible rules
+    - configure evidence overrides
+    - configure scoring enablement and weight
+    - configure violation and action-form response mappings
+    - bind governed template versions
+    - create package action forms
+    - validate duplicate, bilingual and circular dependency errors
+    - save draft definition
+  adjacent_registry:
+    - governed template registry is also rendered on this route
+  data_sources:
+    - packages
+    - package_versions
+    - inspection_items
+    - configuration_templates
+    - violation_codes
+    - penalty_mappings
+    - user_roles
+
+requirement_mapping_review:
+  verified_package_groups:
+    - requirement_ids: [CR-454, CR-455]
+      capability: versioned packages, reusable items and ordered sections
+    - requirement_ids: [CR-456, CR-457, CR-475]
+      capability: template and action-form trigger configuration
+    - requirement_ids: [CR-458, CR-459]
+      capability: draft/publish lifecycle and historical immutability
+    - requirement_ids: [CR-460, CR-477]
+      capability: dependency and publish validation
+    - requirement_ids: [CR-461]
+      capability: source-backed impact analysis
+    - requirement_ids: [CR-462, CR-463]
+      capability: reasoned deactivation and audit
+    - requirement_ids: [CR-464, CR-465]
+      capability: bilingual sections and ordering
+    - requirement_ids: [CR-466, CR-469, CR-470]
+      capability: required, optional, conditional and conditional-mandatory rules
+    - requirement_ids: [CR-467, CR-468]
+      capability: response and compliance-result mapping
+    - requirement_ids: [CR-473]
+      capability: response-based evidence rule
+    - requirement_ids: [CR-476]
+      capability: violation trigger
+    - requirement_ids: [CR-478]
+      capability: runtime version locking
+  scoring_conflict:
+    requirement_ids: [CR-471, CR-472]
+    runtime: scoring_enabled and score_weight are implemented.
+    successor_packet: Marks these rows blocked and instructs removal of scoring controls from WA-DES-005-C1.
+    verdict: GOVERNANCE_CONTRADICTION
+    rule: >-
+      Do not remove or certify scoring until the canonical requirement and
+      successor-design interpretation is reconciled through change control.
+  completion_rule: >-
+    Existing AC ledger claims and code/test evidence are inputs, not automatic
+    completion credit for this independent current design/runtime review.
+
+permissions_and_access:
+  route_roles:
+    - compliance_admin
+    - form_admin
+  writer_helper: requireConfigurationWriter
+  UI_writer_roles:
+    - compliance_admin
+    - form_admin
+  RLS:
+    package_and_version_read: any authenticated user at table level
+    package_and_version_write:
+      - compliance_admin
+      - form_admin
+  route_boundary_narrows_read: true
+  aggregate_impact_roles:
+    - compliance_admin
+    - form_admin
+    - workflow_admin
+    - risk_owner
+    - security_admin
+    - leadership
+  finding: >-
+    The route is correctly narrowed, but table-level read and impact-reader
+    roles are broader than the route. Confirm this is an intentional reusable
+    service boundary rather than accidental package-definition disclosure.
+  validation: CONFIRMED_WITH_SCOPE_REVIEW
+
+publish_lifecycle_and_maker_checker:
+  intended_path:
+    application_action: approveAndPublish
+    validation: Full dependency validation before status transition
+    snapshot: Item, violation, penalty and template semantics frozen
+    RPC: publish_package_version
+    transaction:
+      - lock draft
+      - require distinct approver
+      - close previous active effective window
+      - set predecessor lineage
+      - publish frozen definition
+    validation_result: STRONG_AND_ATOMIC
+  maker_checker:
+    created_by: recorded
+    approved_by: required for published or locked
+    distinct_actor_constraint: present
+    UI_action_uses_current_actor: true
+    validation: PRESENT_ON_INTENDED_PATH
+  bypass:
+    broad_table_update_policy: true
+    direct_status_update_possible_for_authorized_writer: true
+    database_publish_guard_requires_approved_by: true
+    database_definition_trigger: partial shape and relationship checks only
+    full_dependency_validation_at_database_boundary: false
+    frozen_snapshot_build_at_database_boundary: false
+    impact_acknowledgement_required: false
+    implication: >-
+      An authorized writer can update a draft directly to published, populate a
+      distinct approved_by identity, and bypass the full action validation,
+      snapshot creation and atomic predecessor handling.
+    validation: MAKER_CHECKER_AND_PUBLISH_PATH_BYPASSABLE
+  deactivation:
+    allowed_statuses:
+      - published
+      - locked
+    reason_required: true
+    effective_to_required: true
+    distinct_actor_required: false
+    impact_acknowledgement_required: false
+    successor_required: false
+    validation: PARTIAL
+
+immutability_versioning_concurrency:
+  definition_immutability:
+    trigger: trg_guard_pkg
+    published_definition_change_blocked: true
+    published_version_label_change_blocked: true
+    validation: CONFIRMED
+  full_published_row_immutability:
+    effective_from_change_blocked: false
+    effective_to_change_blocked: false
+    published_at_change_blocked: false
+    supersedes_id_change_blocked: false
+    approved_by_change_blocked: false
+    arbitrary_status_change_fully_guarded: false
+    validation: NOT_PROVEN
+  deactivated_immutability:
+    trigger: trg_guard_package_deactivation_reason
+    post_deactivation_change_blocked: true
+    validation: CONFIRMED
+  effective_versioning:
+    one_open_governed_version_index: present
+    effective_window_constraint: present
+    predecessor_lineage: present
+    planning_consumers_reject_future_or_expired_versions: registered evidence
+    in_flight_version_pin: present
+    validation: CONFIRMED_ON_INTENDED_PATH
+  draft_concurrency:
+    row_version: absent
+    updated_at_CAS: absent
+    expected_version: absent
+    save_filter: id and draft status only
+    risk: Concurrent designers can silently overwrite one another.
+    validation: FAIL
+  multiple_drafts:
+    unique_active_draft_per_package: absent
+    implication: More than one independent draft may diverge without visible merge or ownership handling.
+  create_draft:
+    source_selection: latest row by published_at
+    source_read_error_handled: false
+    risk: Failure or ambiguity can create an empty draft rather than a proven successor clone.
+    validation: PARTIAL
+
+dependencies_impact_audit:
+  publish_validation:
+    - active item existence
+    - regulation publication and effective date
+    - bilingual section titles
+    - relationship rule
+    - conditional grammar
+    - circular visibility
+    - evidence shape
+    - action-form reference
+    - template publication and effective date
+    - violation existence and active window
+    - penalty mapping
+  snapshot:
+    - item semantics
+    - violation and penalty semantics
+    - template semantics
+  impact:
+    current_definition_diff: present
+    other_published_packages_sharing_items: present
+    prior_versions_with_active_visits: present
+    prior_versions_with_active_inspections: present
+    unavailable_is_not_zero: true
+    approval_requires_explicit_impact_acknowledgement: false
+    validation: CONFIRMED_WITH_GOVERNANCE_GAP
+  audit:
+    package_versions_trigger: present
+    actor_before_after: present
+    append_only_audit_events: registered
+    route_scoped_audit_link: absent
+    publish_change_set_correlation: not proven
+    validation: CONFIRMED_BACKEND_ONLY
+
+design_authority:
+  page_predecessor:
+    logical_id: WA-DES-002
+    filename: SAQEEL Admin Detail.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Detail.dc.html
+    bytes: 27541
+    lines: 214
+    sha256: 65b98dfc952d2737260c5c49f432c74cdb85a18f1fdec3e0f2af29ac9dea957d
+    route_scope: MULTI_ROUTE_ADMIN_DETAIL
+    package_route_registered: true
+    validation: NEAREST_PAGE_AND_LIFECYCLE_PATTERN_NOT_EXACT
+  designer_predecessor:
+    logical_id: WA-DES-005
+    filename: SAQEEL Admin Form Builder.dc.html
+    path: /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Form Builder.dc.html
+    bytes: 14334
+    lines: 155
+    sha256: 9f33c90405b4b134756848ebe4a6c7fc5a4df29e0a411d4cbb369d1e6583b5f0
+    registered_route: /admin/packages/:id/designer
+    implementation_mapping: embedded DraftEditor at /admin/packages
+    validation: NEAREST_DESIGNER_PATTERN_WITH_INCORRECT_ROUTE_MAPPING
+  proposed_page_successor:
+    revision: WA-DES-002-C1
+    exact_filename: SAQEEL Compliance Detail - WA-DES-002-C1.dc.html
+    local_export: absent
+    accepted_hash: absent
+    status: CONTRACT_ONLY_NON_CONSUMABLE
+  proposed_designer_successor:
+    revision: WA-DES-005-C1
+    exact_filename: SAQEEL Package Designer - WA-DES-005-C1.dc.html
+    local_export: absent
+    accepted_hash: absent
+    status: CONTRACT_ONLY_NON_CONSUMABLE
+  complementary_authority_rule:
+    WA_DES_002_C1: page, lifecycle, version, impact, preview, publish and deactivation
+    WA_DES_005_C1: embedded DraftEditor interaction and component states
+    overlap: prohibited
+  immutable_revision_evidence:
+    predecessor_export_hashes: present
+    successor_exports: absent
+    live_platform_revision_ids: absent
+    exact_successor_frame_manifests: absent
+    validation: INSUFFICIENT
+
+CD_lineage:
+  CD_008:
+    screen: SCR-ADM-030
+    role: HISTORICAL_LOGICAL_AND_VISUAL_SUPPLEMENT
+    base_visuals: present
+    R2_visuals: absent
+    R2_source_commit: 1b530afe06a620b3b85173d10cec1f12074e2c18
+    authorization_metadata: conflicting
+    runtime_claims: stale
+    validation: INSUFFICIENT
+  CD_009:
+    screen: SCR-ADM-031
+    role: HISTORICAL_LOGICAL_AND_VISUAL_SUPPLEMENT
+    base_visuals: present
+    R2_visuals: absent
+    R2_source_commit: 1b530afe06a620b3b85173d10cec1f12074e2c18
+    authorization_metadata: conflicting
+    runtime_claims: stale
+    validation: INSUFFICIENT
+  visual_system_conflict: >-
+    Base CD-008/CD-009 captures use a purple fixture system and illustrative
+    values rather than proving the current SAQEEL implementation.
+
+design_versus_code_delta:
+  WA_DES_002_has_code_lacks:
+    - exact single-route package-library composition
+    - current inline designer relationship
+    - all current loading, partial, stale and impact states
+  WA_DES_005_has_code_lacks:
+    - dedicated designer route
+    - visual controls not bounded to the implemented definition schema
+  code_has_predecessor_designs_lack:
+    - inline three-region DraftEditor
+    - complete relationship and conditional-rule authoring
+    - evidence, scoring, violation and action-form authoring
+    - template registry and binding
+    - frozen runtime field preview
+    - source-backed impact and prior-version pinning
+    - effective windows and predecessor lineage
+    - current neutral error and hard-state boundaries
+  recommended_action: >-
+    Correct the two complementary successor designs after mapping approval.
+    Do not create a new route and do not implement further visual changes from
+    the stale predecessor or CD captures.
+
+language_theme_responsive_accessibility:
+  wordmark:
+    predecessor_English_states: ARABIC_ONLY_OR_UNAPPROVED_IDENTITY
+    required: English SAQEEL Industrial identity in EN and approved Arabic identity in AR.
+    validation: CORRECTION_REQUIRED
+  English_LTR:
+    runtime: present
+    validation: CONFIRMED_WITH_INCOMPLETE_STRING_CERTIFICATION
+  Arabic_RTL:
+    document_direction_test: present
+    populated_hierarchy_test: present
+    complete translated dynamic content: not proven
+    predecessor_design: incomplete
+    validation: PARTIAL
+  themes:
+    runtime_light_dark_screenshots: present in unregistered v2 evidence bucket
+    design_authority_registration: incomplete
+    validation: PARTIAL
+  responsive:
+    runtime_widths:
+      - 1440x900
+      - 1024x1366
+      - 390x844
+    horizontal_overflow_test: present
+    exact accepted design frames: absent
+    validation: PARTIAL
+  accessibility:
+    positive:
+      - route boundary
+      - labelled native controls
+      - focusable result feedback
+      - status and alert roles
+      - 44px visible action target test
+      - inert read-only preview controls
+    missing:
+      - full keyboard journey
+      - focus order through embedded designer panes
+      - drag or reorder equivalent announcement
+      - 200 percent zoom
+      - screen-reader component names and state
+      - Arabic screen-reader and bidi behavior
+      - automated accessibility result
+    validation: INSUFFICIENT
+
+hard_state_review:
+  evidenced:
+    - loading
+    - fatal route error
+    - package source unavailable
+    - item-bank unavailable
+    - true empty
+    - partial degradation
+    - manual refresh/stale notice
+    - read-only projection
+    - immutable published definition
+    - draft editable
+    - unsaved and no-op save
+    - validation blockers
+    - impact unavailable distinct from zero
+    - publish success and neutral error
+    - deactivation success and neutral error
+  missing_or_inadequate:
+    - concurrent draft overwrite
+    - multiple divergent drafts
+    - direct publish bypass detection
+    - snapshot-build partial failure evidence
+    - source-clone read failure
+    - full-row published mutation
+    - stale dependency between validation and publish
+    - impact acknowledgement
+    - no active successor after deactivation
+    - maker-checker pending queue and rejection
+    - audit unavailable
+    - complete EN/AR and all themes/viewports for embedded editor states
+
+test_review:
+  focused:
+    - apps/web/e2e/cd-008-009-packages.spec.ts
+    - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+    - apps/web/e2e/neutral-error-sweep.spec.ts
+  strengths:
+    - package/version runtime rendering
+    - immutable banner
+    - inert preview
+    - unavailable impact honesty
+    - RTL direction
+    - multiple widths and themes
+    - touch target size
+    - source-contract validation coverage
+  weakness: >-
+    Many critical governance assertions are source-text tests rather than live
+    positive and negative database behavior.
+  missing:
+    - direct REST publish bypass
+    - concurrent draft saves
+    - full published-row mutation negatives
+    - distinct maker and checker browser journey
+    - failed snapshot transaction rollback
+    - deactivation dependency impact
+    - complete keyboard and screen-reader flow
+    - exact accepted-design visual diff
+
+bounded_delta:
+  frontend_only: false
+  remote_database_change_authorized: false
+  required_before_build:
+    - approve embedded SCR-ADM-031 mapping
+    - produce and independently accept WA-DES-002-C1 and WA-DES-005-C1
+    - close direct publication bypass
+    - add optimistic concurrency for draft editing
+    - reconcile scoring requirements and successor design
+    - certify current runtime and design comparison evidence
+  implementation_boundary: >-
+    No implementation is authorized by this review. After sponsor consent, one
+    owner may lease the package route/components, focused tests and explicitly
+    approved additive database boundary. The reviewer remains read-only.
+
+evidence:
+  - product-contract/domain/atomic_scope.csv
+  - product-contract/evidence/AC_LEDGER.csv
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+  - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+  - product-contract/operationalization/coordination/batches/M9-PACKAGE-DESIGNER-NO-CODE-MATCH-RESOLUTION-019.yaml
+  - product-contract/operationalization/coordination/batches/M9-PACKAGE-DESIGNER-INLINE-SUCCESSOR-020.yaml
+  - product-contract/operationalization/coordination/batches/M9-ADMIN-FORMS-DESIGN-AUTHORITY-REVIEW-038.yaml
+  - apps/web/src/app/(app)/admin/packages/page.tsx
+  - apps/web/src/app/(app)/admin/packages/layout.tsx
+  - apps/web/src/app/(app)/admin/packages/DraftEditor.tsx
+  - apps/web/src/app/(app)/admin/packages/PackagePreview.tsx
+  - apps/web/src/app/(app)/admin/packages/PublishControls.tsx
+  - apps/web/src/app/(app)/admin/packages/ImpactPanel.tsx
+  - apps/web/src/app/(app)/admin/packages/TemplateRegistry.tsx
+  - apps/web/src/app/(app)/admin/packages/actions.ts
+  - apps/web/e2e/cd-008-009-packages.spec.ts
+  - apps/web/e2e/cd-006-011-backend-completion.spec.ts
+  - supabase/migrations/0001_foundation.sql
+  - supabase/migrations/0002_rbac_audit.sql
+  - supabase/migrations/0006_package_maker_checker.sql
+  - supabase/migrations/0024_fix2_admin_package_impact.sql
+  - supabase/migrations/20260715200000_cd006_011_backend_completion.sql
+  - supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Detail.dc.html
+  - /Users/vikramindla/Attachment dump/export-non-inspector/SAQEEL Admin Form Builder.dc.html
+
+reviewer_recommendation:
+  outcome: RETURN_FOR_MAPPING_CORRECTION
+  blockers:
+    - BLOCK_DUE_TO_UNAPPROVED_EMBEDDED_SCREEN_MAPPING
+    - BLOCK_DUE_TO_MISSING_WA_DES_002_C1_AND_WA_DES_005_C1
+    - BLOCK_DUE_TO_BYPASSABLE_FULL_PUBLISH_CONTRACT
+    - BLOCK_DUE_TO_MISSING_DRAFT_CONCURRENCY
+    - BLOCK_DUE_TO_SCORING_AUTHORITY_CONTRADICTION
+    - BLOCK_DUE_TO_STALE_CD008_CD009_EVIDENCE
+    - BLOCK_DUE_TO_MISSING_IMMUTABLE_SUCCESSOR_REVISION_EVIDENCE
+  sponsor_decision: >-
+    Do not approve Admin Packages as current design-and-runtime complete and do
+    not change the 478-row completion count. Approve only the bounded mapping,
+    successor-design, publish-boundary and concurrency corrections.
+
+next_non_overlapping_review:
+  task_id: M9-ADMIN-ITEMS-DESIGN-AUTHORITY-REVIEW-050
+  route: /admin/items
+  mode: READ_ONLY_INDEPENDENT_DESIGN_AUTHORITY_REVIEW
+  scope:
+    - validate Inspection Item Catalogue route, governed screen and exact requirements
+    - identify nearest stable design and CD-007 lineage
+    - review item versions, dependencies, deactivation, permissions, audit and concurrency
+    - review embedded runtime preview relationship
+    - review EN/AR, RTL/LTR, responsive, accessibility, wordmark and hard states
+  exclusions:
+    - /admin/packages
+    - package designer successors
+    - application, test, database, design, mapping or evidence modifications
+  queue_status: READY
