@@ -94,19 +94,27 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     cancellationRequested: !!flagRow?.cancellation_requested,
     returnRequested: !!flagRow?.return_requested,
   };
-  // Materialize elapsed requests before reading state. The database decision
-  // guard independently checks the deadline, so this is usability/audit
-  // maintenance rather than an authorization shortcut.
-  const { error: expiryError } = await sb.rpc("expire_stale_geo_override_requests");
-  if (expiryError) console.error("[field geo override expiry]", expiryError.message);
   // The request is an Operations workflow object. A missing forward migration
   // degrades to no server state; it never fabricates approval in the field UI.
+  // No mutation on read: the database decision guard (decide_geo_override)
+  // is the sole race-safe expiry authority. A past-due pending row is only
+  // relabeled in memory for display; its stored status is never rewritten
+  // by a page view.
   const { data: overrideRows } = await sb.from("geo_override_requests")
     .select("id, status, expires_at, decision_event_id")
     .eq("visit_id", visitId)
     .order("requested_at", { ascending: false })
     .limit(1);
-  const initialOverride = overrideRows?.[0] ?? null;
+  const rawOverride = overrideRows?.[0] ?? null;
+  // Numeric comparison, not string ordering: expires_at is compared as epoch
+  // milliseconds so the relabel is correct regardless of timestamp precision
+  // or format. An unparseable/missing expires_at fails Number.isFinite and
+  // the row is left exactly as stored (pending), never falsely expired.
+  const fieldOverrideExpiresAtMs = rawOverride?.expires_at ? Date.parse(rawOverride.expires_at) : NaN;
+  const initialOverride = rawOverride && rawOverride.status === "pending"
+    && Number.isFinite(fieldOverrideExpiresAtMs) && fieldOverrideExpiresAtMs <= Date.now()
+    ? { ...rawOverride, status: "expired" as const }
+    : rawOverride;
   // TASK-EXECUTION-MODULE-001 · Phase 4B — journey schema probe (D-015). A
   // tolerant read on the Phase 4A table: while migration 20260721140000 is
   // not applied the probe fails and Startup keeps the EXACT legacy
