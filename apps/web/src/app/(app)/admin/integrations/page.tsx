@@ -16,7 +16,10 @@ export default async function IntegrationsPage() {
     <Shell current="/admin/integrations" title={t("mvp3.integrations.title", "Integration trust console")}
       context={<span className="badge badge-info">{"M3-00 · CD-050 · "}{t("mvp3.integrations.badge", "14 controlled rows")}</span>}>
       <div className="sq-banner"><div><strong>{t("mvp3.integrations.truth", "Configuration is not connectivity.")}</strong> {t("mvp3.integrations.truthBody", "An endpoint becomes configured only with an approved contract and runtime address. Secrets are never displayed here.")}</div></div>
-      <div className="row" style={{ marginBlock: "var(--space-4)" }}><Link className="btn btn-secondary btn-touch" href="/admin/integrations/factory-data">Factory data integration and import</Link></div>
+      <div className="row" style={{ marginBlock: "var(--space-4)", gap: "var(--space-3)", flexWrap: "wrap" }}>
+        <Link className="btn btn-secondary btn-touch" href="/admin/integrations/senai-data">{t("mvp3.integrations.senaiData", "SENAI data management")}</Link>
+        <Link className="btn btn-secondary btn-touch" href="/admin/integrations/factory-data">{t("mvp3.integrations.factoryData", "Factory data integration and import")}</Link>
+      </div>
       {error ? <div className="sq-banner sq-banner--warning" role="alert">{t("mvp3.schema.pending", "MVP3 database contract is not applied in this environment. No data is inferred.")}</div> : null}
       <section className="panel stack" style={{ padding: "var(--space-6)" }} aria-labelledby="integration-registry">
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}><div><h3 id="integration-registry">{t("mvp3.integrations.registry", "Governed endpoint registry")}</h3><p className="t-caption">{t("mvp3.integrations.registryHelp", "Contract version, runtime state and dependency truth—not secret material.")}</p></div><span className="badge">{(endpoints ?? []).length} endpoints</span></div>
