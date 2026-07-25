@@ -13,6 +13,7 @@ export type FieldSyncStrings = {
   offlineQueued: string;   // "Offline — {n} changes queued"
   online: string;          // "Online"
   synced: string;          // "All changes synced"
+  pending?: string;        // "Pending sync · {n}"
   syncFailed: string;      // "{n} sync conflict(s) — no data lost"
 };
 
@@ -32,7 +33,8 @@ export default function FieldSyncChips({ strings, userId }: { strings: FieldSync
         setQueued(ops.length);
         setConflicts((conf as Conflict[]).length);
       } catch {
-        if (alive) setQueued(0);
+        // Fail closed: an unreadable outbox is not evidence that it is empty.
+        if (alive) setQueued(null);
       }
     };
     void promptLegacyOfflineRestore(userId).then(refresh).catch(() => refresh());
@@ -48,30 +50,40 @@ export default function FieldSyncChips({ strings, userId }: { strings: FieldSync
   // fabricated "synced" state before we actually know).
   if (queued === null) return null;
 
+  const chipStyle = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "var(--space-2)",
+    minHeight: 32,
+    paddingBlock: "var(--space-2)",
+    paddingInline: "var(--space-3)",
+    borderRadius: "var(--radius-full)",
+    fontSize: 12,
+    fontWeight: 600,
+    lineHeight: 1.3,
+    whiteSpace: "nowrap",
+  } as const;
+
   return (
     <>
-      {!online && (
-        <span className="sq-sync sq-sync--offline">
-          <span aria-hidden>●</span>
-          {strings.offlineQueued.replace("{n}", String(queued))}
-        </span>
-      )}
-      {online && queued > 0 && (
-        <span className="sq-sync sq-sync--pending">
-          <span aria-hidden>●</span>
-          {strings.offlineQueued.replace("{n}", String(queued))}
-        </span>
-      )}
-      {online && queued === 0 && conflicts === 0 && (
-        <span className="sq-sync sq-sync--synced">
-          <span aria-hidden>●</span>
-          {strings.synced}
-        </span>
-      )}
       {conflicts > 0 && (
-        <span className="sq-sync sq-sync--conflict" role="status">
-          <span aria-hidden>●</span>
+        <span className="sq-sync sq-sync--conflict" role="status" aria-live="polite" style={chipStyle}>
           {strings.syncFailed.replace("{n}", String(conflicts))}
+        </span>
+      )}
+      {conflicts === 0 && !online && (
+        <span className="sq-sync sq-sync--offline" role="status" aria-live="polite" style={chipStyle}>
+          {strings.offlineQueued.replace("{n}", String(queued))}
+        </span>
+      )}
+      {conflicts === 0 && online && queued > 0 && strings.pending && (
+        <span className="sq-sync sq-sync--pending" role="status" aria-live="polite" style={chipStyle}>
+          {strings.pending.replace("{n}", String(queued))}
+        </span>
+      )}
+      {conflicts === 0 && online && queued === 0 && (
+        <span className="sq-sync sq-sync--synced" role="status" style={chipStyle}>
+          {strings.synced}
         </span>
       )}
     </>

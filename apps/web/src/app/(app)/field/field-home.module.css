@@ -5,8 +5,10 @@
    (app)/field/layout.tsx. The design's bare colors (hex-white on the avatar and
    pin glyphs) are replaced with the DS token var(--text-on-action). */
 
+/* Canonical .fd-wrap: max-width 1040px (was 960px — narrower than the design,
+   which squeezed the two-column map row on iPad landscape). */
 .wrap {
-  max-width: 960px; margin: 0 auto; width: 100%;
+  max-width: 1040px; margin: 0 auto; width: 100%;
   padding: 18px 18px 100px; display: flex; flex-direction: column; gap: 16px;
 }
 @media (max-width: 560px) { .wrap { padding: 14px 12px 100px; } }
@@ -82,11 +84,13 @@
 }
 
 /* AI Daily Brief — stats row */
+/* Settled field-channel breakpoint is 600px (not the design's 640px), so the
+   metric strip collapses on the same width as every other field surface. */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-block-start: 14px; }
-@media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+@media (max-width: 600px) { .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
 .stat { display: flex; align-items: center; gap: 9px; padding-inline-end: 16px; border-inline-end: 1px solid var(--border-subtle); }
 .stat:last-child { border-inline-end: none; }
-@media (max-width: 640px) { .stat { border-inline-end: none; padding-inline-end: 0; } }
+@media (max-width: 600px) { .stat { border-inline-end: none; padding-inline-end: 0; } }
 .statIc { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; }
 .statNum { font-weight: 700; font-size: 16px; }
 
@@ -97,8 +101,11 @@
 }
 
 /* Pill buttons (recommendation actions + quick-action rail) */
+/* Settled field-channel geometry: touch controls are never below 50px. The
+   design's 12px/15px padding alone yields ~41px, too small for a gloved tap. */
 .qbtnPill {
-  display: inline-flex; align-items: center; gap: 9px; padding: 12px 15px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  min-block-size: 50px; padding: 12px 15px;
   border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
   background: var(--surface-primary); font: inherit; font-size: 12.5px; font-weight: 600;
   cursor: pointer; color: var(--text-primary); box-shadow: var(--shadow-card);
@@ -107,13 +114,14 @@
 .qbtnPill:hover { box-shadow: var(--shadow-card-hover); }
 .qbtnPrimary { background: var(--action-primary); border-color: var(--action-primary); color: var(--text-on-action); }
 
-/* Two-column map + factory preview */
-/* Map gets the dominant width; the factory preview is a right rail that fits. */
-.twoCol { display: grid; grid-template-columns: 2fr 0.95fr; gap: 14px; align-items: stretch; }
-@media (max-width: 900px) { .twoCol { grid-template-columns: 1fr; } }
+/* Two-column map + factory preview — canonical .fd-2col ratio and collapse
+   width. The map keeps the dominant column; the previous 2fr/0.95fr @900px
+   over-weighted it and starved the preview rail's key/value rows. */
+.twoCol { display: grid; grid-template-columns: 1.7fr 1fr; gap: 14px; align-items: stretch; }
+@media (max-width: 820px) { .twoCol { grid-template-columns: 1fr; } }
 .cardHead { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-block-end: 1px solid var(--border-subtle); }
-.legend { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-block-start: 1px solid var(--border-subtle); flex-wrap: wrap; }
-.legendItem { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+.legend { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-block-start: 1px solid var(--border-subtle); flex-wrap: wrap; }
+.legendItem { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-secondary); }
 
 /* Factory preview */
 .focusNote {
@@ -125,9 +133,10 @@
 .kvRow { display: flex; justify-content: space-between; }
 .btnOutline { border: 1px solid var(--border-subtle); background: none; }
 
-/* Today's schedule rows */
+/* Today's schedule rows — canonical 66px time column. At 60px the Arabic
+   time string (٣:٤٥ م) wrapped and broke the row rhythm. */
 .schedRow {
-  display: grid; grid-template-columns: 60px 1fr auto auto; align-items: center; gap: 12px;
+  display: grid; grid-template-columns: 66px 1fr auto auto; align-items: center; gap: 12px;
   padding: 12px 16px; border-block-end: 1px solid var(--border-subtle);
   text-decoration: none; color: inherit;
 }
@@ -135,7 +144,7 @@
 
 /* Pending attention */
 .attn { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-@media (max-width: 640px) { .attn { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .attn { grid-template-columns: 1fr; } }
 .attnIc { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
 .attnNum { font-size: 26px; font-weight: 700; }
 
