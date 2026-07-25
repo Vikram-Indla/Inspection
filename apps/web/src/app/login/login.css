@@ -694,3 +694,58 @@
   .lg-zone-lift__slab > *, .lg-atlas-image__plane { transition: none !important; }
   .lg-zone-lift__readout { animation: none !important; opacity: 1; transform: translate(-50%, -94%); }
 }
+
+/* ==========================================================================
+   PWA-CARD RESTYLE (2026-07-25) — unify /login to the field/PWA login look.
+   Scoped to .lg-page--split so the shared /reset page (.lg-page:not(--split))
+   keeps its original layout. CSS-only: markup, auth, role-routing and the
+   forgot/OTP reset flow are unchanged. Mirrors the field login's surface
+   choice (full-bleed --nav-bg, centred shield + brand lockup) documented in
+   the field-login.css RCA note. Token-only — no bare colours.
+   ========================================================================== */
+
+/* Full-bleed dark surface instead of a raised card panel, matching image 1.
+   Background only — the panel/story divider border is left to the base rule
+   (and its own max-width:960px removal), so mobile keeps no stray edge. */
+.lg-page--split { background: var(--nav-bg); }
+.lg-page--split .lg-panel { align-items: center; background: var(--nav-bg); }
+
+/* Brand lockup: centred vertical stack (shield above the wordmark), like the
+   field hero. The language/theme controls float to the top-end corner so the
+   brand can centre without a second markup lockup. */
+.lg-page--split .lg-lockup { position: relative; flex-direction: column;
+  align-items: center; gap: var(--space-2); text-align: center; align-self: stretch; }
+.lg-page--split .lg-lockup__mark { inline-size: 52px; block-size: 52px; }
+.lg-page--split .lg-lockup__text { align-items: center; }
+.lg-page--split .lg-lockup__names { justify-content: center; }
+.lg-page--split .lg-controls--end { position: absolute;
+  inset-block-start: 0; inset-inline-end: 0; margin: 0; }
+
+/* Centre the credential card; keep the form controls themselves full-width and
+   start-aligned inside the centred column. */
+.lg-page--split .lg-center { align-items: center; }
+.lg-page--split .lg-card { max-inline-size: 380px; align-items: center; text-align: center; }
+[dir="rtl"] .lg-page--split .lg-card { text-align: center; }
+.lg-page--split .lg-credentials { inline-size: 100%; text-align: start; }
+[dir="rtl"] .lg-page--split .lg-credentials { text-align: right; }
+
+/* Footer centred to match the centred column. */
+.lg-page--split .lg-foot { align-items: center; text-align: center; }
+.lg-page--split .lg-foot__item { justify-content: center; }
+
+/* Text on the dark --nav-bg panel must use the nav text ramp, not --text-primary
+   (which is dark in the light theme → dark-on-dark). Mirrors the field login,
+   which pairs --nav-bg with --nav-text-active / --nav-text. Applied per element
+   so the white .sq-input fields keep their own dark-on-white text. Token-only.
+   The atlas story panel and the white inputs/green CTA are already legible. */
+.lg-page--split .lg-lockup__mark { color: var(--nav-text-active); }
+.lg-page--split .lg-lockup__ar,
+.lg-page--split .lg-lockup__latin { color: var(--nav-text-active); }
+.lg-page--split .lg-lockup__sub { color: var(--nav-text); }
+.lg-page--split .lg-lockup__div { background: color-mix(in srgb, var(--nav-text) 40%, transparent); }
+.lg-page--split .lg-card__title { color: var(--nav-text-active); }
+.lg-page--split .lg-card__sub { color: var(--nav-text); }
+.lg-page--split .lg-panel .sq-field__label { color: var(--nav-text-active); }
+.lg-page--split .lg-foot { color: var(--nav-text);
+  border-block-start-color: color-mix(in srgb, var(--nav-text) 22%, transparent); }
+.lg-page--split .lg-foot__ministry-label { color: var(--nav-text); }
