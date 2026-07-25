@@ -1,0 +1,4 @@
+*.xcodeproj
+.build/
+DerivedData/
+InspectionApp/Config/Secrets.local.xcconfig
