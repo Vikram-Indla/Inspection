@@ -49,7 +49,7 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(css).toContain("current .ax-state and SAQEEL component contracts remain");
   });
 
-  test("sponsor shell correction uses the canonical shield and locale-specific lockup", () => {
+  test("sponsor shell correction renders the WA-BRAND-r1 wordmark and favicon lockup", () => {
     const layout = read("src/app/layout.tsx");
     const shell = read("src/components/ShellClient.tsx");
     const css = read("src/app/astryx.css");
@@ -62,12 +62,13 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(layout).toContain('import "./astryx.css"');
     expect(shell).toContain("ax-shell");
     expect(css).toContain(".ax-shell {");
-    expect(shell).toContain('import SaqeelBrandMark from "@/components/SaqeelBrandMark"');
-    expect(shell).toContain('<SaqeelBrandMark className="ax-shell__brand-mark" />');
-    expect(shell).toContain('className="ax-shell__brand-sub"');
-    expect(css).toContain('.ax-shell__brand-mark { display: block;');
-    expect(shell).toContain('locale === "ar" ? "صقيل" : "SAQEEL"');
-    expect(shell).toContain('locale === "ar" ? "صناعي" : "Industrial"');
+    // WA-BRAND-r1 (O-26): the split صقيل / صناعي text lockup is retired. The rail
+    // renders the wordmark asset expanded and the favicon mark collapsed.
+    expect(shell).toContain('<span className="ax-shell__brand-lockup" role="img" aria-label="SAQEEL" />');
+    expect(shell).not.toContain('ax-shell__brand-sub');
+    expect(shell).not.toContain('صناعي');
+    expect(css).toContain('url("/saqeel-wordmark-dark-mode.svg")');
+    expect(css).toContain('url("/saqeel-favicon.svg")');
     expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
     expect(css).toContain('.ax-shell.is-collapsed .ax-nav-item--child { display: none; }');
     expect(favicon).toContain('M12 3.4 5 6.05');
