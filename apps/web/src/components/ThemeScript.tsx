@@ -17,7 +17,11 @@
 // deliberate, sponsor-directed product decision, not an oversight; if a
 // light-preferring field user needs it back, the control returns here.
 // Kept as a raw string (not a bundled module) so it executes synchronously.
-const THEME_INIT = `(function(){var f=/^\\/field(\\/|$)|^\\/login\\/field(\\/|$)/.test(location.pathname);var t='light';if(f){t='dark';}else{try{var p=localStorage.getItem('saqeel-theme');if(p==='light'||p==='dark')t=p;}catch(e){}}document.documentElement.setAttribute('data-theme',t);})();`;
+// Dark-locked channels: the field channel (/field*, /login/field*), the
+// unified sign-in (/login*) and the password-reset flow (/reset*). The web
+// console keeps the light-or-persisted theme; these auth surfaces are always
+// dark and expose no theme control.
+const THEME_INIT = `(function(){var f=/^\\/field(\\/|$)|^\\/login(\\/|$)|^\\/reset(\\/|$)/.test(location.pathname);var t='light';if(f){t='dark';}else{try{var p=localStorage.getItem('saqeel-theme');if(p==='light'||p==='dark')t=p;}catch(e){}}document.documentElement.setAttribute('data-theme',t);})();`;
 
 export default function ThemeScript() {
   return <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />;

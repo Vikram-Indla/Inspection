@@ -4,7 +4,6 @@ import { homeForRoles } from "@/lib/role-home";
 import { supabaseBrowser } from "@/lib/supabase";
 import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff, IconShieldCheck } from "../icons";
-import ThemeToggle from "@/components/ThemeToggle";
 import SaqeelMark from "./SaqeelMark";
 import StoryPanel, { type StoryStrings } from "./StoryPanel";
 import DemoAccess, { type DemoAccount, type DemoStrings } from "./DemoAccess";
@@ -171,8 +170,6 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     window.location.assign("/reset");
   }
 
-  const themeLabels = { toLight: s.themeToLight, toDark: s.themeToDark };
-
   return (
     <div className="lg-page lg-page--split" dir={s.dir} lang={s.lang}>
       <main className="lg-panel"
@@ -193,11 +190,10 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
             </span>
           </span>
           <div className="lg-controls lg-controls--end">
+            {/* Sign-in is dark-locked and exposes no theme control (ThemeScript /
+                ThemeChannelSync force dark on /login). Only the language control
+                remains. */}
             <a className="lg-lang lg-lang--top" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
-            {/* the story panel (and its own theme toggle) is hidden on small screens */}
-            <div className="lg-controls--compact">
-              <ThemeToggle className="lg-iconbtn" labels={themeLabels} />
-            </div>
           </div>
         </header>
 
@@ -316,7 +312,7 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
         </footer>
       </main>
 
-      <StoryPanel strings={s.story} locale={s.lang} themeLabels={themeLabels}
+      <StoryPanel strings={s.story} locale={s.lang}
         subdued={view !== "signin"} paused={credentialFocus || busy} />
     </div>
   );

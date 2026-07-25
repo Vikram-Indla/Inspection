@@ -8,7 +8,6 @@
 // disabled under prefers-reduced-motion — the tablist becomes the only driver.
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import ThemeToggle from "@/components/ThemeToggle";
 import SaqeelHero from "./SaqeelHero";
 import { STORY_SCENE_ORDER, type AtlasStageId } from "./saudi-atlas-locations";
 import { createAtlasTimeline, type AtlasTimeline } from "./saudi-atlas-motion";
@@ -30,10 +29,9 @@ export type StoryStrings = {
   riyadhLabel: string;                            // SaqeelHero fallback SVG city-chip
 };
 
-export default function StoryPanel({ strings: s, locale, themeLabels, subdued = false, paused = false }: {
+export default function StoryPanel({ strings: s, locale, subdued = false, paused = false }: {
   strings: StoryStrings;
   locale: "ar" | "en";
-  themeLabels: { toLight: string; toDark: string };
   // CD-002: recovery views (forgot / forgot-sent / /reset) subordinate the
   // atlas to a quiet static KSA trust motif — no lifecycle chips, interactive
   // markers or photo rail. Default false = byte-identical accepted CD-001
@@ -107,7 +105,6 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
           <span className="lg-story__title">{s.title}</span>
           <span className="lg-story__overline" dir={locale === "ar" ? "rtl" : "ltr"}>{s.overline}</span>
         </div>
-        <ThemeToggle className="lg-iconbtn" labels={themeLabels} />
       </header>
 
       <div className="lg-story__frame" id="saqeel-industrial-atlas">

@@ -9,22 +9,26 @@ import { usePathname } from "next/navigation";
 // /login/field would otherwise keep the console theme.
 //
 // This re-applies the same rule on every pathname change, using the identical
-// precedence as the head script: the field channel is always dark and ignores
-// any persisted preference; every other route honours the persisted choice and
-// otherwise falls back to the sponsor-approved light theme.
+// precedence as the head script: the dark-locked channels (the field channel
+// and the unified sign-in) are always dark and ignore any persisted preference;
+// every other route honours the persisted choice and otherwise falls back to
+// the sponsor-approved light theme.
 
-const isFieldChannel = (pathname: string) =>
+const isDarkChannel = (pathname: string) =>
   pathname === "/field" ||
   pathname.startsWith("/field/") ||
-  pathname === "/login/field" ||
-  pathname.startsWith("/login/field/");
+  pathname === "/login" ||
+  pathname.startsWith("/login/") ||
+  pathname === "/reset" ||
+  pathname.startsWith("/reset/");
 
 export default function ThemeChannelSync() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Field channel: fixed dark, persisted preference deliberately ignored.
-    if (isFieldChannel(pathname ?? "")) {
+    // Dark-locked channel (field + sign-in): fixed dark, persisted preference
+    // deliberately ignored.
+    if (isDarkChannel(pathname ?? "")) {
       document.documentElement.setAttribute("data-theme", "dark");
       return;
     }
