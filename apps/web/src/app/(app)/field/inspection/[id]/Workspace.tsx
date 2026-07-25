@@ -824,10 +824,23 @@ export default function Workspace({ inspection, items, library, serverResponses,
           config-driven engine: pure anchor navigation over the unchanged section list
           below, no new state, no altered validation/submit/RLS/offline behaviour. */}
       {!submitted && sections.length > 1 && (
-        <nav className="tabs" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
-          {sections.map(s => (
-            <a key={s.key} className="tab" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap" }}>{s.title}</a>
-          ))}
+        <nav className={styles.stepRail} aria-label={strings.panelTitle}>
+          {sections.map((s, index) => {
+            const sectionProgress = progress.find(p => p.key === s.key);
+            const isDone = sectionProgress?.pct === 100;
+            const isCurrent = !isDone && progress.find(p => p.pct < 100)?.key === s.key;
+            return (
+              <a
+                key={s.key}
+                className={`${styles.step} ${isDone ? styles.stepDone : ""} ${isCurrent ? styles.stepCurrent : ""}`}
+                href={`#ax-section-${s.key}`}
+                aria-current={isCurrent ? "step" : undefined}
+              >
+                <span className={styles.stepNumber} aria-hidden="true">{index + 1}</span>
+                {s.title}
+              </a>
+            );
+          })}
         </nav>
       )}
 
@@ -1086,11 +1099,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
                       <input className="input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
                     </label>
                   ) : (it.response_model.responses ?? []).map(r => (
-                    <button key={r} className={val?.value === r ? (r === "non_compliant" ? "btn btn-lg btn-danger" : "btn btn-lg btn-primary") : "btn btn-lg btn-secondary"}
+                    <button key={r} type="button" aria-pressed={val?.value === r} className={`${styles.optionControl} ${val?.value === r ? (r === "non_compliant" ? "btn btn-lg btn-danger" : "btn btn-lg btn-primary") : "btn btn-lg btn-secondary"}`}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
                   {leg?.applies && leg.type !== "comment" && (
-                    <label className="btn btn-lg btn-secondary" style={{ cursor: "pointer" }}>
+                    <label className={`${styles.uploadControl} btn btn-lg btn-secondary`}>
                       {val?.value === "non_compliant" && leg.mandatory ? strings.mandatoryPhoto : (leg.type === "document" ? strings.evAddDoc : strings.evAdd)}
                       <input type="file" accept={acceptFor(leg.type)} multiple hidden onChange={e => { if (e.target.files?.length) { attachFiles(it, e.target.files); e.target.value = ""; } }} />
                     </label>

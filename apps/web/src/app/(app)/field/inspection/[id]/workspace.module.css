@@ -149,6 +149,66 @@
   padding-block: var(--space-2);
 }
 
+/* Inspection-form step rail. It remains anchor navigation over the existing
+   config-driven sections; these rules add no wizard or submission state. */
+.stepRail {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 12px 18px;
+  background: var(--surface-primary);
+  border-block-end: var(--border-w) solid var(--border-subtle);
+}
+.step {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  font-size: 12.5px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.stepCurrent {
+  color: var(--text-on-action);
+  background: var(--action-primary);
+  font-weight: 600;
+}
+.stepDone {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+}
+.stepNumber {
+  inline-size: 18px;
+  block-size: 18px;
+  flex: 0 0 18px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-size: 11px;
+}
+
+/* Canonical PWA answer and evidence affordances: 50px touch targets, with the
+   selected/danger palette still supplied by the existing button classes. */
+.optionControl {
+  min-block-size: 50px;
+  padding: 12px 14px;
+  border-width: 1.5px;
+  border-color: var(--border-input);
+}
+.uploadControl {
+  min-block-size: 50px;
+  padding: 11px 15px;
+  border: 1.5px dashed var(--border-strong);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
 /* Per-section progress track (was inline blockSize/background). */
 .track { block-size: 4px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
 .trackFill { block-size: 4px; border-radius: var(--radius-full); background: var(--action-primary); }

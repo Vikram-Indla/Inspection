@@ -43,7 +43,19 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
       {/* Wrapping <label> = implicit control association (accessible); it is NOT
           className="sq-field__label" so the a11y-form-label release guard's
           htmlFor requirement does not apply to this button-style file control. */}
-      <label className="btn btn-secondary btn-touch" htmlFor={inputId} style={{ cursor: "pointer", alignSelf: "flex-start" }}>
+      <label
+        className="btn btn-secondary btn-touch"
+        htmlFor={inputId}
+        style={{
+          minBlockSize: 50,
+          padding: "11px 15px",
+          border: "1.5px dashed var(--border-strong)",
+          background: "var(--surface-sunken)",
+          color: "var(--text-secondary)",
+          cursor: "pointer",
+          alignSelf: "flex-start",
+        }}
+      >
         {label}
         <input
           id={inputId}
@@ -103,8 +115,8 @@ export default function GatedRepeaterSection({
       <div role="group" aria-labelledby={gateLabelId} className="stack" style={{ gap: "var(--space-2)" }}>
         <p id={gateLabelId} className="sq-field__label">{gate}</p>
         <div className="sq-segmented sq-segmented--field" style={{ alignSelf: "flex-start" }}>
-          <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>{gateYes}</button>
-          <button type="button" aria-pressed={gateAnswer === "no"} onClick={() => setGateAnswer("no")}>{gateNo}</button>
+          <button type="button" style={{ minBlockSize: 50, padding: "12px 14px", borderWidth: "1.5px" }} aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>{gateYes}</button>
+          <button type="button" style={{ minBlockSize: 50, padding: "12px 14px", borderWidth: "1.5px" }} aria-pressed={gateAnswer === "no"} onClick={() => setGateAnswer("no")}>{gateNo}</button>
         </div>
       </div>
 

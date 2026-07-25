@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r14",
-  "updated": "2026-07-26T00:05:00+03:00",
+  "revision": "SB-r15",
+  "updated": "2026-07-26T00:06:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1304,20 +1304,12 @@
       "route": "web/src/app/(app)/field/inspection/[id]/Workspace.tsx · runtime.ts · GatedRepeaterSection.tsx",
       "pwa": {
         "state": "gap",
-        "note": "Canonical .dc.html geometry applied to the workspace shell: 880px centred measure, 14px PWA card radius, 12px nested rows, 600px breakpoint, safe-area-aware action bar, 130px bar clearance. Runtime pixel/RTL comparison not yet run."
+        "note": "Canonical .dc.html geometry applied to the workspace shell: 880px centred measure, 14px PWA card radius, 12px nested rows, 600px breakpoint, safe-area-aware action bar, 130px bar clearance, progressive section step rail, 50px answer touch targets and dashed upload affordances. Runtime pixel/RTL comparison not yet run."
       },
       "pending": [
         {
           "lane": "design",
           "text": "Runtime EN/LTR + AR/RTL pixel comparison not run — structural geometry only, verified against the .dc.html source, not against a rendered diff (BS-1: no automated pixel diff exists)."
-        },
-        {
-          "lane": "design",
-          "text": "Step rail (.if-rail/.if-step pills, 999px, 12.5px) not yet reconciled against the shipped section tab nav — design uses a stepper, repo uses tabs."
-        },
-        {
-          "lane": "design",
-          "text": "Option controls (.opt min-height 50px touch target, 1.5px border) and upload affordance (.up dashed) not yet aligned."
         },
         {
           "lane": "wiring",
