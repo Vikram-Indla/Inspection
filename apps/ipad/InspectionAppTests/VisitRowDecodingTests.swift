@@ -62,4 +62,24 @@ final class VisitRowDecodingTests: XCTestCase {
         XCTAssertNil(item?.inspectionLifecycle)
         XCTAssertEqual(item?.visit.executionMode, .virtual)
     }
+
+    // Real Supabase rows carry a mix of fractional-second precisions. The strict
+    // ISO8601 parser rejects 2-digit fractions; the decoder must handle all three.
+    func test_decodesTimestampsWithVariableFractionalSeconds() throws {
+        for stamp in ["2381-08-10T13:13:10.225+00:00",  // 3 digits (ms)
+                      "2381-08-10T13:13:10.22+00:00",   // 2 digits
+                      "2381-08-10T13:13:10+00:00"] {     // none
+            let json = """
+            [{ "id":"11111111-1111-1111-1111-111111111111",
+               "factory_id":"22222222-2222-2222-2222-222222222222",
+               "visit_type":"periodic","execution_mode":"physical",
+               "planning_status":"published","operational_state":"new",
+               "window_start":"\(stamp)","window_end":"\(stamp)",
+               "execution_date":null,"priority":null,
+               "factories":null,"inspections":[] }]
+            """.data(using: .utf8)!
+            let rows = try VisitRow.decoder().decode([VisitRow].self, from: json)
+            XCTAssertNotNil(rows.first?.toListItem(), "should decode stamp \(stamp)")
+        }
+    }
 }

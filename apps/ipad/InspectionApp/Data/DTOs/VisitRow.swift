@@ -58,18 +58,27 @@ struct VisitRow: Decodable {
 
     static let selectClause = "id, factory_id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, execution_date, priority, factories(id, name, factory_code, city, region, license_number, cr_number, activity_class, risk_band, risk_score), inspections(lifecycle_status)"
 
-    /// A JSONDecoder configured like the Supabase client (ISO8601 with fractional seconds).
+    /// A JSONDecoder that robustly parses Postgres `timestamptz` values.
+    ///
+    /// `ISO8601DateFormatter` is strict: `.withFractionalSeconds` only accepts
+    /// exactly 3 fractional digits (milliseconds), and the plain option rejects
+    /// any fractional part. Real Supabase rows carry a mix — `.225`, `.22`, and
+    /// none — so we strip fractional seconds and parse to whole-second
+    /// precision (sub-second precision is irrelevant for date display).
     static func decoder() -> JSONDecoder {
         let d = JSONDecoder()
-        let iso = ISO8601DateFormatter()
-        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         d.dateDecodingStrategy = .custom { decoder in
-            let s = try decoder.singleValueContainer().decode(String.self)
-            if let date = iso.date(from: s) { return date }
-            let iso2 = ISO8601DateFormatter(); iso2.formatOptions = [.withInternetDateTime]
-            if let date = iso2.date(from: s) { return date }
+            let raw = try decoder.singleValueContainer().decode(String.self)
+            // "2381-08-10T13:13:10.22+00:00" -> "2381-08-10T13:13:10+00:00"
+            let normalized = raw.replacingOccurrences(
+                of: #"\.\d+"#, with: "", options: .regularExpression)
+            let iso = ISO8601DateFormatter()
+            iso.formatOptions = [.withInternetDateTime]
+            if let date = iso.date(from: normalized) { return date }
+            iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = iso.date(from: raw) { return date }
             throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath,
-                                                    debugDescription: "Bad date \(s)"))
+                                                    debugDescription: "Bad date \(raw)"))
         }
         return d
     }
