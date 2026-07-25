@@ -2,7 +2,7 @@ schema_version: "1.0"
 packet_id: "PKT-M3-OPS-LIVE-001"
 authored_by: "ChatGPT"
 planning_lane: "gpt-w1"
-status: "ACTIVE_READY_FOR_CODEX_SAFETY_REVIEW"
+status: "RETURNED_ACKED_PR_60"
 queue_position: 1
 module: "M3 Operations Center and Live Operations"
 vertical_slice: "Authorized Operations user opens Live Operations and receives source-backed, permission-scoped current positions with explicit freshness and safe degraded states."
@@ -86,7 +86,9 @@ wiring_contract:
 write_lease:
   requested_owner: "cc-w1"
   module: "M3"
-  lease_state: "REQUESTED_NOT_GRANTED"
+  lease_state: "RETURNED_ACKED"
+  released_at: "2026-07-25T16:06:02+03:00"
+  release_basis: "Commit 45be514c pushed to codex/m3-operations-reconciliation and PR #60 updated with the bounded Live Operations handoff."
   rule: "Codex alone may grant the lease. One write lease maximum for M3; the queued successor holds none."
   allowed_paths:
     - "apps/web/src/app/(app)/operations/live/page.tsx"

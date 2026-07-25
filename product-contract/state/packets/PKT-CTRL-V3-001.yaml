@@ -1,0 +1,16 @@
+packet_id: PKT-CTRL-V3-001
+owner: codex
+lane: codex-w1
+purpose: Adopt SAQEEL Operating System V3 control-plane rules and establish truthful state.
+requirements: [CR-001..CR-478]
+screens: [CONTROL_BOARD]
+engines: [repository-control-plane]
+acceptance_ids: [OS-V3-BOOTSTRAP, OS-V3-HANDOFF]
+allowed_paths:
+  - product-contract/operationalization/SAQEEL_OPERATING_SYSTEM.md
+  - product-contract/state/**
+  - product-contract/sessions/LAST_SESSION.md
+prohibited_paths: [apps/web/**, main, remote-database, provider-configuration]
+expected_evidence: [V3 PDF review, canonical repository check, truthful lane snapshot]
+stop_conditions: [missing contract, conflicting ownership, unverified completion claim]
+definition_of_done: V3 bootstrap is represented in repository control state and no product code is changed.

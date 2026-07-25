@@ -1,0 +1,13 @@
+packet_id: PKT-M3-OPS-001
+owner: claude-code
+lane: cc-w1
+purpose: Finish Operations Center and Live Operations bounded correction.
+requirements: [CR-001..CR-478]
+screens: [WA-DES-033-C3, WA-DES-034-C3, /operations, /operations/live]
+engines: [Supabase-SSR, RLS, Mapbox, operations-monitoring]
+acceptance_ids: [WA-M3-AC-001..006]
+allowed_paths: [apps/web/src/app/(app)/operations/**, apps/web/e2e/web-admin-m3-operations.spec.ts]
+prohibited_paths: [apps/web/src/app/(app)/admin/**, apps/web/src/app/(app)/field/**, remote-database, main]
+expected_evidence: [source-backed-position, valid-freshness, en-ar, rtl-ltr, responsive, accessibility, console-clean, network-clean]
+stop_conditions: [any-P0, any-P1, invented-position, stale-evidence, overlapping-lease]
+definition_of_done: Real Operations routes pass required wiring, negative states, browser proof and zero P0/P1.

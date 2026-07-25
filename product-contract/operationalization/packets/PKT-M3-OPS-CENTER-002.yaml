@@ -2,7 +2,7 @@ schema_version: "1.0"
 packet_id: "PKT-M3-OPS-CENTER-002"
 authored_by: "ChatGPT"
 planning_lane: "gpt-w1"
-status: "QUEUED_NO_LEASE"
+status: "ACTIVE_IMPLEMENTATION_LEASE_GRANTED"
 queue_position: 2
 predecessor: "PKT-M3-OPS-LIVE-001"
 module: "M3 Operations Center and Live Operations"
@@ -67,8 +67,16 @@ wiring_contract:
 
 write_lease:
   requested_owner: "cc-w1"
+  holder: "cc-w1"
   module: "M3"
-  lease_state: "NONE_WHILE_QUEUED"
+  lease_state: "GRANTED"
+  lease_id: "LEASE-M3-OPS-CENTER-002"
+  acquired_at: "2026-07-25T16:06:02+03:00"
+  expires_at: "2026-07-25T17:36:02+03:00"
+  ttl_minutes: 90
+  renewal_count: 0
+  maximum_renewals: 2
+  breaker: "Codex"
   activation_rule: "Codex may consider a lease only after PKT-M3-OPS-LIVE-001 is ACKed or formally returned/released; the one-lease-per-module rule is absolute."
   allowed_paths:
     - "apps/web/src/app/(app)/operations/page.tsx"

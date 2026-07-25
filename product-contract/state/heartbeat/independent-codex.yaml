@@ -1,0 +1,12 @@
+actor: independent-codex-delivery
+lane: codex-w1
+session_id: replacement-pending
+state: REVIEW
+packet_id: PKT-M9-LOC-001
+branch: codex/admin-localization-lookups
+head: 82b55ce8
+dirty_paths: []
+blocked_on: null
+fallback_packet: PKT-CTRL-V3-001
+context_health: null
+updated_at: 2026-07-25T13:02:00+03:00

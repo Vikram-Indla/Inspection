@@ -1,0 +1,13 @@
+packet_id: PKT-M3-DESIGN-001
+owner: claude-design
+lane: cd-w1
+purpose: Correct the existing Operations design mapping and visual/status truth.
+requirements: [CR-001..CR-478]
+screens: [WA-DES-033-C3, WA-DES-034-C3]
+engines: [existing-claude-design-inventory]
+acceptance_ids: [WA-M3-DESIGN-001]
+allowed_paths: [design-specs/**, product-contract/operationalization/coordination/**]
+prohibited_paths: [apps/web/**, remote-database, main]
+expected_evidence: [stable-revision, export-fingerprint, state-matrix, en-ar, responsive, accessibility]
+stop_conditions: [invented-data, missing-revision, raw-tokens, incomplete-design-state]
+definition_of_done: Existing design lane has a stable accepted revision or an explicit RETURNED blocker.
