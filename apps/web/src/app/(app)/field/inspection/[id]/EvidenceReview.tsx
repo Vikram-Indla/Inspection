@@ -1,22 +1,27 @@
 "use client";
 
 // SAQEEL Field — pre-submission Evidence Review panel (additive, read-only).
-// Aggregates every captured evidence item for the inspection — synced,
-// still-pending (offline outbox) and last-attempt-failed — with its question/
-// finding linkage, sync status, and the mandatory-evidence gate summary that
-// mirrors the real submit blockers. It OWNS NO write path: capture, annotate,
-// replace, soft-delete, offline replay and the submission guards all remain in
+// Aggregates every captured evidence item for the inspection — synced and
+// still-pending (offline outbox) — with its question/finding linkage, sync
+// status, and the mandatory-evidence gate summary that mirrors the real submit
+// blockers. A pending row is NEVER painted "failed" from the workspace-global
+// sync state (a global failure may be a DIFFERENT op ahead in the FIFO queue);
+// a failed/offline sync surfaces once as a SEPARATE workspace warning while the
+// rows stay pending. It OWNS NO write path: capture, annotate, replace,
+// soft-delete, offline replay and the submission guards all remain in
 // Workspace.tsx / offline.ts untouched. "Retry uploads" simply re-triggers the
 // existing outbox replay the workspace already runs on its sync tick.
 import { useMemo } from "react";
+import type { EvidenceSyncWarning } from "./evidence-review-status";
 import styles from "./evidence-review.module.css";
 
 export type EvidenceReviewStrings = {
   title: string;
   caption: string;
-  countSynced: string; countPending: string; countFailed: string;
+  countSynced: string; countPending: string;
   retry: string; retrying: string;
-  statusSynced: string; statusPending: string; statusFailed: string;
+  statusSynced: string; statusPending: string;
+  syncWarningFailed: string; syncWarningOffline: string;
   mandatoryLabel: string; mandatoryMet: string; mandatoryComplete: string;
   mandatoryNone: string; mandatoryGaps: string;
   linkFinding: string; linkAction: string; linkInspection: string;
@@ -28,7 +33,7 @@ export type EvidenceReviewRow = {
   key: string;
   linkLabel: string;
   type: string;                       // photo | video | document | comment
-  status: "synced" | "pending" | "failed";
+  status: "synced" | "pending";       // never global-"failed" per row (see header)
   previewUrl?: string;                // synced image → presigned URL
   previewB64?: string;                // pending image → inline data URI
 };
@@ -41,12 +46,12 @@ const fmt = (s: string, vars: Record<string, string | number>) =>
 const TYPE_GLYPH: Record<string, string> = { photo: "🖼", video: "🎞", document: "📄", comment: "💬" };
 
 export default function EvidenceReview({
-  rows, mandatory, counts, sync, retrying, onRetry, strings,
+  rows, mandatory, counts, warning, retrying, onRetry, strings,
 }: {
   rows: EvidenceReviewRow[];
   mandatory: EvidenceMandatory;
-  counts: { synced: number; pending: number; failed: number };
-  sync: string;
+  counts: { synced: number; pending: number };
+  warning: EvidenceSyncWarning;
   retrying: boolean;
   onRetry: () => void;
   strings: EvidenceReviewStrings;
@@ -56,9 +61,9 @@ export default function EvidenceReview({
   } as Record<string, string>), [strings]);
 
   const statusText = (s: EvidenceReviewRow["status"]) =>
-    s === "synced" ? strings.statusSynced : s === "failed" ? strings.statusFailed : strings.statusPending;
+    s === "synced" ? strings.statusSynced : strings.statusPending;
   const statusBadge = (s: EvidenceReviewRow["status"]) =>
-    s === "synced" ? "badge-compliant" : s === "failed" ? "badge-warning" : "badge-info";
+    s === "synced" ? "badge-compliant" : "badge-info";
 
   // Mandatory-evidence gate line — mirrors the submit blockers exactly (met =
   // total − gaps). total 0 → nothing mandatory for the current answers.
@@ -93,19 +98,23 @@ export default function EvidenceReview({
         )}
       </header>
 
-      <div className={styles.counts} data-sync={sync}>
+      <div className={styles.counts} data-warning={warning}>
         <span className={styles.count} data-testid="evidence-count-synced">
           <span className="id-code">{counts.synced}</span> {strings.countSynced}
         </span>
         <span className={styles.count} data-testid="evidence-count-pending">
           <span className="id-code">{counts.pending}</span> {strings.countPending}
         </span>
-        {counts.failed > 0 && (
-          <span className={`${styles.count} ${styles.countFailed}`} data-testid="evidence-count-failed">
-            <span className="id-code">{counts.failed}</span> {strings.countFailed}
-          </span>
-        )}
       </div>
+
+      {/* Separate WORKSPACE-LEVEL sync warning — a failed/offline sync is a
+          queue-wide condition, not a per-row verdict, so pending rows stay
+          pending and this single banner reports the sync state. */}
+      {warning !== "none" && (
+        <div className={`${styles.warning}`} role="status" data-testid="evidence-sync-warning" data-warning={warning}>
+          {warning === "offline" ? strings.syncWarningOffline : strings.syncWarningFailed}
+        </div>
+      )}
 
       {/* Mandatory-evidence gate summary — same authority as the submit gate. */}
       <div

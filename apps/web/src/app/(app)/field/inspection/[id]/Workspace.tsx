@@ -10,6 +10,7 @@ import {
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import EvidenceReview, { type EvidenceReviewStrings, type EvidenceReviewRow } from "./EvidenceReview";
+import { evidenceRowStatus, evidenceSyncWarning, evidenceReviewCounts } from "./evidence-review-status";
 import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
@@ -628,27 +629,29 @@ export default function Workspace({ inspection, items, library, serverResponses,
       : strings.evReview.linkInspection, [evItemCode, strings.evReview]);
   const evTypeOf = (mime: string) => mime.startsWith("image") ? "photo" : mime.startsWith("video") ? "video" : "document";
   const evidenceReviewRows = useMemo<EvidenceReviewRow[]>(() => {
+    // A queued row is "pending" from its OWN outbox membership — never
+    // "failed" derived from the workspace-global sync state (that global
+    // failure may be a different op ahead in the FIFO queue).
     const pending: EvidenceReviewRow[] = queuedEv.map((q, i) => ({
       key: `q:${q.queued_at}:${i}`,
       linkLabel: evLinkLabel(q.linked_type, q.linked_id),
       type: q.evidence_type ?? evTypeOf(q.mime),
-      status: sync === "failed" ? "failed" : "pending",
+      status: evidenceRowStatus(true),
       previewB64: q.mime.startsWith("image") ? `data:${q.mime};base64,${q.data_b64}` : undefined,
     }));
     const synced: EvidenceReviewRow[] = activeEvidence.map(e => ({
       key: `s:${e.id}`,
       linkLabel: evLinkLabel(e.linked_type, e.linked_id),
       type: e.evidence_type,
-      status: "synced",
+      status: evidenceRowStatus(false),
       previewUrl: e.evidence_type === "photo" ? evidenceUrls[e.id] : undefined,
     }));
     return [...pending, ...synced];   // pending first — it needs the inspector's attention
-  }, [queuedEv, activeEvidence, sync, evidenceUrls, evLinkLabel]);
-  const evidenceCounts = useMemo(() => ({
-    synced: activeEvidence.length,
-    pending: queuedEv.length,
-    failed: sync === "failed" ? queuedEv.length : 0,
-  }), [activeEvidence.length, queuedEv.length, sync]);
+  }, [queuedEv, activeEvidence, evidenceUrls, evLinkLabel]);
+  const evidenceCounts = useMemo(() => evidenceReviewCounts(activeEvidence.length, queuedEv.length), [activeEvidence.length, queuedEv.length]);
+  // Separate workspace-level sync warning (failed/offline) — surfaced once, not
+  // painted onto every pending row.
+  const evidenceWarning = useMemo(() => evidenceSyncWarning(sync, queuedEv.length), [sync, queuedEv.length]);
   // Mandatory-evidence summary — same authority as the submit gate: total is the
   // count of in-scope, visible items whose current answer triggers a mandatory
   // evidence leg; gaps are exactly the submit blockers' evidence codes.
@@ -1203,7 +1206,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           rows={evidenceReviewRows}
           mandatory={evidenceMandatory}
           counts={evidenceCounts}
-          sync={sync}
+          warning={evidenceWarning}
           retrying={retrying}
           onRetry={retryUploads}
           strings={strings.evReview}
