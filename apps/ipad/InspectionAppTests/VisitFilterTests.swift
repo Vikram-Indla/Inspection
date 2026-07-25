@@ -27,4 +27,32 @@ final class VisitFilterTests: XCTestCase {
     func test_allCasesHaveTitles() {
         for f in VisitFilter.allCases { XCTAssertFalse(f.title.isEmpty) }
     }
+
+    /// Regression: a visit with executionDate == nil whose windowStart is today (Riyadh)
+    /// must be included by .today after the windowStart fallback was added to VisitFilter.
+    func test_todayFilter_includesWindowStartFallback() {
+        let todayISODate = VisitScheduling.riyadhDateString(Date())
+
+        // Item with nil executionDate but windowStart = now (i.e. today in Riyadh).
+        let windowStartOnly: VisitListItem = {
+            let v = Visit(id: UUID(), factoryId: UUID(), visitType: "t", executionMode: .physical,
+                          planningStatus: .published, operationalState: .new,
+                          windowStart: Date(), windowEnd: Date(), executionDate: nil, priority: nil)
+            return VisitListItem(visit: v, factory: nil, inspectionLifecycle: nil)
+        }()
+
+        // Item with an old executionDate (should be excluded).
+        let oldItem: VisitListItem = {
+            let v = Visit(id: UUID(), factoryId: UUID(), visitType: "t", executionMode: .physical,
+                          planningStatus: .published, operationalState: .new,
+                          windowStart: Date(timeIntervalSinceNow: -86400 * 30),
+                          windowEnd: Date(timeIntervalSinceNow: -86400 * 30),
+                          executionDate: "2026-01-01", priority: nil)
+            return VisitListItem(visit: v, factory: nil, inspectionLifecycle: nil)
+        }()
+
+        let result = VisitFilter.today.apply(to: [windowStartOnly, oldItem], todayISODate: todayISODate)
+        XCTAssertEqual(result.count, 1, "windowStart-only item scheduled today should be included")
+        XCTAssertEqual(result.first?.visit.id, windowStartOnly.visit.id)
+    }
 }
