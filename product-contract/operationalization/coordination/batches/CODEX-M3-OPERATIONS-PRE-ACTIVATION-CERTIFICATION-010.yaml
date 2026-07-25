@@ -1,0 +1,281 @@
+packet:
+  id: CODEX-M3-OPERATIONS-PRE-ACTIVATION-CERTIFICATION-010
+  title: M3 Operations pre-activation certification
+  status: BLOCKED
+  reviewed_packet: CODEX-M3-OPERATIONS-CORRECTED-GOVERNANCE-SEQUENCE-009
+  review_method: Inspection Gate Check
+  review_result: BLOCKED
+  reviewed_as: GOVERNANCE_ONLY_DRAFT
+  executable: false
+
+gate_definition:
+  gate: M3_PRE_ACTIVATION
+  pass_criteria:
+    - M2 remains authoritative until a repository-backed M3 activation decision.
+    - Packet 008 mandatory corrections are fully applied.
+    - M3, F0, and Admin package ownership matches the authoritative package manifest.
+    - CR-430..CR-448 and WA-M3-AC-001..006 are bound.
+    - Claude's exact eight-file correction lease is registered and collision-free.
+    - One reconciled immutable base exists.
+    - All P0 and P1 sponsor decisions are recorded.
+    - CR-431 remains blocked while DEC-002 is open.
+
+evidence_snapshot:
+  repository: /Users/vikramindla/Developer/Inspection
+  review_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  review_branch: codex/orchestration-control-plane
+  review_head: 9df1b8534e766c24d3dfdbc51eecb6a5fa1e84d3
+  current_slice:
+    task_id: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+    module: M2
+    status: AWAITING_PRODUCT_OWNER_APPROVAL
+    baseline_sha: cf705db0
+  requirements:
+    expected_count: 19
+    observed_count: 19
+    range: CR-430..CR-448
+  acceptance:
+    range: WA-M3-AC-001..006
+    observed_status: PLANNED_NOT_IMPLEMENTED
+  active_lease_registry:
+    claude_map_correction_row_present: false
+  branch_anchors:
+    claude_map_worktree:
+      head: c48f71cc46ce027927224109f7b070ca489f2b15
+      dirty_files: 7
+    f0_worktree:
+      head: c8bdf6d185d0326454f8d95247cfbaab10f47ae4
+      observed_dirt:
+        - apps/web/node_modules deleted worktree link or directory state
+    reconciled_base: MISSING
+  mac_state:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+
+ack_return_block_rules:
+  ACK:
+    decision: ACKNOWLEDGED_AS_GOVERNANCE_DRAFT
+    applies_when:
+      - Packet 009 is used only for planning.
+      - No implementation, branch, migration, test, lease, or design authority is inferred.
+    current_result: PASS
+  RETURN:
+    decision: RETURN_FOR_OWNERSHIP_AND_SCOPE_CORRECTION
+    applies_when:
+      - A proposal conflicts with authoritative package ownership.
+      - A package-owned route or dependency is omitted.
+    current_result: TRIGGERED
+    exact_corrections:
+      - >-
+        Replace M9 ownership of apps/web/src/app/(app)/admin/access/** with M8.
+        PACKAGE_MANIFEST.csv assigns /admin/access and its page to M8.
+      - >-
+        Treat apps/web/src/lib/execution/capabilities.ts as shared capability
+        infrastructure requiring an explicit exact owner; do not infer M9.
+      - >-
+        Add apps/web/src/app/api/routing/eta/route.ts to the M3 package boundary
+        or explicitly record it as unchanged/read-only. The M3 manifest includes
+        /api/routing/eta.
+      - Reissue the corrected draft before activation review.
+  BLOCK:
+    decision: BLOCK_M3_ACTIVATION_AND_DISPATCH
+    applies_when:
+      - Current slice is not M3.
+      - Exact Claude lease is absent.
+      - One reconciled immutable base is absent.
+      - Required sponsor decisions are unapplied.
+      - DEC-002 remains open for CR-431.
+      - The Mac is locked.
+    current_result: TRIGGERED
+
+ownership_certification:
+  F0:
+    status: CONFIRMED
+    owns:
+      - apps/web/src/lib/shell-navigation.ts
+      - shared shell
+      - shared localization
+      - global CSS
+    rule: M3 requests a separate F0 follow-up.
+  M3:
+    status: CONFIRMED_WITH_CORRECTION
+    owns:
+      - /operations/**
+      - /api/routing/eta
+    requirements: CR-430..CR-448
+    acceptance: WA-M3-AC-001..006
+  M8:
+    status: CONFIRMED
+    owns:
+      - /admin/access
+      - apps/web/src/app/(app)/admin/access/page.tsx
+    rule: National-grant administration requires an M8 follow-up, not M9.
+  M9:
+    status: INCORRECTLY_ASSIGNED_IN_PACKET_009
+    authoritative_scope: Admin excluding M6, M8, and M10 ownership.
+
+packet_008_correction_check:
+  m2_remains_authoritative: PASS
+  future_m3_activation_gate: PASS
+  exact_claude_lease_registration_gate: PASS_BUT_NOT_APPLIED
+  f0_ownership_preserved: PASS
+  admin_ownership_preserved: FAIL_M8_MISLABELED_AS_M9
+  single_reconciled_base_required: PASS_BUT_NOT_PRODUCED
+  migration_semantic_order_reserved: PASS
+  migration_filenames_left_unassigned: PASS
+  database_commits_and_gates_isolated: PASS
+  all_cr_430_448_bound: PASS
+  all_wa_m3_acceptance_bound: PASS
+  cr_431_decision_blocked: PASS
+
+exact_sponsor_decisions_required:
+  - id: M3-ACT-DEC-001
+    decision: Activate M3 now, queue it after M2, or authorize a disjoint concurrent slice.
+    recommended: QUEUE_AFTER_M2_UNLESS_A_REPOSITORY_BACKED_CONCURRENT_SLICE_IS_CREATED
+    must_record:
+      - M2 disposition
+      - M3 task and change-control ID
+      - exact base SHA
+      - exact requirements, acceptance, evidence, rollback, and do-not-touch areas
+
+  - id: M3-ACT-DEC-002
+    decision: Supersede obsolete always-projected map acceptance with truthful tiered provenance.
+    recommended: APPROVE_TIERED_PROVENANCE
+    must_preserve:
+      - no fabricated route, ETA, drift, animation, or live claim
+      - recorded timestamp, accuracy, freshness, privacy, and connection truth
+      - truthful scheduled or factory fallback
+      - unavailable, invalid, zero-row, and read-error states
+
+  - id: M3-ACT-DEC-003
+    decision: Map business personas to repository role keys for view, monitoring-only, and actions.
+    must_resolve:
+      - Supervisor
+      - Operations Manager
+      - Executive
+      - Auditor
+      - planner
+      - ops
+      - leadership
+    prohibition: Do not invent a supervisor role key.
+
+  - id: M3-ACT-DEC-004
+    decision: Approve canonical region, branch, and organization scope hierarchy.
+    must_resolve:
+      - user-to-scope cardinality
+      - factory, visit, inspector, case, and risk-exception linkage
+      - transfer, historical, and temporary cross-scope behavior
+
+  - id: M3-ACT-DEC-005
+    decision: Approve precise inspector identity and coordinate access.
+    must_resolve:
+      - eligible roles and direct grantees
+      - active journey and execution states
+      - freshness, stale, masking, and aggregation behavior
+      - privacy, retention, and audit
+
+  - id: M3-ACT-DEC-006
+    decision: Approve the action-to-capability and record-scope matrix.
+    actions:
+      - resolve action form
+      - handle notification
+      - decide GPS override
+      - decide active cancellation
+      - export operational data
+
+  - id: M3-ACT-DEC-007
+    decision: Approve exceptional national-scope grant governance.
+    must_resolve:
+      - grantor, grantee, reason, expiry, review, and revocation
+      - active-session and cache behavior
+      - immutable audit
+
+  - id: M3-ACT-DEC-008
+    decision: Resolve CR-431 and DEC-002 telemetry-frequency ownership and configuration.
+    must_resolve:
+      - policy owner
+      - configuration source
+      - permitted range
+      - offline, reconnect, and stale behavior
+    current_status: OPEN_P0
+
+  - id: M3-ACT-DEC-009
+    decision: Approve cross-package follow-ups.
+    recommended:
+      F0: Navigation only after the current F0 work is accepted.
+      M8: National-grant administration only after database grant governance passes.
+    correction_to_packet_009: M8 replaces M9 for /admin/access.
+
+pre_activation_pass_checklist:
+  - id: PRE-M3-001
+    criterion: Packet 009 ownership corrections are reissued.
+    status: FAIL
+  - id: PRE-M3-002
+    criterion: M3 current or concurrent slice is repository-authoritative.
+    status: FAIL
+  - id: PRE-M3-003
+    criterion: All nine sponsor decisions are recorded.
+    status: FAIL
+  - id: PRE-M3-004
+    criterion: Tiered-provenance acceptance supersession is recorded.
+    status: FAIL
+  - id: PRE-M3-005
+    criterion: Exact eight-file Claude lease is present in ACTIVE_WORKTREE_LEASES.csv.
+    status: FAIL
+  - id: PRE-M3-006
+    criterion: Dirty preview overlap has an explicit non-writer disposition.
+    status: FAIL
+  - id: PRE-M3-007
+    criterion: Accepted F0 dependency SHA exists.
+    status: FAIL
+  - id: PRE-M3-008
+    criterion: One reconciled immutable base SHA exists.
+    status: FAIL
+  - id: PRE-M3-009
+    criterion: CR-430..CR-448 and WA-M3-AC-001..006 are bound.
+    status: PASS
+  - id: PRE-M3-010
+    criterion: CR-431 remains blocked while DEC-002 is open.
+    status: PASS
+  - id: PRE-M3-011
+    criterion: Mac is unlocked for Claude Code dispatch.
+    status: FAIL
+
+dispatch_gate:
+  target: Existing Claude Code conversation only
+  claude_design_contact: PROHIBITED
+  current_decision: BLOCK
+  unlock_behavior:
+    - Report manual unlock immediately.
+    - Do not type into Claude Design.
+    - Re-check M3 activation, exact lease registration, branch/dirt, and collision gates.
+    - Do not dispatch merely because the Mac is unlocked.
+
+missing_evidence:
+  - Corrected Packet 009 reissue with M8 ownership and routing ETA boundary.
+  - M3 activation or concurrent-slice record.
+  - Nine repository-backed sponsor decisions.
+  - Tiered-provenance acceptance supersession.
+  - Exact Claude lease registry row.
+  - Old preview collision disposition.
+  - Accepted F0 dependency SHA.
+  - One reconciled immutable base SHA.
+  - DEC-002 disposition for CR-431 certification.
+
+next_allowed_action:
+  - Reissue Packet 009 as governance-only with M8 ownership and the M3 ETA route boundary corrected.
+  - Prepare sponsor decision application records without self-approving them.
+  - Continue lock monitoring.
+  - Do not activate M3 or dispatch Claude.
+
+no_change_attestation:
+  product: unchanged
+  tests: unchanged
+  migrations: unchanged
+  data: unchanged
+  design: unchanged
+  branches: unchanged
+  leases: unchanged
+  main: unchanged
+  setup_inspection: unchanged
+  stashes: unchanged
