@@ -94,6 +94,15 @@ export async function AppShell({ children }: { children: ReactNode }) {
     themeDark: t("theme.dark", locale === "ar" ? "الوضع الداكن" : "Dark mode"),
     skipToContent: t("shell.skip", locale === "ar" ? "الانتقال إلى المحتوى" : "Skip to content"),
     loadingDestination: t("shell.loadingDestination", locale === "ar" ? "جارٍ تحميل الوجهة…" : "Loading destination…"),
+    // WA-PWA-TAB-r1 — labels transcribed from designs/pwa/pwa/pwa-tabbar.js,
+    // both locales, verbatim. Not re-worded here.
+    tabbar: {
+      home: t("shell.tab.home", locale === "ar" ? "الرئيسية" : "Home"),
+      myTasks: t("shell.tab.myTasks", locale === "ar" ? "مهامي" : "My Tasks"),
+      establishments: t("shell.tab.establishments", locale === "ar" ? "المنشآت" : "Establishments"),
+      notifications: t("shell.tab.notifications", locale === "ar" ? "الإشعارات" : "Notifications"),
+      account: t("shell.tab.account", locale === "ar" ? "حسابي" : "Account"),
+    },
   };
 
   const bellStrings: BellStrings = {

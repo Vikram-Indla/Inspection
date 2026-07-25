@@ -23,10 +23,18 @@ const items: { key: FieldNavKey; href: string; label: (l: FieldNavLabels) => str
   { key: "account", href: "/field/account", label: l => l.account, icon: <><circle cx="12" cy="8" r="4" /><path d="M4 20a8 8 0 0 1 16 0" /></> },
 ];
 
-export default function FieldNav({ active, labels }: { active: FieldNavKey; labels: FieldNavLabels }) {
+export default function FieldNav({ active, labels, consoleChannel = false }: {
+  active: FieldNavKey;
+  labels: FieldNavLabels;
+  // On the field channel this bar is always present, exactly as the DC ships it.
+  // On the console it is an iPad-and-below affordance, so it is gated by the
+  // media rules in astryx.css rather than rendered conditionally — the markup
+  // stays identical across both channels.
+  consoleChannel?: boolean;
+}) {
   return (
     <>
-      <nav aria-label={labels.home} className="field-nav">
+      <nav aria-label={labels.home} className={`field-nav${consoleChannel ? " field-nav--console" : ""}`}>
         {items.map(item => {
           const isActive = item.key === active;
           return (
@@ -41,7 +49,7 @@ export default function FieldNav({ active, labels }: { active: FieldNavKey; labe
           );
         })}
       </nav>
-      <div className="field-nav-spacer" aria-hidden="true" />
+      <div className={`field-nav-spacer${consoleChannel ? " field-nav--console" : ""}`} aria-hidden="true" />
       <style>{`
         .field-nav {
           position: fixed;

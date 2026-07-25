@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import FieldNav, { type FieldNavKey } from "@/components/field/FieldNav";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
@@ -54,6 +55,7 @@ export type ShellClientStrings = {
   themeDark: string;
   skipToContent: string;
   loadingDestination: string;
+  tabbar: { home: string; myTasks: string; establishments: string; notifications: string; account: string };
 };
 
 function Icon({ name }: { name: ShellIcon }) {
@@ -118,6 +120,14 @@ export default function ShellClient({
   const router = useRouter();
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
+  // Same precedence as the design's activeKey(): the more specific field
+  // sections win, and anything else falls back to Home.
+  const tabbarActive: FieldNavKey =
+    current.startsWith("/field/my-tasks") ? "myTasks"
+    : current.startsWith("/field/establishments") || current.startsWith("/field/factory-360") ? "establishments"
+    : current.startsWith("/field/notifications") ? "notifications"
+    : current.startsWith("/field/account") || current.startsWith("/field/settings") ? "account"
+    : "home";
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -499,11 +509,17 @@ export default function ShellClient({
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               {/* Notifications and Account are already destinations in the
-                  field bottom tab bar (FieldTabs) — showing them again here
-                  duplicated the exact same two destinations for a field-only
-                  inspector. Desktop/console personas still need them here;
-                  the sidebar/hamburger are already hidden the same way. */}
-              {!fieldOnly && <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />}
+                  bottom tab bar — showing them again here duplicates the same
+                  destination. That was already true for a field-only inspector;
+                  since the console now carries the same tab bar at iPad size,
+                  it is true there too, so the bell is hidden by the tablet
+                  media rule rather than by persona alone. It stays on desktop,
+                  where there is no tab bar. */}
+              {!fieldOnly && (
+                <span className="ax-topbar-hide-tablet">
+                  <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
+                </span>
+              )}
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="ai" />
               </Link>
@@ -537,6 +553,24 @@ export default function ShellClient({
         </header>
         {children}
       </main>
+
+      {/* Persistent tab bar — WA-PWA-TAB-r1 (designs/pwa/pwa/pwa-tabbar.js).
+          The five tabs, their labels and their icons are the design's, not ours:
+          Home / My Tasks / Establishments / Notifications / Account.
+
+          Product-Owner decision (2026-07-26): the bar is what a touch user gets
+          at iPad size, and the hamburger stays alongside it. On the field
+          channel it is always present, exactly as the DC ships it; on the
+          console it is revealed only at iPad size by the media rules in
+          astryx.css, so the markup is identical either way.
+
+          Only rendered for console routes: field pages each render their own
+          FieldNav today, so adding one here would double it. That per-page
+          pattern is itself the reason 11 of the 21 field screens still have no
+          bar at all — tracked on the pwa-shell card, not papered over here. */}
+      {!current.startsWith("/field") && (
+        <FieldNav consoleChannel active={tabbarActive} labels={strings.tabbar} />
+      )}
     </div>
   );
 }
