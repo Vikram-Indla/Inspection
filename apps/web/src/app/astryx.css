@@ -1438,11 +1438,3 @@ button.ax-shell-scope { cursor: pointer; }
   .field-nav--console { display: flex !important; }
   /* the bar ships its own .field-nav-spacer, so no extra main padding here */
 }
-
-/* Topbar controls that the tab bar already carries. At iPad size Notifications
-   is a tab, so the bell in the topbar is the same destination twice. Hidden by
-   width/pointer rather than by persona, because the tab bar appears the same
-   way. Desktop keeps it — there is no tab bar there. */
-@media (max-width: 1024px), (pointer: coarse) {
-  .ax-topbar-hide-tablet { display: none; }
-}

@@ -508,18 +508,13 @@ export default function ShellClient({
             </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
-              {/* Notifications and Account are already destinations in the
-                  bottom tab bar — showing them again here duplicates the same
-                  destination. That was already true for a field-only inspector;
-                  since the console now carries the same tab bar at iPad size,
-                  it is true there too, so the bell is hidden by the tablet
-                  media rule rather than by persona alone. It stays on desktop,
-                  where there is no tab bar. */}
-              {!fieldOnly && (
-                <span className="ax-topbar-hide-tablet">
-                  <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
-                </span>
-              )}
+              {/* Notifications and Account are destinations in the bottom tab
+                  bar, so for a field-only inspector showing them here is the
+                  same destination twice — hence the persona guard.
+                  A console persona has NO tab bar (CC-SHELL-TABLET-001 option
+                  B), at any width, so the bell is their only route to
+                  notifications and must stay at every size. */}
+              {!fieldOnly && <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />}
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="ai" />
               </Link>
@@ -558,17 +553,17 @@ export default function ShellClient({
           The five tabs, their labels and their icons are the design's, not ours:
           Home / My Tasks / Establishments / Notifications / Account.
 
-          Product-Owner decision (2026-07-26): the bar is what a touch user gets
-          at iPad size, and the hamburger stays alongside it. On the field
-          channel it is always present, exactly as the DC ships it; on the
-          console it is revealed only at iPad size by the media rules in
-          astryx.css, so the markup is identical either way.
+          Product-Owner decision (2026-07-26), CC-SHELL-TABLET-001 option B: the
+          bar is FIELD navigation, so it is shown only to a field persona. An
+          Operations or Leadership user on an iPad keeps the hamburger alone —
+          they would otherwise be handed five tabs into routes their role cannot
+          open. The access gate already routes a field persona to /field, where
+          the field layout renders the bar, so in practice this branch is the
+          narrow case of a field persona landing on a console route.
 
-          Only rendered for console routes: field pages each render their own
-          FieldNav today, so adding one here would double it. That per-page
-          pattern is itself the reason 11 of the 21 field screens still have no
-          bar at all — tracked on the pwa-shell card, not papered over here. */}
-      {!current.startsWith("/field") && (
+          Field routes are excluded here because field/layout.tsx renders the
+          bar for the whole channel; rendering it again would double it. */}
+      {!current.startsWith("/field") && fieldOnly && (
         <FieldNav consoleChannel active={tabbarActive} labels={strings.tabbar} />
       )}
     </div>

@@ -3,7 +3,7 @@ change_control_id: "CC-SHELL-TABLET-001"
 title: "Console shell at tablet / iPad size"
 raised_by: "Claude Orchestrator"
 raised_at: "2026-07-26T01:30:00+03:00"
-state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE"
+state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE (Q1 RESOLVED — option B)"
 landed_commit: "f49c90ca"
 
 sponsor_direction: >
@@ -60,16 +60,27 @@ defect_fixes_included:
 
 open_question_for_sponsor:
   id: "CC-SHELL-TABLET-001-Q1"
+  state: "RESOLVED"
+  resolved_at: "2026-07-26T01:45:00+03:00"
+  resolved_by: "Product Owner"
+  ruling: "B — hide the bar for non-field personas; they keep the hamburger only."
   question: >
     The five tabs are field routes. For an Inspector that is correct — the
     access gate (TASK-WEB-CHANNEL-ACCESS-GATE-001, "Inspector = iPad") already
     routes them to the field channel. But an Operations or Leadership user on an
     iPad is on the console, and these tabs point at routes their role cannot
     open.
-  options:
-    - "A — accept as-is: the bar is field navigation and a console persona has a shortcut into the field channel."
-    - "B — hide the bar for non-field personas; they keep the hamburger only."
-    - "C — commission a separate console tab set with its own design. It must not be improvised from the rail."
+  implementation:
+    - "The console tab bar renders only when isFieldOnlyPersona(roles) is true, so a console persona never sees field tabs."
+    - >
+      Consequence handled: a console persona now has no tab bar at any width, so
+      the topbar notification bell must stay at every size — it is their only
+      route to notifications. The tablet-hide rule added for the bell is
+      removed, and the .ax-topbar-hide-tablet class with it.
+    - "Field routes keep the bar from field/layout.tsx, which covers all 21 screens."
+  verified:
+    console_at_1024: "hamburger grid · tab bar absent · bell present"
+    field_route: "one .field-nav, rendered by the layout"
 
 propagation:
   files_changed:
