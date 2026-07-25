@@ -1,26 +1,34 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { activateWaitingUpdate, installStaleAssetRecovery, registerFieldServiceWorker } from "@/lib/pwa/client";
+import PwaUpdatePrompt from "./PwaUpdatePrompt";
+
+// FND-005: field app survives offline. This component owns the CONTROLLED
+// service-worker lifecycle for the whole origin:
+//  • Production: register /sw.js. A newly deployed worker installs and WAITS
+//    (public/sw.js no longer auto-skipWaiting), so we surface an explicit
+//    "update ready" prompt instead of swapping assets under a running session
+//    (which caused stale-chunk failures). The user reloads on their terms.
+//  • Development: unregister any worker — dev webpack chunks share stable URLs
+//    while their content changes, so a cached chunk would poison every reload.
+//  • Stale-asset recovery: a ChunkLoadError after a deploy clears Cache Storage
+//    (never IndexedDB — drafts/outbox are preserved, SPC-OFF-005) and reloads
+//    once. Registration/recovery are production-only, matching the prior
+//    contract that the offline field-app guarantee only needs to hold in prod.
 export default function PwaRegister() {
+  const [waitingReg, setWaitingReg] = useState<ServiceWorkerRegistration | null>(null);
+
   useEffect(() => {
-    // Dev-mode webpack chunks share a stable URL across recompiles/restarts
-    // while their content changes; sw.js caches /_next/static/* cache-first,
-    // so a dev-time cache poisons every reload with a stale chunk (survives
-    // hard refresh — Service Worker interception is orthogonal to HTTP cache
-    // busting). Registration is production-only; the offline field-app
-    // contract (FND-005) only needs to hold in production.
-    if (!("serviceWorker" in navigator)) return;
-
-    if (process.env.NODE_ENV === "production") {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
-      return;
-    }
-
-    // A worker previously installed from a production build can still control
-    // localhost during development. Remove it before it serves an obsolete
-    // stable-named Next.js chunk after a restart.
-    navigator.serviceWorker.getRegistrations()
-      .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
-      .catch(() => {});
+    const disposeSw = registerFieldServiceWorker(reg => setWaitingReg(reg));
+    const disposeRecovery = process.env.NODE_ENV === "production" ? installStaleAssetRecovery() : () => {};
+    return () => { disposeSw(); disposeRecovery(); };
   }, []);
-  return null;
+
+  if (!waitingReg) return null;
+  return (
+    <PwaUpdatePrompt
+      onReload={() => activateWaitingUpdate(waitingReg)}
+      onDismiss={() => setWaitingReg(null)}
+    />
+  );
 }

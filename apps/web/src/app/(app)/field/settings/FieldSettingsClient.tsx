@@ -188,9 +188,23 @@ export default function FieldSettingsClient({
         </div>
       </div>
 
-      {/* Data & Storage — no device-storage API here; no fake size or clear action */}
+      {/* Data & Storage — this screen holds no device-storage API and no fake
+          size or clear action; the real measured readout lives on the linked
+          Device readiness screen (navigator.storage estimate, offline shell,
+          update state). SCR-IPAD-610 / SPC-OFF-002 / MVP2-REQ-0181. */}
       <SectionLabel>{copy(locale, "Data & Storage", "البيانات والتخزين")}</SectionLabel>
       <div className={styles.card}>
+        <Link href="/field/settings/readiness" prefetch={false} className={styles.link}>
+          <span className={styles.rowLabel}>
+            {copy(locale, "Device readiness", "جاهزية الجهاز")}
+            <span className="t-caption" style={{ display: "block" }}>
+              {copy(locale, "Storage headroom, offline shell, installed mode and app updates.", "المساحة المتاحة، والهيكل دون اتصال، ووضع التثبيت، وتحديثات التطبيق.")}
+            </span>
+          </span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15, color: "var(--text-muted)", flex: "none" }} aria-hidden="true">
+            <path d={chevron} />
+          </svg>
+        </Link>
         <GovernedRow label={copy(locale, "Storage used", "المساحة المستخدمة")} note={copy(locale, "Reported in device settings", "تُعرض في إعدادات الجهاز")} />
         <GovernedRow label={copy(locale, "Clear cache", "مسح الذاكرة المؤقتة")} note={notAvailable} />
       </div>
