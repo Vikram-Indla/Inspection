@@ -1,0 +1,397 @@
+.registry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-300);
+  min-inline-size: 0;
+}
+
+.registryHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--ax-space-300);
+  padding-block: var(--ax-space-150);
+}
+
+.registryHeader h1 {
+  margin: 0;
+  font: var(--ax-text-title);
+  color: var(--ax-color-text);
+}
+
+.registryHeader p {
+  max-inline-size: 68ch;
+  margin: var(--ax-space-050) 0 0;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-body);
+}
+
+.eyebrow {
+  color: var(--ax-color-primary) !important;
+  font: var(--ax-text-micro) !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.headerActions,
+.syncForm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ax-space-100);
+}
+
+.headerActions {
+  justify-content: flex-end;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(190px, 230px) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--ax-space-200);
+}
+
+.statusPanel {
+  position: sticky;
+  inset-block-start: var(--ax-space-200);
+  padding: var(--ax-space-200);
+}
+
+.statusPanel h2 {
+  margin: 0 0 var(--ax-space-150);
+  font: var(--ax-text-subheading);
+  color: var(--ax-color-text);
+}
+
+.statusNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-050);
+}
+
+.statusNav button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-space-150);
+  min-block-size: var(--ax-control-height);
+  inline-size: 100%;
+  padding: var(--ax-space-100) var(--ax-space-150);
+  border: 1px solid transparent;
+  border-radius: var(--ax-radius-input);
+  background: transparent;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-body);
+  text-align: start;
+  cursor: pointer;
+}
+
+.statusNav button:hover {
+  background: var(--ax-color-surface-sunken);
+  color: var(--ax-color-text);
+}
+
+.statusNav button:focus-visible,
+.linkButton:focus-visible {
+  outline: 3px solid var(--ax-color-focus);
+  outline-offset: 2px;
+}
+
+.statusNav .activeFilter {
+  border-color: var(--ax-color-primary);
+  background: var(--ax-color-primary-tint);
+  color: var(--ax-color-primary-strong);
+  font-weight: 700;
+}
+
+.governance {
+  margin-block-start: var(--ax-space-250);
+  padding-block-start: var(--ax-space-200);
+  border-block-start: 1px solid var(--ax-color-border);
+}
+
+.governance strong {
+  color: var(--ax-color-text);
+  font: var(--ax-text-caption);
+  font-weight: 700;
+}
+
+.governance p {
+  margin: var(--ax-space-050) 0 0;
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-caption);
+}
+
+.content,
+.emptyStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-150);
+  min-inline-size: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-space-150);
+  padding: var(--ax-space-150);
+}
+
+.toolbar input {
+  flex: 1;
+  min-inline-size: 200px;
+}
+
+.toolbar > span {
+  color: var(--ax-color-text);
+  white-space: nowrap;
+}
+
+/* The shared graphite shell deliberately remains dark in both themes. Its
+   micro group labels sit just below WCAG AA in the dependency branch; this
+   route-scoped correction keeps the complete M9 page accessible without
+   changing the shared shell owned by another delivery lane. */
+:global(html):has(.registry) :global(.ax-nav-group__trigger) {
+  color: var(--nav-text-active);
+}
+
+.columnHeadings {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1fr) minmax(150px, .5fr);
+  gap: var(--ax-space-200);
+  padding-inline: var(--ax-space-200);
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-micro);
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-100);
+}
+
+.stringRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1fr) minmax(150px, .5fr);
+  gap: var(--ax-space-200);
+  padding: var(--ax-space-200);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  box-shadow: var(--ax-shadow-raised);
+}
+
+.orphaned {
+  opacity: .78;
+  background: var(--ax-color-surface-sunken);
+}
+
+.sourceCell,
+.translationCell,
+.actionCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ax-space-100);
+  min-inline-size: 0;
+}
+
+.translationCell {
+  inline-size: 100%;
+}
+
+.translationForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ax-space-100);
+  inline-size: 100%;
+}
+
+.translationForm input {
+  flex: 1;
+  min-inline-size: 160px;
+}
+
+.actionCell {
+  align-items: flex-start;
+  padding-inline-start: var(--ax-space-150);
+  border-inline-start: 1px solid var(--ax-color-border);
+}
+
+.history {
+  max-inline-size: 100%;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-100);
+  margin-block-start: var(--ax-space-100);
+}
+
+.historyItem {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--ax-space-100);
+  padding-block-start: var(--ax-space-100);
+  border-block-start: 1px dashed var(--ax-color-border);
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: var(--ax-text-caption);
+  cursor: pointer;
+}
+
+.criticalText {
+  color: var(--ax-color-critical-strong);
+}
+
+.addForm {
+  display: grid;
+  grid-template-columns: minmax(180px, .8fr) minmax(220px, 1fr) minmax(220px, 1fr) minmax(180px, .8fr) auto;
+  align-items: end;
+  gap: var(--ax-space-150);
+  padding: var(--ax-space-250);
+}
+
+.addHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  grid-column: 1 / -1;
+  color: var(--ax-color-text);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ax-space-200);
+  padding: var(--ax-space-100) var(--ax-space-150);
+  color: var(--ax-color-text-secondary);
+  font: var(--ax-text-caption);
+}
+
+@media (max-width: 1180px) {
+  .registryHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headerActions {
+    justify-content: flex-start;
+  }
+
+  .addForm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusPanel {
+    position: static;
+  }
+
+  .statusNav {
+    overflow-x: auto;
+    flex-direction: row;
+    padding-block-end: var(--ax-space-050);
+  }
+
+  .statusNav button {
+    flex: 0 0 auto;
+    inline-size: auto;
+  }
+
+  .governance {
+    margin-block-start: var(--ax-space-150);
+  }
+
+  .columnHeadings {
+    display: none;
+  }
+
+  .stringRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .actionCell {
+    padding-block-start: var(--ax-space-150);
+    padding-inline-start: 0;
+    border-block-start: 1px solid var(--ax-color-border);
+    border-inline-start: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .registry {
+    gap: var(--ax-space-200);
+  }
+
+  .headerActions,
+  .syncForm {
+    align-items: stretch;
+    inline-size: 100%;
+  }
+
+  .headerActions > button,
+  .headerActions > form,
+  .syncForm > button {
+    inline-size: 100%;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar input {
+    inline-size: 100%;
+  }
+
+  .toolbar > span {
+    white-space: normal;
+  }
+
+  .stringRow {
+    padding: var(--ax-space-150);
+  }
+
+  .translationForm,
+  .translationForm input,
+  .translationForm button {
+    inline-size: 100%;
+  }
+
+  .addForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .addForm > * {
+    grid-column: 1;
+  }
+
+  .pagination {
+    justify-content: space-between;
+    gap: var(--ax-space-100);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusNav button {
+    scroll-behavior: auto;
+  }
+}

@@ -3,20 +3,84 @@
 // owns filtering and inline editing. The page itself renders through useT()
 // (keys l10n.*) — the module that manages language works in both languages.
 import Shell from "@/components/Shell";
+import EmptyState from "@/components/EmptyState";
+import { IconShieldCheck } from "@/app/icons";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { redirect } from "next/navigation";
 import Manager, { type Labels, type UiString } from "./Manager";
+import LocaleSwitch from "./LocaleSwitch";
 
 export const dynamic = "force-dynamic";
+const UI_STRINGS_PAGE_SIZE = 1000;
 
 export default async function Localization() {
   const { t, locale } = await useT();
+  const copy = (en: string, ar: string) => locale === "ar" ? ar : en;
   const sb = await supabaseServer();
-  const { data, error } = await sb.from("ui_strings")
-    .select("key, en, ar, status, context, orphaned")
-    .order("key");
-  if (error) console.error("[localization] load failed", error);
-  const rows = (data ?? []) as UiString[];
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError?.name === "AuthSessionMissingError" || !user) redirect("/login");
+  if (authError) {
+    console.error("[localization] identity verification failed", authError.message);
+    throw new Error("localization_auth_unavailable");
+  }
+
+  // WA-M9-AC-005: fail closed before loading any configuration data.
+  // RLS remains authoritative for reads and every mutation.
+  const { data: roleRows, error: rolesError } = await getUserRoles(user.id);
+  if (rolesError) {
+    console.error("[localization] role verification failed", rolesError.message);
+    throw new Error("localization_roles_unavailable");
+  }
+  const roles = new Set((roleRows ?? []).map(row => row.role_key));
+  const canManageLocalization = ["compliance_admin", "security_admin", "workflow_admin"]
+    .some(role => roles.has(role));
+
+  if (!canManageLocalization) {
+    return (
+      <Shell current="/admin/localization" title={t("l10n.title", copy("Language & translations", "اللغة والترجمات"))}>
+        <EmptyState
+          icon={<IconShieldCheck size={28} />}
+          role="alert"
+          title={t("admin.unauthorized.heading", copy("This control-plane module is outside your role", "هذه الوحدة الإدارية خارج نطاق دورك"))}
+          body={t(
+            "admin.unauthorized.body",
+            copy(
+              "No localization data has been loaded. Return to your assigned workspace or ask an administrator for the required role.",
+              "لم يتم تحميل أي بيانات ترجمة. ارجع إلى مساحة عملك أو اطلب من المسؤول منحك الدور المطلوب.",
+            ),
+          )}
+        >
+          <a className="btn btn-secondary sq-link btn-touch" href="/launch">
+            {t("admin.unauthorized.return", copy("Return to my workspace", "العودة إلى مساحة عملي"))}
+          </a>
+        </EmptyState>
+      </Shell>
+    );
+  }
+
+  // PostgREST caps one response at 1,000 rows in the configured project.
+  // The governed dictionary is larger, so a single unbounded select silently
+  // omits later keys. Read every stable key-ordered page before calculating
+  // coverage or handing the registry to the client.
+  const rows: UiString[] = [];
+  let loadFailed = false;
+  for (let from = 0; ; from += UI_STRINGS_PAGE_SIZE) {
+    const result = await sb.from("ui_strings")
+      .select("key, en, ar, status, context, orphaned, updated_at")
+      .order("key")
+      .range(from, from + UI_STRINGS_PAGE_SIZE - 1);
+    if (result.error) {
+      console.error("[localization] load failed", result.error);
+      loadFailed = true;
+      break;
+    }
+    const page = (result.data ?? []) as UiString[];
+    rows.push(...page);
+    if (page.length < UI_STRINGS_PAGE_SIZE) break;
+  }
 
   const total = rows.length;
   const translated = rows.filter(r => r.ar !== null && r.ar.trim() !== "").length;
@@ -69,22 +133,56 @@ export default async function Localization() {
     restore: t("l10n.restore", "Restore"),
     restoring: t("l10n.restoring", "Restoring…"),
     restored: t("l10n.restored", "restored (as draft)"),
-    riskLong: t("l10n.risk.long", "Arabic runs long — check narrow layouts"),
+    riskLong: t("l10n.risk.long", copy("Arabic runs long — check narrow layouts", "النص العربي طويل — تحقّق من عرضه في الشاشات الضيقة")),
     orphanNote: t("l10n.orphan.note", "No longer found in the last code scan — kept and restorable, not deleted."),
     placeholderErr: t("l10n.placeholder.err", "Placeholder {token} is missing from the Arabic — Save is disabled until placeholders match."),
+    registryTitle: t("l10n.registry.title", copy("Translation registry", "سجل الترجمات")),
+    registryBody: t(
+      "l10n.registry.body",
+      copy(
+        "Manage the English source and Arabic translation consumed by every localized application surface.",
+        "إدارة النص الإنجليزي المصدر والترجمة العربية المستخدمة في جميع واجهات التطبيق المترجمة.",
+      ),
+    ),
+    statusNavigation: t("l10n.status.navigation", copy("Translation status", "حالة الترجمة")),
+    allKeys: t("l10n.status.all", copy("All keys", "جميع المفاتيح")),
+    missingKeys: t("l10n.status.missing", copy("Missing Arabic", "العربية مفقودة")),
+    draftKeys: t("l10n.status.draft", copy("Draft review", "مسودة للمراجعة")),
+    reviewedKeys: t("l10n.status.reviewed", copy("Reviewed", "تمت المراجعة")),
+    orphanedKeys: t("l10n.status.orphaned", copy("Orphaned", "غير مستخدمة")),
+    sourceHeading: t("l10n.heading.source", copy("English source", "المصدر الإنجليزي")),
+    translationHeading: t("l10n.heading.translation", copy("Arabic translation", "الترجمة العربية")),
+    stateHeading: t("l10n.heading.state", copy("State & actions", "الحالة والإجراءات")),
+    governanceTitle: t("l10n.governance.title", copy("Versioned reference data", "بيانات مرجعية ذات إصدارات")),
+    governanceBody: t(
+      "l10n.governance.body",
+      copy(
+        "Changes are revisioned. Retired keys remain in history and can be restored; they are never silently deleted.",
+        "تُحفظ التغييرات كإصدارات. تبقى المفاتيح المتوقفة في السجل ويمكن استعادتها، ولا تُحذف بصمت.",
+      ),
+    ),
+    openAdd: t("l10n.add.open", copy("Add key", "إضافة مفتاح")),
+    closeAdd: t("l10n.add.close", copy("Close", "إغلاق")),
+    previous: t("common.previous", copy("Previous", "السابق")),
+    next: t("common.next", copy("Next", "التالي")),
+    page: t("common.page", copy("Page", "صفحة")),
+    filteredResults: t("l10n.filtered.results", copy("filtered results", "نتائج تمت تصفيتها")),
+    changedBy: t("l10n.history.actor", copy("Changed by", "غيّرها")),
+    systemActor: t("l10n.history.system", copy("system", "النظام")),
+    sourcePanel: t("l10n.history.source.panel", copy("admin panel", "لوحة الإدارة")),
+    sourceSync: t("l10n.history.source.sync", copy("source sync", "مزامنة المصدر")),
+    sourceRestore: t("l10n.history.source.restore", copy("restore", "استعادة")),
   };
 
   return (
-    <Shell current="/admin/localization" title={t("l10n.title", "Localization")}
+    <Shell current="/admin/localization" title={t("l10n.title", copy("Language & translations", "اللغة والترجمات"))}
       context={
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>
-          {locale === "ar"
-            ? <a className="sq-link" href="/locale?set=en">English</a>
-            : <a className="sq-link" href="/locale?set=ar" lang="ar">العربية</a>}
+          <LocaleSwitch locale={locale} />
         </span>
       }>
-      {error ? (
+      {loadFailed ? (
         <div className="sq-banner sq-banner--critical" role="alert">
           {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
@@ -96,7 +194,7 @@ export default async function Localization() {
             <div className="sq-kpi"><span className="sq-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
             <div className="sq-kpi"><span className="sq-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
           </div>
-          <Manager rows={rows} labels={labels} />
+          <Manager rows={rows} labels={labels} locale={locale} />
         </>
       )}
     </Shell>
