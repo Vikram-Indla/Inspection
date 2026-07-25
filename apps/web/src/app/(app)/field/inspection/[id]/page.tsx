@@ -111,9 +111,10 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   // Tolerant fetches for columns landing in migrations 0015/0020 (context,
   // action_forms.item_id, inspection_no, evidence lifecycle): a missing column
   // degrades the feature instead of killing the page.
-  const [{ data: ctxRow }, { data: afRows }, { data: noRow }, { data: evMeta }] = await Promise.all([
+  const [{ data: ctxRow }, { data: afRows }, { data: findingRows }, { data: noRow }, { data: evMeta }] = await Promise.all([
     sb.from("inspections").select("context").eq("id", id).maybeSingle(),
     sb.from("action_forms").select("id, item_id, violation_id, form_type, owner_name, owner_role, due_at, required_correction, status").eq("inspection_id", id),
+    sb.from("findings").select("id, item_id, severity, description").eq("inspection_id", id),
     sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
     sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
   ]);
@@ -519,6 +520,18 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     historyRejected: t("field.ws.historyRejected", "Rejected"),
     submittedTitle: t("field.ws.submittedTitle", "Submitted — final submitted version."),
     submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
+    completionReview: tr("field.ws.completion.review", "Review summary", "ملخّص المراجعة"),
+    completionAnswered: tr("field.ws.completion.answered", "Answered", "مُجاب"),
+    completionViolations: tr("field.ws.completion.violations", "Violations", "مخالفات"),
+    completionEvidence: tr("field.ws.completion.evidence", "Evidence", "أدلة"),
+    completionForms: tr("field.ws.completion.forms", "Forms", "نماذج"),
+    completionVersion: tr("field.ws.completion.version", "Submission version", "نسخة الإرسال"),
+    completionLocked: tr("field.ws.completion.locked", "Final submitted version. Content is locked; corrections are possible only through reviewer return.", "النسخة النهائية المرسلة. المحتوى مقفل؛ ولا يتم التصحيح إلا عبر إرجاع المراجع."),
+    completionReports: tr("field.ws.completion.reports", "Reports & access", "التقارير والوصول"),
+    completionStatement: tr("field.ws.completion.statement", "View visit statement", "عرض إفادة الزيارة"),
+    completionTasks: tr("field.ws.completion.tasks", "Back to tasks", "العودة إلى المهام"),
+    completionSyncPending: tr("field.ws.completion.syncPending", "Submitted (locked)", "مُرسَل (مقفل)"),
+    completionQueuedLock: tr("field.ws.completion.queuedLock", "The final snapshot is locked on this device while the existing FIFO outbox retries. It is not reported as submitted until the server accepts it.", "اللقطة النهائية مقفلة على هذا الجهاز بينما تعيد قائمة المزامنة الحالية المحاولة. ولا يُبلّغ عنها كمُرسلة حتى يقبلها الخادم."),
     // SCR-IPAD-660 completion state (CR-320/324/327/335/336). The version number
     // and id are SERVER-assigned and only known once the outbox op syncs, so
     // every one of these renders nothing until the server has confirmed.
@@ -564,6 +577,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     enumLabels,
     // — Slice E2 runtime depth —
     progress: t("field.ws.progress", "{pct}% complete"),
+    sectionNavTitle: t("field.ws.sectionNav.title", "Inspection sections"),
+    sectionNavHint: t("field.ws.sectionNav.hint", "Choose a section. Answers are autosaved as you move between sections."),
+    sectionComplete: t("field.ws.sectionNav.complete", "Complete"),
+    sectionIncomplete: t("field.ws.sectionNav.incomplete", "In progress"),
+    previousSection: t("field.ws.sectionNav.previous", "Previous section"),
+    nextSection: t("field.ws.sectionNav.next", "Next section"),
+    nextIncomplete: t("field.ws.sectionNav.nextIncomplete", "Go to next incomplete"),
     summaryTitle: t("field.ws.summaryTitle", "Live summary"),
     sumAnswered: t("field.ws.sum.answered", "Answered"),
     sumPending: t("field.ws.sum.pending", "Pending"),
@@ -595,6 +615,32 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     evQueuedAlt: t("field.ws.ev.queuedAlt", "Queued evidence (unsynced)"),
     evTooLarge: t("field.ws.ev.tooLarge", "{name} exceeds the {mb} MB limit for {type} evidence"),
     evBadFormat: t("field.ws.ev.badFormat", "{name}: unsupported format for {type} evidence (allowed: {formats})"),
+    evReview: {
+      title: tr("field.ws.evReview.title", "Evidence Review", "مراجعة الأدلة"),
+      caption: tr("field.ws.evReview.caption", "Review all captured evidence before submitting. Pending items upload automatically when you're online.", "راجع جميع الأدلة الملتقطة قبل الإرسال. تُرفع العناصر المعلّقة تلقائيًا عند اتصالك بالإنترنت."),
+      countSynced: tr("field.ws.evReview.countSynced", "synced", "متزامنة"),
+      countPending: tr("field.ws.evReview.countPending", "pending upload", "بانتظار الرفع"),
+      retry: tr("field.ws.evReview.retry", "Retry uploads", "إعادة محاولة الرفع"),
+      retrying: tr("field.ws.evReview.retrying", "Retrying…", "جارٍ إعادة المحاولة…"),
+      statusSynced: tr("field.ws.evReview.statusSynced", "Synced", "متزامنة"),
+      statusPending: tr("field.ws.evReview.statusPending", "Pending", "معلّقة"),
+      syncWarningFailed: tr("field.ws.evReview.syncWarningFailed", "Some evidence hasn't finished uploading. It stays saved on this iPad and retries automatically — you can also retry now.", "لم يكتمل رفع بعض الأدلة. تبقى محفوظة على الآيباد ويُعاد المحاولة تلقائيًا — ويمكنك إعادة المحاولة الآن."),
+      syncWarningOffline: tr("field.ws.evReview.syncWarningOffline", "You're offline — captured evidence is saved on this iPad and will upload when you reconnect.", "أنت غير متصل — تُحفظ الأدلة الملتقطة على الآيباد وتُرفع عند إعادة الاتصال."),
+      mandatoryLabel: tr("field.ws.evReview.mandatoryLabel", "Mandatory evidence", "الأدلة الإلزامية"),
+      mandatoryMet: tr("field.ws.evReview.mandatoryMet", "{met}/{total} required captured", "{met}/{total} من المطلوب تم التقاطه"),
+      mandatoryComplete: tr("field.ws.evReview.mandatoryComplete", "All required evidence captured", "تم التقاط جميع الأدلة المطلوبة"),
+      mandatoryNone: tr("field.ws.evReview.mandatoryNone", "No mandatory evidence for the current answers", "لا توجد أدلة إلزامية للإجابات الحالية"),
+      mandatoryGaps: tr("field.ws.evReview.mandatoryGaps", "Still required: {items}", "لا يزال مطلوبًا: {items}"),
+      linkFinding: tr("field.ws.evReview.linkFinding", "Finding", "ملاحظة"),
+      linkAction: tr("field.ws.evReview.linkAction", "Action form", "نموذج إجراء"),
+      linkInspection: tr("field.ws.evReview.linkInspection", "Inspection", "التفتيش"),
+      typePhoto: tr("field.ws.evReview.typePhoto", "Photo", "صورة"),
+      typeVideo: tr("field.ws.evReview.typeVideo", "Video", "فيديو"),
+      typeDocument: tr("field.ws.evReview.typeDocument", "Document", "مستند"),
+      typeComment: tr("field.ws.evReview.typeComment", "Comment", "تعليق"),
+      empty: tr("field.ws.evReview.empty", "No evidence captured yet.", "لم يتم التقاط أي أدلة بعد."),
+      previewAlt: tr("field.ws.evReview.previewAlt", "Captured evidence preview", "معاينة الدليل الملتقط"),
+    },
     afBlocking: t("field.ws.af.blocking", "Blocking — submission refused until this form is complete (M09-027)"),
     afComplete: t("field.ws.af.complete", "Complete"),
     afIncomplete: t("field.ws.af.incomplete", "Incomplete"),
@@ -607,6 +653,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
     vioInvalidated: t("field.ws.vio.invalidated", "Invalidated — the answer changed back to compliant. Kept for audit; no penalty or action is due from this candidate."),
     vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping unavailable — configuration conflict"),
+    findingTitle: t("field.ws.finding.title", "Inspector finding"),
+    findingNarrative: t("field.ws.finding.narrative", "Finding narrative"),
+    findingPlaceholder: t("field.ws.finding.placeholder", "Describe what you observed and where. Do not propose a policy classification."),
+    findingRequired: t("field.ws.finding.required", "A finding narrative is required for every mapped violation"),
+    findingSaved: t("field.ws.finding.saved", "Finding saved"),
+    findingPending: t("field.ws.finding.pending", "Saved on this iPad — waiting to sync"),
+    findingRetry: t("field.ws.finding.retry", "Retry finding"),
     // — Phase 5 item lifecycle (§15) —
     libTitle: t("field.ws.lib.title", "Item library"),
     libHint: t("field.ws.lib.hint", "Add items from the active library to this visit. Added items count toward progress and compliance immediately and follow their own response and evidence rules."),
@@ -636,6 +689,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     valUnanswered: t("field.ws.val.unanswered", "Unanswered: {items}"),
     valEvidence: t("field.ws.val.evidence", "Mandatory evidence missing: {items}"),
     valForms: t("field.ws.val.forms", "Action form incomplete: {items}"),
+    valGoToFirst: tr("field.ws.val.goToFirst", "Go to the first item to fix", "الانتقال إلى أول عنصر للإصلاح"),
+    valGoToSection: tr("field.ws.val.goToSection", "Go to section: {title}", "الانتقال إلى القسم: {title}"),
     ready: t("field.ws.ready", "All blocking validations pass — ready to submit"),
     notReady: t("field.ws.notReady", "{n} blocking issue(s) — submission will be refused"),
     // — Slice F2 evidence & media depth —
@@ -748,6 +803,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         serverResponses={(resp ?? []) as never}
         serverEvidence={(ev ?? []) as never}
         serverForms={(afRows ?? []) as never}
+        serverFindings={(findingRows ?? []) as never}
         serverViolations={(vios ?? []) as never}
         serverItemStates={(itemStateRows ?? []) as never}
         library={library}

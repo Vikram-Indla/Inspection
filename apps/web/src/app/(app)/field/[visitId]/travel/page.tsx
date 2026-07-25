@@ -85,6 +85,13 @@ export default async function FieldTravel({ params }: { params: Promise<{ visitI
     fenceMapAria: tr("field.travel.fenceMapAria", "Geofence verification map at establishment scale", "خريطة التحقق الجغرافي بمقياس المنشأة"),
     continueCheckin: tr("field.travel.continueCheckin", "Continue to check-in", "المتابعة إلى تسجيل الوصول"),
     checkinCaption: tr("field.travel.checkinCaption", "Arrival is confirmed on the governed geofence check-in (M04-004). This screen only shows your route — it does not record arrival.", "يتم تأكيد الوصول عبر تسجيل الدخول الجغرافي المحكوم (M04-004). تعرض هذه الشاشة مسارك فقط ولا تسجّل الوصول."),
+    connectivityOffline: tr("field.travel.connectivityOffline", "Offline — the live route ETA can't refresh. Your GPS position and geofence range below stay live.", "غير متصل — لا يمكن تحديث الوقت المتوقع للمسار. يبقى موقعك عبر GPS ونطاق التسييج أدناه محدّثين مباشرةً."),
+    connectivityWeak: tr("field.travel.connectivityWeak", "Weak connection — the live route ETA may be delayed.", "اتصال ضعيف — قد يتأخر تحديث الوقت المتوقع للمسار."),
+    updated: tr("field.travel.updated", "Fix age", "عمر التحديد"),
+    updatedAgo: tr("field.travel.updatedAgo", "{n}s ago", "قبل {n} ثانية"),
+    updatedNow: tr("field.travel.updatedNow", "just now", "الآن"),
+    openInMaps: tr("field.travel.openInMaps", "Open in Maps", "فتح في الخرائط"),
+    privacyNote: tr("field.travel.privacyNote", "This route view only displays your live location to draw your route and range; the view itself stores nothing. Your journey position and arrival are recorded by the governed check-in as immutable geo events (M04-004).", "يعرض هذا المسار موقعك المباشر فقط لرسم مسارك ونطاقك، ولا يخزّن العرض نفسه أي شيء. تُسجَّل مواضع رحلتك ووصولك عبر تسجيل الدخول المحكوم كأحداث موقع غير قابلة للتغيير (M04-004)."),
   };
 
   const factory = (v?.factories ?? null) as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null; geofence_radius_m: number | null; risk_band: string | null } | null;

@@ -17,13 +17,53 @@ Read these files in order at every session start:
 10. The active packet and task-specific files listed in the current slice.
 
 ## Repository location — fail fast
-- The only authoritative repository is `/Users/vikramindla/Developer/Inspection`.
+
+The authoritative repository is identified by **remote identity, not by absolute
+path**. Contributors work on different machines under different home directories,
+so a hardcoded path cannot be the test.
+
+- A checkout is authoritative when `git remote get-url origin` resolves to the
+  canonical remote `github.com/Vikram-Indla/Inspection` (either scheme:
+  `https://github.com/Vikram-Indla/Inspection.git` or
+  `git@github.com:Vikram-Indla/Inspection.git`).
+- Vikram's authoritative clone is `/Users/vikramindla/Developer/Inspection`.
+  Jahanara's is `/Users/jahanarakhan/inspection latest`. Both are equally
+  authoritative; neither path is the rule. Use **your own** machine's clone.
 - `/Users/vikramindla/Documents/GitHub/Inspection` is retired and prohibited: never read it, write it, cite it, use it as a command working directory, load skills or instructions from it, or use artifacts discovered there.
-- Before the first project-related tool call, resolve and report the current working directory and repository top level. Both must be `/Users/vikramindla/Developer/Inspection` (or a specifically authorized worktree whose Git common directory belongs to that repository).
-- Authorized partner workstation — PWA/field channel only. `/Users/jahanarakhan/inspection latest` is an authorized repository location, granted by the repository owner on 2026-07-25. It is a separate clone of `https://github.com/Vikram-Indla/Inspection.git`, not a worktree of the canonical repository; worktrees whose Git common directory belongs to that clone are authorized on the same terms. Agents there must still resolve and report the working directory and repository top level before the first project-related tool call, and both must resolve to that clone or one of its worktrees. Its write scope is exactly the PWA lane exception at the end of this file and nothing else. Every other rule here applies without relaxation — `/Users/vikramindla/Documents/GitHub/Inspection` stays prohibited, no push, merge or modification of `main`, no editing of frozen product-contract artifacts, no assumption defaults. Work outside the PWA lane paths requires the canonical repository.
+- Before the first project-related tool call, resolve and report the current working directory, the repository top level, and the origin remote. The top level must be your machine's authoritative clone, or a specifically authorized worktree of it (see below).
 - If the session starts in, exposes, or supplies instructions from the retired path, stop before project work. Do not compensate by passing canonical absolute paths while leaving tool calls rooted in the retired checkout. Relaunch or re-root the session at the canonical repository.
 - Browser work does not relax this rule. Runtime inspection, evidence capture, source reads, skills, scripts, and output creation must all be attributable to the canonical repository.
 - Never claim the retired checkout was excluded unless no tool, skill, source, working directory, or artifact from it was accessed during the session.
+
+### Authorized worktrees — standing authorization
+Any Git worktree whose common directory resolves to the `.git` of **your own machine's
+authoritative clone** is a **specifically authorized worktree**, and is a valid working directory
+for a delivery session. This is machine-relative on purpose — it holds on every contributor's
+laptop, not just one. Verify with:
+
+```
+git rev-parse --git-common-dir      # must resolve inside your authoritative clone's .git
+git rev-parse --show-toplevel       # your worktree root
+git remote get-url origin           # must be the canonical Vikram-Indla/Inspection remote
+```
+
+If the common directory resolves into a clone whose origin is the canonical remote, you are
+correctly rooted — do not stop, and do not demand relaunch in the main checkout. If origin is not
+the canonical remote, or the path is the retired
+`/Users/vikramindla/Documents/GitHub/Inspection`, stop as the rule above requires.
+
+The canonical checkout is a **shared** working tree: several actors read it concurrently, and a
+`git checkout` there changes the branch under every one of them. A session holding a write lease
+must therefore work in its own worktree, created from the canonical repository, rather than
+switching branches in the shared checkout:
+
+```
+git -C <your-authoritative-clone> worktree add -b <branch> <path> main
+cd <path>
+```
+
+Worktrees are cheap, and they are what makes concurrent card delivery safe. Sharing one checkout
+between two write-leased sessions is the failure this authorization exists to prevent.
 
 ## Hard rules
 - Broad implementation is blocked until G8 is PASS.
