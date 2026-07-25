@@ -607,6 +607,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     valUnanswered: t("field.ws.val.unanswered", "Unanswered: {items}"),
     valEvidence: t("field.ws.val.evidence", "Mandatory evidence missing: {items}"),
     valForms: t("field.ws.val.forms", "Action form incomplete: {items}"),
+    valGoToFirst: tr("field.ws.val.goToFirst", "Go to the first item to fix", "الانتقال إلى أول عنصر للإصلاح"),
+    valGoToSection: tr("field.ws.val.goToSection", "Go to section: {title}", "الانتقال إلى القسم: {title}"),
     ready: t("field.ws.ready", "All blocking validations pass — ready to submit"),
     notReady: t("field.ws.notReady", "{n} blocking issue(s) — submission will be refused"),
     // — Slice F2 evidence & media depth —

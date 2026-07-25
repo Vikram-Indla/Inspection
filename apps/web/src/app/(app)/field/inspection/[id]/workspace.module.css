@@ -109,6 +109,13 @@
   margin: var(--space-2) 0 0; padding-inline-start: var(--space-4);
   display: flex; flex-direction: column; gap: var(--space-2);
 }
+/* Blocker → section jump: a text button that reads as the section heading but is
+   keyboard-focusable and navigable. */
+.valJump {
+  appearance: none; background: none; border: 0; padding: 0; margin: 0;
+  color: inherit; font: inherit; text-align: start; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+}
 
 /* Sticky immutable-submit action bar (factory-360 .actionBar idiom). */
 .actionbar {
@@ -116,6 +123,9 @@
   background: var(--surface-primary);
   border-block-start: var(--border-w) solid var(--border-subtle);
   padding: var(--space-3);
+  /* Safe-area: keep the sticky submit bar clear of the iPad home indicator in
+     both orientations. */
+  padding-block-end: max(var(--space-3), env(safe-area-inset-bottom));
   display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3);
 }
 
