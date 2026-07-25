@@ -28,7 +28,19 @@
 .row:hover { background: var(--surface-sunken); }
 .rowUnread { background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface-primary)); }
 
+.rowHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.rowIdentity { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 4px; }
+
+.liveState, .offlineState {
+  padding: 9px 18px; border-block-end: 1px solid var(--border-subtle);
+  font-size: 12.5px;
+}
+.liveState { background: var(--status-compliant-soft); color: var(--status-compliant-text); }
+.offlineState { background: var(--status-warning-soft); color: var(--status-warning-text); }
+
 .icn { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.icn svg { width: 19px; height: 19px; }
 
 .clamp2 {
   margin-block-start: 3px; overflow: hidden; text-overflow: ellipsis;
