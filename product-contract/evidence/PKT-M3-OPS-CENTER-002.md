@@ -134,31 +134,110 @@ returning this as the exact blocker rather than self-certifying a browser
 pass that did not happen. Dev server stopped (`pkill next dev`) to leave no
 dangling process.
 
-## Known gap — not evidenced this session
+## Round 4 — Node runtime fixed, real live-browser evidence captured
 
-- **Live Chrome/Playwright runtime evidence** (EN/AR, RTL, light/dark, the
-  five named viewports, keyboard/focus, positive/negative RLS/geography
-  runs) was **not captured** — same environment constraint as
-  `PKT-M3-OPS-LIVE-001.md` (no reachable dev server / authenticated Supabase
-  session, `auth.setup` project dependency blocks isolating composition-only
-  tests headlessly). The new tests above are composition-level (they assert
-  the real code path and query shape exist and are wired correctly); they
-  are not a substitute for a live-browser run against two personas with
-  different `profiles.region` values, which this session could not obtain.
-- No persona with a known non-null `profiles.region` was confirmed in this
-  session (no live DB read performed), so a true positive/negative
-  in-region-vs-out-of-region *runtime* assertion (two personas, two
-  different visible-record sets) could not be authored — only the
-  code-path-level checks above were possible.
+The user pointed out the Round 3 blocker was fixable: this machine has
+`nvm` with Node `v20.20.2` and `v22.22.2` already installed alongside the
+active `v24.14.1`. Switched to `v22.22.2` (`nvm use 22.22.2`), reinstalled
+`node_modules` under that version (`npm ci`), cleared `.next`, and restarted
+`next dev`. **The dev-mode RSC crash from Round 3 is gone** — `/login`
+renders correctly. This confirms Node 24.14.1 was the actual root cause;
+recorded here rather than guessed. (A durable fix — pinning `.nvmrc` — is
+outside this lease's `allowed_paths`; this fix was applied to the running
+shell/session only, not committed to the repo.)
+
+With a working dev server, signed in as the seeded `ops` persona
+(`ops@mim.gov.sa`, roles `leadership · ops`) and drove real browser
+sessions against `/operations` and `/operations/live`:
+
+- **Geography scope, live and positive**: `/operations` rendered
+  `Records outside your authorized region are excluded from this view.
+  Excluded records: 14` immediately on load — the Round 1/2 code path is
+  real, not just composition-verified. Monitoring table and map rows were
+  consistently Riyadh-region factories (Al Watania Plastics, Riyadh
+  Advanced Petrochem, Najd Steel Fabrication, Al Amal Plastics, Sudair
+  Polymer, Najd Food Industries) — no other-region factory leaked through.
+- **`/operations/live` geography + integrity disclosures, live**: rendered
+  both `Verification fixtures and future-dated visit windows are excluded
+  from this live view. Excluded records: 172` and `Records outside your
+  authorized region are excluded from this live view. Excluded records: 4`
+  as two distinct lines, confirming the split-disclosure design decision
+  from Round 2 works as intended (not conflated into one number).
+- **Per-position source/time fields, live**: opened an inspector's detail
+  drawer — rendered `Position source: No recorded position for this visit`
+  and `Position observed: No recorded position for this visit` (this
+  particular visit has no `geo_events` row, which is itself correct
+  truthful behavior — no marker is invented).
+  - **Provider-unavailable fail-closed state, live**: the map panel showed
+    `Live map unavailable — basemap provider failed.` while every other
+    widget (counters, disclosures, inspector list, drawer) remained fully
+    usable — confirms the bounded-widget-failure contract holds for the
+    real Mapbox boundary, not just in composition tests.
+- **Read-only visit handoff, live**: clicked `Open visit record` in the
+  drawer — navigated to `/visits/10d8a983-e078-48c5-b5a4-70948c038a8d`,
+  which loaded the real Visit Detail screen showing `Visit status: arrived`
+  (operational state) and `Planning: published` (workflow/planning status)
+  as two visibly distinct fields — direct browser confirmation of the
+  FND-002 separation this session's composition tests only asserted at the
+  code level.
+- **AR/RTL, live, both routes**: switched locale (`/locale?set=ar`),
+  re-authenticated, and confirmed `/operations/live` renders fully in
+  Arabic with `dir="rtl"`: title "العمليات المباشرة — المملكة العربية
+  السعودية", both disclosure lines translated including the new geography
+  one ("تُستبعد السجلات خارج نطاقك الجغرافي المخوَّل... السجلات المستبعدة:
+  4"), and the inspector drawer's new fields translated ("مصدر الموقع",
+  "وقت رصد الموقع", "فتح سجل الزيارة"). No untranslated route copy observed.
+- **Responsive, live**: resized the Arabic session to 390×844 (mobile) —
+  layout stacked cleanly, both disclosure banners fully readable, no
+  horizontal overflow or clipped text.
+- **Negative role check — inconclusive, noted not fixed**: signed in as
+  `admin@mim.gov.sa` (roles `compliance_admin · form_admin`) and it was
+  **not** denied `/operations` — contradicts this suite's existing runtime
+  test expectation (`"an authenticated admin-only persona is denied both
+  Operations routes"`). Access is derived entirely from
+  `buildShellNavigation(routeRoleKeys)`, which lives in
+  `apps/web/src/lib/shell-navigation.ts` — outside every allowed_paths list
+  in both M3 packets (explicitly prohibited: shared shell/navigation). Not
+  investigated further or touched. This may be a stale test expectation
+  against current seed-role data, or a real shared-navigation entitlement
+  question — either way it is not this lease's file to fix. Flagging for
+  the shared-shell/navigation owner rather than silently ignoring it.
+- **Instability observed while driving the browser**: the dev server died
+  unprompted once mid-session (process exited with no fatal error logged,
+  possibly resource pressure from concurrent tabs + HMR); restarted cleanly
+  on retry with no further recurrence. Not investigated further — treated
+  as dev-tooling noise, not an application defect, since it self-resolved
+  and no equivalent failure occurred in the `next build` production path.
+
+All dev servers stopped at the end of this round (`pkill`/`kill`) — no
+dangling process left running.
+
+## Known gap — still not evidenced this session
+
+- Full delivery-matrix coverage (light/dark theme, the remaining named
+  viewports 1440×900/1024×768/412×915/320×800, full keyboard/focus-visible
+  sweep, automated accessibility checks) was not exhaustively driven —
+  Round 4 covered EN+AR, one mobile viewport, and the specific interactions
+  above, not the complete matrix from `evidence_required`.
+- The `ops` persona's non-null `profiles.region` is now confirmed
+  indirectly (14/4 exclusion counts prove a real region filter is active),
+  but the exact region value was not read from the database, and only one
+  in-region persona was driven — a true two-persona, two-different-region
+  comparison (e.g. a second persona confirmed assigned to a different
+  region, both seeing disjoint record sets) was not captured this session.
 
 ## Verdict
 
 All identified P1 geography-authorization gaps (visits, factories, high-risk
 board, override queue, cancellation queue) and the retry-affordance gap are
 closed within the granted lease scope, with non-vacuous composition-level
-positive/negative tests added. Full acceptance (WA-M3-AC-001..006 P0/P1)
-remains blocked solely on live-browser evidence capture (locale/theme/
-viewport/accessibility/two-persona-geography runs), which requires a
-reachable dev server and authenticated Supabase session neither available in
-this session. Not claiming completion of the full acceptance matrix or
-self-certifying browser acceptance.
+positive/negative tests added and now real-browser confirmed in Round 4
+(EN, AR/RTL, one mobile viewport, ops-persona geography scope, provider
+fail-closed state, FND-002 separation, visit handoff). Full acceptance
+(WA-M3-AC-001..006 P0/P1) remains open pending: the complete delivery matrix
+(remaining viewports, light/dark theme, full accessibility sweep), a true
+two-persona/two-region comparison, and resolution of the
+admin-persona-not-denied observation (flagged above, not this lease's file).
+Not claiming completion of the full acceptance matrix or self-certifying
+full browser acceptance — Round 4 substantially narrows, but does not close,
+that gap.
