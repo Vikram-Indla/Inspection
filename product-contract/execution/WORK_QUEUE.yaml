@@ -75,11 +75,11 @@ items:
   - task_id: "TASK-REPOSITORY-CONSOLIDATION-20260725"
     gate: "G11 repository administration"
     priority: "P0"
-    status: "READY_FOR_MAIN_PROMOTION"
+    status: "COMPLETE"
     owner: "Codex repository administration"
     blocked_by: []
-    blocks: ["Canonical main promotion"]
-    note: "Sponsor-approved re-consolidation after concurrent Claude/Codex worktree proliferation. The V3 contract lineage is promoted; locally unique commits are preserved on named remote branches. Unaccepted product, preview, design and divergent control-plane lines remain noncanonical until their own acceptance/reconciliation gates pass. No worktree or branch is deleted and no product acceptance changes."
+    blocks: []
+    note: "Completed by non-force fast-forward promotion to main. The V3 contract lineage and exact consolidation inventory are canonical; locally unique commits are preserved on named remote branches. Unaccepted product, preview, design and divergent control-plane lines remain noncanonical until their own acceptance/reconciliation gates pass. No worktree or branch was deleted and no product acceptance changed."
   - task_id: "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001"
     gate: "G11 controlled public-access UI hardening"
     priority: "P0"

@@ -8,6 +8,11 @@ shared source of project truth. The isolated integration branch
 `codex/repository-consolidation` fast-forwarded from `main` `21f20e32` to the
 current SAQEEL V3 contract lineage at `27bce51e`.
 
+The verified administrative union was then promoted to `origin/main` by a
+non-force fast-forward at `91afebfe`. YAML parsing, diff checking and reachable
+Git-object connectivity pass. Every locally unique committed line named in the
+task record is remote-backed.
+
 The audit found multiple concurrent product, control, preview, design and
 session-provenance branches based on different historical baselines. They are
 not interchangeable and are not silently accepted by this administrative

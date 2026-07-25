@@ -2,7 +2,7 @@ schema_version: "1.0"
 task_id: "TASK-REPOSITORY-CONSOLIDATION-20260725"
 change_control_id: "CC-REPOSITORY-CONSOLIDATION-20260725"
 gate: "G11 repository administration"
-status: "READY_FOR_MAIN_PROMOTION"
+status: "COMPLETE"
 approved_by: "Product Owner"
 approved_at: "2026-07-25"
 approval_text: "approved"
@@ -29,6 +29,8 @@ canonical_promotion:
   previous_main: "21f20e325cbe6320001a954eed786b5ef4a6328e"
   contract_union: "27bce51eba89207137ea3f240796cab8ad922be8"
   integration_branch: "codex/repository-consolidation"
+  first_main_promotion: "91afebfe"
+  promotion_method: "non-force fast-forward push"
 
 remote_preservation:
   pushed_local_only_or_ahead_branches:
@@ -94,3 +96,10 @@ completion_conditions:
   - "Every locally unique commit is reachable from a named remote branch."
   - "Main is updated without force."
   - "The active M3 product slice remains unaccepted and isolated."
+
+completion_evidence:
+  yaml_parse: "PASS"
+  diff_check: "PASS"
+  git_connectivity: "PASS — 0 non-dangling findings; historical dangling objects retained"
+  remote_preservation: "PASS"
+  main_fast_forward: "PASS"
