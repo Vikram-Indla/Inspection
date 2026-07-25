@@ -27,7 +27,7 @@ final class VisitRowDecodingTests: XCTestCase {
         "risk_band": "high",
         "risk_score": 82.5
       },
-      "inspections": [ { "lifecycle_status": "returned" } ]
+      "inspections": { "lifecycle_status": "returned" }
     }]
     """.data(using: .utf8)!
 
@@ -54,7 +54,7 @@ final class VisitRowDecodingTests: XCTestCase {
            "window_start":"2026-07-25T06:00:00+00:00",
            "window_end":"2026-07-26T06:00:00+00:00",
            "execution_date":null,"priority":null,
-           "factories":null,"inspections":[] }]
+           "factories":null,"inspections":null }]
         """.data(using: .utf8)!
         let item = try VisitRow.decoder().decode([VisitRow].self, from: minimal)[0].toListItem()
         XCTAssertNotNil(item)
@@ -76,7 +76,7 @@ final class VisitRowDecodingTests: XCTestCase {
                "planning_status":"published","operational_state":"new",
                "window_start":"\(stamp)","window_end":"\(stamp)",
                "execution_date":null,"priority":null,
-               "factories":null,"inspections":[] }]
+               "factories":null,"inspections":null }]
             """.data(using: .utf8)!
             let rows = try VisitRow.decoder().decode([VisitRow].self, from: json)
             XCTAssertNotNil(rows.first?.toListItem(), "should decode stamp \(stamp)")

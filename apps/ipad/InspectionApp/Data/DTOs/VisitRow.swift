@@ -12,7 +12,10 @@ struct VisitRow: Decodable {
     let executionDate: String?
     let priority: String?
     let factories: FactoryRow?
-    let inspections: [InspectionRow]
+    // `inspections` embeds as a single object (or null): the visits→inspections
+    // relationship is to-one (inspections.visit_id is UNIQUE), so PostgREST
+    // returns an object, not an array.
+    let inspections: InspectionRow?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -96,7 +99,7 @@ struct VisitRow: Decodable {
                     region: $0.region, licenseNumber: $0.licenseNumber, crNumber: $0.crNumber,
                     activityClass: $0.activityClass, riskBand: $0.riskBand, riskScore: $0.riskScore)
         }
-        let lifecycle = inspections.first.flatMap { InspectionLifecycle.from($0.lifecycleStatus) }
+        let lifecycle = inspections.flatMap { InspectionLifecycle.from($0.lifecycleStatus) }
         return VisitListItem(visit: visit, factory: factory, inspectionLifecycle: lifecycle)
     }
 }
