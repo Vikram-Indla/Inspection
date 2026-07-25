@@ -1,0 +1,522 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-IMPLEMENTATION-PATH-OBJECT-COLLISION-REFRESH-074
+status: READ_ONLY_COLLISION_REFRESH_COMPLETE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+timezone: Asia/Riyadh
+saqeel_os: "v2"
+
+purpose: >-
+  Refresh the exact M11 application, migration, database-function, policy,
+  test and evidence collision boundary against current refs, worktrees and
+  leases, including the audit-secret exposure proven by packet 073.
+
+source_pins:
+  product:
+    ref: origin/main
+    commit: 9d8c414258a5e04244fdf9ce350e5f25f952dfc1
+    work_queue_sha256: 2b56dbe794a32520a764cd546c7a0c4e6b5407624ea3980c3b715349e9e9f37e
+    current_slice_sha256: 7cb31070385e2cef184a873905b7d44e26b94ba1f749f2e04eb1f121c2731d81
+  coordination:
+    authoritative_remote_ref: origin/codex/orchestration-control-plane
+    authoritative_remote_commit: 9198567442a7545b1cad2cafaedea3d1519d650c
+    local_review_head: 2fc42db3aee59dcbfdda665d74fd00db4af73105
+    local_only_delta:
+      - product-contract/operationalization/coordination/batches/KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073.yaml
+    lease_registry_sha256: 33f8351c45d603a54c910c2f6a463fb6b26ee1497a647c288497aded8a7c104a
+
+inputs:
+  - KIMI-M11-AUDIT-CONSUMER-STATIC-INVENTORY-073
+  - product-contract/operationalization/coordination/ACTIVE_WORKTREE_LEASES.csv
+  - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
+  - product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv
+
+hard_boundary:
+  - "Read-only Git object, ref, lease and worktree inspection plus this one uniquely owned packet."
+  - "No fetch, checkout, merge, commit, push, owner, lease, dispatch or shared-control mutation."
+  - "No application, SQL, database, seed, test, evidence, design, branch or stash mutation."
+  - "No runtime acceptance and no requirement credit."
+
+lease_snapshot:
+  registry_rows: 6
+  active_control_writer:
+    actor: Codex
+    packet: BATCH-WEB-ADMIN-ORCHESTRATION-001
+    worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+    leased_paths:
+      - product-contract/operationalization/coordination/**
+      - product-contract/operationalization/ORCHESTRATION_STATUS.md
+    exclusions:
+      - apps/**
+      - supabase/**
+      - main
+  M11_application_write_lease: NONE
+  M11_database_write_lease: NONE
+  M11_test_write_lease: NONE
+  M11_QA_lease: NONE
+  M11_evidence_write_lease: NONE
+  interpretation: >-
+    Queue ownership, prior analysis and sponsor intent are not substitutes for
+    an exact implementation or QA lease.
+
+live_worktree_collision_scan:
+  registered_worktrees_inspected: 18
+  relevant_dirty_worktrees: 1
+  relevant_dirty_rows:
+    - worktree: /Users/vikramindla/Developer/Inspection-codex-web-admin-convergence
+      paths:
+        - product-contract/evidence/EVIDENCE_STATUS.md
+        - product-contract/evidence/SAQEEL-DSYNC-001.md
+      overlap_with_proposed_M11_exact_paths: false
+      disposition: PRESERVE_UNTOUCHED
+  M11_application_dirty_paths: 0
+  M11_migration_dirty_paths: 0
+  M11_test_dirty_paths: 0
+  M11_exact_evidence_dirty_paths: 0
+  committed_branch_divergence:
+    method: "origin/main...each local branch, exact M11 path filters"
+    branches_with_M11_path_delta: 0
+  conclusion: >-
+    No current dirty-path or committed-branch collision was found on the exact
+    M11 paths, but writes remain blocked because no exact lease exists.
+
+application_path_collision_matrix:
+  - path_id: APP-074-01
+    path: apps/web/src/app/(app)/virtual/[id]/page.tsx
+    current_role: "VirtualRoom server read and virtual_sessions.timeline renderer"
+    proposed_reason_to_touch: "Wire a safe immutable audit timeline after the redaction contract is accepted."
+    current_lease: NONE
+    dirty_collision: false
+    branch_divergence: false
+    collision_status: UNLEASED_SHARED_PRODUCT_PATH
+  - path_id: APP-074-02
+    path: apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    current_role: "Interactive participant, OTP and session-state surface"
+    proposed_reason_to_touch: "Only if the accepted design places audit interaction inside Room."
+    current_lease: NONE
+    dirty_collision: false
+    branch_divergence: false
+    collision_status: UNLEASED_SHARED_PRODUCT_PATH_DESIGN_DEPENDENT
+  - path_id: APP-074-03
+    path: apps/web/src/app/(app)/virtual/[id]/actions.ts
+    current_role: "Shared M11 mutation and transition authority"
+    proposed_reason_to_touch: NONE_FOR_AUDIT_READ_REMEDIATION
+    current_lease: NONE
+    collision_status: PROTECTED_DO_NOT_TOUCH
+    reason: >-
+      Audit-consumer redaction is a read-boundary problem. Editing session
+      mutations would unnecessarily collide with verified transition,
+      readiness, notification and execution-engine behavior.
+  - path_id: APP-074-04
+    path: apps/web/src/app/(app)/virtual/page.tsx
+    current_role: "Virtual-session list and scheduling surface"
+    proposed_reason_to_touch: NONE
+    current_lease: NONE
+    collision_status: OUTSIDE_MINIMUM_REMEDIATION
+  - path_id: APP-074-05
+    path: apps/web/src/app/(app)/admin/audit/page.tsx
+    current_role: "Raw global audit browser"
+    proposed_reason_to_touch: >-
+      Consume an accepted redacted projection or prevent rendering sensitive
+      M11 before_state/after_state.
+    current_lease: NONE
+    dirty_collision: false
+    branch_divergence: false
+    collision_status: UNLEASED_CROSS_MODULE_SHARED_PATH
+    blast_radius: "Every module represented in the global audit browser."
+  - path_id: APP-074-06
+    path: apps/web/src/app/(app)/admin/page.tsx
+    current_role: "Global audit count"
+    proposed_reason_to_touch: NONE
+    current_lease: NONE
+    collision_status: READ_ONLY_COUNT_NO_SECRET_DETAIL
+  - path_id: APP-074-07
+    path: apps/web/src/app/(app)/virtual/[id]/AuditTimeline.tsx
+    current_role: ABSENT
+    proposed_reason_to_touch: "Possible isolated renderer only after design authority chooses the presentation."
+    current_lease: NONE
+    path_exists_on_origin_main: false
+    collision_status: AVAILABLE_BUT_UNALLOCATED
+
+migration_path_collision_matrix:
+  - path_id: MIG-074-01
+    path: supabase/migrations/0001_foundation.sql
+    objects:
+      - public.virtual_sessions
+      - public.virtual_participants
+      - public.audit_events
+    collision_status: IMMUTABLE_HISTORY_DO_NOT_EDIT
+  - path_id: MIG-074-02
+    path: supabase/migrations/0002_rbac_audit.sql
+    objects:
+      - audit_read
+      - audit_row_change()
+      - vs_read
+      - vs_write
+      - vp_rw
+    collision_status: IMMUTABLE_HISTORY_DO_NOT_EDIT
+  - path_id: MIG-074-03
+    path: supabase/migrations/0005_audit_absolute_immutability.sql
+    objects:
+      - trg_audit_immutable
+      - block_audit_mutation()
+    collision_status: PROTECTED_APPEND_ONLY_AUTHORITY
+  - path_id: MIG-074-04
+    path: supabase/migrations/0018_w4_notifications_reviews.sql
+    objects:
+      - vs_append_event(uuid,text,jsonb)
+      - vp_otp_status(uuid)
+      - trg_audit_virtual_sessions
+      - trg_audit_virtual_participants
+    collision_status: IMMUTABLE_HISTORY_DO_NOT_EDIT
+  - path_id: MIG-074-05
+    path: supabase/migrations/0019_w5_records.sql
+    objects:
+      - audit_read_compliance
+      - audit query indexes
+    collision_status: IMMUTABLE_HISTORY_DO_NOT_EDIT
+  - path_id: MIG-074-06
+    path: supabase/migrations/0021_fix_broad_rls.sql
+    objects:
+      - vs_read
+      - vp_rw
+    collision_status: IMMUTABLE_HISTORY_POLICY_AUTHORITY
+    security_boundary: >-
+      vp_rw is row-scoped, not column-scoped. Authorized staff and the assigned
+      inspector can query virtual_participants.verification_record directly
+      unless a separate column/projection boundary prevents it. Fixing only
+      vs_audit_trail would not close this broader secret-access path.
+  - path_id: MIG-074-07
+    path: supabase/migrations/0023_fix_otp_rpc_authorization.sql
+    objects:
+      - vp_request_otp(uuid)
+      - vp_verify_otp(uuid,text)
+    collision_status: PROTECTED_OTP_AUTHORITY_DO_NOT_EDIT_WITHOUT_EXACT_SCOPE
+  - path_id: MIG-074-08
+    path: supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
+    objects:
+      - vp_otp_status(uuid)
+    collision_status: PROTECTED_SAFE_STATUS_SEAM
+  - path_id: MIG-074-09
+    path: supabase/migrations/20260715190000_cd042_audit_read_seam.sql
+    objects:
+      - vs_audit_trail(uuid)
+    collision_status: EXISTING_UNSAFE_SEAM_REQUIRES_FORWARD_REPLACEMENT
+    secret_exposure: "Returns audit_events.after_state unchanged as detail."
+  - path_id: MIG-074-10
+    path: supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql
+    objects:
+      - audit_row_change()
+    collision_status: GLOBAL_SHARED_FUNCTION_DO_NOT_MODIFY_FOR_M11
+    blast_radius: "Every table using audit_row_change, not only virtual participants."
+  - path_id: MIG-074-11
+    path: supabase/migrations/20260721170000_execution_virtual_leg.sql
+    objects:
+      - set_operational_state(uuid,operational_state)
+    collision_status: PROTECTED_EXECUTION_AUTHORITY_OUTSIDE_AUDIT_READ_FIX
+  - path_id: MIG-074-12
+    path: "supabase/migrations/<reserved_timestamp>_m11_audit_consumer_redaction.sql"
+    current_role: ABSENT
+    current_lease: NONE
+    collision_status: TIMESTAMP_AND_OBJECT_ALLOCATION_REQUIRED
+    rule: >-
+      A future owner must reserve one forward-only filename at dispatch. No
+      historical migration may be edited and no timestamp is allocated by this
+      read-only packet.
+
+database_object_collision_matrix:
+  - object_id: DB-074-01
+    object: public.audit_events
+    kind: TABLE
+    current_owner_scope: GLOBAL_SHARED
+    mutation_required_for_minimum_fix: false
+    collision_status: PROTECTED_NO_SCHEMA_OR_DATA_MUTATION
+  - object_id: DB-074-02
+    object: public.virtual_participants.verification_record
+    kind: JSONB_COLUMN
+    current_owner_scope: M11_IDENTITY_SECRET
+    mutation_required_for_minimum_fix: false
+    collision_status: SECRET_SOURCE_PROTECT_AND_NEVER_PROJECT_RAW
+  - object_id: DB-074-03
+    object: public.vs_audit_trail(uuid)
+    kind: SECURITY_DEFINER_FUNCTION
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: true
+    collision_status: EXACT_REPLACEMENT_OBJECT_REQUIRES_LEASE
+  - object_id: DB-074-04
+    object: public.audit_row_change()
+    kind: TRIGGER_FUNCTION
+    current_owner_scope: GLOBAL_SHARED
+    mutation_required_for_minimum_fix: false
+    collision_status: EXCLUDE_FROM_M11_LEASE
+  - object_id: DB-074-05
+    object: public.vp_otp_status(uuid)
+    kind: SECURITY_DEFINER_FUNCTION
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: false
+    collision_status: PROTECTED_REFERENCE_FOR_REDACTION_STANDARD
+  - object_id: DB-074-06
+    object: public.vp_request_otp(uuid)
+    kind: SECURITY_DEFINER_FUNCTION
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: false
+    collision_status: PROTECTED_OTP_WRITE_AUTHORITY
+  - object_id: DB-074-07
+    object: public.vp_verify_otp(uuid,text)
+    kind: SECURITY_DEFINER_FUNCTION
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: false
+    collision_status: PROTECTED_OTP_WRITE_AUTHORITY
+  - object_id: DB-074-08
+    object: public.trg_audit_virtual_participants
+    kind: TRIGGER
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: false
+    collision_status: PRESERVE_RAW_IMMUTABLE_AUDIT_PRODUCTION
+  - object_id: DB-074-09
+    object: public.trg_audit_virtual_sessions
+    kind: TRIGGER
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: false
+    collision_status: PRESERVE_RAW_IMMUTABLE_AUDIT_PRODUCTION
+  - object_id: DB-074-10
+    object: public.audit_read
+    kind: RLS_POLICY
+    current_owner_scope: GLOBAL_SHARED
+    mutation_required_for_minimum_fix: false
+    collision_status: EXCLUDE_FROM_M11_LEASE_PENDING_GLOBAL_DECISION
+  - object_id: DB-074-11
+    object: public.audit_read_compliance
+    kind: RLS_POLICY
+    current_owner_scope: GLOBAL_SHARED
+    mutation_required_for_minimum_fix: false
+    collision_status: EXCLUDE_FROM_M11_LEASE_PENDING_GLOBAL_DECISION
+  - object_id: DB-074-12
+    object: public.vp_rw
+    kind: RLS_POLICY
+    current_owner_scope: M11
+    mutation_required_for_minimum_fix: UNDECIDED
+    collision_status: REQUIRES_SECRET_ACCESS_CONTRACT
+
+policy_collision_matrix:
+  - policy: vs_read
+    table: virtual_sessions
+    minimum_fix_touch: false
+    status: PRESERVE
+  - policy: vs_write
+    table: virtual_sessions
+    minimum_fix_touch: false
+    status: PRESERVE
+  - policy: vp_rw
+    table: virtual_participants
+    minimum_fix_touch: UNDECIDED
+    status: >-
+      BLOCK until column-level secret access is resolved; RLS alone cannot hide
+      verification_record from an otherwise row-authorized SELECT.
+  - policy: audit_read
+    table: audit_events
+    minimum_fix_touch: false
+    status: PRESERVE_PENDING_SEPARATE_GLOBAL_AUDIT_REDACTION_DECISION
+  - policy: audit_read_compliance
+    table: audit_events
+    minimum_fix_touch: false
+    status: PRESERVE_PENDING_SEPARATE_GLOBAL_AUDIT_REDACTION_DECISION
+
+test_path_collision_matrix:
+  - path: apps/web/e2e/cd-041-virtual-backend.spec.ts
+    status: PROTECTED_EXISTING_REGRESSION
+    future_action: RUN_UNCHANGED
+  - path: apps/web/e2e/cd-041-virtual-verified-gate.spec.ts
+    status: PROTECTED_EXISTING_REGRESSION
+    future_action: RUN_UNCHANGED
+  - path: apps/web/e2e/cd-042-audit-read-seam.spec.ts
+    status: EXISTING_PARTIAL_CONTRACT
+    future_action: >-
+      Extend only if explicitly leased; otherwise preserve and add a focused
+      redaction spec.
+  - path: apps/web/e2e/cd-042-otp-status-authz.spec.ts
+    status: PROTECTED_SAFE_STATUS_AND_AUTHZ_REGRESSION
+    future_action: RUN_UNCHANGED
+  - path: apps/web/e2e/cd-043-virtual-boundary-states.spec.ts
+    status: PROTECTED_BOUNDARY_REGRESSION
+    future_action: RUN_UNCHANGED
+  - path: apps/web/e2e/execution-crossmodule-contract.spec.ts
+    status: PROTECTED_EXECUTION_REGRESSION
+    future_action: RUN_UNCHANGED
+  - path: apps/web/e2e/neutral-error-sweep.spec.ts
+    status: PROTECTED_ERROR_REGRESSION
+    future_action: RUN_UNCHANGED
+  - path: apps/web/e2e/m11-audit-consumer-redaction.spec.ts
+    path_exists_on_origin_main: false
+    current_lease: NONE
+    status: AVAILABLE_BUT_UNALLOCATED
+  - path: supabase/tests/m11_audit_consumer_redaction_security.sql
+    path_exists_on_origin_main: false
+    current_lease: NONE
+    status: AVAILABLE_BUT_UNALLOCATED
+  - path: apps/web/e2e/m11-audit-direct-table-secret-negative.spec.ts
+    path_exists_on_origin_main: false
+    current_lease: NONE
+    status: AVAILABLE_BUT_UNALLOCATED
+
+evidence_path_collision_matrix:
+  - path: product-contract/evidence/B6-EV-001-otp-flow.txt
+    status: PROTECTED_HISTORICAL_EVIDENCE
+  - path: product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
+    status: PROTECTED_HISTORICAL_EVIDENCE
+  - path: product-contract/evidence/CD-043_D2L_WIRING_CLOSURE_2026-07-15.md
+    status: PROTECTED_HISTORICAL_EVIDENCE
+  - path: product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md
+    status: PROTECTED_HISTORICAL_EVIDENCE
+  - path: product-contract/evidence/M11_AUDIT_CONSUMER_REDACTION_CERTIFICATION.md
+    path_exists_on_origin_main: false
+    current_lease: NONE
+    status: AVAILABLE_BUT_UNALLOCATED
+  - path: product-contract/evidence/EVIDENCE_STATUS.md
+    dirty_in_other_worktree: true
+    status: EXCLUDE_CONCURRENT_FILE_OWNERSHIP
+  - path: product-contract/evidence/SAQEEL-DSYNC-001.md
+    untracked_in_other_worktree: true
+    status: EXCLUDE_CONCURRENT_FILE_OWNERSHIP
+
+audit_secret_exposure_boundary:
+  exposure_1:
+    route: "vs_audit_trail(uuid) -> audit_events.after_state -> detail"
+    exposed_fields:
+      - verification_record.code_hash
+      - verification_record.expires_at
+      - verification_record.attempts
+      - verification_record.resends
+      - verification_record.last_sent_at
+      - verification_record.provider
+    caller_scope:
+      - ops
+      - reviewer
+      - auditor
+      - compliance_admin
+      - planner
+      - assigned_inspector
+    blocker: P0
+  exposure_2:
+    route: "vp_rw row authorization -> direct virtual_participants SELECT"
+    exposed_fields:
+      - verification_record
+    caller_scope:
+      - ops
+      - reviewer
+      - auditor
+      - compliance_admin
+      - planner
+      - assigned_inspector
+    blocker: P0
+    note: "Row-level security does not provide column-level redaction."
+  exposure_3:
+    route: "/admin/audit -> raw before_state/after_state"
+    exposed_fields:
+      - "Any verification_record serialized by trg_audit_virtual_participants"
+    caller_scope:
+      - "roles allowed by audit_read and audit_read_compliance"
+    blocker: P0
+  minimum_safe_boundary:
+    preserve:
+      - public.audit_events
+      - public.audit_row_change()
+      - trg_audit_virtual_participants
+      - trg_audit_virtual_sessions
+      - vp_request_otp(uuid)
+      - vp_verify_otp(uuid,text)
+      - vp_otp_status(uuid)
+    require_decision:
+      - "Approved redacted vs_audit_trail return schema."
+      - "Direct virtual_participants secret-column access contract."
+      - "Global /admin/audit rendering contract for M11 snapshots."
+      - "Duplicate raw UPDATE plus explicit OTP event presentation rule."
+
+exact_future_lease_boundary:
+  implementation_paths_minimum:
+    - apps/web/src/app/(app)/virtual/[id]/page.tsx
+    - "supabase/migrations/<reserved_timestamp>_m11_audit_consumer_redaction.sql"
+    - apps/web/e2e/m11-audit-consumer-redaction.spec.ts
+    - supabase/tests/m11_audit_consumer_redaction_security.sql
+  implementation_objects_minimum:
+    - public.vs_audit_trail(uuid)
+  conditional_paths:
+    - apps/web/src/app/(app)/virtual/[id]/Room.tsx
+    - apps/web/src/app/(app)/virtual/[id]/AuditTimeline.tsx
+    - apps/web/src/app/(app)/admin/audit/page.tsx
+    - apps/web/e2e/m11-audit-direct-table-secret-negative.spec.ts
+  conditional_objects:
+    - public.vp_rw
+    - "new redacted admin-audit read seam, name not yet authorized"
+  explicit_exclusions:
+    - public.audit_events
+    - public.audit_row_change()
+    - public.trg_audit_virtual_participants
+    - public.trg_audit_virtual_sessions
+    - public.vp_request_otp(uuid)
+    - public.vp_verify_otp(uuid,text)
+    - public.vp_otp_status(uuid)
+    - public.vs_append_event(uuid,text,jsonb)
+    - public.vs_mark_session_verified(uuid,uuid)
+    - public.set_operational_state(uuid,operational_state)
+    - apps/web/src/app/(app)/virtual/[id]/actions.ts
+    - apps/web/src/app/(app)/virtual/actions.ts
+    - product-contract/evidence/EVIDENCE_STATUS.md
+  unresolved_before_lease:
+    - "Design placement for the reviewer-visible timeline."
+    - "Redacted event schema and allowed detail keys."
+    - "Direct-table verification_record access decision."
+    - "Global audit browser M11 redaction decision."
+    - "Forward migration filename/timestamp reservation."
+    - "Distinct implementation and QA owners."
+
+collision_verdict:
+  exact_dirty_path_collision: false
+  exact_committed_branch_collision: false
+  exact_active_lease_collision: false
+  write_authority_available: false
+  classification: BLOCK_UNLEASED_AND_MISSING_SECRET_CONTRACT
+  explanation: >-
+    The target paths are presently clean and no other branch changes them, but
+    no M11 implementation/QA lease exists and the redaction/access contract is
+    incomplete. Absence of a collision is not authorization to write.
+  blockers_closed: 0
+  requirement_credit: 0
+
+safe_successor:
+  packet: KIMI-M11-AUDIT-SECRET-REDACTION-CONTRACT-075
+  state: QUEUED_SAFE_READ_ONLY_NOT_STARTED
+  purpose: >-
+    Define a decision-ready, field-exact redaction and access contract for
+    vs_audit_trail, direct virtual_participants access and the global audit
+    browser, without choosing owners or changing code, SQL, data, tests,
+    policies or leases.
+  prohibited:
+    - "No owner, lease, dispatch, product, SQL, database, test, evidence, design, branch, stash or shared-control mutation."
+
+Mac_capture_dependency:
+  state: LOCKED
+  Kimi_response_captured: false
+  Kimi_response_accepted: false
+
+validation:
+  yaml_parse: PASS
+  semantic_validation: PASS
+  application_paths: 7
+  migration_paths: 12
+  database_objects: 12
+  policies: 5
+  test_paths: 10
+  evidence_paths: 7
+  secret_exposure_routes: 3
+  registered_worktrees_inspected: 18
+  relevant_dirty_worktrees: 1
+  exact_M11_dirty_path_collisions: 0
+  branches_with_M11_path_delta: 0
+  active_M11_write_leases: 0
+  active_M11_QA_leases: 0
+  blockers_closed: 0
+  credit_granted: 0
+  commits_created: 0
+  pushes_created: 0
+  non_mutating_boundary_checked: PASS

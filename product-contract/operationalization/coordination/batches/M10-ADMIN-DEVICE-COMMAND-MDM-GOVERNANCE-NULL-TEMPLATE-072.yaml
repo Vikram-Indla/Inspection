@@ -1,0 +1,478 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+title: Trusted Devices unresolved governance null template
+status: NULL_TEMPLATE_COMPLETE_NO_DECISIONS_POPULATED
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+mode: READ_ONLY_NULL_SCHEMA
+
+completion_credit:
+  requirement_rows: 0
+  screens: 0
+  decisions_populated: 0
+  authority_records_changed: 0
+  leases_granted: 0
+  reason: >-
+    Every policy-bearing field is deliberately null. This template prevents
+    assumptions but supplies no decision, approval, provider authority, design
+    identity or implementation authorization.
+
+task_contract:
+  task_id: M10-ADMIN-DEVICE-COMMAND-MDM-GOVERNANCE-NULL-TEMPLATE-072
+  source_task: DEV-PRE-GOV-02
+  predecessors:
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-DECISION-BRIEF-062
+    - M10-ADMIN-DEVICE-COMMAND-MDM-SPONSOR-ANSWER-VALIDATION-CHECKLIST-067
+    - M10-ADMIN-DEVICE-COMMAND-MDM-REPOSITORY-AUTHORITY-TARGET-MAP-071
+  governed_decisions: 10
+  do_not_touch:
+    - sponsor answer set and canonical decision register
+    - RBAC, transitions, provider holds/contracts and design route maps
+    - design, application, database, provider, data, tests and evidence
+    - branches, leases, main, setup/Inspection and stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  git_common_directory: /Users/vikramindla/Developer/Inspection/.git
+  branch: codex/orchestration-control-plane
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_status: AWAITING_PRODUCT_OWNER_APPROVAL
+  collision_assessment: Coordination template only; no authority target is edited.
+
+null_semantics:
+  null: Sponsor/governance/provider/design authority has not supplied or verified the value.
+  empty_collection: No entries have been authorized; it must not be interpreted as none required.
+  false: May be used only for template metadata such as populated=false, never as a default policy answer.
+  prohibition: Downstream tools must not coerce null to current-code behavior, common practice, safest guess, mock, seed or illustrative design data.
+
+template_metadata:
+  answer_set_revision: null
+  sponsor_identity: null
+  sponsor_answered_at: null
+  governance_recorded_at: null
+  governance_change_control_id: null
+  preservation_floor_acknowledged: null
+  populated: false
+  validated_against_checklist_067: false
+  validation_result: null
+
+decision_answer_template:
+  DEV-CMD-DEC-01:
+    option_id: null
+    role_to_capability_matrix: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-02:
+    option_id: null
+    per_command_role_and_source_state_matrix: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-03:
+    option_id: null
+    commands_requiring_approval: null
+    emergency_or_expiry_behavior: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-04:
+    option_id: null
+    reactivation_process_owner_and_evidence: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-05:
+    option_id: null
+    attestation_authority_and_freshness_rule: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-06:
+    option_id: null
+    authoritative_actor_and_receipt_for_each_stage: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-07:
+    option_id: null
+    exact_scope_and_server_device_effects: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-08:
+    option_id: null
+    source_owner_formula_threshold_and_actions: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-09:
+    option_id: null
+    separate_provider_governance_reference: null
+    sponsor_rationale: null
+    governance_target_reference: null
+  DEV-CMD-DEC-10:
+    option_id: null
+    governed_identity_fingerprint_and_lineage: null
+    sponsor_rationale: null
+    governance_target_reference: null
+
+derived_authority_templates:
+  decision_register_record:
+    decision_id: null
+    subject: null
+    sponsor_answer: null
+    status: null
+    owner: null
+    decision_date: null
+    evidence_reference: null
+    downstream_authority_targets: null
+    preservation_boundary: null
+    change_control_id: null
+
+  role_capability_authority:
+    canonical_role_rows: null
+    capability_vocabulary:
+      view_device_register: null
+      view_command_evidence: null
+      register_device: null
+      assign_device: null
+      request_suspend: null
+      request_resume: null
+      request_revoke: null
+      request_remote_wipe: null
+      request_expire_packages: null
+      approve_command: null
+      view_sync_health: null
+      perform_sync_rescue: null
+      view_provider_receipt: null
+    role_rows_template:
+      - role_id: null
+        canonical_source_reference: null
+        read_scope: null
+        mutation_capabilities: null
+        device_scope_rule: null
+        approval_scope_rule: null
+        direct_route_behavior: null
+        direct_server_behavior: null
+        audit_requirement: null
+    explicit_denials:
+      inspector_mutation: null
+      auditor_mutation: null
+      unauthenticated_read_or_mutation: null
+      out_of_scope_device_mutation: null
+
+  command_transition_authority:
+    governing_version_id: null
+    optimistic_concurrency_field: null
+    transition_rows_template:
+      - transition_id: null
+        command: null
+        source_state: null
+        target_state_after_request: null
+        target_state_after_approval: null
+        target_state_after_provider_acceptance: null
+        target_state_after_device_receipt: null
+        target_state_after_verified_effect: null
+        allowed_roles: null
+        approval_required: null
+        guard: null
+        expected_version_rule: null
+        stale_conflict_result: null
+        idempotency_rule_reference: null
+        audit_event: null
+    terminal_rules:
+      revoked_terminal: null
+      wiped_terminal: null
+      wipe_pending_interruptible: null
+      ordinary_resume_allowed_from_revoked: null
+      ordinary_resume_allowed_from_wipe_pending: null
+      ordinary_resume_allowed_from_wiped: null
+      separate_reactivation_process: null
+
+  approval_authority:
+    commands_requiring_approval: null
+    requester_may_approve: null
+    approver_roles: null
+    approver_scope: null
+    pending_state: null
+    approve_state: null
+    reject_state: null
+    withdrawal_rule: null
+    expiry_rule: null
+    emergency_rule: null
+    concurrent_decision_rule: null
+    audit_fields: null
+
+  trust_evidence_authority:
+    enrollment_requirement: null
+    assignment_requirement: null
+    platform_requirement: null
+    app_policy_authority: null
+    app_policy_version: null
+    attestation_authority: null
+    attestation_schema_reference: null
+    freshness_rule: null
+    evidence_timestamp_source: null
+    evidence_actor_or_system: null
+    human_approval_required: null
+    independent_approval_required: null
+    stale_evidence_outcome: null
+    missing_evidence_outcome: null
+    conflicting_evidence_outcome: null
+    trust_revocation_rule: null
+
+  acknowledgement_receipt_authority:
+    lifecycle_stages: null
+    stage_rows_template:
+      - stage_id: null
+        business_meaning: null
+        authoritative_actor: null
+        receipt_schema_reference: null
+        authentication_rule: null
+        correlation_field: null
+        idempotency_field: null
+        timestamp_source: null
+        verified_effect: null
+        next_state: null
+    duplicate_receipt_rule: null
+    late_receipt_rule: null
+    stale_receipt_rule: null
+    mismatched_receipt_rule: null
+    unverifiable_receipt_rule: null
+    rejected_receipt_rule: null
+    quarantine_rule: null
+    completion_evidence_rule: null
+    direct_table_update_authorized_as_receipt: null
+
+  package_invalidation_authority:
+    scope_option: null
+    selection_rule: null
+    policy_reference: null
+    affected_manifest_identity_rule: null
+    server_download_effect: null
+    server_open_effect: null
+    cached_open_effect: null
+    sync_effect: null
+    submit_effect: null
+    partial_failure_rule: null
+    offline_pending_rule: null
+    device_deletion_evidence: null
+    immutable_evidence_preservation: null
+
+  sync_health_authority:
+    owning_surface: null
+    route_if_separate: null
+    source_owner: null
+    outbox_source: null
+    conflict_source: null
+    error_source: null
+    replay_source: null
+    last_confirmed_source: null
+    health_formula: null
+    thresholds: null
+    freshness_rule: null
+    rescue_actions: null
+    rescue_roles: null
+    stale_source_presentation: null
+    failed_source_presentation: null
+    held_presentation: null
+
+  provider_authority:
+    option: null
+    state: null
+    provider_name: null
+    provider_governance_reference: null
+    hold_id: null
+    hold_scope: null
+    credential_owner: null
+    non_production_environment_reference: null
+    enrollment_contract_reference: null
+    attestation_contract_reference: null
+    transport_contract_reference: null
+    callback_or_polling_contract_reference: null
+    receipt_contract_reference: null
+    correlation_rule_reference: null
+    idempotency_rule_reference: null
+    retry_rule_reference: null
+    privacy_rule_reference: null
+    release_evidence_reference: null
+    fail_closed_behavior: null
+    provider_specific_runtime_claim_allowed: null
+
+  design_identity_authority:
+    option: null
+    design_id: null
+    parent_design_id: null
+    module_design_id: null
+    route: null
+    source_filename: null
+    revision_id: null
+    sha256: null
+    frame_ids: null
+    selector_behavior: null
+    parent_lineage: null
+    collision_check_reference: null
+    requirement_ids: null
+    acceptance_ids: null
+    states_covered: null
+    locales: null
+    themes: null
+    viewports: null
+    accessibility_contract: null
+    sponsor_design_acceptance_reference: null
+
+  implementation_slice_authority:
+    change_control_id: null
+    task_id: null
+    branch: null
+    worktree: null
+    baseline_sha: null
+    requirement_ids: null
+    acceptance_ids: null
+    design_revision: null
+    routes: null
+    engines: null
+    exact_files: null
+    exact_database_objects: null
+    provider_boundary: null
+    data_fixture_boundary: null
+    test_files: null
+    evidence_outputs: null
+    do_not_touch: null
+    rollback_or_forward_remediation: null
+    lease_owner: null
+    reviewer: null
+    sponsor_consent_reference: null
+
+preservation_floor_template:
+  only_assigned_enrolled_trusted_compliant_device_may_download: null
+  only_assigned_enrolled_trusted_compliant_device_may_open: null
+  only_assigned_enrolled_trusted_compliant_device_may_submit: null
+  pending_fails_closed: null
+  suspended_fails_closed: null
+  revoked_fails_closed: null
+  wipe_pending_fails_closed: null
+  wiped_fails_closed: null
+  queued_is_not_acknowledged: null
+  queued_is_not_completed: null
+  queued_resume_does_not_restore_trust: null
+  genuine_receipt_required_for_remote_effect: null
+  audit_actor_reason_version_time_before_after: null
+  immutable_inspection_and_package_evidence_preserved: null
+  offline_conflicts_never_silently_overwrite: null
+  all_46_negative_cases_preserved: null
+  all_14_positive_cases_preserved: null
+  English_Arabic_RTL_responsive_accessibility_preserved: null
+
+field_validation_rules:
+  option_allow_lists:
+    DEV-CMD-DEC-01: [D01-A, D01-B, D01-C]
+    DEV-CMD-DEC-02: [D02-A, D02-B, D02-C]
+    DEV-CMD-DEC-03: [D03-A, D03-B, D03-C]
+    DEV-CMD-DEC-04: [D04-A, D04-B, D04-C]
+    DEV-CMD-DEC-05: [D05-A, D05-B, D05-C]
+    DEV-CMD-DEC-06: [D06-A, D06-B, D06-C]
+    DEV-CMD-DEC-07: [D07-A, D07-B, D07-C]
+    DEV-CMD-DEC-08: [D08-A, D08-B, D08-C]
+    DEV-CMD-DEC-09: [D09-A, D09-B, D09-C]
+    DEV-CMD-DEC-10: [D10-A, D10-B]
+  unconditional_required:
+    - Every decision option_id.
+    - D01 role_to_capability_matrix.
+    - D02 per_command_role_and_source_state_matrix.
+    - D03 commands_requiring_approval.
+    - D05 attestation_authority_and_freshness_rule.
+    - D06 authoritative_actor_and_receipt_for_each_stage.
+    - D07 exact_scope_and_server_device_effects.
+  conditional_required:
+    - D03-B/C requires emergency_or_expiry_behavior.
+    - D04-B/C requires reactivation_process_owner_and_evidence.
+    - D08-A/B requires source_owner_formula_threshold_and_actions.
+    - D09-B/C requires separate_provider_governance_reference.
+    - D10 identity/fingerprint is applied by governance after sponsor selection, not invented in the answer.
+  boolean_floor_rule: Every preservation_floor_template field must become explicit true; false or null is not ACK.
+  reference_rule: Every governance/provider/design reference must resolve read-only before ACK.
+  collection_rule: Empty maps/lists fail completion where a matrix, stage set, transition set or evidence set is required.
+
+completion_rules:
+  TEMPLATE_COMPLETE:
+    condition:
+      - All defined policy-bearing fields remain null.
+      - populated remains false.
+      - No external authority file is changed.
+    current_result: true
+    effect: Template may be used to collect future answers but authorizes nothing.
+  ANSWER_SET_READY_FOR_VALIDATION:
+    condition:
+      - Ten option IDs and all required companion fields are populated by sponsor.
+      - Preservation floor is explicitly true.
+      - Cited references exist.
+    current_result: false
+    effect: Run checklist 067; no automatic ACK.
+  GOVERNANCE_READY_TO_RECORD:
+    condition:
+      - Checklist 067 returns ACK with zero RETURN/BLOCK failures.
+      - Sponsor identity/revision/evidence are bound.
+      - Change control is authorized.
+    current_result: false
+    effect: Governance may prepare canonical edits under a separately authorized task.
+  DESIGN_READY:
+    condition:
+      - D01..D09 are recorded and D10 selected.
+      - Stable design lease is separately granted.
+    current_result: false
+  IMPLEMENTATION_READY:
+    condition:
+      - Governance/provider/design authorities are accepted.
+      - New slice and non-overlapping exact-file leases are granted.
+    current_result: false
+
+rejection_rules:
+  RETURN:
+    - Missing or invalid option ID.
+    - Required or conditional field remains null.
+    - Required matrix/list is empty, partial or ambiguous.
+    - A cited reference cannot be resolved.
+    - Derived authority fields conflict but do not yet weaken the preservation floor.
+    - Design identity/revision is supplied by a non-governance actor without collision proof.
+  BLOCK:
+    - Any null is replaced by current source behavior, illustrative design data, seed, mock or assumed best practice.
+    - Inspector or Auditor receives device mutation.
+    - Ordinary Resume is allowed from revoked, wipe_pending or wiped.
+    - Queueing, local database update or mock is accepted as acknowledgement/completion/trust evidence.
+    - Provider execution is claimed while held or without separate provider authority.
+    - Cached deletion, wipe or expiry is claimed without genuine effect evidence.
+    - Sync health, formula, threshold or rescue action is invented.
+    - Any preservation-floor field is false, omitted or waived.
+    - Any answer is treated as a lease, provider enablement, design acceptance or completion evidence.
+
+consumer_rules:
+  Claude_Design:
+    may_read: Populated and governance-recorded values only.
+    while_null: Must use unresolved/held state slots and cannot choose semantics.
+  implementation:
+    may_read: Accepted authority records and stable design revision only.
+    while_null: No mutation or implicit fallback to current code.
+  seeder:
+    may_read: Approved schema/state vocabulary only.
+    while_null: May inventory fixture sources but cannot create policy-shaped data.
+  QA:
+    may_read: Approved expected outcomes only.
+    while_null: Cases remain NOT_RUN/BLOCKED; no guessed assertion.
+  evidence:
+    may_read: Immutable producer results only.
+    while_null: Evidence slot remains empty and cannot be marked not applicable.
+
+review:
+  disposition: ACK
+  code: ACK_NULL_TEMPLATE_ONLY
+  validation_summary:
+    decision_objects: 10
+    derived_authority_templates: 11
+    populated_decisions: 0
+    non_null_policy_answers: 0
+    authority_files_modified: 0
+    leases_granted: 0
+  caveat: ACK certifies only that assumptions are prevented; all downstream authority remains blocked.
+  safe_successor:
+    task_id: M10-ADMIN-DEVICE-COMMAND-MDM-DESIGN-STATE-SLOT-INVENTORY-073
+    mode: READ_ONLY
+    source_task: DEV-PRE-DES-02
+    objective: >-
+      Map the 60 cases and 26 hazards to route design state slots using null
+      semantics for every unresolved role/provider/lifecycle value, without
+      opening or modifying live Claude Design.
