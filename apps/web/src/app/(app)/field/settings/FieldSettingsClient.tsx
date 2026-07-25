@@ -220,7 +220,7 @@ export default function FieldSettingsClient({
         <GovernedRow label={copy(locale, "Privacy Policy", "سياسة الخصوصية")} note={notAvailable} />
       </div>
 
-      <a href="/signout" className="btn btn-danger btn-block">
+      <a href="/login/field/logout" className="btn btn-danger btn-block">
         {copy(locale, "Sign out", "تسجيل الخروج")}
       </a>
 
