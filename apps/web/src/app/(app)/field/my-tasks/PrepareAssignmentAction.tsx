@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { acceptPrepareAssignment, type AssignmentPrepareResult } from "./actions";
+import styles from "./my-tasks.module.css";
 
 const INITIAL: AssignmentPrepareResult = { status: "idle" };
 
@@ -25,7 +26,7 @@ export default function PrepareAssignmentAction({
   }, [router, state]);
 
   return (
-    <form action={action} className="grow">
+    <form action={action} className={styles.taskActionForm}>
       <input type="hidden" name="visit_id" value={visitId} />
       <button type="submit" className="btn btn-secondary" disabled={pending}
         aria-describedby={state.status === "error" ? `prepare-error-${visitId}` : undefined}>
