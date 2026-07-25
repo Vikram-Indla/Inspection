@@ -1,0 +1,285 @@
+schema_version: "1.0"
+packet_id: KIMI-M11-POST-CORRECTION-ACCEPTANCE-HARNESS-030
+status: DOCUMENTATION_ONLY_QUEUED_NOT_EXECUTABLE
+prepared_by: codex_kimi_live_watch
+prepared_on: "2026-07-25"
+saqeel_os: "v2"
+
+purpose: >-
+  Specify the deterministic read-only acceptance procedure for future review
+  025 after six actual corrected packets and their response manifest exist.
+  This specification does not execute review 025 or authorize implementation.
+
+authority:
+  correction_authority: KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022
+  prior_readiness_review: KIMI-M11-CORRECTION-READINESS-REVIEW-024
+  future_review: KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025
+  correction_blueprint: KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026
+  collision_preflight: KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027
+  dispatch_package: KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028
+  dispatch_certificate: KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029
+
+hard_boundary:
+  allowed:
+    - "Read-only parsing, fingerprinting, schema checks and cross-packet comparison."
+    - "Produce one future 025 PASS, RETURN or BLOCKED verdict with evidence."
+  prohibited:
+    - "Dispatch before six corrected payloads and their response manifest exist."
+    - "Product, application, database, remote DDL, test, migration, data, UI or seed writes."
+    - "Branch/worktree creation or switch, lease issuance, push, merge, deploy, main, setup/Inspection or stash changes."
+    - "Runtime, migration, security or requirement certification."
+  completion_effect: "Zero change to the 478-row completion count."
+
+execution_precondition:
+  required:
+    - "Package 028 was dispatched only after its manual-unlock and fingerprint gates passed."
+    - "Six complete corrected chat payloads were received with all delimiters exactly once."
+    - "One complete response manifest and closure matrix were received."
+    - "An authorized control writer materialized exactly six corrected coordination packet files."
+    - "Materialized packet hashes and extracted chat-payload hashes were recorded."
+  if_missing: "DO_NOT_RUN_025_KEEP_QUEUED"
+
+authority_fingerprint_baseline:
+  algorithm: SHA-256
+  files:
+    KIMI-M11-CONSOLIDATED-SECURITY-CORRECTION-022:
+      sha256: 384ed1fe0bceacd4bcb3bea2fd665c28a750f9084cb875a5ebfb15eba4b07546
+    KIMI-M11-CORRECTION-READINESS-REVIEW-024:
+      sha256: aa9beb6787536b73803467e6c47130358e991557b66593539167bcb9fc433e75
+    KIMI-M11-POST-RETURN-INDEPENDENT-REVIEW-025:
+      sha256: ad7908b85d81a43357dba4e3e7dfad70a79dedfa58c5fddd67f1dd768e9a14d9
+    KIMI-M11-SOURCE-PACKET-CORRECTION-BLUEPRINT-026:
+      sha256: 70013fa37f25231eb4a9e4520c415e914d814b601f6a450addb7889436c6fe96
+    KIMI-M11-OWNERSHIP-COLLISION-PREFLIGHT-027:
+      sha256: 35d23cea16d13b7dff29376280645067556f2e53e6d0d46f3f89bd3d927252da
+    KIMI-M11-CHAT-ONLY-CORRECTION-DISPATCH-PACKAGE-028:
+      sha256: 2d613f96665f16584b4825d19e08c7e8019d78236be6ed34731392f64156d1f5
+    KIMI-M11-DISPATCH-INTEGRITY-CERTIFICATE-029:
+      sha256: ef8237ebce091cc13d11f847ccf4cbd7163227de86808ce49d09c0813340496b
+  mismatch_action: >-
+    RETURN_FOR_CORRECTION with SOURCE_AUTHORITY_FINGERPRINT_MISMATCH unless a
+    newer explicit authority packet re-baselines this harness before review.
+
+source_fingerprint_recheck:
+  steps:
+    - id: FP-01
+      check: "Recompute all seven authority hashes above immediately before 025."
+      pass: "Every hash matches."
+    - id: FP-02
+      check: "Compare the response manifest's acknowledged 028 source hashes for original 010/011/013/014/015/017 and 022/024/026/027."
+      pass: "All ten acknowledged values equal package 028."
+    - id: FP-03
+      check: "Hash each extracted corrected YAML payload before materialization."
+      pass: "Six hashes exist and correspond one-to-one with the six delimiters."
+    - id: FP-04
+      check: "Hash each materialized corrected packet."
+      pass: "Each file hash equals its extracted corrected-payload hash."
+    - id: FP-05
+      check: "Compare corrected packet hashes with package 028's original source hashes."
+      pass: "Every packet requiring correction differs from its original source hash."
+  fail_classification:
+    authority_or_acknowledgement_mismatch: RETURN_FOR_CORRECTION
+    payload_to_materialized_mismatch: RETURN_FOR_CORRECTION
+    unchanged_required_packet: RETURN_FOR_CORRECTION
+
+schema_and_yaml_validation:
+  packet_checks:
+    - "Exactly six materialized files exist and parse as one YAML document each."
+    - "packet_id is unchanged and unique."
+    - "schema_version is present."
+    - "Status does not claim implemented, tested, certified, accepted requirement or issued lease."
+    - "Every 026 required section exists for that packet."
+    - "Every proposed_future_lease is explicitly PROPOSED_NOT_ISSUED."
+    - "No migration filename, branch, worktree, implementation owner or QA owner is presented as allocated when unresolved."
+    - "Every unresolved authority/provider/owner/lease value uses an allowed BLOCKED state."
+  response_manifest_checks:
+    - "Manifest parses as one YAML document."
+    - "All required top-level fields from 028 exist."
+    - "repository_write_attempted=false for Kimi."
+    - "implementation_claimed=false."
+    - "lease_issued_or_claimed=false."
+    - "review_025_run=false at return time."
+    - "Six packet_results entries exist and each reports delimiter_present=true and yaml_self_parse=PASS."
+    - "All 16 collision-stop acknowledgements exist."
+  failure_output: RETURN_FOR_CORRECTION
+
+closure_matrix_evaluation:
+  required_primary_rows:
+    migration_security:
+      P0: [M11-MIGSEC-001, M11-MIGSEC-002, M11-MIGSEC-003, M11-MIGSEC-004, M11-MIGSEC-005, M11-MIGSEC-006, M11-MIGSEC-007, M11-MIGSEC-008]
+      P1: [M11-MIGSEC-009, M11-MIGSEC-010, M11-MIGSEC-011, M11-MIGSEC-012]
+    addendum:
+      P0: ["021-P0-01", "021-P0-02", "021-P0-03", "021-P0-04", "021-P0-05", "021-P0-06", "021-P0-07", "021-P0-08"]
+      P1: ["021-P1-01", "021-P1-02", "021-P1-03", "021-P1-04", "021-P1-05"]
+    contradictions:
+      - "024-X01"
+      - "024-X02"
+      - "024-X03"
+      - "024-X04"
+      - "024-X05"
+      - "024-X06"
+  cardinality:
+    migration_security: 12
+    addendum: 13
+    contradictions: 6
+    total_primary_rows: 31
+  per_row_checks:
+    - "Exactly one primary owner equals 026 primary_ownership_index."
+    - "Consumer packets equal the applicable 026 cross-cutting list."
+    - "corrected_section points to an existing non-empty packet section."
+    - "authority_evidence cites 022 plus applicable canonical requirement/RBAC authority without invention."
+    - "proposed_future_lease is non-overlapping and marked PROPOSED_NOT_ISSUED."
+    - "acceptance_gate and blocker_or_stop_condition are explicit."
+    - "closure_status is one of the five statuses allowed by 026."
+    - "No row uses IMPLEMENTED, TESTED or ACCEPTED_REQUIREMENT."
+  duplicate_or_missing_row_output: RETURN_FOR_CORRECTION
+  status_interpretation:
+    CLOSED_IN_CORRECTED_PACKET: "The orchestration correction is textually complete; it is not implemented."
+    BLOCKED_ON_AUTHORITY: "Structurally valid but implementation ownership cannot be proposed."
+    BLOCKED_ON_PROVIDER: "Structurally valid but runtime completion/ownership decision remains blocked."
+    BLOCKED_ON_OWNER: "Structurally valid but function/security ownership is unresolved."
+    BLOCKED_ON_LEASE: "Structurally valid but exact non-overlapping implementation ownership is unresolved."
+
+P0_acceptance_conditions:
+  required_count: 16
+  rule: "Every P0 row must satisfy its packet-specific 026 acceptance gate and the following cross-stack conditions."
+  conditions:
+    - "Every proposed function has exact identity/signature placeholder, security mode, search_path='', full qualification, safe dependencies and exact ACL contract."
+    - "All PUBLIC, anon and obsolete authenticated grants/revokes are explicit per exact signature."
+    - "Final post-013 invoker/definer authorization checks are declared for creation, join, begin, close, verified and OTP paths."
+    - "Raw participant audit is denied to every authenticated application role through all overlapping policies."
+    - "015 safe participant audit trigger/projection is installed in expansion before any hardened OTP function is exercised."
+    - "013 initial OTP and 015 exact successor ownership is sequential, preserves authorization/locking and has no traffic between contract migrations."
+    - "OTP participant locking, atomic counters/code consumption and one-event cardinality are explicit."
+    - "Rollout is database expand → application switch with OTP disabled → quiesce/drain → 013 then 015 contract without traffic → certification."
+    - "Assigned Inspector-only OTP authority is preserved; Reviewer/Auditor remain safe-read-only."
+    - "No dev_code/code_hash/raw verification reaches client, log or evidence; unavailable provider is truthfully blocked."
+    - "Direct table DML revokes cover PUBLIC, anon and authenticated."
+    - "Every governed public RPC uses VIRTUAL_RESOURCE_NOT_FOUND_OR_OUT_OF_SCOPE before existence/state disclosure."
+    - "Global audit consumer inventory/adaptation is complete before raw-policy contraction."
+  correction_failure_output: RETURN_FOR_CORRECTION
+  valid_external_blocker_output: BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+
+P1_acceptance_conditions:
+  required_count: 9
+  rule: "Every P1 row must satisfy its packet-specific 026 acceptance gate and the following hardening conditions."
+  conditions:
+    - "Per-command RLS policies use explicit TO authenticated and correct UPDATE USING/WITH CHECK."
+    - "Final pg_policy permissive-OR, table ACL, affected-row and supporting-index manifests are exact."
+    - "No recursive session↔participant policy dependency or unsafe nested search_path=public helper remains."
+    - "Safe trigger timing/order, rollback behavior and semantic event cardinality are unified."
+    - "Pre/post-contract compatibility, quiesced disable rehearsal and roll-forward-only recovery are explicit."
+    - "Planner/Operations permissions are authority-cited per RPC or fail closed as BLOCKED_FOR_AUTHORITY."
+    - "Every overlapping RPC uses visit→session→participants UUID order→inspection locking."
+    - "Owner/bypass-RLS/extension schema/type/dependency manifest is exact or explicitly BLOCKED_ON_OWNER."
+  correction_failure_output: RETURN_FOR_CORRECTION
+  valid_external_blocker_output: BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+
+contradiction_scan:
+  items:
+    - contradiction_id: "024-X01"
+      packet: KIMI-M11-ATOMIC-FIX-LEASE-010
+      pass_when: "Exact function security/ACL/final-013 authorization model exists."
+    - contradiction_id: "024-X02"
+      packet: KIMI-M11-EXECUTION-WINDOW-LEASE-011
+      pass_when: "Governed reschedule/waiting ownership and safe shared-helper rules exist."
+    - contradiction_id: "024-X03"
+      packet: KIMI-M11-BEGIN-ATOMICITY-LEASE-014
+      pass_when: "Final post-013 privilege model, neutral token and common lock order exist."
+    - contradiction_id: "024-X04"
+      packet: KIMI-M11-PERMISSION-HARDENING-LEASE-013
+      pass_when: "Expansion/contract split, close/verified ownership, OTP locking and exact 015 handoff exist."
+    - contradiction_id: "024-X05"
+      packet: KIMI-M11-AUDIT-BOUNDARY-LEASE-015
+      pass_when: "All-role raw denial, phase-1 safe trigger, global consumer inventory and exact OTP successor exist."
+    - contradiction_id: "024-X06"
+      packet: KIMI-M11-REMEDIATION-DEPENDENCY-LEASE-COLLISION-PLAN-017
+      pass_when: "Expand/switch/quiesce/013→015 contract/certify sequence and exact ownership replace the old model."
+  cross_packet_negative_scan:
+    - "No packet calls 013 the sole final OTP owner."
+    - "No packet allows parallel edits to a shared application file or function signature."
+    - "No packet contracts DML/audit/generic append before application switch and quiesce."
+    - "No packet presents Planner/Operations rights, provider delivery, owner role, extension schema or policy value as inferred."
+    - "No packet introduces CR-337 or DEC-005."
+  any_failure_output: RETURN_FOR_CORRECTION
+
+ownership_and_collision_recheck:
+  steps:
+    - "Re-read ACTIVE_WORKTREE_LEASES.csv immediately before verdict."
+    - "Confirm no active application or Supabase lease overlaps any proposed M11 scope."
+    - "Confirm all six corrected packet leases remain PROPOSED_NOT_ISSUED."
+    - "Confirm application file sequence is 010→011 and 011→014→single bounded 013/015 integrator."
+    - "Confirm creation RPC sequence is 010 initial→011 exact successor."
+    - "Confirm OTP sequence is 013 initial contract→015 exact no-traffic successor."
+    - "Confirm 015 owns safe audit expansion and audit/generic-append contraction."
+    - "Confirm only a future integration owner may allocate monotonic migration filenames."
+    - "Confirm corrected 009r acceptance and single QA ownership are recorded before an implementation proposal."
+    - "Confirm global audit consumers and exact future file ownership are inventoried."
+    - "Confirm all 16 collision stops from 027/028 remain present."
+  overlap_or_unresolved_lease_output: BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+  contradictory_ownership_text_output: RETURN_FOR_CORRECTION
+
+decision_algorithm:
+  order:
+    - step: 0
+      if: "execution_precondition is incomplete"
+      output: DO_NOT_RUN_025_KEEP_QUEUED
+    - step: 1
+      if: "fingerprint, YAML/schema, closure cardinality, contradiction or correction-content check fails"
+      output: RETURN_FOR_CORRECTION
+    - step: 2
+      if: "all correction-content checks pass but any authority/provider/owner/lease blocker remains"
+      output: BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+    - step: 3
+      if: "all checks pass and no implementation-ownership blocker remains"
+      output: ACK_CORRECTED_PACKETS_READY_FOR_SPONSOR_LEASE_DECISION
+  precedence:
+    - "RETURN takes precedence over BLOCKED when packet authors can correct the defect."
+    - "BLOCKED applies only to a structurally correct, truthfully documented external authority/provider/owner/lease dependency."
+    - "ACK does not issue a lease or authorize implementation."
+
+future_review_output_contract:
+  common_fields:
+    - review_id
+    - executed_on
+    - authority_fingerprints
+    - corrected_packet_fingerprints
+    - schema_results
+    - closure_matrix_results
+    - P0_results
+    - P1_results
+    - contradiction_results
+    - ownership_collision_results
+    - unresolved_blockers
+    - verdict
+    - evidence
+  allowed_verdicts:
+    PASS: ACK_CORRECTED_PACKETS_READY_FOR_SPONSOR_LEASE_DECISION
+    RETURN: RETURN_FOR_CORRECTION
+    BLOCKED: BLOCKED_ON_AUTHORITY_PROVIDER_OWNER_OR_LEASE
+
+queue_state:
+  review_025: QUEUED_SAFE_FOLLOW_ON_NOT_DISPATCHED
+  corrected_payloads_received: false
+  corrected_packets_materialized: false
+  harness_executed: false
+  implementation_authorized: false
+  leases_issued: false
+
+unlock_monitor:
+  checked_on: "2026-07-25"
+  observed_state: LOCKED
+  automatic_unlock_attempted: false
+  dispatch_attempted: false
+
+validation:
+  yaml_parse: PASS
+  authority_fingerprints_captured: PASS
+  six_packet_scope_checked: PASS
+  closure_matrix_31_rows_specified: PASS
+  P0_16_and_P1_9_conditions_specified: PASS
+  six_contradictions_specified: PASS
+  ownership_collision_recheck_specified: PASS
+  PASS_RETURN_BLOCKED_outputs_specified: PASS
+  review_025_not_executed: PASS
+  non_executable_boundary_checked: PASS

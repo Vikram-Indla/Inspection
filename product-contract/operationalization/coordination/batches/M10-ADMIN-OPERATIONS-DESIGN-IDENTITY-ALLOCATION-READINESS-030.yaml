@@ -1,0 +1,543 @@
+schema_version: "1.0"
+packet_id: M10-ADMIN-OPERATIONS-DESIGN-IDENTITY-ALLOCATION-READINESS-030
+title: Admin Platform Operations governed design identity allocation readiness
+status: READY_FOR_GOVERNANCE_DECISION_NON_CONSUMABLE
+prepared_by: claude_design_live_watch
+prepared_on: "2026-07-25"
+design_identity_allocated: false
+screen_identity_allocated: false
+design_write_authorized: false
+implementation_authorized: false
+sponsor_decision_recorded: false
+
+predecessor_acknowledgement:
+  packet_id: M10-SPATIAL-CANVAS-DESIGN-IDENTITY-ALLOCATION-READINESS-029
+  disposition: BLOCKED_DUE_TO_MISSING_GOVERNED_IDENTITY_AND_CONTRACT
+  design_identity_allocated: false
+  design_write_authorized: false
+  implementation_authorized: false
+  rule: No Spatial Canvas ID, filename, screen identity, design lease, or implementation authority may be inferred from readiness.
+
+task_contract:
+  task_id: M10-ADMIN-OPERATIONS-DESIGN-IDENTITY-ALLOCATION-READINESS-030
+  gate: M10 Admin Platform Operations design identity governance
+  route: /admin/operations
+  channel: ADMIN
+  process_ids: ["G2-P00"]
+  module_id: M3-00
+  module_design_id: CD-050
+  direct_requirement_ids: [MVP2-REQ-0078]
+  cross_cutting_requirement_ids: [MVP2-REQ-0227, MVP2-REQ-0238, MVP2-REQ-0241, MVP2-REQ-0256]
+  contextual_m3_00_requirement_ids:
+    - MVP2-REQ-0073
+    - MVP2-REQ-0188
+    - MVP2-REQ-0189
+    - MVP2-REQ-0190
+    - MVP2-REQ-0191
+    - MVP2-REQ-0192
+    - MVP2-REQ-0224
+    - MVP2-REQ-0226
+    - MVP2-REQ-0239
+  acceptance_ids:
+    direct: [MVP2-AC-0078]
+    cross_cutting: [MVP2-AC-0227, MVP2-AC-0238, MVP2-AC-0241, MVP2-AC-0256]
+    contextual: [MVP2-AC-0073, MVP2-AC-0188, MVP2-AC-0189, MVP2-AC-0190, MVP2-AC-0191, MVP2-AC-0192, MVP2-AC-0224, MVP2-AC-0226, MVP2-AC-0239]
+    web_admin_family: [WA-M10-AC-001, WA-M10-AC-002, WA-M10-AC-003, WA-M10-AC-004, WA-M10-AC-005, WA-M10-AC-006]
+  dependencies:
+    - M10-ADMIN-OPERATIONS-DESIGN-READINESS-018
+    - M10-CONTROL-PANEL-ROUTE-OWNERSHIP-019
+    - CD-050_M3-00_R2_package_identity_and_fingerprint_verification
+    - exact_route_specific_CD-050_frame_or_child_identity_decision
+    - exact_screen_identity_and_requirement_ownership_decision
+    - route_navigation_RLS_RPC_permission_reconciliation
+    - MVP3-HOLD-004
+    - MVP3-HOLD-005
+    - MVP3-HOLD-006
+    - MVP3-HOLD-008
+    - one_named_collision_free_Claude_Design_writer
+  do_not_touch:
+    - live Claude Design, CD-050 R2 package, WA-DES-020, or any exported design
+    - frozen design, route, screen, requirement, acceptance, or evidence mappings
+    - Admin Operations, Integration Hub, Security Access, Devices, shared shell, or provider application code
+    - tests, evidence, Supabase, migrations, RPCs, credentials, environment, seeds, or data
+    - branches, leases, main, setup/Inspection, or stashes
+
+session:
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  control_worktree: /Users/vikramindla/Developer/Inspection-codex-orchestration
+  branch: codex/orchestration-control-plane
+  observed_head: e0e95eb7
+  unrelated_dirty_paths_observed: []
+  current_application_slice: TASK-WEB-ADMIN-PHASE1-M2-BATCH-002
+  current_slice_state: AWAITING_PRODUCT_OWNER_APPROVAL
+  conflict_assessment: >-
+    This is a read-only identity decision aid. It starts no design or
+    application batch, allocates no identity, and changes no accepted mapping.
+
+authority:
+  design_and_module:
+    - product-contract/mvp3/README.md
+    - product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv
+    - product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv
+    - product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv
+    - product-contract/mvp3/MVP3_IMPLEMENTATION_STATUS.csv
+    - product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv
+    - product-contract/mvp3/MVP3_SCHEMA_REUSE_REGISTER.csv
+  web_admin_inventory:
+    - product-contract/screens/screen_route_catalogue.csv
+    - product-contract/web-admin-phase1/ROUTE_INVENTORY.csv
+    - product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv
+    - product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv
+  live_code_mapping:
+    - apps/web/src/app/(app)/admin/operations/page.tsx
+    - apps/web/src/app/(app)/admin/operations/loading.tsx
+    - apps/web/src/app/(app)/admin/mvp3-actions.ts
+    - apps/web/src/components/Mvp3ActionForm.tsx
+    - apps/web/src/app/(app)/layout.tsx
+    - apps/web/src/lib/shell-navigation.ts
+    - supabase/migrations/20260718150000_mvp3_enterprise_control_plane.sql
+  current_tests:
+    - apps/web/e2e/mvp3-enterprise-contract.spec.ts
+    - apps/web/e2e/mvp3-retrofit-regression.spec.ts
+
+route_and_code_evidence:
+  route_exists: true
+  route: /admin/operations
+  primary_component: apps/web/src/app/(app)/admin/operations/page.tsx
+  loading_component: apps/web/src/app/(app)/admin/operations/loading.tsx
+  action_module: apps/web/src/app/(app)/admin/mvp3-actions.ts
+  action_form: apps/web/src/components/Mvp3ActionForm.tsx
+  rendered_title: Platform operations and resilience
+  code_authority_badge: M3-00_CD-050
+  reads:
+    error_queue:
+      table: mvp3_error_queue
+      fields: [id, source, operation, status, attempt_count, last_error_code, created_at]
+      limit: 50
+    feature_flags:
+      table: mvp3_feature_flags
+      fields: [id, flag_key, version, description, enabled, status, created_by, approved_by]
+    integration_endpoints:
+      table: mvp3_integration_endpoints
+      fields: [id, status]
+  derived_counts:
+    endpoint_contracts: RLS-visible endpoint rows; not provider health.
+    configured_endpoints: Stored status equals configured; not connectivity or uptime.
+    open_errors: Returned rows not resolved; not throughput or platform reliability.
+    published_flags: Returned flag rows whose stored status is published.
+  governed_actions:
+    - action: Request idempotent retry
+      rpc: mvp3_request_error_retry
+      eligible_statuses: [failed, dependency_blocked]
+      success_truth: Retry requested; delivery awaits a genuine receipt.
+    - action: Approve and publish feature flag
+      rpc: mvp3_publish_feature_flag
+      eligible_statuses: [draft]
+      success_truth: Independent checker publication; maker cannot approve own flag.
+  current_truth_gaps:
+    - Only the error-queue read error is handled; flag and endpoint read failures can appear as verified zero.
+    - The route supplies no route-specific authorization boundary beyond shared channel handling, navigation visibility, RLS, and RPC checks.
+    - RPC error.message is returned raw to the client.
+    - The route does not prove stale-version conflict handling or action idempotency beyond the stored RPC behavior.
+    - Error rows are bounded to 50 without a total or completeness label.
+    - Action tests do not prove refreshed persistence, maker self-approval denial, or retry receipt distinction on this route.
+
+catalogue_inventory_and_collision_evidence:
+  screen_catalogue:
+    exact_route_row: NONE
+    consequence: No screen ID may be invented or borrowed.
+  registered_wa_design_inventory:
+    count: 46
+    occupied_range: WA-DES-001_THROUGH_WA-DES-046
+    exact_correct_route_authority: NONE
+  current_mapped_design:
+    design_id: WA-DES-020
+    filename: SAQEEL Control Panel.dc.html
+    sha256: 387114f67318fc3d8d0022b72f711a4b952dce588a66ba5875fd8a5d675125d2
+    reference_viewport: 1200x900
+    semantic_role: ADMINISTRATION_NAVIGATION_CATALOGUE
+    mapping_status: INCORRECT_MAPPING
+    mismatch:
+      - It is a grouped catalogue of Admin navigation cards.
+      - Its System Operations card links elsewhere and contains no error queue, feature-flag lifecycle, endpoint contract counts, or governed RPC actions.
+      - Its Technical Admin persona is not the exact route/RLS/RPC authority.
+      - A card catalogue cannot replace a data/action control plane.
+  wa_des_020_disposition: ORPHANED_PENDING_SEPARATE_GOVERNANCE_DECISION
+  broad_m10_bundle_status: NON_EXACT_AND_NOT_SAFE_AS_ROUTE_AUTHORITY
+
+cd_050_authority_evidence:
+  module: M3-00
+  design_id: CD-050
+  register_rows: 14
+  authority_statement: Corrected CD-050 R2 package is the visual and interaction authority for M3-00.
+  routes_currently_using_module_authority:
+    - /admin/integrations
+    - /admin/operations
+    - /admin/security-access
+  reconciliation_reference:
+    frame_source: CD-050_M3-00_R2_FINAL
+    render_source: CD-050_R2_FINAL/renders/01..06-CD-050_R2.png
+  repository_verification:
+    exact_dc_html_present: false
+    route_specific_frame_manifest_present: false
+    package_sha256_present: false
+    exact_operations_frame_id_proven: false
+  implication: >-
+    CD-050 is binding module-family authority, but the available repository
+    evidence cannot prove which stable R2 frame owns /admin/operations or its
+    exact fingerprint. A route-level identity must be verified and registered
+    before a design writer changes or exports anything.
+
+identity_recommendation:
+  governed_route_identity_required: true
+  design_id: UNALLOCATED
+  screen_id: UNALLOCATED
+  preferred_resolution:
+    classification: GOVERNED_CD_050_ROUTE_CHILD
+    condition: >-
+      Retrieve and independently fingerprint the accepted CD-050 R2 package,
+      prove its exact /admin/operations frame, and register a stable
+      route-specific child identity, filename, lineage, requirements, and
+      acceptance evidence without changing CD-050 family authority.
+  fallback_resolution:
+    classification: NEW_LOGICAL_DESIGN_AUTHORITY_LINKED_TO_CD_050
+    condition: >-
+      Use only if the accepted CD-050 package has no distinct Operations frame
+      or cannot support stable route-specific lineage. Governance must allocate
+      the collision-checked identity; this packet supplies no candidate number.
+  prohibited:
+    - Reuse WA-DES-020 for /admin/operations.
+    - Rename CD-050 or a frame filename into a WA-DES or screen ID.
+    - Select the next WA-DES number because 001 through 046 appear occupied.
+    - Treat a code badge, catalogue card, screenshot, or reconciliation row as a route identity.
+
+capability_boundary:
+  admin_operations_owns:
+    - RLS-visible endpoint contract counts with configured status explicitly separated from health.
+    - RLS-visible error queue records and bounded retry-request action.
+    - Feature-flag version visibility and independent-checker publication action.
+    - Honest policy-held retention, backup target, and restore-objective state.
+    - Source-specific unavailable, partial, stale, denied, and conflict truth.
+  adjacent_surfaces_own:
+    integration_hub: Endpoint registry, API events, export jobs, receipts, and source-specific integration trust evidence.
+    security_access: Access reviews, evidence grants, purpose, expiry, and security posture.
+    devices: Device trust, package access, and governed device commands.
+    admin_home: Configuration evidence spine and Admin navigation.
+  explicitly_excluded:
+    - Provider credentials, secret values, base URLs, payloads, or raw internal errors.
+    - Live connectivity, uptime, latency, throughput, SLA, job completion, or platform-health claims.
+    - Error create, resolve, cancel, replay, or execution beyond the real retry-request RPC.
+    - Feature-flag create, edit, delete, rollback, self-approval, or uncontracted scheduling.
+    - Retention period, purge, legal hold, backup target, restore, RPO, RTO, or successful-restore claims while held.
+    - Integration configuration, security review, device command, planning, inspection, or Factory 360 behavior.
+
+requirement_ownership:
+  source_478:
+    exact_primary_rows: NONE
+    rule: Do not claim CR-001 through CR-478 for this route.
+  direct:
+    - requirement_id: MVP2-REQ-0078
+      fit: PRIMARY_PARTIAL
+      truth: Error queues and flags are present; environment configuration, monitoring, backup, and retention remain partial or held.
+  cross_cutting:
+    - {requirement_id: MVP2-REQ-0227, fit: ADMIN_MAKER_CHECKER_CONTEXT}
+    - {requirement_id: MVP2-REQ-0238, fit: BILINGUAL_RTL_CONTEXT}
+    - {requirement_id: MVP2-REQ-0241, fit: RBAC_ABAC_MAKER_CHECKER_CONTEXT}
+    - {requirement_id: MVP2-REQ-0256, fit: SECURITY_RETENTION_PRIVACY_CONTEXT}
+  contextual:
+    - MVP2-REQ-0073
+    - MVP2-REQ-0188
+    - MVP2-REQ-0189
+    - MVP2-REQ-0190
+    - MVP2-REQ-0191
+    - MVP2-REQ-0192
+    - MVP2-REQ-0224
+    - MVP2-REQ-0226
+    - MVP2-REQ-0239
+  rule: CD-050's 14-row module coverage must not become 14 route-completion claims.
+
+permission_truth:
+  route_and_navigation:
+    shared_route_group: AUTHENTICATED_NON_FIELD_CHANNEL
+    nav_visible_roles: [security_admin, workflow_admin]
+    route_specific_guard: NOT_PRESENT
+    rule: Navigation visibility grants nothing and is not equivalent to route authorization.
+  source_visibility:
+    error_queue_read: [ops, security_admin, auditor]
+    endpoint_read: [security_admin, workflow_admin]
+    feature_flag_read: ALL_AUTHENTICATED_UNDER_CURRENT_RLS
+  action_authority:
+    request_retry: [ops, security_admin]
+    publish_feature_flag: [security_admin]
+    publish_separation_of_duties: Maker cannot approve own draft.
+  persona_implications:
+    security_admin: Can read all three current sources and invoke both actions subject to row/state guards.
+    workflow_admin: Can read endpoints and flags; error queue is RLS-empty and actions are denied.
+    ops: Can read error queue and flags and request retry; navigation currently does not advertise the route.
+    auditor: Can read error queue and flags; no action authority.
+    other_authenticated: Current flag RLS may expose flag rows while other sources are empty; route-specific denial is absent.
+  required_decision: >-
+    Governance must reconcile route admission, navigation, source visibility,
+    and action roles. The design may depict proven per-source scopes but must
+    not invent one universal Platform Admin persona.
+
+data_and_provider_truth:
+  data_rules:
+    - Count only successfully returned RLS-visible rows.
+    - Distinguish verified zero from RLS-empty, failed source, bounded prefix, and unavailable schema.
+    - Show loaded count and total only when both are source-backed.
+    - Preserve stored status and version; do not convert configured into healthy.
+    - Retry requested is not job executed or delivered.
+    - Publication success is not proof that downstream services consumed the flag.
+  provider_holds:
+    - id: MVP3-HOLD-004
+      scope: EBDA and data exchange
+      effect: Prepared export may not be presented as transmitted without approved endpoint, credentials, schema, transport, retry, and receipt.
+    - id: MVP3-HOLD-005
+      scope: Notification channels
+      effect: External delivery must remain unavailable and retry-safe until providers/templates are approved.
+    - id: MVP3-HOLD-006
+      scope: Retention and backup
+      effect: No destructive purge or configured backup/restore claim.
+    - id: MVP3-HOLD-008
+      scope: Production release
+      effect: Local/runtime evidence is not deployment or production operations proof.
+  provider_boundary: No provider probe or service-control action exists on this route.
+
+required_design_state_matrix:
+  route_and_access:
+    - LOADING
+    - AUTHORIZED_FULL_SCOPE
+    - AUTHORIZED_PARTIAL_SCOPE
+    - UNAUTHORIZED_DIRECT_ROUTE
+    - SESSION_EXPIRED
+    - RLS_EMPTY_OR_ZERO_DISCLOSURE
+  source_reads:
+    - POPULATED_ALL_SOURCES
+    - VERIFIED_ZERO_ERROR_QUEUE
+    - VERIFIED_ZERO_FLAGS
+    - VERIFIED_ZERO_ENDPOINTS
+    - ERROR_QUEUE_UNAVAILABLE
+    - FLAGS_UNAVAILABLE
+    - ENDPOINTS_UNAVAILABLE
+    - MULTIPLE_SOURCES_UNAVAILABLE
+    - SCHEMA_UNAVAILABLE
+    - ERROR_QUEUE_BOUNDED_COMPLETENESS_UNKNOWN
+  retry_action:
+    - RETRY_ELIGIBLE
+    - RETRY_PENDING
+    - RETRY_REQUESTED_AWAITING_RECEIPT
+    - RETRY_DEPENDENCY_BLOCKED
+    - RETRY_DENIED_NO_CHANGE
+    - RETRY_NOT_ELIGIBLE
+    - RETRY_FAILED_NEUTRAL
+    - RETRY_STALE_OR_CONFLICT
+  feature_flags:
+    - DRAFT_MAKER_VIEW
+    - DRAFT_INDEPENDENT_CHECKER_VIEW
+    - PUBLISH_PENDING
+    - PUBLISHED_IMMUTABLE
+    - SELF_APPROVAL_DENIED_NO_CHANGE
+    - PUBLISH_DENIED_NO_CHANGE
+    - PUBLISH_FAILED_NEUTRAL
+    - PUBLISH_STALE_OR_CONFLICT
+  provider_and_policy:
+    - PROVIDER_DEPENDENCY_BLOCKED
+    - RETENTION_POLICY_HELD
+    - BACKUP_TARGET_HELD
+    - RESTORE_OBJECTIVES_HELD
+    - PRODUCTION_RELEASE_HELD
+  truth_rule: A designed state is not runtime proof and may not be labelled implemented without application evidence.
+
+responsive_arabic_theme_accessibility:
+  viewports:
+    - {viewport: 1440x900, expectation: Full cards and two bounded operational tables without page overflow.}
+    - {viewport: 1200x900, expectation: Exact WA-DES-020 comparison viewport while demonstrating semantic mismatch, not visual replication.}
+    - {viewport: 1024x768, expectation: Cards and tables reflow without clipped actions or hanging shell.}
+    - {viewport: 768x1024, expectation: Single task order with source status retained beside each table.}
+    - {viewport: 412x915, expectation: Labelled records replace wide tables; no peeking submenu icons or hidden governed actions.}
+    - {viewport: 390x844, expectation: Pending, denial, error, and policy-held parity without two-dimensional scroll.}
+    - {viewport: 320x568, expectation: No task loss, overlap, clipped identity, or detached action/status relationship.}
+  locales:
+    - {locale: en, direction: ltr}
+    - {locale: ar, direction: rtl}
+  bidi_rules:
+    - Use logical properties and mirror structural layout.
+    - Keep flag keys, versions, error codes, operation names, timestamps, and identifiers LTR.
+    - Localize headings, source states, actions, validation, denial, policy holds, and recovery.
+    - Require qualified native-Arabic review before acceptance.
+  themes: [light, dark]
+  theme_evidence:
+    - Shell, cards, tables/records, status, policy banner, buttons, focus, disabled, pending, error, and unavailable states.
+    - Lifecycle and severity use words/icons/shape plus color.
+  accessibility:
+    - One h1, ordered headings, semantic regions, and labelled tables or labelled-record reflow.
+    - Visible single focus treatment and logical LTR/RTL keyboard order.
+    - Forty-four-pixel minimum governed-action targets.
+    - Unique accessible action names include the target error or flag.
+    - Pending and result messages are announced; focus moves to the result without losing context.
+    - Long safe error codes and flag keys wrap without obscuring meaning.
+    - Prove 200 percent zoom and 400 percent or 320 CSS-pixel equivalent reflow.
+    - Reduced motion and no animation-dependent lifecycle meaning.
+
+p0_return_gates:
+  - id: P0-IDENTITY
+    return_if: A design/screen/frame ID or filename is invented, reused, inferred, or allocated outside governance.
+  - id: P0-CD050-LINEAGE
+    return_if: CD-050 is ignored, overwritten, or claimed route-specific without package/frame/fingerprint proof.
+  - id: P0-WA-DES-020
+    return_if: The Control Panel catalogue remains mapped or is used as the Operations predecessor.
+  - id: P0-REQUIREMENT
+    return_if: CR-001..478 or all 14 M3-00 rows are claimed as completed by this route.
+  - id: P0-CAPABILITY
+    return_if: Integration, Security Access, Devices, Admin Home, Planning, Field, or Factory behavior is absorbed.
+  - id: P0-HEALTH
+    return_if: Configured/count is presented as live health, uptime, throughput, SLA, freshness, or connectivity.
+  - id: P0-RETRY
+    return_if: Retry requested is presented as executed, delivered, resolved, or receipt-confirmed.
+  - id: P0-FLAG-LIFECYCLE
+    return_if: Create/edit/delete/rollback/self-approve/schedule or unsupported publication behavior is shown.
+  - id: P0-AUTHORIZATION
+    return_if: Navigation, authentication, or one role label is presented as universal read/action authority.
+  - id: P0-CONFIDENTIALITY
+    return_if: A denied persona sees source data, raw errors, provider details, credentials, payloads, or actions.
+  - id: P0-SOURCE-TRUTH
+    return_if: Failed, denied, or bounded source data is presented as verified zero or complete.
+  - id: P0-RAW-ERROR
+    return_if: Database/provider/internal RPC error text is exposed in the design.
+  - id: P0-CONFLICT-AUDIT
+    return_if: Conflict safety or audited completion is claimed without actor, object, before/after, timestamp, version, and no-change evidence.
+  - id: P0-POLICY-PROVIDER
+    return_if: Retention, purge, backup, restore, RPO/RTO, EBDA, notification, or production readiness is invented or shown enabled while held.
+  - id: P0-IMPLEMENTATION-CLAIM
+    return_if: Module authority, design frames, route smoke, schema tests, or screenshots are used to claim full runtime completion.
+
+p1_return_gates:
+  - id: P1-STATE-COVERAGE
+    return_if: Required access, source, retry, flag, provider, policy, failure, or recovery state is missing.
+  - id: P1-RESPONSIVE
+    return_if: Any viewport clips, overlaps, hangs the shell, peeks submenu icons, hides actions, or detaches action from status.
+  - id: P1-ARABIC-RTL
+    return_if: Arabic is untranslated, unreviewed, directionally broken, or reverses identifiers/codes/versions/timestamps.
+  - id: P1-THEME
+    return_if: Light/dark contrast or state parity fails in shell, cards, records, statuses, actions, focus, errors, or holds.
+  - id: P1-ACCESSIBILITY
+    return_if: Labels, headings, regions, focus, target size, keyboard flow, announcements, or unique action names are missing.
+  - id: P1-ZOOM-MOTION
+    return_if: 200/400 percent zoom or reduced-motion evidence is missing or causes task loss.
+  - id: P1-DATA-PROVENANCE
+    return_if: Scope, source, boundedness, stored state, timestamp/freshness limitation, or fixture distinction is absent.
+  - id: P1-EVIDENCE-PACK
+    return_if: Identity decision, CD-050 package proof, collision check, component annotations, state index, visual matrix, limitations, or export fingerprint is incomplete.
+
+sponsor_and_governance_decisions:
+  - decision_id: SD-030-01
+    owner: GOVERNANCE
+    status: PENDING
+    question: Retrieve and fingerprint the accepted CD-050 R2 package and identify the exact Operations frame, if present.
+    recommendation: REQUIRED_BEFORE_IDENTITY_DECISION
+  - decision_id: SD-030-02
+    owner: GOVERNANCE
+    status: PENDING
+    question: >-
+      Register /admin/operations as a stable CD-050 route child, or allocate a
+      new logical authority linked to CD-050 if no separable frame exists?
+    recommendation: GOVERNED_CD_050_ROUTE_CHILD_IF_PROVEN
+  - decision_id: SD-030-03
+    owner: GOVERNANCE
+    status: PENDING
+    question: Allocate/reconcile the route's screen identity and exact direct/contextual requirement ownership.
+    constraint: No catalogue row exists and no ID may be invented.
+  - decision_id: SD-030-04
+    owner: SPONSOR_GOVERNANCE
+    status: PENDING
+    question: Retire WA-DES-020 as a non-consumable reference or separately govern an Admin catalogue route.
+    recommendation: RETIRE_AS_NON_CONSUMABLE_REFERENCE
+  - decision_id: SD-030-05
+    owner: SPONSOR_GOVERNANCE
+    status: PENDING
+    question: Reconcile route admission/navigation with per-source RLS and RPC roles.
+    recommendation: DO_NOT_INVENT_UNIVERSAL_PLATFORM_ADMIN
+  - decision_id: SD-030-06
+    owner: SPONSOR
+    status: PENDING
+    question: Accept the bounded Operations capability and all provider/policy-held truth.
+    recommendation: ACCEPT_BOUNDED_FAIL_CLOSED_SCOPE
+  - decision_id: SD-030-07
+    owner: SPONSOR
+    status: PENDING
+    question: Approve one named Claude Design writer after SD-030-01 through SD-030-06 are recorded.
+    constraint: Design consent is not mapping, implementation, provider, policy, deployment, or release authority.
+
+collision_safe_design_lease_order:
+  current_state: NOT_ISSUED
+  steps:
+    - order: 1
+      owner: GOVERNANCE
+      action: Retrieve/read-only verify the accepted CD-050 package, exact frame IDs, fingerprints, and route coverage.
+    - order: 2
+      owner: GOVERNANCE
+      action: Record the route-child versus new-linked-authority decision, stable identity, filename, screen identity, and requirement ownership.
+    - order: 3
+      owner: SPONSOR_GOVERNANCE
+      action: Record WA-DES-020 disposition and reconcile route/navigation/RLS/RPC permission truth.
+    - order: 4
+      owner: ORCHESTRATOR
+      action: Re-run design ID, frame, filename, route, writer, CD-050-family, and concurrent-file collision checks.
+    - order: 5
+      owner: SPONSOR
+      action: Name exactly one Claude Design writer and issue one bounded design-only lease.
+    - order: 6
+      owner: NAMED_DESIGNER
+      action: Correct or create only the governed Operations artifact and complete the full state/evidence pack.
+    - order: 7
+      owner: INDEPENDENT_REVIEWER
+      action: Verify CD-050 lineage, capability, permissions, source/provider truth, responsive/Arabic/theme/accessibility evidence, and all return gates.
+    - order: 8
+      owner: SPONSOR
+      action: Accept, return, or reject the design; authorize implementation separately if accepted.
+  parallelism_rule: >-
+    No writer may concurrently modify the same CD-050 package, Admin Operations
+    artifact, shared M3-00 frame selector, shared Admin shell, or evidence index.
+
+browser_evidence_prerequisites:
+  design_review:
+    - Every required viewport in EN/AR and light/dark after Arabic scope is governed.
+    - Full-scope and each partial-scope persona with truthful per-source availability.
+    - Verified zero, bounded, failure, denial, pending, retry-requested, self-approval-denied, conflict, and held-policy frames.
+    - Keyboard-only governed actions, focus recovery, announcements, zoom, and reduced-motion evidence.
+    - CD-050 predecessor/child comparison, stable frame/export fingerprint, state index, and limitations.
+  later_application_review_not_authorized_here:
+    - Route admission/navigation and direct URL behavior for security_admin, workflow_admin, ops, auditor, unrelated authenticated, and unauthenticated personas.
+    - Per-source RLS result/error isolation with no false zero.
+    - Retry request, refresh persistence, ineligible no-change, denial no-change, and genuine receipt distinction.
+    - Feature publication, self-approval denial, stale conflict, immutable published version, and audit actor/object/timestamp.
+    - Neutral RPC failures with no internal disclosure.
+    - Bounded queue completeness, EN/AR RTL, light/dark, all viewports, keyboard, zoom, accessibility, and reduced motion.
+  truth_rule: >-
+    Design screenshots prove appearance only. They do not prove route guards,
+    RLS, RPC authority, persistence, audit, provider health, receipts, policy,
+    data completeness, deployment, or production operations.
+
+reviewer_conclusion:
+  governed_route_identity_required: true
+  preferred_identity_path: PROVE_AND_REGISTER_CD_050_ROUTE_CHILD
+  fallback_identity_path: GOVERNANCE_ALLOCATED_NEW_AUTHORITY_LINKED_TO_CD_050
+  identity_allocated: false
+  exact_route_frame_proven: false
+  wa_des_020_mapping_valid: false
+  codex_validation: INCORRECT_MAPPING
+  recommended_action: RETURN_FOR_MAPPING_AND_IDENTITY_CORRECTION
+  completion_claim: NOT_ALLOWED
+
+safe_follow_on:
+  packet_id: M10-ADMIN-SECURITY-ACCESS-DESIGN-IDENTITY-READINESS-031
+  lane: CLAUDE_DESIGN_LOCK_SAFE_READ_ONLY
+  route: /admin/security-access
+  objective: >-
+    Resolve the route-specific identity and authority collision between CD-050
+    M3-00 Security Access behavior and the broader WA-DES-043 Users/Roles
+    mapping without allocating an ID or changing design/mapping/application.
+  non_overlap:
+    - No Admin Operations, WA-DES-020, retry, feature-flag, or resilience design work.
+    - No code, tests, data, providers, branches, leases, main, setup/Inspection, or stashes.
