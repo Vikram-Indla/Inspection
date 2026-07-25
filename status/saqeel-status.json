@@ -1,7 +1,7 @@
 {
-  "revision": "SB-r7",
+  "revision": "SB-r8",
   "updated": "2026-07-25",
-  "updatedBy": "claude-code",
+  "updatedBy": "kimi",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
@@ -789,20 +789,20 @@
       "channel": "admin",
       "group": "admincore",
       "name": "KPI management & dashboard config",
-      "design": 60,
-      "code": 90,
-      "wiring": 70,
+      "design": 70,
+      "code": 95,
+      "wiring": 80,
       "designPage": "SAQEEL KPI Management.dc.html · SAQEEL Dashboard Config.dc.html",
       "route": "web/src/app/admin/dashboard-config · lib/dashboard-kpi/registry.ts",
       "pwa": null,
       "pending": [
         {
           "lane": "wiring",
-          "text": "KPI targets unsupplied — blocked KPIs stay fail-closed."
+          "text": "KPI targets remain unsupplied — fail-closed is correct and now legible. Admin page shows per-KPI unblock notes (decisionRef + registry note). Dashboard renders honest status chips, methodology drawers, and 'Governed boundaries' panel. Closure requires a sponsor decision and published policy, not code."
         },
         {
           "lane": "code",
-          "text": "No rail route for either design page (O-31)."
+          "text": "O-31 investigation complete: neither SAQEEL KPI Management.dc.html nor SAQEEL Dashboard Config.dc.html includes a rail entry for itself. These surfaces are deep-linked config screens (reachable from dashboard / admin home). Adding a rail entry is a governed decision — do not add without sponsor approval, especially while the Insights group is being removed under O-28."
         }
       ],
       "phase": 2,
