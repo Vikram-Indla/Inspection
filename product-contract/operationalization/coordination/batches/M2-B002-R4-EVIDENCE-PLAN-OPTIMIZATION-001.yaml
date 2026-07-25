@@ -1,0 +1,414 @@
+packet:
+  id: M2-B002-R4-EVIDENCE-PLAN-OPTIMIZATION-001
+  title: M2 R4 adversarial evidence acceleration review
+  created_at: "2026-07-25"
+  owner: Codex orchestration
+  reviewed_packet: M2-B002-R4-EVIDENCE-AND-CONTINUITY-CORRECTION
+  status: READY_AS_GOVERNANCE_DRAFT
+  executable: false
+  classification: GOVERNANCE_ONLY_OPTIMIZATION
+  review_result: CONDITIONAL_REDUCTION_WITH_PROOF_OF_EQUIVALENCE
+  m2_product_state: BLOCKED_FOR_PRODUCT_EDITS
+  m3_state: BLOCKED_UNCHANGED
+
+objective: >-
+  Reduce repetitive screenshot capture without weakening WA-M2 functional,
+  negative/security, visual, RTL/responsive/accessibility, regression, or
+  evidence acceptance. Preserve every screen, locale, direction, theme,
+  breakpoint class, state, and real-data behavior through primary images,
+  deterministic runtime traces, computed assertions, or explicit equivalence
+  probes.
+
+hard_boundaries:
+  allowed:
+    - Read-only evidence-plan analysis.
+    - Governance packet creation in the orchestration worktree.
+    - Read-only Mac lock monitoring.
+  prohibited:
+    - Product, test, design, data, migration, branch, or lease mutation.
+    - Browser or Claude operation while the Mac is locked.
+    - Main, setup/Inspection, remote, deployment, provider, or stash action.
+    - Treating an optimization as evidence that has already been captured.
+
+input_plan:
+  core_parity_frames: 144
+  state_frames: 56
+  total_frames: 200
+  safety_assessment: >-
+    Complete but over-specified. It independently screenshots every Cartesian
+    combination even when a boundary pair plus deterministic automated proof
+    establishes the same responsive or state behavior.
+
+non_shareable_evidence:
+  screens:
+    finding: CANNOT_SHARE_PRIMARY_CAPTURE
+    reason: >-
+      Planning landing, Visits list, and Visit detail are different routes,
+      components, data grains, permissions, and state contracts.
+    consequence: EACH_SCREEN_RETAINS_INDEPENDENT_PRIMARY_EVIDENCE
+  sources:
+    finding: CANNOT_DERIVE_DESIGN_FROM_RUNTIME_OR_RUNTIME_FROM_DESIGN
+    reason: >-
+      A Claude Design frame and a real application render prove different
+      authorities. A derived side-by-side board is useful only after both
+      primary images are checksummed.
+    consequence: BOTH_SOURCES_REMAIN_REQUIRED
+  locale_direction:
+    finding: CANNOT_DERIVE_AR_RTL_FROM_EN_LTR
+    reason: >-
+      Translation length, bidi order, logical properties, table flow, icon
+      direction, and truncation can diverge.
+    consequence: BOTH_LOCALE_DIRECTION_MODES_REMAIN_PRIMARY
+  themes:
+    finding: CANNOT_DERIVE_DARK_FROM_LIGHT
+    reason: >-
+      Semantic-token mapping, contrast, borders, maps, and focus treatment can
+      diverge by theme.
+    consequence: BOTH_THEMES_REMAIN_PRIMARY
+  fixed_visual_parity:
+    finding: CANNOT_REPLACE_1440X900_WITH_FULL_PAGE_CAPTURE
+    reason: >-
+      WA-M2-AC-003 requires a fixed design viewport. Full-page captures alter
+      the image height and cannot prove exact viewport composition.
+    consequence: 1440X900_VIEWPORT_IMAGES_REMAIN_REQUIRED
+
+equivalence_reductions:
+  responsive_cross_product:
+    original: >-
+      Four presentation modes at every viewport for every screen and source.
+    optimized: >-
+      Preserve all four modes at the fixed desktop viewport and the critical
+      390px mobile viewport. Use complementary mode pairs at intermediate and
+      minimum-width boundaries, backed by full automated layout, overflow,
+      direction, theme-token, keyboard, and axe assertions in every omitted
+      combination.
+    proof_required:
+      - Identical DOM/component topology for the compared modes.
+      - Exact matched-media-query inventory recorded per viewport.
+      - No horizontal overflow.
+      - Expected grid, rail, table, and action-stack mode.
+      - Logical inset and ordering assertions in LTR and RTL.
+      - Computed theme token and contrast assertions in light and dark.
+      - Keyboard order and axe results for every omitted visual combination.
+      - Any failed proof promotes that omitted combination to a required image.
+    acceptance_effect: NONE
+  viewport_412_vs_390:
+    original: BOTH_SCREENSHOTTED
+    optimized: >-
+      Use 390x844 as the primary 412/390 mobile acceptance image. Run a
+      non-visual equivalence probe at 412x915.
+    proof_required:
+      - 390 and 412 match the same responsive breakpoint class.
+      - Same visible component set and DOM order.
+      - Same grid/stack mode, navigation mode, table mode, and sticky behavior.
+      - Zero overflow at both widths.
+      - No text clipping, hidden action, or inaccessible control at 412.
+      - Computed layout changes are continuous sizing only.
+    escalation: >-
+      If any proof differs, 412x915 becomes a primary image for every affected
+      screen, source, locale/direction, and theme combination.
+    basis: >-
+      WA-M2-AC-004 states 412/390, so one primary width is allowed only when
+      equivalence is independently demonstrated.
+    acceptance_effect: NONE
+  design_negative_states:
+    original: ONE_IMAGE_PER_DESIGN_STATE
+    optimized: >-
+      One unscaled full-width state atlas per screen and representative context.
+      Each state occupies its own viewport-width region stacked vertically.
+    proof_required:
+      - No state is scaled down.
+      - Every region is independently named and bounded in the manifest.
+      - Region width equals the declared viewport width.
+      - Text, action, icon, and error semantics remain readable.
+      - Atlas checksum and per-region pixel coordinates are recorded.
+    acceptance_effect: NONE
+  runtime_negative_context_duplication:
+    original: EVERY_STATE_IN_BOTH_REPRESENTATIVE_CONTEXTS
+    optimized: >-
+      Capture every unique runtime state once, distributed so every screen has
+      both an EN/LTR/light/1440 and AR/RTL/dark/390 negative-state image.
+      Prove the counterpart context with deterministic Playwright traces,
+      computed assertions, text/direction checks, keyboard checks, and axe.
+    proof_required:
+      - One trace step and assertion bundle per state and context.
+      - State trigger is deterministic and does not mutate shared data.
+      - Screenshot context assignment is recorded in the manifest.
+      - Counterpart context has identical business-state semantics.
+      - Any trace/assertion difference promotes the counterpart to an image.
+    acceptance_effect: NONE
+
+optimized_core_parity_matrix:
+  sources:
+    - CLAUDE_DESIGN_STABLE_ACCEPTED_REVISION
+    - REAL_RUNTIME_AT_CERTIFICATION_HEAD
+  screens:
+    - WA-DES-036_PLANNING_LANDING
+    - WA-DES-045_VISITS_LIST
+    - WA-DES-045_VISIT_DETAIL
+  viewport_modes:
+    "1440x900":
+      purpose: FIXED_VISUAL_PARITY_AND_ALL_PRESENTATION_MODES
+      modes:
+        - en-LTR-light
+        - en-LTR-dark
+        - ar-RTL-light
+        - ar-RTL-dark
+    "1024x768":
+      purpose: DESKTOP_TO_TABLET_BOUNDARY
+      modes:
+        - en-LTR-light
+        - ar-RTL-dark
+    "768x1024":
+      purpose: R4_768_TO_899_RESPONSIVE_CLASS
+      modes:
+        - en-LTR-dark
+        - ar-RTL-light
+    "390x844":
+      purpose: CRITICAL_MOBILE_AND_ALL_PRESENTATION_MODES
+      modes:
+        - en-LTR-light
+        - en-LTR-dark
+        - ar-RTL-light
+        - ar-RTL-dark
+    "320x800":
+      purpose: MINIMUM_WIDTH_REFLOW
+      modes:
+        - en-LTR-light
+        - ar-RTL-dark
+  primary_cells_per_screen_and_source: 14
+  primary_core_images: 84
+  automated_non_image_probes:
+    "412x915":
+      modes:
+        - en-LTR-light
+        - en-LTR-dark
+        - ar-RTL-light
+        - ar-RTL-dark
+      screens: ALL_THREE
+      sources:
+        - REAL_RUNTIME_AT_CERTIFICATION_HEAD
+        - DESIGN_FRAME_METADATA_OR_LAYOUT_SPEC
+    omitted_mode_cross_products:
+      rule: >-
+        Run computed layout, theme, RTL, keyboard, overflow, and axe checks for
+        every mode not pictured at 1024, 768, and 320.
+
+optimized_negative_state_matrix:
+  design_atlases:
+    contexts:
+      - en-LTR-light__1440x900
+      - ar-RTL-dark__390x844
+    screens:
+      PLANNING_LANDING:
+        states:
+          - LOADING
+          - EMPTY
+          - READ_ERROR
+          - UNAUTHORIZED
+      PLANNING_VISITS_LIST:
+        states:
+          - LOADING
+          - EMPTY
+          - READ_ERROR
+          - UNAUTHORIZED
+          - STALE_OR_DEGRADED
+      PLANNING_VISIT_DETAIL:
+        states:
+          - LOADING
+          - NOT_FOUND
+          - READ_ERROR
+          - UNAUTHORIZED
+          - STALE_OR_CONFLICT
+    primary_design_images: 6
+  runtime_state_images:
+    assignment_rule: >-
+      Every unique state receives one primary runtime image. Within each screen,
+      distribute states across both representative contexts.
+    exact_assignments:
+      PLANNING_LANDING:
+        en-LTR-light__1440x900:
+          - LOADING
+          - READ_ERROR
+        ar-RTL-dark__390x844:
+          - EMPTY
+          - UNAUTHORIZED
+      PLANNING_VISITS_LIST:
+        en-LTR-light__1440x900:
+          - LOADING
+          - READ_ERROR
+          - STALE_OR_DEGRADED
+        ar-RTL-dark__390x844:
+          - EMPTY
+          - UNAUTHORIZED
+      PLANNING_VISIT_DETAIL:
+        en-LTR-light__1440x900:
+          - LOADING
+          - READ_ERROR
+          - STALE_OR_CONFLICT
+        ar-RTL-dark__390x844:
+          - NOT_FOUND
+          - UNAUTHORIZED
+    primary_runtime_images: 14
+    counterpart_context_proof:
+      traces: 28
+      interpretation: >-
+        Fourteen states in both contexts. The fourteen primary-image contexts
+        are also traced; the fourteen counterpart contexts are trace-only unless
+        a mismatch promotes them to images.
+  primary_negative_images: 20
+
+optimized_total:
+  primary_core_images: 84
+  primary_negative_images: 20
+  irreducible_primary_images: 104
+  deterministic_runtime_state_traces: 28
+  automated_412_equivalence_probes: 24
+  omitted_mode_automated_probes: 36
+  reduction_from_original_images: 96
+  image_reduction_percent: 48
+  behaviors_or_acceptance_removed: 0
+  promotion_rule: >-
+    Any failed equivalence, trace, layout, theme, RTL, accessibility, keyboard,
+    overflow, checksum, or metadata proof converts the affected omitted cell
+    back into a mandatory primary image. The original 200-cell plan remains the
+    safe upper bound.
+
+capture_sharing_rules:
+  allowed:
+    - >-
+      One Claude Design state-atlas capture may contain all named states for one
+      screen and context when regions are full-width, unscaled, independently
+      bounded, and manifested.
+    - >-
+      One automated browser session may capture multiple routes, modes, and
+      viewports sequentially, but each primary image remains a separate
+      checksummed artifact.
+    - >-
+      One Playwright trace may contain multiple negative-state steps only when
+      every step has a unique evidence ID, deterministic trigger, timestamp,
+      assertion bundle, and screenshot or DOM snapshot.
+    - >-
+      Side-by-side comparison boards may be derived from checksummed primary
+      images and never replace them.
+  forbidden:
+    - Scaling multiple fixed-viewport screens into one contact sheet for parity.
+    - Deriving Arabic from English.
+    - Deriving dark from light.
+    - Using a full-page screenshot as 1440x900 viewport proof.
+    - Using design evidence as runtime proof.
+    - Treating a skipped zero-row test as real-data evidence.
+    - Reusing one screenshot for two routes or two states.
+
+manifest_additions:
+  optimized_plan_fields:
+    - evidence_kind
+    - primary_or_derived
+    - equivalence_group
+    - equivalence_proof_ids
+    - promoted_from_omitted_cell
+    - atlas_region
+    - trace_id
+    - trace_step
+    - assertion_bundle_id
+  evidence_kinds:
+    - PRIMARY_VIEWPORT_IMAGE
+    - DESIGN_STATE_ATLAS
+    - RUNTIME_TRACE
+    - COMPUTED_LAYOUT_PROBE
+    - ACCESSIBILITY_RESULT
+    - DERIVED_COMPARISON_BOARD
+  rule: >-
+    The manifest must enumerate all original acceptance cells and point each to
+    a primary image or an explicit equivalence proof. No cell may disappear.
+
+F0_focus_isolation:
+  status: SEPARATE_BLOCKING_FOUNDATION_DEFECT
+  not_an_M2_composition_change: true
+  observed_runtime_chain:
+    - apps/web/src/app/layout.tsx imports saqeel-components-legacy.css.
+    - apps/web/src/app/layout.tsx then imports saqeel-components.css.
+    - M2 controls use sq-input/sq-select class names.
+    - The legacy sq-input focus selector applies an outer 2px outline with 2px offset.
+    - The shell-search focus selector also applies the outer outline.
+    - Canonical component CSS uses input/select class names, not sq-input/sq-select.
+    - The M2 focused test asserts the legacy outer-outline source string.
+    - The recorded evidence claims the opposite single contiguous inset stroke.
+  owner: F0
+  future_F0_scope_candidate:
+    product_paths:
+      - apps/web/src/app/saqeel-components-legacy.css
+      - apps/web/src/app/saqeel-components.css
+      - apps/web/src/app/layout.tsx
+    test_paths:
+      - apps/web/e2e/web-admin-f0-foundation.spec.ts
+      - apps/web/e2e/design-foundation-contract.spec.ts
+    exact_scope_must_be_decided_before_lease: true
+  future_M2_scope:
+    - Consume the certified shared focus behavior.
+    - Remove or replace M2 source-string focus assertions only under an M2 test lease.
+    - Add runtime focus regression coverage on M2 controls without editing F0 CSS.
+  sequencing:
+    - Independent F0 defect confirmation.
+    - Exact F0 correction authority and non-overlapping lease.
+    - F0 runtime certification in both themes and directions.
+    - Immutable F0 certification head.
+    - M2 capture and M2 runtime regression against that head.
+  rule: >-
+    Do not capture final M2 parity evidence above an unresolved shared focus
+    defect and do not let M2 modify shared CSS to make its own evidence pass.
+
+independent_optimization_gate:
+  result_now: CONDITIONAL_PASS_AS_A_PLAN
+  required_before_use:
+    - Stable R4 handoff exists.
+    - Sponsor-selected revision is unambiguous.
+    - F0 focus defect is independently resolved or explicitly remains visible and blocks final parity.
+    - Capture runner proves the 412/390 equivalence.
+    - Capture runner implements promotion-on-difference.
+    - Evidence manifest enumerates every original acceptance cell.
+  failure_behavior: FALL_BACK_TO_ORIGINAL_200_IMAGE_PLAN
+
+post_unlock_capture_task:
+  id: M2-B002-R4-OPTIMIZED-CAPTURE-PREFLIGHT
+  state: QUEUED_NOT_DISPATCHED
+  dispatch_conditions:
+    - IOConsoleLocked is false.
+    - CGSSessionScreenIsLocked is false.
+    - Stable R4 completion handoff is available.
+    - Sponsor revision authority is recorded.
+    - F0 focus sequence has an honest disposition.
+    - Orchestrator explicitly dispatches the read-only task.
+  actions:
+    - Inventory the stable R4 frames without mutating Claude Design.
+    - Verify real RLS records for populated list and detail without seeding.
+    - Calculate all 104 primary image destinations.
+    - Calculate 28 trace and 60 automated-probe evidence IDs.
+    - Verify manifest completeness before capture.
+    - Return for independent reviewer ACK or correction.
+  prohibited:
+    - Product or test edit.
+    - Design mutation.
+    - Seed or shared-data mutation.
+    - Lease issuance.
+    - Cutover, push, merge, deploy, or remote action.
+  stop_condition: >-
+    Stop after the independent reviewer approves the optimized capture plan.
+    Capture itself requires a separately dispatched evidence-only runtime task.
+
+unlock_monitor:
+  current_state:
+    IOConsoleLocked: true
+    CGSSessionScreenIsLocked: true
+  behavior: >-
+    Continue read-only lock checks. Notify the orchestrator on unlock. Do not
+    operate the browser or Claude Design automatically.
+
+final_disposition:
+  original_plan: SAFE_UPPER_BOUND_200_IMAGES
+  optimized_plan: CONDITIONAL_MINIMUM_104_IMAGES_PLUS_TRACES_AND_PROBES
+  product_edits: BLOCKED
+  test_edits: BLOCKED
+  design_mutation: BLOCKED
+  lease: NOT_ISSUED
+  m3: BLOCKED
