@@ -1188,23 +1188,47 @@
       "channel": "pwa",
       "group": "pwacore",
       "name": "Visits list & travel",
-      "design": 85,
-      "code": 92,
-      "wiring": 88,
+      "design": null,
+      "code": 88,
+      "wiring": 85,
       "designPage": "pwa/SAQEEL PWA-Field Visits.dc.html · Journey · Travel",
-      "route": "web/src/app/(app)/field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
+      "route": "web/src/app/(app)/field/visits (+ calendar) · field/[visitId]/travel/* · field/map/page.tsx · FieldFullMap.tsx",
       "pwa": {
         "state": "ok",
-        "note": "Canonical .dc.html geometry applied and committed (14px cards, 12px nested rows, 600px breakpoint, 50px touch targets, safe-area bars, tokens only). Runtime EN/AR pixel capture NOT run — geometry verified against the design source, not a rendered diff (BS-1)."
+        "note": "/field/visits BUILT 2026-07-26 (CR-100/101/102) — the assigned-visits list had never existed. The prior 85/92/88 described the Travel and Map screens bundled on this card, not this screen. List + Day/Week/Month calendar, RLS-scoped to the signed-in inspector's assignments. Runtime EN/LTR and AR/RTL driven in-browser against real data; the measured pixel diff has NOT produced a score, so the design lane is null rather than estimated."
       },
       "pending": [
         {
-          "lane": "wiring",
-          "text": "Geo stays real — Mapbox + real KSA basemap and zones. No synthetic coordinates or placeholder pins. Ungoverned ETA/distance/SLA render nothing."
+          "lane": "design",
+          "text": "DESIGN LANE IS NULL BY EVIDENCE, NOT BY OVERSIGHT. No measured pixel diff exists for this card. The BS-1 sweep reached the new route (manifest resolves 3 design pages and 4 route targets, zero manifest issues) but the measurement spec exceeded its 30-minute timeout before scoring. Re-run against a production build, not a dev server, then set this number."
         },
         {
           "lane": "design",
-          "text": "Runtime EN/LTR + AR/RTL pixel comparison still not run — no automated pixel diff exists (BS-1). Numbers rest on source-verified geometry plus typecheck, not rendered proof."
+          "text": "No PWA .dc.html exists for the calendar. Behaviour follows the web visits/calendar CalendarBoard; appearance reuses the PWA segmented-control, card and badge vocabulary. Judgment, not transcription."
+        },
+        {
+          "lane": "design",
+          "text": "Design header carries a theme toggle and a hardcoded 'Pending sync · 2'. Both are deliberately absent: the field channel is fixed dark (FieldHeader.tsx), and the sync badge renders only on a real outbox."
+        },
+        {
+          "lane": "wiring",
+          "text": "Seed dates are corrupt: 1057 of 1491 visits are dated more than five years out, latest 2381-08-10. The inspector's 10 assignments fall in 2039-2091, so the design's default Today tab is legitimately empty and the calendar shows nothing in any reachable month. Needs a seed fix, not a code change."
+        },
+        {
+          "lane": "wiring",
+          "text": "visits.priority holds high (13) / normal (5) / null (1473). There is no medium and no low. 'normal' is outside the canonical lookup, so those 5 rows render no risk badge and join no risk chip — correct under zero-assumption, but they are invisible to the risk filter. Lookup drift to reconcile."
+        },
+        {
+          "lane": "wiring",
+          "text": "enum.new and enum.submitted have no Arabic in ui_strings, and they are the only two operational states the inspector's visits carry, so the AR operational badge falls back to English. Governed content for /admin/localization — Arabic scope must not be invented."
+        },
+        {
+          "lane": "wiring",
+          "text": "No lease exists for pwa-visits in CURRENT_SLICE.yaml, granted or queued. Built on explicit Product Owner instruction 2026-07-26; the lease record needs reconciling."
+        },
+        {
+          "lane": "wiring",
+          "text": "Geo stays real — distance renders only with a real device position and real official coordinates, otherwise an em dash. No synthetic coordinates."
         }
       ],
       "phase": 4,
