@@ -18,14 +18,19 @@ test.describe("Prompt 01 shared shell source contract", () => {
     ]);
     const business = buildShellNavigation(["planner"]).flatMap(group => group.items).filter(item => item.visibility === "business");
     expect(business.map(item => item.labelEn)).toEqual([
-      "Dashboard", "Operations Center", "Factory 360", "Planning", "Execution", "Review & Approval",
+      "Dashboard", "Operations Center", "Factory 360", "Planning", "Visits", "Tasks",
+      "Execution", "Review & Approval", "Virtual Inspections", "Cases", "Committee & Signatures",
+      "External Portal",
       "Inspection Rules", "Awaiting Approval", "Violations & Penalties",
     ]);
     expect(business.filter(item => item.parentId === "inspection").map(item => item.labelEn)).toEqual(["Execution", "Review & Approval"]);
   });
 
-  test("unauthorized Administration options are absent rather than advertised as locked", () => {
-    expect(buildShellNavigation(["reviewer"]).find(group => group.id === "administration")).toBeUndefined();
+  test("Administration remains discoverable while unauthorized configuration options stay absent", () => {
+    expect(buildShellNavigation(["reviewer"]).flatMap(group => group.items))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: "admin-home", href: "/admin", enabled: true }),
+      ]));
     const securityItems = buildShellNavigation(["security_admin"])
       .flatMap(group => group.items)
       .map(item => item.labelEn);

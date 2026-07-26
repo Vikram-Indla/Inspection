@@ -20,25 +20,27 @@ const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item
 // role-specific additions on top of this shared set.)
 const businessHrefsFor = (roles: string[]) =>
   itemsFor(roles).filter(item => item.visibility === "business" && item.enabled).map(item => item.href);
-const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin/compliance-approvals", "/admin/violations"];
+const businessHrefs = [
+  "/dashboard", "/operations", "/factories", "/planning", "/visits", "/tasks",
+  "/field", "/reviews", "/virtual", "/cases", "/committee", "/portal",
+  "/admin/regulations", "/admin/compliance-approvals", "/admin/violations",
+];
 
 test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
-  // TASK-WEB-CHANNEL-ACCESS-GATE-001 (change-control of CMP-REQ-SHELL-001..003):
-  // the identical-shell contract is scoped to WEB-channel business personas.
-  // The Inspector is an iPad-channel persona (rbac_matrix.csv RBAC-009/010) and
-  // is redirected off the web portal, so it no longer receives the web nav or a
-  // locked Administration group. See the "field channel" describe block below.
-  test("every WEB business persona receives the business catalogue without unauthorized admin entries", () => {
-    for (const role of ["planner", "reviewer", "ops", "leadership"]) {
+  test("every business persona receives the canonical catalogue and Administration entry", () => {
+    for (const role of ["planner", "inspector", "reviewer", "ops", "leadership"]) {
       const groups = buildShellNavigation([role]);
       expect(businessHrefsFor([role])).toEqual(businessHrefs);
-      const adminItems = groups.find(group => group.id === "administration")?.items ?? [];
+      const adminItems = groups.filter(group => group.id === "administration" || group.id.startsWith("admin-"))
+        .flatMap(group => group.items);
       expect(adminItems.every(item => item.enabled)).toBe(true);
-      expect(adminItems.every(item => item.roles.includes(role))).toBe(true);
+      expect(adminItems).toEqual(expect.arrayContaining([
+        expect.objectContaining({ id: "admin-home", href: "/admin" }),
+      ]));
     }
   });
 
-  test("admin-only personas receive only their authorized admin destinations", () => {
+  test("admin capability personas receive the canonical catalogue and authorized admin destinations", () => {
     const security = itemsFor(["security_admin"]);
     expect(security.find(item => item.id === "users")?.enabled).toBe(true);
     expect(security.find(item => item.id === "roles")?.enabled).toBe(true);
@@ -46,7 +48,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(security.find(item => item.id === "surveys")).toBeUndefined();
     expect(security.find(item => item.id === "devices")?.enabled).toBe(true);
     expect(security.find(item => item.id === "gis")).toBeUndefined();
-    expect(security.some(item => item.visibility === "business")).toBe(false);
+    expect(security.filter(item => item.visibility === "business").map(item => item.href)).toEqual(businessHrefs);
 
     const composed = itemsFor(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"]);
     expect(composed.filter(item => item.visibility === "admin-primary").every(item => item.enabled)).toBe(true);
@@ -60,7 +62,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
         "admin-control", "admin-people", "admin-rules", "admin-planning",
         "admin-risk", "admin-connections", "admin-governance",
       ]);
-    expect(composed.some(item => item.visibility === "business")).toBe(false);
+    expect(composed.filter(item => item.visibility === "business").map(item => item.href)).toEqual(businessHrefs);
   });
 
   test("authorized admin discovery is the least-privilege hub and destination registry", () => {
@@ -74,22 +76,24 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(securityItems.map(item => item.id)).not.toContain("surveys");
     expect(security.flatMap(hub => [hub.labelEn, hub.labelAr]).every(Boolean)).toBe(true);
 
-    expect(buildAuthorizedAdminDiscovery(["planner"])).toEqual([]);
-    expect(buildAuthorizedAdminDiscovery(["inspector"])).toEqual([]);
-    expect(buildAuthorizedAdminDiscovery([])).toEqual([]);
+    for (const roles of [["planner"], ["inspector"], []]) {
+      expect(buildAuthorizedAdminDiscovery(roles)).toEqual([
+        expect.objectContaining({
+          id: "admin-control",
+          items: [expect.objectContaining({ id: "admin-home", href: "/admin" })],
+        }),
+      ]);
+    }
 
     const projectedAdmin = buildShellNavigation(["security_admin"])
       .filter(group => group.id.startsWith("admin-"));
     expect(projectedAdmin).toEqual(security);
   });
 
-  test("dedicated admin shell consumes projected hubs instead of the removed monolithic group", () => {
+  test("admin routes consume the same shared shell", () => {
     const shell = readFileSync(resolve(__dirname, "../src/components/Shell.tsx"), "utf8");
-    const adminShell = readFileSync(resolve(__dirname, "../src/components/admin/AdminShellClient.tsx"), "utf8");
-    expect(shell).toContain('group.id.startsWith("admin-")');
-    expect(shell).not.toContain('filter(group => group.id === "administration")');
-    expect(adminShell).toContain('href={`/locale?set=${locale === "ar" ? "en" : "ar"}`}');
-    expect(adminShell).not.toContain("document.cookie");
+    expect(shell).toContain("<ShellClient");
+    expect(shell).not.toContain("AdminShellClient");
   });
 
   test("admin discovery chrome keeps keyboard and mobile accessibility contracts", () => {
@@ -125,49 +129,35 @@ test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
     expect(isAdminOnlyPersona([])).toBe(false);
   });
 
-  test("server channel guard protects copied business URLs while preserving admin deep links", () => {
+  test("parent layout no longer redirects capability profiles between shells", () => {
     const layout = readFileSync(join(process.cwd(), "src/app/(app)/layout.tsx"), "utf8");
-    expect(layout).toContain("isAdminOnlyPersona(roleKeys) && isBusinessOnlyPath(pathname)");
-    expect(layout).toContain('redirect(homeForRoles(roleKeys) ?? "/admin")');
-    for (const prefix of ["/dashboard", "/operations", "/factories", "/planning", "/reviews", "/ai"]) {
-      expect(layout).toContain(`"${prefix}"`);
-    }
-    expect(layout).not.toContain('"/admin",\n].some');
+    expect(layout).toContain("return <AppShell>{children}</AppShell>");
+    expect(layout).not.toContain("isAdminOnlyPersona");
+    expect(layout).not.toContain("isBusinessOnlyPath");
   });
 
-  test("admin chrome omits the business global-search and scope cluster", () => {
+  test("admin routes retain the common global-search and scope cluster", () => {
     const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
-    const css = readFileSync(join(process.cwd(), "src/app/astryx.css"), "utf8");
-    expect(shell).toContain('{!adminOnly ? <div className="ax-shell-controls">');
-    expect(shell).toContain('adminOnly ? " is-admin-only" : ""');
+    expect(shell).toContain('<div className="ax-shell-controls">');
     expect(shell).toContain("routeScope.date ? (");
     expect(shell).toContain("sq-shell-scope--region");
     expect(shell).toContain(") : null}");
-    expect(css).toContain("@media (min-width: 1025px)");
-    expect(css).toContain(".ax-shell.is-admin-only .ax-shell__groups");
-    expect(css).toContain("overflow: visible");
+    expect(shell).toContain("(max-width: 1024px), (pointer: coarse)");
   });
 });
 
 test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv RBAC-009/010)", () => {
-  test("a field-only Inspector sees only the field channel — no web catalogue, no admin group", () => {
+  test("Inspector receives the canonical shared catalogue and guarded Administration entry", () => {
     const groups = buildShellNavigation(["inspector"]);
-    // Only groups that still carry a field-channel destination survive.
-    expect(groups.map(group => group.id)).toEqual(["operations"]);
-    expect(enabledHrefsFor(["inspector"])).toEqual(["/field"]);
-    // The Administration group is dropped entirely — not even a locked entry.
-    expect(groups.find(group => group.id === "administration")).toBeUndefined();
-    // No web-portal destinations leak into the shared chrome.
-    const hrefs = itemsFor(["inspector"]).map(item => item.href);
-    for (const web of ["/dashboard", "/operations", "/factories", "/planning", "/reviews", "/admin/regulations", "/admin", "/ai/suggestions"]) {
-      expect(hrefs).not.toContain(web);
-    }
+    expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "admin-control"]);
+    expect(businessHrefsFor(["inspector"])).toEqual(businessHrefs);
+    expect(enabledHrefsFor(["inspector"])).toContain("/admin");
   });
 
-  test("an operational grant wins: a multi-role Inspector+Planner keeps only the business catalogue", () => {
+  test("a multi-role Inspector+Planner keeps the canonical catalogue", () => {
     expect(isFieldOnlyPersona(["inspector", "planner"])).toBe(false);
     expect(businessHrefsFor(["inspector", "planner"])).toEqual(businessHrefs);
-    expect(buildShellNavigation(["inspector", "planner"]).find(group => group.id === "administration")).toBeUndefined();
+    expect(enabledHrefsFor(["inspector", "planner"])).toContain("/admin");
   });
 
   test("field-only detection is precise and never locks out web or no-role sessions", () => {

@@ -1,0 +1,73 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-FOUNDATION-SHELL-001"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/foundation-shell"
+baseline: "0fac821b0c5966b351d9eba3ad2cacea8a29ecba"
+state: "IMPLEMENTED_AWAITING_COMMIT"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Codex task: You got all the approvals. You must just go and do the job and continue."
+
+requirements:
+  - "CR-001 role-permitted planning-method access remains enforced at the route/service layer"
+  - "CR-117..CR-336 field execution capabilities remain present while shell ownership converges"
+  - "CMP-REQ-SHELL-001..003"
+screens:
+  - "SCR-SHARED-SHELL-001"
+  - "SCR-ADM-001"
+  - "SCR-IPAD field route family"
+engines:
+  - "ENG-SHELL-NAVIGATION"
+  - "ENG-ROUTE-AUTHORIZATION"
+  - "ENG-I18N-RTL"
+acceptance:
+  - "All authenticated personas render through one AppShell."
+  - "The canonical business navigation structure is visible to every persona."
+  - "Administration is visible to every persona."
+  - "Planner and Inspector opening Administration receive the localized unauthorized state before administration data loads."
+  - "Authorized legacy capability profiles retain their existing administration destinations."
+  - "Field pages retain field content/session/offline behavior without a second drawer or bottom navigation shell."
+  - "Direct URL, refresh and deep link behavior remains route/server/RLS enforced."
+  - "English/Arabic, LTR/RTL, light/dark and responsive shell behavior remain intact."
+
+allowed_paths:
+  - "apps/web/src/app/(app)/layout.tsx"
+  - "apps/web/src/app/(app)/field/layout.tsx"
+  - "apps/web/src/app/(app)/admin/layout.tsx"
+  - "apps/web/src/components/Shell.tsx"
+  - "apps/web/src/components/ShellClient.tsx"
+  - "apps/web/src/components/AdminRouteBoundary.tsx"
+  - "apps/web/src/lib/shell-navigation.ts"
+  - "apps/web/e2e/responsive-foundation-shell.spec.ts"
+  - "apps/web/e2e/compliance-shared-shell.spec.ts"
+  - "apps/web/e2e/shell-navigation.spec.ts"
+  - "apps/web/playwright.static.config.ts"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-FOUNDATION-SHELL-001.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-FOUNDATION-SHELL-001.md"
+
+prohibited:
+  - "Business feature pages and actions"
+  - "Supabase migrations, RLS, RPCs or shared data"
+  - "Offline outbox, package integrity, evidence or submission logic"
+  - "Service worker, manifest or Web Push"
+  - "Role storage or audit history"
+  - "main and integration branch mutation"
+
+evidence:
+  - "typecheck"
+  - "production build"
+  - "focused positive and unauthorized source/runtime contracts"
+  - "protected shell regression"
+  - "EN/AR responsive browser capture when credentials are available"
+
+results:
+  typecheck: "PASS"
+  focused_and_protected_static_contracts: "PASS 23/23"
+  production_build: "PASS (known Supabase Edge-runtime warning only)"
+  browser_capture: "DEFERRED: no persona storage state in isolated worktree"
+
+stop_conditions:
+  - "Any route authorization or RLS weakening"
+  - "Any loss of field offline/session behavior"
+  - "Any administration data exposed before authorization"
+  - "Any P0/P1 focused or protected regression"

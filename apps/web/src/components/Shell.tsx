@@ -1,12 +1,10 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { type ReactNode } from "react";
 import { getShellRegions, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { getServerUser } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
-import AdminShellClient from "@/components/admin/AdminShellClient";
 import { type BellStrings } from "@/components/NotificationBell";
 
 const loadShellData = async () => {
@@ -37,7 +35,6 @@ export function preloadShell(current: string) {
 
 export async function AppShell({ children }: { children: ReactNode }) {
   const { t, locale, user, roles, regions } = await loadShellData();
-  const pathname = (await headers()).get("x-pathname") ?? "";
   if (!user) {
     // SCR-PWA-001: a deep link into the field channel while signed out lands
     // on the field-specific biometric sign-in (SAQEEL Field Login.dc.html),
@@ -145,36 +142,6 @@ export async function AppShell({ children }: { children: ReactNode }) {
   };
 
   const languageHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
-  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
-    const adminItems = groups
-      // buildShellNavigation projects the former monolithic Administration
-      // group into authorization-filtered admin hubs. Consume those hubs
-      // directly; filtering for the removed group silently empties the rail.
-      .filter(group => group.id.startsWith("admin-"))
-      .flatMap(group => group.items);
-    return (
-      <AdminShellClient
-        items={adminItems}
-        locale={locale}
-        email={user.email ?? user.id}
-        roles={roles}
-        languageLabel={locale === "ar" ? "English" : "العربية"}
-        bellStrings={bellStrings}
-        labels={{
-          navigation: t("admin.shell.navigation", locale === "ar" ? "تنقل لوحة التحكم" : "Control Panel navigation"),
-          controlPanel: t("admin.shell.controlPanel", locale === "ar" ? "لوحة التحكم" : "Control Panel"),
-          collapse: shellStrings.collapse,
-          expand: shellStrings.expand,
-          light: shellStrings.themeLight,
-          dark: shellStrings.themeDark,
-          signOut: shellStrings.signOut,
-          authorized: t("admin.shell.authorized", locale === "ar" ? "منطقة مصرح بها" : "areas authorized"),
-        }}
-      >
-        {children}
-      </AdminShellClient>
-    );
-  }
   return (
     <ShellClient
       groups={groups}

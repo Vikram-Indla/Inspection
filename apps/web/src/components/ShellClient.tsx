@@ -4,12 +4,10 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
-import FieldNav, { type FieldNavKey } from "@/components/field/FieldNav";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ShellNavIcon from "@/components/ShellNavIcon";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
-  isAdminOnlyPersona,
   isFieldOnlyPersona,
   isShellRouteCurrent,
   shellGlobalSearchHref,
@@ -96,17 +94,8 @@ export default function ShellClient({
   const router = useRouter();
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
-  const adminOnly = isAdminOnlyPersona(roles);
-  const adminWorkspace = current === "/admin" || current.startsWith("/admin/");
+  const adminWorkspace = false;
   const aiVisible = groups.some(group => group.items.some(item => item.enabled && item.href === "/ai/suggestions"));
-  // Same precedence as the design's activeKey(): the more specific field
-  // sections win, and anything else falls back to Home.
-  const tabbarActive: FieldNavKey =
-    current.startsWith("/field/my-tasks") ? "myTasks"
-    : current.startsWith("/field/establishments") || current.startsWith("/field/factory-360") ? "establishments"
-    : current.startsWith("/field/notifications") ? "notifications"
-    : current.startsWith("/field/account") || current.startsWith("/field/settings") ? "account"
-    : "home";
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [compactNavigation, setCompactNavigation] = useState(false);
@@ -501,7 +490,7 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${adminOnly ? " is-admin-only" : ""}${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
       {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
       <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
@@ -661,8 +650,8 @@ export default function ShellClient({
                     {/* The menu itself is universal; only this destination stays
                         persona-aware, because an Inspector's settings live on
                         the field channel. Routing, not chrome. */}
-                    <Link href={fieldOnly ? "/field/settings" : "/profile"} prefetch={false}>
-                      {fieldOnly ? strings.fieldSettings : strings.profileSettings}
+                    <Link href="/profile" prefetch={false}>
+                      {strings.profileSettings}
                     </Link>
                     <a href="/signout">{strings.signOut}</a>
                   </div>,
@@ -736,23 +725,6 @@ export default function ShellClient({
         document.body,
       )}
 
-      {/* Persistent tab bar — WA-PWA-TAB-r1 (designs/pwa/pwa/pwa-tabbar.js).
-          The five tabs, their labels and their icons are the design's, not ours:
-          Home / My Tasks / Establishments / Notifications / Account.
-
-          Product-Owner decision (2026-07-26), CC-SHELL-TABLET-001 option B: the
-          bar is FIELD navigation, so it is shown only to a field persona. An
-          Operations or Leadership user on an iPad keeps the hamburger alone —
-          they would otherwise be handed five tabs into routes their role cannot
-          open. The access gate already routes a field persona to /field, where
-          the field layout renders the bar, so in practice this branch is the
-          narrow case of a field persona landing on a console route.
-
-          Field routes are excluded here because field/layout.tsx renders the
-          bar for the whole channel; rendering it again would double it. */}
-      {!current.startsWith("/field") && fieldOnly && (
-        <FieldNav consoleChannel active={tabbarActive} labels={strings.tabbar} />
-      )}
     </div>
   );
 }

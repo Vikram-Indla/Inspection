@@ -252,7 +252,9 @@ export function buildAuthorizedAdminDiscovery(roleKeys: readonly string[]): Auth
   if (!administration) return [];
 
   const authorizedItems = administration.items.flatMap(item =>
-    item.roles.some(role => roles.has(role)) ? [{ ...item, enabled: true }] : [],
+    item.id === "admin-home" || item.roles.some(role => roles.has(role))
+      ? [{ ...item, enabled: true }]
+      : [],
   );
 
   return ADMIN_HUBS.flatMap(hub => {
@@ -264,32 +266,27 @@ export function buildAuthorizedAdminDiscovery(roleKeys: readonly string[]): Auth
   });
 }
 
-// `narrowToFieldChannel` (default true) is the TASK-WEB-CHANNEL-ACCESS-GATE-001
-// gate: in the WEB chrome a field-only Inspector is shown the field channel
-// only. The FIELD channel's own side panel opts out — the Product Owner ruled on
-// 2026-07-26 that the panel is available to every persona, with per-destination
-// restrictions deferred — so it passes false and receives the full catalogue,
-// still role-filtered by `enabled` and still admin-omitted below. The web gate
-// is unchanged: nothing here grants access, every destination keeps its own
-// route guard, RLS, action permission and audit enforcement.
+// The compatibility option remains in the signature for callers migrated from
+// the former split field shell. CC-SAQEEL-RESPONSIVE-REVAMP-001 makes the shared
+// catalogue canonical for every presentation persona; route guards, RLS,
+// action permissions and audit enforcement remain the authorization authority.
 export function buildShellNavigation(
   roleKeys: readonly string[],
   options?: { narrowToFieldChannel?: boolean },
 ): BuiltShellNavGroup[] {
   const roles = new Set(roleKeys);
-  // Field-only personas get the field channel only: no web-portal destinations,
-  // no admin group (not even a locked one). Web/admin personas are unaffected.
-  const fieldOnly = (options?.narrowToFieldChannel ?? true) && isFieldOnlyPersona(roleKeys);
-  const adminOnly = isAdminOnlyPersona(roleKeys);
+  void options;
   const projected = SHELL_NAVIGATION.map(group => ({
     ...group,
     items: group.items.flatMap(item => {
-      if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];
-      if (adminOnly && item.visibility === "business") return [];
       const allowed = item.roles.some(role => roles.has(role));
-      // Navigation is a least-privilege projection, not a catalogue. A
-      // destination the persona cannot use must not be disclosed as a locked
-      // or disabled option. Route guards and RLS remain the enforcement layer.
+      // CC-SAQEEL-RESPONSIVE-REVAMP-001: every canonical persona sees the same
+      // business information architecture. Visibility is not authorization.
+      if (item.visibility === "business") return [{ ...item, enabled: true }];
+      // Administration is always discoverable through its landing route. The
+      // route-level boundary returns a localized unauthorized state before
+      // loading configuration data for Planner and Inspector.
+      if (item.id === "admin-home") return [{ ...item, enabled: true }];
       if (!allowed) return [];
       return [{
         ...item,
@@ -301,9 +298,12 @@ export function buildShellNavigation(
   // Admin navigation is hub-first. Authorization still happens above, before
   // hub construction, so empty hubs and unauthorized child destinations never
   // reach the DOM. Existing hrefs remain unchanged for deep-link compatibility.
-  return projected.flatMap(group =>
-    group.id === "administration" ? buildAuthorizedAdminDiscovery(roleKeys) : [group]
-  );
+  return projected.flatMap(group => {
+    if (group.id !== "administration") return [group];
+    const authorized = buildAuthorizedAdminDiscovery(roleKeys);
+    if (authorized.length) return authorized;
+    return group.items.length ? [group] : [];
+  });
 }
 
 export function isShellRouteCurrent(current: string, href: string) {
