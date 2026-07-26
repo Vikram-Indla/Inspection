@@ -27,6 +27,24 @@ design_proposal:
     Written as a NEW page. SAQEEL Web Shell v5.dc.html is untouched and remains
     the accepted authority until the sponsor accepts this proposal. Code must
     never overwrite accepted design.
+  carries_q2: >
+    Updated 2026-07-26 to carry the Q2 ruling as well. The page now records the
+    three v5 conditions Q2 changes (showNav, showHamburger, showBackdrop), marks
+    the superseded field-persona exceptions in sections 1 and 4, and states the
+    field-channel tagging gap as explicitly NOT resolved. v5 itself is still
+    untouched; those conditions are applied to it only on acceptance.
+  q2_authorship_correction: >
+    A first attempt at Q2 built a separate PWA-only drawer in a new pwa-shell.js,
+    with groups taken from SAQEEL PWA-Index.dc.html's journey listing. That was
+    wrong twice over. The Index groups are a file-browsing structure for the
+    design set, not product navigation, so repurposing them as a nav was
+    authoring, not transcription — and it was redundant, because v5 already
+    ships the rail, drawer and hamburger, gated only by !field. The Product
+    Owner rejected it. Both artifacts (pwa/pwa-shell.js and the PWA proposal
+    page built on it) were deleted from the design project the same session and
+    never reached the repo or any accepted page. Recorded so the mistake is not
+    repeated: the shell's navigation is v5's four groups, and Q2 changes a gate,
+    not a menu.
 
 decisions:
   breakpoint:
