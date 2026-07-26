@@ -362,6 +362,28 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
           <strong className={styles.assuranceFactValue}>{strategic.scopedViolations.length}</strong>
           <a className={styles.linkAction} href="/enforcement">{copy(locale, "Open records", "عرض السجلات")}</a>
         </div>
+        {/* The one recorded exception not already carried by Decision mix or
+            Violation evidence: answers that failed inside work that was
+            nonetheless approved. Derived, never fabricated — if the
+            denominator is zero the tile shows the governed-absence badge. */}
+        <div className={styles.assuranceFact}>
+          <span className={styles.kpiLabel}>
+            {copy(locale, "Non-compliant answers in approved work", "إجابات غير مطابقة في عمل معتمد")}
+          </span>
+          {strategic.approvedAnsweredForCompliance > 0 ? (
+            <>
+              <strong className={styles.assuranceFactValue}>
+                {strategic.approvedAnsweredForCompliance - strategic.approvedCompliant}
+                <span className={styles.assuranceOf}> / {strategic.approvedAnsweredForCompliance}</span>
+              </strong>
+              <span className={styles.assuranceNote}>
+                {copy(locale, "eligible answers in scope", "من الإجابات المؤهلة ضمن النطاق")}
+              </span>
+            </>
+          ) : (
+            <span className="badge badge-neutral">{copy(locale, "Not available", "غير متاح")}</span>
+          )}
+        </div>
         <div className={styles.assuranceFact}>
           <span className={styles.kpiLabel}>{copy(locale, "Approved of submitted", "قرارات معتمدة مقابل مُرسلة")}</span>
           <strong className={styles.assuranceFactValue}>

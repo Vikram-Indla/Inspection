@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r24",
-  "updated": "2026-07-26T10:24:50+03:00",
+  "revision": "SB-r27",
+  "updated": "2026-07-26T10:54:04+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/exec",
   "committed": false,
@@ -600,7 +600,7 @@
       "group": "exec",
       "name": "Executive Overview",
       "design": 70,
-      "code": 78,
+      "code": 88,
       "wiring": 82,
       "designPage": "SAQEEL Executive Overview.html",
       "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
@@ -639,8 +639,8 @@
           "text": "AI Composer still NOT wired. The Gemini adapter exists (lib/providers/ai-gemini.ts, fail-closed on GEMINI_API_KEY) but the governed advisory surfaces are a closed enum of six in lib/ai/contextual-actions.ts and none is executive/dashboard. Each governed surface also requires a fixed server-re-read context plus evidence refs, whereas the design draws a free-text intent box with forecasting prompts — which contradicts the shipped strategic contract (\"deterministic · not AI — no generated narrative or forecast\"). Requires a new governed surface AND a decision authorising executive forecasting. Nothing fabricated."
         },
         {
-          "lane": "wiring",
-          "text": "P1 — the executive surface cannot read its own headline metric. Browser gate as ops-01@mim-inspection.test: checklist_responses returns 0 rows under RLS while service-role returns 632. inspections (288), violations (268), factories (1970) and reviews (202) are identical under both, so only this table is scoped out. Two policies exist (0002_rbac_audit.sql responses_rw: assigned inspector or reviewer/auditor; 0020_fix_media_records.sql responses_read_prior_approved: same-factory approved) and NEITHER grants ops or leadership. The approved-compliance rate is therefore permanently 'Not available' for the persona the surface exists for. Not a scope effect — reproduced with from=2024-01-01&to=2027-12-31. Needs a Product Owner ruling on whether ops/leadership may read checklist responses at national scope; it is a security boundary, not a UI fix, and belongs to admin-access."
+          "lane": "code",
+          "text": "The design's section list over-counts what is missing. Sector comparison is satisfied by the Compliance performance explorer (dimension tabs Region/City/Sector/Authority, label · compliant/total, no target line), and two of the three recorded-exception items are satisfied by the Decision mix — Level 2 and Violation evidence panels. Only the seven declared hard states (loading, empty, error, degraded, unauthorized, stale/conflict, provider-unavailable) remain genuinely unbuilt as a verified set. Do not build named sections from the design's list without first checking the shipped panel that already carries the content."
         }
       ],
       "phase": 8,
@@ -679,6 +679,23 @@
             "wiring": 82
           },
           "evidence": "RLS oversight fixed and applied live to iiozvqntawxfwbgffzqu (migration 20260726090000_exec_responses_read_ops_leadership.sql). Measured as ops-01@mim-inspection.test: checklist_responses 0 -> 632, matching service-role exactly; the write path stays refused (403), so read-only scope held. The surface now renders a real headline — 96%, 27 compliant of 28 eligible answers — and the regional queue populates and orders correctly worst-first on live data: Eastern 3/4 (75%) ahead of Riyadh 24/24 (100%). Gate re-run 12/12 after the change. NOT raised further: the AI Composer is still unwired and needs a new governed surface in contextual-actions.ts plus a ruling authorising executive forecasting against the deterministic contract; the sector comparison needs governed KPI targets that do not exist; and the seven declared hard states are unbuilt."
+        },
+        {
+          "at": "2026-07-26T10:49:26+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "P1 — the executive surface cannot read its own headline metric. Browser gate as ops-01@mim-inspection.test: checklist_responses returns 0 rows under RLS while service-role returns 632. inspections (288), violations (268), factories (1970) and reviews (202) are identical under both, so only this table is scoped out. Two policies exist (0002_rbac_audit.sql responses_rw: assigned inspector or reviewer/auditor; 0020_fix_media_records.sql responses_read_prior_approved: same-factory approved) and NEITHER grants ops or leadership. The approved-compliance rate is therefore permanently 'Not available' for the persona the surface exists for. Not a scope effect — reproduced with from=2024-01-01&to=2027-12-31. Needs a Product Owner ruling on whether ops/leadership may read checklist responses at national scope; it is a security boundary, not a UI fix, and belongs to admin-access."
+          },
+          "evidence": "RESOLVED, not merely reworded. Migration 20260726090000_exec_responses_read_ops_leadership.sql was applied live to iiozvqntawxfwbgffzqu on 2026-07-26: pg_policies on checklist_responses now carries responses_read_oversight (SELECT, has_any_role(ARRAY['ops','leadership'])), independently re-confirmed through the Supabase MCP after its OAuth grant was re-scoped to the Inspection organisation. Measured as ops-01@mim-inspection.test: checklist_responses 0 -> 632, matching service-role, with the write path still refused 403. The surface renders its headline for the first time — 96%, 27 compliant of 28 eligible answers — and the regional queue populates worst-first on live data (Eastern 3/4 = 75% ahead of Riyadh 24/24 = 100%). Gate re-run 12/12 after the change. The item was left standing after the lane moved; that was my bookkeeping error, and the board contradicted itself for one revision."
+        },
+        {
+          "at": "2026-07-26T10:54:04+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 88
+          },
+          "evidence": "Recorded-assurance-exceptions and sector-comparison closed out. Investigation first: both were largely already built under other names. Sector comparison is the Compliance performance explorer, whose dimension tabs (Region/City/Sector/Authority) render label · compliant/total with rates and no target line — which is exactly the design's 'current approved compliance by sector with denominators'. Two of the three exception items are also present: Decision mix — Level 2, and Violation evidence. Building either as a new section would have duplicated shipped panels. The one genuinely absent fact — non-compliant answers inside approved work — is now a tile in the assurance grid, derived from approvedAnsweredForCompliance minus approvedCompliant, with a governed-absence badge when the denominator is zero. Verified in the browser as ops-01: 'Non-compliant answers in approved work 1 / 28', consistent with the 96% headline. Gate re-run 12/12. NOT 100: the seven declared hard states are still unverified as a set and no pixel diff against the .dc.html has been run."
         }
       ]
     },
