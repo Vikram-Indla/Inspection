@@ -235,7 +235,10 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             className="sq-surface sq-kpi" aria-current={params.tab === tab ? "page" : undefined}
             style={{ textDecoration: "none", color: "inherit", outline: params.tab === tab ? "2px solid var(--focus-ring, currentColor)" : undefined }}>
             <span className="sq-overline">{tabLabels[tab]}</span>
-            <span className="sq-kpi__value sq-numeric">{list.counts[tab]}</span>
+            {/* An unavailable count renders as an em dash, never as 0: the
+                tab counts and the list fail independently, and a fabricated
+                zero would read as "no visits in this state". */}
+            <span className="sq-kpi__value sq-numeric">{list.countsAvailable ? list.counts[tab] : "—"}</span>
           </a>
         ))}
       </div>

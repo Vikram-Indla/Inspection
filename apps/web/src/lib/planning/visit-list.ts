@@ -19,9 +19,13 @@
 // disappear, which is exactly the fake-empty failure this module exists to
 // prevent.
 //
-// Fail closed: any read error (search resolution, main query or per-tab
-// counts) returns { ok: false } and is logged server-side. Callers render an
-// honest unavailable state; a failed read never masquerades as an empty list.
+// Fail closed, but at the right granularity. A search-resolution or main-query
+// error returns { ok: false }: without rows there is no list to show, and a
+// failed read must never masquerade as an empty one. The six per-tab counts are
+// separate — they fan out beside the row query and are the first thing to hit a
+// statement timeout under load, so a count failure returns the rows with
+// countsAvailable: false instead of blanking a page whose data already arrived.
+// Callers must render the counts as unavailable in that case, never as 0.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { collectPostgrestPages } from "@/lib/supabase-pagination";
@@ -85,7 +89,10 @@ export type PlanningVisitRow = {
 export type PlanningListCounts = Record<PlanningTab, number>;
 
 export type PlanningListResult =
-  | { ok: true; rows: PlanningVisitRow[]; counts: PlanningListCounts; total: number; page: number; pageSize: number }
+  // countsAvailable is false when the tab-count queries failed but the list
+  // itself loaded. The counts object is then meaningless and must not be
+  // rendered as numbers — a failed count shown as 0 is a fabricated figure.
+  | { ok: true; rows: PlanningVisitRow[]; counts: PlanningListCounts; countsAvailable: boolean; total: number; page: number; pageSize: number }
   | { ok: false };
 
 // Sort whitelist — URL input is never interpolated into a column name.
@@ -293,7 +300,7 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
     if (!resolved.ok) return { ok: false };
     matchedIds = resolved.ids;
     if (matchedIds.length === 0) {
-      return { ok: true, rows: [], counts: emptyCounts(), total: 0, page: 1, pageSize };
+      return { ok: true, rows: [], counts: emptyCounts(), countsAvailable: true, total: 0, page: 1, pageSize };
     }
   }
 
@@ -318,9 +325,18 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
 
   const failedRow = rowResults.find(r => r.error);
   const failedCount = countResults.find(c => c.error);
-  if (failedRow?.error || failedCount?.error) {
-    console.error("[planning.visit-list] query failed:", failedRow?.error?.message ?? failedCount?.error?.message);
+  // The list and the tab counts fail independently. Six exact counts fan out
+  // beside the row query, so under load the counts are what hit the statement
+  // timeout first — and treating that as a total failure blanked a page whose
+  // rows had already come back. Only a row failure is fatal now; a count
+  // failure degrades to "counts unavailable" and the list still renders.
+  if (failedRow?.error) {
+    console.error("[planning.visit-list] row query failed:", failedRow.error.message);
     return { ok: false };
+  }
+  const countsAvailable = !failedCount?.error;
+  if (!countsAvailable) {
+    console.error("[planning.visit-list] tab counts unavailable:", failedCount?.error?.message);
   }
 
   const counts = emptyCounts();
@@ -333,8 +349,10 @@ export async function queryPlanningVisits(sb: SupabaseClient, params: PlanningLi
     rows.sort(compareRows(sort));
     rows = rows.slice((page - 1) * pageSize, page * pageSize);
   }
-  const total = matchedIds ? counts[params.tab] : (rowResults[0].count ?? rows.length);
-  return { ok: true, rows, counts, total, page, pageSize };
+  // With counts unavailable there is no honest total for the active tab, so the
+  // row query's own count is used and, failing that, the rows actually returned.
+  const total = matchedIds && countsAvailable ? counts[params.tab] : (rowResults[0].count ?? rows.length);
+  return { ok: true, rows, counts, countsAvailable, total, page, pageSize };
 }
 
 /**
