@@ -31,6 +31,15 @@ export function isFieldOnlyPersona(roleKeys: readonly string[]): boolean {
     && roleKeys.every(role => (FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role));
 }
 
+// ADMIN-SHELL-PERSONA-001 — a control-plane-only account receives only its
+// authorized administration destinations. A concurrent business grant still
+// wins, so multi-role operators retain the business console they are assigned.
+export function isAdminOnlyPersona(roleKeys: readonly string[]): boolean {
+  const roles = new Set(roleKeys);
+  return roleKeys.some(role => (ADMIN_ROLE_KEYS as readonly string[]).includes(role))
+    && !BUSINESS_ROLE_KEYS.some(role => roles.has(role));
+}
+
 export type ShellGlobalSearchResultType =
   | "commercial_registration"
   | "industrial_license"
@@ -126,11 +135,10 @@ export type BuiltShellNavGroup = Omit<ShellNavGroupDefinition, "items"> & {
 };
 
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
-// Web-portal business roles exclude the field-only Inspector (RBAC-009/010).
-// Inspector reaches Execution through the field channel, not the web nav.
+// Web-portal business roles exclude both the field-only Inspector and the
+// admin-only role family. A business grant, not an admin grant, opens this set.
 const businessRoles = [
   ...BUSINESS_ROLE_KEYS.filter(role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)),
-  ...ADMIN_ROLE_KEYS,
 ] as readonly string[];
 const primaryAdmin = (
   item: Omit<ShellNavItemDefinition, "visibility">,
@@ -213,22 +221,21 @@ export function isAdminPersona(roleKeys: readonly string[]) {
 export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNavGroup[] {
   const roles = new Set(roleKeys);
   // Field-only personas get the field channel only: no web-portal destinations,
-  // no admin group (not even a locked one). Web/admin personas are unaffected.
+  // no admin group (not even a locked one).
   const fieldOnly = isFieldOnlyPersona(roleKeys);
+  const adminOnly = isAdminOnlyPersona(roleKeys);
   return SHELL_NAVIGATION.map(group => ({
     ...group,
     items: group.items.flatMap(item => {
       if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];
+      if (adminOnly && item.visibility === "business") return [];
       const allowed = item.roles.some(role => roles.has(role));
-      if (item.visibility === "admin-advanced" && !allowed) return [];
+      // Navigation is a least-privilege projection, not an awareness catalogue.
+      // Route boundaries and RLS remain the authoritative enforcement layer.
+      if (item.visibility !== "business" && !allowed) return [];
       return [{
         ...item,
-        enabled: item.visibility === "business" || allowed,
-        ...(item.visibility === "admin-primary" && !allowed ? {
-          disabledReasonKey: "shell.adminRequired",
-          disabledReasonEn: "Administrator access required.",
-          disabledReasonAr: "يتطلب الوصول صلاحية المسؤول.",
-        } : {}),
+        enabled: true,
       }];
     }),
   })).filter(group => group.items.length > 0);

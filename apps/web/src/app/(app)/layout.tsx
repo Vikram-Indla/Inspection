@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/Shell";
 import { getServerUser } from "@/lib/supabase-server";
 import { getUserRoles } from "@/lib/persona";
-import { isFieldOnlyPersona } from "@/lib/shell-navigation";
+import { isAdminOnlyPersona, isFieldOnlyPersona } from "@/lib/shell-navigation";
 import { homeForRoles } from "@/lib/role-home";
 
 // TASK-G11-REMEDIATION-PERFORMANCE-001 · K-001/K-004
@@ -23,6 +23,15 @@ import { homeForRoles } from "@/lib/role-home";
 const isFieldPath = (pathname: string) =>
   pathname === "/field" || pathname.startsWith("/field/");
 
+const isBusinessOnlyPath = (pathname: string) => [
+  "/dashboard",
+  "/operations",
+  "/factories",
+  "/planning",
+  "/reviews",
+  "/ai",
+].some(prefix => pathname === prefix || pathname.startsWith(`${prefix}/`));
+
 async function enforceChannelAccess() {
   const pathname = (await headers()).get("x-pathname") ?? "";
   if (isFieldPath(pathname)) return;
@@ -40,6 +49,13 @@ async function enforceChannelAccess() {
     // that single planning route; every other non-field path still redirects.
     if (pathname === "/planning/immediate") return;
     redirect(homeForRoles(roleKeys) ?? "/field");
+  }
+
+  // ADMIN-SHELL-PERSONA-001 — mirror the navigation projection at a server
+  // boundary so a copied business URL cannot bypass the admin-only channel.
+  // Governed admin deep links retain their route-specific RBAC/RLS guards.
+  if (isAdminOnlyPersona(roleKeys) && isBusinessOnlyPath(pathname)) {
+    redirect(homeForRoles(roleKeys) ?? "/admin");
   }
 }
 

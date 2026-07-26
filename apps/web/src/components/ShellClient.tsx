@@ -8,6 +8,7 @@ import FieldNav, { type FieldNavKey } from "@/components/field/FieldNav";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
+  isAdminOnlyPersona,
   isFieldOnlyPersona,
   isShellRouteCurrent,
   shellGlobalSearchHref,
@@ -120,6 +121,7 @@ export default function ShellClient({
   const router = useRouter();
   const current = usePathname() || "/";
   const fieldOnly = isFieldOnlyPersona(roles);
+  const adminOnly = isAdminOnlyPersona(roles);
   // Same precedence as the design's activeKey(): the more specific field
   // sections win, and anything else falls back to Home.
   const tabbarActive: FieldNavKey =
@@ -475,7 +477,7 @@ export default function ShellClient({
                     document.body,
                   )}
                 </div>
-                {routeScope.date ? (
+                {!adminOnly ? <>{routeScope.date ? (
                   <details className="sq-shell-scope sq-shell-scope--date">
                     <summary aria-label={strings.dateScope} title={strings.dateScope}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
@@ -501,7 +503,7 @@ export default function ShellClient({
                     <option value="">{strings.allRegions}</option>
                     {regions.map(region => <option value={region} key={region}>{region}</option>)}
                   </select>
-                </label>
+                </label></> : null}
             </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
@@ -510,9 +512,11 @@ export default function ShellClient({
                   it rewrites each notification's href onto the field channel —
                   that is routing, not chrome. */}
               <NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />
-              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
-                <Icon name="ai" />
-              </Link>
+              {!adminOnly ? (
+                <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
+                  <Icon name="ai" />
+                </Link>
+              ) : null}
               <div ref={accountRef} className="ax-shell-account">
                 <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>
