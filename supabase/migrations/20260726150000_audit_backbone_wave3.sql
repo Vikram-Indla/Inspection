@@ -63,8 +63,15 @@ begin
     raise exception 'conflict detection time is required' using errcode = '22023';
   end if;
 
-  select cr, i.visit_id
-    into v_response, v_visit_id
+  -- Split into two statements: PL/pgSQL rejects a %rowtype record variable in a
+  -- multiple-item INTO list ("record variable cannot be part of multiple-item
+  -- INTO list", SQLSTATE 42601), which made the original single SELECT fail to
+  -- compile and left this whole migration unapplied. The join is retained on
+  -- the first statement so `found` still means "response AND its inspection
+  -- exist", and visit_id is then read from the located row — semantics are
+  -- unchanged.
+  select cr.*
+    into v_response
     from public.checklist_responses cr
     join public.inspections i on i.id = cr.inspection_id
    where cr.inspection_id = p_inspection_id
@@ -73,6 +80,11 @@ begin
   if not found then
     raise exception 'canonical server response not found' using errcode = '22023';
   end if;
+
+  select i.visit_id
+    into v_visit_id
+    from public.inspections i
+   where i.id = v_response.inspection_id;
   if not is_assigned_inspector(v_visit_id) then
     raise exception 'not assigned to inspection visit' using errcode = '42501';
   end if;
