@@ -294,9 +294,15 @@
   --row-h-compact: 34px;
   --touch-target: 44px;
 
-  /* Canonical rail width — designs/web/export-saqeel-web/saqeel/tokens.
-     Was 264px, which no design authority calls for. */
-  --sidebar-w: 248px;
+  /* 264px is a Product Owner ruling, not an accident. During the live review of
+     TASK-WEB-ADMIN-PHASE1-M2-BATCH-001 the shared left rail was called a
+     blocking mismatch, and the scoped F0 follow-up set this width from the
+     supplied `saqeel web.html` authority (sha256 b870e068...bab9bc2, held
+     outside Git). The vendored designs/web/export-saqeel-web/saqeel tokens say
+     248px; where the two disagree, saqeel web.html wins — the Product Owner
+     ruled it authoritative on 2026-07-26. Do not "correct" this to 248px.
+     See DEC-043. */
+  --sidebar-w: 264px;
   --sidebar-w-collapsed: 74px;
   --topbar-h: 52px;
   --page-pad: var(--space-6);

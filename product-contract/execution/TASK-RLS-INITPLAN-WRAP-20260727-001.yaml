@@ -1,0 +1,86 @@
+schema_version: "1.0"
+task_id: "TASK-RLS-INITPLAN-WRAP-20260727-001"
+change_control_id: "CC-RLS-INITPLAN-WRAP-20260727-001"
+title: "Remove per-row RLS predicate evaluation and restore the field dashboard"
+priority: "P0"
+status: "COMPLETE_APPLIED_AND_VERIFIED"
+owner: "Claude Code"
+gate: "G10 verification / G11 hardening"
+
+objective: >
+  Make the Inspector field dashboard's governed read complete inside the 8s
+  statement timeout without narrowing what the inspector may see, and without
+  presenting missing data as zero when a read still fails.
+
+allowed_paths:
+  - "supabase/migrations/20260727010000_rls_initplan_wrap.sql"
+  - "supabase/migrations/20260727010500_visits_factory_id_idx.sql"
+  - "supabase/migrations/20260726231500_planning_visits_created_at_idx.sql"
+  - "apps/web/src/app/(app)/field/page.tsx"
+  - "product-contract/governance/CC-RLS-INITPLAN-WRAP-20260727-001.yaml"
+  - "product-contract/execution/TASK-RLS-INITPLAN-WRAP-20260727-001.yaml"
+
+implementation_contract:
+  part_1:
+    migration: "20260727010000_rls_initplan_wrap.sql"
+    shape: "275 ALTER POLICY statements, generated from pg_policies, not hand-edited"
+    wrapped:
+      - "has_any_role(ARRAY[...])"
+      - "has_planning_capability('...')"
+      - "has_permission('...')"
+      - "has_role('...')"
+      - "ccr_is_reviewer(), dash_is_config_writer(), dash_is_config_reviewer()"
+      - "bare auth.uid()"
+    deliberately_not_wrapped:
+      - "is_assigned_inspector(visit_id)"
+      - "inspects_same_factory(visit_id)"
+      - "can_read_semantic_audit_object(aggregate_type, aggregate_id, source_audit_event_id)"
+    reason_not_wrapped: "Row-dependent arguments. Hoisting them to an InitPlan would change meaning, not just cost."
+  part_2:
+    migration: "20260727010500_visits_factory_id_idx.sql"
+    changes:
+      - "create index visits_factory_id_idx on public.visits (factory_id) — the self-join inside inspects_same_factory() had no index and scanned all 1491 visits per call."
+      - "inspects_same_factory() now calls (select auth.uid()); its two siblings already did."
+  part_3:
+    file: "apps/web/src/app/(app)/field/page.tsx"
+    change: >
+      The assignment-read failure branch no longer replaces the whole dashboard
+      with one alert. It names the affected surfaces, states explicitly that no
+      counts are shown and that this is not a count of zero, serves the daily
+      brief when that independent read succeeded, and offers routes to My Tasks,
+      Establishments, Notifications and retry.
+    rejected_alternative: >
+      Rendering the normal dashboard with an empty task list. Every count would
+      read 0, asserting "no visits today" — a claim the page cannot make when the
+      read failed. Refused on the no-fabrication rule.
+  requirement_refs:
+    - "MVP1-FND-012"
+    - "ERR-OPS-001"
+    - "RBAC-001"
+
+verification:
+  remote_application: "authorized only for iiozvqntawxfwbgffzqu"
+  application_path: "Supabase Management API /v1/projects/{ref}/database/query — no local DB password exists"
+  equivalence:
+    result: "PASS — 981 checks over 327 distinct clauses, 3 identities, 0 row mismatches, 0 errors"
+    note: "Executed as superuser so every row of every table was covered, not only rows visible to a given role."
+  predicate_scan_after_apply:
+    result: "PASS — 0 bare has_any_role, 0 bare has_planning_capability, 0 bare auth.uid() across all 311 policies"
+  performance:
+    result: "PASS — 5728.286 ms to 44.200 ms on the same query, same user, RLS on"
+  static:
+    result: "PASS — tsc --noEmit clean"
+  cleanup:
+    result: "PASS — temporary _rlsfix schema dropped, zero residue in pg_namespace"
+  outstanding:
+    - "FAIL_UNPROVEN — the /field partial-service branch was not exercised in a browser. No session is available on the main-tree server and password entry is out of scope for the agent."
+
+handoff:
+  next_step: >
+    Two follow-ups, neither blocking this task. First, obtain a browser session
+    as inspector@mim.gov.sa and confirm the partial-service branch renders and
+    prints no zero counts. Second, add a contract test asserting that
+    pg_policies contains no bare parameterless predicate, so a later migration
+    cannot silently reintroduce the per-row cost — nothing guards this today.
+  do_not:
+    - "Do not widen FIELD_CHANNEL_ROLE_KEYS under this task. The Product Owner confirmed on 2026-07-27 that the web-to-field channel gate stands; see DEC-042."
