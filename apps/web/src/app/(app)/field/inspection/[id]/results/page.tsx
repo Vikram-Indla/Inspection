@@ -11,17 +11,18 @@ import type { ResultsDraft } from "./actions";
  * Visit Report · Results (Step 3 of 4).
  * Design of record: designs/pwa/pwa/SAQEEL PWA-Field Visit Results.dc.html
  *
- * ROUTE PLACEMENT — deliberate, and temporary. The natural home is
- * /field/inspection/[id]/results, beside the existing statement/ sibling, but
- * apps/web/src/app/(app)/field/inspection/[id]/** is held under
- * LEASE-SAQEEL-PWA-WORKSPACE-001 and LEASE-SAQEEL-PWA-COMPLETION-001 by another
- * actor who is committing to this branch concurrently. Building there would be
- * a lease breach and a near-certain collision, so the screen lives outside the
- * leased path and should be moved once the lease is released. Nothing here
- * depends on the location beyond backHref.
+ * ROUTE — /field/inspection/[id]/results, the canonical home: this is Step 3 of
+ * the inspection execution flow, it is anchored on an inspection, and it sits
+ * beside the existing statement/ sibling under the same [id].
+ *
+ * LEASE NOTE: field/inspection/[id]/** is held under
+ * LEASE-SAQEEL-PWA-WORKSPACE-001 / -PWA-COMPLETION-001. This slice adds a NEW
+ * results/ subdirectory and modifies none of the leased files, so it cannot
+ * collide textually with that holder's work. Flagged rather than assumed —
+ * if the lease holder also builds a results surface, these must converge.
  */
-export default async function VisitResultsPage({ params }: { params: Promise<{ inspectionId: string }> }) {
-  const { inspectionId } = await params;
+export default async function VisitResultsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: inspectionId } = await params;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => (locale === "ar" ? ar : t(key, en));
 

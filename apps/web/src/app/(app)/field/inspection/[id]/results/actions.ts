@@ -119,7 +119,7 @@ export async function saveResults(inspectionId: string, draft: ResultsDraft): Pr
     return isImmutable(seizedErr) ? { kind: "immutable" } : { kind: "error", message: seizedErr };
   }
 
-  revalidatePath(`/field/visit-report/${inspectionId}/results`);
+  revalidatePath(`/field/inspection/${inspectionId}/results`);
   return { kind: "ok", reportId: report.id };
 }
 
