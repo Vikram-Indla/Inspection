@@ -9,7 +9,6 @@ interface SpineCard {
   route?: string;
   designPage?: string;
 }
-
 interface Spine {
   cards: SpineCard[];
 }
@@ -243,4 +242,3 @@ export function loadManifest(): ManifestCard[] {
       };
     });
 }
-

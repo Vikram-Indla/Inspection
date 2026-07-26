@@ -177,37 +177,51 @@ and only when the work is actually done.
 words: *"Agents update `status/saqeel-status.json`; this page only renders it."*
 It reads the project-local file `status/saqeel-status.json`.
 
-So publishing is one write: repo copy → project copy. Never hand-edit the
+So publishing means getting the repo copy onto that path. Never hand-edit the
 `.dc.html`; never publish anywhere else. Google Drive is not a status target.
 
 ```bash
 python3 .claude/skills/orchestrator/scripts/board.py publish
 ```
 
-That prints the revision, the target path, and the exact `write_files` call to
-make. Read the project copy first to get its `etag`, then write with `if_match`
-so a concurrent Claude Design edit is caught instead of silently clobbered:
+That prints the revision, the target, and which of the two routes below applies.
+
+### You cannot push the whole board with `write_files`
+
+`mcp__claude-design__write_files` takes inline `data` only. Its `local_path`
+parameter exists in the schema but returns *"not yet implemented for server-side
+callers — use inline data for now."* The board is ~71 KB (~55 KB minified), so
+inlining it means hand-emitting 70 000 bytes of JSON through token generation —
+a single wrong byte publishes a corrupted board. **Do not attempt it.** Verified
+2026-07-26.
+
+### Route A — ask Claude Design to pull (default)
+
+Post the request into the project chat, then a Claude Design session (which can
+read the repo) copies the file across:
 
 ```
-mcp__claude-design__read_file        # capture the etag
+mcp__claude-design__put_conversation
   project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
-  path: status/saqeel-status.json
-
-mcp__claude-design__write_files
-  project_id: 5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61
-  path:      status/saqeel-status.json
-  if_match:  <etag from the read>
-  content:   <output of `board.py publish --print-payload`>
+  title:      "Board reconciliation <rev> — sync request"
+  messages:   [{role:"user", …}, {role:"assistant", …}]
 ```
 
-Then record what you pushed:
+State in the message: the repo path and branch, the revision, the byte count,
+the `if_match` etag to guard the write, and *"copy it byte-for-byte rather than
+regenerating it."* Then verify by re-reading the project copy's `revision`.
+
+### Route B — small, surgical writes
+
+`write_files` is fine for anything small: a `.dc.html` design edit, a single
+support file. Read first for the `etag`, write with `if_match`, and record it:
 
 ```bash
 python3 .claude/skills/orchestrator/scripts/board.py record-publish \
   --revision <rev> --etag <etag returned by the write>
 ```
 
-**On a `if_match` conflict, stop and reconcile — do not force.** Someone edited
+**On an `if_match` conflict, stop and reconcile — do not force.** Someone edited
 the board in Claude Design while you worked. Read both copies, merge by card,
 and only then re-push.
 

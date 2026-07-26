@@ -1,0 +1,22 @@
+{
+  "_comment": [
+    "Who owns each board channel. This is the ONE place ownership is declared;",
+    "brief.py and board.py both read it, so changing a value here changes what",
+    "the orchestrator will work on.",
+    "",
+    "Values:",
+    "  claude-code       this CLI writes the code itself",
+    "  codex             this CLI writes the packet, Codex writes the code",
+    "  other-developer   out of scope: read-only, lanes frozen, no file edits",
+    "",
+    "To take the PWA channel, change pwa to \"claude-code\" (or \"codex\") and say",
+    "so in the session. Set it back to \"other-developer\" when handing it back.",
+    "Product Owner ruling 2026-07-26: web = claude-code, admin = codex,",
+    "pwa = a different developer."
+  ],
+  "channelOwners": {
+    "web": "claude-code",
+    "admin": "codex",
+    "pwa": "other-developer"
+  }
+}

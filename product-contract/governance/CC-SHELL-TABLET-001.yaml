@@ -3,7 +3,7 @@ change_control_id: "CC-SHELL-TABLET-001"
 title: "Console shell at tablet / iPad size"
 raised_by: "Claude Orchestrator"
 raised_at: "2026-07-26T01:30:00+03:00"
-state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE (Q1 RESOLVED — option B)"
+state: "PROPOSED_AWAITING_SPONSOR_ACCEPTANCE (Q1 RESOLVED — option B; Q2 RESOLVED — one shell for every persona)"
 landed_commit: "f49c90ca"
 
 sponsor_direction: >
@@ -27,6 +27,24 @@ design_proposal:
     Written as a NEW page. SAQEEL Web Shell v5.dc.html is untouched and remains
     the accepted authority until the sponsor accepts this proposal. Code must
     never overwrite accepted design.
+  carries_q2: >
+    Updated 2026-07-26 to carry the Q2 ruling as well. The page now records the
+    three v5 conditions Q2 changes (showNav, showHamburger, showBackdrop), marks
+    the superseded field-persona exceptions in sections 1 and 4, and states the
+    field-channel tagging gap as explicitly NOT resolved. v5 itself is still
+    untouched; those conditions are applied to it only on acceptance.
+  q2_authorship_correction: >
+    A first attempt at Q2 built a separate PWA-only drawer in a new pwa-shell.js,
+    with groups taken from SAQEEL PWA-Index.dc.html's journey listing. That was
+    wrong twice over. The Index groups are a file-browsing structure for the
+    design set, not product navigation, so repurposing them as a nav was
+    authoring, not transcription — and it was redundant, because v5 already
+    ships the rail, drawer and hamburger, gated only by !field. The Product
+    Owner rejected it. Both artifacts (pwa/pwa-shell.js and the PWA proposal
+    page built on it) were deleted from the design project the same session and
+    never reached the repo or any accepted page. Recorded so the mistake is not
+    repeated: the shell's navigation is v5's four groups, and Q2 changes a gate,
+    not a menu.
 
 decisions:
   breakpoint:
@@ -49,14 +67,27 @@ decisions:
       Planning, Inspection Rules, Users). That was invented, not designed, and
       was reverted before it reached main.
   topbar:
-    change: "no change — the bell stays at every width for a console persona"
+    change: "the bell stays at every width for EVERY persona (superseded by Q2)"
     history: >
       An earlier pass hid the bell at tablet size on the grounds that
       Notifications was a tab there. Q1 option B removed the console tab bar, so
       that reasoning no longer holds: the bell is a console persona's only route
       to notifications and must remain at every size. The rule and its
-      .ax-topbar-hide-tablet class were reverted. A field-only persona still does
-      not get the bell, because for them it genuinely duplicates a tab.
+      .ax-topbar-hide-tablet class were reverted. The remaining field-persona
+      exception was then removed by Q2 — the bell now renders for everyone.
+  shell_chrome:
+    rule: "The console shell is NOT persona-based. Every persona gets identical chrome at every width."
+    covers: ["sidebar", "drawer", "backdrop", "hamburger", "notification bell", "account menu"]
+    basis: "Q2 (below)."
+    contents_are_still_filtered: >
+      Same shell, role-appropriate items. buildShellNavigation() continues to
+      filter destinations by role and channel (shell-navigation.ts), so what a
+      persona can reach is unchanged. Chrome is universal; contents are not.
+      RBAC-009/010 and TASK-WEB-CHANNEL-ACCESS-GATE-001 are untouched.
+    still_persona_aware_because_it_is_routing_not_chrome:
+      - "shellGlobalSearchHref() — rewrites search hits onto the field channel."
+      - "NotificationBell fieldOnly prop — rewrites notification hrefs onto the field channel."
+      - "Account menu settings link — /field/settings vs /profile."
 
 defect_fixes_included:
   - "Drawer wordmark was crushed into a 28px grid column and vanished; the drawer now resets brand to flex and keeps the design's 22px cap height."
@@ -87,6 +118,52 @@ open_question_for_sponsor:
   verified:
     console_at_1024: "hamburger grid · tab bar absent · bell present"
     field_route: "one .field-nav, rendered by the layout"
+
+second_question_for_sponsor:
+  id: "CC-SHELL-TABLET-001-Q2"
+  state: "RESOLVED"
+  resolved_at: "2026-07-26T02:55:00+03:00"
+  resolved_by: "Product Owner"
+  ruling: >
+    The shell must not be persona-based — it has to be the same for everybody.
+    Applies to the hamburger, drawer, sidebar, bell and account menu. The
+    role/channel filter on the drawer's CONTENTS is kept.
+  question: >
+    Q1 settled which persona sees the bottom tab bar. It left a second, larger
+    fork untouched: `fieldOnly` also suppressed the sidebar, drawer, hamburger,
+    bell and account menu outright. Should the shell chrome itself differ by
+    persona at all?
+  defect_this_ruling_fixes: >
+    (app)/layout.tsx does not wrap /field/* in the AppShell, and its access gate
+    redirects a field-only persona off every other route EXCEPT the documented
+    M01-043 exception /planning/immediate. So the suppressed-chrome branch could
+    only ever fire on that one route — where it handed an Inspector a page with
+    no hamburger, no drawer, no bell and no account menu. No navigation at all.
+    Stranded, with browser-back the only exit. Universal chrome removes that.
+  implementation:
+    - "Removed every !fieldOnly guard from the sidebar, backdrop, drawer, hamburger, bell and account menu in ShellClient.tsx."
+    - "Removed the is-field-nav-hidden class and its now-dead grid rule in astryx.css."
+    - "Q1 option B (tab bar shown only to a field persona) is deliberately UNCHANGED."
+    - "buildShellNavigation()'s role/channel filter is deliberately UNCHANGED."
+  verified:
+    build: "next build — 0 errors, 0 warnings"
+    typecheck: >
+      Clean. Two tsc errors seen beforehand were stale .next/types references to
+      login/field/page.tsx, deleted in 53ddf4de; they do not survive a build.
+    lint: "No ESLint config exists in this repo — next lint prompts for setup. There is no lint gate to run."
+    browser: >
+      NOT DONE. The changed branch is only reachable by a field persona on
+      /planning/immediate, which needs an authenticated Inspector session. The
+      inspector password must be entered by the Product Owner. Outstanding.
+  consequence_to_watch:
+    id: "field-channel nav tagging is thin"
+    detail: >
+      Only ONE item in SHELL_NAVIGATION carries channels: ["web", "field"].
+      Empty groups are dropped, so a field persona's drawer now renders with a
+      single destination. Correct per this ruling and far better than no
+      navigation, but the shared drawer will look sparse for that persona until
+      more destinations are tagged for the field channel. Tagging more items is
+      a separate decision and is NOT taken here.
 
 propagation:
   files_changed:

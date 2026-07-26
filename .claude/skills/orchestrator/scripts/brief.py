@@ -25,11 +25,20 @@ PHASE1 = REPO / "product-contract" / "web-admin-phase1"
 ROUTE_MAP = PHASE1 / "DESIGN_ROUTE_MAP.csv"
 BASELINE = PHASE1 / "REQUIREMENT_BASELINE.csv"
 
-OWNER = {
-    "web": "claude-code",
-    "admin": "codex",
-    "pwa": "OUT OF SCOPE — owned by another developer",
-}
+CONFIG = Path(__file__).resolve().parents[1] / "config.json"
+OUT_OF_SCOPE = "other-developer"
+
+# Channel ownership lives in config.json so it is declared in one place and can
+# be handed over without editing code. See that file's _comment.
+_owners = json.loads(CONFIG.read_text(encoding="utf-8"))["channelOwners"]
+
+
+def owner(channel: str) -> str:
+    return _owners.get(channel, OUT_OF_SCOPE)
+
+
+def in_scope(channel: str) -> bool:
+    return owner(channel) != OUT_OF_SCOPE
 
 csv.field_size_limit(10_000_000)
 
@@ -214,7 +223,8 @@ def cmd_list(spine: dict) -> None:
     print(f"SAQEEL board {spine['revision']} — updated {spine['updated']}\n")
     for ch in ("web", "admin", "pwa"):
         cards = [c for c in spine["cards"] if c["channel"] == ch]
-        print(f"── {ch}  ({len(cards)} cards)  owner: {OWNER[ch]}")
+        mark = "" if in_scope(ch) else "   [out of scope — read-only]"
+        print(f"── {ch}  ({len(cards)} cards)  owner: {owner(ch)}{mark}")
         for c in cards:
             n = lambda v: " ref" if v is None else f"{v:3d}"
             print(
@@ -240,8 +250,8 @@ def build_brief(spine: dict, card: dict) -> dict:
 
     return {
         "card": card,
-        "owner": OWNER[ch],
-        "in_scope": ch != "pwa",
+        "owner": owner(ch),
+        "in_scope": in_scope(ch),
         "design_files": [
             {
                 **f,
@@ -300,8 +310,11 @@ def render(b: dict) -> None:
           f"   complexity {c.get('complexity')}")
     print(f"OWNER: {b['owner']}")
     if not b["in_scope"]:
-        print("\n*** OUT OF SCOPE. PWA belongs to another developer. Report status "
-              "and stop. Do not edit PWA files. ***")
+        print(f"\n*** OUT OF SCOPE. The {c['channel']} channel is owned by another\n"
+              f"    developer. Report status and stop — do not edit its files and do\n"
+              f"    not move its lanes. To take this channel, set channelOwners."
+              f"{c['channel']} to \"claude-code\" in\n"
+              f"    .claude/skills/orchestrator/config.json and say so in the session. ***")
     print(bar)
 
     print(f"\nLANES (board claim — verify each before believing it)")

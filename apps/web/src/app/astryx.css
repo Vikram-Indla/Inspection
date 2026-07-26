@@ -453,10 +453,9 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    collapse and accessible mobile drawer. All geometry uses logical axes. */
 .ax-shell { display: grid; grid-template-columns: var(--ax-shell-nav-width) minmax(0, 1fr); min-block-size: 100dvh; transition: grid-template-columns var(--ax-motion-standard); }
 .ax-shell.is-collapsed { grid-template-columns: 68px minmax(0, 1fr); }
-/* Field-only Inspector sessions render no console sidebar nav at all — the
-   drawer, backdrop and hamburger are not in the DOM. Collapse the reserved
-   nav column so the page content spans full width instead of leaving a gap. */
-.ax-shell.is-field-nav-hidden, .ax-shell.is-field-nav-hidden.is-collapsed { grid-template-columns: minmax(0, 1fr); }
+/* `is-field-nav-hidden` was removed on 2026-07-26: the shell is no longer
+   persona-based, so the nav column is always present and never needs
+   collapsing away. Do not re-add a persona variant of this rule. */
 .ax-shell__skip { position: fixed; inset-block-start: var(--ax-space-100); inset-inline-start: var(--ax-space-100); z-index: var(--ax-z-toast); transform: translateY(-160%); background: var(--ax-color-primary); color: var(--ax-color-inverse-text); padding: var(--ax-space-100) var(--ax-space-150); border-radius: var(--ax-radius-small); font: var(--ax-text-body-strong); text-decoration: none; }
 .ax-shell__skip:focus { transform: translateY(0); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* SAQEEL graphite navigation — deep graphite in BOTH themes (PR 1b hotfix). */
