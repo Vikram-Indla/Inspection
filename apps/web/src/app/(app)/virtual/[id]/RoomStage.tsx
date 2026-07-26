@@ -13,6 +13,26 @@
 //
 // SB19 — every string is built server-side with t() and passed in as props.
 import { useCallback, useEffect, useRef, useState } from "react";
+import { requestRoomToken } from "./video-actions";
+
+/** Minimal shape of what we use from twilio-video, so the SDK stays a dynamic
+ *  import (it touches WebRTC globals and must never be pulled in during SSR). */
+type TwilioTrack = {
+  kind: string;
+  attach: (el?: HTMLMediaElement) => HTMLMediaElement;
+  detach: () => HTMLMediaElement[];
+};
+type TwilioParticipant = {
+  identity: string;
+  on: (ev: string, cb: (t: TwilioTrack) => void) => void;
+  tracks: Map<string, { track: TwilioTrack | null }>;
+};
+type TwilioRoom = {
+  localParticipant: { identity: string };
+  participants: Map<string, TwilioParticipant>;
+  on: (ev: string, cb: (p: TwilioParticipant) => void) => void;
+  disconnect: () => void;
+};
 
 export type RoomStageStrings = {
   title: string;
@@ -22,6 +42,7 @@ export type RoomStageStrings = {
   stateLocalOnly: string;
   stateUnavailable: string;
   remoteWaiting: string;
+  remoteRepNoRoute: string;
   remoteUnavailable: string;
   remoteUnavailableReason: string;
   selfView: string;
@@ -44,6 +65,13 @@ export type RoomStageStrings = {
   errBusy: string;
   errUnsupported: string;
   errGeneric: string;
+  // room admission
+  join: string;
+  joining: string;
+  stateNotJoined: string;
+  joinedWith: string;
+  joinedAlone: string;
+  errJoin: string;
 };
 
 type MediaFailure = keyof Pick<
@@ -60,6 +88,9 @@ function classify(err: unknown): MediaFailure {
   if (name === "TypeError") return "errUnsupported";
   return "errGeneric";
 }
+
+/** Substitutes {n} in a count string; the copy stays server-built and localizable. */
+const fmtCount = (s: string, n: number) => s.replace("{n}", String(n));
 
 const ICON = {
   viewBox: "0 0 24 24",
@@ -112,25 +143,34 @@ function IconLeave() {
 
 export default function RoomStage({
   strings: t,
+  sessionId,
   remoteName,
   remoteInitials,
   transportConfigured,
 }: {
   strings: RoomStageStrings;
+  /** The virtual_sessions row id — also the Twilio room name. */
+  sessionId: string;
   remoteName: string;
   remoteInitials: string;
-  /** Server truth from videoTransportStatus() — never inferred on the client. */
+  /** Server truth from videoRoomJoinable() — never inferred on the client. */
   transportConfigured: boolean;
 }) {
   const [camOn, setCamOn] = useState(false);
   const [micOn, setMicOn] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [failure, setFailure] = useState<MediaFailure | null>(null);
+  const [joining, setJoining] = useState(false);
+  const [joined, setJoined] = useState(false);
+  const [remotes, setRemotes] = useState<string[]>([]);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   const camStream = useRef<MediaStream | null>(null);
   const shareStream = useRef<MediaStream | null>(null);
   const selfVideo = useRef<HTMLVideoElement | null>(null);
   const shareVideo = useRef<HTMLVideoElement | null>(null);
+  const roomRef = useRef<TwilioRoom | null>(null);
+  const remoteBox = useRef<HTMLDivElement | null>(null);
 
   const stopStream = (ref: React.RefObject<MediaStream | null>) => {
     ref.current?.getTracks().forEach(track => { track.stop(); });
@@ -141,6 +181,10 @@ export default function RoomStage({
   // operator navigates away is a real privacy defect, not a cosmetic one.
   useEffect(() => {
     return () => {
+      // Disconnect first: navigating away must not leave a ghost participant
+      // sitting in a governed room, which would also keep billing the session.
+      roomRef.current?.disconnect();
+      roomRef.current = null;
       camStream.current?.getTracks().forEach(t2 => { t2.stop(); });
       shareStream.current?.getTracks().forEach(t2 => { t2.stop(); });
     };
@@ -229,7 +273,84 @@ export default function RoomStage({
     }
   };
 
+  /** Attach a remote track into the stage and keep the roster in sync. */
+  const attachRemote = useCallback((participant: TwilioParticipant, track: TwilioTrack | null) => {
+    if (!track || !remoteBox.current) return;
+    const el = track.attach();
+    el.setAttribute("data-identity", participant.identity);
+    if (track.kind === "video") {
+      el.className = "cd-stage__feed";
+      (el as HTMLVideoElement).playsInline = true;
+    }
+    remoteBox.current.appendChild(el);
+  }, []);
+
+  /** Remove every element belonging to one identity.
+   *
+   *  Sweeping the DOM by data-identity rather than calling track.detach() is
+   *  deliberate: at `participantDisconnected` the publication's `.track` is
+   *  already null, so detach() removes nothing and the departed participant's
+   *  last frame stays frozen on screen — an operator would read a still image as
+   *  a live person still in the room. */
+  const dropRemote = useCallback((identity: string) => {
+    remoteBox.current?.querySelectorAll(`[data-identity="${CSS.escape(identity)}"]`)
+      .forEach(el => { el.remove(); });
+    setRemotes(prev => prev.filter(id => id !== identity));
+  }, []);
+
+  const wireParticipant = useCallback((p: TwilioParticipant) => {
+    p.tracks.forEach(pub => { attachRemote(p, pub.track); });
+    p.on("trackSubscribed", (track: TwilioTrack) => { attachRemote(p, track); });
+    // A track can stop mid-call without the participant leaving (they turn the
+    // camera off), so its element must go too.
+    p.on("trackUnsubscribed", (track: TwilioTrack) => {
+      track.detach().forEach(el => { el.remove(); });
+    });
+    setRemotes(prev => (prev.includes(p.identity) ? prev : [...prev, p.identity]));
+  }, [attachRemote]);
+
+  /**
+   * Join the governed room. The token is minted server-side against the caller's
+   * own credentials — this component asks for admission, it does not assert it.
+   */
+  const joinRoom = async () => {
+    setJoinError(null);
+    setJoining(true);
+    try {
+      const admission = await requestRoomToken(sessionId);
+      if (!admission.ok) { setJoinError(admission.error); setJoining(false); return; }
+
+      // Publish whatever the operator already turned on; joining must not
+      // silently switch a camera on that they had deliberately left off.
+      const tracks = camStream.current?.getTracks().filter(t => t.enabled) ?? [];
+      // Dynamic import: the SDK touches WebRTC globals and must not run in SSR.
+      const { connect } = await import("twilio-video");
+      const room = (await connect(admission.token, {
+        name: sessionId,
+        tracks,
+      })) as unknown as TwilioRoom;
+      roomRef.current = room;
+
+      room.participants.forEach(p => { wireParticipant(p); });
+      room.on("participantConnected", p => { wireParticipant(p); });
+      room.on("participantDisconnected", p => { dropRemote(p.identity); });
+      setJoined(true);
+    } catch (err) {
+      console.error("[virtual room connect]", err);
+      setJoinError(t.errJoin);
+    } finally {
+      setJoining(false);
+    }
+  };
+
   const leave = () => {
+    // Disconnect from the room BEFORE stopping local tracks, so remote peers see
+    // a clean participantDisconnected rather than a frozen frame.
+    roomRef.current?.disconnect();
+    roomRef.current = null;
+    if (remoteBox.current) remoteBox.current.replaceChildren();
+    setJoined(false);
+    setRemotes([]);
     stopStream(camStream);
     stopStream(shareStream);
     if (selfVideo.current) selfVideo.current.srcObject = null;
@@ -237,10 +358,16 @@ export default function RoomStage({
     setCamOn(false); setMicOn(false); setSharing(false); setFailure(null);
   };
 
-  const live = camOn || micOn || sharing;
-  const stateText = transportConfigured
-    ? (live ? t.stateConnected : t.statusReady)
-    : (live ? t.stateLocalOnly : t.stateUnavailable);
+  const live = camOn || micOn || sharing || joined;
+  // "Connected" is claimed ONLY when actually in the room. Local devices being
+  // on is a different fact and gets a different label.
+  const stateText = joined
+    ? (remotes.length > 0 ? fmtCount(t.joinedWith, remotes.length) : t.joinedAlone)
+    : transportConfigured
+      // Not t.statusReady here: the header line already says that, and the chip
+      // repeating it read as "ready to connect ready to connect".
+      ? (live ? t.stateLocalOnly : t.stateNotJoined)
+      : (live ? t.stateLocalOnly : t.stateUnavailable);
 
   return (
     <section className="cd-stage" aria-label={t.title}>
@@ -254,9 +381,13 @@ export default function RoomStage({
 
       <div className="cd-stage__frame">
         {/* Remote leg — honest while the transport has no credentials. */}
+        {/* Remote participants land here once connected. Empty until then, and
+            never used to imply presence. */}
+        <div ref={remoteBox} className="cd-stage__remotes" hidden={remotes.length === 0} />
+
         {sharing ? (
           <video ref={shareVideo} className="cd-stage__feed" muted playsInline aria-label={t.sharingLabel} />
-        ) : (
+        ) : remotes.length > 0 ? null : (
           <div className="cd-stage__remote">
             <span className="cd-stage__avatar" aria-hidden="true">{remoteInitials}</span>
             <strong>{remoteName}</strong>
@@ -264,6 +395,10 @@ export default function RoomStage({
               {transportConfigured ? t.remoteWaiting : t.remoteUnavailable}
             </p>
             {!transportConfigured && <p className="cd-sub">{t.remoteUnavailableReason}</p>}
+            {/* "Waiting for the representative" would be a promise the system
+                cannot keep: they have no auth account and no join route, so
+                nothing they do could put them in this room. Say so. */}
+            {transportConfigured && <p className="cd-sub cd-stage__reason">{t.remoteRepNoRoute}</p>}
           </div>
         )}
 
@@ -294,20 +429,28 @@ export default function RoomStage({
           aria-pressed={sharing} onClick={toggleShare}>
           <IconScreen />{sharing ? t.shareStop : t.share}
         </button>
+        {transportConfigured && !joined && (
+          <button type="button" className="btn btn-primary btn-touch cd-stage__btn"
+            onClick={joinRoom} disabled={joining}>
+            <IconScreen />{joining ? t.joining : t.join}
+          </button>
+        )}
         <span className="cd-stage__spacer" />
-        {/* The control releases devices; it only "leaves a room" when a room
-            can exist. Labelling it "Leave room" with no transport configured
-            would assert a session that was never joined — the same failure the
-            field route closed in 5fa170a7 (provider-unavailable is a failure,
-            not a session). */}
+        {/* The control releases devices; it only "leaves a room" once there IS a
+            room joined. Saying "Leave room" otherwise asserts a session that was
+            never joined — the same failure the field route closed in 5fa170a7
+            (provider-unavailable is a failure, not a session). */}
         <button type="button" className="btn btn-danger btn-touch cd-stage__btn"
           onClick={leave} disabled={!live}>
-          <IconLeave />{transportConfigured ? t.leave : t.stopDevices}
+          <IconLeave />{joined ? t.leave : t.stopDevices}
         </button>
       </div>
 
       {failure && (
         <div className="sq-banner sq-banner--warning" role="alert"><div>{t[failure]}</div></div>
+      )}
+      {joinError && (
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{joinError}</div></div>
       )}
       <p className="cd-sub cd-stage__note">{t.note}</p>
     </section>

@@ -313,7 +313,7 @@ export default function Room({ session, strings: t, rev, stage, transportConfigu
           {/* WA-DES-044 — the room leads the column: device checks and screen
               share are usable before anyone joins, and the remote leg states
               its own availability. */}
-          <RoomStage strings={stage} remoteName={stageRemoteName}
+          <RoomStage strings={stage} sessionId={session.id} remoteName={stageRemoteName}
             remoteInitials={stageRemoteInitials} transportConfigured={transportConfigured} />
 
           {/* WA-DES-044 — identity verification is the human work of the room:

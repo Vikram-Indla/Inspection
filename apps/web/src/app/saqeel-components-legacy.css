@@ -1187,6 +1187,11 @@ button.sq-shell-scope { cursor: pointer; }
 .cd-stage__reason { max-inline-size: 48ch; }
 .cd-stage__avatar { inline-size: 48px; aspect-ratio: 1; border-radius: var(--radius-full); background: var(--surface-sunken); border: 1px solid var(--border-subtle); display: grid; place-items: center; font: var(--type-micro); letter-spacing: .04em; }
 .cd-stage__feed { inline-size: 100%; block-size: 100%; object-fit: cover; }
+/* Remote participants. Grid so a second joiner splits the stage rather than
+   overlaying the first; audio elements are present but have no box. */
+.cd-stage__remotes { position: absolute; inset: 0; display: grid; gap: 2px; grid-auto-flow: column; }
+.cd-stage__remotes:empty { display: none; }
+.cd-stage__remotes audio { display: none; }
 .cd-stage__pip { position: absolute; inset-block-end: 12px; inset-inline-end: 12px; inline-size: 148px; aspect-ratio: 4 / 3; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-sunken); display: grid; place-items: center; overflow: hidden; text-align: center; padding: 6px; }
 /* Narrow widths: the self-view is absolutely positioned, and at 320px it covered
    the stage note — the reason the room cannot open was the text being hidden.
