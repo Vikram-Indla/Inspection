@@ -1,0 +1,40 @@
+schema_version: "1.0"
+decision_id: "DEC-PWA-WEB-PUSH-PRESERVATION-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+title: "Preserve Web Push while retiring active PWA delivery"
+state: "APPROVED_FOR_IMPLEMENTATION"
+decided_at: "2026-07-26"
+decided_by: "Vikram Indla / Product Owner"
+approval_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+decision:
+  web_push: "PRESERVE"
+  global_service_worker_registration: "RETIRE"
+  install_manifest_and_standalone_metadata: "RETIRE"
+  app_shell_and_static_asset_caching: "RETIRE"
+  explicit_push_opt_in_registration: "PRESERVE"
+  field_offline_business_state: "PRESERVE"
+
+rationale:
+  - "The approved product is one responsive browser application, not a showcased or separately installed PWA."
+  - "Web Push remains an accepted notification capability and requires a service worker."
+  - "A push-only worker registered from the explicit user opt-in action preserves notifications without restoring app-shell caching, install prompts, standalone navigation, or a second application architecture."
+  - "Existing IndexedDB drafts, outbox replay, conflict detection, package integrity, evidence queues and immutable submission guards do not depend on service-worker fetch interception and remain active."
+
+implementation_constraints:
+  - "The root layout must not register a service worker."
+  - "The worker must not intercept fetches, cache navigations or static assets, or advertise an installed shell."
+  - "Push permission and worker registration must remain behind an explicit user gesture."
+  - "The push worker may delete only obsolete saqeel-shell-* Cache Storage entries during activation; it must never delete IndexedDB or offline business records."
+  - "Existing push subscription storage, authenticated self-registration, RLS and server delivery behavior remain unchanged."
+  - "The archived pre-migration branch and tag remain immutable and disconnected from active delivery."
+
+resolves:
+  - "DEP-WEB-PUSH-DISPOSITION"
+
+does_not_authorize:
+  - "Production DDL or shared-data mutation"
+  - "A new notification provider or policy"
+  - "Removal of offline business capability"
+  - "Deployment, merge to main, or reconnection of the PWA archive"

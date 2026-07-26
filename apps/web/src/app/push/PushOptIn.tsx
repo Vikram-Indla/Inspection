@@ -29,6 +29,11 @@ export function PushOptIn({ strings: s }: { strings: { enable: string; enabling:
     try {
       const permission = await Notification.requestPermission();
       if (permission !== "granted") { setState("error"); setMsg(s.denied); return; }
+      // Web Push still requires a service worker, but the responsive web
+      // application no longer registers one globally. Registration happens
+      // only inside this explicit user gesture and the shipped worker handles
+      // push/notification events only — it does not cache or intercept pages.
+      await navigator.serviceWorker.register("/sw.js", { scope: "/" });
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,

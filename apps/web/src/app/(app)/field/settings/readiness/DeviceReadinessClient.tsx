@@ -1,21 +1,22 @@
 "use client";
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { readDeviceReadiness, requestPersistentStorage, type DeviceReadinessSnapshot } from "@/lib/pwa/client";
-import { formatBytes } from "@/lib/pwa/readiness";
+import {
+  formatBytes,
+  readDeviceReadiness,
+  requestPersistentStorage,
+  type DeviceReadinessSnapshot,
+} from "@/lib/device-readiness";
 import styles from "../settings.module.css";
 
 type Locale = "en" | "ar";
+type Tone = "ok" | "warn" | "muted";
 
 function copy(locale: Locale, en: string, ar: string): string {
   return locale === "ar" ? ar : en;
 }
 
-type Tone = "ok" | "warn" | "muted";
-
 function Badge({ tone, children }: { tone: Tone; children: ReactNode }) {
-  // Non-color-only (SPC-OFF-001): the badge always carries a text label; the
-  // tone class only reinforces it. "muted" = honest unknown, never a fake state.
   const cls = tone === "ok" ? "badge badge-compliant" : tone === "warn" ? "badge badge-warning" : "badge";
   return <span className={cls}>{children}</span>;
 }
@@ -25,30 +26,37 @@ function StatusRow({ label, tone, badge, note }: { label: string; tone: Tone; ba
     <div className={styles.row}>
       <span className={styles.rowLabel}>
         {label}
-        {note ? <span className="t-caption" style={{ display: "block" }}>{note}</span> : null}
+        {note ? <span className="t-caption" style={{ display: "block", color: "var(--text-secondary)" }}>{note}</span> : null}
       </span>
       <Badge tone={tone}>{badge}</Badge>
     </div>
   );
 }
 
-export default function DeviceReadinessClient({ locale, appVersion }: { locale: Locale; appVersion: string | null }) {
-  const [snap, setSnap] = useState<DeviceReadinessSnapshot | null>(null);
+export default function DeviceReadinessClient({ locale }: { locale: Locale }) {
+  const [snapshot, setSnapshot] = useState<DeviceReadinessSnapshot | null>(null);
   const [persisting, setPersisting] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      setSnap(await readDeviceReadiness());
+      setSnapshot(await readDeviceReadiness());
     } catch {
-      setSnap(null);
+      setSnapshot(null);
     }
   }, []);
 
   useEffect(() => {
     void refresh();
-    const onVis = () => { if (document.visibilityState === "visible") void refresh(); };
-    document.addEventListener("visibilitychange", onVis);
-    return () => document.removeEventListener("visibilitychange", onVis);
+    const onVisible = () => { if (document.visibilityState === "visible") void refresh(); };
+    const onConnectivity = () => { void refresh(); };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("online", onConnectivity);
+    window.addEventListener("offline", onConnectivity);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("online", onConnectivity);
+      window.removeEventListener("offline", onConnectivity);
+    };
   }, [refresh]);
 
   const requestPersist = useCallback(async () => {
@@ -62,33 +70,15 @@ export default function DeviceReadinessClient({ locale, appVersion }: { locale: 
   }, [refresh]);
 
   const unknown = copy(locale, "Unknown", "غير معروف");
-
-  // ---- Offline / shell ----
-  const shell = snap?.shell;
-  const shellRow = {
-    ready: { tone: "ok" as Tone, badge: copy(locale, "Ready", "جاهز") },
-    not_cached: { tone: "warn" as Tone, badge: copy(locale, "Not cached yet", "غير مخزّن بعد") },
-    no_controller: { tone: "warn" as Tone, badge: copy(locale, "Starting", "قيد البدء") },
-    unsupported: { tone: "muted" as Tone, badge: copy(locale, "Unsupported", "غير مدعوم") },
-  }[shell ?? "unsupported"];
-
-  const display = snap?.display;
-  const displayRow = {
-    standalone: { tone: "ok" as Tone, badge: copy(locale, "Installed app", "تطبيق مثبّت") },
-    browser: { tone: "muted" as Tone, badge: copy(locale, "In browser", "في المتصفح") },
+  const loading = snapshot === null;
+  const connectivity = snapshot?.connectivity ?? "unknown";
+  const connectivityRow = {
+    online: { tone: "ok" as Tone, badge: copy(locale, "Online", "متصل") },
+    offline: { tone: "warn" as Tone, badge: copy(locale, "Offline", "دون اتصال") },
     unknown: { tone: "muted" as Tone, badge: unknown },
-  }[display ?? "unknown"];
+  }[connectivity];
 
-  const update = snap?.update;
-  const updateRow = {
-    current: { tone: "ok" as Tone, badge: copy(locale, "Up to date", "محدّث") },
-    update_ready: { tone: "warn" as Tone, badge: copy(locale, "Update ready", "تحديث جاهز") },
-    unregistered: { tone: "muted" as Tone, badge: copy(locale, "Not registered", "غير مسجّل") },
-    unsupported: { tone: "muted" as Tone, badge: copy(locale, "Unsupported", "غير مدعوم") },
-  }[update ?? "unsupported"];
-
-  // ---- Storage ----
-  const storage = snap?.storage;
+  const storage = snapshot?.storage;
   const storageMeasured = storage?.measured && storage.quotaBytes !== null;
   const storageTone: Tone = !storage ? "muted" : storage.state === "ample" ? "ok" : storage.state === "constrained" ? "warn" : "muted";
   const storageBadge = !storage || storage.state === "unknown"
@@ -96,58 +86,49 @@ export default function DeviceReadinessClient({ locale, appVersion }: { locale: 
     : storage.state === "ample"
       ? copy(locale, "Ample", "كافٍ")
       : copy(locale, "Low", "منخفض");
-  // MVP2-REQ-0181 — when storage is constrained, state the exact fix.
   const storageFix = storage?.state === "constrained"
     ? copy(
         locale,
-        `Free up space in iPadOS Settings before travel — ${formatBytes(storage.availableBytes)} free.`,
-        `أفرغ مساحة من إعدادات iPadOS قبل السفر — ${formatBytes(storage.availableBytes)} متاحة.`,
+        `Free up space in device settings before travel — ${formatBytes(storage.availableBytes)} free.`,
+        `أفرغ مساحة من إعدادات الجهاز قبل الانتقال — ${formatBytes(storage.availableBytes)} متاحة.`,
       )
     : undefined;
 
-  const persistence = snap?.persistence;
-  const persistRow = {
+  const persistence = snapshot?.persistence;
+  const persistenceRow = {
     persisted: { tone: "ok" as Tone, badge: copy(locale, "Persistent", "دائم") },
     best_effort: { tone: "muted" as Tone, badge: copy(locale, "Best effort", "أفضل جهد") },
     unknown: { tone: "muted" as Tone, badge: unknown },
   }[persistence ?? "unknown"];
 
-  const loading = snap === null;
-
   return (
     <div className={styles.wrap} data-readiness-ready={loading ? "loading" : "ready"}>
-      {/* Offline readiness — what the inspector can rely on without a network
-          (SPC-OFF-002, FND-005). Every value is measured, never assumed. */}
-      <div className={styles.label}>{copy(locale, "Offline readiness", "الجاهزية دون اتصال")}</div>
+      <h1 className="sr-only">{copy(locale, "Device readiness", "جاهزية الجهاز")}</h1>
+      <div className={styles.label} style={{ color: "var(--text-secondary)" }}>{copy(locale, "Browser delivery", "التشغيل عبر المتصفح")}</div>
       <div className={styles.card}>
         <StatusRow
-          label={copy(locale, "Offline app shell", "هيكل التطبيق دون اتصال")}
-          tone={loading ? "muted" : shellRow.tone}
-          badge={loading ? copy(locale, "Checking…", "جارٍ الفحص…") : shellRow.badge}
-          note={copy(locale, "The field workspace can cold-start offline once the shell is cached.", "يمكن لمساحة العمل الميدانية أن تبدأ دون اتصال بمجرد تخزين الهيكل.")}
+          label={copy(locale, "Network", "الشبكة")}
+          tone={loading ? "muted" : connectivityRow.tone}
+          badge={loading ? copy(locale, "Checking…", "جارٍ الفحص…") : connectivityRow.badge}
+          note={copy(
+            locale,
+            "A network connection is required to load a new page.",
+            "يلزم اتصال بالشبكة لتحميل صفحة جديدة.",
+          )}
         />
         <StatusRow
-          label={copy(locale, "Installed mode", "وضع التثبيت")}
-          tone={loading ? "muted" : displayRow.tone}
-          badge={loading ? "…" : displayRow.badge}
-          note={display === "browser" ? copy(locale, "Add to Home Screen for a full-screen field app and push alerts.", "أضِف إلى الشاشة الرئيسية للحصول على تطبيق ميداني بملء الشاشة وتنبيهات فورية.") : undefined}
+          label={copy(locale, "Inspection work protection", "حماية أعمال التفتيش")}
+          tone="ok"
+          badge={copy(locale, "Drafts and queue preserved", "المسودات وقائمة الانتظار محفوظة")}
+          note={copy(
+            locale,
+            "Already-open inspection work keeps drafts and queued changes on this device; reconnect to synchronize.",
+            "تحفظ أعمال التفتيش المفتوحة المسودات والتغييرات في قائمة الانتظار على هذا الجهاز؛ أعد الاتصال للمزامنة.",
+          )}
         />
-        <StatusRow
-          label={copy(locale, "App version state", "حالة إصدار التطبيق")}
-          tone={loading ? "muted" : updateRow.tone}
-          badge={loading ? "…" : updateRow.badge}
-          note={update === "update_ready" ? copy(locale, "A new version is ready — reload from the banner to apply it.", "يتوفر إصدار جديد — أعد التحميل من الشريط لتطبيقه.") : undefined}
-        />
-        <div className={styles.row}>
-          <span className={styles.rowLabel}>{copy(locale, "App version", "إصدار التطبيق")}</span>
-          <span className="t-mono">{appVersion ?? copy(locale, "Set by deployment", "يُحدَّد عند النشر")}</span>
-        </div>
       </div>
 
-      {/* Storage — measured headroom for the offline package and outbox
-          (SCR-IPAD-610 "storage low"). Raw bytes are always shown so the number
-          speaks for itself regardless of the advisory. */}
-      <div className={styles.label}>{copy(locale, "Storage", "التخزين")}</div>
+      <div className={styles.label} style={{ color: "var(--text-secondary)" }}>{copy(locale, "Storage", "التخزين")}</div>
       <div className={styles.card}>
         <StatusRow
           label={copy(locale, "Storage headroom", "المساحة المتاحة")}
@@ -167,9 +148,13 @@ export default function DeviceReadinessClient({ locale, appVersion }: { locale: 
         </div>
         <StatusRow
           label={copy(locale, "Persistent storage", "تخزين دائم")}
-          tone={loading ? "muted" : persistRow.tone}
-          badge={loading ? "…" : persistRow.badge}
-          note={copy(locale, "Persistent storage protects offline drafts from being evicted under pressure.", "يحمي التخزين الدائم المسودات دون اتصال من الحذف عند الضغط.")}
+          tone={loading ? "muted" : persistenceRow.tone}
+          badge={loading ? "…" : persistenceRow.badge}
+          note={copy(
+            locale,
+            "Persistent browser storage protects offline drafts from eviction under pressure.",
+            "يحمي التخزين الدائم في المتصفح المسودات دون اتصال من الحذف عند الضغط.",
+          )}
         />
         {persistence !== "persisted" ? (
           <button type="button" className={styles.link} onClick={() => void requestPersist()} disabled={persisting} data-action="request-persist">
@@ -185,11 +170,11 @@ export default function DeviceReadinessClient({ locale, appVersion }: { locale: 
 
       <div className={styles.card}>
         <div className={styles.row}>
-          <p className={`t-caption ${styles.note}`}>
+          <p className={`t-caption ${styles.note}`} style={{ color: "var(--text-secondary)" }}>
             {copy(
               locale,
-              "This screen reads device state only — it cannot clear drafts, packages, queued work, or conflicts.",
-              "تقرأ هذه الشاشة حالة الجهاز فقط — ولا يمكنها مسح المسودات أو الحزم أو الأعمال في قائمة الانتظار أو التعارضات.",
+              "This screen reads browser state only — it cannot clear drafts, packages, queued work, or conflicts.",
+              "تقرأ هذه الشاشة حالة المتصفح فقط — ولا يمكنها مسح المسودات أو الحزم أو الأعمال في قائمة الانتظار أو التعارضات.",
             )}
           </p>
         </div>

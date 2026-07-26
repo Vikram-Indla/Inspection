@@ -1,0 +1,117 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-PWA-DECOUPLING-009"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/pwa-decoupling"
+baseline: "93d87fd34ca15ab6130fdd60eb568941f4938e4f"
+state: "TECHNICAL_PASS_READY_FOR_REVIEW"
+verified_at: "2026-07-27T00:57:36+03:00"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+process_ids:
+  - "M4"
+  - "M11"
+  - "MVP1-FND-005"
+  - "MVP1-FND-006"
+  - "STM-SYNC-001"
+  - "STM-SYNC-002"
+  - "SPC-OFF-001"
+  - "SPC-OFF-002"
+  - "SPC-OFF-005"
+requirements:
+  - "CR-120"
+  - "CR-142..CR-143"
+  - "CR-149"
+  - "CR-184"
+  - "CR-280..CR-283"
+  - "CR-093"
+  - "CR-099"
+  - "CR-104"
+  - "CR-111"
+  - "CR-332..CR-336"
+screens:
+  - "Unified responsive root delivery"
+  - "Field device readiness"
+  - "Profile notification opt-in"
+routes:
+  - "/**"
+  - "/field/**"
+  - "/profile"
+engines:
+  - "Responsive browser delivery"
+  - "Ordinary network-interruption handling"
+  - "IndexedDB drafts, outbox, idempotent replay and conflict detection"
+  - "Offline package integrity and evidence preservation"
+  - "Explicit Web Push opt-in, authenticated subscription and push-only worker"
+
+acceptance:
+  - "The application has no global service-worker registration, install manifest, install/update prompt, standalone metadata, app-shell cache or service-worker fetch interception."
+  - "The remaining service worker handles Web Push and notification clicks only, apart from safe retirement of obsolete saqeel-shell-* caches."
+  - "Push permission and push-worker registration occur only from the explicit user opt-in action."
+  - "Existing authenticated push-subscription writes, RLS, provider delivery and fail-closed configuration behavior remain unchanged."
+  - "Offline drafts, outbox replay, idempotency, conflict detection, package integrity, evidence queues and immutable submission behavior remain unchanged."
+  - "A loaded inspection workspace reports a real browser offline event and preserves queued work without claiming that a new browser navigation can cold-start offline."
+  - "Device readiness reports browser connectivity and measured storage truth without advertising install, standalone shell or service-worker update state."
+  - "English/Arabic, LTR/RTL, light/dark and responsive behavior remain available."
+  - "The archive branch and annotated tag resolve to the approved baseline 54a139a9daf893babf16fa901755e61525f26f1c and remain disconnected from active navigation and deployment."
+
+decisions:
+  - id: "DEC-PWA-WEB-PUSH-PRESERVATION-001"
+    disposition: "Preserve Web Push through a push-only worker registered only from explicit opt-in; retire PWA delivery and caching."
+  - id: "DEC-032"
+    disposition: "No new real submission evidence is created by this packet. Existing submission guards remain unchanged."
+
+dependencies:
+  - "PKT-RESPONSIVE-EXECUTION-FIELD-004"
+  - "PKT-RESPONSIVE-ADMIN-RBAC-008 at 93d87fd34ca15ab6130fdd60eb568941f4938e4f"
+  - "archive/pwa-pre-responsive-revamp and pwa-pre-responsive-revamp at 54a139a9daf893babf16fa901755e61525f26f1c"
+  - "Approved PWA Preservation worksheet in SAQEEL_Responsive_Revamp_Impact_Traceability.xlsx"
+
+allowed_paths:
+  - "apps/web/src/app/layout.tsx"
+  - "apps/web/src/app/push/PushOptIn.tsx"
+  - "apps/web/src/app/(app)/field/settings/readiness/**"
+  - "apps/web/src/components/PwaRegister.tsx"
+  - "apps/web/src/components/PwaUpdatePrompt.tsx"
+  - "apps/web/src/lib/pwa/**"
+  - "apps/web/src/lib/device-readiness.ts"
+  - "apps/web/src/lib/providers/push-webpush.ts (documentation correction only)"
+  - "apps/web/public/manifest.json"
+  - "apps/web/public/sw.js"
+  - "apps/web/e2e/field-offline-runtime.spec.ts"
+  - "apps/web/e2e/ipad-pwa-shell-contract.spec.ts"
+  - "apps/web/e2e/responsive-browser-delivery-contract.spec.ts"
+  - "apps/web/e2e/mvp2-push-webpush.spec.ts"
+  - "product-contract/governance/DEC-PWA-WEB-PUSH-PRESERVATION-001.yaml"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-PWA-DECOUPLING-009.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-PWA-DECOUPLING-009.md"
+
+prohibited:
+  - "apps/web/src/lib/offline.ts, offline-package-integrity.ts, factory snapshots, field execution actions, evidence queues or submission logic"
+  - "Push subscription tables, RLS, RPCs, VAPID secrets, notification policy or provider replacement"
+  - "Supabase migrations, production DDL or shared-data mutation"
+  - "Any install prompt, PWA showcase, separate field shell or separate frontend"
+  - "Any deletion of IndexedDB, drafts, packages, outbox entries or conflicts"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Static proof that install metadata, global registration, cache interception and update prompts are absent"
+  - "Push-only service-worker and explicit opt-in registration tests"
+  - "Authenticated loaded-workspace network-interruption behavior"
+  - "Offline outbox, replay, conflict, package-integrity and isolation regressions"
+  - "EN/AR, LTR/RTL, light/dark and mandated responsive readiness evidence"
+  - "Archive branch/tag remote-ref verification"
+
+rollback:
+  - "Revert the packet commit to restore the pre-decoupling delivery implementation."
+  - "The immutable archive branch/tag remain an additional source recovery point."
+  - "No data or schema rollback is required."
+
+stop_conditions:
+  - "Any loss of Web Push subscription or delivery behavior"
+  - "Any weakening of offline drafts, replay idempotency, conflicts, package integrity, evidence or immutable submission protection"
+  - "Any service-worker fetch interception, install metadata or global auto-registration remaining active"
+  - "Any IndexedDB deletion or silent data-loss path"
+  - "Any P0/P1 focused or protected regression"

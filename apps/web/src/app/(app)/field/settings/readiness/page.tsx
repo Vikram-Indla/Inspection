@@ -6,13 +6,12 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import DeviceReadinessClient from "./DeviceReadinessClient";
 
-// Inspector iPad PWA Shell — Device Readiness surface. Related contract anchors:
+// Responsive browser Device Readiness surface. Related contract anchors:
 // SCR-IPAD-610 (Inspector Startup Pack readiness / "storage low" negative state),
 // SPC-OFF-002 (see what data/actions are available offline), MVP2-REQ-0181
-// (readiness must state the exact fix before field travel), FND-005 (offline
-// shell). This screen READS device state only (storage estimate, persistence,
-// installed mode, offline-shell/service-worker state, app-update state) — it
-// makes no policy verdict and never clears drafts, packages, or queued work.
+// (readiness must state the exact fix before field travel), and FND-005/006
+// (offline business-state protection). This screen reads browser connectivity
+// and storage only; it never clears drafts, packages, conflicts or queued work.
 export default async function FieldDeviceReadinessPage() {
   const [sb, { t, locale }] = await Promise.all([supabaseServer(), useT()]);
   const { data: { user }, error } = await getVerifiedUser(sb);
@@ -33,7 +32,7 @@ export default async function FieldDeviceReadinessPage() {
         langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
         langLabel={locale === "ar" ? "EN" : "AR"}
       />
-      <DeviceReadinessClient locale={locale} appVersion={process.env.NEXT_PUBLIC_APP_VERSION ?? null} />
+      <DeviceReadinessClient locale={locale} />
     </>
   );
 }

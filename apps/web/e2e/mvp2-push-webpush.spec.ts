@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { WebPushAdapter, maybeRegisterWebPush } from "../src/lib/providers/push-webpush";
 import type { DeliveryAdapter } from "../src/lib/notify";
 
@@ -15,6 +17,18 @@ import type { DeliveryAdapter } from "../src/lib/notify";
 // throw on construction. Never used to send anything.
 const DUMMY_VAPID_PUB = "BKHA4vfNn_8XfGK736hp-8djN4vrrinyghj5ylGgrbuH9yO9MKwnqjn0OwpKN6CE8Br7XPmkbp_AXUHlvpV9rOY";
 const DUMMY_VAPID_PRIV = "lL6_IvyQhgf_xWwwQp8ko4xcNMAmOPJo2DEWor1x9yo";
+
+test("push capability uses the explicit opt-in and push-only worker", () => {
+  const worker = readFileSync(join(process.cwd(), "public/sw.js"), "utf8");
+  const optIn = readFileSync(join(process.cwd(), "src/app/push/PushOptIn.tsx"), "utf8");
+  expect(worker).toContain('addEventListener("push"');
+  expect(worker).toContain('addEventListener("notificationclick"');
+  expect(worker).not.toContain('addEventListener("fetch"');
+  expect(worker).not.toContain("caches.open");
+  expect(optIn).toContain('navigator.serviceWorker.register("/sw.js", { scope: "/" })');
+  expect(optIn).toContain("Notification.requestPermission()");
+  expect(optIn).toContain("subscribeToPush");
+});
 
 test("fail-closed: no recipient user -> no_recipient_user, no RPC call attempted", async () => {
   const adapter = new WebPushAdapter(DUMMY_VAPID_PUB, DUMMY_VAPID_PRIV, "mailto:test@example.com");
@@ -52,8 +66,7 @@ test("LIVE: web-push sends a real message to a real browser Push subscription", 
   const context = await browser.newContext();
   const page = await context.newPage();
   // Service workers require a real HTTP(S) origin — navigate to the running
-  // app and register the ACTUAL shipped public/sw.js (the same file with the
-  // real 'push' handler added for this feature), not a stand-in copy.
+  // app and register the ACTUAL shipped push-only public/sw.js, not a stand-in.
   await page.goto("/login", { waitUntil: "load" });
   // Explicit per-origin grant (context-creation-time permissions do not
   // reliably propagate to a freshly navigated origin in all Chromium builds).

@@ -2,11 +2,11 @@
 // DeliveryAdapter registry. TASK-MVP2-M2-02 notification delivery.
 //
 // Free, no vendor account: VAPID is a self-issued keypair (RFC 8292), not a
-// third-party credential. Requires the recipient's browser/PWA to have
+// third-party credential. Requires the recipient's browser to have
 // subscribed (Notification permission granted + PushSubscription registered —
-// see subscribePush.ts / PushOptIn.tsx). Works on iOS 16.4+ ONLY when the PWA
-// is installed to the home screen (display:standalone, already set in
-// public/manifest.json) — Safari tabs do not support Web Push.
+// see PushOptIn.tsx). The responsive application does not install or globally
+// register an app-shell worker. Browsers that require a Home Screen web app for
+// push apply that platform rule; SAQEEL does not advertise a separate PWA.
 //
 // Fail-closed by contract: with no VAPID keys the adapter is NOT registered,
 // so the push channel stays honestly 'not_configured'. With keys configured,
