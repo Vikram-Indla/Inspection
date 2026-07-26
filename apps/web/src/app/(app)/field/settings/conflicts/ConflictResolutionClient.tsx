@@ -2,7 +2,7 @@
 
 // SAQEEL Field Conflict Resolution — client surface over the REAL offline
 // `conflicts` IndexedDB store (lib/offline.ts). Reads conflicts on the client
-// only (SSR-safe, like FieldSyncChips), renders each record as a local-vs-server
+// only (SSR-safe), renders each record as a local-vs-server
 // compare, and resolves through the existing store methods ONLY:
 //   • list    → localForUser(userId).conflicts()
 //   • discard → localForUser(userId).resolveConflict(key)   ("Keep server")

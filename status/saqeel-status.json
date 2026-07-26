@@ -1437,7 +1437,7 @@
       "design": 70,
       "code": 90,
       "wiring": 85,
-      "designPage": "pwa/SAQEEL PWA-Field Visit Statement.dc.html (signature block)",
+      "designPage": "pwa/SAQEEL PWA-Field Completion.dc.html (ack phase — signature capture)",
       "route": "web/src/app/(app)/field/inspection/[id]/FactoryVerification.tsx · SignaturePad.tsx",
       "pwa": {
         "state": "gap",
@@ -1467,7 +1467,7 @@
       "design": 78,
       "code": 90,
       "wiring": 85,
-      "designPage": "pwa/SAQEEL PWA-Field Seizure Records.dc.html",
+      "designPage": "pwa/SAQEEL PWA-Field Visit Results.dc.html (cards 2-3 — samples + seizure)",
       "route": "components/field/SamplesSection.tsx · SeizureSection.tsx · samplesSeizureStrings.ts",
       "pwa": {
         "state": "ok",

@@ -2,7 +2,7 @@
 // SAQEEL Field Dashboard header connectivity cluster — the design's Online pill
 // + Sync-Now control, wired to the REAL device state (lib/offline.ts), never a
 // fabricated status. Reads the actual inspection outbox (peekAll) and
-// navigator connectivity exactly like FieldSyncChips, and Sync-Now runs the
+// navigator connectivity directly, and Sync-Now runs the
 // real processOutbox replay. DS tokens only; strings arrive pre-translated
 // (strings-prop canon). SSR-safe: renders nothing about queue state until the
 // outbox has actually been read on the client.
