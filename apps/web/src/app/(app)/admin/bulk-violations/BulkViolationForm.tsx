@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
 import { issueBulkViolation, type BulkResult } from "./actions";
+import styles from "./BulkViolationForm.module.css";
 
 export type BulkViolationStrings = {
   searchFactoryLabel: string; searchFactoryPlaceholder: string; selectedCount: string;
@@ -49,7 +50,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
   const failedCount = results.filter(r => r.status === "failed").length;
 
   return (
-    <form action={formAction} className="stack" style={{ gap: "var(--space-6)" }}>
+    <form action={formAction} className={`stack ${styles.form}`} style={{ gap: "var(--space-6)" }}>
       <input type="hidden" name="request_id" value={requestId} />
 
       <section className="panel stack" style={{ padding: "var(--space-6)" }}>
@@ -101,7 +102,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
           {failedCount > 0
             ? <div className="sq-banner sq-banner--warning" role="alert"><div>{strings.partialWarning}</div></div>
             : <div className="sq-banner sq-banner--success"><div>{fmt(strings.allSucceeded, { n: successCount })}</div></div>}
-          <div className="sq-tablewrap"><table className="sq-table"><tbody>
+          <div className="sq-tablewrap" tabIndex={0} aria-label={strings.resultsTitle}><table className="sq-table"><tbody>
             {results.map(r => (
               <tr key={r.factory_id}>
                 <td className="t-caption numeric">{r.factory_id}</td>
@@ -113,7 +114,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
         </section>
       )}
 
-      <button type="submit" className="btn btn-primary btn-field" aria-disabled={!canSubmit} disabled={!canSubmit}>
+      <button type="submit" className={`btn btn-primary btn-field ${styles.submit}`} aria-disabled={!canSubmit} disabled={!canSubmit}>
         {pending ? strings.submitting : strings.submit}
       </button>
     </form>
