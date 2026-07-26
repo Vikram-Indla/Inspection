@@ -1,0 +1,3060 @@
+{
+  "login": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/login",
+    "json": {
+      "success": true,
+      "token": "17559|RTgTB0QCKo7l79loU6BGksOyddyAP24v4QN8feUHaaabcd88",
+      "user": {
+        "id": "01kv3vsb3e22a8v9a1mragpy66",
+        "old_id": null,
+        "username": "inspector",
+        "first_name": "inspector",
+        "last_name": "Account",
+        "national_id": "1234562384",
+        "email": "inspector@ip.com",
+        "mobile": "0512338274",
+        "entity": "mim",
+        "region_id": null,
+        "city_id": null,
+        "parent_id": null,
+        "date_of_birth": "2009-06-18",
+        "language": "en",
+        "email_verified_at": null,
+        "mobile_verified_at": null,
+        "last_login_at": null,
+        "blocked_at": null,
+        "disabled_at": null,
+        "created_at": "2026-06-14T20:04:51.000000Z",
+        "updated_at": "2026-06-14T20:04:51.000000Z"
+      }
+    }
+  },
+  "profile": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/profile",
+    "json": {
+      "user": {
+        "id": "01kv3vsb3e22a8v9a1mragpy66",
+        "old_id": null,
+        "username": "inspector",
+        "first_name": "inspector",
+        "last_name": "Account",
+        "national_id": "1234562384",
+        "email": "inspector@ip.com",
+        "mobile": "0512338274",
+        "entity": "mim",
+        "region_id": null,
+        "city_id": null,
+        "parent_id": null,
+        "date_of_birth": "2009-06-18",
+        "language": "en",
+        "email_verified_at": null,
+        "mobile_verified_at": null,
+        "last_login_at": null,
+        "blocked_at": null,
+        "disabled_at": null,
+        "created_at": "2026-06-14T20:04:51.000000Z",
+        "updated_at": "2026-06-14T20:04:51.000000Z"
+      }
+    }
+  },
+  "regulations": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/regulations",
+    "json": {
+      "data": [
+        {
+          "id": "01kvqs4ygsk5h3eqfv7adncfhr",
+          "name": "Administrative Notes",
+          "number": "4801078725",
+          "issue_date": "2026-06-21 00:00:00",
+          "status": true,
+          "issuing_authorities": [
+            {
+              "value": "industry_mineral_resources",
+              "label": "Ministry of Industry and Mineral Resources"
+            }
+          ],
+          "documents": [],
+          "items": [
+            {
+              "id": "01kvqs4yh9xg9101w97rg76fdj",
+              "type": {
+                "value": "violation",
+                "label": "Violation"
+              },
+              "entity_notification": false,
+              "geographical_location": "Resolved from the system based on context (not editable).",
+              "administrative_name": {
+                "value": "permits_and_licenses",
+                "label": "Permits & licenses"
+              },
+              "name": "Municipal license (operation from a municipality affiliate)",
+              "appeared_in_self_assessment": true,
+              "report_kind": {
+                "value": "seizure",
+                "label": "Seizure"
+              },
+              "description": "Municipal license (operation from a municipality affiliate)",
+              "approval_option": {
+                "value": "yes",
+                "label": "Yes"
+              },
+              "rejection_option": {
+                "value": "from_administrative_name",
+                "label": "From administrative name"
+              },
+              "status": {
+                "value": "active",
+                "label": "Active"
+              },
+              "attachment_mode": {
+                "value": "supporting_documents",
+                "label": "Supporting documents"
+              },
+              "is_mandatory_for_inspector": false,
+              "report_types": [
+                {
+                  "value": "visit_report",
+                  "label": "Visit report"
+                }
+              ],
+              "associated_reports": [
+                {
+                  "value": "release_seizure",
+                  "label": "Release seizure (if prior seizure exists)"
+                }
+              ],
+              "violations": [
+                {
+                  "id": "01kvqs3yac22d8t7m28p4kza6e",
+                  "administrative_technical_rules": "The facility does not possess a valid municipal license for operation, or refused to present it to the inspector upon request.",
+                  "classification": {
+                    "value": "material",
+                    "label": "Material"
+                  },
+                  "description": "The facility does not possess a valid municipal license for operation, or refused to present it to the inspector upon request.",
+                  "corrective_action": null,
+                  "grace_period_duration": {
+                    "value": "one_month",
+                    "label": "One month"
+                  },
+                  "exceptional_grace_period_duration": {
+                    "value": "one_month",
+                    "label": "One month"
+                  },
+                  "penalties": [
+                    {
+                      "id": "01kvqs3yanvj0hp1macqjfqf99",
+                      "frequency": {
+                        "value": "daily",
+                        "label": "Daily"
+                      },
+                      "amount": "12",
+                      "max_limit": "13",
+                      "penalty_types": [
+                        {
+                          "value": "product_seizure",
+                          "label": "Product seizure"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "created_at": "2026-06-22T13:43:34.000000Z"
+            }
+          ],
+          "created_at": "2026-06-22T13:43:34.000000Z"
+        }
+      ]
+    }
+  },
+  "regulation_show": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/regulations/01kvqs4ygsk5h3eqfv7adncfhr",
+    "json": {
+      "data": {
+        "id": "01kvqs4ygsk5h3eqfv7adncfhr",
+        "name": "Administrative Notes",
+        "number": "4801078725",
+        "issue_date": "2026-06-21 00:00:00",
+        "status": true,
+        "issuing_authorities": [
+          {
+            "value": "industry_mineral_resources",
+            "label": "Ministry of Industry and Mineral Resources"
+          }
+        ],
+        "documents": [],
+        "items": [
+          {
+            "id": "01kvqs4yh9xg9101w97rg76fdj",
+            "type": {
+              "value": "violation",
+              "label": "Violation"
+            },
+            "entity_notification": false,
+            "geographical_location": "Resolved from the system based on context (not editable).",
+            "administrative_name": {
+              "value": "permits_and_licenses",
+              "label": "Permits & licenses"
+            },
+            "name": "Municipal license (operation from a municipality affiliate)",
+            "appeared_in_self_assessment": true,
+            "report_kind": {
+              "value": "seizure",
+              "label": "Seizure"
+            },
+            "description": "Municipal license (operation from a municipality affiliate)",
+            "approval_option": {
+              "value": "yes",
+              "label": "Yes"
+            },
+            "rejection_option": {
+              "value": "from_administrative_name",
+              "label": "From administrative name"
+            },
+            "status": {
+              "value": "active",
+              "label": "Active"
+            },
+            "attachment_mode": {
+              "value": "supporting_documents",
+              "label": "Supporting documents"
+            },
+            "is_mandatory_for_inspector": false,
+            "report_types": [
+              {
+                "value": "visit_report",
+                "label": "Visit report"
+              }
+            ],
+            "associated_reports": [
+              {
+                "value": "release_seizure",
+                "label": "Release seizure (if prior seizure exists)"
+              }
+            ],
+            "violations": [
+              {
+                "id": "01kvqs3yac22d8t7m28p4kza6e",
+                "administrative_technical_rules": "The facility does not possess a valid municipal license for operation, or refused to present it to the inspector upon request.",
+                "classification": {
+                  "value": "material",
+                  "label": "Material"
+                },
+                "description": "The facility does not possess a valid municipal license for operation, or refused to present it to the inspector upon request.",
+                "corrective_action": null,
+                "grace_period_duration": {
+                  "value": "one_month",
+                  "label": "One month"
+                },
+                "exceptional_grace_period_duration": {
+                  "value": "one_month",
+                  "label": "One month"
+                },
+                "penalties": [
+                  {
+                    "id": "01kvqs3yanvj0hp1macqjfqf99",
+                    "frequency": {
+                      "value": "daily",
+                      "label": "Daily"
+                    },
+                    "amount": "12",
+                    "max_limit": "13",
+                    "penalty_types": [
+                      {
+                        "value": "product_seizure",
+                        "label": "Product seizure"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "created_at": "2026-06-22T13:43:34.000000Z"
+          }
+        ],
+        "created_at": "2026-06-22T13:43:34.000000Z"
+      }
+    }
+  },
+  "tasks": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/tasks",
+    "json": {
+      "data": [
+        {
+          "id": "01kvr03jc3nhqxsctfs0fg003s",
+          "number": "4801072820",
+          "workflow": "visit",
+          "status": "pending",
+          "created_at": "2026-06-22T15:45:09.000000Z",
+          "visit": {
+            "id": "01kvr03jck0b41d4nnq3pvj688",
+            "type": {
+              "value": "regulatory_variants",
+              "label": "Regulatory variants"
+            },
+            "method": {
+              "value": "registered",
+              "label": "Registered facility on an Senaei"
+            },
+            "visit_date": "2026-06-21",
+            "facility_name": "Nafhat Perfumes Factory",
+            "cr_number": "7060138125",
+            "notes": null,
+            "third_parties": null,
+            "inspector": {
+              "id": "01kv3vsb3e22a8v9a1mragpy66",
+              "name": "inspector Account"
+            },
+            "plant": {
+              "id": "01kr14s8tqb9edce9jj0xqxv73",
+              "plant_number": 4711205718,
+              "state": {
+                "value": "active",
+                "label": "Production"
+              },
+              "main_activity_code_l2": null,
+              "main_activity_code_l4": null,
+              "has_approved_manpower": null,
+              "inside_industrial_city": null,
+              "started_production_at": "2026-05-10T12:03:23.000000Z",
+              "closed_at": null,
+              "established_at": "2026-05-07 15:37:16",
+              "canceled_at": null,
+              "address": {
+                "address_id": "01kr14s8teep6c61ad3hbw439e",
+                "type_code": null,
+                "address_line_1": null,
+                "land_mark": null,
+                "district_en": null,
+                "district_ar": null,
+                "building_number": null,
+                "additional_number": null,
+                "zip_code": null,
+                "unit_no": null,
+                "street_name_ar": null,
+                "street_name_en": null,
+                "latitude": "24.77501640891",
+                "longitude": "46.717645946786",
+                "city": {
+                  "name_en": "Al Rain",
+                  "name_ar": "الرين"
+                },
+                "region": {
+                  "name_en": "riyadh area",
+                  "name_ar": "منطقة الرياض"
+                }
+              },
+              "land_provider": {
+                "value": "OTHER",
+                "label": "Other"
+              },
+              "industrial_city": null,
+              "license_number": "4711206688",
+              "hs_12_confirmed_at": "2026-05-25",
+              "city": {
+                "id": "01j2q11ysr4csc0pywxtbmqmc3",
+                "name_en": "Al Rain",
+                "name_ar": "الرين"
+              },
+              "commercial_entity": {
+                "number": "7060138125",
+                "unified_number": "7060138125",
+                "name_en": "Nafhat Perfumes Factory",
+                "name_ar": "مصنع الرياض للمراتب الفاخرة"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "task_show": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/tasks/01kvr03jc3nhqxsctfs0fg003s",
+    "json": {
+      "data": {
+        "id": "01kvr03jc3nhqxsctfs0fg003s",
+        "number": "4801072820",
+        "workflow": "visit",
+        "status": "pending",
+        "created_at": "2026-06-22T15:45:09.000000Z",
+        "license": {
+          "id": "01kr14s8t22vdzs902zbgqhmm9",
+          "license_number": "4711206688",
+          "license_type": {
+            "value": "general",
+            "label": "General"
+          },
+          "status": {
+            "value": "active",
+            "label": "Active"
+          },
+          "investment_type": {
+            "value": "national",
+            "label": "National Investment"
+          },
+          "investment_size": 1234213
+        },
+        "visit": {
+          "id": "01kvr03jck0b41d4nnq3pvj688",
+          "type": {
+            "value": "regulatory_variants",
+            "label": "Regulatory variants"
+          },
+          "method": {
+            "value": "registered",
+            "label": "Registered facility on an Senaei"
+          },
+          "visit_date": "2026-06-21",
+          "facility_name": "Nafhat Perfumes Factory",
+          "cr_number": "7060138125",
+          "notes": null,
+          "third_parties": null,
+          "inspector": {
+            "id": "01kv3vsb3e22a8v9a1mragpy66",
+            "name": "inspector Account"
+          },
+          "plant": {
+            "id": "01kr14s8tqb9edce9jj0xqxv73",
+            "plant_number": 4711205718,
+            "state": {
+              "value": "active",
+              "label": "Production"
+            },
+            "main_activity_code_l2": null,
+            "main_activity_code_l4": null,
+            "has_approved_manpower": null,
+            "inside_industrial_city": null,
+            "started_production_at": "2026-05-10T12:03:23.000000Z",
+            "closed_at": null,
+            "established_at": "2026-05-07 15:37:16",
+            "canceled_at": null,
+            "address": {
+              "address_id": "01kr14s8teep6c61ad3hbw439e",
+              "type_code": null,
+              "address_line_1": null,
+              "land_mark": null,
+              "district_en": null,
+              "district_ar": null,
+              "building_number": null,
+              "additional_number": null,
+              "zip_code": null,
+              "unit_no": null,
+              "street_name_ar": null,
+              "street_name_en": null,
+              "latitude": "24.77501640891",
+              "longitude": "46.717645946786",
+              "city": {
+                "name_en": "Al Rain",
+                "name_ar": "الرين"
+              },
+              "region": {
+                "name_en": "riyadh area",
+                "name_ar": "منطقة الرياض"
+              }
+            },
+            "land_provider": {
+              "value": "OTHER",
+              "label": "Other"
+            },
+            "industrial_city": null,
+            "license_number": "4711206688",
+            "hs_12_confirmed_at": "2026-05-25",
+            "city": {
+              "id": "01j2q11ysr4csc0pywxtbmqmc3",
+              "name_en": "Al Rain",
+              "name_ar": "الرين"
+            },
+            "commercial_entity": {
+              "number": "7060138125",
+              "unified_number": "7060138125",
+              "name_en": "Nafhat Perfumes Factory",
+              "name_ar": "مصنع الرياض للمراتب الفاخرة"
+            }
+          },
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc3",
+            "code": 1149,
+            "name_en": "Al Rain",
+            "name_ar": "الرين",
+            "region_id": "01j2q11ycmgthgjyw414fpjwvp"
+          },
+          "region": {
+            "id": "01j2q11ycmgthgjyw414fpjwvp",
+            "name_en": "riyadh area",
+            "name_ar": "منطقة الرياض",
+            "code": 11
+          }
+        }
+      }
+    }
+  },
+  "v3_plants": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/v3/inspection/plants?limit=100",
+    "json": {
+      "data": [
+        {
+          "id": "01kxk5tse2y39hmcqnx0v3ym8f",
+          "plant_number": 4802018379,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4802017626",
+          "expires_at": "2027-07-15T15:20:24.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmva",
+            "name_en": "khathaam",
+            "name_ar": "خثعم"
+          },
+          "commercial_entity": {
+            "number": "1333928943",
+            "unified_number": "1333928943",
+            "name_en": "Kali Sipes",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kxdr7p2dcn8an9998bqae5q5",
+          "plant_number": 4801281882,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-07-15 12:20:31",
+          "canceled_at": null,
+          "license_number": "4801289627",
+          "expires_at": "2026-06-01T09:20:31.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmt7",
+            "name_en": "Abo Thamir",
+            "name_ar": "ابو ثامر"
+          },
+          "commercial_entity": {
+            "number": "7080475587",
+            "unified_number": "7080475587",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kxawrb0v94yf70ndswmrx6xk",
+          "plant_number": 4801272913,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4801273183",
+          "expires_at": "2027-07-12T10:07:51.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcb",
+            "name_en": "Al-Khurma",
+            "name_ar": "الخرما"
+          },
+          "commercial_entity": {
+            "number": "7060138125",
+            "unified_number": "7060138125",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kxawbrn8qkzq707whq9y0nec",
+          "plant_number": 4801276211,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4801279852",
+          "expires_at": "2026-07-10T10:00:59.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmv3",
+            "name_en": "al-ayn",
+            "name_ar": "العين"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kxaw59ax2n1pb7b76a5wvwma",
+          "plant_number": 4801273697,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4801276106",
+          "expires_at": "2027-07-12T09:57:27.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmt8",
+            "name_en": "AlJirbah",
+            "name_ar": "الجربة"
+          },
+          "commercial_entity": {
+            "number": "7054014854",
+            "unified_number": "7054014854",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01kxatxptg3szt5r43de887x28",
+          "plant_number": 4801277538,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-07-13 10:53:39",
+          "canceled_at": null,
+          "license_number": "4801279756",
+          "expires_at": "2027-07-13T07:53:39.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmva",
+            "name_en": "khathaam",
+            "name_ar": "خثعم"
+          },
+          "commercial_entity": {
+            "number": "7080475587",
+            "unified_number": "7080475587",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kvt9c2m03g8xtcbh2p7ye7hv",
+          "plant_number": 4801086377,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4801087104",
+          "expires_at": "2027-06-23T13:05:34.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc3",
+            "name_en": "Al Rain",
+            "name_ar": "الرين"
+          },
+          "commercial_entity": {
+            "number": "1433824659",
+            "unified_number": "1433824659",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kvr0k2g7b12d1nxgkhf7e74h",
+          "plant_number": 4801070113,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4801077150",
+          "expires_at": "2027-06-22T15:53:37.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmv6",
+            "name_en": "tharhn al-janoob",
+            "name_ar": "ظهران الجنوب"
+          },
+          "commercial_entity": {
+            "number": "1433824659",
+            "unified_number": "1433824659",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kv5mswy71d3pwh1q5njcrt8h",
+          "plant_number": 4712290966,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4712290793",
+          "expires_at": "2027-06-15T12:41:18.000000Z",
+          "city": {
+            "id": "01j2q11ysta0wr431mjfte9ext",
+            "name_en": "Abyar Almash",
+            "name_ar": "ابيار الماشبي"
+          },
+          "commercial_entity": {
+            "number": "1254409879",
+            "unified_number": "1254409879",
+            "name_en": "SRAYA",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kv5kmsm4paxvnfz1a7k3enf2",
+          "plant_number": 4712290666,
+          "state": {
+            "value": "canceled",
+            "label": "Canceled"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": "2026-06-20 22:03:18",
+          "license_number": "4712296869",
+          "expires_at": "2027-06-15T12:21:02.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc5",
+            "name_en": "Al Thebiah",
+            "name_ar": "الذيبية / القصيم"
+          },
+          "commercial_entity": {
+            "number": "7060138125",
+            "unified_number": "7060138125",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01ktv9j2mx6n2g28tmdj89j1r4",
+          "plant_number": 4712252140,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4712258380",
+          "expires_at": "2027-06-11T12:12:23.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmb9",
+            "name_en": "arar",
+            "name_ar": "عرعر"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01ktv7q5wk8dbv3v9vsy9h1qpk",
+          "plant_number": 4712253484,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4712258602",
+          "expires_at": "2027-06-11T11:40:13.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmbs",
+            "name_en": "al-mareer",
+            "name_ar": "المرير / الجوف"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kt3rjg318frh6x00ahpffdav",
+          "plant_number": 4712160733,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-06-02 15:48:37",
+          "canceled_at": null,
+          "license_number": "4712167391",
+          "expires_at": "2027-06-02T12:48:37.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmd0",
+            "name_en": "Al Wosail",
+            "name_ar": "الوصيل"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kscnk42hmstvf3g2qbhh3svt",
+          "plant_number": 4712072096,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-05-24 13:19:29",
+          "canceled_at": null,
+          "license_number": "4712076481",
+          "expires_at": "2028-05-24T11:00:35.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmbs",
+            "name_en": "al-mareer",
+            "name_ar": "المرير / الجوف"
+          },
+          "commercial_entity": {
+            "number": "7054014854",
+            "unified_number": "7054014854",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01ks2v37175pcd2w51hn85vcvq",
+          "plant_number": 4712035974,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4712038479",
+          "expires_at": "2027-05-20T14:02:08.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmct",
+            "name_en": "Al Ammariyah",
+            "name_ar": "العمارية"
+          },
+          "commercial_entity": {
+            "number": "1091416623",
+            "unified_number": "1091416623",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kry4y7hkr16bdpmd1bgmzbv8",
+          "plant_number": 4712013768,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4712019367",
+          "expires_at": "2025-05-14T18:17:58.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmt2",
+            "name_en": "AlKharaa",
+            "name_ar": "الخرعاء"
+          },
+          "commercial_entity": {
+            "number": "7079728171",
+            "unified_number": "7079728171",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01krx7xj7y4fbwm9nxvn117spt",
+          "plant_number": 4712018614,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-05-18 13:17:06",
+          "canceled_at": null,
+          "license_number": "4712016597",
+          "expires_at": "2027-05-18T10:22:40.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmby",
+            "name_en": "Al Quraiyat",
+            "name_ar": "القريات"
+          },
+          "commercial_entity": {
+            "number": "7018799494",
+            "unified_number": "7018799494",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01krx4nv9fv5jrdpg7rqy0aarc",
+          "plant_number": 4712017264,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-05-18 13:39:22",
+          "canceled_at": null,
+          "license_number": "4712012150",
+          "expires_at": "2026-11-18T12:16:06.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmbq",
+            "name_en": "al-shuwaihtey",
+            "name_ar": "الشويحطيه"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kr8wzx3cb0ryjyasrwe1rret",
+          "plant_number": 4711239008,
+          "state": {
+            "value": "canceled",
+            "label": "Canceled"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": "2026-05-10 15:37:07",
+          "license_number": "4711232885",
+          "expires_at": "2027-05-10T12:15:01.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7qx",
+            "name_en": "Altaif",
+            "name_ar": "الطائف"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kr14s8t22vdzs902zbgqhmm9",
+          "plant_number": 4711205718,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-05-07 15:37:16",
+          "canceled_at": null,
+          "license_number": "4711206688",
+          "expires_at": "2026-11-12T13:18:23.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc3",
+            "name_en": "Al Rain",
+            "name_ar": "الرين"
+          },
+          "commercial_entity": {
+            "number": "7060138125",
+            "unified_number": "7060138125",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kr12w131bqvq5sd7a0zfkv9a",
+          "plant_number": 4711206436,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-05-07 14:57:12",
+          "canceled_at": null,
+          "license_number": "4711207660",
+          "expires_at": "2025-11-30T12:25:42.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsh",
+            "name_en": "AlHashr",
+            "name_ar": "الحشر"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kqz1bp0f1cbg8zpjdm30313p",
+          "plant_number": 4711193148,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711196761",
+          "expires_at": "2027-05-06T16:18:57.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmb6",
+            "name_en": "tiraif",
+            "name_ar": "طريف"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kqw5k9yp1xy78gatykcjjs6k",
+          "plant_number": 4711184462,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711186207",
+          "expires_at": "2027-05-05T13:35:18.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmv7",
+            "name_en": "al-harjah",
+            "name_ar": "الحرجه"
+          },
+          "commercial_entity": {
+            "number": "1961549959",
+            "unified_number": "1961549959",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kqs2a52zdbamh52xm6sspsgb",
+          "plant_number": 4711179778,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-05-11 14:26:40",
+          "canceled_at": null,
+          "license_number": "4711179284",
+          "expires_at": "2026-05-01T11:26:40.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmv3",
+            "name_en": "al-ayn",
+            "name_ar": "العين"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kqc8d2kgq984p5c2tjyey7a3",
+          "plant_number": 4711124063,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711122330",
+          "expires_at": "2027-04-29T09:16:29.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmv8",
+            "name_en": "al-hibail",
+            "name_ar": "الحبيل"
+          },
+          "commercial_entity": {
+            "number": "7048647490",
+            "unified_number": "7048647490",
+            "name_en": "Payton Steuber",
+            "name_ar": "مجموعة الحميد وأولاده"
+          }
+        },
+        {
+          "id": "01kqa1atejpnr5tp2y8b4x25g9",
+          "plant_number": 4711119679,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-04-29 11:16:11",
+          "canceled_at": null,
+          "license_number": "4711116015",
+          "expires_at": "2027-04-29T08:16:11.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmbm",
+            "name_en": "khawaa",
+            "name_ar": "خوعاء"
+          },
+          "commercial_entity": {
+            "number": "1707785911",
+            "unified_number": "1707785911",
+            "name_en": "Edyth Lemke",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kqa124h6erk1k97w6cbga6h5",
+          "plant_number": 4711119120,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711113771",
+          "expires_at": "2027-04-28T12:29:41.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsz",
+            "name_en": "Abo Shadad",
+            "name_ar": "ابوشداد"
+          },
+          "commercial_entity": {
+            "number": "1596169760",
+            "unified_number": "1596169760",
+            "name_en": "Rosie Quitzon",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01kq9wf7v9jb978ef9z9byym0d",
+          "plant_number": 4711111027,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711110109",
+          "expires_at": "2027-04-28T11:09:28.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmb3",
+            "name_en": "nasab",
+            "name_ar": "نصاب"
+          },
+          "commercial_entity": {
+            "number": "1995416175",
+            "unified_number": "1995416175",
+            "name_en": "Manuel Johnson",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kq9gmsw2nhrqkm5nj83b63q8",
+          "plant_number": 4711116500,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711115475",
+          "expires_at": "2027-04-28T07:42:47.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmbh",
+            "name_en": "gara",
+            "name_ar": "قارا"
+          },
+          "commercial_entity": {
+            "number": "1311672179",
+            "unified_number": "1311672179",
+            "name_en": "Matilda Schmeler MD",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kq9dkcge2zqzmwf9w9b05et6",
+          "plant_number": 4711111882,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711117626",
+          "expires_at": "2027-04-28T06:49:35.000000Z",
+          "city": {
+            "id": "01j2q11ysta0wr431mjfte9ezv",
+            "name_en": "oyoun al-jawa",
+            "name_ar": "عيون الجوا"
+          },
+          "commercial_entity": {
+            "number": "1311672179",
+            "unified_number": "1311672179",
+            "name_en": "Matilda Schmeler MD",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kq7ev3hcgya3medr9a8zkp6v",
+          "plant_number": 4711107929,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711102784",
+          "expires_at": "2027-04-27T12:32:48.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmww",
+            "name_en": "al-salaymah",
+            "name_ar": "السليمي"
+          },
+          "commercial_entity": {
+            "number": "7001262091",
+            "unified_number": "7001262091",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01kptbpcr62bzyc0tbd4p154zq",
+          "plant_number": 4711057493,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4711055691",
+          "expires_at": "2027-04-22T10:27:40.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmse",
+            "name_en": "AlAlyah",
+            "name_ar": "العالية"
+          },
+          "commercial_entity": {
+            "number": "7050963283",
+            "unified_number": "7050963283",
+            "name_en": "Lonzo Reilly",
+            "name_ar": "الشهري للمساهمة المحدودة"
+          }
+        },
+        {
+          "id": "01kp33qg5tgdtsge3w53abqtq9",
+          "plant_number": 4710252346,
+          "state": {
+            "value": "canceled",
+            "label": "Canceled"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": "2026-06-24 10:32:21",
+          "license_number": "4710256683",
+          "expires_at": "2027-04-13T09:45:56.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc6",
+            "name_en": "Al Sahnah",
+            "name_ar": "الصحنة"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01knpj2ghbhqsq038cryhe5421",
+          "plant_number": 4710200530,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4710202401",
+          "expires_at": "2027-04-08T12:46:29.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7pn",
+            "name_en": "AlSharaiee",
+            "name_ar": "الشرائع"
+          },
+          "commercial_entity": {
+            "number": "7080475587",
+            "unified_number": "7080475587",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01knh8ws1b3pbqc0mnxz50scsj",
+          "plant_number": 4710181681,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-04-12 18:50:50",
+          "canceled_at": null,
+          "license_number": "4710185300",
+          "expires_at": "2026-12-02T12:54:57.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmca",
+            "name_en": "Ashaiger",
+            "name_ar": "اشيقر"
+          },
+          "commercial_entity": {
+            "number": "7025162418",
+            "unified_number": "7025162418",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01knh3hn6n67x8ffy1gfy1014t",
+          "plant_number": 4710181371,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4710182333",
+          "expires_at": "2027-04-06T09:56:24.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc5",
+            "name_en": "Al Thebiah",
+            "name_ar": "الذيبية / القصيم"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01knfdsfh0p55b99zsar4q3dng",
+          "plant_number": 4710170761,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4710171375",
+          "expires_at": "2027-04-05T18:16:58.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcf",
+            "name_en": "Al-Sarr 2",
+            "name_ar": "السر 2"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kkepgr5vbbwmr0f40jrznycw",
+          "plant_number": 4709229744,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4709224557",
+          "expires_at": "2027-03-11T14:58:51.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc7",
+            "name_en": "Al Bakhrah",
+            "name_ar": "البخرة"
+          },
+          "commercial_entity": {
+            "number": "7059190999",
+            "unified_number": "7059190999",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kkent3m9f0g9sv9c0pef8jck",
+          "plant_number": 4709223105,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4709229809",
+          "expires_at": "2027-03-11T14:46:29.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc6",
+            "name_en": "Al Sahnah",
+            "name_ar": "الصحنة"
+          },
+          "commercial_entity": {
+            "number": "7032654731",
+            "unified_number": "7032654731",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kke8j92ycpfrt467yrxmy4r5",
+          "plant_number": 4709225631,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4709224321",
+          "expires_at": "2027-03-11T10:55:01.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmww",
+            "name_en": "al-salaymah",
+            "name_ar": "السليمي"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kh612tszeghn83862htt398g",
+          "plant_number": 4708237059,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-02-11 12:46:49",
+          "canceled_at": null,
+          "license_number": "4708234037",
+          "expires_at": "2028-02-11T10:25:39.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7ng",
+            "name_en": "Qusaibah",
+            "name_ar": "قصيباء"
+          },
+          "commercial_entity": {
+            "number": "1320233615",
+            "unified_number": "1320233615",
+            "name_en": "Elwin Conroy",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01kgc16syq5p8a7ys8t35sxwr3",
+          "plant_number": 4708132159,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708135442",
+          "expires_at": "2027-02-01T07:20:50.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcb",
+            "name_en": "Al-Khurma",
+            "name_ar": "الخرما"
+          },
+          "commercial_entity": {
+            "number": "7054014854",
+            "unified_number": "7054014854",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01kg24bv5f3s5xedm53302ceme",
+          "plant_number": 4708093154,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708095016",
+          "expires_at": "2027-01-28T11:03:37.000000Z",
+          "city": {
+            "id": "01j2q11ysta0wr431mjfte9ex9",
+            "name_en": "Yabreen",
+            "name_ar": "يبرين / الرياض"
+          },
+          "commercial_entity": {
+            "number": "7032654731",
+            "unified_number": "7032654731",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kfx81kzzveanfz8d08dy6ern",
+          "plant_number": 4708070229,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708076216",
+          "expires_at": "2027-01-26T13:31:44.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kfx7rkkg0j7kwsezxg5crd18",
+          "plant_number": 4708075408,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708079657",
+          "expires_at": "2027-01-26T13:26:49.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kffwdstys7q3cddaxcvt1nag",
+          "plant_number": 4708029452,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708026412",
+          "expires_at": "2027-01-21T08:58:33.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmca",
+            "name_en": "Ashaiger",
+            "name_ar": "اشيقر"
+          },
+          "commercial_entity": {
+            "number": "1053490067",
+            "unified_number": "1053490067",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kffvp066k8497rnj6r0c8hz9",
+          "plant_number": 4708029856,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-21 11:54:02",
+          "canceled_at": null,
+          "license_number": "4708026415",
+          "expires_at": "2027-01-21T08:54:02.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmd4",
+            "name_en": "Al Hawiyh",
+            "name_ar": "الحوية"
+          },
+          "commercial_entity": {
+            "number": "1053490067",
+            "unified_number": "1053490067",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kfde0j740mv3jh3sa8kj8215",
+          "plant_number": 4708017597,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708015524",
+          "expires_at": "2027-01-20T10:08:10.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc5",
+            "name_en": "Al Thebiah",
+            "name_ar": "الذيبية / القصيم"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kfd6x1z807jqyj2k3z0en97w",
+          "plant_number": 4708019217,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708012645",
+          "expires_at": "2027-01-20T08:03:55.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kfd5n67zcm538cketk240vhc",
+          "plant_number": 4708010487,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708018918",
+          "expires_at": "2027-01-20T07:42:09.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kfd5794sg0jpd7a2dg5ty42b",
+          "plant_number": 4708013061,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4708019643",
+          "expires_at": "2027-01-20T07:34:33.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kfafpptgeymbdjc3zmjxyk74",
+          "plant_number": 4707308211,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707300058",
+          "expires_at": "2027-01-19T06:40:01.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7nk",
+            "name_en": "Dekhnah",
+            "name_ar": "دخنه"
+          },
+          "commercial_entity": {
+            "number": "1053490067",
+            "unified_number": "1053490067",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kf8x7vdvk97tbjbz6bjqd7q8",
+          "plant_number": 4707295851,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707290065",
+          "expires_at": "2027-01-18T15:58:05.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf8t50v4xtkt0e2z727983d8",
+          "plant_number": 4707297043,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707295284",
+          "expires_at": "2027-01-18T15:04:07.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf8j4tf63qy1dtzf29mwsqeg",
+          "plant_number": 4707291559,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707293977",
+          "expires_at": "2027-01-18T12:44:12.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcj",
+            "name_en": "Al Hiathem.",
+            "name_ar": "الهياثم"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf80n3gjdss8vfgaws65084w",
+          "plant_number": 4707290180,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707295089",
+          "expires_at": "2027-01-18T07:38:31.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmd3",
+            "name_en": "Al Ardhiah Al Janoobiah",
+            "name_ar": "العرضية الجنوبية"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf0tceqy2ygsk4ff5ttyexm7",
+          "plant_number": 4707262510,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-15 15:58:25",
+          "canceled_at": null,
+          "license_number": "4707263911",
+          "expires_at": "2027-01-15T12:58:25.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc8",
+            "name_en": "Al-Jaima",
+            "name_ar": "الجعيمة"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf0mp7eqeb9dfdvb7g34w1xv",
+          "plant_number": 4707269935,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707269473",
+          "expires_at": "2027-01-15T10:54:44.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc2",
+            "name_en": "Tarout",
+            "name_ar": "تاروت"
+          },
+          "commercial_entity": {
+            "number": "1372023718",
+            "unified_number": "1372023718",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf0dt8azkw3s7wx6h4sa7jmp",
+          "plant_number": 4707267375,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-15 12:02:03",
+          "canceled_at": null,
+          "license_number": "4707267582",
+          "expires_at": "2031-01-15T09:13:08.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsc",
+            "name_en": "Manjid",
+            "name_ar": "منجد"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kf094rc6m77g5db0mc05y8g2",
+          "plant_number": 4707265115,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707269518",
+          "expires_at": "2027-01-15T07:32:57.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmw5",
+            "name_en": "al-juwah",
+            "name_ar": "الجوه / الباحة"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf0883x6eqjnwt7q77vq23tj",
+          "plant_number": 4707261785,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-03-07 01:39:01",
+          "canceled_at": null,
+          "license_number": "4707261321",
+          "expires_at": "2027-03-06T22:39:01.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsf",
+            "name_en": "AlKhalawiyah",
+            "name_ar": "الخلاوية والنجوع"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kf07qqs4gzkc49p0fjgzv441",
+          "plant_number": 4707263334,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707260160",
+          "expires_at": "2026-01-14T07:08:22.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7ng",
+            "name_en": "Qusaibah",
+            "name_ar": "قصيباء"
+          },
+          "commercial_entity": {
+            "number": "7054014854",
+            "unified_number": "7054014854",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01kf07gaapr6q034pgwqfxgz7c",
+          "plant_number": 4707266904,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707262713",
+          "expires_at": "2027-01-15T07:04:19.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcg",
+            "name_en": "Al-Qaisumah 2",
+            "name_ar": "القيصومة 2"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01key0sfthjmc0gjpv4hrkzptw",
+          "plant_number": 4707256228,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707254441",
+          "expires_at": "2027-01-14T10:28:30.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcp",
+            "name_en": "Om Al Sahek.",
+            "name_ar": "ام الساهك"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kexz4q1dbbps8rr50jjgrj5q",
+          "plant_number": 4707256164,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707256829",
+          "expires_at": "2027-01-14T09:59:41.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc7",
+            "name_en": "Al Bakhrah",
+            "name_ar": "البخرة"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kew89s19vss5a19a2tqny7nv",
+          "plant_number": 4707247209,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707243655",
+          "expires_at": "2027-01-13T18:01:15.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmd3",
+            "name_en": "Al Ardhiah Al Janoobiah",
+            "name_ar": "العرضية الجنوبية"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kevmwre6srztp3h48ppef6zx",
+          "plant_number": 4707248323,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-13 15:52:32",
+          "canceled_at": null,
+          "license_number": "4707240818",
+          "expires_at": "2027-01-13T12:52:32.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmaj",
+            "name_en": "al-jibaawiyah",
+            "name_ar": "الجبعاويه"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kevk29jx6dahjgnqgnqxeh12",
+          "plant_number": 4707248679,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-15 16:24:06",
+          "canceled_at": null,
+          "license_number": "4707241545",
+          "expires_at": "2027-01-15T13:24:07.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc7",
+            "name_en": "Al Bakhrah",
+            "name_ar": "البخرة"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kevjs1hbywgr3ae85s5avtgs",
+          "plant_number": 4707244788,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707248853",
+          "expires_at": "2027-01-13T11:45:07.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcf",
+            "name_en": "Al-Sarr 2",
+            "name_ar": "السر 2"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kevg9pn526vhv93yfzw3zzce",
+          "plant_number": 4707247651,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-13 14:15:50",
+          "canceled_at": null,
+          "license_number": "4707249779",
+          "expires_at": "2027-01-13T11:15:50.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc5",
+            "name_en": "Al Thebiah",
+            "name_ar": "الذيبية / القصيم"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kevdkyzhv1nkvdvwavjty72q",
+          "plant_number": 4707247636,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707246016",
+          "expires_at": "2027-01-13T10:14:57.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc2",
+            "name_en": "Tarout",
+            "name_ar": "تاروت"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kevd4efrg4h7kfemctt3vgzv",
+          "plant_number": 4707244187,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707243946",
+          "expires_at": "2027-01-13T10:06:29.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc9",
+            "name_en": "Shadqam",
+            "name_ar": "شدقم"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kevcbd4ztcvttzcjkpcjk9qp",
+          "plant_number": 4707245371,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707248025",
+          "expires_at": "2027-01-13T09:52:48.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc6",
+            "name_en": "Al Sahnah",
+            "name_ar": "الصحنة"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kes2ea2rgwyvf5jhrg2njs0d",
+          "plant_number": 4707235732,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707238381",
+          "expires_at": "2027-01-12T12:21:09.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc6",
+            "name_en": "Al Sahnah",
+            "name_ar": "الصحنة"
+          },
+          "commercial_entity": {
+            "number": "7076356925",
+            "unified_number": "7076356925",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kes1npbpd9b2vqh7qsswnh1x",
+          "plant_number": 4707235061,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-13 13:46:00",
+          "canceled_at": null,
+          "license_number": "4707233247",
+          "expires_at": "2027-01-13T10:46:00.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcp",
+            "name_en": "Om Al Sahek.",
+            "name_ar": "ام الساهك"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kerwrehbj6dk3snrnger8tk1",
+          "plant_number": 4707232566,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-15 11:02:23",
+          "canceled_at": null,
+          "license_number": "4707230165",
+          "expires_at": "2027-01-15T08:02:23.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcq",
+            "name_en": "Al-Jard",
+            "name_ar": "الجرد"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kenypx4c2kend9pwa1758bme",
+          "plant_number": 4707221397,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-11 11:35:20",
+          "canceled_at": null,
+          "license_number": "4707228972",
+          "expires_at": "2027-01-11T08:35:20.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmct",
+            "name_en": "Al Ammariyah",
+            "name_ar": "العمارية"
+          },
+          "commercial_entity": {
+            "number": "1053490067",
+            "unified_number": "1053490067",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kenxvkwkkx8nam2w8kw28efc",
+          "plant_number": 4707225346,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707229488",
+          "expires_at": "2027-01-11T07:03:19.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7nk",
+            "name_en": "Dekhnah",
+            "name_ar": "دخنه"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01keeqr4hbxcrd48bp4e188j7d",
+          "plant_number": 4707192031,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707193813",
+          "expires_at": "2027-01-08T12:01:52.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmw7",
+            "name_en": "shada al-ala",
+            "name_ar": "شدا الاعلي"
+          },
+          "commercial_entity": {
+            "number": "7054593671",
+            "unified_number": "7054593671",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01keeptj3j393w25jctar6aaps",
+          "plant_number": 4707194117,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707194432",
+          "expires_at": "2027-01-08T11:45:43.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc9",
+            "name_en": "Shadqam",
+            "name_ar": "شدقم"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01keen4w583wgefavn7pz4eqv3",
+          "plant_number": 4707193327,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707193471",
+          "expires_at": "2027-01-08T11:16:24.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcb",
+            "name_en": "Al-Khurma",
+            "name_ar": "الخرما"
+          },
+          "commercial_entity": {
+            "number": "7075692782",
+            "unified_number": "7075692782",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01keem86r6fag95jj23qjf0dpx",
+          "plant_number": 4707196571,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-08 15:01:05",
+          "canceled_at": null,
+          "license_number": "4707198432",
+          "expires_at": "2027-01-08T12:01:05.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcw",
+            "name_en": "Mulaijah",
+            "name_ar": "مليجة"
+          },
+          "commercial_entity": {
+            "number": "7016487259",
+            "unified_number": "7016487259",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01keek3sx0rkdnj7qw35ezf8dt",
+          "plant_number": 4707196858,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-08 13:44:54",
+          "canceled_at": null,
+          "license_number": "4707196242",
+          "expires_at": "2027-01-08T10:44:54.000000Z",
+          "city": {
+            "id": "01j2q11yss576ff57f86nrz7nk",
+            "name_en": "Dekhnah",
+            "name_ar": "دخنه"
+          },
+          "commercial_entity": {
+            "number": "1053490067",
+            "unified_number": "1053490067",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01keehy64yd7gdmhjwjgmcat4c",
+          "plant_number": 4707199448,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-08 13:26:48",
+          "canceled_at": null,
+          "license_number": "4707197677",
+          "expires_at": "2027-01-08T10:26:48.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmd3",
+            "name_en": "Al Ardhiah Al Janoobiah",
+            "name_ar": "العرضية الجنوبية"
+          },
+          "commercial_entity": {
+            "number": "1053490067",
+            "unified_number": "1053490067",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01keehcwrhscdx0tqaekhxf3h5",
+          "plant_number": 4707196679,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-01 00:00:00",
+          "canceled_at": null,
+          "license_number": "4707196927",
+          "expires_at": "2027-01-08T10:10:52.000000Z",
+          "city": {
+            "id": "01j2q11yspckpa8n605jpeprj7",
+            "name_en": "Muslyah",
+            "name_ar": "مسلية"
+          },
+          "commercial_entity": {
+            "number": "7086954403",
+            "unified_number": "7086954403",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01ke9ez85a8da4gac1kdw52vhc",
+          "plant_number": 4707171914,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-06 14:12:59",
+          "canceled_at": null,
+          "license_number": "4707171667",
+          "expires_at": "2027-01-06T11:12:59.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsf",
+            "name_en": "AlKhalawiyah",
+            "name_ar": "الخلاوية والنجوع"
+          },
+          "commercial_entity": {
+            "number": "1232357193",
+            "unified_number": "1232357193",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01ke9abdx2ajem2vdgw4krhcey",
+          "plant_number": 4707173346,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707176381",
+          "expires_at": "2027-01-06T09:31:32.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmd3",
+            "name_en": "Al Ardhiah Al Janoobiah",
+            "name_ar": "العرضية الجنوبية"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01ke793q2n6118aj7qbzw41ky8",
+          "plant_number": 4707165717,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707165537",
+          "expires_at": "2027-01-05T14:31:22.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmw5",
+            "name_en": "al-juwah",
+            "name_ar": "الجوه / الباحة"
+          },
+          "commercial_entity": {
+            "number": "1867232161",
+            "unified_number": "1867232161",
+            "name_en": "Cleta Bartoletti",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01ke6j4natx4m9e6csz4vmjpr4",
+          "plant_number": 4707169383,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-06 12:09:07",
+          "canceled_at": null,
+          "license_number": "4707162286",
+          "expires_at": "2027-01-06T09:09:07.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsf",
+            "name_en": "AlKhalawiyah",
+            "name_ar": "الخلاوية والنجوع"
+          },
+          "commercial_entity": {
+            "number": "7043514990",
+            "unified_number": "7043514990",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01ke6hrn4cp58949rv1vscqzf9",
+          "plant_number": 4707168108,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-05 10:49:01",
+          "canceled_at": null,
+          "license_number": "4707163002",
+          "expires_at": "2027-01-05T13:21:08.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmw6",
+            "name_en": "shada al-asfal",
+            "name_ar": "شدا الاسفل"
+          },
+          "commercial_entity": {
+            "number": "7001262091",
+            "unified_number": "7001262091",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "مصنع مراتب الرياض الراقي للصناعة"
+          }
+        },
+        {
+          "id": "01ke6f55r1axwnf63b00na1bks",
+          "plant_number": 4707165579,
+          "state": {
+            "value": "established",
+            "label": "Established"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-05 10:34:16",
+          "canceled_at": null,
+          "license_number": "4707162887",
+          "expires_at": "2027-01-05T07:34:16.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmsg",
+            "name_en": "AlGsbah",
+            "name_ar": "القصبة"
+          },
+          "commercial_entity": {
+            "number": "1404281717",
+            "unified_number": "1404281717",
+            "name_en": "Julianne Stanton",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01ke5484wyfz1n8wtn7d0mp7r4",
+          "plant_number": 4707155202,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-04 22:06:19",
+          "canceled_at": null,
+          "license_number": "4707152599",
+          "expires_at": "2027-01-04T20:06:33.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcq",
+            "name_en": "Al-Jard",
+            "name_ar": "الجرد"
+          },
+          "commercial_entity": {
+            "number": "1867232161",
+            "unified_number": "1867232161",
+            "name_en": "Cleta Bartoletti",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01ke4kp1ed3wcsj04sxvtc5dw2",
+          "plant_number": 4707157868,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707154059",
+          "expires_at": "2027-01-28T13:38:25.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmx1",
+            "name_en": "al-khuwair",
+            "name_ar": "الخوير"
+          },
+          "commercial_entity": {
+            "number": "1096817295",
+            "unified_number": "1096817295",
+            "name_en": "Jordon Carroll",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01ke4eyd7vhpx35nwhdrm0a2m0",
+          "plant_number": 4707154822,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2026-01-04 15:39:02",
+          "canceled_at": null,
+          "license_number": "4707158911",
+          "expires_at": "2028-01-04T13:08:02.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmw6",
+            "name_en": "shada al-asfal",
+            "name_ar": "شدا الاسفل"
+          },
+          "commercial_entity": {
+            "number": "1919260678",
+            "unified_number": "1919260678",
+            "name_en": "Pearline Kreiger",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kdmskzy75cxvc570babhwsgt",
+          "plant_number": 4707094475,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707090644",
+          "expires_at": "2026-12-29T10:14:18.000000Z",
+          "city": {
+            "id": "01j2q11ysqazpa725qcmmwqmse",
+            "name_en": "AlAlyah",
+            "name_ar": "العالية"
+          },
+          "commercial_entity": {
+            "number": "1091416623",
+            "unified_number": "1091416623",
+            "name_en": "Care Experts Industry Company",
+            "name_ar": "شركة خبراء العناية للصناعة"
+          }
+        },
+        {
+          "id": "01kdjdnabcb07f08hpwew1y681",
+          "plant_number": 4707088402,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707082347",
+          "expires_at": "2026-12-28T12:06:50.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmc3",
+            "name_en": "Al Rain",
+            "name_ar": "الرين"
+          },
+          "commercial_entity": {
+            "number": "1213161500",
+            "unified_number": "1213161500",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kd53p4fne6te4avghdmgb78m",
+          "plant_number": 4707030125,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707036098",
+          "expires_at": "2026-12-23T08:02:23.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmcn",
+            "name_en": "Asfan",
+            "name_ar": "عسفان"
+          },
+          "commercial_entity": {
+            "number": "7075692782",
+            "unified_number": "7075692782",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع نفحات للعطور"
+          }
+        },
+        {
+          "id": "01kd2t4g52cg0n847g00qzfff8",
+          "plant_number": 4707023554,
+          "state": {
+            "value": "active",
+            "label": "Production"
+          },
+          "closed_at": null,
+          "established_at": "2025-12-23 14:05:29",
+          "canceled_at": null,
+          "license_number": "4707021482",
+          "expires_at": "2026-12-23T11:13:30.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqma7",
+            "name_en": "jibbah",
+            "name_ar": "جبه"
+          },
+          "commercial_entity": {
+            "number": "1213161500",
+            "unified_number": "1213161500",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kd2rcet8bza4jbq4wn2jn4ke",
+          "plant_number": 4707029956,
+          "state": {
+            "value": "canceled",
+            "label": "Canceled"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": "2025-12-22 13:32:09",
+          "license_number": "4707028023",
+          "expires_at": "2026-12-22T10:06:23.000000Z",
+          "city": {
+            "id": "01j2q11ysta0wr431mjfte9ez3",
+            "name_en": "Almuzahmyah",
+            "name_ar": "المزاحمية"
+          },
+          "commercial_entity": {
+            "number": "1213161500",
+            "unified_number": "1213161500",
+            "name_en": "Nafhat Perfumes Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        },
+        {
+          "id": "01kd16p21k9b6gmjj5j8f7nbz3",
+          "plant_number": 4707016189,
+          "state": {
+            "value": "new",
+            "label": "Foundation"
+          },
+          "closed_at": null,
+          "established_at": null,
+          "canceled_at": null,
+          "license_number": "4707017917",
+          "expires_at": "2026-12-21T19:37:49.000000Z",
+          "city": {
+            "id": "01j2q11ysr4csc0pywxtbmqmca",
+            "name_en": "Ashaiger",
+            "name_ar": "اشيقر"
+          },
+          "commercial_entity": {
+            "number": "1723088698",
+            "unified_number": "1723088698",
+            "name_en": "Riyadh Luxury Mattress Factory",
+            "name_ar": "مصنع الرياض للمراتب الفاخرة"
+          }
+        }
+      ],
+      "total_count": 1009
+    }
+  },
+  "production_line": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/inspection/tasks/production-line?plant_id=01ktv7q5wk8dbv3v9vsy9h1qpk&type=product",
+    "json": {
+      "current_page": 1,
+      "data": [],
+      "first_page_url": "http://sectorial-be.senaei.app/api/inspection/tasks/production-line?page=1",
+      "from": null,
+      "last_page": 1,
+      "last_page_url": "http://sectorial-be.senaei.app/api/inspection/tasks/production-line?page=1",
+      "links": [
+        {
+          "url": null,
+          "label": "&laquo; Previous",
+          "active": false
+        },
+        {
+          "url": "http://sectorial-be.senaei.app/api/inspection/tasks/production-line?page=1",
+          "label": "1",
+          "active": true
+        },
+        {
+          "url": null,
+          "label": "Next &raquo;",
+          "active": false
+        }
+      ],
+      "next_page_url": null,
+      "path": "http://sectorial-be.senaei.app/api/inspection/tasks/production-line",
+      "per_page": 15,
+      "prev_page_url": null,
+      "to": null,
+      "total": 0
+    }
+  },
+  "v3_chemical_permits": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/v3/inspection/plants/4712253484/chemical-permits",
+    "json": {
+      "data": [],
+      "total_count": 0
+    }
+  },
+  "v3_customs_exemptions": {
+    "status": 200,
+    "url": "https://sectorial-be.senaei.app/api/v3/inspection/plants/4712160733/customs-exemptions",
+    "json": {
+      "data": [
+        {
+          "id": "01kwh94nwgd7e6hmw8f28p5ya1",
+          "request_number": null,
+          "type": {
+            "value": "raw_materials",
+            "label": "Raw Materials"
+          },
+          "decree_number": 63,
+          "decree_ISN": null,
+          "approved_at": "2026-07-02 00:00:00",
+          "starts_at": "2026-09-30 00:00:00",
+          "ends_at": "2027-09-30 00:00:00",
+          "status": {
+            "value": "inactive",
+            "label": "Inactive"
+          },
+          "meta": {
+            "duration": 1,
+            "letterNumber": null,
+            "requestNumber": null
+          },
+          "created_at": "2026-07-02 14:24:03",
+          "updated_at": "2026-07-02 14:24:03",
+          "parent_id": null,
+          "plant_id": "01kt3rjg3p4p1608egv1fkjbq1",
+          "items_count": 1,
+          "products_count": null,
+          "plant": {
+            "id": "01kt3rjg3p4p1608egv1fkjbq1",
+            "plant_number": 4712160733,
+            "state": {
+              "value": "established",
+              "label": "Established"
+            },
+            "main_activity_code_l2": null,
+            "main_activity_code_l4": null,
+            "has_approved_manpower": null,
+            "inside_industrial_city": null,
+            "started_production_at": null,
+            "closed_at": null,
+            "established_at": "2026-06-02 15:48:37",
+            "canceled_at": null,
+            "address": {
+              "address_id": "01kt3rjg3cza9365vy9ymvr59b",
+              "type_code": null,
+              "address_line_1": null,
+              "land_mark": null,
+              "district_en": null,
+              "district_ar": null,
+              "building_number": null,
+              "additional_number": null,
+              "zip_code": null,
+              "unit_no": null,
+              "street_name_ar": null,
+              "street_name_en": null,
+              "latitude": "0",
+              "longitude": "0",
+              "city": {
+                "name_en": "Al Wosail",
+                "name_ar": "الوصيل"
+              },
+              "region": {
+                "name_en": "riyadh area",
+                "name_ar": "منطقة الرياض"
+              }
+            },
+            "land_provider": {
+              "value": "MOMRAH",
+              "label": "Ministry of Municipal, Rural Affairs and Housing"
+            },
+            "industrial_city": null,
+            "license_number": "4712167391",
+            "hs_12_confirmed_at": "2026-06-02",
+            "city": {
+              "id": "01j2q11ysr4csc0pywxtbmqmd0",
+              "name_en": "Al Wosail",
+              "name_ar": "الوصيل"
+            },
+            "commercial_entity": {
+              "number": "7076356925",
+              "unified_number": "7076356925",
+              "name_en": "Riyadh Luxury Mattress Factory",
+              "name_ar": "مصنع الرياض للمراتب الفاخرة"
+            }
+          },
+          "flow": {
+            "id": "01kt67gmaz98vb2kx392qqyj1s",
+            "state": {
+              "value": "approved",
+              "label": "Approved"
+            },
+            "status": {
+              "value": "approved",
+              "label": "Approved"
+            },
+            "workflow": {
+              "value": "customs_raw_materials",
+              "label": "Customs Raw Materials"
+            }
+          }
+        }
+      ],
+      "total_count": 1
+    }
+  }
+}
