@@ -12,18 +12,16 @@ import type { ShellIcon } from "@/lib/shell-navigation";
 // `saqeel-primary-nav` matches the web shell so the two channels stay one
 // vocabulary.
 //
-// SCOPE (CC-SHELL-TABLET-001 option B). The field layout mounts this ONLY for a
-// persona that is not field-only. A field-only Inspector keeps the bottom tab
-// bar alone, exactly as the shipped console shell already decides at
-// ShellClient.tsx — this closes the opposite gap, where a multi-role user
-// (inspector + planner, say) on /field had no route back to the web portal at
-// all because the field layout bypasses the console shell entirely.
+// SCOPE (Product Owner, 2026-07-26). The panel is available to EVERY persona on
+// the field channel — the design authority's own rule ("burger AND sticky
+// footer, both, for every role"), which the earlier CC-SHELL-TABLET-001 option B
+// reading contradicted by mounting this only for a persona that was not
+// field-only. The Product Owner resolved that contradiction in favour of the
+// design. Per-destination restrictions are deferred to a later slice.
 //
-// The design's own header states a competing viewport-triggered rule ("burger
-// AND sticky footer, both, for every role"). That rule is NOT applied here: it
-// would reverse commit 05491a4f and is unresolved. Turning this on for every
-// persona is a one-condition change in field/layout.tsx if the Product Owner
-// rules that way.
+// `enabled` therefore means "this persona has at least one destination", not
+// "this persona is allowed a side panel". It stays as a guard because a drawer
+// with no rows is still an empty control, and no such control is presented.
 //
 // PLACEMENT. pwa-shell.js injects the button into the page's <header> from a
 // standalone script. Doing that here — portalling a node into markup React owns
@@ -50,9 +48,9 @@ type FieldShellContextValue = {
 
 const FieldShellContext = createContext<FieldShellContextValue | null>(null);
 
-// Rendered by FieldHeader as its first child. Returns nothing when the persona
-// has no side-panel destinations — the field-only Inspector case — so no empty
-// control is ever presented.
+// Rendered by FieldHeader as its first child. Returns nothing only when the
+// persona has no side-panel destinations at all, so no empty control is ever
+// presented.
 export function FieldShellBurger() {
   const ctx = useContext(FieldShellContext);
   if (!ctx?.enabled) return null;

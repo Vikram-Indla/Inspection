@@ -9,7 +9,7 @@ import { safeFieldReturnPath } from "@/lib/field-auth";
 import FieldSessionBoundary from "@/components/field/FieldSessionBoundary";
 import FieldNav, { type FieldNavKey } from "@/components/field/FieldNav";
 import FieldShellDrawer, { type FieldDrawerGroup } from "@/components/field/FieldShellDrawer";
-import { buildShellNavigation, isFieldOnlyPersona } from "@/lib/shell-navigation";
+import { buildShellNavigation } from "@/lib/shell-navigation";
 
 // SAQEEL field (inspector iPad) channel layout. This segment renders its OWN
 // self-contained chrome from the canonical SAQEEL field design system — the
@@ -48,21 +48,25 @@ export default async function FieldLayout({ children }: { children: ReactNode })
   }
   const { t, locale } = await useT();
 
-  // CC-SHELL-TABLET-001 option B: the bottom tab bar IS field navigation, so a
-  // field-only Inspector navigates by tabs alone and receives no side panel —
-  // the same decision the console shell already makes at ShellClient.tsx. A
-  // multi-role persona (inspector + planner, ops, admin…) keeps the hamburger,
-  // and until now had none here at all: the field layout bypasses the console
-  // shell, so /field stranded them with no route back to the web portal.
+  // Side-panel availability (Product Owner, 2026-07-26 — supersedes the
+  // CC-SHELL-TABLET-001 option B reading applied here before). The panel is
+  // available to EVERY persona on the field channel, matching the design
+  // authority's own rule in pwa-shell.js ("burger AND sticky footer, both, for
+  // every role"). The earlier build gave a field-only Inspector the bottom tab
+  // bar alone, so the burger never rendered for the channel's whole audience.
+  // Per-destination restrictions are deferred to a later slice by that same
+  // ruling; `narrowToFieldChannel: false` opts this drawer out of the WEB
+  // channel gate without touching it — TASK-WEB-CHANNEL-ACCESS-GATE-001 still
+  // governs the console shell, and every destination keeps its own route guard.
   //
   // Administrator visibility (Product Owner, 2026-07-26): an item the persona
   // is not allowed is OMITTED, never rendered disabled behind "Administrator
   // access required." A control implying a capability the user does not have is
-  // the UI equivalent of a plausible default. buildShellNavigation already drops
-  // the whole admin group for a field-only persona; this drops the individual
-  // admin-primary rows for everyone else, inside this drawer only.
-  const fieldOnly = isFieldOnlyPersona(roleKeys);
-  const drawerGroups: FieldDrawerGroup[] = fieldOnly ? [] : buildShellNavigation(roleKeys)
+  // the UI equivalent of a plausible default. That ruling is NOT relaxed by the
+  // availability ruling above: admin-advanced rows are dropped upstream and the
+  // `enabled` filter below drops the admin-primary rows, so a non-admin persona
+  // still gets no Administration group at all.
+  const drawerGroups: FieldDrawerGroup[] = buildShellNavigation(roleKeys, { narrowToFieldChannel: false })
     .map(group => ({
       id: group.id,
       label: t(group.labelKey, locale === "ar" ? group.labelAr : group.labelEn),
