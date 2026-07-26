@@ -7,13 +7,18 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { background: var(--ax-color-canvas); overflow-x: hidden; }
+/* No overflow-x here. Setting it to hidden on html and body makes both scroll
+   containers (CSS overflow: a non-visible axis forces the other to auto), which
+   breaks `position: sticky` on the shell rail and clips wide content with no
+   scrollbar to reach it. .ax-shell__main owns horizontal overflow instead.
+   saqeel-components-legacy.css carried an identical duplicate of this block;
+   both were corrected together so they cannot drift apart again. */
+html { background: var(--ax-color-canvas); }
 body {
   margin: 0;
   font: var(--ax-text-body);
   color: var(--ax-color-text);
   background: var(--ax-color-canvas);
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   font-synthesis: none;
 }
@@ -462,7 +467,13 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell__nav {
   background: var(--nav-bg); border-inline-end: 1px solid var(--nav-border); color: var(--nav-text);
   padding: var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
-  position: sticky; inset-block-start: 0; min-block-size: 100dvh; min-inline-size: 0; align-self: start;
+  /* Exactly one viewport tall, never taller: min-block-size let the rail grow
+     to its content (956px against an 894px viewport), so the last items sat
+     below the fold with no way to reach them. It is now viewport-height with
+     its own scroll, and sticky keeps it pinned against a page that can be
+     20,000px long. */
+  position: sticky; inset-block-start: 0; block-size: 100dvh; overflow-y: auto;
+  min-inline-size: 0; align-self: start;
 
   /* CANONICAL RAIL METRICS — single source for every .ax-nav-* rule below.
      Values come from the design authority, designs/web/export-saqeel-web/
@@ -580,7 +591,10 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell.is-collapsed .ax-shell__collapse { min-block-size: 28px; justify-content: center; padding: 0; }
 .ax-shell.is-collapsed .ax-nav-item[aria-current="page"] { box-shadow: none; }
 [dir="rtl"] .ax-shell.is-collapsed .ax-nav-item[aria-current="page"] { box-shadow: none; }
-.ax-shell__main { display: flex; flex-direction: column; min-inline-size: 0; }
+/* The content pane owns horizontal overflow, so a too-wide table, map or KPI
+   strip scrolls inside the pane instead of being clipped by the document or
+   dragging the whole page sideways under the fixed rail. */
+.ax-shell__main { display: flex; flex-direction: column; min-inline-size: 0; overflow-x: auto; }
 
 .ax-pagehead {
   background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border);

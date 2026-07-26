@@ -7,13 +7,19 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { background: var(--surface-canvas); overflow-x: hidden; }
+/* overflow-x: hidden was set on BOTH html and body here. Per CSS overflow, when
+   one axis is not `visible` the other computes to `auto`, so both elements
+   became scroll containers. That silently killed `position: sticky` on the shell
+   rail — measured at scrollY 3000 the rail's top was -3000, i.e. it scrolled
+   away entirely and left bare canvas under it — and it clipped any wide content
+   with no scrollbar to reach it. Horizontal overflow is now contained on
+   .ax-shell__main instead, which is where a too-wide table or map belongs. */
+html { background: var(--surface-canvas); }
 body {
   margin: 0;
   font: var(--type-body-font);
   color: var(--text-primary);
   background: var(--surface-canvas);
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   font-synthesis: none;
 }
