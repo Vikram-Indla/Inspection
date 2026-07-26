@@ -31,6 +31,15 @@ export function isFieldOnlyPersona(roleKeys: readonly string[]): boolean {
     && roleKeys.every(role => (FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role));
 }
 
+// ADMIN-SHELL-PERSONA-001 — a control-plane-only account receives only its
+// authorized administration destinations. A concurrent business grant still
+// wins, so multi-role operators retain the business console they are assigned.
+export function isAdminOnlyPersona(roleKeys: readonly string[]): boolean {
+  const roles = new Set(roleKeys);
+  return roleKeys.some(role => (ADMIN_ROLE_KEYS as readonly string[]).includes(role))
+    && !BUSINESS_ROLE_KEYS.some(role => roles.has(role));
+}
+
 export type ShellGlobalSearchResultType =
   | "commercial_registration"
   | "industrial_license"
@@ -144,8 +153,8 @@ export type AuthorizedAdminHub = {
 };
 
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
-// Web-portal business roles exclude the field-only Inspector (RBAC-009/010).
-// Inspector reaches Execution through the field channel, not the web nav.
+// Web-portal business roles exclude both the field-only Inspector and the
+// admin-only role family. A business grant, not an admin grant, opens this set.
 const businessRoles = [
   ...BUSINESS_ROLE_KEYS.filter(role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)),
 ] as readonly string[];
@@ -253,6 +262,7 @@ export function buildShellNavigation(
     ...group,
     items: group.items.flatMap(item => {
       if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];
+      if (adminOnly && item.visibility === "business") return [];
       const allowed = item.roles.some(role => roles.has(role));
       // Navigation is a least-privilege projection, not a catalogue. A
       // destination the persona cannot use must not be disclosed as a locked

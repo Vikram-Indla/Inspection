@@ -37,7 +37,7 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     }
   });
 
-  test("admin primary and advanced options compose from existing role families", () => {
+  test("admin-only personas receive only their authorized admin destinations", () => {
     const security = itemsFor(["security_admin"]);
     expect(security.find(item => item.id === "users")?.enabled).toBe(true);
     expect(security.find(item => item.id === "roles")?.enabled).toBe(true);
@@ -106,6 +106,39 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   });
 });
 
+test.describe("ADMIN-SHELL-PERSONA-001 admin-only channel", () => {
+  test("admin-only detection requires an admin grant and no business grant", () => {
+    expect(isAdminOnlyPersona(["security_admin"])).toBe(true);
+    expect(isAdminOnlyPersona(["compliance_admin", "form_admin"])).toBe(true);
+    expect(isAdminOnlyPersona(["security_admin", "planner"])).toBe(false);
+    expect(isAdminOnlyPersona(["planner"])).toBe(false);
+    expect(isAdminOnlyPersona([])).toBe(false);
+  });
+
+  test("server channel guard protects copied business URLs while preserving admin deep links", () => {
+    const layout = readFileSync(join(process.cwd(), "src/app/(app)/layout.tsx"), "utf8");
+    expect(layout).toContain("isAdminOnlyPersona(roleKeys) && isBusinessOnlyPath(pathname)");
+    expect(layout).toContain('redirect(homeForRoles(roleKeys) ?? "/admin")');
+    for (const prefix of ["/dashboard", "/operations", "/factories", "/planning", "/reviews", "/ai"]) {
+      expect(layout).toContain(`"${prefix}"`);
+    }
+    expect(layout).not.toContain('"/admin",\n].some');
+  });
+
+  test("admin chrome omits the business global-search and scope cluster", () => {
+    const shell = readFileSync(join(process.cwd(), "src/components/ShellClient.tsx"), "utf8");
+    const css = readFileSync(join(process.cwd(), "src/app/astryx.css"), "utf8");
+    expect(shell).toContain('{!adminOnly ? <div className="ax-shell-controls">');
+    expect(shell).toContain('adminOnly ? " is-admin-only" : ""');
+    expect(shell).toContain("routeScope.date ? (");
+    expect(shell).toContain("sq-shell-scope--region");
+    expect(shell).toContain(") : null}");
+    expect(css).toContain("@media (min-width: 1025px)");
+    expect(css).toContain(".ax-shell.is-admin-only .ax-shell__groups");
+    expect(css).toContain("overflow: visible");
+  });
+});
+
 test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv RBAC-009/010)", () => {
   test("a field-only Inspector sees only the field channel — no web catalogue, no admin group", () => {
     const groups = buildShellNavigation(["inspector"]);
@@ -121,7 +154,7 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
     }
   });
 
-  test("an operational grant wins: a multi-role Inspector+Planner keeps the full web catalogue", () => {
+  test("an operational grant wins: a multi-role Inspector+Planner keeps only the business catalogue", () => {
     expect(isFieldOnlyPersona(["inspector", "planner"])).toBe(false);
     expect(businessHrefsFor(["inspector", "planner"])).toEqual(businessHrefs);
     expect(buildShellNavigation(["inspector", "planner"]).find(group => group.id === "administration")).toBeUndefined();
@@ -142,7 +175,7 @@ test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv R
 test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
   test.use({ storageState: storageStatePath("planner") });
 
-  test("desktop navigation collapses with unified business and accessible locked admin options", async ({ page }) => {
+  test("desktop navigation collapses with the authorized business catalogue only", async ({ page }) => {
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
@@ -151,10 +184,8 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Inspection Rules" })).toBeVisible();
-    await nav.getByRole("button", { name: "Administration" }).click();
-    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(10);
-    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
-    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");
+    await expect(nav.getByRole("button", { name: "Administration" })).toHaveCount(0);
+    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(0);
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
     await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);
