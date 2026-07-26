@@ -34,6 +34,7 @@ export type LiveInspector = {
   lng: number | null;
   sinceAt: string | null;
   sinceLabel: string;
+  sinceState: "recorded" | "unavailable" | "rejected";
   positionObservedAt: string | null;
   positionObservedLabel: string;
   positionSourceLabel: string | null;

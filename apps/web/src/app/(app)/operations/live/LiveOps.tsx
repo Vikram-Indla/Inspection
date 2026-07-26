@@ -13,7 +13,6 @@ export type LiveOpsStrings = {
   completed: string;
   totalsLabel: string;
   inspector: string;
-  projected: string;
   freshnessPolicy: string;
   lastObserved: string;
   snapshotGenerated: string;
@@ -48,6 +47,7 @@ export type LiveOpsStrings = {
   rejectedState: string;
   partialSource: string;
   factorySourceUnavailable: string;
+  stateHistoryUnavailable: string;
   sourceNotRecorded: string;
 };
 
@@ -59,28 +59,32 @@ export default function LiveOps({
   inspectors,
   strings: s,
   snapshotAt,
+  snapshotLabel,
   positionObservedAt,
+  positionObservedLabel,
   wallboard,
   visitReadError,
   positionReadError,
   factoryReadError,
+  stateHistoryReadError,
   excludedRecordCount,
   outOfScopeRecordCount,
-  locale,
 }: {
   factories: LiveFactory[];
   regions: LiveRegion[];
   inspectors: LiveInspector[];
   strings: LiveOpsStrings;
   snapshotAt: string;
+  snapshotLabel: string;
   positionObservedAt: string | null;
+  positionObservedLabel: string | null;
   wallboard: boolean;
   visitReadError: boolean;
   positionReadError: boolean;
   factoryReadError: boolean;
+  stateHistoryReadError: boolean;
   excludedRecordCount: number;
   outOfScopeRecordCount: number;
-  locale: "en" | "ar";
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [providerFailed, setProviderFailed] = useState(false);
@@ -91,15 +95,6 @@ export default function LiveOps({
   const noScopeRows = factories.length === 0 && inspectors.length === 0;
   const hasNoPositions = factories.length > 0
     && !inspectors.some(inspector => inspector.lat != null && inspector.lng != null);
-  const dateFormatter = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
-    dateStyle: "medium",
-    timeStyle: "medium",
-    timeZone: "Asia/Riyadh",
-  });
-  const formattedSnapshotAt = dateFormatter.format(new Date(snapshotAt));
-  const formattedPositionObservedAt = positionObservedAt
-    ? dateFormatter.format(new Date(positionObservedAt))
-    : null;
   const provenanceLabel = (inspector: LiveInspector) => inspector.positionState === "recorded"
     ? s.recordedState
     : inspector.positionState === "rejected" ? s.rejectedState : s.unavailableState;
@@ -117,9 +112,9 @@ export default function LiveOps({
             <span className={`${styles.provenance} ${styles.provenanceRejected}`}>{s.rejectedState}</span>
           </div>
           <p className={styles.freshness}>
-            <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{formattedSnapshotAt}</time></span>
-            <span>{formattedPositionObservedAt
-              ? <>{s.lastObserved}: <time dateTime={positionObservedAt!}>{formattedPositionObservedAt}</time></>
+            <span>{s.snapshotGenerated}: <time data-testid="live-snapshot-at" dateTime={snapshotAt}>{snapshotLabel}</time></span>
+            <span>{positionObservedAt && positionObservedLabel
+              ? <>{s.lastObserved}: <time dateTime={positionObservedAt}>{positionObservedLabel}</time></>
               : s.noRecordedPositions}</span>
             <span>{s.freshnessPolicy}</span>
           </p>
@@ -135,6 +130,7 @@ export default function LiveOps({
           ) : null}
           {positionReadError ? <p className={styles.partialSource} role="alert">{s.partialSource}</p> : null}
           {factoryReadError ? <p className={styles.partialSource} role="status">{s.factorySourceUnavailable}</p> : null}
+          {stateHistoryReadError ? <p className={styles.partialSource} role="alert">{s.stateHistoryUnavailable}</p> : null}
         </div>
         {wallboard ? <a className="sq-btn sq-btn--secondary" href="/operations/live">{s.wallboardExit}</a> : null}
       </header>
@@ -200,7 +196,7 @@ export default function LiveOps({
                 <div><dt>{s.operationalState}</dt><dd>{selectedInspector.stateLabel}</dd></div>
                 <div>
                   <dt>{s.since}</dt>
-                  <dd>{selectedInspector.sinceAt
+                  <dd data-state-time={selectedInspector.sinceState}>{selectedInspector.sinceAt
                     ? <time dateTime={selectedInspector.sinceAt}>{selectedInspector.sinceLabel}</time>
                     : selectedInspector.sinceLabel}</dd>
                 </div>
@@ -233,8 +229,8 @@ export default function LiveOps({
                     onClick={() => setSelectedId(inspector.id)}
                   >
                     <span>
-                      <strong>{inspector.factoryName}</strong>
-                      <small>{inspector.region} · <bdi dir="auto">{inspector.inspector}</bdi></small>
+                      <strong><bdi dir="auto">{inspector.inspector}</bdi></strong>
+                      <small>{inspector.factoryName} · {inspector.region}</small>
                       <span className={`${styles.provenance} ${provenanceClass(inspector)}`}>
                         {provenanceLabel(inspector)}
                       </span>
@@ -248,7 +244,7 @@ export default function LiveOps({
                     </span>
                     <span>
                       <span className="sq-lozenge sq-lozenge--info">{inspector.stateLabel}</span>
-                      <small>
+                      <small data-state-time={inspector.sinceState}>
                         {s.since}: {inspector.sinceAt
                           ? <time data-live-since dateTime={inspector.sinceAt}>{inspector.sinceLabel}</time>
                           : inspector.sinceLabel}
