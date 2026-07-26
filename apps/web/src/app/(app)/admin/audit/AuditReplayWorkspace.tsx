@@ -18,6 +18,27 @@ const json = (value: unknown) => value == null ? "∅" : JSON.stringify(value, n
 
 export default function AuditReplayWorkspace(props: Props) {
   const L = labels[props.locale];
+  const auditTerms = props.locale === "ar" ? {
+    appendOnly: "إضافة فقط",
+    semantic: "دلالي مسجل",
+    generic: "عام فقط",
+    partial: "جزئي",
+    changed: "متغير",
+    unchanged: "غير متغير",
+    reconstructedStates: "حالات مجمعة أعيد بناؤها",
+    sourceEvents: "أحداث مصدر",
+    last: "آخر حدث",
+  } : {
+    appendOnly: "Append-only",
+    semantic: "Recorded semantic",
+    generic: "Generic only",
+    partial: "Partial",
+    changed: "Changed",
+    unchanged: "Unchanged",
+    reconstructedStates: "reconstructed aggregate states",
+    sourceEvents: "source events",
+    last: "last",
+  };
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
@@ -37,8 +58,9 @@ export default function AuditReplayWorkspace(props: Props) {
     <a className="sq-shell__skip" href="#audit-chronology">{L.skip}</a>
     <section className="ar-casehead panel">
       <div><span className="t-caption">MVP2-CD-031-M2-05</span><h2>{L.title}</h2><p className="t-caption">{props.caseRef || L.portfolio} · {props.events.length} · {completenessAvailable ? `${completeness.found}/${completeness.expected}` : L.ledger}</p></div>
-      <div className="ar-status"><span className="badge badge-compliant">append-only</span><span className="badge badge-info">{props.roles.join(" · ")}</span></div>
+      <div className="ar-status"><span className="badge badge-compliant">{auditTerms.appendOnly}</span><span className="badge badge-info">{props.roles.join(" · ")}</span></div>
     </section>
+    <div className="sq-banner sq-banner--warning" role="note"><div><strong>{L.policyHeldTag}</strong>{" · "}{L.policy}</div></div>
     <form method="get" className="ar-filter panel">
       <label className="sq-field"><span className="sq-field__label">{L.case}</span><input className="sq-input" name="case" defaultValue={props.caseRef}/></label>
       <label className="sq-field"><span className="sq-field__label">{L.search}</span><input className="sq-input" name="q" defaultValue={props.query}/></label>
@@ -55,19 +77,18 @@ export default function AuditReplayWorkspace(props: Props) {
       <div className="ar-lanes panel" aria-label={L.recorder}><div className="ar-lane ar-lane--version">{L.versions}</div><div className="ar-lane ar-lane--workflow">{L.workflow}</div><div className="ar-lane ar-lane--device">{L.device}</div><div className="ar-lane ar-lane--evidence">{L.evidence}</div></div>
       <ol className="ar-spine panel">{props.events.map(event => <li key={event.id} className={`ar-event ar-event--${event.provenance}`}>
         <time dateTime={event.occurredAt}>{new Date(event.occurredAt).toLocaleString(props.locale === "ar" ? "ar-SA" : "en-GB")}</time>
-        <div><strong>{event.eventType}</strong><p>{event.aggregateType} · <bdi>{event.aggregateId ?? "—"}</bdi></p><span className={`sq-lozenge ${event.provenance === "semantic" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{event.provenance === "semantic" ? "RECORDED SEMANTIC" : "GENERIC ONLY"}</span></div>
+        <div><strong>{event.eventType}</strong><p>{event.aggregateType} · <bdi>{event.aggregateId ?? "—"}</bdi></p><span className={`sq-lozenge ${event.provenance === "semantic" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{event.provenance === "semantic" ? auditTerms.semantic : auditTerms.generic}</span></div>
         <button ref={el => { if (el) triggerRefs.current.set(event.id,el); }} className="btn btn-ghost btn-touch" type="button" onClick={() => open(event.id)}>{L.detail}</button>
       </li>)}</ol>
-      <aside className="ar-dossier panel"><h3>{L.dossier}</h3><p>{atState.length ? String(atState.length) : L.noEvent}</p><dl><dt>{L.governing}</dt><dd>{L.missing}</dd><dt>{L.correlation}</dt><dd>{props.events.some(e => e.correlationId) ? "PARTIAL" : L.missing}</dd><dt>{L.legal}</dt><dd>{L.policyHeldTag}{" · DEC-006 / DEC2-009"}</dd></dl></aside>
+      <aside className="ar-dossier panel"><h3>{L.dossier}</h3><p>{atState.length ? String(atState.length) : L.noEvent}</p><dl><dt>{L.governing}</dt><dd>{L.missing}</dd><dt>{L.correlation}</dt><dd>{props.events.some(e => e.correlationId) ? auditTerms.partial : L.missing}</dd><dt>{L.legal}</dt><dd>{L.policyHeldTag}{" · DEC-006 / DEC2-009"}</dd></dl></aside>
     </section>}
 
-    {props.mode === "reconstruct" && <section className="panel ar-modepanel"><form method="get"><input type="hidden" name="view" value="reconstruct"/><input type="hidden" name="case" value={props.caseRef}/><label className="sq-field"><span className="sq-field__label">{L.at}</span><input className="sq-input" type="datetime-local" name="at" defaultValue={props.at?.slice(0,16)}/></label><button className="btn btn-primary btn-lg btn-touch">{L.apply}</button></form><h3>{atState.length} reconstructed aggregate states</h3>{atState.map(row => <article key={row.key} className="ar-custody"><strong>{row.key}</strong><span>{row.eventIds.length} source events · last {row.lastOccurredAt}</span>{row.conflicts.length > 0 && <span className="badge badge-critical">{L.conflictTag}</span>}<pre>{json(row.state)}</pre></article>)}</section>}
-    {props.mode === "compare" && <section className="panel ar-modepanel"><form method="get" className="ar-compareform"><input type="hidden" name="view" value="compare"/><input type="hidden" name="case" value={props.caseRef}/><label className="sq-field"><span className="sq-field__label">{L.at}</span><input className="sq-input" type="datetime-local" name="at" defaultValue={props.at?.slice(0,16)}/></label><label className="sq-field"><span className="sq-field__label">{L.vs}</span><input className="sq-input" type="datetime-local" name="vs" defaultValue={props.vs?.slice(0,16)}/></label><button className="btn btn-primary btn-lg btn-touch">{L.apply}</button></form>{comparison.map(row => <article key={row.key}><h3>{row.key} · {row.changed ? "CHANGED" : "UNCHANGED"}</h3><div className="ar-diff"><div><h4>{L.before}</h4><pre>{json(row.before?.state)}</pre></div><div><h4>{L.after}</h4><pre>{json(row.after?.state)}</pre></div></div></article>)}</section>}
+    {props.mode === "reconstruct" && <section className="panel ar-modepanel"><form method="get"><input type="hidden" name="view" value="reconstruct"/><input type="hidden" name="case" value={props.caseRef}/><label className="sq-field"><span className="sq-field__label">{L.at}</span><input className="sq-input" type="datetime-local" name="at" defaultValue={props.at?.slice(0,16)}/></label><button className="btn btn-primary btn-lg btn-touch">{L.apply}</button></form><h3>{atState.length} {auditTerms.reconstructedStates}</h3>{atState.map(row => <article key={row.key} className="ar-custody"><strong>{row.key}</strong><span>{row.eventIds.length} {auditTerms.sourceEvents} · {auditTerms.last} {row.lastOccurredAt}</span>{row.conflicts.length > 0 && <span className="badge badge-critical">{L.conflictTag}</span>}<pre>{json(row.state)}</pre></article>)}</section>}
+    {props.mode === "compare" && <section className="panel ar-modepanel"><form method="get" className="ar-compareform"><input type="hidden" name="view" value="compare"/><input type="hidden" name="case" value={props.caseRef}/><label className="sq-field"><span className="sq-field__label">{L.at}</span><input className="sq-input" type="datetime-local" name="at" defaultValue={props.at?.slice(0,16)}/></label><label className="sq-field"><span className="sq-field__label">{L.vs}</span><input className="sq-input" type="datetime-local" name="vs" defaultValue={props.vs?.slice(0,16)}/></label><button className="btn btn-primary btn-lg btn-touch">{L.apply}</button></form>{comparison.map(row => <article key={row.key}><h3>{row.key} · {row.changed ? auditTerms.changed : auditTerms.unchanged}</h3><div className="ar-diff"><div><h4>{L.before}</h4><pre>{json(row.before?.state)}</pre></div><div><h4>{L.after}</h4><pre>{json(row.after?.state)}</pre></div></div></article>)}</section>}
     {props.mode === "ledger" && <section className="panel ar-modepanel"><h3>{L.ledger} · {completenessAvailable ? `${completeness.found}/${completeness.expected}` : L.missing}</h3>{!completenessAvailable && <div className="sq-banner sq-banner--warning"><div>{L.selectCase}</div></div>}<div className="ar-ledger">{completeness.rows.map(row => <div key={row.requirementId} className="ar-ledgerrow"><bdi>{row.requirementId}</bdi><strong>{row.eventType}</strong><span className={`sq-lozenge ${row.found ? "sq-lozenge--success" : row.defaultStatus === "needs_contract" ? "sq-lozenge--warning" : "sq-lozenge--critical"}`}>{row.found ? L.found : row.defaultStatus === "needs_contract" ? L.needs : L.missing}</span></div>)}</div></section>}
     {props.mode === "custody" && <section className="panel ar-modepanel"><h3>{L.custody}</h3>{props.events.map(event => <div className="ar-custody" key={event.id}><bdi>{event.id}</bdi><span>{event.eventType}</span><span>{L.integrity}: {event.integrityStatus}</span><span>{L.chain}: {event.chainStatus}</span></div>)}</section>}
     {props.mode === "print" && <section className="panel ar-modepanel ar-print"><h3>{L.print}</h3><p role="note">{L.policy}</p>{props.events.map(event => <p key={event.id}><time>{event.occurredAt}</time> · {event.eventType} · {event.provenance} · {event.integrityStatus}</p>)}</section>}
 
-    <div className="sq-banner" role="note"><div>{L.policy}</div></div>
     {selected && <div className="ar-dialogbackdrop" onMouseDown={event => { if (event.target === event.currentTarget) close(); }}><aside className="ar-dialog panel" role="dialog" aria-modal="true" aria-labelledby="audit-event-title" onKeyDown={event => { if (event.key === "Escape") close(); if (event.key === "Tab") { event.preventDefault(); closeRef.current?.focus(); } }}>
       <button ref={closeRef} className="btn btn-ghost ar-dialogclose btn-touch" type="button" onClick={close} aria-label={L.close}>×</button><h2 id="audit-event-title">{selected.eventType}</h2><dl><dt>{L.source}</dt><dd>{selected.provenance}</dd><dt>{L.integrity}</dt><dd>{selected.integrityStatus}</dd><dt>{L.chain}</dt><dd>{selected.chainStatus}</dd><dt>{L.correlation}</dt><dd><bdi>{selected.correlationId ?? "MISSING"}</bdi></dd></dl><div className="ar-diff"><div><h3>{L.before}</h3><pre>{json(selected.beforeState)}</pre></div><div><h3>{L.after}</h3><pre>{json(selected.afterState)}</pre></div></div><h3>{L.payload}</h3><pre>{json(selected.payload)}</pre>
     </aside></div>}

@@ -16,7 +16,7 @@ export default async function AdminNotifications() {
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
 
-  const [{ data: roleRows, error: roleError }, { data: rulesData, error: rulesError }, { data: roleTable }] = await Promise.all([
+  const [{ data: roleRows, error: roleError }, { data: rulesData, error: rulesError }, { data: roleTable, error: roleTableError }] = await Promise.all([
     user ? getUserRoles(user.id) : Promise.resolve({ data: [] as { role_key: string }[], error: null }),
     sb.from("notification_rules")
       .select("id, event_key, channel, recipient_role, template, sla_minutes, escalation_role, status, version_label, created_at, deactivation_reason")
@@ -61,6 +61,7 @@ export default async function AdminNotifications() {
     colVersion: t("admin.notif.col.version", "Version"),
     colActions: t("admin.notif.col.actions", "Actions"),
     missingRecipient: t("admin.notif.missingRecipient", "Missing recipient"),
+    rolesUnavailable: t("admin.notif.rolesUnavailable", "Recipient roles are unavailable. Rule creation is disabled; existing rules remain readable."),
   };
 
   const title = t("admin.notif.title", "Notification & SLA Rules");
@@ -99,9 +100,10 @@ export default async function AdminNotifications() {
   return (
     <Shell current="/admin/notifications" title={title} context={context}>
       {degradedBanner}
+      {roleTableError ? <div className="sq-banner sq-banner--warning" role="alert">{l.rolesUnavailable}</div> : null}
       {readOnlyBanner}
       {isWriter ? (
-        <NotificationRulesManager rows={rulesError ? [] : rows} roles={roleOptions} l={l} />
+        <NotificationRulesManager rows={rulesError ? [] : rows} roles={roleOptions} rolesAvailable={!roleTableError} l={l} />
       ) : (
         <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr><th scope="col">{l.colEvent}</th><th scope="col">{l.colChannel}</th><th scope="col">{l.colRecipient}</th><th scope="col">{l.colSla}</th><th scope="col">{l.colStatus}</th><th scope="col">{l.colVersion}</th></tr></thead>
