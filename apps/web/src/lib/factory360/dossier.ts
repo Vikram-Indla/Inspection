@@ -58,7 +58,14 @@ export type GovernmentRecord = { id: string; record_type: string; external_recor
 export type FactoryDocument = { id: string; industrial_license_id: string | null; business_category: string | null; doc_type: string; title: string; reference_no: string | null; valid_from: string | null; valid_to: string | null; storage_path: string | null; source_system: string | null; source_status: string | null; created_at: string };
 export type MediaAsset = { id: string; industrial_license_id: string | null; category: string; evidence_id: string | null; inspection_id: string | null; violation_id: string | null; storage_path: string | null; title: string | null; mime_type: string | null; source_system: string; captured_at: string | null };
 export type RiskSnapshot = { id: string; score: number; band: string; model_version: string; drivers: unknown; calculated_at: string };
-export type PenaltyNotice = { id: string; inspection_id: string | null; notice_number: string; status: string; issued_at: string };
+export type PenaltyNotice = {
+  id: string;
+  inspection_id: string | null;
+  violation_id: string | null;
+  notice_number: string;
+  status: string;
+  issued_at: string;
+};
 export type ObservedRow = { key: string; official: string | number | null | undefined; observedKey: string };
 
 type Result<T> = { data: T | null; error: unknown };

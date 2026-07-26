@@ -17,7 +17,15 @@ export default async function Factories() {
   // this legacy factory has a verified license mapping. If the new projection
   // is unavailable or unmapped, preserve the established /factories/:id path.
   const factoryRows = (fs ?? []).map(({ industrial_licenses, ...row }) => {
-    const commercialRegistrationId = industrial_licenses?.[0]?.commercial_registration_id ?? null;
+    const mappedIndustrialLicense = industrial_licenses as
+      | { commercial_registration_id: string | null }
+      | { commercial_registration_id: string | null }[]
+      | null;
+    const industrialLicense = Array.isArray(mappedIndustrialLicense)
+      ? mappedIndustrialLicense[0]
+      : mappedIndustrialLicense;
+    const commercialRegistrationId =
+      industrialLicense?.commercial_registration_id ?? null;
     return {
       ...row,
       dossier_href: commercialRegistrationId ? `/factories/cr/${commercialRegistrationId}` : `/factories/${row.id}`,
@@ -45,6 +53,10 @@ export default async function Factories() {
     thCity: t("f360.list.th.city", "City"),
     thRisk: t("f360.list.th.risk", "Risk"),
     dossier: t("f360.list.dossier", "View factory"),
+    portfolioLabel: t("f360.list.portfolio", "Factory portfolio"),
+    licensedCountLabel: t("f360.list.licensedCount", "Licensed factories"),
+    unlicensedCountLabel: t("f360.list.unlicensedCount", "Unlicensed establishments"),
+    regionsCountLabel: t("f360.list.regionsCount", "Regions represented"),
     bandLabels: {
       high: t("enum.high", "high"),
       medium: t("enum.medium", "medium"),
@@ -54,6 +66,7 @@ export default async function Factories() {
   const isEmpty = factoryRows.length === 0;
   return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="sq-lozenge sq-lozenge--info">SCR-WEB-400</span>}>
+      <h1 className="sr-only">{t("f360.title", "Factory 360")}</h1>
       {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
         <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}

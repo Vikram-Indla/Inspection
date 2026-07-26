@@ -125,7 +125,6 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   const bandTone = f.risk_band === "high" ? "sq-lozenge--critical" : f.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success";
   const riskTone = f.risk_band === "high" ? "cd-risk-high" : f.risk_band === "medium" ? "cd-risk-medium" : "cd-risk-low";
   const today = new Date().toISOString().slice(0, 10);
-  const soon = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
   const docTypeLabel = (value: string) => t(`enum.${value}`, DOC_TYPE_LABEL[value] ?? value);
   const retry = t("f360.err.retry", "retry");
@@ -145,16 +144,16 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   const saudization = f.employees_total && f.employees_saudi != null && f.employees_total > 0
     ? Math.round((f.employees_saudi / f.employees_total) * 1000) / 10 : null;
   // Validity is precomputed so JSX stays free of inline comparisons.
-  const docValidity = (valid_to: string | null): "none" | "expired" | "expiring" | "valid" => {
+  // The Factory 360 contract defines expired/history visibility but no
+  // "expiring soon" window. Do not synthesize a 30/60/90-day policy threshold.
+  const docValidity = (valid_to: string | null): "none" | "expired" | "valid" => {
     if (valid_to == null) return "none";
     if (valid_to < today) return "expired";
-    if (valid_to < soon) return "expiring";
     return "valid";
   };
-  const VALIDITY_BADGE: Record<"none" | "expired" | "expiring" | "valid", { cls: string; label: string }> = {
+  const VALIDITY_BADGE: Record<"none" | "expired" | "valid", { cls: string; label: string }> = {
     none: { cls: "sq-caption", label: t("f360.docs.noExpiry", "no expiry") },
     expired: { cls: "sq-lozenge sq-lozenge--critical", label: t("f360.docs.expired", "expired") },
-    expiring: { cls: "sq-lozenge sq-lozenge--warning", label: t("f360.docs.expiringSoon", "expiring soon") },
     valid: { cls: "sq-lozenge sq-lozenge--success", label: t("f360.docs.valid", "valid") },
   };
 

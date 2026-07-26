@@ -4,6 +4,7 @@
 // the app never breaks while translation review is in flight.
 import { cookies, headers } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
+import { FACTORY360_AR_FALLBACK } from "@/lib/factory360/arabic";
 
 export type Locale = "en" | "ar";
 export type Dict = Record<string, string>;
@@ -137,7 +138,9 @@ export async function getDict(locale: Locale): Promise<Dict> {
   // the reviewed fallback rather than crashing the whole page render.
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) return MVP3_AR_FALLBACK;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return { ...MVP3_AR_FALLBACK, ...FACTORY360_AR_FALLBACK };
+  }
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(supabaseUrl, supabaseAnonKey);
   // Page through ALL rows. A single unbounded select is capped at 1000 by
@@ -153,7 +156,11 @@ export async function getDict(locale: Locale): Promise<Dict> {
     for (const r of data) dict[r.key] = r.ar as string;
     if (data.length < PAGE) break;
   }
-  const complete = { ...MVP3_AR_FALLBACK, ...dict };
+  const complete = {
+    ...MVP3_AR_FALLBACK,
+    ...FACTORY360_AR_FALLBACK,
+    ...dict,
+  };
   cache = { at: Date.now(), dict: complete };
   return complete;
 }
