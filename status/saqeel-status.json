@@ -1,5 +1,5 @@
 {
-  "revision": "SB-r24",
+  "revision": "SB-r25",
   "updated": "2026-07-26T06:19:33+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/virtual",
@@ -716,8 +716,8 @@
       "group": "exec",
       "name": "Feedback module",
       "design": 90,
-      "code": 35,
-      "wiring": 10,
+      "code": 65,
+      "wiring": 55,
       "designPage": "SAQEEL Feedback.dc.html",
       "route": "web/src/app/(app)/field/feedback/page.tsx · components/field/FieldQrPlaceholder.tsx",
       "pwa": {
@@ -743,6 +743,17 @@
       "dependsOn": [
         "pwa-completion",
         "reports"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T06:04:08+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "code": 65,
+            "wiring": 55
+          },
+          "evidence": "Schema live (feedback+feedback_aspect+submit_visit_feedback RPC, iiozvqntawxfwbgffzqu); real rate/[visitId] flow driven end-to-end in Chrome as inspector.test persona on visit cfe216e1 (Al Watania Plastics) — 5-question stepper, SignaturePad (DEC-009 reuse), RPC submit, row verified in DB (feedback id 1bcba16a, 5 aspects, real PNG signature); idempotent re-visit shows already-submitted; RLS negative-path confirmed (blocked on another inspector's visit); PDF hand-off resolves to real /reports/inspection/[id]. QR stays a generic non-scannable placeholder per PO (O-15 self-serve scan still open). Admin analytics view still not built (route-map REQUIRES_PRODUCT_OWNER_APPROVAL, untouched)."
+        }
       ]
     },
     {
@@ -1883,5 +1894,17 @@
     "L": 3,
     "XL": 5
   },
-  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first."
+  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first.",
+  "reconciled": {
+    "at": "2026-07-26T06:45:00+03:00",
+    "by": "claude-code",
+    "authority": "Product Owner: reconcile all 55 cards, then make the repo the source",
+    "base": "SB-r19 (dafcf468)",
+    "merged_lineages": [
+      "SB-r24 saqeel/virtual — card `virtual` 60/90/55 -> 88/96/82",
+      "SB-r20 saqeel/feedback — published to Claude Design, adopted verbatim: feedback"
+    ],
+    "conflicts": "none — the two lineages touched disjoint cards",
+    "note": "The earlier SB-r9 claude-design lineage is not represented: it was already overwritten in the project by SB-r20 before this reconcile, and never existed in the repo's history."
+  }
 }
