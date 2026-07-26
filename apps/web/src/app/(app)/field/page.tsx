@@ -191,7 +191,12 @@ export default async function Field() {
   // ---- "Start here" recommendation: highest real risk among actionable, else
   // the soonest window. Reason is derived ONLY from real signals. -------------
   const byStart = [...tasks].sort((a, b) => a.window_start.localeCompare(b.window_start));
-  const registerTasks = byStart.slice(0, 6);
+  // "Today's Schedule" is scoped to TODAY. The design titles the section
+  // "Today's Schedule" and prints today's visit count beside it; listing the
+  // whole assigned queue under that heading asserted something false about the
+  // rows. This is the same set the insight strip counts as "Today's visits",
+  // ordered by window — so the two sections can never disagree.
+  const scheduleTasks = [...todayTasks].sort((a, b) => a.window_start.localeCompare(b.window_start));
   const byRisk = [...actionable].sort((a, b) => (b.factories?.risk_score ?? -1) - (a.factories?.risk_score ?? -1));
   const nextActionable = actionable.find((v) => !v.inspections || v.inspections.status === "not_started");
   const selected = (byRisk[0]?.factories?.risk_band === "high" ? byRisk[0] : null)
@@ -496,16 +501,16 @@ export default async function Field() {
             <div className={styles.cardHead}>
               <span style={{ fontWeight: 600, fontSize: 14.5 }}>{tr("field.home.schedule.title", "Today's schedule", "جدول اليوم")}</span>
               <span className="grow" />
-              <span className="t-caption">{tr("field.home.schedule.count", "{n} visits", "{n} زيارة").replace("{n}", String(tasks.length))}</span>
+              <span className="t-caption">{tr("field.home.schedule.count", "{n} visits", "{n} زيارة").replace("{n}", String(scheduleTasks.length))}</span>
             </div>
-            {registerTasks.length === 0 ? (
+            {scheduleTasks.length === 0 ? (
               <div style={{ padding: "18px 16px" }}>
-                <div style={{ fontWeight: 600, marginBlockEnd: 4 }}>{tr("field.home.register.empty", "No assigned tasks", "لا توجد مهام مسندة")}</div>
+                <div style={{ fontWeight: 600, marginBlockEnd: 4 }}>{tr("field.home.schedule.empty", "No visits scheduled today", "لا توجد زيارات مجدولة اليوم")}</div>
                 <p className="t-caption">{tr("field.home.register.emptyBody", "Only your own assignments appear here (RBAC-009). New assignments arrive with a notification.", "تظهر هنا مهامك المسندة فقط (RBAC-009). تصل المهام الجديدة مع إشعار.")}</p>
               </div>
             ) : (
               <div>
-                {registerTasks.map((v) => (
+                {scheduleTasks.map((v) => (
                   <Link key={v.id} href={`/field/my-tasks?task=${v.id}`} prefetch={false} className={styles.schedRow}>
                     <span className="id-code" style={{ fontSize: 12, color: "var(--text-secondary)" }}>{tm(v.window_start)}</span>
                     <span style={{ minWidth: 0 }}>
@@ -519,11 +524,14 @@ export default async function Field() {
                     <span className={`badge ${statusTone(v)}`} style={{ height: 18, whiteSpace: "nowrap" }}>{statusLabel(v)}</span>
                   </Link>
                 ))}
-                <div style={{ display: "flex", justifyContent: "flex-end", padding: "11px 16px" }}>
-                  <Link href="/field/my-tasks" prefetch={false} style={{ color: "var(--action-primary)", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>{tr("field.home.register.viewAll", "View all", "عرض الكل")}</Link>
-                </div>
               </div>
             )}
+            {/* The design renders "View all" unconditionally — with the list
+                scoped to today it is exactly what an inspector needs when today
+                is empty but the assigned queue is not. */}
+            <div style={{ display: "flex", justifyContent: "flex-end", padding: "11px 16px" }}>
+              <Link href="/field/my-tasks" prefetch={false} style={{ color: "var(--action-primary)", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>{tr("field.home.register.viewAll", "View all", "عرض الكل")}</Link>
+            </div>
           </section>
 
           {/* 5 — PENDING ATTENTION (real counts only) */}
@@ -600,20 +608,27 @@ export default async function Field() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
                 {tr("field.home.qa.search", "Search factory", "بحث منشأة")}
               </Link>
-              {/* CR-100/101/102 — the assigned-visits surface (list · calendar · map).
-                  FieldNav has no slot for it and is shared shell under CC-SHELL-TABLET-001,
-                  so this rail is the entry point. */}
-              <Link href="/field/visits" prefetch={false} className={styles.qbtnPill}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>
-                {tr("field.home.qa.myVisits", "My visits", "زياراتي")}
-              </Link>
-              {/* Rendered only when a real in-flight inspection exists. */}
+              {/* Third pill in the design's rail: "Continue Active Inspection —
+                  <factory>". Rendered only when a real in-flight inspection
+                  exists. The design's fourth pill is Sync Now with a pending
+                  count; the outbox is a client-side store (lib/offline) that this
+                  server render cannot read, and the live control already sits in
+                  the header cluster (FieldHeaderSync), so it is not duplicated
+                  here with a fabricated count. */}
               {activeVisit?.inspections && (
                 <Link href={`/field/inspection/${activeVisit.inspections.id}`} prefetch={false} className={styles.qbtnPill}>
                   <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--status-compliant-text)", flex: "none" }} />
                   {tr("field.home.qa.continue", "Continue active inspection", "متابعة التفتيش النشط")} — <bdi>{activeVisit.factories?.name ?? "—"}</bdi>
                 </Link>
               )}
+              {/* CR-100/101/102 — the assigned-visits surface (list · calendar · map).
+                  FieldNav has no slot for it and is shared shell under CC-SHELL-TABLET-001,
+                  so this rail is the entry point. Placed last so the design's own
+                  three pills keep the design's order. */}
+              <Link href="/field/visits" prefetch={false} className={styles.qbtnPill}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>
+                {tr("field.home.qa.myVisits", "My visits", "زياراتي")}
+              </Link>
             </div>
           </div>
         </div>
