@@ -1174,6 +1174,59 @@ button.sq-shell-scope { cursor: pointer; }
 .cd-roombox { block-size: 150px; border-radius: var(--radius-sm); border: 1px dashed var(--border-strong); background: var(--surface-sunken); display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center; margin-block: 10px; }
 .cd-roombox__glyph { font-size: 30px; color: var(--text-secondary); opacity: .6; }
 .cd-roombox__lab { font: var(--type-micro); color: var(--text-secondary); letter-spacing: .01em; }
+/* WA-DES-044 — inspection room stage. Local media (camera/mic/screen share) is
+   real browser capability; the remote tile states why it cannot connect rather
+   than rendering an empty "waiting" frame. Logical properties throughout so the
+   self-view pins to the trailing edge in both LTR and RTL. */
+.cd-stage { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface-primary); overflow: hidden; display: flex; flex-direction: column; }
+.cd-stage__bar { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--border-subtle); flex-wrap: wrap; }
+.cd-stage__title { font-size: 14px; }
+.cd-stage__spacer { margin-inline-start: auto; }
+.cd-stage__frame { position: relative; aspect-ratio: 16 / 9; background: repeating-linear-gradient(135deg, var(--surface-sunken), var(--surface-sunken) 10px, var(--surface-canvas) 10px, var(--surface-canvas) 20px); display: grid; place-items: center; padding: var(--space-5); }
+.cd-stage__remote { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.cd-stage__reason { max-inline-size: 48ch; }
+.cd-stage__avatar { inline-size: 48px; aspect-ratio: 1; border-radius: var(--radius-full); background: var(--surface-sunken); border: 1px solid var(--border-subtle); display: grid; place-items: center; font: var(--type-micro); letter-spacing: .04em; }
+.cd-stage__feed { inline-size: 100%; block-size: 100%; object-fit: cover; }
+.cd-stage__pip { position: absolute; inset-block-end: 12px; inset-inline-end: 12px; inline-size: 148px; aspect-ratio: 4 / 3; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--surface-sunken); display: grid; place-items: center; overflow: hidden; text-align: center; padding: 6px; }
+.cd-stage__controls { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-block-start: 1px solid var(--border-subtle); flex-wrap: wrap; }
+.cd-stage__btn { display: inline-flex; align-items: center; gap: 8px; }
+.cd-stage__btn[aria-pressed="true"] { border-color: var(--action-primary); color: var(--action-primary); }
+.cd-stage__note { padding: 0 var(--space-4) var(--space-3); margin: 0; }
+/* WA-DES-044 — horizontal compact spine for the state path. The vertical spine
+   above stays the default; these modifiers only lay it on its side, so the dot
+   states (is-done / is-current / is-blocked) keep their existing meaning. */
+.spine.is-horizontal { flex-direction: row; align-items: flex-start; gap: 0; }
+.spine.is-horizontal .spine-node { flex: 1; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding-block-end: 0; min-inline-size: 0; }
+.spine.is-horizontal .spine-node::before { inset-inline-start: 50%; inset-block-start: 9px; inset-block-end: auto; inline-size: 100%; block-size: 2px; width: auto; }
+.spine.is-horizontal .spine-node:last-child::before { display: none; }
+.spine.is-compact .spine-dot { inline-size: 16px; block-size: 16px; width: 16px; height: 16px; font-size: 9px; }
+.spine.is-compact.is-horizontal .spine-node::before { inset-block-start: 7px; }
+/* Break between words only — mid-word breaks turned "scheduled" into
+   "schedule/d" in the six-node compact spine. */
+.spine-label { font: var(--type-micro); color: var(--text-secondary); overflow-wrap: normal; hyphens: none; }
+.spine.is-compact .spine-label { font-size: 10px; line-height: 1.25; }
+.spine-node.is-current .spine-label { color: var(--text-primary); font-weight: 600; }
+
+/* WA-DES-044 — readiness contract as compact evidence rows. Same six concerns
+   as the earlier card grid (scope, time, participants, state, transition,
+   fallback); transition is promoted to its own action panel and fallback rides
+   the last row, so no stored fact is dropped by the denser presentation. */
+.cd-gates { display: flex; flex-direction: column; gap: var(--space-4); }
+.cd-gate { display: flex; align-items: flex-start; gap: var(--space-3); }
+.cd-gate__mark { margin-block-start: 2px; flex: none; }
+.cd-gate__b { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
+.cd-gate__label { font-size: 13px; }
+.cd-gate__detail { font: var(--type-micro); color: var(--text-secondary); overflow-wrap: anywhere; }
+.cd-gate__detail .cd-mono { font-family: var(--font-mono); }
+
+/* WA-DES-044 — identity panel: participant rows carry an avatar, matching the
+   design's people-first treatment instead of a bare name list. */
+.cd-idrow { display: flex; align-items: flex-start; gap: var(--space-3); padding-block: var(--space-3); border-block-start: 1px solid var(--border-subtle); }
+.cd-idrow:first-of-type { border-block-start: 0; }
+.cd-idrow__b { flex: 1; min-inline-size: 0; }
+.cd-idrow__st { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: end; }
+[dir="rtl"] .cd-idrow__st { align-items: flex-start; text-align: start; }
+
 .cd-action { padding: var(--space-6); border: 1px solid var(--accent-soft-hover); }
 .cd-primaryzone { padding: var(--space-4); border-radius: var(--radius-sm); background: var(--surface-sunken); display: flex; flex-direction: column; gap: 8px; margin-block: var(--space-3); }
 .cd-primaryzone.is-ready { background: var(--accent-soft); }
