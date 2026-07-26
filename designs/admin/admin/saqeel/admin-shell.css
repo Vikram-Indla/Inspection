@@ -1,0 +1,373 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   WA-ADMIN-r1 — Control Panel chrome.
+   Generated markup comes from tools/admin-shell.js; this file owns its looks.
+
+   Design rules this file enforces, and the defects each one retires:
+   · ONE DOCUMENT SCROLL. The rail is sticky with block-size:auto and no
+     overflow, so it never owns a scrollbar and never "hangs". The old chrome
+     nested an overflow-y:auto rail inside a 100vh grid inside a 100vh main.
+   · COMPACT, STABLE RAIL. 30px rows, 12.5px labels, 18px icons. The resting
+     rail is primary areas + one closed "Advanced" disclosure, so it fits
+     1440/1024/412/390/320 without scrolling.
+   · NO LOCKED ITEMS. Unauthorized destinations are absent, so there is no
+     disabled/lock styling to define here at all.
+   · ONE COMMAND HEADER. A single compact row, no breadcrumb, no second row.
+   · LOGICAL PROPERTIES ONLY, so RTL is free.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.ad-shell {
+  min-block-size: 100dvh;
+  display: grid;
+  grid-template-columns: var(--ad-rail-w, 252px) minmax(0, 1fr);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+
+/* ── rail: SEVEN hubs at most, children never live here ───────────────────── */
+.ad-rail {
+  position: sticky; inset-block-start: 0; align-self: start;
+  max-block-size: 100dvh;
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 0 8px 10px;
+  background: var(--nav-bg); color: var(--nav-text);
+  border-inline-end: 1px solid var(--nav-border);
+}
+.ad-rail__brand { display: flex; align-items: center; gap: 10px; min-block-size: 54px; padding-inline: 6px; }
+.ad-wordmark { block-size: 19px; inline-size: auto; display: block; }
+.ad-favicon { inline-size: 26px; block-size: 26px; display: none; flex: none; }
+.ad-collapse { margin-inline-start: auto; display: grid; place-items: center;
+  inline-size: 28px; block-size: 28px; border: 0; border-radius: var(--radius-sm);
+  background: none; color: var(--nav-text); cursor: pointer; }
+.ad-collapse:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
+.ad-collapse:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+
+/* find-a-tool opener; the palette is the discovery path, not a nav catalogue */
+.ad-cmdk { display: flex; align-items: center; gap: 8px; inline-size: 100%;
+  min-block-size: 30px; margin-block: 2px 10px; padding: 4px 8px;
+  border: 1px solid var(--nav-border); border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--nav-text) 6%, transparent);
+  color: var(--nav-text); cursor: pointer; text-align: start;
+  transition: background var(--transition-fast), color var(--transition-fast); }
+.ad-cmdk:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
+.ad-cmdk:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.ad-cmdk__label { flex: 1; font: 500 12px/1.4 var(--font-body); }
+.ad-cmdk kbd { font: 600 10px/1.6 var(--font-mono); padding: 0 4px;
+  border: 1px solid var(--nav-border); border-radius: 4px; color: var(--nav-text); }
+
+.ad-rail__body { display: flex; flex-direction: column; gap: 1px; min-inline-size: 0; }
+.ad-hub { position: relative; display: grid; grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center; gap: 10px; min-block-size: 34px; padding: 5px 8px;
+  border-radius: var(--radius-sm); color: var(--nav-text); text-decoration: none;
+  transition: background var(--transition-fast), color var(--transition-fast); }
+.ad-hub:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); text-decoration: none; }
+.ad-hub:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -1px; }
+/* emerald is reserved for selection and the primary action */
+.ad-hub.is-active { background: var(--nav-bg-selected); color: var(--nav-text-active); }
+.ad-hub.is-active::before { content: ""; position: absolute; inset-block: 7px; inset-inline-start: 0;
+  inline-size: 2px; border-radius: 0 2px 2px 0; background: var(--nav-indicator); }
+.ad-hub__icon { display: grid; place-items: center; inline-size: 18px; block-size: 18px; opacity: .8; }
+.ad-hub.is-active .ad-hub__icon { opacity: 1; color: var(--nav-indicator); }
+.ad-hub__label { font: 500 14.5px/1.35 var(--font-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-hub.is-active .ad-hub__label { font-weight: 600; }
+
+.ad-rail__foot { margin-block-start: auto; padding: 10px 8px 0; border-block-start: 1px solid var(--nav-border); }
+.ad-viewall { font: 500 11.5px/1.5 var(--font-body); color: var(--nav-text); }
+.ad-viewall:hover { color: var(--nav-text-active); }
+.ad-noroute { font: 700 11px/1 var(--font-mono); color: var(--status-warning-text); margin-inline-start: 5px; }
+
+/* icon-only rail */
+.ad-shell.is-rail-compact { --ad-rail-w: 56px; }
+.is-rail-compact .ad-wordmark,
+.is-rail-compact .ad-hub__label,
+.is-rail-compact .ad-cmdk__label,
+.is-rail-compact .ad-cmdk kbd,
+.is-rail-compact .ad-rail__foot { display: none; }
+.is-rail-compact .ad-favicon { display: block; }
+.is-rail-compact .ad-rail__brand { justify-content: center; padding-inline: 0; }
+.is-rail-compact .ad-collapse { margin-inline-start: 0; }
+.is-rail-compact .ad-hub, .is-rail-compact .ad-cmdk { grid-template-columns: 18px; justify-content: center; padding-inline: 0; }
+
+/* ── utility bar ──────────────────────────────────────────────────────────── */
+/* No global search and no date/region scope: an admin surface configures the
+   platform, and those controls were permanently inert here. */
+.ad-util {
+  position: sticky; inset-block-start: 0; z-index: 30;
+  display: flex; align-items: center; gap: 6px;
+  min-block-size: 48px;
+  padding: 6px clamp(12px, 1.6vw, 20px);
+  background: color-mix(in srgb, var(--surface-primary) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-block-end: 1px solid var(--border-subtle);
+}
+.ad-menu { display: none; }
+.ad-util__here {
+  display: flex; align-items: baseline; gap: 7px;
+  font: 600 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ad-util__here [lang="ar"] { font-family: var(--font-body); font-size: 12.5px; letter-spacing: 0; text-transform: none; }
+.ad-util__spacer { flex: 1; }
+.ad-iconbtn {
+  min-inline-size: 44px; min-block-size: 44px;
+  display: grid; place-items: center;
+  inline-size: 34px; block-size: 34px;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: none; color: var(--text-secondary);
+  font: 600 13px/1 var(--font-body); cursor: pointer;
+  position: relative;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+.ad-iconbtn:hover { background: var(--surface-secondary); color: var(--text-primary); border-color: var(--border-subtle); }
+.ad-iconbtn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.ad-badge {
+  position: absolute; inset-block-start: 3px; inset-inline-end: 3px;
+  min-inline-size: 15px; padding: 0 3px;
+  border-radius: var(--radius-full);
+  background: var(--status-critical); color: var(--text-inverse);
+  font: 700 9px/15px var(--font-mono); text-align: center;
+}
+.ad-account { position: relative; flex: 0 1 auto; min-inline-size: 0; }
+.ad-account > summary {
+  display: flex; align-items: center; gap: 8px;
+  min-block-size: 44px; padding: 2px 8px;
+  border-radius: var(--radius-full);
+  cursor: pointer; list-style: none; min-inline-size: 0;
+}
+.ad-account > summary::-webkit-details-marker { display: none; }
+.ad-account > summary:hover { background: var(--surface-secondary); }
+.ad-account > summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.ad-avatar {
+  display: grid; place-items: center; flex: none;
+  inline-size: 26px; block-size: 26px; border-radius: var(--radius-full);
+  background: var(--action-primary); color: var(--text-inverse);
+  font: 700 10.5px/1 var(--font-mono);
+}
+.ad-who { display: flex; flex-direction: column; min-inline-size: 0; }
+.ad-who strong { font: 600 13.5px/1.3 var(--font-body); color: var(--text-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-who small { font: 500 11.5px/1.3 var(--font-mono); color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-pop {
+  position: absolute; inset-block-start: calc(100% + 6px); inset-inline-end: 0; z-index: 40;
+  display: flex; flex-direction: column; gap: 6px;
+  inline-size: max(216px, 100%); padding: 12px;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+  background: var(--surface-raised); box-shadow: var(--shadow-md);
+}
+.ad-pop a { padding: 5px 0; font-size: 13px; }
+.ad-signout { color: var(--status-critical-text); }
+
+/* ── one compact command header ───────────────────────────────────────────── */
+.ad-head {
+  display: flex; align-items: center; gap: clamp(10px, 1.4vw, 18px);
+  flex-wrap: wrap;
+  padding: 14px clamp(12px, 1.6vw, 20px) 12px;
+  border-block-end: 1px solid var(--border-subtle);
+  background: var(--surface-canvas);
+}
+.ad-head__id { min-inline-size: 0; flex: 1 1 260px; }
+.ad-head__title {
+  display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap;
+  margin: 0;
+  font: 700 19px/1.25 var(--font-body); letter-spacing: -.01em;
+  color: var(--text-primary);
+}
+.ad-head__title-ar { font: 600 15px/1.3 var(--font-body); color: var(--text-secondary); }
+.ad-head__sub {
+  margin: 3px 0 0;
+  font: 400 12.5px/1.5 var(--font-body); color: var(--text-secondary);
+  max-inline-size: 92ch; text-wrap: pretty;
+}
+.ad-head__ctx { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ad-head__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-inline-start: auto; }
+
+/* ── page body rhythm ─────────────────────────────────────────────────────── */
+.ad-body {
+  inline-size: 100%;
+  max-inline-size: 1120px;
+  padding: 18px clamp(12px, 1.6vw, 20px) 72px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.ad-section { display: flex; flex-direction: column; gap: 10px; }
+.ad-section > h2 {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 0;
+  font: 600 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ad-section > h2 [lang="ar"] { font-family: var(--font-body); font-size: 12.5px; letter-spacing: 0; text-transform: none; }
+.ad-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+/* ── shared states: empty / error / unauthorized ──────────────────────────── */
+.ad-state {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  padding: 20px 22px;
+  border: 1px dashed var(--border-strong); border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-secondary) 60%, transparent);
+}
+.ad-state__icon { display: grid; place-items: center; inline-size: 30px; block-size: 30px; border-radius: var(--radius-sm); background: var(--surface-sunken); color: var(--text-secondary); }
+.ad-state__title { margin: 0; font: 600 14px/1.4 var(--font-body); color: var(--text-primary); }
+.ad-state__body { margin: 0; font: 400 12.5px/1.55 var(--font-body); color: var(--text-secondary); max-inline-size: 68ch; }
+.ad-state--error { border-style: solid; border-color: color-mix(in srgb, var(--status-critical-text) 38%, transparent); background: color-mix(in srgb, var(--status-critical-text) 8%, transparent); }
+.ad-state--error .ad-state__icon { background: color-mix(in srgb, var(--status-critical-text) 16%, transparent); color: var(--status-critical-text); }
+.ad-state--denied { border-style: solid; border-color: color-mix(in srgb, var(--status-warning-text) 40%, transparent); background: color-mix(in srgb, var(--status-warning-text) 8%, transparent); }
+.ad-state--denied .ad-state__icon { background: color-mix(in srgb, var(--status-warning-text) 16%, transparent); color: var(--status-warning-text); }
+
+/* ── responsive: drawer at iPad and below, matching login.css's own rule ──── */
+.ad-scrim { display: none; }
+@media (max-width: 1024px), (pointer: coarse) {
+  .ad-shell { grid-template-columns: minmax(0, 1fr); }
+  .ad-menu { display: grid; place-items: center; inline-size: 34px; block-size: 34px;
+    border: 1px solid transparent; border-radius: var(--radius-sm);
+    background: none; color: var(--text-secondary); cursor: pointer; }
+  .ad-menu:hover { background: var(--surface-secondary); color: var(--text-primary); }
+  .ad-menu:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+  /* Kept in the DOM so the hamburger's aria-controls always resolves. */
+  .ad-rail {
+    position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 70;
+    /* The rail is a grid item; align-self:start still applies once it is
+       out of flow, which would collapse the drawer to its content height. */
+    align-self: stretch; block-size: 100dvh;
+    inline-size: min(300px, 88vw); max-block-size: none;
+    overflow-y: auto;                        /* a drawer may scroll; the page does not */
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-102%);
+    transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+    visibility: hidden;
+  }
+  [dir="rtl"] .ad-rail { transform: translateX(102%); }
+  .ad-shell.is-drawer-open .ad-rail { transform: none; visibility: visible; }
+  .ad-shell.is-drawer-open .ad-scrim {
+    display: block; position: fixed; inset: 0; z-index: 60;
+    border: 0; background: var(--surface-overlay);
+  }
+  .ad-shell.is-rail-compact { --ad-rail-w: auto; }
+  .is-rail-compact .ad-wordmark, .is-rail-compact .ad-rail__scope,
+  .is-rail-compact .ad-item__label, .is-rail-compact .ad-count,
+  .is-rail-compact .ad-rail__foot { display: revert; }
+  .is-rail-compact .ad-favicon { display: none; }
+  .is-rail-compact .ad-item, .is-rail-compact .ad-adv > summary { grid-template-columns: 18px minmax(0,1fr) auto; padding-inline: 8px; }
+}
+@media (max-width: 700px) {
+  .ad-who { display: none; }
+  .ad-head { padding-block: 12px 10px; }
+  .ad-head__actions { margin-inline-start: 0; inline-size: 100%; }
+}
+@media (max-width: 430px) {
+  .ad-util__here [lang="ar"] { display: none; }
+  .ad-head__title { font-size: 17px; }
+  .ad-head__title-ar { font-size: 13.5px; }
+  .ad-body { padding-block-end: 56px; gap: 14px; }
+  .ad-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 340px) {
+  .ad-util { gap: 2px; padding-inline: 8px; }
+  .ad-util__here { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ad-rail { transition: none; }
+}
+
+
+/* ── contextual child navigation ──────────────────────────────────────────────
+   The open hub's authorized children appear HERE, under the command header, and
+   nowhere else. They never take a permanent seat in the rail. */
+.ad-subnav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 8px clamp(12px, 1.6vw, 20px);
+  border-block-end: 1px solid var(--border-subtle);
+  background: var(--surface-canvas); }
+.ad-subnav__up { display: inline-flex; align-items: center; gap: 5px;
+  font: 600 11.5px/1.5 var(--font-body); color: var(--text-secondary); }
+.ad-subnav__up:hover { color: var(--text-primary); text-decoration: none; }
+.ad-subnav__up svg { flex: none; }
+[dir="rtl"] .ad-subnav__up svg { transform: scaleX(-1); }
+.ad-subnav__rule { inline-size: 1px; block-size: 15px; background: var(--border-subtle); }
+.ad-subnav__list { display: flex; align-items: center; gap: 2px; flex-wrap: wrap;
+  margin: 0; padding: 0; list-style: none; min-inline-size: 0; }
+.ad-subnav__item { display: inline-flex; align-items: center;
+  padding: 5px 10px; border-radius: var(--radius-sm);
+  font: 500 12.5px/1.4 var(--font-body); color: var(--text-secondary); }
+.ad-subnav__item:hover { background: var(--surface-secondary); color: var(--text-primary); text-decoration: none; }
+.ad-subnav__item:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.ad-subnav__item.is-active { background: var(--accent-soft); color: var(--accent-text); font-weight: 600; }
+
+/* ── command palette: authorized destinations only ────────────────────────── */
+.ad-pal { position: fixed; inset: 0; z-index: 90; display: grid;
+  place-items: start center; padding-block-start: 12vh; }
+.ad-pal[hidden] { display: none; }
+.ad-pal__scrim { position: absolute; inset: 0; border: 0; background: var(--surface-overlay); }
+.ad-pal__box { position: relative; z-index: 1; inline-size: min(560px, 92vw);
+  display: flex; flex-direction: column;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+  background: var(--surface-raised); box-shadow: var(--shadow-lg); overflow: hidden; }
+.ad-pal__input { inline-size: 100%; min-block-size: 46px; padding: 0 16px;
+  border: 0; border-block-end: 1px solid var(--border-subtle);
+  background: none; color: var(--text-primary); font: 400 15px/1.4 var(--font-body); }
+.ad-pal__input:focus-visible { outline: none; box-shadow: inset 0 -2px 0 var(--action-primary); }
+.ad-pal__list { margin: 0; padding: 6px; list-style: none; max-block-size: 46vh; overflow-y: auto; }
+.ad-pal__list a { display: flex; align-items: baseline; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-sm); color: var(--text-primary); }
+.ad-pal__list a:hover, .ad-pal__list li.is-cursor > a { background: var(--surface-secondary); text-decoration: none; }
+.ad-pal__list a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.ad-pal__name { flex: 1; font: 500 13.5px/1.4 var(--font-body); }
+.ad-pal__hub { font: 500 10.5px/1.5 var(--font-mono); color: var(--text-muted); }
+.ad-pal__empty { margin: 0; padding: 16px; font: 400 13px/1.5 var(--font-body); color: var(--text-secondary); }
+.ad-pal__empty[hidden] { display: none; }
+
+/* ── /admin task dashboard ────────────────────────────────────────────────── */
+.ad-dash { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; }
+@media (max-width: 1024px) { .ad-dash { grid-template-columns: minmax(0, 1fr); } }
+.ad-hubgrid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+/* compact summaries — a hub card is three lines, never a tall catalogue tile */
+.ad-hubcard { display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+  background: var(--surface-primary); color: var(--text-primary);
+  transition: border-color var(--transition-fast), background var(--transition-fast); }
+.ad-hubcard:hover { border-color: var(--border-strong); background: var(--surface-secondary); text-decoration: none; }
+.ad-hubcard:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+.ad-hubcard__top { display: flex; align-items: center; gap: 8px; }
+.ad-hubcard__icon { display: grid; place-items: center; inline-size: 22px; block-size: 22px;
+  border-radius: var(--radius-xs); background: var(--surface-sunken); color: var(--text-secondary); flex: none; }
+.ad-hubcard__name { font: 600 13px/1.35 var(--font-body); }
+.ad-hubcard__blurb { font: 400 12.5px/1.5 var(--font-body); color: var(--text-secondary); }
+.ad-hubcard__lead { font: 500 12px/1.55 var(--font-mono); color: var(--text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-list { display: flex; flex-direction: column; gap: 1px; }
+.ad-list a { display: flex; align-items: baseline; gap: 8px; padding: 7px 9px;
+  border-radius: var(--radius-sm); color: var(--text-primary); font: 500 12.5px/1.4 var(--font-body); }
+.ad-list a:hover { background: var(--surface-secondary); text-decoration: none; }
+.ad-list a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -1px; }
+.ad-list .ad-list__hub { margin-inline-start: auto; font: 500 10px/1.5 var(--font-mono); color: var(--text-muted); }
+.ad-allgroup { display: flex; flex-direction: column; gap: 6px; padding-block: 10px; }
+.ad-allgroup > h3 { margin: 0; font: 600 10.5px/1.4 var(--font-mono);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary); }
+.ad-allgroup + .ad-allgroup { border-block-start: 1px solid var(--border-subtle); }
+
+@media (max-width: 1024px), (pointer: coarse) {
+  /* hub-first drawer: the drawer shows hubs, and a Back control returns to them */
+  .ad-subnav { gap: 8px; }
+}
+@media (max-width: 430px) {
+  .ad-subnav__list { inline-size: 100%; }
+  .ad-hubgrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 44px minimum touch target for the chrome's own controls (acceptance row:
+   "44px touch targets"). Page-level controls set this in their own CSS. */
+.ad-head__actions .btn, .ad-subnav__item, .ad-subnav__up, .ad-menu, .ad-viewall {
+  min-block-size: 44px; display: inline-flex; align-items: center;
+}
+.ad-head__actions .btn { padding-block: 0; }
+
+/* Type scale — the chrome was authored at wireframe sizes and read small in the
+   real shell; one step up across labels, headings and dense mono text. */
+.ad-head__title { font-size: 22px; }
+.ad-head__title-ar { font-size: 17px; }
+.ad-head__sub { font-size: 13.5px; }
+.ad-subnav__item, .ad-subnav__up { font-size: 13.5px; }
+.ad-pal__name { font-size: 14.5px; }
+.ad-pal__hub { font-size: 12px; }
+.ad-allgroup h3 { font-size: 13px; }
+.ad-list a { font-size: 13.5px; }
+.ad-viewall { font-size: 13.5px; }

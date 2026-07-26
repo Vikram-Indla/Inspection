@@ -8,234 +8,842 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="saqeel/styles.css">
+<link rel="stylesheet" href="saqeel/styles.css?v=r7">
+<link rel="stylesheet" href="saqeel/admin-shell.css?v=r7">
+<script src="admin-shell.js?v=r7"></script>
 <style>
   html, body { height: 100%; margin: 0; }
-  .rk-track { position: relative; height: 6px; border-radius: 3px; background: var(--surface-sunken); overflow: hidden; }
-  .rk-track > i { position: absolute; inset-block: 0; inset-inline-start: 0; background: var(--action-primary); border-radius: 3px; }
+
+  .rk-cols { display:grid; grid-template-columns:minmax(0,1fr) 350px; gap:16px; align-items:start; }
+  @media (max-width:1040px){ .rk-cols { grid-template-columns:minmax(0,1fr); } }
+  .rk-panel { padding:16px 18px; }
+  .rk-panel > h2 { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 4px;
+    font:600 15.5px/1.35 var(--font-body); color:var(--text-primary); }
+  .rk-panel > h2 [lang] { font-size:14px; color:var(--text-secondary); font-weight:500; }
+  .rk-note { margin:0 0 12px; font:400 13px/1.6 var(--font-body); color:var(--text-secondary); text-wrap:pretty; }
+  .rk-src { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font:500 11.5px/1.5 var(--font-mono); color:var(--text-muted); }
+  .rk-src b { font-weight:700; color:var(--text-secondary); }
+  .rk-src code { font:inherit; padding:0 4px; border-radius:3px; background:var(--surface-sunken); color:var(--text-secondary); }
+  .rk-seg { display:flex; flex-wrap:wrap; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); overflow:hidden; margin-block-end:14px; }
+  .rk-seg a { flex:1 1 150px; min-block-size:44px; display:flex; align-items:center; justify-content:center; padding:0 12px;
+    font:500 13.5px/1.4 var(--font-body); color:var(--text-secondary); text-align:center; }
+  .rk-seg a + a { border-inline-start:1px solid var(--border-subtle); }
+  .rk-seg a.is-on { background:var(--surface-sunken); color:var(--text-primary); font-weight:600; }
+  .rk-scroll { overflow-x:auto; }
+  .rk-tbl { inline-size:100%; border-collapse:collapse; font:400 13px/1.55 var(--font-body); }
+  .rk-tbl th { text-align:start; font:600 12px/1.5 var(--font-body); color:var(--text-secondary);
+    padding:7px 8px; border-block-end:1px solid var(--border-strong); white-space:nowrap; }
+  .rk-tbl td { padding:8px; border-block-end:1px solid var(--border-subtle); color:var(--text-secondary); vertical-align:top; }
+  .rk-tbl td.is-empty { color:var(--text-muted); text-align:center; padding:16px 8px; }
+  .rk-tbl tr[tabindex]:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
+  @media (max-width:640px){
+    .rk-tbl, .rk-tbl tbody, .rk-tbl tr, .rk-tbl td { display:block; inline-size:100%; }
+    .rk-tbl thead { position:absolute; inline-size:1px; block-size:1px; overflow:hidden; clip:rect(0 0 0 0); }
+    .rk-tbl tr { border:1px solid var(--border-subtle); border-radius:var(--radius-md); margin-block-end:10px; padding:6px; }
+    .rk-tbl td { border-block-end:0; }
+  }
+  .rk-kv { display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font:400 13px/1.55 var(--font-body); margin:0; }
+  .rk-kv dt { color:var(--text-muted); }
+  .rk-kv dd { margin:0; color:var(--text-primary); }
+  .rk-mono { font:500 12px/1.55 var(--font-mono); color:var(--text-secondary); }
+  .rk-tag { font:600 11.5px/1.7 var(--font-mono); padding:1px 7px; border-radius:var(--radius-full);
+    border:1px solid var(--border-subtle); background:var(--surface-sunken); color:var(--text-secondary); white-space:nowrap; }
+  .rk-tag--off { border-style:dashed; }
+  .rk-legend { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+  .rk-legend li { display:grid; grid-template-columns:auto 1fr; gap:9px; align-items:start; font:400 13px/1.55 var(--font-body); color:var(--text-secondary); }
+  .rk-warn { display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius:var(--radius-md);
+    border:1px solid var(--border-strong); background:var(--surface-secondary); color:var(--text-primary);
+    font:400 13px/1.6 var(--font-body); margin-block-end:12px; }
+  .rk-warn b { display:block; font:600 13.5px/1.4 var(--font-body); }
+  .rk-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .rk-btns .btn { min-block-size:44px; }
+  .rk-field { display:flex; flex-direction:column; gap:5px; min-inline-size:0; }
+  .rk-field > label, .rk-lbl { font:500 13.5px/1.4 var(--font-body); color:var(--text-secondary); }
+  .rk-row2 { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  @media (max-width:520px){ .rk-row2 { grid-template-columns:1fr; } }
+  .rk-set { display:flex; flex-direction:column; gap:13px; }
+  .rk-skel { display:block; block-size:34px; border-radius:var(--radius-sm);
+    background:linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-secondary) 50%, var(--surface-sunken) 75%);
+    background-size:220% 100%; animation:rk-shimmer 1.4s linear infinite; }
+  @keyframes rk-shimmer { to { background-position:-120% 0; } }
+  @media (prefers-reduced-motion: reduce){ .rk-skel { animation-duration:6s; } }
+  textarea.rk-json { inline-size:100%; min-block-size:150px; resize:vertical; box-sizing:border-box;
+    font:500 13px/1.65 var(--font-mono); direction:ltr; text-align:start; color:var(--text-primary);
+    background:var(--surface-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px; }
 </style>
 </helmet>
-<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+<div class="ad-shell" data-theme="{{ theme }}">
 
-  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
-    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
-      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
-      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
-      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-    </div>
-    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
-        <a class="nav-item" href="../SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
-        <a class="nav-item" href="../SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
-      </details>
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
-        <div role="group" aria-labelledby="r5-p-inspection">
-          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
-          <a class="nav-item r5-child" href="SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
-        </div>
-      </details>
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
-        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
-        <a class="nav-item" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
-      </details>
-    </div>
-    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
-      <details class="r5-group r5-group--admin">
-        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
-        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
-        <a class="nav-item" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
-        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
-        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
-        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
-        <a class="nav-item is-active" href="SAQEEL%20Risk.dc.html" data-route="/admin/risk" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
-        <a class="nav-item" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
-        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
-        <a class="nav-item" href="SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
-        <div role="group" aria-labelledby="r5-p-advanced-administration">
-          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
-          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
-          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
-          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
-          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Control%20Panel.dc.html" data-route="/admin"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
-          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
-        </div>
-      </details>
-    </div>
-  </aside>
+  <aside class="ad-rail" id="saqeel-primary-nav" aria-label="Control Panel navigation" data-held-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops">
+  <div class="ad-rail__brand">
+    <img class="ad-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL" width="260" height="40">
+    <img class="ad-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="28" height="28">
+    <button class="ad-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></button>
+  </div>
+  <button class="ad-cmdk" type="button" aria-keyshortcuts="Meta+K Control+K" data-ar="ابحث في الأدوات"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="ad-cmdk__label">Find a tool</span><kbd>⌘K</kbd></button>
+  <nav class="ad-rail__body">
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-cp" data-hub="cp" data-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hub__label">Control Panel</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-people" data-hub="people" data-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hub__label">People & Access</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-rules" data-hub="rules" data-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin workflow_admin security_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hub__label">Rules & Content</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-hub="planning" data-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hub__label">Planning & Execution</span></a>
+    <a class="ad-hub is-active" href="SAQEEL%20Control%20Panel.dc.html#hub-risk" data-hub="risk" data-ar="المخاطر والذكاء" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin" aria-current="true"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hub__label">Risk & Intelligence</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-connections" data-hub="connections" data-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hub__label">Connections & Geography</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-hub="governance" data-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><span class="ad-hub__label">Governance & Operations</span></a>
+  </nav>
+  <div class="ad-rail__foot">
+    <a class="ad-viewall" href="SAQEEL%20Control%20Panel.dc.html#all-tools" data-ar="عرض كل الأدوات المصرّح بها">View all authorized tools</a>
+  </div>
+</aside>
 
-  <main id="main-content" tabindex="-1" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
-    <a class="r5-skip" href="#page-body">Skip to content</a>
-    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
-    <div class="r5-topbar">
-      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      <details class="r5-search">
-        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
-        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
-      </details>
-      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
-      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
-      <span class="r5-spacer"></span>
-      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
-      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
-      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
-      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
-    </div>
-    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle);">
-      <div style="display:flex; align-items:center; gap:12px; padding:12px 24px;">
-        <div class="breadcrumb"><a href="#">Administration</a><span class="sep">/</span><span>Risk Engine</span></div>
-        <span class="grow"></span>
-        <span class="avatar" style="background:var(--action-primary); color:#fff;">RA</span>
-      </div>
-      <div style="display:flex; align-items:flex-end; gap:14px; padding:0 24px 14px; flex-wrap:wrap;">
-        <div><h1 style="font-family:var(--font-body); font-size:24px; font-weight:700; letter-spacing:-0.02em; margin:0;">Risk Engine</h1><div class="t-caption" style="margin-block-start:4px;">Two distinct products — live configuration and the governed draft layer</div></div>
-        <span class="badge badge-info">{{ ctxBadge }}</span>
-        <span class="grow"></span>
-        <div class="seg"><button class="seg-opt" aria-pressed="{{ isStudio }}" onClick="{{ pickStudio }}">Risk Studio · live</button><button class="seg-opt" aria-pressed="{{ isWorkbench }}" onClick="{{ pickWorkbench }}">Model workbench · governed</button></div>
-      </div>
-    </header>
+  <main id="main-content" tabindex="-1" class="ad-main">
+    <a class="btn btn-secondary sr-only sr-only-focusable" href="#page-body">Skip to content</a>
+    <div class="ad-util">
+  <button class="ad-menu" type="button" aria-label="Open navigation" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <span class="ad-util__here" data-ar="الإدارة">Administration</span>
+  <span class="ad-util__spacer"></span>
+  <button class="ad-iconbtn ad-locale" type="button" aria-label="Switch to Arabic" lang="ar">ع</button>
+  <button class="ad-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.5 1.5M17.3 17.3l1.5 1.5M18.8 5.2l-1.5 1.5M6.7 17.3l-1.5 1.5"/></svg></button>
+  <button class="ad-iconbtn" type="button" aria-label="{{ t.notifLabel }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
+  <details class="ad-account"><summary aria-label="Account"><span class="ad-avatar" aria-hidden="true">—</span><span class="ad-who"><strong>—</strong><small data-ar="غير مُهيّأ">Not configured</small></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="ad-pop"><strong data-ar="غير مُهيّأ">Not configured</strong><span class="t-caption" data-ar="الأدوار المصرّح بها: غير مُهيّأ">Authorized roles: Not configured</span><a href="#profile">Profile &amp; settings</a><a class="ad-signout" href="#signout">Sign out</a></div></details>
+</div>
+    <header class="ad-head">
+  <div class="ad-head__id">
+    <h1 class="ad-head__title">Risk Settings<span class="ad-head__title-ar" lang="ar" dir="rtl">إعدادات المخاطر</span></h1>
+    <p class="ad-head__sub">{{ t.sub }}</p>
+  </div>
+  <div class="ad-head__ctx"><span class="badge badge-neutral">{{ modeLabel }}</span></div>
+  <div class="ad-head__actions"><a class="btn btn-secondary" href="#audit">{{ t.openAudit }}</a><button class="btn btn-secondary" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.runImpact }}</button><button class="btn btn-primary" aria-disabled="{{ approveDisabled }}" style="{{ approveStyle }}">{{ t.approvePublish }}</button></div>
+</header>
+    <nav class="ad-subnav" aria-label="Risk &amp; Intelligence">
+  <a class="ad-subnav__up" href="SAQEEL%20Control%20Panel.dc.html#hub-risk" data-ar="المخاطر والذكاء"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg><span>Risk &amp; Intelligence</span></a>
+  <span class="ad-subnav__rule" aria-hidden="true"></span>
+  <ul class="ad-subnav__list">
+    <li><a class="ad-subnav__item is-active" href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" aria-current="page" data-roles="risk_owner">Risk Settings</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20Dashboard%20Config.dc.html" data-ar="تهيئة لوحة القيادة" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Dashboard Configuration</a></li>
+    <li><a class="ad-subnav__item" href="SAQEEL%20KPI%20Management.dc.html" data-ar="إدارة المؤشرات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">KPI Management</a></li>
+  </ul>
+</nav>
 
     <a id="page-body" tabindex="-1"></a>
-    <div style="max-width:1000px; width:100%; padding:20px 24px 80px; display:flex; flex-direction:column; gap:16px;">
+    <div class="ad-body" style="max-inline-size:none;">
+      <div dir="{{ dir }}" lang="{{ lang }}">
+      <p class="sr-only" role="status" aria-live="polite">{{ liveStatus }}</p>
 
-      <!-- ═══ RISK STUDIO (live engine_settings) ═══ -->
-      <sc-if value="{{ isStudio }}" hint-placeholder-val="{{ true }}">
-        <div class="panel" style="padding:16px 18px; border-inline-start:3px solid var(--action-primary);">
-          <div style="font-weight:600; font-size:13.5px;">This is the Risk Studio (MVP1 foundation scope).</div>
-          <p class="t-caption" style="margin:4px 0 0;">Weights and bands are <strong>live configuration</strong> in <span class="id-code">engine_settings</span> — scores must be reproducible from stored inputs + this version <span class="id-code">(EV-004)</span>. Writes require the <strong>risk_owner</strong> role; RLS rejects everyone else. Every save lands in the immutable audit trail. There is <strong>no draft or approval step</strong> on this screen — a successful save is effective immediately.</p>
+      <nav class="rk-seg" aria-label="{{ t.workspaceLbl }}">
+        <a class="{{ onModelsCls }}" href="SAQEEL%20Risk.dc.html?view=models" aria-current="{{ onModelsCur }}" onClick="{{ goModels }}">{{ t.tabModels }}</a>
+        <a class="{{ onBenchCls }}" href="SAQEEL%20Risk.dc.html?view=workbench" aria-current="{{ onBenchCur }}" onClick="{{ goBench }}">{{ t.tabWorkbench }}</a>
+        <a class="{{ onTestCls }}" href="SAQEEL%20Risk.dc.html?view=validation" aria-current="{{ onTestCur }}" onClick="{{ goTest }}">{{ t.tabValidation }}</a>
+        <a class="{{ onPubCls }}" href="SAQEEL%20Risk.dc.html?view=publish" aria-current="{{ onPubCur }}" onClick="{{ goPub }}">{{ t.tabPublish }}</a>
+      </nav>
+
+      <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+        <div class="panel rk-panel" role="status" aria-busy="true">
+          <h2>{{ t.loadingTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.loadingTitle }}</span></h2>
+          <p class="rk-note">{{ t.loadingBody }}</p>
+          <div class="stack" style="gap:8px;" aria-hidden="true"><span class="rk-skel"></span><span class="rk-skel"></span></div>
         </div>
+      </sc-if>
 
-        <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:16px; align-items:start;">
-          <div class="panel" style="padding:18px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-block-end:14px;"><h2 style="font-size:15px; font-weight:600; margin:0;">Factors &amp; weights <span class="t-caption" style="font-weight:400;">must sum to 1.00</span></h2><span class="badge badge-compliant" style="height:20px;">Σ = 1.00 ✓</span></div>
-            <div class="stack" style="gap:14px;">
-              <sc-for list="{{ factors }}" as="f" hint-placeholder-count="4">
-                <div style="display:grid; grid-template-columns:1fr 120px 64px; gap:12px; align-items:center;">
-                  <span style="font-size:13.5px;">{{ f.name }}</span>
-                  <div class="rk-track"><i style="width:{{ f.pct }};"></i></div>
-                  <input class="input" value="{{ f.weight }}" style="text-align:end; font-variant-numeric:tabular-nums;">
+      <sc-if value="{{ isUnauth }}" hint-placeholder-val="{{ false }}">
+        <div class="ad-state ad-state--denied" role="alert">
+          <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+          <h2 class="ad-state__title">{{ t.unauthTitle }}</h2>
+          <p class="ad-state__body">{{ t.unauthBody }}</p>
+          <dl class="rk-kv" style="margin-block-start:10px;"><dt>{{ t.serverReason }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd><dt>{{ t.authorizedFor }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd></dl>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+        <div class="ad-state ad-state--error" role="alert">
+          <span class="ad-state__icon"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>
+          <h2 class="ad-state__title">{{ t.errorTitle }}</h2>
+          <p class="ad-state__body">{{ t.errorBody }}</p>
+          <dl class="rk-kv" style="margin:10px 0 12px;"><dt>{{ t.serverReason }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd></dl>
+          <button class="btn btn-secondary btn-sm" type="button">{{ t.retry }}</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showWork }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <sc-if value="{{ isDegraded }}" hint-placeholder-val="{{ false }}">
+            <div class="rk-warn" role="status">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 16H3z"/><path d="M12 9v4M12 16h.01"/></svg></span>
+              <span><b>{{ t.degTitle }}</b>{{ t.degBody }} <bdi class="rk-mono">{{ t.degSources }} {{ slotNC }}</bdi></span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isReadOnly }}" hint-placeholder-val="{{ false }}">
+            <div class="rk-warn" role="status">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+              <span><b>{{ t.roTitle }}</b>{{ t.roBody }}</span>
+            </div>
+          </sc-if>
+          <div class="rk-warn" role="note">
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg></span>
+            <span><b>{{ t.healthTitle }}</b>{{ t.healthBody }}</span>
+          </div>
+
+        <sc-if value="{{ onModels }}" hint-placeholder-val="{{ true }}">
+          <div class="rk-cols">
+            <section class="panel rk-panel">
+              <h2>{{ t.modelsTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.modelsTitle }}</span></h2>
+              <p class="rk-note">{{ t.modelsNote }}</p>
+              <div class="rk-scroll">
+                <table class="rk-tbl">
+                  <thead><tr><th scope="col">{{ t.colModel }}</th><th scope="col">{{ t.colVersion }}</th><th scope="col">{{ t.colStatus }}</th><th scope="col">{{ t.colEffective }}</th><th scope="col">{{ t.colOwner }}</th></tr></thead>
+                  <tbody><tr tabindex="0"><td class="is-empty" colspan="5">{{ t.noModels }}</td></tr></tbody>
+                </table>
+              </div>
+              <p class="rk-note" style="margin:10px 0 0;">{{ t.rowKeyboard }}</p>
+              <p class="rk-note">{{ t.noModelTruth }}</p>
+              <div class="rk-btns" style="margin-block-start:12px;">
+                <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.newDraft }}</button>
+                <a class="btn btn-secondary btn-sm" href="#audit">{{ t.openAudit }}</a>
+              </div>
+              <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqModels }}</b><bdi><code>risk_models</code></bdi></span>
+            </section>
+
+            <aside class="stack" style="gap:16px;">
+              <section class="panel rk-panel">
+                <h2>{{ t.lifeTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.lifeTitle }}</span></h2>
+                <p class="rk-note">{{ t.lifeNote }}</p>
+                <ul class="rk-legend">
+                  <li><span class="rk-tag">{{ t.stDraft }}</span><span>{{ t.stDraftB }}</span></li>
+                  <li><span class="rk-tag">{{ t.stReview }}</span><span>{{ t.stReviewB }}</span></li>
+                  <li><span class="rk-tag">{{ t.stApproved }}</span><span>{{ t.stApprovedB }}</span></li>
+                  <li><span class="rk-tag">{{ t.stPublished }}</span><span>{{ t.stPublishedB }}</span></li>
+                  <li><span class="rk-tag rk-tag--off">{{ t.stRetired }}</span><span>{{ t.stRetiredB }}</span></li>
+                </ul>
+                <p class="rk-note" style="margin:12px 0 0;">{{ t.lifeTransitions }}</p>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqLifecycle }}</b><bdi><code>risk_model_transition</code></bdi></span>
+              </section>
+
+              <section class="panel rk-panel">
+                <h2>{{ t.provTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.provTitle }}</span></h2>
+                <p class="rk-note">{{ t.provNote }}</p>
+                <dl class="rk-kv">
+                  <dt>{{ t.pInputs }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.pLastRun }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.pFreshness }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                </dl>
+                <p class="rk-note" style="margin:12px 0 0;">{{ t.provTruth }}</p>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqInputs }}</b><bdi><code>factory_risk_snapshots</code></bdi></span>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onBench }}" hint-placeholder-val="{{ false }}">
+          <div class="rk-cols">
+            <div class="stack" style="gap:16px;">
+              <section class="panel rk-panel">
+                <h2>{{ t.factorsTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.factorsTitle }}</span></h2>
+                <p class="rk-note">{{ t.factorsNote }}</p>
+                <div class="rk-scroll">
+                  <table class="rk-tbl">
+                    <thead><tr><th scope="col">{{ t.colFactor }}</th><th scope="col">{{ t.colSourceField }}</th><th scope="col">{{ t.colTransform }}</th><th scope="col">{{ t.colWeight }}</th><th scope="col">{{ t.colMissing }}</th><th scope="col">{{ t.colActionCol }}</th></tr></thead>
+                    <tbody><tr tabindex="0"><td class="is-empty" colspan="6">{{ t.noFactors }}</td></tr></tbody>
+                  </table>
                 </div>
-              </sc-for>
-            </div>
-            <h3 style="font-size:12.5px; font-weight:600; margin:20px 0 10px; color:var(--text-secondary);">Bands (0–100)</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-              <label class="stack" style="gap:4px;"><span class="t-label">Low ends at</span><input class="input" value="39" style="text-align:end;"></label>
-              <label class="stack" style="gap:4px;"><span class="t-label">Medium ends at</span><input class="input" value="69" style="text-align:end;"></label>
-              <label class="stack" style="gap:4px;"><span class="t-label">High</span><input class="input" value="70–100" disabled></label>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; margin-block-start:18px; padding-block-start:16px; border-block-start:1px solid var(--border-subtle);">
-              <button class="btn btn-primary" aria-disabled="{{ saveBlocked }}" style="opacity:{{ saveOpacity }};">Save configuration</button>
-              <span class="t-caption" style="color:{{ ownerHintColor }};">{{ ownerHint }}</span>
-            </div>
-            <p class="t-caption" style="margin:10px 0 0;">Saving writes factors and bands to <span class="id-code">engine_settings</span> after the weights-sum check, effective immediately for new score calculations. Last updated <span class="id-code">2026-07-19 08:41</span>{{ ctxVersion }}.</p>
-          </div>
+                <dl class="rk-kv" style="margin-block-start:12px;">
+                  <dt>{{ t.weightSum }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                  <dt>{{ t.weightRule }}</dt><dd><bdi class="rk-mono">0 ≤ w ≤ 1 · Σw = 1.00 ± 0.001</bdi></dd>
+                </dl>
+                <div class="rk-btns" style="margin-block-start:12px;">
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.addFactor }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ rowDisabled }}" style="{{ rowStyle }}">{{ t.editFactor }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ rowDisabled }}" style="{{ rowStyle }}">{{ t.removeFactor }}</button>
+                </div>
+                <p class="rk-note" style="margin:10px 0 0;">{{ t.factorTruth }}</p>
+                <p class="rk-note">{{ t.missingRuleNote }}</p>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqFactors }}</b><bdi><code>risk_models.payload.factors</code></bdi></span>
+              </section>
 
-          <div class="stack" style="gap:16px;">
-            <div class="panel" style="padding:18px;">
-              <h2 style="font-size:14px; font-weight:600; margin:0 0 8px;">Reproducibility (EV-004)</h2>
-              <p class="t-caption" style="margin:0;">Any score = <span class="id-code">f(stored inputs, {{ ctxVersion }})</span>. Publishing a new version never retroactively recomputes historical scores; recalculation is a separate governed action. <strong>Health Score ≠ Risk Score</strong> — distinct governed concepts.</p>
+              <section class="panel rk-panel">
+                <h2>{{ t.bandsTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.bandsTitle }}</span></h2>
+                <p class="rk-note">{{ t.bandsNote }}</p>
+                <div class="rk-set">
+                  <div class="rk-row2">
+                    <div class="rk-field"><label for="rk-low">{{ t.lowMax }}</label><input class="input" id="rk-low" type="number" inputMode="numeric" dir="ltr" placeholder="{{ slotNC }}" style="text-align:end;" disabled="{{ selDisabled }}"></div>
+                    <div class="rk-field"><label for="rk-med">{{ t.medMax }}</label><input class="input" id="rk-med" type="number" inputMode="numeric" dir="ltr" placeholder="{{ slotNC }}" style="text-align:end;" disabled="{{ selDisabled }}"></div>
+                  </div>
+                  <div class="rk-scroll">
+                    <table class="rk-tbl">
+                      <thead><tr><th scope="col">{{ t.colBand }}</th><th scope="col">{{ t.colRange }}</th></tr></thead>
+                      <tbody>
+                        <tr><td>{{ t.bLow }}</td><td><bdi class="rk-mono">{{ slotNC }}</bdi></td></tr>
+                        <tr><td>{{ t.bMedium }}</td><td><bdi class="rk-mono">{{ slotNC }}</bdi></td></tr>
+                        <tr><td>{{ t.bHigh }}</td><td><bdi class="rk-mono">{{ slotNC }}</bdi></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <dl class="rk-kv">
+                    <dt>{{ t.bandRule }}</dt><dd><bdi class="rk-mono">0 ≤ low &lt; medium ≤ 99 · high → 100</bdi></dd>
+                    <dt>{{ t.bandCheck }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                  </dl>
+                  <p class="rk-note">{{ t.bandsTruth }}</p>
+                </div>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqBands }}</b><bdi><code>risk_models.payload.bands</code></bdi></span>
+              </section>
             </div>
-            <div class="panel" style="padding:18px; background:var(--surface-sunken); border-style:dashed;">
-              <div class="badge badge-pending" style="margin-block-end:8px;"><span class="dot"></span>Not available yet</div>
-              <h2 style="font-size:14px; font-weight:600; margin:0 0 6px;">Why this factory? — worked calculation trace</h2>
-              <p class="t-caption" style="margin:0 0 8px;">A line-by-line score trace isn’t shown here — this screen configures the model, not individual factories.</p>
-              <p class="id-code" style="font-size:10.5px; color:var(--text-muted);">seam: NEEDS_FACTORY_SCORING_INPUTS — per-factory trace</p>
-            </div>
+
+            <aside class="stack" style="gap:16px;">
+              <section class="panel rk-panel">
+                <h2>{{ t.formulaTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.formulaTitle }}</span></h2>
+                <p class="rk-note">{{ t.formulaNote }}</p>
+                <p class="rk-mono" dir="ltr" style="padding:10px; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); background:var(--surface-canvas);">score = round(Σ clamp(input, 0, 1) × weight × 100)</p>
+                <p class="rk-note" style="margin:12px 0 0;">{{ t.formulaTruth }}</p>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqFormula }}</b><bdi><code>computeRiskScore()</code><code>bandFor()</code></bdi></span>
+              </section>
+
+              <section class="panel rk-panel">
+                <h2>{{ t.draftTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.draftTitle }}</span></h2>
+                <dl class="rk-kv">
+                  <dt>{{ t.dStatus }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.dValidation }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                  <dt>{{ t.dReason }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                </dl>
+                <div class="rk-field" style="margin-block-start:12px;"><label for="rk-reason">{{ t.changeReason }}</label><textarea class="input" id="rk-reason" rows="2" placeholder="{{ slotNC }}" disabled="{{ selDisabled }}"></textarea></div>
+                <div class="rk-btns" style="margin-block-start:12px;">
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.saveDraft }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.sendReview }}</button>
+                </div>
+                <p class="rk-note" style="margin:10px 0 0;">{{ t.draftTruth }}</p>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqDraft }}</b><bdi><code>risk_models.status</code></bdi></span>
+              </section>
+            </aside>
           </div>
+        </sc-if>
+
+        <sc-if value="{{ onTest }}" hint-placeholder-val="{{ false }}">
+          <div class="rk-cols">
+            <section class="panel rk-panel">
+              <h2>{{ t.testTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.testTitle }}</span></h2>
+              <p class="rk-note">{{ t.testNote }}</p>
+              <div class="rk-set">
+                <div class="rk-row2">
+                  <div class="rk-field"><label for="rk-fixture">{{ t.fixtureLbl }}</label><select class="select" id="rk-fixture" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select><span class="rk-src"><b>{{ t.reqFixture }}</b><bdi><code>risk_model_fixtures</code></bdi></span></div>
+                  <div class="rk-field"><label for="rk-scenario">{{ t.scenarioLbl }}</label><select class="select" id="rk-scenario" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select></div>
+                </div>
+                <p class="rk-note">{{ t.fixtureTruth }}</p>
+                <div class="rk-btns"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.runTest }}</button></div>
+              </div>
+              <div class="rk-scroll" style="margin-block-start:14px;">
+                <table class="rk-tbl">
+                  <thead><tr><th scope="col">{{ t.colCase }}</th><th scope="col">{{ t.colInputs }}</th><th scope="col">{{ t.colScore }}</th><th scope="col">{{ t.colBand }}</th><th scope="col">{{ t.colExplain }}</th></tr></thead>
+                  <tbody><tr><td class="is-empty" colspan="5">{{ t.notRun }}</td></tr></tbody>
+                </table>
+              </div>
+              <dl class="rk-kv" style="margin-block-start:12px;">
+                <dt>{{ t.boundaryCases }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                <dt>{{ t.changedOutcomes }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                <dt>{{ t.resultId }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                <dt>{{ t.testErrors }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+              </dl>
+              <p class="rk-note" style="margin:12px 0 0;">{{ t.testTruth }}</p>
+              <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqTest }}</b><bdi><code>risk_model_test_runs</code></bdi></span>
+            </section>
+
+            <aside class="stack" style="gap:16px;">
+              <section class="panel rk-panel">
+                <h2>{{ t.diffTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.diffTitle }}</span></h2>
+                <p class="rk-note">{{ t.diffNote }}</p>
+                <div class="rk-scroll">
+                  <table class="rk-tbl">
+                    <thead><tr><th scope="col">{{ t.colChange }}</th><th scope="col">{{ t.colPublishedV }}</th><th scope="col">{{ t.colDraftV }}</th></tr></thead>
+                    <tbody><tr><td class="is-empty" colspan="3">{{ t.notRun }}</td></tr></tbody>
+                  </table>
+                </div>
+                <div class="rk-btns" style="margin-block-start:12px;"><button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.runDiff }}</button></div>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqDiff }}</b><bdi><code>risk_models.payload</code></bdi></span>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ onPub }}" hint-placeholder-val="{{ false }}">
+          <div class="rk-cols">
+            <section class="panel rk-panel">
+              <h2>{{ t.pubTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.pubTitle }}</span></h2>
+              <p class="rk-note">{{ t.pubNote }}</p>
+              <dl class="rk-kv">
+                <dt>{{ t.iFactories }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                <dt>{{ t.iBandMoves }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                <dt>{{ t.iVisits }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+                <dt>{{ t.iPlans }}</dt><dd><bdi class="rk-mono">{{ t.notRun }}</bdi></dd>
+              </dl>
+              <div class="rk-set" style="margin-block-start:14px;">
+                <div class="rk-row2">
+                  <div class="rk-field"><label for="rk-effective">{{ t.effectiveFrom }}</label><input class="input" id="rk-effective" type="date" dir="ltr" disabled="{{ selDisabled }}"></div>
+                  <div class="rk-field"><label for="rk-rollback">{{ t.rollbackTarget }}</label><select class="select" id="rk-rollback" disabled="{{ selDisabled }}"><option>{{ slotNR }}</option></select></div>
+                </div>
+                <dl class="rk-kv">
+                  <dt>{{ t.maker }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                  <dt>{{ t.checker }}</dt><dd><bdi class="rk-mono">{{ slotNC }}</bdi></dd>
+                </dl>
+                <div class="rk-btns">
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ actDisabled }}" style="{{ actStyle }}">{{ t.runImpact }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ approveDisabled }}" style="{{ approveStyle }}">{{ t.approvePublish }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ retireDisabled }}" style="{{ retireStyle }}">{{ t.rollback }}</button>
+                  <button class="btn btn-secondary btn-sm" type="button" aria-disabled="{{ retireDisabled }}" style="{{ retireStyle }}">{{ t.retire }}</button>
+                </div>
+                <p class="rk-note">{{ t.pubGate }}</p>
+                <p class="rk-note">{{ t.pubImmutable }}</p>
+              </div>
+              <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqPublish }}</b><bdi><code>risk_models.publish()</code><code>audit_events</code></bdi></span>
+            </section>
+
+            <aside class="stack" style="gap:16px;">
+              <section class="panel rk-panel">
+                <h2>{{ t.histTitle }}<span lang="{{ altLang }}" dir="{{ altDir }}">{{ alt.histTitle }}</span></h2>
+                <p class="rk-note">{{ t.histNote }}</p>
+                <div class="rk-scroll">
+                  <table class="rk-tbl">
+                    <thead><tr><th scope="col">{{ t.colWhen }}</th><th scope="col">{{ t.colVersion }}</th><th scope="col">{{ t.colEvent }}</th><th scope="col">{{ t.colActor }}</th></tr></thead>
+                    <tbody><tr><td class="is-empty" colspan="4">{{ t.noHistory }}</td></tr></tbody>
+                  </table>
+                </div>
+                <div class="rk-btns" style="margin-block-start:12px;"><a class="btn btn-secondary btn-sm" href="#audit">{{ t.openAudit }}</a></div>
+                <span class="rk-src" style="margin-block-start:10px;"><b>{{ t.reqHistory }}</b><bdi><code>audit_events</code></bdi></span>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
         </div>
       </sc-if>
-
-      <!-- ═══ MODEL WORKBENCH (governed draft layer, feature-flagged) ═══ -->
-      <sc-if value="{{ isWorkbench }}" hint-placeholder-val="{{ false }}">
-        <sc-if value="{{ workbenchOn }}" hint-placeholder-val="{{ true }}">
-          <div class="panel" style="padding:16px 18px; border-inline-start:3px solid var(--action-primary);">
-            <div style="font-weight:600; font-size:13.5px;">Governed draft layer.</div>
-            <p class="t-caption" style="margin:4px 0 0;">Drafts validate weights-sum and bands (parity with Risk Studio) and publish through <strong>maker-checker</strong>; published versions are <strong>immutable</strong>. No policy value is set here that the accepted structure does not require.</p>
-          </div>
-          <div class="panel" style="padding:18px;">
-            <h2 style="font-size:15px; font-weight:600; margin:0 0 12px;">Create draft version</h2>
-            <div style="display:grid; grid-template-columns:220px 1fr auto; gap:12px; align-items:end;">
-              <label class="stack" style="gap:4px;"><span class="t-label">New draft version label</span><input class="input" placeholder="risk v5"></label>
-              <label class="stack" style="gap:4px;"><span class="t-label">Model payload · factors[] weights sum to 1.00 · bands 0–100</span><input class="input" placeholder='{"factors":[…],"bands":{…}}' style="font-family:var(--font-mono); font-size:12px;"></label>
-              <button class="btn btn-primary">Create draft</button>
-            </div>
-          </div>
-          <div class="table-wrap"><table class="table"><thead><tr><th>Version</th><th>Status</th><th>Row version</th><th>Governed transition</th></tr></thead><tbody>
-            <sc-for list="{{ models }}" as="m" hint-placeholder-count="3">
-              <tr>
-                <td><span class="id-code">{{ m.label }}</span></td>
-                <td><span class="badge {{ m.badge }}">{{ m.status }}</span></td>
-                <td class="cell-num"><span class="id-code">rv{{ m.rowVersion }}</span></td>
-                <td>{{ m.transition }}</td>
-              </tr>
-            </sc-for>
-          </tbody></table></div>
-          <p class="t-caption" style="margin:0;">Maker ≠ checker: the drafter cannot approve their own version. Published versions never change; a correction is a new version.</p>
-        </sc-if>
-        <sc-if value="{{ workbenchOff }}" hint-placeholder-val="{{ false }}">
-          <div class="panel" style="padding:40px; text-align:center;">
-            <div class="badge badge-pending" style="margin-block-end:12px;"><span class="dot"></span>Not available yet</div>
-            <h2 style="font-size:16px; font-weight:600; margin:0 0 8px;">Risk model workbench</h2>
-            <p class="t-caption" style="max-width:52ch; margin:0 auto;">The governed risk-model draft layer is not enabled here; live risk config is still edited on the Risk Studio.</p>
-            <p class="id-code" style="font-size:11px; color:var(--text-muted); margin-block-start:12px;">seam: FEATURE_RISK_WORKBENCH=off</p>
-          </div>
-        </sc-if>
-      </sc-if>
+      </div>
     </div>
+  <div class="ad-pal" id="ad-palette" hidden="hidden">
+  <button class="ad-pal__scrim" type="button" aria-label="Close"></button>
+  <div class="ad-pal__box" role="dialog" aria-modal="true" aria-label="Find a tool">
+    <input class="ad-pal__input" type="text" role="combobox" aria-expanded="true" aria-controls="ad-pal-list" aria-autocomplete="list" placeholder="Find a tool…" data-ar-ph="ابحث عن أداة…">
+    <ul class="ad-pal__list" id="ad-pal-list" role="listbox">
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html" data-ar="الاعتماد والتهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Approval & Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html" data-ar="التهيئة الموسّعة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Extended Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Detail.dc.html" data-ar="تفاصيل التهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Configuration Detail</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Users</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Roles</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Role Overrides</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="#devices" data-ar="الأجهزة الموثوقة" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Trusted Devices</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="#security-access" data-ar="مراجعة الأمن والوصول" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Security & Access Review</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-pal__name">Delegation</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin"><span class="ad-pal__name">Inspection Forms</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin form_admin"><span class="ad-pal__name">Inspection Items</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin workflow_admin security_admin"><span class="ad-pal__name">Reference Lists</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin security_admin workflow_admin"><span class="ad-pal__name">Language & Translations</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="#planning-lookups" data-ar="قوائم التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Lookups</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="#planning-expiry" data-ar="قواعد انتهاء التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Expiry Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="#planning-status" data-ar="قواعد حالة التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Status Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Execution.dc.html" data-ar="إعدادات التنفيذ" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Execution Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-ar="إعدادات سير العمل" data-hub-ar="التخطيط والتنفيذ" data-roles="workflow_admin"><span class="ad-pal__name">Workflow Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" data-hub-ar="المخاطر والذكاء" data-roles="risk_owner"><span class="ad-pal__name">Risk Settings</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Dashboard%20Config.dc.html" data-ar="تهيئة لوحة القيادة" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Dashboard Configuration</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20KPI%20Management.dc.html" data-ar="إدارة المؤشرات" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">KPI Management</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations.dc.html" data-ar="اتصالات النظام" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Connections</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20SENAI%20Data.dc.html" data-ar="بيانات سناعي" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">SENAI Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations%20Data.dc.html" data-ar="بيانات التكامل" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">Integration Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Geofence.dc.html" data-ar="إعدادات الخرائط" data-hub-ar="الاتصالات والجغرافيا" data-roles="gis_admin"><span class="ad-pal__name">Map Settings</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="مزودو الزيارة الافتراضية" data-hub-ar="الاتصالات والجغرافيا" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Virtual Visit Providers</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="#audit" data-ar="سجل النشاط" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Activity Log</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="#notifications" data-ar="إعدادات الإشعارات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Notification Settings</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="#platform-operations" data-ar="عمليات النظام" data-hub-ar="الحوكمة والعمليات" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Operations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="توصيات الإنفاذ" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Enforcement Recommendations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="إصدار عدة مخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Issue Multiple Violations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Cases.dc.html" data-ar="قضايا المخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin"><span class="ad-pal__name">Violation Cases</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+    </ul>
+    <p class="ad-pal__empty" hidden="hidden">No authorized tool matches.</p>
+    <p class="ad-pal__live sr-only" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900},&quot;riskOwner&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Risk Engine&quot;},&quot;workbenchEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Risk Engine&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;models&quot;,&quot;workbench&quot;,&quot;validation&quot;,&quot;publish&quot;],&quot;default&quot;:&quot;models&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Route&quot;},&quot;dataState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;loading&quot;,&quot;empty&quot;,&quot;readonly&quot;,&quot;degraded&quot;,&quot;unauthorized&quot;,&quot;error&quot;],&quot;default&quot;:&quot;empty&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;locale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;en&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;themeMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Data state&quot;},&quot;isApprover&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Governance&quot;}}">
 class Component extends DCLogic {
-  state = { theme: "dark", view: "studio" };
+  // SAQEEL Risk — governed model workbench.
+  // Structure comes from the canonical model module: factors carry a key and a
+  // weight in [0,1] summing to 1.00 ± 0.001; bands are whole-number, contiguous
+  // and cover 0..100; score = round(Σ clamp(input,0,1) × weight × 100); the
+  // lifecycle is draft → review → approved → published → retired.
+  // NO VALUES ARE INVENTED HERE (policy boundary): no weight, band, threshold,
+  // score, fixture or impact figure is authored by this surface. Health is never
+  // used as a risk input.
+  state = { theme: "dark", lang: "en", view: "models", data: "empty" };
+
+  componentDidMount() {
+    const q = (typeof location !== "undefined" && location.search) || "";
+    const m = q.match(/[?&]view=(models|workbench|validation|publish)/);
+    this.setState({ view: this.props.view || (m && m[1]) || "models" });
+    if (this.props.dataState) this.setState({ data: this.props.dataState });
+    if (this.props.locale) this.setState({ lang: this.props.locale });
+    if (this.props.themeMode) this.setState({ theme: this.props.themeMode });
+    this.syncShell();
+    this.watchShell();
+  }
+
+  // The shell owns locale and theme (admin-shell.js?v=r7 writes dir/lang and the
+  // theme onto .ad-shell). Seed from it and watch it, so the ع toggle flips the
+  // page body too — the host Tweaks props remain an override.
+  syncShell() {
+    if (typeof document === "undefined") return;
+    const shell = document.querySelector(".ad-shell");
+    let lang = null, theme = null;
+    try { lang = localStorage.getItem("saqeel-admin-locale"); } catch (e) { lang = null; }
+    if (shell) {
+      lang = shell.getAttribute("lang") || lang;
+      theme = shell.getAttribute("data-theme");
+    }
+    const next = {};
+    if (lang === "ar" || lang === "en") next.lang = lang;
+    if (theme === "dark" || theme === "light") next.theme = theme;
+    if (Object.keys(next).length) this.setState(next);
+  }
+
+  watchShell() {
+    if (typeof MutationObserver === "undefined" || typeof document === "undefined") return;
+    this._shellObs = new MutationObserver(() => this.syncShell());
+    this._shellObs.observe(document.documentElement, {
+      subtree: true, childList: true, attributes: true,
+      attributeFilter: ["lang", "dir", "data-theme"],
+    });
+  }
+
+  componentWillUnmount() { if (this._shellObs) this._shellObs.disconnect(); }
 
   renderVals() {
-    const owner = this.props.riskOwner ?? true;
-    const wbOn = this.props.workbenchEnabled ?? false;
-    const studio = this.state.view === "studio";
-    const CRIT = "var(--status-critical-text)", MUTE = "var(--text-muted)";
-    const FACTORS = [
-      ["Open fire-safety findings", "0.35", "35%"],
-      ["Repeat violations (12 mo)", "0.25", "25%"],
-      ["Licence exposure", "0.20", "20%"],
-      ["Days since inspection", "0.20", "20%"],
-    ];
-    const MODELS = [
-      { label: "risk v5", status: "draft", badge: "badge-neutral", rowVersion: "1", transition: "Submit for review" },
-      { label: "risk v4.1-rc", status: "pending review", badge: "badge-warning", rowVersion: "2", transition: "Approve & publish / Return (checker ≠ maker)" },
-      { label: "risk v4", status: "published · immutable", badge: "badge-compliant", rowVersion: "3", transition: "— (locked)" },
-    ];
+    const view = this.state.view || this.props.view;
+    const d = this.props.dataState || this.state.data;
+    const AR = (this.state.lang || this.props.locale) === "ar";
+    const EN = {
+          "serverReason": "Server reason",
+          "authorizedFor": "Your authorized scope",
+          "retry": "Retry",
+          "openAudit": "Open Activity Log",
+          "notRun": "Not run",
+          "degTitle": "Partial read — some sources did not answer. ",
+          "degBody": "Readable facts are shown; anything depending on a failed source reads as Not configured rather than being guessed, and nothing can be published while the read is incomplete.",
+          "degSources": "Unavailable sources:",
+          "roTitle": "Read-only. ",
+          "roBody": "Your session may read this configuration but not change it. Controls that would write are unavailable rather than hidden, so the boundary stays explainable.",
+          "sub": "Governed risk models — factors, weights, bands and publication",
+          "workspaceLbl": "Risk workspace",
+          "tabModels": "Models",
+          "tabWorkbench": "Workbench",
+          "tabValidation": "Validation",
+          "tabPublish": "Publish & history",
+          "loadingTitle": "Loading governed risk models",
+          "loadingBody": "Reading models, their factor payloads and the input provenance for your authorized scope. No editable control is offered until the read succeeds.",
+          "unauthTitle": "Not authorized for risk configuration",
+          "unauthBody": "The server refused this route for your session. Who may read or publish a risk model is decided by the route guard and row-level security; the reason the server returned is shown below.",
+          "errorTitle": "Risk models could not be read",
+          "errorBody": "The read failed. Nothing was written and no model changed. Retry; the attempt is recorded as an audit event.",
+          "healthTitle": "Health is not risk. ",
+          "healthBody": "Platform, endpoint and queue health say whether the system is working. A risk score says how a factory is behaving against the governed model. Neither is ever derived from the other, and no health figure appears here as a scoring input.",
+          "modelsTitle": "Risk models",
+          "modelsNote": "Every model version with its status and effective window. Nothing is listed unless the server returned it.",
+          "colModel": "Model",
+          "colVersion": "Version",
+          "colStatus": "Status",
+          "colEffective": "Effective",
+          "colOwner": "Owner",
+          "noModels": "No risk model has been configured",
+          "rowKeyboard": "Rows are focusable: Enter or Space opens the model, and the selection is announced.",
+          "noModelTruth": "With no published model there is no score. Factories read as Not configured rather than defaulting to a band, and targeting that depends on a band says why it is unavailable.",
+          "newDraft": "New draft",
+          "lifeTitle": "Model lifecycle",
+          "lifeNote": "The canonical status set. Each transition is server-enforced.",
+          "stDraft": "Draft",
+          "stDraftB": "Editable by the model owner.",
+          "stReview": "Review",
+          "stReviewB": "Submitted; read-only until returned or approved.",
+          "stApproved": "Approved",
+          "stApprovedB": "Accepted by a distinct approver, not yet in force.",
+          "stPublished": "Published",
+          "stPublishedB": "In force from its effective date; the payload is frozen.",
+          "stRetired": "Retired",
+          "stRetiredB": "No longer in force; history and past scores are retained.",
+          "lifeTransitions": "Allowed moves: draft → review; review → approved or back to draft; approved → published or back to draft; published → retired. Anything else is refused server-side.",
+          "provTitle": "Input provenance",
+          "provNote": "Which governed inputs the model reads and how current they are.",
+          "pInputs": "Bound inputs",
+          "pLastRun": "Last recalculation",
+          "pFreshness": "Input freshness",
+          "provTruth": "An input that did not answer is reported as unavailable. A missing reading is never silently treated as zero risk.",
+          "factorsTitle": "Factors & weights",
+          "factorsNote": "One row per factor: the source field it reads, the transformation applied, its weight and what happens when the reading is missing.",
+          "colFactor": "Factor",
+          "colSourceField": "Source field",
+          "colTransform": "Transformation",
+          "colWeight": "Weight",
+          "colMissing": "Missing-data rule",
+          "colActionCol": "Action",
+          "noFactors": "No factors configured in this draft",
+          "weightSum": "Weight sum",
+          "weightRule": "Weight rule",
+          "addFactor": "Add factor",
+          "editFactor": "Edit factor",
+          "removeFactor": "Remove factor",
+          "factorTruth": "Weights are entered by an authorized owner. This surface enforces the structure — each weight between 0 and 1, the set summing to 1.00 within 0.001 — and never proposes a value of its own.",
+          "missingRuleNote": "Every factor must state its missing-data rule explicitly, because a missing reading contributes nothing to the weighted score and would otherwise look like a good reading.",
+          "bandsTitle": "Bands",
+          "bandsNote": "Bands are contiguous and cover 0–100 with whole-number boundaries.",
+          "lowMax": "Low band upper bound",
+          "medMax": "Medium band upper bound",
+          "colBand": "Band",
+          "colRange": "Range",
+          "bLow": "Low",
+          "bMedium": "Medium",
+          "bHigh": "High",
+          "bandRule": "Band rule",
+          "bandCheck": "Band check",
+          "bandsTruth": "Boundaries are governed values. Until they are configured no band is displayed, and a score with no band reads as Not configured rather than being placed in one.",
+          "formulaTitle": "Scoring formula",
+          "formulaNote": "The deterministic formula the engine applies. It is shown so a reviewer can reproduce any score by hand.",
+          "formulaTruth": "Each input is clamped to 0–1 before weighting, so a bad reading cannot push a score outside 0–100. The same inputs always produce the same score.",
+          "draftTitle": "Draft state",
+          "dStatus": "Status",
+          "dValidation": "Structure validation",
+          "dReason": "Change reason on record",
+          "changeReason": "Change reason (required, recorded in the audit event)",
+          "saveDraft": "Save draft",
+          "sendReview": "Send for review",
+          "draftTruth": "A draft cannot leave draft while its weights or bands fail the structural rules; the failing factor or boundary is named.",
+          "testTitle": "Scenario validation",
+          "testNote": "Run the draft against governed fixtures and see the score, the band and the explanation per case.",
+          "fixtureLbl": "Fixture set",
+          "scenarioLbl": "Scenario",
+          "fixtureTruth": "Fixtures are governed records, not values invented here. With no fixture set, validation cannot run and says so.",
+          "runTest": "Run validation",
+          "colCase": "Case",
+          "colInputs": "Inputs",
+          "colScore": "Score",
+          "colExplain": "Explanation",
+          "boundaryCases": "Boundary cases",
+          "changedOutcomes": "Factories that would change band",
+          "resultId": "Reproducible result id",
+          "testErrors": "Errors",
+          "testTruth": "Every run stores a reproducible result id with the payload it tested, so an approver can re-open the exact result rather than trusting a screenshot.",
+          "diffTitle": "Draft vs published",
+          "diffNote": "Factor, weight, band and rule differences between this draft and the model in force.",
+          "colChange": "Change",
+          "colPublishedV": "Published",
+          "colDraftV": "Draft",
+          "runDiff": "Run diff",
+          "pubTitle": "Impact, approval & activation",
+          "pubNote": "What publication would move, read from the server before anything changes.",
+          "iFactories": "Factories rescored",
+          "iBandMoves": "Band changes",
+          "iVisits": "Visits affected",
+          "iPlans": "Plans affected",
+          "effectiveFrom": "Effective from",
+          "rollbackTarget": "Rollback target version",
+          "maker": "Submitted by",
+          "checker": "Approved by",
+          "runImpact": "Run impact",
+          "approvePublish": "Approve & publish",
+          "rollback": "Roll back",
+          "retire": "Retire model",
+          "pubGate": "Publication stays unavailable until structure validation passes, a scenario run exists, an impact result is present, a reason is recorded and the approver is a different authorized user.",
+          "pubImmutable": "A published payload is immutable. Rollback publishes a new version from an earlier payload; it never rewrites history, and scores already recorded keep the model version that produced them.",
+          "histTitle": "Version history",
+          "histNote": "Publish, rollback and retire events with actor and version, newest first.",
+          "colWhen": "When",
+          "colEvent": "Event",
+          "colActor": "Actor",
+          "noHistory": "No model events recorded",
+          "reqModels": "Governed risk models",
+          "reqLifecycle": "Model lifecycle",
+          "reqInputs": "Input provenance",
+          "reqFactors": "Factors & weights",
+          "reqBands": "Band thresholds",
+          "reqFormula": "Deterministic scoring",
+          "reqDraft": "Draft governance",
+          "reqFixture": "Governed fixtures",
+          "reqTest": "Reproducible validation",
+          "reqDiff": "Version diff",
+          "reqPublish": "Impact, approval & publication",
+          "reqHistory": "Append-only history"
+    };
+    const ARA = {
+          "serverReason": "سبب الخادم",
+          "authorizedFor": "نطاقك المصرّح به",
+          "retry": "إعادة المحاولة",
+          "openAudit": "فتح سجل النشاط",
+          "notRun": "لم يُنفَّذ",
+          "degTitle": "قراءة جزئية — لم تستجب بعض المصادر. ",
+          "degBody": "تُعرض الحقائق المقروءة فقط؛ وما يعتمد على مصدر فاشل يظهر «غير مُهيّأ» بدل التخمين، ولا يُنشر شيء حتى تكتمل القراءة.",
+          "degSources": "المصادر غير المتاحة:",
+          "roTitle": "للقراءة فقط. ",
+          "roBody": "جلستك تقرأ هذه التهيئة ولا تغيّرها. عناصر الكتابة تظهر غير متاحة بدل إخفائها ليبقى الحد قابلاً للتفسير.",
+          "sub": "نماذج المخاطر المحكومة — العوامل والأوزان والنطاقات والنشر",
+          "workspaceLbl": "مساحة المخاطر",
+          "tabModels": "النماذج",
+          "tabWorkbench": "ورشة النموذج",
+          "tabValidation": "التحقّق",
+          "tabPublish": "النشر والسجل",
+          "loadingTitle": "جارٍ تحميل نماذج المخاطر المعتمدة",
+          "loadingBody": "تُقرأ النماذج وحمولات عواملها ومصادر مدخلاتها داخل نطاقك المصرّح به. لا يُتاح أي عنصر تحرير قبل نجاح القراءة.",
+          "unauthTitle": "غير مصرّح بتهيئة المخاطر",
+          "unauthBody": "رفض الخادم هذا المسار لجلستك. تحديد من يقرأ نموذج المخاطر أو ينشره يتم عبر حماية المسار وأمن الصفوف؛ وسبب الخادم معروض أدناه.",
+          "errorTitle": "تعذّر قراءة نماذج المخاطر",
+          "errorBody": "فشلت القراءة. لم يُكتب شيء ولم يتغيّر أي نموذج. أعد المحاولة؛ تُسجَّل المحاولة في سجل النشاط.",
+          "healthTitle": "الجاهزية ليست المخاطر. ",
+          "healthBody": "جاهزية المنصّة والنهايات والطوابير تخبر إن كان النظام يعمل. ودرجة المخاطر تخبر كيف يتصرّف المصنع مقابل النموذج المعتمد. ولا يُستنتج أحدهما من الآخر، ولا يظهر أي رقم جاهزية هنا كمُدخل تقييم.",
+          "modelsTitle": "نماذج المخاطر",
+          "modelsNote": "كل إصدار نموذج بحالته ونافذة سريانه. لا يُدرج شيء لم يُعده الخادم.",
+          "colModel": "النموذج",
+          "colVersion": "الإصدار",
+          "colStatus": "الحالة",
+          "colEffective": "السريان",
+          "colOwner": "المالك",
+          "noModels": "لا نموذج مخاطر مُهيّأ",
+          "rowKeyboard": "الصفوف قابلة للتركيز: Enter أو مسافة تفتح النموذج، ويُعلن التحديد.",
+          "noModelTruth": "بلا نموذج منشور لا توجد درجة. تظهر المصانع «غير مُهيّأة» بدل نطاق افتراضي، والاستهداف المعتمد على النطاق يوضّح سبب عدم توفّره.",
+          "newDraft": "مسودة جديدة",
+          "lifeTitle": "دورة حياة النموذج",
+          "lifeNote": "مجموعة الحالات المعتمدة، وكل انتقال مفروض في الخادم.",
+          "stDraft": "مسودة",
+          "stDraftB": "قابلة للتحرير من مالك النموذج.",
+          "stReview": "مراجعة",
+          "stReviewB": "مُرسلة وللقراءة فقط حتى تُعاد أو تُعتمد.",
+          "stApproved": "معتمد",
+          "stApprovedB": "قبله معتمد مختلف ولم يسرِ بعد.",
+          "stPublished": "منشور",
+          "stPublishedB": "ساري من تاريخ نفاذه، والحمولة مثبّتة.",
+          "stRetired": "موقوف",
+          "stRetiredB": "لم يعد سارياً، مع الاحتفاظ بالسجل والدرجات السابقة.",
+          "lifeTransitions": "الانتقالات المسموحة: مسودة → مراجعة؛ مراجعة → معتمد أو رجوع إلى مسودة؛ معتمد → منشور أو رجوع إلى مسودة؛ منشور → موقوف. وما عدا ذلك يُرفض في الخادم.",
+          "provTitle": "مصادر المدخلات",
+          "provNote": "المدخلات المحكومة التي يقرأها النموذج ومدى حداثتها.",
+          "pInputs": "المدخلات المرتبطة",
+          "pLastRun": "آخر إعادة حساب",
+          "pFreshness": "حداثة المدخلات",
+          "provTruth": "المُدخل الذي لم يستجب يُبلَّغ كغير متاح، ولا تُعامل القراءة الناقصة صامتاً كخطر صفري.",
+          "factorsTitle": "العوامل والأوزان",
+          "factorsNote": "صف لكل عامل: الحقل المصدر والتحويل المطبّق ووزنه وما يحدث عند غياب القراءة.",
+          "colFactor": "العامل",
+          "colSourceField": "الحقل المصدر",
+          "colTransform": "التحويل",
+          "colWeight": "الوزن",
+          "colMissing": "قاعدة غياب البيانات",
+          "colActionCol": "إجراء",
+          "noFactors": "لا عوامل مهيّأة في هذه المسودة",
+          "weightSum": "مجموع الأوزان",
+          "weightRule": "قاعدة الوزن",
+          "addFactor": "إضافة عامل",
+          "editFactor": "تعديل العامل",
+          "removeFactor": "حذف العامل",
+          "factorTruth": "الأوزان يُدخلها مالك مصرّح له. تفرض هذه الشاشة البنية — كل وزن بين 0 و1 ومجموعها 1.00 بهامش 0.001 — ولا تقترح قيمة من تلقاء نفسها.",
+          "missingRuleNote": "كل عامل يجب أن يصرّح بقاعدة غياب البيانات، لأن القراءة الغائبة لا تسهم في الدرجة الموزونة وقد تبدو دون ذلك كقراءة جيدة.",
+          "bandsTitle": "النطاقات",
+          "bandsNote": "النطاقات متصلة وتغطي 0–100 بحدود أعداد صحيحة.",
+          "lowMax": "الحد الأعلى للنطاق المنخفض",
+          "medMax": "الحد الأعلى للنطاق المتوسط",
+          "colBand": "النطاق",
+          "colRange": "المدى",
+          "bLow": "منخفض",
+          "bMedium": "متوسط",
+          "bHigh": "مرتفع",
+          "bandRule": "قاعدة النطاق",
+          "bandCheck": "فحص النطاقات",
+          "bandsTruth": "الحدود قيم محكومة. وحتى تُهيّأ لا يُعرض أي نطاق، والدرجة بلا نطاق تظهر «غير مُهيّأة» بدل إدراجها في نطاق.",
+          "formulaTitle": "معادلة التقييم",
+          "formulaNote": "المعادلة الحتمية التي يطبّقها المحرّك، معروضة ليتمكّن المراجع من إعادة حساب أي درجة يدوياً.",
+          "formulaTruth": "يُقيَّد كل مُدخل بين 0 و1 قبل الوزن، فلا تخرج الدرجة عن 0–100. والمدخلات نفسها تنتج الدرجة نفسها دائماً.",
+          "draftTitle": "حالة المسودة",
+          "dStatus": "الحالة",
+          "dValidation": "تحقّق البنية",
+          "dReason": "سبب التغيير المسجّل",
+          "changeReason": "سبب التغيير (مطلوب، يُسجَّل في سجل النشاط)",
+          "saveDraft": "حفظ المسودة",
+          "sendReview": "إرسال للمراجعة",
+          "draftTruth": "لا تخرج المسودة من حالتها ما دامت الأوزان أو النطاقات مخالفة للقواعد البنيوية، ويُسمّى العامل أو الحد المخالف.",
+          "testTitle": "التحقّق بالسيناريو",
+          "testNote": "نفّذ المسودة على عيّنات محكومة واعرض الدرجة والنطاق والتفسير لكل حالة.",
+          "fixtureLbl": "مجموعة العيّنات",
+          "scenarioLbl": "السيناريو",
+          "fixtureTruth": "العيّنات سجلات محكومة لا قيم مُخترعة هنا. وبلا مجموعة عيّنات لا يمكن تشغيل التحقّق ويُصرَّح بذلك.",
+          "runTest": "تشغيل التحقّق",
+          "colCase": "الحالة",
+          "colInputs": "المدخلات",
+          "colScore": "الدرجة",
+          "colExplain": "التفسير",
+          "boundaryCases": "الحالات الحدّية",
+          "changedOutcomes": "المصانع التي سيتغيّر نطاقها",
+          "resultId": "معرّف نتيجة قابل للتكرار",
+          "testErrors": "الأخطاء",
+          "testTruth": "كل تشغيل يخزّن معرّف نتيجة قابلاً للتكرار مع الحمولة المختبرة، ليعيد المعتمد فتح النتيجة نفسها بدل الاعتماد على صورة.",
+          "diffTitle": "المسودة مقابل المنشور",
+          "diffNote": "فروق العوامل والأوزان والنطاقات والقواعد بين المسودة والنموذج الساري.",
+          "colChange": "التغيير",
+          "colPublishedV": "المنشور",
+          "colDraftV": "المسودة",
+          "runDiff": "تشغيل المقارنة",
+          "pubTitle": "الأثر والاعتماد والتفعيل",
+          "pubNote": "ما سينقله النشر، يُقرأ من الخادم قبل أي تغيير.",
+          "iFactories": "المصانع المعاد تقييمها",
+          "iBandMoves": "تغييرات النطاق",
+          "iVisits": "الزيارات المتأثرة",
+          "iPlans": "الخطط المتأثرة",
+          "effectiveFrom": "ساري من",
+          "rollbackTarget": "إصدار الرجوع",
+          "maker": "أرسله",
+          "checker": "اعتمده",
+          "runImpact": "تشغيل الأثر",
+          "approvePublish": "الاعتماد والنشر",
+          "rollback": "الرجوع",
+          "retire": "إيقاف النموذج",
+          "pubGate": "يبقى النشر غير متاح حتى ينجح تحقّق البنية ويوجد تشغيل سيناريو ونتيجة أثر وسبب مسجّل، ويكون المعتمد مستخدماً آخر مصرّحاً له.",
+          "pubImmutable": "الحمولة المنشورة غير قابلة للتغيير. والرجوع ينشر إصداراً جديداً من حمولة أسبق ولا يعيد كتابة التاريخ، والدرجات المسجّلة تحفظ إصدار النموذج الذي أنتجها.",
+          "histTitle": "سجل الإصدارات",
+          "histNote": "أحداث النشر والرجوع والإيقاف مع الفاعل والإصدار، الأحدث أولاً.",
+          "colWhen": "التاريخ",
+          "colEvent": "الحدث",
+          "colActor": "الفاعل",
+          "noHistory": "لا أحداث نموذج مسجّلة",
+          "reqModels": "نماذج المخاطر المعتمدة",
+          "reqLifecycle": "دورة حياة النموذج",
+          "reqInputs": "مصادر المدخلات",
+          "reqFactors": "العوامل والأوزان",
+          "reqBands": "حدود النطاقات",
+          "reqFormula": "تقييم حتمي",
+          "reqDraft": "حوكمة المسودة",
+          "reqFixture": "عيّنات محكومة",
+          "reqTest": "تحقّق قابل للتكرار",
+          "reqDiff": "مقارنة الإصدارات",
+          "reqPublish": "الأثر والاعتماد والنشر",
+          "reqHistory": "سجل غير قابل للتعديل"
+    };
+    const t = AR ? ARA : EN, alt = AR ? EN : ARA;
+    const loading = d === "loading", error = d === "error", unauth = d === "unauthorized";
+    const degraded = d === "degraded", readOnly = d === "readonly";
+    const gate = loading || error || unauth;
+    const frozen = gate || readOnly || degraded;
+    const off = "opacity:.58; pointer-events:none;";
+    const approver = this.props.isApprover === true;
+    const nav = (v) => (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ view: v }); };
+
     return {
-      theme: this.state.theme,
-      isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
-      toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
-      isStudio: studio, isWorkbench: !studio,
-      pickStudio: () => this.setState({ view: "studio" }),
-      pickWorkbench: () => this.setState({ view: "workbench" }),
-      ctxBadge: studio ? "" : "",
-      ctxVersion: "risk v4",
-      factors: FACTORS.map(([name, weight, pct]) => ({ name, weight, pct })),
-      saveBlocked: owner ? "false" : "true",
-      saveOpacity: owner ? "1" : ".5",
-      ownerHint: owner ? "risk_owner — save effective immediately" : "Read-only: risk_owner role required (RLS)",
-      ownerHintColor: owner ? MUTE : CRIT,
-      workbenchOn: wbOn, workbenchOff: !wbOn,
-      models: MODELS,
+      theme: this.state.theme || this.props.themeMode,
+      t, alt, dir: AR ? "rtl" : "ltr", lang: AR ? "ar" : "en",
+      altLang: AR ? "en" : "ar", altDir: AR ? "ltr" : "rtl",
+      slotNC: AR ? "غير مُهيّأ" : "Not configured",
+      slotNR: loading ? (AR ? "جارٍ التحميل…" : "Loading…") : (AR ? "لا سجلات نشطة" : "No active records"),
+      isLoading: loading, isError: error, isUnauth: unauth, isDegraded: degraded, isReadOnly: readOnly, showWork: !gate,
+      liveStatus: loading ? t.loadingTitle : unauth ? t.unauthTitle : error ? t.errorTitle
+        : degraded ? t.degTitle : readOnly ? t.roTitle : t.notRun,
+      modeLabel: readOnly ? (AR ? "للقراءة فقط" : "Read-only") : approver ? (AR ? "معتمد · مراجعة" : "Checker · review") : (AR ? "مالك النموذج" : "Model owner"),
+      onModels: view === "models", onBench: view === "workbench", onTest: view === "validation", onPub: view === "publish",
+      onModelsCls: view === "models" ? "is-on" : "", onBenchCls: view === "workbench" ? "is-on" : "",
+      onTestCls: view === "validation" ? "is-on" : "", onPubCls: view === "publish" ? "is-on" : "",
+      onModelsCur: view === "models" ? "page" : "false", onBenchCur: view === "workbench" ? "page" : "false",
+      onTestCur: view === "validation" ? "page" : "false", onPubCur: view === "publish" ? "page" : "false",
+      goModels: nav("models"), goBench: nav("workbench"), goTest: nav("validation"), goPub: nav("publish"),
+      selDisabled: frozen ? "disabled" : "",
+      actDisabled: frozen ? "true" : "false", actStyle: frozen ? off : "",
+      rowDisabled: frozen ? "true" : "false", rowStyle: frozen ? off : "",
+      approveDisabled: approver && !frozen ? "false" : "true", approveStyle: approver && !frozen ? "" : off,
+      retireDisabled: approver && !frozen ? "false" : "true", retireStyle: approver && !frozen ? "" : off,
     };
   }
 }

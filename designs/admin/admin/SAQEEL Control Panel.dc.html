@@ -8,125 +8,242 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="saqeel/styles.css">
+<link rel="stylesheet" href="saqeel/styles.css?v=r7">
+<link rel="stylesheet" href="saqeel/admin-shell.css?v=r7">
+<script src="admin-shell.js?v=r7"></script>
 <style>
   html, body { height: 100%; margin: 0; }
   .cp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: 14px; }
-  .cp-lock { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-muted); margin-block-start: auto; padding-block-start: 8px; }
-  .cp-langbtn { padding:7px 13px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--surface-sunken); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--text-secondary); }
+  /* The favourites / recents / shortcut sections use the shared panel
+     grammar; this page previously carried the markup without the rule, so
+     they rendered flush and unpadded. */
+  .ad-main > aside.stack { inline-size: 100%; max-inline-size: 1120px;
+    padding: 0 clamp(12px, 1.6vw, 20px) 72px; box-sizing: border-box; }
+  .gv-panel { padding: 16px 18px; }
+  .gv-panel > h2 { margin: 0 0 8px; }
 </style>
 </helmet>
-<div data-theme="{{ theme }}" style="height:100vh; display:grid; grid-template-columns:248px 1fr; background:var(--surface-canvas); color:var(--text-primary); font-family:var(--font-body);">
+<div class="ad-shell" data-theme="{{ theme }}">
 
-  <aside class="sidebar" id="saqeel-primary-nav" aria-label="Primary navigation" style="height:100vh;">
-    <div class="sidebar-brand" style="gap:11px; min-height:64px;">
-      <img class="brand-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" width="260" height="40">
-      <img class="brand-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="32" height="32">
-      <button class="r5-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-    </div>
-    <div style="flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Overview</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20M1%20Dashboard.dc.html" data-route="/dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nav-label">Dashboard</span></a>
-        <a class="nav-item" href="../SAQEEL%20M3%20Operations%20Center%20-%20WA-DES-033-C3.dc.html" data-route="/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">Operations Center</span></a>
-        <a class="nav-item" href="../SAQEEL%20Factory%20360.dc.html" data-route="/factories"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6 3V9l6 3V5h6v16z"/><path d="M7 17h2M13 17h2M18 9h3"/></svg></span><span class="nav-label">Factory 360</span></a>
-      </details>
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Operations</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20Planning.dc.html" data-route="/planning"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="nav-label">Planning</span></a>
-        <div role="group" aria-labelledby="r5-p-inspection">
-          <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
-          <a class="nav-item r5-child" href="SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
-        </div>
-      </details>
-      <details class="r5-group" open="open">
-        <summary><span class="nav-label">Compliance</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/regulations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Inspection Rules</span></a>
-        <a class="nav-item" href="../SAQEEL%20M6%20Compliance%20Control%20Plane.dc.html" data-route="/admin/compliance-approvals"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Awaiting Approval</span></a>
-        <a class="nav-item" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violations &amp; Penalties</span></a>
-      </details>
-    </div>
-    <div style="border-block-start:1px solid var(--nav-border); padding-block-start:6px;">
-      <details class="r5-group r5-group--admin">
-        <summary><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Administration</span><svg class="r5-chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary>
-        <a class="nav-item" href="SAQEEL%20Users%20Roles.dc.html" data-route="/admin/access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Users</span></a>
-        <span class="nav-item is-locked" role="link" aria-disabled="true" tabindex="0" title="Roles — Administrator access required." aria-label="Roles. Administrator access required."><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Roles</span><span class="r5-lock" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span></span>
-        <a class="nav-item" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Reference Lists</span></a>
-        <a class="nav-item" href="#planning-lookups" data-route="/admin/planning/lookups"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Planning Lookups</span></a>
-        <a class="nav-item" href="#planning-expiry" data-route="/admin/planning/expiry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Expiry Rules</span></a>
-        <a class="nav-item" href="#planning-status" data-route="/admin/planning/status"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Planning Status Rules</span></a>
-        <a class="nav-item" href="SAQEEL%20Risk.dc.html" data-route="/admin/risk"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="nav-label">Risk Settings</span></a>
-        <a class="nav-item" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-route="/admin/packages"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Forms</span></a>
-        <a class="nav-item" href="#notifications" data-route="/admin/notifications"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></span><span class="nav-label">Notification Settings</span></a>
-        <a class="nav-item" href="SAQEEL%20Admin%20Integrations.dc.html" data-route="/admin/integrations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">System Connections</span></a>
-        <div role="group" aria-labelledby="r5-p-advanced-administration">
-          <div class="r5-sub" id="r5-p-advanced-administration"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Advanced Administration</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Execution.dc.html" data-route="/admin/execution"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Execution Settings</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-route="/admin/workflows"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M17 8l-4 8M7 8l4 8"/></svg></span><span class="nav-label">Workflow Settings</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Geofence.dc.html" data-route="/admin/gis"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg></span><span class="nav-label">Map Settings</span></a>
-          <a class="nav-item r5-child" href="#audit" data-route="/admin/audit"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Activity Log</span></a>
-          <a class="nav-item r5-child" href="#platform-operations" data-route="/admin/operations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6M12 3v2M21 12h-2"/></svg></span><span class="nav-label">System Operations</span></a>
-          <a class="nav-item r5-child" href="#security-access" data-route="/admin/security-access"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></svg></span><span class="nav-label">Security &amp; Access Review</span></a>
-          <a class="nav-item r5-child" href="#devices" data-route="/admin/devices"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Trusted Devices</span></a>
-          <a class="nav-item r5-child is-active" href="SAQEEL%20Control%20Panel.dc.html" data-route="/admin" aria-current="page"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87A2 2 0 1 1 16.9 19.7a1.7 1.7 0 0 0-2.87 1.3 2 2 0 0 1-4 0 1.7 1.7 0 0 0-2.87-1.3A2 2 0 1 1 4.3 16.87 1.7 1.7 0 0 0 3 14a2 2 0 0 1 0-4 1.7 1.7 0 0 0 1.3-2.87A2 2 0 1 1 7.13 4.3 1.7 1.7 0 0 0 10 3a2 2 0 0 1 4 0 1.7 1.7 0 0 0 2.87 1.3A2 2 0 1 1 19.7 7.13 1.7 1.7 0 0 0 21 10a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg></span><span class="nav-label">Approval &amp; Configuration</span></a>
-          <a class="nav-item r5-child" href="#items" data-route="/admin/items"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span><span class="nav-label">Inspection Items</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/enforcement-recommendations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Enforcement Recommendations</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Enforcement.dc.html" data-route="/admin/bulk-violations"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Issue Multiple Violations</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Admin%20Lookups.dc.html" data-route="/admin/localization"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="nav-label">Language &amp; Translations</span></a>
-          <a class="nav-item r5-child" href="../SAQEEL%20Cases.dc.html" data-route="/enforcement"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M8 17l8-8M10 5l4 4M6 9l4 4"/></svg></span><span class="nav-label">Violation Cases</span></a>
-        </div>
-      </details>
-    </div>
-  </aside>
+  <aside class="ad-rail" id="saqeel-primary-nav" aria-label="Control Panel navigation" data-held-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops">
+  <div class="ad-rail__brand">
+    <img class="ad-wordmark" src="export-wordmark-icons/saqeel-wordmark-dark-mode.svg" alt="SAQEEL" width="260" height="40">
+    <img class="ad-favicon" src="export-wordmark-icons/saqeel-favicon.svg" alt="SAQEEL" width="28" height="28">
+    <button class="ad-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></button>
+  </div>
+  <button class="ad-cmdk" type="button" aria-keyshortcuts="Meta+K Control+K" data-ar="ابحث في الأدوات"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="ad-cmdk__label">Find a tool</span><kbd>⌘K</kbd></button>
+  <nav class="ad-rail__body">
+    <a class="ad-hub is-active" href="SAQEEL%20Control%20Panel.dc.html#hub-cp" data-hub="cp" data-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner" aria-current="true"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hub__label">Control Panel</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-people" data-hub="people" data-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hub__label">People & Access</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-rules" data-hub="rules" data-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin workflow_admin security_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hub__label">Rules & Content</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-planning" data-hub="planning" data-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hub__label">Planning & Execution</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-risk" data-hub="risk" data-ar="المخاطر والذكاء" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hub__label">Risk & Intelligence</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-connections" data-hub="connections" data-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hub__label">Connections & Geography</span></a>
+    <a class="ad-hub" href="SAQEEL%20Control%20Panel.dc.html#hub-governance" data-hub="governance" data-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops"><span class="ad-hub__icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><span class="ad-hub__label">Governance & Operations</span></a>
+  </nav>
+  <div class="ad-rail__foot">
+    <a class="ad-viewall" href="SAQEEL%20Control%20Panel.dc.html#all-tools" data-ar="عرض كل الأدوات المصرّح بها">View all authorized tools</a>
+  </div>
+</aside>
 
-  <main id="main-content" tabindex="-1" dir="{{ dir }}" lang="{{ lang }}" style="height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
-    <a class="r5-skip" href="#page-body">Skip to content</a>
-    <div class="r5-progress" role="status" aria-busy="false"><i></i><span class="sr-only">Loading destination</span></div>
-    <div class="r5-topbar">
-      <button class="r5-iconbtn r5-menu" type="button" aria-label="Open menu" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      <details class="r5-search">
-        <summary><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="r5-search__input" type="search" role="combobox" aria-expanded="false" aria-controls="r5-search-results" aria-autocomplete="list" aria-label="Search navigation, factories, visits" placeholder="Search navigation, factories, visits"></summary>
-        <div class="r5-pop r5-pop--search" id="r5-search-results" role="listbox" aria-label="Search results"><p class="r5-pop__note">Type to search. Navigation matches and backend results are returned together; loading, no-match and unavailable are distinct states.</p></div>
-      </details>
-      <button class="r5-scope is-off" type="button" disabled="disabled" aria-label="Date scope: not applicable on this route" title="Not applicable"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span>Not applicable</span></button>
-      <label class="r5-scope is-off"><span class="sr-only">Region scope</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg><select aria-label="Region scope" disabled="disabled"><option>Not applicable</option><option>Riyadh</option><option>Makkah</option><option>Eastern Province</option></select></label>
-      <span class="r5-spacer"></span>
-      <button class="r5-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>
-      <button class="r5-iconbtn r5-notif" type="button" aria-label="Notifications, 4 unread"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="r5-badge">4</span></button>
-      <a class="r5-iconbtn" href="#ai" aria-label="AI Insights" title="AI Insights"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/><path d="M19 3v2.5M20.25 4.25H17.75"/></svg></a>
-      <details class="r5-account"><summary aria-label="Account"><span class="r5-avatar" aria-hidden="true">FA</span><span class="r5-who"><strong>f.admin</strong><small>compliance_admin · ops</small></span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m8 10 4 4 4-4"/></svg></summary><div class="r5-pop r5-pop--account"><strong>f.admin@mim.gov.sa</strong><span class="t-caption">Roles: compliance_admin, ops</span><hr><a href="#locale">العربية</a><a href="#profile">Profile &amp; settings</a><a href="#signout" class="r5-signout">Sign out</a></div></details>
-    </div>
-    <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); padding:16px 28px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;">
-      <div><h1 style="font-family:var(--font-body); font-size:24px; font-weight:700; letter-spacing:-0.02em; margin:0;">{{ t.title }}</h1><div class="t-caption" style="margin-block-start:4px;">{{ t.subtitle }}</div></div>
-      <span class="grow"></span>
-      <button class="cp-langbtn" onClick="{{ toggleLang }}">{{ t.langBtnLabel }}</button>
-      <span class="avatar" style="background:var(--action-primary); color:#fff;">AS</span>
-    </header>
+  <main id="main-content" tabindex="-1" class="ad-main" dir="{{ dir }}" lang="{{ lang }}" style="display:flex; flex-direction:column;">
+    <a class="btn btn-secondary sr-only sr-only-focusable" href="#page-body">Skip to content</a>
+    <div class="ad-util">
+  <button class="ad-menu" type="button" aria-label="Open navigation" aria-controls="saqeel-primary-nav" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <span class="ad-util__here" data-ar="الإدارة">Administration</span>
+  <span class="ad-util__spacer"></span>
+  <button class="ad-iconbtn ad-locale" type="button" aria-label="Switch to Arabic" lang="ar">ع</button>
+  <button class="ad-iconbtn" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.5 1.5M17.3 17.3l1.5 1.5M18.8 5.2l-1.5 1.5M6.7 17.3l-1.5 1.5"/></svg></button>
+  <button class="ad-iconbtn" type="button" aria-label="Notifications" data-ar-label="الإشعارات"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
+  <details class="ad-account"><summary aria-label="Account"><span class="ad-avatar" aria-hidden="true">—</span><span class="ad-who"><strong>—</strong><small data-ar="غير مُهيّأ">Not configured</small></span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="ad-pop"><strong data-ar="غير مُهيّأ">Not configured</strong><span class="t-caption" data-ar="الأدوار المصرّح بها: غير مُهيّأ">Authorized roles: Not configured</span><a href="#profile">Profile &amp; settings</a><a class="ad-signout" href="#signout">Sign out</a></div></details>
+</div>
+    <header class="ad-head">
+  <div class="ad-head__id">
+    <h1 class="ad-head__title">Control Panel<span class="ad-head__title-ar" lang="ar" dir="rtl">لوحة التحكم</span></h1>
+    <p class="ad-head__sub" data-ar="ابدأ من المجال الذي تريد تهيئته. تُعرض المجالات المصرّح بها لأدوارك فقط.">Start from the area you need. Only the areas your roles authorize are shown.</p>
+  </div>
+  <div class="ad-head__actions"><a class="btn btn-secondary" href="#audit" data-ar="سجل النشاط">Activity Log</a></div>
+</header>
 
     <a id="page-body" tabindex="-1"></a>
-    <div style="padding:22px 28px 90px; display:flex; flex-direction:column; gap:26px; max-width:1120px; width:100%;">
-      <p class="t-caption" style="margin:0; max-width:70ch;">{{ t.intro }}</p>
+    <div class="ad-body" style="max-inline-size:none;">
+      <section class="stack" style="gap:14px;">
+        <div class="ad-hubgrid">
+            <a class="ad-hubcard" id="hub-cp" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner" href="SAQEEL%20Control%20Panel.dc.html" data-ar="لوحة التحكم">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></span><span class="ad-hubcard__name">Control Panel</span></span>
+              <span class="ad-hubcard__blurb">Where configuration starts</span>
+              <span class="ad-hubcard__lead">Approval & Configuration · Extended Configuration · Configuration Detail</span>
+            </a>
+            <a class="ad-hubcard" id="hub-people" data-roles="security_admin compliance_admin" href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون والصلاحيات">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20v-1.6A5.4 5.4 0 0 1 8.4 13h1.2A5.4 5.4 0 0 1 15 18.4V20"/><path d="M16 8.2a3 3 0 0 1 0 5.6M18 20v-1.4a4 4 0 0 0-1.6-3.2"/></svg></span><span class="ad-hubcard__name">People & Access</span></span>
+              <span class="ad-hubcard__blurb">Who can act, and on what</span>
+              <span class="ad-hubcard__lead">Users · Roles · Role Overrides</span>
+            </a>
+            <a class="ad-hubcard" id="hub-rules" data-roles="form_admin compliance_admin workflow_admin security_admin" href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="القواعد والمحتوى">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/><path d="M7 8h.01M17 8h.01"/></svg></span><span class="ad-hubcard__name">Rules & Content</span></span>
+              <span class="ad-hubcard__blurb">What inspectors are asked</span>
+              <span class="ad-hubcard__lead">Inspection Forms · Inspection Items · Reference Lists</span>
+            </a>
+            <a class="ad-hubcard" id="hub-planning" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner" href="#planning-lookups" data-ar="التخطيط والتنفيذ">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="ad-hubcard__name">Planning & Execution</span></span>
+              <span class="ad-hubcard__blurb">How visits are planned and run</span>
+              <span class="ad-hubcard__lead">Planning Lookups · Planning Expiry Rules · Planning Status Rules</span>
+            </a>
+            <a class="ad-hubcard" id="hub-risk" data-roles="risk_owner compliance_admin form_admin workflow_admin security_admin gis_admin" href="SAQEEL%20Risk.dc.html" data-ar="المخاطر والذكاء">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></svg></span><span class="ad-hubcard__name">Risk & Intelligence</span></span>
+              <span class="ad-hubcard__blurb">Scoring and what leadership sees</span>
+              <span class="ad-hubcard__lead">Risk Settings · Dashboard Configuration · KPI Management</span>
+            </a>
+            <a class="ad-hubcard" id="hub-connections" data-roles="security_admin workflow_admin gis_admin compliance_admin form_admin risk_owner" href="SAQEEL%20Admin%20Integrations.dc.html" data-ar="الاتصالات والجغرافيا">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg></span><span class="ad-hubcard__name">Connections & Geography</span></span>
+              <span class="ad-hubcard__blurb">Upstream data and the map</span>
+              <span class="ad-hubcard__lead">System Connections · SENAI Data · Integration Data</span>
+            </a>
+            <a class="ad-hubcard" id="hub-governance" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner ops" href="#audit" data-ar="الحوكمة والعمليات">
+              <span class="ad-hubcard__top"><span class="ad-hubcard__icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span><span class="ad-hubcard__name">Governance & Operations</span></span>
+              <span class="ad-hubcard__blurb">Oversight, records and enforcement</span>
+              <span class="ad-hubcard__lead">Activity Log · Notification Settings · System Operations</span>
+            </a>
+            </div>
+          </section>
 
-      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="5">
-        <section>
-          <div style="display:flex; align-items:baseline; gap:10px; margin-block-end:12px;">
-            <h2 style="font-size:15px; font-weight:600; margin:0;">{{ g.title }}</h2>
-            <span class="t-caption" lang="{{ altLang }}" dir="{{ altDir }}">{{ g.titleAlt }}</span>
+          <!-- Secondary discovery. The full authorized set stays reachable, but
+               it is not the first thing anyone meets. -->
+          <details class="panel gv-panel" id="all-tools" style="padding:14px 16px;">
+            <summary style="cursor:pointer; font:600 13px/1.4 var(--font-body); color:var(--text-primary);" data-ar="عرض كل الأدوات المصرّح بها">View all authorized tools</summary>
+            <p class="ad-head__sub" style="margin:8px 0 0;">Grouped by hub. Only destinations your roles authorize are listed.</p>
+          <div class="ad-allgroup">
+            <h3 data-ar="لوحة التحكم">Control Panel</h3>
+            <div class="ad-list">
+              <a href="SAQEEL%20Control%20Panel.dc.html" data-ar="الاعتماد والتهيئة" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Approval & Configuration</a>
+              <a href="SAQEEL%20Admin%20Extended.dc.html" data-ar="التهيئة الموسّعة" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Extended Configuration</a>
+              <a href="SAQEEL%20Admin%20Detail.dc.html" data-ar="تفاصيل التهيئة" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Configuration Detail</a>
+            </div>
           </div>
-          <div class="cp-grid">
-            <sc-for list="{{ g.cards }}" as="c" hint-placeholder-count="4">
-              <a href="{{ c.href }}" style="display:flex; flex-direction:column; gap:6px; padding:16px; background:var(--surface-primary); border:1px solid var(--border-subtle); border-radius:14px; box-shadow:var(--shadow-card); text-decoration:none; color:inherit; min-height:118px; transition:box-shadow .18s, transform .18s, border-color .18s;" style-hover="box-shadow:var(--shadow-card-hover); transform:translateY(-3px); border-color:var(--border-strong);">
-                <div style="display:flex; align-items:center; gap:9px;"><span style="width:30px; height:30px; border-radius:8px; background:var(--accent-soft); color:var(--accent-text); display:grid; place-items:center; flex:none;"><span style="font-size:11px; font-weight:700; letter-spacing:.02em;">{{ c.glyph }}</span></span><span style="font-weight:600; font-size:14px;">{{ c.title }}</span></div>
-                <span class="t-caption" lang="{{ altLang }}" dir="{{ altDir }}" style="color:var(--text-secondary);">{{ c.titleAlt }}</span>
-                <span class="t-caption" style="color:var(--text-muted);">{{ c.desc }}</span>
-                <sc-if value="{{ c.locked }}" hint-placeholder-val="{{ false }}"><span class="cp-lock"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>{{ c.role }}</span></sc-if>
-              </a>
-            </sc-for>
+          <div class="ad-allgroup">
+            <h3 data-ar="المستخدمون والصلاحيات">People & Access</h3>
+            <div class="ad-list">
+              <a href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" data-roles="security_admin">Users</a>
+              <a href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-roles="security_admin">Roles</a>
+              <a href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-roles="security_admin">Role Overrides</a>
+              <a href="#devices" data-ar="الأجهزة الموثوقة" data-roles="security_admin">Trusted Devices</a>
+              <a href="#security-access" data-ar="مراجعة الأمن والوصول" data-roles="security_admin">Security & Access Review</a>
+              <a href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-roles="security_admin compliance_admin">Delegation</a>
+            </div>
           </div>
-        </section>
-      </sc-for>
+          <div class="ad-allgroup">
+            <h3 data-ar="القواعد والمحتوى">Rules & Content</h3>
+            <div class="ad-list">
+              <a href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-roles="form_admin compliance_admin">Inspection Forms</a>
+              <a href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" data-roles="compliance_admin form_admin">Inspection Items</a>
+              <a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-roles="compliance_admin workflow_admin security_admin">Reference Lists</a>
+              <a href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-roles="compliance_admin security_admin workflow_admin">Language & Translations</a>
+            </div>
+          </div>
+          <div class="ad-allgroup">
+            <h3 data-ar="التخطيط والتنفيذ">Planning & Execution</h3>
+            <div class="ad-list">
+              <a href="#planning-lookups" data-ar="قوائم التخطيط" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Planning Lookups</a>
+              <a href="#planning-expiry" data-ar="قواعد انتهاء التخطيط" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Planning Expiry Rules</a>
+              <a href="#planning-status" data-ar="قواعد حالة التخطيط" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Planning Status Rules</a>
+              <a href="SAQEEL%20Admin%20Execution.dc.html" data-ar="إعدادات التنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Execution Settings</a>
+              <a href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-ar="إعدادات سير العمل" data-roles="workflow_admin">Workflow Settings</a>
+            </div>
+          </div>
+          <div class="ad-allgroup">
+            <h3 data-ar="المخاطر والذكاء">Risk & Intelligence</h3>
+            <div class="ad-list">
+              <a href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" data-roles="risk_owner">Risk Settings</a>
+              <a href="SAQEEL%20Dashboard%20Config.dc.html" data-ar="تهيئة لوحة القيادة" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Dashboard Configuration</a>
+              <a href="SAQEEL%20KPI%20Management.dc.html" data-ar="إدارة المؤشرات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">KPI Management</a>
+            </div>
+          </div>
+          <div class="ad-allgroup">
+            <h3 data-ar="الاتصالات والجغرافيا">Connections & Geography</h3>
+            <div class="ad-list">
+              <a href="SAQEEL%20Admin%20Integrations.dc.html" data-ar="اتصالات النظام" data-roles="security_admin workflow_admin">System Connections</a>
+              <a href="SAQEEL%20Admin%20SENAI%20Data.dc.html" data-ar="بيانات سناعي" data-roles="security_admin workflow_admin">SENAI Data</a>
+              <a href="SAQEEL%20Admin%20Integrations%20Data.dc.html" data-ar="بيانات التكامل" data-roles="security_admin workflow_admin">Integration Data</a>
+              <a href="SAQEEL%20Admin%20Geofence.dc.html" data-ar="إعدادات الخرائط" data-roles="gis_admin">Map Settings</a>
+              <a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="مزودو الزيارة الافتراضية" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Virtual Visit Providers</a>
+            </div>
+          </div>
+          <div class="ad-allgroup">
+            <h3 data-ar="الحوكمة والعمليات">Governance & Operations</h3>
+            <div class="ad-list">
+              <a href="#audit" data-ar="سجل النشاط" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Activity Log</a>
+              <a href="#notifications" data-ar="إعدادات الإشعارات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner">Notification Settings</a>
+              <a href="#platform-operations" data-ar="عمليات النظام" data-roles="security_admin workflow_admin">System Operations</a>
+              <a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="توصيات الإنفاذ" data-roles="ops compliance_admin">Enforcement Recommendations</a>
+              <a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="إصدار عدة مخالفات" data-roles="ops compliance_admin">Issue Multiple Violations</a>
+              <a href="../web/SAQEEL%20Cases.dc.html" data-ar="قضايا المخالفات" data-roles="compliance_admin">Violation Cases</a>
+            </div>
+          </div>
+          </details>
+        </div>
+
+        <aside class="stack" style="gap:16px; margin-block-start:16px;">
+          <section class="panel gv-panel" data-stored="favorites">
+            <h2 style="font:600 12px/1.4 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--text-secondary); margin:0 0 8px;" data-ar="المفضلة">Favorites</h2>
+            <div class="ad-list"></div>
+            <p class="ad-head__sub" data-empty="1" style="margin:0;" data-ar="حتى خمس أدوات تثبّتها. لا شيء مثبّت بعد.">Up to five tools you pin. None pinned yet.</p>
+          </section>
+
+          <section class="panel gv-panel" data-stored="recents">
+            <h2 style="font:600 12px/1.4 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--text-secondary); margin:0 0 8px;" data-ar="الأقسام الأخيرة">Recent areas</h2>
+            <div class="ad-list"></div>
+            <p class="ad-head__sub" data-empty="1" style="margin:0;" data-ar="ستظهر هنا آخر خمسة مجالات فتحتها.">The last five areas you opened will appear here.</p>
+          </section>
+
+          <section class="panel gv-panel">
+            <h2 style="font:600 12px/1.4 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--text-secondary); margin:0 0 8px;" data-ar="اختصار">Shortcut</h2>
+            <p class="ad-head__sub" style="margin:0;"><span data-ar="اضغط">Press</span> <kbd style="font:600 11px var(--font-mono); padding:1px 5px; border:1px solid var(--border-subtle); border-radius:4px;">⌘K</kbd> <span data-ar="أو">or</span> <kbd style="font:600 11px var(--font-mono); padding:1px 5px; border:1px solid var(--border-subtle); border-radius:4px;">Ctrl K</kbd> <span data-ar="للانتقال إلى أي أداة مصرّح بها بالاسم، بالعربية أو الإنجليزية.">to jump to any authorized tool by name, in English or Arabic.</span></p>
+          </section>
+        </aside>
+      </div>
     </div>
+    <div class="ad-pal" id="ad-palette" hidden="hidden">
+  <button class="ad-pal__scrim" type="button" aria-label="Close"></button>
+  <div class="ad-pal__box" role="dialog" aria-modal="true" aria-label="Find a tool">
+    <input class="ad-pal__input" type="text" role="combobox" aria-expanded="true" aria-controls="ad-pal-list" aria-autocomplete="list" placeholder="Find a tool…" data-ar-ph="ابحث عن أداة…">
+    <ul class="ad-pal__list" id="ad-pal-list" role="listbox">
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Control%20Panel.dc.html" data-ar="الاعتماد والتهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Approval & Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Extended.dc.html" data-ar="التهيئة الموسّعة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Extended Configuration</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Detail.dc.html" data-ar="تفاصيل التهيئة" data-hub-ar="لوحة التحكم" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Configuration Detail</span><span class="ad-pal__hub">Control Panel</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html" data-ar="المستخدمون" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Users</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Users%20Roles.dc.html?view=roles" data-ar="الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Roles</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Role%20Override.dc.html" data-ar="تجاوزات الأدوار" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Role Overrides</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="#devices" data-ar="الأجهزة الموثوقة" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Trusted Devices</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="#security-access" data-ar="مراجعة الأمن والوصول" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin"><span class="ad-pal__name">Security & Access Review</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Delegation.dc.html" data-ar="التفويض" data-hub-ar="المستخدمون والصلاحيات" data-roles="security_admin compliance_admin"><span class="ad-pal__name">Delegation</span><span class="ad-pal__hub">People & Access</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Form%20Builder.dc.html" data-ar="نماذج التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="form_admin compliance_admin"><span class="ad-pal__name">Inspection Forms</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Item%20Execution.dc.html" data-ar="بنود التفتيش" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin form_admin"><span class="ad-pal__name">Inspection Items</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html" data-ar="القوائم المرجعية" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin workflow_admin security_admin"><span class="ad-pal__name">Reference Lists</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Lookups.dc.html#i18n" data-ar="اللغة والترجمة" data-hub-ar="القواعد والمحتوى" data-roles="compliance_admin security_admin workflow_admin"><span class="ad-pal__name">Language & Translations</span><span class="ad-pal__hub">Rules & Content</span></a></li>
+      <li role="option" aria-selected="false"><a href="#planning-lookups" data-ar="قوائم التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Lookups</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="#planning-expiry" data-ar="قواعد انتهاء التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Expiry Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="#planning-status" data-ar="قواعد حالة التخطيط" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Planning Status Rules</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Execution.dc.html" data-ar="إعدادات التنفيذ" data-hub-ar="التخطيط والتنفيذ" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Execution Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Workflow%20Builder.dc.html" data-ar="إعدادات سير العمل" data-hub-ar="التخطيط والتنفيذ" data-roles="workflow_admin"><span class="ad-pal__name">Workflow Settings</span><span class="ad-pal__hub">Planning & Execution</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Risk.dc.html" data-ar="إعدادات المخاطر" data-hub-ar="المخاطر والذكاء" data-roles="risk_owner"><span class="ad-pal__name">Risk Settings</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Dashboard%20Config.dc.html" data-ar="تهيئة لوحة القيادة" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Dashboard Configuration</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20KPI%20Management.dc.html" data-ar="إدارة المؤشرات" data-hub-ar="المخاطر والذكاء" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">KPI Management</span><span class="ad-pal__hub">Risk & Intelligence</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations.dc.html" data-ar="اتصالات النظام" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Connections</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20SENAI%20Data.dc.html" data-ar="بيانات سناعي" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">SENAI Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Integrations%20Data.dc.html" data-ar="بيانات التكامل" data-hub-ar="الاتصالات والجغرافيا" data-roles="security_admin workflow_admin"><span class="ad-pal__name">Integration Data</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Geofence.dc.html" data-ar="إعدادات الخرائط" data-hub-ar="الاتصالات والجغرافيا" data-roles="gis_admin"><span class="ad-pal__name">Map Settings</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="SAQEEL%20Admin%20Virtual%20Premium.dc.html" data-ar="مزودو الزيارة الافتراضية" data-hub-ar="الاتصالات والجغرافيا" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Virtual Visit Providers</span><span class="ad-pal__hub">Connections & Geography</span></a></li>
+      <li role="option" aria-selected="false"><a href="#audit" data-ar="سجل النشاط" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Activity Log</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="#notifications" data-ar="إعدادات الإشعارات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin form_admin workflow_admin security_admin gis_admin risk_owner"><span class="ad-pal__name">Notification Settings</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="#platform-operations" data-ar="عمليات النظام" data-hub-ar="الحوكمة والعمليات" data-roles="security_admin workflow_admin"><span class="ad-pal__name">System Operations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="توصيات الإنفاذ" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Enforcement Recommendations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Enforcement.dc.html" data-ar="إصدار عدة مخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="ops compliance_admin"><span class="ad-pal__name">Issue Multiple Violations</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+      <li role="option" aria-selected="false"><a href="../web/SAQEEL%20Cases.dc.html" data-ar="قضايا المخالفات" data-hub-ar="الحوكمة والعمليات" data-roles="compliance_admin"><span class="ad-pal__name">Violation Cases</span><span class="ad-pal__hub">Governance & Operations</span></a></li>
+    </ul>
+    <p class="ad-pal__empty" hidden="hidden">No authorized tool matches.</p>
+    <p class="ad-pal__live sr-only" role="status" aria-live="polite"></p>
+  </div>
+</div>
   </main>
 </div>
 </x-dc>
@@ -136,54 +253,58 @@ class Component extends DCLogic {
   renderVals() {
     const lang = this.state.lang;
     const CHROME = {
-      en: { title: "Control Panel", subtitle: "لوحة التحكم — إعداد المنصة", langBtnLabel: "AR",
-        intro: "One place to configure people, rules, forms, scoring and connections. Each area opens its own workspace. Areas you cannot change are shown but marked — access is decided by your role." },
-      ar: { title: "لوحة التحكم", subtitle: "Control Panel — platform configuration", langBtnLabel: "EN",
-        intro: "مكان واحد لإعداد المستخدمين والقواعد والنماذج والتقييم والاتصالات. كل قسم يفتح مساحة عمله الخاصة. الأقسام التي لا يمكنك تغييرها تظهر لكنها مُعلَّمة — الوصول يُحدَّد حسب دورك." },
+      en: { title: "Control Panel", subtitle: "Platform configuration — people, rules, forms, scoring and connections", langBtnLabel: "AR",
+        intro: "One place to configure people, rules, forms, scoring and connections. Each area opens its own workspace. Only areas your roles authorize are listed — RLS enforces every write." },
+      ar: { title: "لوحة التحكم", subtitle: "إعداد المنصة — المستخدمون والقواعد والنماذج والتقييم والاتصالات", langBtnLabel: "EN",
+        intro: "مكان واحد لإعداد المستخدمين والقواعد والنماذج والتقييم والاتصالات. كل قسم يفتح مساحة عمله الخاصة. تظهر فقط الأقسام التي تصرّح بها أدوارك — وسياسات RLS تفرض كل عملية كتابة." },
     };
     const t = CHROME[lang];
     const GROUPS = [
       { title: "People & access", titleAr: "المستخدمون والصلاحيات", cards: [
-        { glyph: "Us", title: "Users", titleAr: "المستخدمون", desc: "Add people, assign roles, review access.", href: "SAQEEL Users Roles.dc.html", locked: true, role: "Security admin" },
-        { glyph: "Ro", title: "Roles", titleAr: "الأدوار", desc: "Role definitions and the capabilities each grants.", href: "SAQEEL Users Roles.dc.html", locked: true, role: "Security admin" },
-        { glyph: "Ac", title: "Security & Access Review", titleAr: "مراجعة الأمن والوصول", desc: "Purpose-bound grants and access audit.", href: "SAQEEL Admin Extended.dc.html", locked: true, role: "Security admin" },
+        { glyph: "Us", title: "Users", titleAr: "المستخدمون", desc: "Add people, assign roles, review access.", href: "SAQEEL Users Roles.dc.html", roles: ["security_admin"] },
+        { glyph: "Ro", title: "Roles", titleAr: "الأدوار", desc: "Role definitions and the capabilities each grants.", href: "SAQEEL Users Roles.dc.html", roles: ["security_admin"] },
+        { glyph: "Ac", title: "Security & Access Review", titleAr: "مراجعة الأمن والوصول", desc: "Purpose-bound grants and access audit.", href: "SAQEEL Admin Extended.dc.html", roles: ["security_admin"] },
       ]},
       { title: "Inspection rules & forms", titleAr: "قواعد ونماذج التفتيش", cards: [
-        { glyph: "Ru", title: "Inspection Rules", titleAr: "قواعد التفتيش", desc: "Regulations, clauses and their linked items.", href: "SAQEEL Admin.dc.html", locked: true, role: "Compliance admin" },
-        { glyph: "It", title: "Inspection Items", titleAr: "بنود التفتيش", desc: "Question items: response, evidence and violation rules.", href: "SAQEEL Admin Detail.dc.html", locked: true, role: "Compliance / Form admin" },
-        { glyph: "Fm", title: "Inspection Forms", titleAr: "نماذج التفتيش", desc: "Checklist packages and their frozen versions.", href: "SAQEEL Admin Detail.dc.html", locked: true, role: "Form admin" },
-        { glyph: "Vn", title: "Violations & Penalties", titleAr: "المخالفات والعقوبات", desc: "Violation codes, severities and penalty basis.", href: "SAQEEL Admin.dc.html", locked: false, role: "" },
+        { glyph: "Ru", title: "Inspection Rules", titleAr: "قواعد التفتيش", desc: "Regulations, clauses and their linked items.", href: "SAQEEL Admin.dc.html", roles: ["compliance_admin"] },
+        { glyph: "It", title: "Inspection Items", titleAr: "بنود التفتيش", desc: "Question items: response, evidence and violation rules.", href: "SAQEEL Admin Detail.dc.html", roles: ["compliance_admin","form_admin"] },
+        { glyph: "Fm", title: "Inspection Forms", titleAr: "نماذج التفتيش", desc: "Checklist packages and their frozen versions.", href: "SAQEEL Admin Detail.dc.html", roles: ["form_admin","compliance_admin"] },
+        { glyph: "Vn", title: "Violations & Penalties", titleAr: "المخالفات والعقوبات", desc: "Violation codes, severities and penalty basis.", href: "SAQEEL Admin.dc.html", roles: ["compliance_admin"] },
       ]},
       { title: "Scoring & intelligence", titleAr: "التقييم والذكاء", cards: [
-        { glyph: "Rk", title: "Risk Settings", titleAr: "إعدادات المخاطر", desc: "Factor weights, bands and the model workbench.", href: "SAQEEL Risk.dc.html", locked: true, role: "Risk owner" },
-        { glyph: "AI", title: "AI Insights", titleAr: "رؤى الذكاء الاصطناعي", desc: "Advisory dockets — human disposition required.", href: "SAQEEL AI Studio.dc.html", locked: false, role: "" },
-        { glyph: "KP", title: "Dashboard KPIs", titleAr: "مؤشرات لوحة القيادة", desc: "Which metrics show, their formula and delivery.", href: "SAQEEL KPI Management.dc.html", locked: true, role: "Compliance admin" },
+        { glyph: "Rk", title: "Risk Settings", titleAr: "إعدادات المخاطر", desc: "Factor weights, bands and the model workbench.", href: "SAQEEL Risk.dc.html", roles: ["risk_owner"] },
+        { glyph: "KP", title: "Dashboard KPIs", titleAr: "مؤشرات لوحة القيادة", desc: "Which metrics show, their formula and delivery.", href: "SAQEEL KPI Management.dc.html", roles: ["compliance_admin","form_admin","workflow_admin","security_admin","gis_admin","risk_owner"] },
       ]},
       { title: "Operations setup", titleAr: "إعداد العمليات", cards: [
-        { glyph: "Wf", title: "Workflow Settings", titleAr: "إعدادات سير العمل", desc: "Lifecycle transitions and deadline rules.", href: "SAQEEL Admin.dc.html", locked: true, role: "Workflow admin" },
-        { glyph: "Ex", title: "Execution Settings", titleAr: "إعدادات التنفيذ", desc: "Capacity, geofence, evidence and offline policy.", href: "SAQEEL Admin Execution.dc.html", locked: true, role: "Admin" },
-        { glyph: "Nt", title: "Notification Settings", titleAr: "إعدادات الإشعارات", desc: "Channels, templates and delivery routing.", href: "SAQEEL Admin.dc.html", locked: true, role: "Admin" },
-        { glyph: "Mp", title: "Map Settings", titleAr: "إعدادات الخريطة", desc: "Factory coordinates, geofence radius, layers.", href: "SAQEEL Admin Integrations Data.dc.html", locked: true, role: "Map admin" },
-        { glyph: "Cx", title: "System Connections", titleAr: "اتصالات النظام", desc: "Senaei / MODON sync and data reconciliation.", href: "SAQEEL Admin Integrations Data.dc.html", locked: true, role: "Security / Workflow admin" },
-        { glyph: "Dv", title: "Trusted Devices", titleAr: "الأجهزة الموثوقة", desc: "Registered field devices and their status.", href: "SAQEEL Admin.dc.html", locked: true, role: "Security admin" },
+        { glyph: "Wf", title: "Workflow Settings", titleAr: "إعدادات سير العمل", desc: "Lifecycle transitions and deadline rules.", href: "SAQEEL Admin.dc.html", roles: ["workflow_admin"] },
+        { glyph: "Ex", title: "Execution Settings", titleAr: "إعدادات التنفيذ", desc: "Capacity, geofence, evidence and offline policy.", href: "SAQEEL Admin Execution.dc.html", roles: ["compliance_admin","form_admin","workflow_admin","security_admin","gis_admin","risk_owner"] },
+        { glyph: "Nt", title: "Notification Settings", titleAr: "إعدادات الإشعارات", desc: "Channels, templates and delivery routing.", href: "SAQEEL Admin.dc.html", roles: ["compliance_admin","form_admin","workflow_admin","security_admin","gis_admin","risk_owner"] },
+        { glyph: "Mp", title: "Map Settings", titleAr: "إعدادات الخريطة", desc: "Factory coordinates, geofence radius, layers.", href: "SAQEEL Admin Integrations Data.dc.html", roles: ["gis_admin"] },
+        { glyph: "Cx", title: "System Connections", titleAr: "اتصالات النظام", desc: "Senaei / MODON sync and data reconciliation.", href: "SAQEEL Admin Integrations Data.dc.html", roles: ["security_admin","workflow_admin"] },
+        { glyph: "Dv", title: "Trusted Devices", titleAr: "الأجهزة الموثوقة", desc: "Registered field devices and their status.", href: "SAQEEL Admin.dc.html", roles: ["security_admin"] },
       ]},
       { title: "Records & oversight", titleAr: "السجلات والرقابة", cards: [
-        { glyph: "Ap", title: "Awaiting Approval", titleAr: "بانتظار الاعتماد", desc: "Configuration changes pending maker-checker.", href: "SAQEEL Admin Extended.dc.html", locked: false, role: "" },
-        { glyph: "Rq", title: "Configuration Requests", titleAr: "طلبات التهيئة", desc: "Change envelopes and their review workspace.", href: "SAQEEL Compliance Requests.dc.html", locked: false, role: "" },
-        { glyph: "Lg", title: "Activity Log", titleAr: "سجل النشاط", desc: "Append-only audit of every governed change.", href: "SAQEEL Admin.dc.html", locked: true, role: "Admin" },
-        { glyph: "Op", title: "System Operations", titleAr: "عمليات النظام", desc: "Health, error queue and feature flags.", href: "SAQEEL Admin Extended.dc.html", locked: true, role: "Security / Workflow admin" },
-        { glyph: "Ln", title: "Language & Translations", titleAr: "اللغة والترجمة", desc: "Reference lists and EN/AR string coverage.", href: "SAQEEL Admin.dc.html", locked: true, role: "Compliance / Security admin" },
-        { glyph: "Bv", title: "Issue Multiple Violations", titleAr: "إصدار عدة مخالفات", desc: "Bulk violation issuance with a permanent-write gate.", href: "SAQEEL Admin Extended.dc.html", locked: true, role: "Ops / Compliance admin" },
-        { glyph: "Er", title: "Enforcement Recommendations", titleAr: "توصيات الإنفاذ", desc: "Unlicensed-establishment decisions queue.", href: "SAQEEL Enforcement.dc.html", locked: true, role: "Ops / Compliance admin" },
-        { glyph: "Ca", title: "Violation Cases", titleAr: "قضايا المخالفات", desc: "Case lifecycle from an inspection or violation.", href: "SAQEEL Cases.dc.html", locked: false, role: "" },
+        { glyph: "Ap", title: "Awaiting Approval", titleAr: "بانتظار الاعتماد", desc: "Configuration changes pending maker-checker.", href: "SAQEEL Admin Extended.dc.html", roles: ["compliance_admin"] },
+        { glyph: "Rq", title: "Configuration Requests", titleAr: "طلبات التهيئة", desc: "Change envelopes and their review workspace.", href: "SAQEEL Compliance Requests.dc.html", roles: ["compliance_admin"] },
+        { glyph: "Lg", title: "Activity Log", titleAr: "سجل النشاط", desc: "Append-only audit of every governed change.", href: "SAQEEL Admin.dc.html", roles: ["compliance_admin","form_admin","workflow_admin","security_admin","gis_admin","risk_owner"] },
+        { glyph: "Op", title: "System Operations", titleAr: "عمليات النظام", desc: "Health, error queue and feature flags.", href: "SAQEEL Admin Extended.dc.html", roles: ["security_admin","workflow_admin"] },
+        { glyph: "Ln", title: "Language & Translations", titleAr: "اللغة والترجمة", desc: "Reference lists and EN/AR string coverage.", href: "SAQEEL Admin.dc.html", roles: ["compliance_admin","security_admin","workflow_admin"] },
+        { glyph: "Bv", title: "Issue Multiple Violations", titleAr: "إصدار عدة مخالفات", desc: "Bulk violation issuance with a permanent-write gate.", href: "SAQEEL Admin Extended.dc.html", roles: ["ops","compliance_admin"] },
+        { glyph: "Er", title: "Enforcement Recommendations", titleAr: "توصيات الإنفاذ", desc: "Unlicensed-establishment decisions queue.", href: "SAQEEL Enforcement.dc.html", roles: ["ops","compliance_admin"] },
+        { glyph: "Ca", title: "Violation Cases", titleAr: "قضايا المخالفات", desc: "Case lifecycle from an inspection or violation.", href: "SAQEEL Cases.dc.html", roles: ["compliance_admin"] },
       ]},
     ];
+    // The grid IS the Control Panel's navigation directory, so it obeys the same
+    // contract as the rail: a card whose roles do not intersect the held set is
+    // removed, never shown with a padlock. A group that empties disappears too.
+    const HELD = ["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner", "ops"];
+    const allowed = c => (c.roles || []).some(r => HELD.includes(r));
     const swap = groups => groups.map(g => ({
       ...g,
       title: lang === "ar" ? g.titleAr : g.title,
       titleAlt: lang === "ar" ? g.title : g.titleAr,
-      cards: g.cards.map(c => ({ ...c, title: lang === "ar" ? c.titleAr : c.title, titleAlt: lang === "ar" ? c.title : c.titleAr })),
-    }));
+      cards: g.cards.filter(allowed).map(c => ({ ...c, title: lang === "ar" ? c.titleAr : c.title, titleAlt: lang === "ar" ? c.title : c.titleAr })),
+    })).filter(g => g.cards.length);
     return {
       theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
       toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
