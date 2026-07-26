@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r17",
-  "updated": "2026-07-26T00:45:00+03:00",
+  "revision": "SB-r19",
+  "updated": "2026-07-26T01:40:00+03:00",
   "updatedBy": "claude-code",
   "branch": "feature/ipad-field-channel-delivery",
   "committed": false,
@@ -1290,11 +1290,11 @@
       "pending": [
         {
           "lane": "design",
-          "text": "Runtime EN/LTR and AR/RTL screenshot comparison remains; sandbox blocked local port binding."
+          "text": "Runtime EN/LTR and AR/RTL comparison remains. The pixel-diff harness at apps/web/e2e/pixel/ now covers this card; its measurement replaces the earlier sandbox port-binding blocker."
         },
         {
           "lane": "design",
-          "text": "'Completion' design page has no repo counterpart — confirm whether it folds into Workspace submit."
+          "text": "RESOLVED 2026-07-25 — the 'Completion' design page DOES have a repo counterpart. Product Owner ruled SCR-IPAD-670 stale and completion is built as the post-submit STATE of /field/inspection/[id], not a separate route (see pwa-completion). This card no longer carries that question."
         }
       ],
       "phase": 5,
@@ -1477,7 +1477,7 @@
       "code": 70,
       "wiring": 50,
       "designPage": "pwa/SAQEEL PWA-Field Reports.dc.html · Reports Library · Challenge Report",
-      "route": "none — no /field/reports route in the repo",
+      "route": "web/src/app/(app)/field/reports/page.tsx · reports/[id]/page.tsx · reports.module.css",
       "pwa": {
         "state": "break",
         "note": "Three designed report screens with NO repo route. Inspectors cannot reach their own report history in the app."

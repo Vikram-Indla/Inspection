@@ -12,10 +12,12 @@ test.use({ storageState: storageStatePath("inspector") });
 
 let inspectionId: string;
 let itemIds: Record<string, string>;
+let inspectorAuth: { jwt: string; userId: string };
 
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
   const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  inspectorAuth = inspector;
 
   const fac = must(await rest("GET", "factories?select=id&factory_code=eq.F-1102", planner.jwt), "factory")[0];
   const pkg = must(await rest("GET", "package_versions?select=id&status=eq.published&order=published_at.desc&limit=1", planner.jwt), "package")[0];
@@ -47,23 +49,22 @@ test.beforeAll(async () => {
 
 test("offline answers queue locally, replay once on reconnect, offline submit never claims success", async ({ page, context }) => {
   await page.goto(`/field/inspection/${inspectionId}`);
-  const badge = page.locator(".sq-sync");
-  await expect(badge).toBeVisible();
+  await expect(page.getByText("Synced", { exact: true })).toBeVisible();
 
   // --- go offline ---
   await context.setOffline(true);
   await page.evaluate(() => window.dispatchEvent(new Event("offline")));
-  await expect(badge).toHaveClass(/sq-sync--offline/);
-  await expect(badge).toContainText("Offline — work saved locally");
+  const offlineBadge = page.getByText("Offline", { exact: true });
+  await expect(offlineBadge).toHaveClass(/badge-warning/);
 
   // Answer FS-101 while offline; UI reflects it instantly from the local draft.
-  const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
+  const q101 = page.locator("p").filter({ hasText: /^FS-101 ·/ }).locator("..");
   await q101.getByRole("button", { name: /^compliant$/i }).click();
   await expect(q101).toHaveClass(/is-answered/);
 
   // Answer the rest and submit while still offline (STM-SYNC-001 leg).
   for (const code of ["FS-102", "EG-201"]) {
-    const q = page.locator(".ipad-q", { hasText: code });
+    const q = page.locator("p").filter({ hasText: new RegExp(`^${code} ·`) }).locator("..");
     await q.getByRole("button", { name: /^compliant$/i }).click();
     await expect(q).toHaveClass(/is-answered/);
   }
@@ -76,7 +77,7 @@ test("offline answers queue locally, replay once on reconnect, offline submit ne
   // --- reconnect ---
   await context.setOffline(false);
   await page.evaluate(() => window.dispatchEvent(new Event("online")));
-  await expect(badge).toHaveClass(/sq-sync--synced/, { timeout: 30_000 });
+  await expect(page.getByText("Synced", { exact: true })).toHaveClass(/badge-compliant/, { timeout: 30_000 });
 
   // Server truth: all three responses landed and exactly one immutable v1 exists.
   const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
@@ -90,4 +91,125 @@ test("offline answers queue locally, replay once on reconnect, offline submit ne
     `submission_versions?select=id,version_number&inspection_id=eq.${inspectionId}`, inspector.jwt), "versions");
   expect(subs.length, "exactly one submission after replay (idempotent)").toBe(1);
   expect(subs[0].version_number).toBe(1);
+});
+
+test("STM-SYNC-002 detects a moved server row and never silently overwrites it", async ({ page }) => {
+  const itemId = itemIds["FS-101"];
+  assertOk(await rest("POST", "checklist_responses", inspectorAuth.jwt, {
+    inspection_id: inspectionId,
+    item_id: itemId,
+    response: { value: "compliant" },
+    is_complete: true,
+  }, "resolution=merge-duplicates,return=minimal"), "seed response baseline");
+
+  const baseline = must(await rest("GET",
+    `checklist_responses?select=updated_at&inspection_id=eq.${inspectionId}&item_id=eq.${itemId}`,
+    inspectorAuth.jwt), "response baseline")[0].updated_at as string;
+
+  await page.goto(`/field/inspection/${inspectionId}`);
+  await expect(page.getByText("Synced", { exact: true })).toBeVisible();
+
+  await page.evaluate(({ userId, inspectionId, itemId, baseline }) => new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const transaction = request.result.transaction("outbox", "readwrite");
+      transaction.objectStore("outbox").add({
+        kind: "response",
+        inspection_id: inspectionId,
+        item_id: itemId,
+        response: { value: "non_compliant" },
+        baseline_updated_at: baseline,
+        queued_at: new Date().toISOString(),
+      });
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    };
+  }), { userId: inspectorAuth.userId, inspectionId, itemId, baseline });
+
+  await new Promise(resolve => setTimeout(resolve, 25));
+  assertOk(await rest("PATCH",
+    `checklist_responses?inspection_id=eq.${inspectionId}&item_id=eq.${itemId}`,
+    inspectorAuth.jwt,
+    {
+      response: { value: "compliant", server_move: "STM-SYNC-002" },
+      is_complete: true,
+      updated_at: new Date().toISOString(),
+    },
+    "return=minimal"), "move server response underneath offline baseline");
+
+  await page.evaluate(() => window.dispatchEvent(new Event("online")));
+  await page.reload();
+  await expect(page.getByText(/Conflict on FS-101.*STM-SYNC-002.*no silent overwrite/)).toBeVisible({ timeout: 30_000 });
+
+  const conflicts = await page.evaluate(({ userId }) => new Promise<unknown[]>((resolve, reject) => {
+    const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const transaction = request.result.transaction("conflicts", "readonly");
+      const all = transaction.objectStore("conflicts").getAll();
+      all.onsuccess = () => resolve(all.result);
+      all.onerror = () => reject(all.error);
+    };
+  }), { userId: inspectorAuth.userId });
+  expect(conflicts).toHaveLength(1);
+
+  const server = must(await rest("GET",
+    `checklist_responses?select=response&inspection_id=eq.${inspectionId}&item_id=eq.${itemId}`,
+    inspectorAuth.jwt), "server response after conflict")[0];
+  expect(server.response).toEqual({ value: "compliant", server_move: "STM-SYNC-002" });
+});
+
+test("STM-SYNC-001 replays a duplicated queued submit exactly once under its idempotency key", async ({ page }) => {
+  const idempotencyKey = `offline-submit-${inspectionId}-${Date.now()}`;
+  await page.goto(`/field/inspection/${inspectionId}`);
+  await expect(page.getByText("Synced", { exact: true })).toBeVisible();
+
+  await page.evaluate(({ userId, inspectionId, idempotencyKey }) => new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const transaction = request.result.transaction("outbox", "readwrite");
+      const operation = {
+        kind: "submit",
+        inspection_id: inspectionId,
+        version_number: 1,
+        snapshot: {},
+        idempotency_key: idempotencyKey,
+        acknowledgement: {
+          name: "SAQEEL E2E Inspector",
+          signed: true,
+          ts: new Date().toISOString(),
+          signed_at: new Date().toISOString(),
+          signature_data_url: "data:image/png;base64,",
+        },
+        queued_at: new Date().toISOString(),
+      };
+      transaction.objectStore("outbox").add(operation);
+      transaction.objectStore("outbox").add(operation);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    };
+  }), { userId: inspectorAuth.userId, inspectionId, idempotencyKey });
+
+  await page.reload();
+  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 30_000 });
+
+  const versions = must(await rest("GET",
+    `submission_versions?select=id,version_number,idempotency_key&inspection_id=eq.${inspectionId}&idempotency_key=eq.${idempotencyKey}`,
+    inspectorAuth.jwt), "idempotent submission versions");
+  expect(versions, "two queued copies with one idempotency key must create exactly one immutable version").toHaveLength(1);
+  expect(versions[0].idempotency_key).toBe(idempotencyKey);
+
+  const outboxCount = await page.evaluate(({ userId }) => new Promise<number>((resolve, reject) => {
+    const request = indexedDB.open(`mim-field-v1:${userId}`, 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const transaction = request.result.transaction("outbox", "readonly");
+      const count = transaction.objectStore("outbox").count();
+      count.onsuccess = () => resolve(count.result);
+      count.onerror = () => reject(count.error);
+    };
+  }), { userId: inspectorAuth.userId });
+  expect(outboxCount, "both replay attempts must be consumed after the server reuses the idempotency key").toBe(0);
 });

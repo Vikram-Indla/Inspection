@@ -64,6 +64,7 @@ export type FieldLoginStrings = {
   forgot: string;
   signIn: string;
   offlineNote: string;
+  dismiss: string;
   copyright: string;
   // Copy with no DC counterpart: states the mockup never had to express.
   bioUnavailable: string;
@@ -160,6 +161,9 @@ export default function FieldLoginClient({
   const [showPasswordFallback, setShowPasswordFallback] = useState(false);
   const [bootstrapping, setBootstrapping] = useState(true);
   const [offlineReady, setOfflineReady] = useState(false);
+  // Login v2 makes the offline note dismissible. It is advisory copy, and on a
+  // short viewport it competed with the form for space.
+  const [showOfflineNote, setShowOfflineNote] = useState(true);
 
   // Network state is observed, never assumed: the DC's pill is a live claim
   // about connectivity and the field app is offline-first.
@@ -467,7 +471,7 @@ export default function FieldLoginClient({
 
       {/* footer: offline-first assurance */}
       <div className="fl-foot">
-        <div className="fl-foot-note">
+        {showOfflineNote && <div className="fl-foot-note">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -480,7 +484,12 @@ export default function FieldLoginClient({
             <circle cx="12" cy="20" r="1" />
           </svg>
           <span className="t-compact">{s.offlineNote}</span>
-        </div>
+          <button type="button" className="fl-foot-dismiss" onClick={() => setShowOfflineNote(false)}
+            aria-label={s.dismiss} title={s.dismiss}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+        </div>}
         <div className="fl-foot-row">
           <span className="t-caption">{s.copyright}</span>
           {/* The DC's "Last sync 08:41" is a fact about a signed-in device.

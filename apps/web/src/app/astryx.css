@@ -380,6 +380,31 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 }
 @keyframes ax-shimmer { to { background-position: -200% 0; } }
 
+/* Map loading state.
+   Mapbox paints an opaque canvas into its container as soon as the GL context
+   exists, well before any tile arrives, so a background-only skeleton on the
+   container is hidden behind it. Overlaying through ::after keeps the shimmer
+   above the canvas without adding a wrapper element, which matters because
+   callers position the map by [data-map-provider] (field/my-tasks). The
+   container is .mapboxgl-map, which Mapbox already sets position: relative. */
+.sq-map-loading::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(90deg, var(--surface-sunken) 25%, var(--surface-raised) 50%, var(--surface-sunken) 75%);
+  background-size: 200% 100%; animation: ax-shimmer 1.4s linear infinite;
+}
+/* Centred label above the shimmer. The text arrives as a quoted string in
+   --sq-map-loading-label (set by GeoMap) so it stays localised without adding
+   a DOM node; it falls back to empty rather than to English. */
+.sq-map-loading::before {
+  content: var(--sq-map-loading-label, "");
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  display: grid; place-items: center;
+  color: var(--text-secondary); font-size: 13px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sq-map-loading::after { animation: none; }
+}
+
 .ax-state {
   display: flex; flex-direction: column; align-items: center; text-align: center;
   gap: var(--ax-space-100); padding: var(--ax-space-600) var(--ax-space-300);

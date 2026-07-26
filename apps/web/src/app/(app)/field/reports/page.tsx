@@ -90,8 +90,13 @@ export default async function FieldReportsPage() {
         langLabel={locale === "ar" ? "EN" : "AR"}
       />
       <main className={styles.wrap}>
-        <div className={styles.segment} role="tablist" aria-label={tr("field.reports.view", "Report view", "عرض التقارير")}>
-          <span role="tab" aria-selected="true">{tr("field.reports.submitted", "Submitted reports", "التقارير المقدمة")}</span>
+        {/* Reports Library draws a two-option segmented control (visit records /
+            prior establishment visits). Only the submitted-history view is built,
+            so this renders as a plain label: a role="tablist" holding one tab that
+            controls no tabpanel announces "tab 1 of 1" and promises a switch that
+            does not exist. */}
+        <div className={styles.segment}>
+          <span>{tr("field.reports.submitted", "Submitted reports", "التقارير المقدمة")}</span>
         </div>
         <p className={styles.hint}>
           {tr(

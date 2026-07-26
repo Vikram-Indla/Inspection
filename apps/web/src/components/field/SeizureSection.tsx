@@ -6,7 +6,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { SeizureSectionStrings } from "./samplesSeizureStrings";
+import { seizureItemHeader, type SeizureSectionStrings } from "./samplesSeizureStrings";
 
 export type { SeizureSectionStrings };
 
@@ -24,6 +24,17 @@ function TrashIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
       <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />
+    </svg>
+  );
+}
+
+// Selected-gate glyph. Visit Results draws the pressed indicator as a filled
+// circle carrying a check, not an outline ring; the design's bare #fff stroke
+// is expressed here as the --text-on-action token.
+function GateCheckIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="seizure-check">
+      <path d="m5 12 5 5 9-10" />
     </svg>
   );
 }
@@ -47,11 +58,11 @@ export default function SeizureSection({ strings }: { strings: SeizureSectionStr
         <p id={`${inputPrefix}-gate`}>{strings.gate}</p>
         <div className="seizure-options">
           <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>
-            <span className="seizure-radio" aria-hidden="true" />
+            <span className="seizure-radio" aria-hidden="true">{gateAnswer === "yes" && <GateCheckIcon />}</span>
             {strings.gateYes}
           </button>
           <button type="button" aria-pressed={gateAnswer === "no"} onClick={() => setGateAnswer("no")}>
-            <span className="seizure-radio" aria-hidden="true" />
+            <span className="seizure-radio" aria-hidden="true">{gateAnswer === "no" && <GateCheckIcon />}</span>
             {strings.gateNo}
           </button>
         </div>
@@ -62,11 +73,10 @@ export default function SeizureSection({ strings }: { strings: SeizureSectionStr
           {products.map((product, index) => {
             const productId = `${inputPrefix}-product-${product.id}`;
             const quantityId = `${inputPrefix}-quantity-${product.id}`;
-            const rowLabel = strings.itemHeader.replace(/\d+/, String(index + 1));
             return (
               <div className="seizure-row" key={product.id}>
                 <div className="seizure-row-head">
-                  <span className="badge badge-neutral">{rowLabel}</span>
+                  <span className="badge badge-neutral">{seizureItemHeader(strings.itemHeader, index + 1)}</span>
                   <button
                     type="button"
                     className="seizure-delete"
@@ -150,7 +160,7 @@ export default function SeizureSection({ strings }: { strings: SeizureSectionStr
           min-block-size: 50px;
           padding: 12px 14px;
           border: 1.5px solid var(--border-input);
-          border-radius: 12px;
+          border-radius: var(--radius-md);
           background: var(--surface-primary);
           color: var(--text-primary);
           cursor: pointer;
@@ -162,15 +172,24 @@ export default function SeizureSection({ strings }: { strings: SeizureSectionStr
           background: var(--accent-soft);
         }
         .seizure-radio {
+          display: grid;
           inline-size: 18px;
           block-size: 18px;
           flex: none;
+          place-items: center;
           border: 2px solid var(--border-strong);
           border-radius: 50%;
         }
         .seizure-options button[aria-pressed="true"] .seizure-radio {
-          border: 5px solid var(--action-primary);
-          background: var(--surface-primary);
+          border-color: var(--action-primary);
+          background: var(--action-primary);
+        }
+        .seizure-radio :global(.seizure-check) {
+          inline-size: 11px;
+          block-size: 11px;
+          fill: none;
+          stroke: var(--text-on-action);
+          stroke-width: 3;
         }
         .seizure-repeater {
           display: flex;
@@ -204,7 +223,17 @@ export default function SeizureSection({ strings }: { strings: SeizureSectionStr
           cursor: pointer;
         }
         .seizure-delete:hover { background: var(--status-critical-soft); }
-        .seizure-delete svg, .seizure-add svg {
+        /* The icons come from sibling components, so styled-jsx never stamps its
+           scope class on them; without :global() these rules match nothing and
+           the glyphs render at the UA default size with a solid fill. */
+        .seizure-delete :global(svg) {
+          inline-size: 15px;
+          block-size: 15px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.7;
+        }
+        .seizure-add :global(svg) {
           inline-size: 16px;
           block-size: 16px;
           fill: none;
@@ -246,9 +275,13 @@ export default function SeizureSection({ strings }: { strings: SeizureSectionStr
           font-weight: 600;
         }
         .seizure-add:hover { background: var(--surface-secondary); }
+        /* Visit Results collapses its two-column field grid (.vr-grid2) at 700px,
+           not at the 600px PWA shell breakpoint. */
+        @media (max-width: 700px) {
+          .seizure-fields { grid-template-columns: minmax(0, 1fr); }
+        }
         @media (max-width: 600px) {
           .seizure-card { padding: 16px; }
-          .seizure-fields { grid-template-columns: minmax(0, 1fr); }
         }
       `}</style>
     </section>
