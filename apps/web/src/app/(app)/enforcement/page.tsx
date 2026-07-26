@@ -1,6 +1,8 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import EnforcementDecisionForm from "./EnforcementDecisionForm";
 import EnforcementLibrary, {
   type EnforcementLibraryRow,
   type EnforcementLibraryStrings,
@@ -58,28 +60,84 @@ type RuntimeViolation = {
   } | null;
 };
 
+type RecommendationRow = {
+  id: string;
+  recommendation_notes: string | null;
+  recommended_by: string;
+  recommended_at: string;
+  factories: {
+    name: string;
+    factory_code: string;
+  } | null;
+};
+
+type DecidedRecommendationRow = {
+  id: string;
+  status: string;
+  decided_at: string | null;
+  decision_reason: string | null;
+  factories: {
+    name: string;
+    factory_code: string;
+  } | null;
+};
+
+// WA-DES-023 · WA-M6-AC-001/002/004/005 · M3-09 · CD-059
+// The responsive library and the DEC-F recommendation queue are one governed
+// enforcement surface. Policy-held measures and legal wording remain
+// explicitly unconfigured; only the approved/rejected human disposition and
+// its required basis can be recorded through the guarded server action.
 export default async function EnforcementPage() {
   const [{ t, locale }, sb] = await Promise.all([useT(), supabaseServer()]);
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
+  const { data: { user } } = await getVerifiedUser(sb);
 
-  const { data, error } = await sb
-    .from("violations")
-    .select(`
-      id,mapping_version,invalidated_at,
-      violation_codes(code,title,level),
-      inspections!inner(
-        id,status,started_at,submitted_at,
-        visits!inner(
-          id,
-          factories!inner(id,name,factory_code,license_number,region,city),
-          assignments(status,profiles(full_name))
-        ),
-        action_forms(id,violation_id,form_type,status,owner_name),
-        evidence(id,linked_type,linked_id,content_sha256)
-      )
-    `)
-    .in("inspections.visits.factories.factory_code", [...CLEAN_FACTORY_CODES])
-    .limit(100);
+  const [
+    { data, error },
+    roleRead,
+    recommendationRead,
+    decidedRead,
+  ] = await Promise.all([
+    sb
+      .from("violations")
+      .select(`
+        id,mapping_version,invalidated_at,
+        violation_codes(code,title,level),
+        inspections!inner(
+          id,status,started_at,submitted_at,
+          visits!inner(
+            id,
+            factories!inner(id,name,factory_code,license_number,region,city),
+            assignments(status,profiles(full_name))
+          ),
+          action_forms(id,violation_id,form_type,status,owner_name),
+          evidence(id,linked_type,linked_id,content_sha256)
+        )
+      `)
+      .in("inspections.visits.factories.factory_code", [...CLEAN_FACTORY_CODES])
+      .limit(100),
+    user
+      ? sb.from("user_roles").select("role_key").eq("user_id", user.id)
+      : Promise.resolve({ data: [] as { role_key: string }[], error: null }),
+    sb
+      .from("enforcement_recommendations")
+      .select("id,recommendation_notes,recommended_by,recommended_at,factories!inner(name,factory_code)")
+      .eq("status", "pending")
+      .in("factories.factory_code", [...CLEAN_FACTORY_CODES])
+      .order("recommended_at", { ascending: true }),
+    sb
+      .from("enforcement_recommendations")
+      .select("id,status,decided_at,decision_reason,factories!inner(name,factory_code)")
+      .neq("status", "pending")
+      .in("factories.factory_code", [...CLEAN_FACTORY_CODES])
+      .order("decided_at", { ascending: false })
+      .limit(20),
+  ]);
+
+  const roles = new Set((roleRead.data ?? []).map(row => row.role_key));
+  const canDecide = !roleRead.error && (roles.has("ops") || roles.has("compliance_admin"));
+  const recommendations = (recommendationRead.data ?? []) as unknown as RecommendationRow[];
+  const decided = (decidedRead.data ?? []) as unknown as DecidedRecommendationRow[];
 
   const strings: EnforcementLibraryStrings = {
     search: tr("mvp3.enforcement.search", "Search enforcement", "البحث في سجلات الإنفاذ"),
@@ -181,6 +239,184 @@ export default async function EnforcementPage() {
       ) : (
         <EnforcementLibrary rows={rows} strings={strings} locale={locale} />
       )}
+
+      <section
+        className="panel stack"
+        aria-labelledby="enforcement-recommendations-heading"
+        style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-5)" }}
+      >
+        <div className="row" style={{ justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
+          <div>
+            <h2 id="enforcement-recommendations-heading" style={{ margin: 0 }}>
+              {tr("mvp3.enforcement.recommendations", "Enforcement recommendations", "توصيات الإنفاذ")}
+            </h2>
+            <p className="t-caption" style={{ marginBlockEnd: 0 }}>
+              {tr(
+                "mvp3.enforcement.recommendations.rule",
+                "Inspector recommendations remain pending until a different Operations or Compliance Admin checker records a decision and its basis.",
+                "تظل توصيات المفتش معلقة حتى يسجل مدقق مختلف من العمليات أو مسؤول الامتثال القرار وأساسه.",
+              )}
+            </p>
+          </div>
+          {!recommendationRead.error ? (
+            <span className="badge badge-warning">
+              <bdi>{recommendations.length.toLocaleString(locale === "ar" ? "ar-SA" : "en-US")}</bdi>{" "}
+              {tr("mvp3.enforcement.pending", "pending", "معلقة")}
+            </span>
+          ) : null}
+        </div>
+
+        {roleRead.error ? (
+          <div className="sq-banner sq-banner--warning" role="alert">
+            <div>{tr(
+              "mvp3.enforcement.permissions",
+              "Decision permissions could not be verified. Writes are disabled.",
+              "تعذر التحقق من صلاحيات القرار. تم تعطيل الكتابة.",
+            )}</div>
+          </div>
+        ) : null}
+        {recommendationRead.error ? (
+          <div className="sq-banner sq-banner--warning" role="alert">
+            <div>{tr(
+              "mvp3.enforcement.recommendationsUnavailable",
+              "The recommendation queue is unavailable. No pending count is claimed.",
+              "قائمة التوصيات غير متاحة. لا يُدّعى أي عدد معلق.",
+            )}</div>
+          </div>
+        ) : null}
+        {!recommendationRead.error && recommendations.length === 0 ? (
+          <div className="sq-state sq-state--inline" role="status">
+            <span className="sq-state__glyph" aria-hidden="true">✓</span>
+            <h3>{tr("mvp3.enforcement.noRecommendations", "No pending recommendations", "لا توجد توصيات معلقة")}</h3>
+          </div>
+        ) : null}
+
+        {recommendations.map(row => {
+          const makerCheckerBlocked = row.recommended_by === user?.id;
+          return (
+            <article className="sq-panel stack" style={{ padding: "var(--space-5)" }} key={row.id}>
+              <div className="row" style={{ justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
+                <div>
+                  <strong>{row.factories?.name ?? row.factories?.factory_code ?? "—"}</strong>
+                  <div className="t-caption">
+                    <bdi>{row.id}</bdi>
+                    {" · "}
+                    <bdi>{new Date(row.recommended_at).toLocaleString(locale)}</bdi>
+                  </div>
+                </div>
+                <span className="badge badge-warning">
+                  {tr("mvp3.enforcement.measureNotConfigured", "Recommended measure: Not configured", "التدبير الموصى به: غير مهيأ")}
+                </span>
+              </div>
+              {row.recommendation_notes ? <p>{row.recommendation_notes}</p> : null}
+              <dl className="sq-grid">
+                <div>
+                  <dt className="t-caption">{tr("mvp3.enforcement.measure", "Measure catalogue", "كتالوج التدابير")}</dt>
+                  <dd>{tr("mvp3.enforcement.notConfigured", "Not configured", "غير مهيأ")}</dd>
+                </div>
+                <div>
+                  <dt className="t-caption">{tr("mvp3.enforcement.legalBasis", "Legal basis", "الأساس القانوني")}</dt>
+                  <dd>{tr("mvp3.enforcement.notConfigured", "Not configured", "غير مهيأ")}</dd>
+                </div>
+              </dl>
+              {canDecide ? (
+                makerCheckerBlocked ? (
+                  <div className="sq-banner" role="note">
+                    <div>{tr(
+                      "mvp3.enforcement.error.makerChecker",
+                      "Maker-checker blocked this decision: the recommender cannot decide their own recommendation.",
+                      "منع فصل المُعدّ عن المدقّق هذا القرار: لا يمكن لمقدم التوصية البت في توصيته.",
+                    )}</div>
+                  </div>
+                ) : (
+                  <EnforcementDecisionForm
+                    recommendationId={row.id}
+                    strings={{
+                      approve: tr("mvp3.enforcement.approve", "Approve", "موافقة"),
+                      reject: tr("mvp3.enforcement.reject", "Reject", "رفض"),
+                      reason: tr("mvp3.enforcement.reason", "Decision basis (required)", "أساس القرار (مطلوب)"),
+                      reasonPlaceholder: tr("mvp3.enforcement.reasonPlaceholder", "Recorded in the immutable audit trail", "يُسجَّل في مسار التدقيق غير القابل للتعديل"),
+                      submit: tr("mvp3.enforcement.record", "Record decision", "تسجيل القرار"),
+                      submitting: tr("mvp3.enforcement.recording", "Recording…", "جارٍ التسجيل…"),
+                      success: tr("mvp3.enforcement.recorded", "Decision recorded and audited.", "تم تسجيل القرار وتدقيقه."),
+                      errors: {
+                        auth_required: tr("mvp3.enforcement.error.auth", "Your session expired. Sign in and try again.", "انتهت جلستك. سجّل الدخول وحاول مرة أخرى."),
+                        invalid_request: tr("mvp3.enforcement.error.invalid", "The decision request is invalid.", "طلب القرار غير صالح."),
+                        reason_required: tr("mvp3.enforcement.error.reason", "A decision reason is required.", "سبب القرار مطلوب."),
+                        maker_checker: tr("mvp3.enforcement.error.makerChecker", "Maker-checker blocked this decision.", "منع فصل المُعدّ عن المدقّق هذا القرار."),
+                        conflict: tr("mvp3.enforcement.error.conflict", "This recommendation changed or was already decided. Reload before deciding again.", "تغيرت هذه التوصية أو تم البت فيها. أعد التحميل قبل اتخاذ قرار جديد."),
+                        write_failed: tr("mvp3.enforcement.error.write", "The decision could not be recorded. No outcome was changed.", "تعذر تسجيل القرار. لم تتغير أي نتيجة."),
+                      },
+                    }}
+                  />
+                )
+              ) : (
+                <p className="t-caption">
+                  {tr(
+                    "mvp3.enforcement.readOnly",
+                    "Read-only. An Operations or Compliance Admin checker records the decision.",
+                    "للقراءة فقط. يسجل مدقق من العمليات أو مسؤول الامتثال القرار.",
+                  )}
+                </p>
+              )}
+            </article>
+          );
+        })}
+      </section>
+
+      <section
+        className="panel stack"
+        aria-labelledby="enforcement-decision-trail-heading"
+        style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-4)" }}
+      >
+        <h2 id="enforcement-decision-trail-heading" style={{ margin: 0 }}>
+          {tr("mvp3.enforcement.decisionTrail", "Immutable decision trail", "مسار القرار غير القابل للتعديل")}
+        </h2>
+        {decidedRead.error ? (
+          <div className="sq-banner sq-banner--warning" role="alert">
+            <div>{tr(
+              "mvp3.enforcement.auditUnavailable",
+              "Decision history is unavailable. No history claim is made.",
+              "سجل القرارات غير متاح. لا يُدّعى وجود سجل.",
+            )}</div>
+          </div>
+        ) : decided.length === 0 ? (
+          <p className="t-caption">{tr("mvp3.enforcement.noHistory", "No decisions recorded yet.", "لم تُسجَّل قرارات بعد.")}</p>
+        ) : (
+          <div className="sq-tablewrap" tabIndex={0}>
+            <table className="sq-table">
+              <thead>
+                <tr>
+                  <th scope="col">{tr("mvp3.enforcement.establishment", "Establishment", "المنشأة")}</th>
+                  <th scope="col">{tr("mvp3.enforcement.decision", "Decision", "القرار")}</th>
+                  <th scope="col">{tr("mvp3.enforcement.reason", "Decision basis", "أساس القرار")}</th>
+                  <th scope="col">{tr("mvp3.enforcement.decidedAt", "Recorded", "سُجِّل")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {decided.map(row => (
+                  <tr key={row.id}>
+                    <th scope="row">
+                      {row.factories?.name ?? row.factories?.factory_code ?? "—"}
+                      <span className="t-caption"><bdi>{row.id}</bdi></span>
+                    </th>
+                    <td><span className="badge">{row.status}</span></td>
+                    <td>{row.decision_reason ?? "—"}</td>
+                    <td><bdi>{row.decided_at ? new Date(row.decided_at).toLocaleString(locale) : "—"}</bdi></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="t-caption">
+          {tr(
+            "mvp3.enforcement.auditRule",
+            "Decision rows and their append-only audit events cannot be edited or deleted from this screen.",
+            "لا يمكن تعديل أو حذف صفوف القرارات وأحداث التدقيق الإلحاقية من هذه الشاشة.",
+          )}
+        </p>
+      </section>
     </Shell>
   );
 }
