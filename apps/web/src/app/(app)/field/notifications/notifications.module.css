@@ -28,6 +28,15 @@
 .row:hover { background: var(--surface-sunken); }
 .rowUnread { background: color-mix(in srgb, var(--accent-soft) 45%, var(--surface-primary)); }
 
+.rowLink {
+  display: flex; flex-direction: column; gap: 6px;
+  color: inherit; text-decoration: none;
+}
+
+.rowHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.rowIdentity { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.actions { display: flex; align-items: center; gap: 8px; }
+
 .icn { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; }
 
 .clamp2 {

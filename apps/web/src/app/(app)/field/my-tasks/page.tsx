@@ -101,6 +101,12 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
 
   const dt = (value: string | null | undefined) =>
     value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
+  const dateTime = (value: string) =>
+    new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "Asia/Riyadh",
+    }).format(new Date(value));
   const text = (value: string | number | null | undefined) => (value == null || value === "" ? "—" : String(value));
   const label = (value: string | null | undefined) => (value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—");
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
@@ -186,6 +192,10 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
       city: a.visits.factories!.city,
     },
   }));
+  const renderNow = Date.now();
+  const windowStartLabels = Object.fromEntries(
+    browserTasks.map(task => [task.id, dateTime(task.windowStart)]),
+  );
 
   const selected = tasks.find(v => v.id === params.task) ?? tasks[0] ?? null;
   const activeReg: RegChip = (REG_CHIPS as readonly string[]).includes(params.reg ?? "")
@@ -354,6 +364,8 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
             selectedId={selected?.id ?? null}
             alertSourceAvailable={!notificationRead.error}
             locale={locale === "ar" ? "ar" : "en"}
+            renderNow={renderNow}
+            windowStartLabels={windowStartLabels}
             labels={{
               search: tr("field.myTasks.search", "Search factory, visit, city or region", "ابحث عن منشأة أو زيارة أو مدينة أو منطقة"),
               all: tr("field.myTasks.filter.all", "All", "الكل"),

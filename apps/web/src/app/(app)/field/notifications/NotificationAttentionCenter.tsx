@@ -6,7 +6,6 @@ import { formatDateTime } from "@/lib/dates";
 import {
   assignmentNoticeKind,
   fieldNotificationCacheKey,
-  fieldNotificationHref,
   parseFieldNotificationCache,
   type FieldNotificationRow,
 } from "@/lib/field-notifications";
@@ -203,25 +202,28 @@ export default function NotificationAttentionCenter(props: Props) {
             : [row.payload?.reason, row.payload?.decision, row.payload?.factory]
                 .find(value => typeof value === "string" && value) as string | undefined;
           const unread = isNotificationUnread(row);
+          const detailHref = `/field/notifications/${encodeURIComponent(row.id)}`;
           return (
             <article key={row.id} className={`${styles.row} ${unread ? styles.rowUnread : ""}`}>
-              <div className={styles.rowHead}>
-                <div className={styles.rowIdentity}>
-                  <span className={styles.icn} style={{ background: icon.bg, color: icon.color }} aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                      <path d={icon.path} />
-                    </svg>
-                  </span>
-                  <div>
-                    <strong>{props.strings.kinds[kind] || row.event_key.replace(/_/g, " ")}</strong>
-                    {detail && <div className={`t-caption ${styles.clamp2}`}>{detail}</div>}
+              <Link className={styles.rowLink} href={detailHref} prefetch={false}>
+                <div className={styles.rowHead}>
+                  <div className={styles.rowIdentity}>
+                    <span className={styles.icn} style={{ background: icon.bg, color: icon.color }} aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                        <path d={icon.path} />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>{props.strings.kinds[kind] || row.event_key.replace(/_/g, " ")}</strong>
+                      {detail && <div className={`t-caption ${styles.clamp2}`}>{detail}</div>}
+                    </div>
                   </div>
+                  {unread && <span className="badge">{props.strings.newBadge}</span>}
                 </div>
-                {unread && <span className="badge">{props.strings.newBadge}</span>}
-              </div>
-              <div className="t-caption">{formatDateTime(row.created_at, props.locale)}</div>
+                <div className="t-caption">{formatDateTime(row.created_at, props.locale)}</div>
+              </Link>
               <div className={styles.actions}>
-                <Link className="btn btn-secondary btn-sm" href={fieldNotificationHref(row)} prefetch={false}>
+                <Link className="btn btn-secondary btn-sm" href={detailHref} prefetch={false}>
                   {props.strings.open}
                 </Link>
                 {unread && (

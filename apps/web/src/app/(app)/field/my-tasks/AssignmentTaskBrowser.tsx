@@ -58,12 +58,16 @@ export default function AssignmentTaskBrowser({
   selectedId,
   alertSourceAvailable,
   locale,
+  renderNow,
+  windowStartLabels,
   labels,
 }: {
   tasks: AssignmentTask[];
   selectedId: string | null;
   alertSourceAvailable: boolean;
   locale: "en" | "ar";
+  renderNow: number;
+  windowStartLabels: Record<string, string>;
   labels: Copy;
 }) {
   const [query, setQuery] = useState("");
@@ -82,10 +86,14 @@ export default function AssignmentTaskBrowser({
     };
   }, []);
 
-  const counts = useMemo(() => assignmentCounts(tasks, Date.now()), [tasks]);
+  // `renderNow` and each task's display label are produced by the server and
+  // serialized with the component props. The server render and the first
+  // browser render must use the same instant and the same formatted text;
+  // calling Date.now()/Intl here caused the shipped hydration mismatch.
+  const counts = useMemo(() => assignmentCounts(tasks, renderNow), [renderNow, tasks]);
   const visible = useMemo(() => filterAssignmentTasks(tasks, {
-    filter, query, sort, locale, now: Date.now(),
-  }), [filter, locale, query, sort, tasks]);
+    filter, query, sort, locale, now: renderNow,
+  }), [filter, locale, query, renderNow, sort, tasks]);
   const connectivity = connectivityPresentation(online, labels);
 
   const filterButtons: { key: AssignmentFilter; label: string }[] = [
@@ -162,9 +170,7 @@ export default function AssignmentTaskBrowser({
                 </span>
                 <strong className={styles.taskFactory}><bdi>{task.factory.name}</bdi></strong>
                 <span className={`${styles.taskDate} t-caption`}>
-                  {new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", {
-                    dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh",
-                  }).format(new Date(task.windowStart))}
+                  {windowStartLabels[task.id] ?? "—"}
                   {task.factory.city ? ` · ${task.factory.city}` : ""}
                 </span>
                 <span className={styles.taskSignals}>
