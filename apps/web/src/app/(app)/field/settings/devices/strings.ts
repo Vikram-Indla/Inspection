@@ -57,6 +57,18 @@ export type TrustedDevicesStrings = {
   enroll: string;
   enrolling: string;
   enrollBlocked: string;
+  enrollRegistered: string;
+
+  // Biometric.dc.html — "Device Enrollment" column heading block.
+  bioSectionTitle: string;
+  bioSectionDesc: string;
+
+  // Biometric.dc.html — the "Trusted Device" summary panel (`dl.desc`).
+  bioSummaryLabel: string;
+  bioSummaryDevice: string;
+  bioSummaryDeviceId: string;
+  bioSummaryStatus: string;
+  bioSummaryLastAuth: string;
 
   bioTitle: string;
   bioSubtitle: string;

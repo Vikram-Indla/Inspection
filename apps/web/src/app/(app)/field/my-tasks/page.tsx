@@ -10,6 +10,7 @@ import type { ProductionLine } from "@/lib/factory360/dossier";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { isNotificationUnread } from "@/lib/notification-read";
 import AssignmentTaskBrowser, { type AssignmentTask } from "./AssignmentTaskBrowser";
+import TaskHeaderStatus from "./TaskHeaderStatus";
 import styles from "./my-tasks.module.css";
 // SCR-IPAD a11y hardening — reduced-motion, coarse-pointer touch targets,
 // focus-visible and the global RTL directional-icon flip, applied via the scope.
@@ -219,6 +220,12 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
   // the shared dossier. Identical resolution to /field/establishments.
   const permissions = selected?.factory_id ? await resolveFactory360Permissions(sb) : null;
   let dossier: Awaited<ReturnType<typeof loadFactory360Dossier>> | null = null;
+  // The design's Establishment Data header carries a "Timeline" control. Its
+  // governed target is the existing Factory 360 profile (CR-106 — factory
+  // profile AND history), reached with the same CR/licence pair this screen
+  // already resolved. No new capability is invented; when no CR/licence
+  // mapping resolves there is no dossier section at all, so no dead control.
+  let timelineHref: string | null = null;
   if (selected?.factory_id && permissions?.["view_factory_360"]) {
     const { data: licRows } = await sb.from("industrial_licenses")
       .select("id, commercial_registration_id, license_number")
@@ -228,6 +235,8 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
       { id: string; commercial_registration_id: string } | undefined;
     if (lic?.commercial_registration_id) {
       dossier = await loadFactory360Dossier(sb, lic.commercial_registration_id, lic.id, permissions);
+      timelineHref = `/field/factory-360/${lic.commercial_registration_id}?license=${lic.id}`
+        + `&return=${encodeURIComponent(`/field/my-tasks?task=${selected.id}`)}`;
     }
   }
 
@@ -355,6 +364,14 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
         title={tr("field.myTasks.title", "My Tasks", "مهامي")}
         subtitle={tr("field.myTasks.sub", "Tasks assigned to you · authority-scoped", "المهام المسندة إليك · نطاق محكوم بالصلاحية")}
         langHref={langHref} langLabel={langLabel}
+        right={
+          <TaskHeaderStatus
+            onlineLabel={tr("field.myTasks.onlinePill", "Online", "متصل")}
+            offlineLabel={tr("field.myTasks.offlinePill", "Offline", "غير متصل")}
+            syncLabel={tr("field.myTasks.syncNow", "Sync now", "مزامنة الآن")}
+            syncingLabel={tr("field.myTasks.syncing", "Syncing…", "جارٍ المزامنة…")}
+          />
+        }
       />
       <div className={`${styles.grid} ${pane} ${a11y.scope}`}>
         {/* LEFT — assigned task list */}
@@ -451,6 +468,16 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                     <div className={styles.secHead}>
                       <h3 style={{ margin: 0 }}>{tr("field.myTasks.estData", "Establishment Data", "بيانات المنشأة")}</h3>
                       <span className="badge badge-info">{tr("field.myTasks.licensedEst", "Licensed establishment", "منشأة مرخصة")}</span>
+                      <span className="grow" />
+                      {timelineHref ? (
+                        <Link href={timelineHref} prefetch={false} className="btn btn-secondary btn-sm">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+                            className={styles.secHeadIcon} aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 2" />
+                          </svg>
+                          {tr("field.myTasks.timeline", "Timeline", "الجدول الزمني")}
+                        </Link>
+                      ) : null}
                     </div>
                     <div className={styles.title}><bdi>{crTitle}</bdi></div>
                     <dl className={styles.row2}>
@@ -459,7 +486,11 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                       <div className={styles.kv}><dt className="k">{tr("field.myTasks.investment", "Investment size", "حجم الاستثمار")}</dt><dd className="v"><bdi>{investment}</bdi></dd></div>
                       <div className={styles.kv}><dt className="k">{tr("field.myTasks.requestDate", "Request created on", "تاريخ إنشاء الطلب")}</dt><dd className="v id-code">{dt(cr?.issue_date)}</dd></div>
                       <div className={styles.kv}><dt className="k">{tr("field.myTasks.estType", "Establishment type", "نوع المنشأة")}</dt><dd className="v">{tr("field.myTasks.factory", "Factory", "مصنع")}</dd></div>
-                      <div className={styles.kv}><dt className="k">{tr("field.myTasks.estStatus", "Establishment status", "حالة المنشأة")}</dt><dd className="v">{label(cr?.status)}</dd></div>
+                      {/* Design renders establishment status as a badge. Tone
+                          is informational only — no status is graded here, and
+                          an absent status stays a dash rather than a badge. */}
+                      <div className={styles.kv}><dt className="k">{tr("field.myTasks.estStatus", "Establishment status", "حالة المنشأة")}</dt>
+                        <dd className="v">{cr?.status ? <span className="badge badge-info">{label(cr.status)}</span> : "—"}</dd></div>
                     </dl>
                   </div>
 
@@ -469,13 +500,21 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                     <dl className={styles.row2}>
                       <div className={styles.kv}>
                         <dt className="k">{tr("field.myTasks.complianceRate", "Compliance rate", "نسبة الامتثال")}</dt>
-                        <dd className="v id-code">{currentCompliance?.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</dd>
+                        {/* Design pairs the rate with a trailing caption. The
+                            only governed caption is the passed/answered basis
+                            used by Factory 360 — no band word is invented. */}
+                        <dd className="v id-code">
+                          {currentCompliance?.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}
+                          {currentCompliance?.status === "available"
+                            ? <span className="t-caption"> {currentCompliance.passed}/{currentCompliance.answered}</span>
+                            : null}
+                        </dd>
                       </div>
                       <div className={styles.kv}>
                         <dt className="k">{tr("field.myTasks.riskScore", "Risk score", "درجة الخطورة")}</dt>
                         <dd>
                           {permissions?.["view_risk_details"]
-                            ? <span className={`badge ${factory?.risk_band === "high" ? "badge-critical" : factory?.risk_band === "medium" ? "badge-warning" : factory?.risk_band ? "badge-compliant" : "badge-outline"}`}>{text(factory?.risk_score)}{factory?.risk_band ? ` · ${label(factory.risk_band)}` : ""}</span>
+                            ? <span className={`badge ${factory?.risk_band === "high" ? "badge-critical" : factory?.risk_band === "medium" ? "badge-warning" : factory?.risk_band ? "badge-compliant" : "badge-outline"}`}><span className="dot" aria-hidden="true" />{text(factory?.risk_score)}{factory?.risk_band ? ` · ${label(factory.risk_band)}` : ""}</span>
                             : <span className="badge badge-outline">{t("f360.restricted", "restricted")}</span>}
                         </dd>
                       </div>
@@ -507,7 +546,15 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                     </div>
                     <div className={styles.map}>
                       {lat != null && lng != null ? (
-                        <FieldLocationMap lat={lat} lng={lng} label={factory?.name ?? crTitle} />
+                        <>
+                          <FieldLocationMap lat={lat} lng={lng} label={factory?.name ?? crTitle} />
+                          {/* Design's map attribution caption. The provider is
+                              named only on the branch that actually renders the
+                              shared Mapbox GL map. */}
+                          <span className={`id-code ${styles.mapCaption}`}>
+                            Mapbox GL · {tr("field.myTasks.officialLoc", "official location", "الموقع الرسمي")}
+                          </span>
+                        </>
                       ) : (
                         <>
                           <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(var(--border-subtle) 1px, transparent 1px)", backgroundSize: "22px 22px", opacity: 0.6 }} />
@@ -544,7 +591,7 @@ export default async function FieldMyTasks({ searchParams }: { searchParams: Pro
                       <div className={styles.regstack}>
                         {regCards.map((c, i) => (
                           <div key={i} className={styles.regcard}>
-                            <div style={{ fontWeight: 600, fontSize: 14, marginBlockEnd: 8 }}><bdi>{c.title}</bdi></div>
+                            <div className={styles.regcardTitle}><bdi>{c.title}</bdi></div>
                             <dl className={styles.row2}>
                               {c.lines.map(([k, val], j) => (
                                 <div key={j} className={styles.kv}><dt className="k">{k}</dt><dd className="v"><bdi>{val}</bdi></dd></div>

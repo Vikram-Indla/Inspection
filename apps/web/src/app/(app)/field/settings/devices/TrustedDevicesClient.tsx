@@ -22,6 +22,34 @@ import styles from "./devices.module.css";
 type Locale = "en" | "ar";
 
 // ---------------------------------------------------------------------------
+// COMPOSITION — this route renders TWO design pages, in this order:
+//
+//   SAQEEL PWA-Field Trusted Devices.dc.html          (whole page)
+//     1  header .......................... page.tsx / <FieldHeader>
+//     2  intro caption
+//     3  device register list (`sc-for` over .td-card)
+//     4  "Enroll new device" — .btn-primary.btn-block.btn-lg
+//     5  register note — .panel with info glyph
+//
+//   SAQEEL PWA-Field Biometric.dc.html — "Device Enrollment" column only
+//     6  heading block — h1 20px/700 + caption
+//     7  "Trusted Device" panel — .t-label + dl.desc
+//     8  authenticator panel — 44px tile + title + caption + switch
+//     9  scope callout — .panel with 3px inline-start accent edge
+//    10  "Enable biometric lock" — .btn-primary.btn-block.btn-lg
+//    11  "Unenroll device" — .btn-ghost.btn-block
+//
+// Two parts of the Biometric design are deliberately NOT here:
+//   • Its `.bio-seg` segmented bar (Biometric Lock / Device Enrollment + lang +
+//     theme). That is the standalone page's own chrome. This route already
+//     carries the Trusted Devices header, whose language pill is the same
+//     control; the field channel is fixed dark so the theme button has nothing
+//     to switch; and the "Biometric Lock" tab targets the full-screen unlock,
+//     which lives in login/field/**, not in this segment. Rendering it here
+//     would stack a second chrome bar with one inert tab.
+//   • The full-screen "Biometric Lock" view itself — same reason.
+//
+// ---------------------------------------------------------------------------
 // WHAT IS AND IS NOT REAL ON THIS SCREEN — read before changing anything here.
 //
 // REAL (backend-authoritative):
@@ -31,20 +59,25 @@ type Locale = "en" | "ar";
 //     rendered comes from that row; nothing is inferred client-side, ever.
 //   • Trust transitions. Only `mvp3_issue_device_command` (Operations /
 //     security_admin) moves a row between trust states. This screen cannot.
+//   • `display_name` (migration 20260726150000) is the design's device name.
+//     It is nullable: null falls back to the `platform` check-constraint value
+//     in words, and an unrecognised platform renders an em dash.
 //
 // NOT REAL (and must never be presented as if it were):
-//   • Per-device Revoke. The design mock puts one on every card. The schema has
-//     no UPDATE and no DELETE policy on `mvp3_devices`, so no revoke exists that
-//     an inspector may call. The control is therefore ABSENT rather than
-//     present-and-broken, and `registerNote` names Operations as its owner.
-//   • Device NAME. `mvp3_devices` has no name/model column. The bold line is the
-//     `platform` check-constraint value rendered in words; an unrecognised value
-//     renders an em dash rather than a plausible-looking model name.
+//   • Per-device Revoke. The design mock puts one on every card, and the
+//     Biometric design's "Unenroll device" implies the same. `mvp3_devices` has
+//     no UPDATE and no DELETE policy, and the requirements baseline names
+//     revocation zero times, so no revoke exists that an inspector may call.
+//     The control is ABSENT rather than present-and-disabled — a greyed-out
+//     button is still a claim that the capability exists. `registerNote` names
+//     Operations as its owner. The design's slot 11 therefore carries the one
+//     un-enrolment that IS real: removing this browser's local biometric
+//     credential.
 //   • Separate Face ID and Touch ID switches. The design shows two. WebAuthn
 //     exposes only `isUserVerifyingPlatformAuthenticatorAvailable()` — a single
 //     boolean that never says which modality the hardware offers. Two
-//     independently-togglable rows would be two invented capabilities, so this
-//     renders the one control the platform actually reports.
+//     independently-togglable rows would be two invented capabilities, so
+//     design slots 8a/8b collapse into the one control the platform reports.
 //   • Self-enrolment is gated on the `mvp3_devices_self_enroll_insert` policy.
 //     Where that policy is not applied the insert fails with 42501 and the
 //     action returns `policy_pending` — enrolment genuinely cannot complete, so
@@ -105,14 +138,18 @@ function statusBadge(status: DeviceTrustStatus): string {
 }
 
 /**
- * The design's bold device line. `mvp3_devices` carries no name or model, so
- * this renders the `platform` enum in words. An unrecognised value renders an
- * em dash — never a guessed device name.
+ * The design's bold device line. `display_name` is the design's name and is
+ * nullable; where it is null this renders the `platform` check-constraint value
+ * in words. An unrecognised value renders an em dash — never a guessed model.
  */
 function platformLabel(platform: string, s: TrustedDevicesStrings): string {
   if (platform === "ipad_os") return s.platformIpadOs;
   if (platform === "web_managed") return s.platformWebManaged;
   return "—";
+}
+
+function deviceName(row: FieldDeviceListRow, s: TrustedDevicesStrings): string {
+  return row.displayName ?? platformLabel(row.platform, s);
 }
 
 function trustDetail(result: FieldDeviceEnrollmentResult | null, s: TrustedDevicesStrings): string {
@@ -216,16 +253,46 @@ export default function TrustedDevicesClient({
     }
   }
 
-  const registered = enrollment != null && (enrollment.kind === "enrolled" || enrollment.kind === "already_registered");
-  const trusted = registered && enrollment.trustStatus === "trusted";
+  // Unknown timestamps render an em dash, never an invented date.
+  const fmt = (value: string | null): string => {
+    if (!value) return "—";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime())
+      ? "—"
+      : new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium", timeStyle: "short" }).format(d);
+  };
 
-  // Enrolment affordance. `blocked` is the honest live state where the
-  // self-enroll RLS policy is not deployed: the control stays visible so the
-  // user can see it exists, but it is disabled and says why.
-  const enrollState: "hidden" | "enabled" | "blocked" =
-    enrollment?.kind === "not_enrolled" ? "enabled"
-      : enrollment?.kind === "policy_pending" ? "blocked"
-        : "hidden";
+  const rows: FieldDeviceListRow[] = list.kind === "ok" ? list.devices : [];
+
+  // THIS device, resolved from the register first and from the enrolment probe
+  // only as a fallback. Both reads are scoped `assigned_user_id = auth.uid()`,
+  // so neither can surface another inspector's row.
+  const currentRow = rows.find(d => d.deviceIdentifier === deviceIdentifier) ?? null;
+  const registered = enrollment != null && (enrollment.kind === "enrolled" || enrollment.kind === "already_registered");
+  const currentStatus: DeviceTrustStatus | null =
+    currentRow?.trustStatus ?? (registered ? enrollment.trustStatus : null);
+  const currentPlatform: string | null = currentRow?.platform ?? (registered ? enrollment.platform : null);
+  const currentName: string | null =
+    currentRow?.displayName ?? (currentPlatform ? platformLabel(currentPlatform, s) : null);
+  const currentLastSeen: string | null = currentRow?.lastSeenAt ?? (registered ? enrollment.lastSeenAt : null);
+
+  const trusted = currentStatus === "trusted";
+
+  // Enrolment affordance — design slot 4, always rendered as the design renders
+  // it. It is actionable only in the one state where the insert can succeed;
+  // every other state disables it and states the reason underneath.
+  const canEnroll = enrollment?.kind === "not_enrolled" && online && !enrolling;
+  const enrollReason: string =
+    enrollment == null ? s.dtChecking
+      : enrollment.kind === "policy_pending" ? s.enrollBlocked
+        : currentRow != null || registered ? s.enrollRegistered
+          // Offline is why the control is disabled, so offline is what it says.
+          // "Enroll this iPad to request approval" while the request cannot
+          // leave the device would be the wrong reason for the right state.
+          : !online ? s.listOffline
+            : trustDetail(enrollment, s);
+  const enrollReasonWarn =
+    !online || enrollment?.kind === "policy_pending" || enrollment?.kind === "unavailable";
 
   const bioGate: BioGate =
     bioRecord ? (trusted ? "active" : "active-inactive")
@@ -264,15 +331,6 @@ export default function TrustedDevicesClient({
     setBioError(false);
   }
 
-  // Unknown timestamps render an em dash, never an invented date.
-  const fmt = (value: string | null): string => {
-    if (!value) return "—";
-    const d = new Date(value);
-    return Number.isNaN(d.getTime())
-      ? "—"
-      : new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium", timeStyle: "short" }).format(d);
-  };
-
   const deviceIcon = (
     <span className={styles.icn} aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={styles.icnSvg}>
@@ -281,20 +339,19 @@ export default function TrustedDevicesClient({
     </span>
   );
 
-  const rows: FieldDeviceListRow[] = list.kind === "ok" ? list.devices : [];
-  const currentInRegister = rows.some(d => d.deviceIdentifier === deviceIdentifier);
-
   return (
     <div className={styles.wrap}>
+      {/* ── Trusted Devices, slot 2 — intro ───────────────────────────── */}
       <p className={`t-caption ${styles.intro}`}>{s.intro}</p>
 
       {!online && (
         <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="status">{s.listOffline}</p>
       )}
 
-      {/* The device register. Every card below is one real, RLS-released
-          `mvp3_devices` row — the design's `sc-for`, with no fabricated entry
-          and no per-device Revoke, because no revoke exists for this actor. */}
+      {/* ── Trusted Devices, slot 3 — the register ────────────────────────
+          Every card below is one real, RLS-released `mvp3_devices` row — the
+          design's `sc-for` — with no fabricated entry and no per-device Revoke,
+          because no revoke exists for this actor. */}
       {list.kind === "signed_out" && (
         <div className={styles.card} data-list-state="signed-out">
           {deviceIcon}
@@ -326,8 +383,10 @@ export default function TrustedDevicesClient({
             {deviceIcon}
             <div className={styles.body}>
               <div className={styles.name}>
-                <span className={styles.nameText}>{platformLabel(d.platform, s)}</span>
+                <span className={styles.nameText}>{deviceName(d, s)}</span>
                 {isCurrent && <span className={`badge badge-info ${styles.badgeSm}`}>{s.thisDevice}</span>}
+                {/* The design mock assumes every listed device is trusted. The
+                    register does not, so the real state travels with the row. */}
                 <span className={`badge ${statusBadge(d.trustStatus)} ${styles.badgeSm}`}>{statusLabel(d.trustStatus, s)}</span>
               </div>
               <div className={`t-caption id-code ${styles.id}`}><bdi>{d.deviceIdentifier}</bdi></div>
@@ -340,42 +399,64 @@ export default function TrustedDevicesClient({
 
       {refreshing && <p className={`t-caption ${styles.intro}`} role="status">{s.listRefreshing}</p>}
 
-      {/* This device, when the register does not hold it. Same card shape, real
-          status, no invented row. */}
-      {!currentInRegister && list.kind === "ok" && (
-        <div className={styles.card} data-enrollment-state={enrollment?.kind ?? "checking"}>
-          {deviceIcon}
-          <div className={styles.body}>
-            <div className={styles.name}>
-              <span className={styles.nameText}>{s.thisDevice}</span>
-              <span className={`badge badge-warning ${styles.badgeSm}`}>{trustLabel(enrollment, s)}</span>
-            </div>
-            <div className={`t-caption id-code ${styles.id}`}><bdi>{deviceIdentifier || s.loading}</bdi></div>
-            <p className={`t-caption ${styles.reason}`}>{trustDetail(enrollment, s)}</p>
-          </div>
-        </div>
-      )}
+      {/* ── Trusted Devices, slot 4 — enrol ───────────────────────────── */}
+      <div className={styles.action}>
+        <button
+          type="button"
+          className={`btn btn-primary btn-block btn-lg ${styles.touch}`}
+          onClick={() => void enroll()}
+          disabled={!canEnroll}
+        >
+          {enrolling ? s.enrolling : s.enroll}
+        </button>
+        <p
+          className={`t-caption ${styles.reason} ${enrollReasonWarn ? styles.reasonWarn : ""}`}
+          role="status"
+        >
+          {enrollReason}
+        </p>
+      </div>
 
-      {enrollState !== "hidden" && (
-        <div>
-          <button
-            type="button"
-            className={`btn btn-primary btn-block btn-lg ${styles.touch}`}
-            onClick={() => void enroll()}
-            disabled={enrollState === "blocked" || enrolling || !online}
-          >
-            {enrolling ? s.enrolling : s.enroll}
-          </button>
-          {enrollState === "blocked" && (
-            <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="status">{s.enrollBlocked}</p>
-          )}
-        </div>
-      )}
+      {/* ── Trusted Devices, slot 5 — register note ───────────────────────
+          The design's closing note. Here it also carries who owns revocation,
+          which is why no Revoke control appears above. */}
+      <div className={`panel ${styles.hint}`}>
+        <svg className={styles.hintIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" />
+        </svg>
+        <span>{s.registerNote}</span>
+      </div>
 
-      {/* Biometric unlock. Always rendered, never hidden — hiding it would leave
-          the inspector unable to tell whether the capability is missing or
-          merely unavailable. The switch is enabled only in the `ready` gate, and
-          only ever reflects a credential this browser genuinely holds. */}
+      {/* ── Biometric / Device Enrollment, slot 6 — heading block ─────── */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>{s.bioSectionTitle}</h2>
+        <p className={`t-caption ${styles.sectionDesc}`}>{s.bioSectionDesc}</p>
+      </div>
+
+      {/* ── slot 7 — "Trusted Device" summary ─────────────────────────── */}
+      <div className={`panel ${styles.bioPanel}`}>
+        <div className={`t-label ${styles.summaryLabel}`}>{s.bioSummaryLabel}</div>
+        <dl className={`desc ${styles.summary}`}>
+          <dt>{s.bioSummaryDevice}</dt>
+          <dd>{currentName ?? "—"}</dd>
+          <dt>{s.bioSummaryDeviceId}</dt>
+          {/* The identifier is generated on-device, so before hydration it is
+              not unknown — it is still being read. Say that, not "—". */}
+          <dd>{deviceIdentifier ? <span className="id-code"><bdi>{deviceIdentifier}</bdi></span> : s.loading}</dd>
+          <dt>{s.bioSummaryStatus}</dt>
+          <dd>
+            {currentStatus
+              ? <span className={`badge ${statusBadge(currentStatus)} ${styles.badgeSm}`}>{statusLabel(currentStatus, s)}</span>
+              : <span className={`badge badge-disabled ${styles.badgeSm}`}>{trustLabel(enrollment, s)}</span>}
+          </dd>
+          <dt>{s.bioSummaryLastAuth}</dt>
+          <dd><span className="id-code">{fmt(currentLastSeen)}</span></dd>
+        </dl>
+      </div>
+
+      {/* ── slot 8 — the authenticator row ────────────────────────────────
+          The design draws two of these, one per modality. WebAuthn reports a
+          single boolean and never the modality, so there is one row. */}
       <div className={`panel ${styles.bioPanel}`} data-bio-gate={bioGate}>
         <div className={styles.bioRow}>
           <span className={`${styles.bioIcn} ${bioGate === "active" ? "" : styles.bioIcnMuted}`} aria-hidden="true">
@@ -404,16 +485,11 @@ export default function TrustedDevicesClient({
             />
           </label>
         </div>
-
-        <p className={`t-caption ${styles.reason}`}>{bioBusy ? s.bioEnabling : bioReason}</p>
-
-        {bioError && (
-          <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="alert">{s.bioError}</p>
-        )}
       </div>
 
-      {/* Scope note — states plainly that this is not a passkey, not a
-          credential, and not a second factor. */}
+      {/* ── slot 9 — scope callout ────────────────────────────────────────
+          States plainly that this is not a passkey, not a credential, and not
+          a second factor. */}
       <div className={`panel ${styles.callout}`}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={styles.calloutIcon} aria-hidden="true">
           <circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v4h1" />
@@ -421,12 +497,36 @@ export default function TrustedDevicesClient({
         <span className={styles.calloutText}>{s.bioScopeNote}</span>
       </div>
 
-      <div className={`panel ${styles.hint}`}>
-        <svg className={styles.hintIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" />
-        </svg>
-        <span>{s.registerNote}</span>
+      {/* ── slot 10 — enable ──────────────────────────────────────────── */}
+      <div className={styles.action}>
+        <button
+          type="button"
+          className={`btn btn-primary btn-block btn-lg ${styles.touch}`}
+          onClick={() => void enrollBiometric()}
+          disabled={bioBusy || bioGate !== "ready"}
+        >
+          {bioBusy ? s.bioEnabling : s.bioEnable}
+        </button>
+        <p className={`t-caption ${styles.reason}`} role="status">{bioBusy ? s.bioEnabling : bioReason}</p>
+        {bioError && (
+          <p className={`t-caption ${styles.reason} ${styles.reasonWarn}`} role="alert">{s.bioError}</p>
+        )}
       </div>
+
+      {/* ── slot 11 — un-enrol ───────────────────────────────────────────
+          The design labels this "Unenroll device". Un-enrolling the DEVICE is
+          not a capability that exists — `mvp3_devices` has no UPDATE and no
+          DELETE policy — so this slot carries the un-enrolment that is real:
+          removing this browser's local biometric credential. It is labelled for
+          what it does, never for what the mock implies. */}
+      <button
+        type="button"
+        className={`btn btn-ghost btn-block ${styles.touch}`}
+        onClick={disableBiometric}
+        disabled={bioRecord == null || bioBusy}
+      >
+        {s.bioDisable}
+      </button>
     </div>
   );
 }

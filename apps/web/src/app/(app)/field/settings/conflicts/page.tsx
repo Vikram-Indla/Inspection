@@ -48,6 +48,16 @@ export default async function FieldConflictsPage() {
     emptySub: tr("field.conflicts.emptySub", "All checklist-item responses are in sync.", "جميع إجابات بنود التفتيش متزامنة."),
     resolving: tr("field.conflicts.resolving", "Resolving…", "جارٍ الحل…"),
     resolveFailed: tr("field.conflicts.resolveFailed", "Could not resolve — try again.", "تعذّر الحل — حاول مرة أخرى."),
+    // Keeping the server value discards the inspector's own answer and is the
+    // one branch with no domain write, so the decision record IS the resolution
+    // (design policy note: the choice "is applied immediately and logged in the
+    // decision record"). That record is a server-side append, so the choice
+    // cannot be completed offline — said plainly rather than retried forever.
+    resolveNeedsConnection: tr(
+      "field.conflicts.resolveNeedsConnection",
+      "Keeping the server value must be recorded in the decision record before your response is discarded. Reconnect and try again.",
+      "يجب تسجيل خيار إبقاء قيمة الخادم ضمن سجل القرار قبل تجاهل إجابتك. أعد الاتصال ثم حاول مرة أخرى.",
+    ),
     policyNote: tr(
       "field.conflicts.policy",
       "Resolution policy: the inspector is asked every time — no side wins automatically. Your choice (keep server value or resubmit your response) is applied immediately and logged in the decision record.",

@@ -62,6 +62,25 @@
 .reasonFirst { margin: 0; }
 .reasonWarn { color: var(--status-warning-text); }
 
+/* Slot 4 / 10 — a block button plus the reason line that belongs to it. The
+   design has no reason line; this route never renders a disabled control
+   without saying why, so the pair is kept together as one unit inside the
+   wrap's 16px gap. */
+.action { display: flex; flex-direction: column; }
+
+/* Slot 6 — the "Device Enrollment" heading block from Biometric.dc.html:
+   `h1` 20px/700 with a 6px caption under it. Rendered as an h2 because the
+   route's header already owns the page h1. */
+.section { margin-block-start: 4px; }
+.sectionTitle { font-size: 20px; font-weight: 700; margin: 0; line-height: 1.25; }
+.sectionDesc { margin: 6px 0 0; }
+
+/* Slot 7 — the "Trusted Device" summary panel: `.t-label` heading with 10px
+   below it, over a `dl.desc` at the design's auto/1fr, 8px/12px, 13.5px. */
+.summaryLabel { margin-block-end: 10px; }
+.summary { grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 13.5px; }
+.summary dd { display: flex; align-items: center; }
+
 /* Device Enrollment panel — Biometric.dc.html geometry: 16px 18px panel,
    44px/12px icon tile, 12px row gap, switch on the trailing edge. */
 .bioPanel { padding: 16px 18px; }
@@ -114,4 +133,12 @@
   .card { padding: 14px 15px; gap: 12px; }
   .bioPanel { padding: 14px 15px; }
   .callout { padding: 12px 14px; }
+}
+
+/* At 390px the summary's `auto 1fr` term column starves the value column —
+   "Last authentication" alone eats most of the row. Stack it instead. */
+@media (max-width: 430px) {
+  .summary { grid-template-columns: 1fr; gap: 2px 0; }
+  .summary dd { margin-block-end: 6px; }
+  .summary dd:last-child { margin-block-end: 0; }
 }

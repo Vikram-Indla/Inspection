@@ -23,6 +23,10 @@ import type { DeviceTrustStatus } from "../actions";
 
 export type FieldDeviceListRow = {
   deviceIdentifier: string;
+  /** `mvp3_devices.display_name` — nullable by design (migration
+   *  20260726150000). Null means no name is known, and the UI must render
+   *  nothing rather than a plausible model string. */
+  displayName: string | null;
   trustStatus: DeviceTrustStatus;
   platform: "ipad_os" | "web_managed";
   lastSeenAt: string | null;
@@ -36,13 +40,14 @@ export type FieldDeviceListResult =
 
 type Row = {
   device_identifier: string;
+  display_name: string | null;
   trust_status: DeviceTrustStatus;
   platform: "ipad_os" | "web_managed";
   last_seen_at: string | null;
   enrolled_at: string;
 };
 
-const COLUMNS = "device_identifier,trust_status,platform,last_seen_at,enrolled_at";
+const COLUMNS = "device_identifier,display_name,trust_status,platform,last_seen_at,enrolled_at";
 
 export async function listFieldDevices(): Promise<FieldDeviceListResult> {
   const sb = await supabaseServer();
@@ -66,6 +71,9 @@ export async function listFieldDevices(): Promise<FieldDeviceListResult> {
     kind: "ok",
     devices: ((data ?? []) as Row[]).map(r => ({
       deviceIdentifier: r.device_identifier,
+      // Blank-but-present names are treated as unknown, never rendered as an
+      // empty bold line.
+      displayName: r.display_name?.trim() ? r.display_name.trim() : null,
       trustStatus: r.trust_status,
       platform: r.platform,
       lastSeenAt: r.last_seen_at,
