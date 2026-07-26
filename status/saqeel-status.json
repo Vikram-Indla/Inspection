@@ -2047,5 +2047,13 @@
     "L": 3,
     "XL": 5
   },
-  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first."
+  "sortLaw": "Default order is Remaining work: (300 − design − code − wiring) × complexity weight. A card is BLOCKED when any dependsOn card has overall < 70 — build the dependency first.",
+  "published": [
+    {
+      "revision": "SB-r48",
+      "target": "claude-design:5e8154ad-aa9e-4e3d-9b7a-c66ca020bd61/status/saqeel-status.json",
+      "etag": "1785053066933605",
+      "at": "2026-07-26T11:04:44+03:00"
+    }
+  ]
 }
