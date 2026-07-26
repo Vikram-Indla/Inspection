@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r23",
-  "updated": "2026-07-26T10:15:43+03:00",
+  "revision": "SB-r24",
+  "updated": "2026-07-26T10:24:50+03:00",
   "updatedBy": "claude-code",
   "branch": "saqeel/exec",
   "committed": false,
@@ -601,7 +601,7 @@
       "name": "Executive Overview",
       "design": 70,
       "code": 78,
-      "wiring": 60,
+      "wiring": 82,
       "designPage": "SAQEEL Executive Overview.html",
       "route": "web/src/app/(app)/dashboard (persona view) · lib/role-home.ts",
       "pwa": null,
@@ -671,6 +671,14 @@
             "code": 78
           },
           "evidence": "Browser gate run headless against the running route as ops-01@mim-inspection.test, 12/12 passing (apps/web/e2e/exec-overview-gate.spec.ts). Asserted in a real browser, not by typecheck: the assurance section leads and states its eligible-answer denominator without describing it as factories; the regional queue precedes the geographic evidence in document order (compareDocumentPosition); region selection still cross-filters after the state lift into RegionalScope (aria-pressed flips); Basis and source opens a dialog containing Numerator and Denominator and closes on Escape; the map starts below 900px at 1440x900; and no 'Live · refreshed' claim survives anywhere on the surface. Six captures written to INSPECTION_DOCS_ROOT/.../screens/exec at 1440/1024/412 in EN and AR. The Mapbox canvas paints (13,823 distinct colours in the map band, dominant colour 38%). NOT raised to 100: the sector comparison, recorded-exceptions section and the seven declared hard states are not built, and no pixel diff against the .dc.html has been run."
+        },
+        {
+          "at": "2026-07-26T10:24:50+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "wiring": 82
+          },
+          "evidence": "RLS oversight fixed and applied live to iiozvqntawxfwbgffzqu (migration 20260726090000_exec_responses_read_ops_leadership.sql). Measured as ops-01@mim-inspection.test: checklist_responses 0 -> 632, matching service-role exactly; the write path stays refused (403), so read-only scope held. The surface now renders a real headline — 96%, 27 compliant of 28 eligible answers — and the regional queue populates and orders correctly worst-first on live data: Eastern 3/4 (75%) ahead of Riyadh 24/24 (100%). Gate re-run 12/12 after the change. NOT raised further: the AI Composer is still unwired and needs a new governed surface in contextual-actions.ts plus a ruling authorising executive forecasting against the deterministic contract; the sector comparison needs governed KPI targets that do not exist; and the seven declared hard states are unbuilt."
         }
       ]
     },
