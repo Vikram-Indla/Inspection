@@ -1,4 +1,5 @@
 import Link from "next/link";
+import styles from "./PlanningPreview.module.css";
 
 type Method = { glyph?: string; title: string; desc: string; href: string };
 type Draft = { id: string; method: string; status: string; planReference: string | null; createdAt: string; planner: string; href: string };
@@ -10,12 +11,14 @@ function PlanningMethodIcon({ href }: { href: string }) {
   return <svg {...common}><path d="M13 2 5.5 13h6L11 22l7.5-12h-6z"/><path d="M4 5h3M3 9h3"/></svg>;
 }
 
-export default function PlanningPreview({ methods, drafts, effectivePackage, canCreate, locale }: {
+export default function PlanningPreview({ methods, drafts, effectivePackage, canCreate, locale, showVisits = true, showPlans = true }: {
   methods: Method[];
   drafts: Draft[];
-  effectivePackage: string | null;
+  effectivePackage: string | null | undefined;
   canCreate: boolean;
   locale: "en" | "ar";
+  showVisits?: boolean;
+  showPlans?: boolean;
 }) {
   const ar = locale === "ar";
   const copy = ar ? {
@@ -33,24 +36,26 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
   return (
     <div data-saqeel-design="WA-DES-036" className="ax-stack" style={{ gap: "var(--ax-space-250)" }}>
       <h1 className="ax-sr-only">{ar ? "تخطيط الزيارات" : "Visit planning"}</h1>
-      <div className={`ax-banner ${effectivePackage ? "ax-banner--success" : "ax-banner--warning"}`} role="status"><div>
-        <strong>{effectivePackage ? copy.packageReady : copy.packageMissing}</strong>
-        {effectivePackage ? <> — <span className="ax-numeric">{effectivePackage}</span> · {drafts.length} {copy.drafts}</> : null}
-      </div></div>
+      {effectivePackage !== undefined && (
+        <div className={`ax-banner ${effectivePackage ? "ax-banner--success" : "ax-banner--warning"}`} role="status"><div>
+          <strong>{effectivePackage ? copy.packageReady : copy.packageMissing}</strong>
+          {effectivePackage ? <> — <span className="ax-numeric">{effectivePackage}</span> · {drafts.length} {copy.drafts}</> : null}
+        </div></div>
+      )}
       <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
         <h2 style={{ margin: 0 }}>{copy.methods}</h2>
-        <Link className="ax-btn ax-btn--subtle" href="/planning/visits?wa_preview=1" prefetch={false}>{copy.visits}</Link>
+        {showVisits !== false && <Link className="ax-btn ax-btn--subtle" href="/planning/visits" prefetch={false}>{copy.visits}</Link>}
       </div>
-      <div className="wa-planning-methods">
+      <div className={`wa-planning-methods ${styles.methods}`}>
         {methods.map(method => (
           <Link key={method.href} href={canCreate ? method.href : "#"} aria-disabled={!canCreate}
-            className="ax-surface wa-planning-method" style={{ textDecoration: "none", color: "inherit" }}>
-            <span className="wa-planning-method__icon"><PlanningMethodIcon href={method.href} /></span>
-            <span className="wa-planning-method__copy"><strong>{method.title}</strong><span className="ax-caption">{method.desc}</span></span>
+            className={`ax-surface wa-planning-method ${styles.method}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <span className={`wa-planning-method__icon ${styles.icon}`}><PlanningMethodIcon href={method.href} /></span>
+            <span className={`wa-planning-method__copy ${styles.copy}`}><strong>{method.title}</strong><span className="ax-caption">{method.desc}</span></span>
           </Link>
         ))}
       </div>
-      <section className="ax-surface" aria-labelledby="wa-m2-plans-heading" style={{ overflow: "hidden" }}>
+      {showPlans !== false && <section className="ax-surface" aria-labelledby="wa-m2-plans-heading" style={{ overflow: "hidden" }}>
         <div className="ax-panel-header"><h2 id="wa-m2-plans-heading" style={{ margin: 0, fontSize: "var(--ax-font-size-300)" }}>{copy.plans}</h2>
           <span className="ax-lozenge ax-lozenge--warning">{drafts.length} {copy.drafts}</span></div>
         {drafts.length === 0 ? <p className="ax-caption" style={{ padding: "var(--ax-space-300)" }}>{copy.noDrafts}</p> : (
@@ -61,7 +66,7 @@ export default function PlanningPreview({ methods, drafts, effectivePackage, can
               <td><Link className="ax-link" href={draft.href}>{copy.continue}</Link></td></tr>)}</tbody>
           </table></div>
         )}
-      </section>
+      </section>}
     </div>
   );
 }

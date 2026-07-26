@@ -1,0 +1,107 @@
+schema_version: "1.0"
+packet_id: "PKT-RESPONSIVE-PLANNING-003"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+branch: "revamp/planning"
+baseline: "c78882a74c2dc116c80d8320d764f0900a7655e9"
+state: "IMPLEMENTED_VERIFIED_PENDING_REVIEW"
+authorized_by: "Vikram Indla / Product Owner"
+authorization_evidence: "Locked migration execution configuration plus explicit instruction that all approvals are granted and execution must continue."
+
+process_ids:
+  - "M2"
+  - "SCR-WEB-100"
+  - "SCR-WEB-200"
+  - "SCR-WEB-210"
+requirements:
+  - "CR-001..CR-098"
+screens:
+  - "WA-DES-036"
+  - "WA-DES-045"
+design_sources:
+  - "SAQEEL Planning.dc.html"
+  - "SAQEEL Planning Identity.dc.html"
+  - "SAQEEL Visits.dc.html"
+routes:
+  - "/planning"
+  - "/planning/bulk"
+  - "/planning/bulk/review"
+  - "/planning/immediate"
+  - "/planning/plans"
+  - "/planning/plans/:id"
+  - "/planning/single"
+  - "/planning/visits"
+  - "/planning/visits/:id"
+  - "/visits"
+  - "/visits/:id"
+  - "/visits/calendar"
+  - "/visits/map"
+  - "/visits/workload"
+engines:
+  - "Planning capability and direct-route authorization"
+  - "Planning lifecycle, assignment and conflict validation"
+  - "Workflow audit and immutable version preservation"
+  - "Supabase RLS-scoped reads and guarded mutations"
+  - "Responsive layout, i18n and RTL"
+
+acceptance:
+  - "WA-M2-AC-001..006"
+  - "WA-AC-0001..0098"
+  - "The approved WA-DES-036 Planning landing becomes the canonical /planning experience without an environment or query preview gate."
+  - "Planning-owned Visits list/detail routes become canonical without weakening direct-route authorization or the existing /visits compatibility routes."
+  - "Planner retains Bulk, Single and Immediate creation methods."
+  - "Inspector can reach /planning and sees only the source-authorized Immediate method; Bulk and Single are absent."
+  - "Administrator and Inspector are denied Planning-owned Visits before visit data reads."
+  - "All workflow, audit, version, assignment, conflict, final-state and RLS contracts remain unchanged."
+  - "Planning and Visits reflow without document overflow at 320, 375, 390, 768, 1024, 1280, 1440 and 1920 CSS pixels."
+  - "English/Arabic, LTR/RTL, light/dark and keyboard/accessibility behavior remain intact."
+
+open_decisions:
+  - id: "DEC-025"
+    disposition: "The new migration packet independently authorizes the exact CR-001/CR-043 behavior: Inspector reaches only Immediate. The older decision-register row is not edited or claimed globally resolved."
+  - id: "DEC-026"
+    disposition: "OPEN stop line. Preserve deterministic source-backed summaries only; do not claim or invent an AI Planning Summary."
+
+dependencies:
+  - "PKT-RESPONSIVE-FOUNDATION-SHELL-001 at c78882a7"
+  - "Existing development Supabase and excluded persona storage states for browser evidence"
+  - "DEC-032 remains out of scope; no inspection submission is created by this packet's read-only acceptance."
+
+allowed_paths:
+  - "apps/web/src/app/(app)/planning/**"
+  - "apps/web/src/app/(app)/visits/**"
+  - "apps/web/src/lib/planning/**"
+  - "apps/web/e2e/cd-020-planning-home.spec.ts"
+  - "apps/web/e2e/web-admin-m2-batch-001.spec.ts"
+  - "apps/web/e2e/web-admin-m2-batch-002.spec.ts"
+  - "apps/web/e2e/responsive-planning.spec.ts"
+  - "apps/web/playwright.static.config.ts"
+  - "product-contract/operationalization/packets/PKT-RESPONSIVE-PLANNING-003.yaml"
+  - "product-contract/evidence/PKT-RESPONSIVE-PLANNING-003.md"
+
+prohibited:
+  - "Shared shell files owned by the foundation PR"
+  - "Field execution, review, compliance, Factory 360 and administration source"
+  - "Supabase migrations, RLS, RPCs, shared data or production DDL"
+  - "Invented AI output, planning policy, assignment rule, conflict rule, SLA, risk, provider or refresh value"
+  - "PWA delivery infrastructure"
+  - "main or integration branch mutation"
+
+evidence:
+  - "Typecheck and production build"
+  - "Focused source, route-authorization and protected lifecycle contracts"
+  - "Authenticated Planner and Inspector positive paths plus Administrator negative paths"
+  - "EN/AR, LTR/RTL, light/dark responsive matrix"
+  - "No horizontal document overflow at every mandated width"
+  - "Accessibility and protected regression"
+
+rollback:
+  - "Revert the packet commit; existing /visits compatibility routes and all database contracts remain unchanged."
+  - "No destructive data or schema rollback is required."
+
+stop_conditions:
+  - "Any Planning-owned visit data read before route authorization"
+  - "Any weakening of Supabase RLS, workflow guards, audit, immutable versions or final states"
+  - "Any invented AI or planning decision"
+  - "Any loss of partial/error/conflict/stale/provider-unavailable behavior"
+  - "Any P0/P1 focused or protected regression"
