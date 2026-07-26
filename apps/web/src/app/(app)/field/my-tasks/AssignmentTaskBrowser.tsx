@@ -108,18 +108,18 @@ export default function AssignmentTaskBrowser({
 
   return (
     <>
-      <div className={`${styles.connectivity} ${connectivity.tone === "online" ? styles.connectivityOnline : styles.connectivityOffline}`}
-        role="status" aria-live="polite">
-        <span className={styles.connectivityDot} aria-hidden="true" />
-        {connectivity.message}
-      </div>
-
-      {counts.alerts > 0 ? (
-        <button type="button" className={styles.alertSummary} onClick={() => setFilter("alerts")} role="alert">
-          <span aria-hidden="true">!</span>
-          {labels.alerts}: <span className="id-code">{counts.alerts}</span>
-        </button>
+      {/* The design's list pane carries no steady-state banner and no alert
+          summary block — connectivity lives in the header pill and the alert
+          count lives on the "Needs attention" filter. Only genuinely degraded
+          states surface here, and only while they are true. */}
+      {connectivity.tone === "offline" ? (
+        <div className={`${styles.connectivity} ${styles.connectivityOffline}`}
+          role="status" aria-live="polite">
+          <span className={styles.connectivityDot} aria-hidden="true" />
+          {connectivity.message}
+        </div>
       ) : null}
+
       {!alertSourceAvailable ? (
         <div className={styles.alertUnavailable} role="status">{labels.alertsUnavailable}</div>
       ) : null}
@@ -160,20 +160,22 @@ export default function AssignmentTaskBrowser({
           const actionable = !expired && !returned;
           const actionLabel = active ? labels.continueAction : labels.prepare;
           return (
+            // Design row anatomy (.mt-item): a flat, hairline-separated row —
+            // #id / establishment / window date in the start column, status on
+            // the end. No card border, no radius, no bordered action footer.
+            // The governed priority and package signals stack under the status
+            // badge so the row keeps the design's two-column silhouette.
             <article key={task.id} data-alert={hasAssignmentAlert(task) ? "true" : undefined}
-              className={`${styles.taskCard} ${selectedId === task.id ? styles.itemActive : ""}`}>
-              <Link href={`/field/my-tasks?task=${task.id}`} prefetch={false} className={styles.taskMain}
+              className={`${styles.item} ${selectedId === task.id ? styles.itemActive : ""}`}>
+              <Link href={`/field/my-tasks?task=${task.id}`} prefetch={false} className={styles.itemMain}
                 aria-current={selectedId === task.id ? "true" : undefined}>
-                <span className={styles.taskTop}>
-                  <span className="id-code">#{task.id.slice(0, 8)}</span>
-                  <span className={`badge ${tone(task)}`}>{status}</span>
+                <span className={styles.kv} style={{ flex: 1 }}>
+                  <span className={`id-code ${styles.itemId}`}>#{task.id.slice(0, 8)}</span>
+                  <span className={styles.itemName}><bdi>{task.factory.name}</bdi></span>
+                  <span className="k">{windowStartLabels[task.id] ?? "—"}</span>
                 </span>
-                <strong className={styles.taskFactory}><bdi>{task.factory.name}</bdi></strong>
-                <span className={`${styles.taskDate} t-caption`}>
-                  {windowStartLabels[task.id] ?? "—"}
-                  {task.factory.city ? ` · ${task.factory.city}` : ""}
-                </span>
-                <span className={styles.taskSignals}>
+                <span className={styles.itemBadges}>
+                  <span className={`badge ${tone(task)} ${styles.itemStatus}`}>{status}</span>
                   {task.priority ? <span className="badge badge-critical">
                     {labels.priority}: {labels.priorityLabels[task.priority] ?? task.priority}
                   </span> : null}
@@ -182,16 +184,20 @@ export default function AssignmentTaskBrowser({
                   </span>
                 </span>
               </Link>
-              <div className={styles.taskActions}>
+              {/* CR-104 / MVP1-M03-002. The design draws no row action; the
+                  contract mandates accept-prepare and return from the
+                  assignment pool, so they render as flat btn-sm controls
+                  inside the row rather than in card chrome. */}
+              <div className={styles.itemActions}>
                 {actionable && task.assignmentStatus === "assigned" ? (
                   <PrepareAssignmentAction visitId={task.id} label={actionLabel} working={labels.preparing} />
                 ) : (
-                  <Link className="btn btn-secondary" href={`/field/${task.id}`} prefetch={false}>
+                  <Link className="btn btn-secondary btn-sm" href={`/field/${task.id}`} prefetch={false}>
                     {expired ? labels.viewOnly : returned ? labels.open : actionLabel}
                   </Link>
                 )}
                 {!expired && !returned ? (
-                  <Link className="btn btn-ghost" href={`/field/${task.id}#return-assignment`} prefetch={false}>
+                  <Link className="btn btn-ghost btn-sm" href={`/field/${task.id}#return-assignment`} prefetch={false}>
                     {labels.returnAction}
                   </Link>
                 ) : null}

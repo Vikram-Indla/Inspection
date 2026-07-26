@@ -39,6 +39,7 @@ export type ConflictStrings = {
   emptySub: string;
   resolving: string;
   resolveFailed: string;
+  resolveNeedsConnection: string;
   policyNote: string;
   groundingNote: string;
 };
@@ -127,8 +128,13 @@ export default function ConflictResolutionClient({
   // null = store not yet read on the client (SSR-safe: render nothing about
   // conflict state until we actually know).
   const [conflicts, setConflicts] = useState<Conflict[] | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [failed, setFailed] = useState<string | null>(null);
+  // Which conflict is resolving, and via which choice — both choices are async
+  // now, so the in-flight label has to land on the button that was pressed.
+  const [busy, setBusy] = useState<{ key: string; choice: "server" | "mine" } | null>(null);
+  // Which conflict failed to resolve, and why — "offline" is called out
+  // separately because retrying without connectivity cannot succeed: the
+  // decision record the policy note promises is a server-side append.
+  const [failed, setFailed] = useState<{ key: string; reason: "error" | "offline" } | null>(null);
   // item UUID → governed { code, title }. Only ever holds entries that were
   // actually read from a frozen package or the governed catalogue.
   const [itemIdentities, setItemIdentities] = useState<Record<string, ItemIdentity>>({});
@@ -247,15 +253,56 @@ export default function ConflictResolutionClient({
   );
 
   // "Keep server": discard the local response — the server value already stands.
+  //
+  // The design's own policy note states the inspector's choice "is applied
+  // immediately and logged in the decision record". For "resubmit mine" the
+  // record follows from the replayed response write; for THIS branch there is
+  // no domain write at all, so until the canonical `SyncConflictResolved` event
+  // is appended, nothing anywhere records that the inspector was asked and
+  // chose to discard their own answer. That is now appended first, through
+  // `record_sync_conflict_resolution` (migration 20260726150000), which writes
+  // ONLY audit rows — audit_events, audit_semantic_events and their mapping —
+  // and no domain row, so what is persisted is unchanged apart from the record.
+  //
+  // The append is a precondition, not a side effect: the local response is
+  // discarded only once the decision is recorded. Discarding first and logging
+  // best-effort would let the one copy of the inspector's answer disappear with
+  // no trace of the decision — the exact "silently overwritten" outcome this
+  // screen exists to prevent. The RPC also rejects a stale choice (the server
+  // value must still match the one shown), and it is scoped server-side to the
+  // assigned inspector, so an unauthorized or out-of-date resolution fails
+  // loudly with the conflict left intact.
   const keepServer = useCallback(
     async (c: Conflict) => {
       setFailed(null);
-      setBusy(c.key);
+      setBusy({ key: c.key, choice: "server" });
       try {
+        const inspectionId = inspectionIdOf(c);
+        if (!inspectionId) {
+          // The conflict key cannot be resolved to an inspection, so the
+          // decision cannot be attributed. Do not discard the local answer.
+          setFailed({ key: c.key, reason: "error" });
+          return;
+        }
+        if (typeof navigator !== "undefined" && !navigator.onLine) {
+          setFailed({ key: c.key, reason: "offline" });
+          return;
+        }
+        const { error } = await supabaseBrowser().rpc("record_sync_conflict_resolution", {
+          p_inspection_id: inspectionId,
+          p_item_id: c.item_id,
+          p_local_value: c.local,
+          p_server_value: c.server,
+          p_detected_at: c.detected_at,
+        });
+        if (error) {
+          setFailed({ key: c.key, reason: "error" });
+          return;
+        }
         await local.resolveConflict(c.key);
         await refresh();
       } catch {
-        setFailed(c.key);
+        setFailed({ key: c.key, reason: "error" });
       } finally {
         setBusy(null);
       }
@@ -271,12 +318,12 @@ export default function ConflictResolutionClient({
   const keepMine = useCallback(
     async (c: Conflict) => {
       setFailed(null);
-      setBusy(c.key);
+      setBusy({ key: c.key, choice: "mine" });
       try {
         const inspectionId = inspectionIdOf(c);
         if (!inspectionId) {
           // Cannot safely reconstruct the target op — do not fabricate one.
-          setFailed(c.key);
+          setFailed({ key: c.key, reason: "error" });
           return;
         }
         const op: OutboxOp = {
@@ -302,7 +349,7 @@ export default function ConflictResolutionClient({
         } catch { /* op remains queued; nothing is lost */ }
         await refresh();
       } catch {
-        setFailed(c.key);
+        setFailed({ key: c.key, reason: "error" });
       } finally {
         setBusy(null);
       }
@@ -356,7 +403,7 @@ export default function ConflictResolutionClient({
       ) : (
         conflicts.map((c) => {
           const { local: localFields, server: serverFields } = toComparedFields(c.local, c.server);
-          const rowBusy = busy === c.key;
+          const rowBusy = busy?.key === c.key;
           // Design heading: "Checklist item #12 — Fire Safety". Rendered from
           // the governed item code and title once resolved; while (or if) they
           // are not, the raw item id is shown rather than a plausible name.
@@ -399,16 +446,18 @@ export default function ConflictResolutionClient({
                 </div>
               </div>
 
-              {failed === c.key ? (
-                <p className={`t-caption ${styles.failed}`} role="alert">{strings.resolveFailed}</p>
+              {failed?.key === c.key ? (
+                <p className={`t-caption ${styles.failed}`} role="alert">
+                  {failed.reason === "offline" ? strings.resolveNeedsConnection : strings.resolveFailed}
+                </p>
               ) : null}
 
               <div className={styles.actions}>
                 <button type="button" className="btn btn-secondary btn-sm" style={{ flex: 1 }} disabled={rowBusy} onClick={() => void keepServer(c)}>
-                  {strings.keepServer}
+                  {rowBusy && busy?.choice === "server" ? strings.resolving : strings.keepServer}
                 </button>
                 <button type="button" className="btn btn-primary btn-sm" style={{ flex: 1 }} disabled={rowBusy} onClick={() => void keepMine(c)}>
-                  {rowBusy ? strings.resolving : strings.keepMine}
+                  {rowBusy && busy?.choice === "mine" ? strings.resolving : strings.keepMine}
                 </button>
               </div>
             </div>

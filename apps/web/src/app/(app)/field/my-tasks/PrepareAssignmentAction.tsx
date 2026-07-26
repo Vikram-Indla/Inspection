@@ -26,9 +26,9 @@ export default function PrepareAssignmentAction({
   }, [router, state]);
 
   return (
-    <form action={action} className={styles.taskActionForm}>
+    <form action={action} className={styles.itemActionForm}>
       <input type="hidden" name="visit_id" value={visitId} />
-      <button type="submit" className="btn btn-secondary" disabled={pending}
+      <button type="submit" className="btn btn-secondary btn-sm" disabled={pending}
         aria-describedby={state.status === "error" ? `prepare-error-${visitId}` : undefined}>
         {pending ? working : label}
       </button>

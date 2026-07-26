@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import FieldHeader from "@/components/field/FieldHeader";
 import FieldHeaderSync from "@/components/field/FieldHeaderSync";
 import FieldHome, { type FieldHomeMarker } from "@/components/field/FieldHome";
+import { FieldScopeProvider } from "@/components/field/FieldScopeProvider";
+import FieldMetricStrip, { type FieldScopeStat } from "@/components/field/FieldMetricStrip";
+import DailyBriefingCard, { type BriefRecommendation } from "@/components/field/DailyBriefingCard";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -11,18 +14,30 @@ import { isNotificationUnread } from "@/lib/notification-read";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import styles from "./field-home.module.css";
 
-// SAQEEL Field Dashboard.dc.html — the inspector Home. Rebuilt to the current
-// canonical design: an AI Daily Brief (mission + real stats + a "start here"
-// recommendation), a Today's-route map beside a factory preview, Today's
-// Schedule, a Pending-Attention row, an Operational-Insight strip and a
-// Quick-Actions rail. Renders its own SAQEEL chrome (FieldHeader + FieldNav);
-// the global AppShell is bypassed for /field.
+// SAQEEL Field Dashboard.dc.html — the inspector Home, REBUILT to the design's
+// composition (not patched to its pixel values). The design's sections, in the
+// design's order:
 //
-// NOT DEAD WOOD: every number is real and RLS-scoped, or the element is omitted.
-// Per the project no-fabrication + Health≠Risk laws, the design's ungoverned
-// values (Health Score, Est. Finish Time, SLA "closes in 2h", distance/"nearest
-// to you", decorative map pins) are NOT invented — they are left out entirely.
-// Bottom nav stays 5 tabs (Factory 360 is contextual, reached with a real id).
+//   1. ONE card: mission line + returned/draft chips + Daily/Weekly control,
+//      split by a rule from the four metrics.        → <FieldMetricStrip>
+//   2. AI Daily Brief — prose paragraph + the "start here" recommendation
+//      with its governed risk badge.                 → <DailyBriefingCard>
+//   3. "Today's operations map": the route card and the factory preview
+//      STACKED full width (the .dc.html defines .fd-2col but does not use it
+//      here — the two-column split this route drew was an invention).
+//   4. Today's Schedule.   5. Pending Attention.   6. Operational insight.
+//   7. Quick actions.
+//
+// Renders its own SAQEEL chrome (FieldHeader + FieldNav); the global AppShell
+// is bypassed for /field.
+//
+// NOT DEAD WOOD: every number is real and RLS-scoped, or the element renders the
+// governed empty state. Per the project no-fabrication + Health≠Risk laws the
+// design's ungoverned values are NOT invented: Health Score, the "Est. Finish
+// Time" clock, the SLA "closes in 2 hours" clause, distance/"nearest to you",
+// and the traffic advisory are all left out or rendered as "—".
+// Baseline: CR-099 (Inspector Dashboard — inspector-specific information only),
+// CR-100 (only assigned visits), CR-107 (AI recommendations are advisory only).
 
 type ReviewRow = { returned_sections: string[] | null };
 type VisitRow = {
@@ -48,13 +63,7 @@ type VisitRow = {
 };
 type Assignment = { visit_id: string; visits: VisitRow | null };
 
-function toBulletLines(text: string): string[] {
-  const lines = text.split("\n").map((line) => line.replace(/^-\s*/, "").trim()).filter(Boolean);
-  if (lines.length > 1) return lines;
-  return (lines[0] ?? text).split(/(?<=[.!?؟])\s+/).map((s) => s.trim()).filter(Boolean);
-}
-
-const EXC_TONES = ["exc-warning", "exc-critical", "exc-pending", "exc-info"] as const;
+const CLOSED_STATES = ["submitted", "approved", "completed", "closed"];
 
 // Risk band → DS status token (tone only; Risk is the governed factory signal,
 // never conflated with any Health concept).
@@ -89,7 +98,10 @@ export default async function Field() {
   const langHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   const langLabel = locale === "ar" ? "EN" : "AR";
 
-  const [profileRead, assignmentRead, notificationRead, dailyBriefing] = await Promise.all([
+  // Both briefing scopes are pre-fetched (cached server-side) so the shared
+  // Daily/Weekly control switches the brief with no extra round trip — the
+  // design's `briefRange` state drives both the metrics and the brief text.
+  const [profileRead, assignmentRead, notificationRead, dailyBriefing, weeklyBriefing] = await Promise.all([
     sb.from("profiles").select("full_name, region").eq("user_id", user.id).maybeSingle(),
     sb.from("assignments")
       .select("visit_id, visits(id, planning_status, operational_state, visit_type, window_start, window_end, factory_id, factories(id, name, factory_code, region, city, risk_score, risk_band, official_lat, official_lng), inspections(id, status, reviews(returned_sections)))")
@@ -97,6 +109,7 @@ export default async function Field() {
     sb.from("notifications").select("id, read_at, delivery_state").eq("recipient", user.id)
       .order("created_at", { ascending: false }).limit(20),
     getOrGenerateBriefing("daily", { locale: locale === "ar" ? "ar" : "en" }),
+    getOrGenerateBriefing("weekly", { locale: locale === "ar" ? "ar" : "en" }),
   ]);
 
   if (assignmentRead.error) {
@@ -130,6 +143,8 @@ export default async function Field() {
     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Riyadh",
   }).format(nowMs);
   const dateShort = new Intl.DateTimeFormat(arLocale ? "ar-SA-u-ca-gregory" : "en-US", { day: "numeric", month: "short", timeZone: "Asia/Riyadh" }).format(nowMs);
+  // The design's header line is "date · city". `profiles` carries a governed
+  // `region` and no city column, so the region is what we can truthfully print.
   const region = profileRead.data?.region?.trim();
   const dateLine = region ? `${dateStr} · ${region}` : dateStr;
   const todayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(nowMs); // YYYY-MM-DD Riyadh
@@ -137,7 +152,7 @@ export default async function Field() {
   const hasUnread = !notificationRead.error && (notificationRead.data ?? []).some((n) =>
     isNotificationUnread({ read_at: n.read_at as string | null, delivery_state: n.delivery_state as string }));
 
-  // ---- Assigned tasks (RLS-scoped; e2e fixtures excluded) --------------------
+  // ---- Assigned tasks (RLS-scoped; e2e fixtures excluded) — CR-100 ----------
   const tasks = (assignmentRead.data as unknown as Assignment[] ?? [])
     .map((a) => a.visits)
     .filter((v): v is VisitRow => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status))
@@ -146,35 +161,51 @@ export default async function Field() {
   const actionable = tasks.filter((v) => v.planning_status !== "expired");
   const dayOf = (v: VisitRow) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Riyadh" }).format(new Date(v.window_start));
   const todayTasks = actionable.filter((v) => dayOf(v) === todayKey);
-  const isDone = (v: VisitRow) => ["submitted", "approved", "completed", "closed"].includes(v.operational_state);
+  const weekEndMs = nowMs + (7 * 24 * 60 * 60 * 1000);
+  const weekTasks = actionable.filter((v) => {
+    const start = new Date(v.window_start).getTime();
+    return start >= nowMs && start < weekEndMs;
+  });
+  const isDone = (v: VisitRow) => CLOSED_STATES.includes(v.operational_state);
 
   // ---- Real, governed counts (no fabrication, no invented thresholds) --------
-  const stat = {
-    today: todayTasks.length,
-    highRisk: actionable.filter((v) => v.factories?.risk_band === "high").length,
-    followUp: tasks.filter((v) => isReturned(v.inspections?.reviews ?? null)).length,
-    remaining: todayTasks.filter((v) => !isDone(v)).length,
+  const scopeStat = (rows: VisitRow[]): FieldScopeStat => {
+    const submitted = rows.filter(isDone).length;
+    return {
+      inspections: rows.length,
+      followUp: rows.filter((v) => isReturned(v.inspections?.reviews ?? null)).length,
+      highRisk: rows.filter((v) => v.factories?.risk_band === "high").length,
+      remaining: rows.length - submitted,
+      completionPct: rows.length ? Math.round((submitted / rows.length) * 100) : 0,
+    };
   };
-  const completedToday = todayTasks.filter(isDone).length;
-  const progressPct = todayTasks.length ? Math.round((completedToday / todayTasks.length) * 100) : 0;
-  const draftCount = tasks.filter((v) => v.inspections && !["submitted", "approved", "completed", "closed"].includes(v.inspections.status) && v.inspections.status !== "not_started").length;
-  const returnedCount = stat.followUp;
-  const expiredCount = tasks.filter((v) => v.planning_status === "expired").length;
+  const dailyStat = scopeStat(todayTasks);
+  const weeklyStat = scopeStat(weekTasks);
+  const progressPct = dailyStat.completionPct;
+
+  const draftCount = tasks.filter((v) => v.inspections && !CLOSED_STATES.includes(v.inspections.status) && v.inspections.status !== "not_started").length;
+  // Whole-queue returned count — the Pending-Attention card and the exception
+  // chip both answer "what is waiting on me", not "what is in this period".
+  const returnedCount = tasks.filter((v) => isReturned(v.inspections?.reviews ?? null)).length;
 
   // ---- "Start here" recommendation: highest real risk among actionable, else
   // the soonest window. Reason is derived ONLY from real signals. -------------
-  const registerTasks = [...tasks].sort((a, b) => a.window_start.localeCompare(b.window_start)).slice(0, 6);
+  const byStart = [...tasks].sort((a, b) => a.window_start.localeCompare(b.window_start));
+  const registerTasks = byStart.slice(0, 6);
   const byRisk = [...actionable].sort((a, b) => (b.factories?.risk_score ?? -1) - (a.factories?.risk_score ?? -1));
   const nextActionable = actionable.find((v) => !v.inspections || v.inspections.status === "not_started");
   const selected = (byRisk[0]?.factories?.risk_band === "high" ? byRisk[0] : null)
     ?? nextActionable
     ?? [...actionable].sort((a, b) => a.window_start.localeCompare(b.window_start))[0]
     ?? null;
-  const startHref = selected
-    ? (selected.inspections && selected.inspections.status !== "not_started"
-        ? `/field/inspection/${selected.inspections.id}`
-        : `/field/${selected.id}`)
-    : "/field/my-tasks";
+  // The design's "Start Journey" targets the Travel screen (SAQEEL PWA-Field
+  // Travel.dc.html), which this channel really has at /field/<visitId>/travel —
+  // "Journey to Site", display-and-navigate only, no state mutation. The
+  // pre-inspection pack is the Startup/PreExecution screen at /field/<visitId>.
+  // A visit already under way is reached by the Quick-Actions "continue" pill,
+  // exactly as the design separates them.
+  const journeyHref = selected ? `/field/${selected.id}/travel` : "/field/my-tasks";
+  const prepHref = selected ? `/field/${selected.id}` : "/field/my-tasks";
   const factory360Href = selected?.factories ? `/field/factory-360?factory=${selected.factories.id}` : "/field/establishments";
   const selZone = selected?.factories
     ? [selected.factories.region, selected.factories.city].filter(Boolean).join(" · ")
@@ -185,6 +216,31 @@ export default async function Field() {
     : selected
       ? tr("field.home.reco.soonest", "Earliest scheduled window in your queue.", "أقرب موعد مجدول في قائمتك.")
       : "";
+
+  // Governed risk-band badge for the recommendation. The design shows "Highest
+  // Risk"; that superlative is only true when the pick IS the high band, so
+  // every other band prints its own governed label and an unset band prints
+  // nothing at all.
+  const bandBadge = (band: string | null | undefined): { text: string; cls: string } | null => {
+    switch (band) {
+      case "high": return { text: tr("field.home.reco.highest", "Highest risk", "الأعلى خطورة"), cls: "badge-critical" };
+      case "medium": return { text: tr("field.home.band.medium", "Medium risk", "خطورة متوسطة"), cls: "badge-warning" };
+      case "low": return { text: tr("field.home.band.low", "Low risk", "خطورة منخفضة"), cls: "badge-compliant" };
+      default: return null;
+    }
+  };
+  const selBadge = bandBadge(selected?.factories?.risk_band);
+
+  const recommendation: BriefRecommendation | null = selected?.factories
+    ? {
+        factoryName: selected.factories.name,
+        badgeText: selBadge?.text ?? null,
+        badgeClass: selBadge?.cls ?? "",
+        reason: recoReason,
+        factoryHref: factory360Href,
+        startHref: journeyHref,
+      }
+    : null;
 
   // ---- Map markers (real GIS coordinates only) ------------------------------
   const markers: FieldHomeMarker[] = tasks
@@ -200,11 +256,15 @@ export default async function Field() {
     ? [markers.reduce((a, m) => a + m.lat, 0) / markers.length, markers.reduce((a, m) => a + m.lng, 0) / markers.length]
     : [24.7136, 46.6753]; // KSA fallback (Riyadh) when nothing is geocoded
 
-  const briefLines = dailyBriefing.text ? toBulletLines(dailyBriefing.text) : [];
+  // Planned sequence for the route-card footer — today's assigned visits in
+  // window order. This is a real ordering, not an optimised/AI route.
+  const routeStops = [...todayTasks].sort((a, b) => a.window_start.localeCompare(b.window_start)).slice(0, 3);
+
   // First governed brief line drives the Factory-Preview AI focus note. It is
   // sourced ONLY from the real daily briefing (getOrGenerateBriefing); if the
   // briefing produced nothing, the focus-note panel is omitted (no fabrication).
-  const focusNote = briefLines[0] ?? "";
+  const focusNote = (dailyBriefing.text ?? "")
+    .split("\n").map((l) => l.replace(/^[-•]\s*/, "").trim()).filter(Boolean)[0] ?? "";
 
   // ---- Last submitted inspection at the selected factory (RLS-scoped) --------
   // Latest inspection with a real submitted_at for this factory's visits. RLS
@@ -232,6 +292,12 @@ export default async function Field() {
   // factories/cr/[id] and api/field/factory-360/snapshot), so we render "—".
   const openViolations: number | null = null;
 
+  // The design's third quick action is "Continue Active Inspection — <name>".
+  // It is rendered ONLY when a real in-flight inspection exists.
+  const activeVisit = byStart.find((v) => v.inspections
+    && !CLOSED_STATES.includes(v.inspections.status)
+    && v.inspections.status !== "not_started") ?? null;
+
   const statusTone = (v: VisitRow) => {
     if (v.planning_status === "expired") return "badge-warning";
     switch (v.operational_state) {
@@ -243,6 +309,10 @@ export default async function Field() {
   const statusLabel = (v: VisitRow) => (v.planning_status === "expired" ? label("expired") : label(v.operational_state));
 
   // ---- Header cluster --------------------------------------------------------
+  // The design's header is: avatar, greeting + "date · city", date pill, online
+  // pill, search, notifications, sync, language, theme. FieldHeader is shared
+  // channel chrome and outside this lease; the theme control it deliberately
+  // does not expose (the field channel is fixed dark) is reported, not forked.
   const avatar = (
     <span className="avatar avatar-lg" aria-hidden="true"
       style={{ background: "var(--action-primary)", color: "var(--text-on-action)" }}>
@@ -265,10 +335,6 @@ export default async function Field() {
         aria-label={tr("field.home.search", "Search", "بحث")}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
       </Link>
-      <Link href="/field/feedback" prefetch={false} className="btn btn-icon btn-ghost"
-        aria-label={tr("field.qr.title", "Establishment feedback QR", "رمز تقييم المنشأة")}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3M20 20h1v1M14 20h1v1" /></svg>
-      </Link>
       <Link href="/field/notifications" prefetch={false} className="btn btn-icon btn-ghost"
         style={{ position: "relative" }} aria-label={tr("field.tabs.notifications", "Notifications", "الإشعارات")}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
@@ -277,267 +343,274 @@ export default async function Field() {
     </>
   );
 
-  const sparkle = <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" strokeWidth="1.7" style={{ width: 19, height: 19 }} aria-hidden="true"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z" /></svg>;
+  const sparkle = <svg viewBox="0 0 24 24" fill="none" stroke="var(--action-primary)" strokeWidth="1.7" style={{ width: 14, height: 14, flex: "none", marginBlockStart: 1 }} aria-hidden="true"><path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z" /></svg>;
+
+  const routeTitle = region
+    ? `${region} — ${tr("field.home.map.todaysRoute", "Today's route", "مسار اليوم")}`
+    : tr("field.home.map.todaysRoute", "Today's route", "مسار اليوم");
 
   return (
     <>
       <FieldHeader leading={avatar} title={greeting} subtitle={dateLine} right={headerRight}
         langHref={langHref} langLabel={langLabel} />
 
-      <div className={styles.wrap} style={{ flex: 1 }}>
-        {/* 1 — AI DAILY BRIEF */}
-        <section className={styles.card} style={{ padding: "18px 20px" }} aria-labelledby="fd-brief-title">
-          <div className={styles.briefHead}>
-            {sparkle}
-            <span id="fd-brief-title" className={styles.briefTitle}>{tr("field.home.brief.title", "AI Daily Brief", "ملخص اليوم الذكي")}</span>
-            <span className="grow" />
-            <span className="badge badge-info" style={{ height: 19 }}>{tr("field.home.brief.advisory", "Advisory only", "استشاري فقط")}</span>
-          </div>
+      <FieldScopeProvider>
+        <div className={styles.wrap} style={{ flex: 1 }}>
+          {/* 1 — MISSION RAIL + METRIC STRIP (ONE card, per the design) */}
+          <FieldMetricStrip
+            daily={dailyStat}
+            weekly={weeklyStat}
+            returned={returnedCount}
+            drafts={draftCount}
+            strings={{
+              missionDaily: tr("field.home.mission.daily", "{n} visits remaining today", "لديك {n} زيارة متبقية اليوم"),
+              missionWeekly: tr("field.home.mission.weekly", "{n} visits remaining this week", "لديك {n} زيارة متبقية هذا الأسبوع"),
+              returned: tr("field.home.railReturned", "returned", "مُعادة"),
+              drafts: tr("field.home.railDraft", "draft to resume", "مسودة للاستئناف"),
+              daily: tr("field.home.daily", "Daily", "يومي"),
+              weekly: tr("field.home.weekly", "Weekly", "أسبوعي"),
+              scopeAria: tr("field.home.scopeAria", "Metric period", "فترة المؤشرات"),
+              stripAria: tr("field.home.stripAria", "Today's mission and metrics", "مهمة اليوم والمؤشرات"),
+              labelInspections: tr("field.home.stat.inspections", "Inspections", "عمليات تفتيش"),
+              labelFollowUp: tr("field.home.stat.followUp", "Follow-up", "متابعة"),
+              labelHighRisk: tr("field.home.stat.highRisk", "High-risk factories", "منشآت عالية الخطورة"),
+              labelFinish: tr("field.home.stat.finishTime", "Est. finish time", "وقت الإنهاء المتوقع"),
+              labelCompletion: tr("field.home.stat.completion", "Completion rate", "نسبة الإنجاز"),
+              capAssignedDaily: tr("field.home.cap.assignedDaily", "assigned · window begins today", "مسندة · تبدأ نافذتها اليوم"),
+              capAssignedWeekly: tr("field.home.cap.assignedWeekly", "assigned · window begins this week", "مسندة · تبدأ نافذتها هذا الأسبوع"),
+              capFollowUp: tr("field.home.cap.followUp", "returned for correction · this period", "مُعادة للتصحيح · هذه الفترة"),
+              capHighRisk: tr("field.home.cap.highRisk", "risk band · high", "درجة الخطورة · عالية"),
+              capCompletion: tr("field.home.cap.completion", "submitted ÷ assigned · not approval", "مُرسلة ÷ مسندة · ليست اعتماداً"),
+              notConfigured: tr("field.home.notConfigured", "Not configured", "غير مُهيأ"),
+            }}
+          />
 
-          {briefLines.length > 0 ? (
-            <ul className={styles.briefList}>
-              {briefLines.map((line, i) => (
-                <li key={i} className={styles.briefItem}>
-                  <span className={`exc ${EXC_TONES[i % EXC_TONES.length]} ${styles.briefMark}`} aria-hidden="true"><span className="exc-mark" /></span>
-                  <span>{line}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="t-caption" role="status">
-              {dailyBriefing.error ?? tr("field.home.brief.unavailable", "No advisory is available right now — nothing was generated or changed.", "لا يوجد ملخص استشاري الآن — لم يتم إنشاء أو تغيير أي شيء.")}
-            </p>
-          )}
+          {/* 2 — AI DAILY BRIEF (prose + start-here recommendation) */}
+          <DailyBriefingCard
+            daily={{ text: dailyBriefing.text ?? null, error: dailyBriefing.error ?? null }}
+            weekly={{ text: weeklyBriefing.text ?? null, error: weeklyBriefing.error ?? null }}
+            reco={recommendation}
+            strings={{
+              title: tr("field.home.brief.title", "AI Daily Brief", "ملخص اليوم الذكي"),
+              advisory: tr("field.home.brief.advisory", "Advisory only", "استشاري فقط"),
+              unavailable: tr("field.home.brief.unavailable", "No advisory is available right now — nothing was generated or changed.", "لا يوجد ملخص استشاري الآن — لم يتم إنشاء أو تغيير أي شيء."),
+              recoLabel: tr("field.home.reco.label", "AI recommendation — start here", "توصية الذكاء الاصطناعي — ابدأ هنا"),
+              viewCard: tr("field.home.reco.viewCard", "View factory card", "عرض بطاقة المنشأة"),
+              startJourney: tr("field.home.reco.start", "Start journey", "بدء الرحلة"),
+            }}
+          />
 
-          {/* Real, governed stats (Est. Finish Time omitted — no governed source) */}
-          <div className={styles.stats}>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.today}</div><div className="t-caption">{tr("field.home.stat.inspections", "Inspections today", "عمليات تفتيش اليوم")}</div></div>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--status-critical-soft)", color: "var(--status-critical-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.highRisk}</div><div className="t-caption">{tr("field.home.stat.highRisk", "High-risk factories", "منشآت عالية الخطورة")}</div></div>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--status-warning-soft)", color: "var(--status-warning-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M1 4v6h6" /><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.followUp}</div><div className="t-caption">{tr("field.home.stat.followUp", "Follow-up (returned)", "متابعة (مُعادة)")}</div></div>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.statIc} style={{ background: "var(--status-compliant-soft)", color: "var(--status-compliant-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg></span>
-              <div><div className={`id-code ${styles.statNum}`}>{stat.remaining}</div><div className="t-caption">{tr("field.home.stat.remaining", "Remaining today", "المتبقية اليوم")}</div></div>
-            </div>
-          </div>
-
-          {/* AI Recommendation — Start Here (real factory pick, honest reason) */}
-          {selected?.factories && (
-            <div className={styles.reco}>
-              <div style={{ flex: 1, minWidth: 260 }}>
-                <div className="t-label" style={{ marginBlockEnd: 6 }}>{tr("field.home.reco.label", "AI recommendation — start here", "توصية الذكاء — ابدأ هنا")}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 9, marginBlockEnd: 6, flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: 700, fontSize: 15.5 }}><bdi>{selected.factories.name}</bdi></span>
-                  {selected.factories.risk_band === "high" && <span className="badge badge-critical" style={{ height: 18 }}>{tr("field.home.reco.highest", "Highest risk", "الأعلى خطورة")}</span>}
+          {/* 3 — TODAY'S OPERATIONS MAP: route card then factory preview,
+                  STACKED full width exactly as the .dc.html renders them. */}
+          <div>
+            <div className="t-label" style={{ marginBlockEnd: 8 }}>{tr("field.home.mapSection", "Today's operations map", "خريطة العمليات اليوم")}</div>
+            <div className={styles.mapStack}>
+              <section className={styles.card} style={{ overflow: "hidden" }}>
+                <div className={styles.cardHead}>
+                  <span style={{ fontWeight: 600, fontSize: 14 }}><bdi>{routeTitle}</bdi></span>
+                  <span className="grow" />
+                  <span className="t-caption">{tr("field.home.map.plannedSeq", "Planned sequence · today", "التسلسل المخطط · اليوم")}</span>
                 </div>
-                {recoReason && <div style={{ fontSize: 12.5, color: "var(--text-secondary)", display: "flex", alignItems: "flex-start", gap: 6 }}>{sparkle}<span>{recoReason}</span></div>}
-              </div>
-              <div style={{ display: "flex", gap: 9, flex: "none", flexWrap: "wrap" }}>
-                <Link href={factory360Href} prefetch={false} className={styles.qbtnPill}>{tr("field.home.reco.viewCard", "View factory card", "عرض بطاقة المنشأة")}</Link>
-                <Link href={startHref} prefetch={false} className={`${styles.qbtnPill} ${styles.qbtnPrimary}`}>{tr("field.home.reco.start", "Start journey", "بدء الرحلة")}</Link>
-              </div>
-            </div>
-          )}
-        </section>
+                <div className={styles.mapCanvas}>
+                  <FieldHome markers={markers} center={mapCenter}
+                    ariaLabel={tr("field.home.map.title", "Assigned tasks map", "خريطة المهام المسندة")} />
+                </div>
+                {/* Footer = the design's numbered planned-sequence legend. The
+                    design's traffic advisory is omitted: no governed traffic
+                    provider exists, and a fabricated one would be a lie. The
+                    "View full map" link keeps /field/map reachable — the bottom
+                    nav has no map tab and this card is its only entry point. */}
+                <div className={styles.legend}>
+                  {routeStops.length > 0 ? routeStops.map((v, i) => (
+                    <span key={v.id} className={styles.legendItem}>
+                      <span className={styles.stopNum} style={{ background: riskColor(v.factories?.risk_band ?? null) }}>{i + 1}</span>
+                      <span>
+                        <bdi>{v.factories?.name ?? "—"}</bdi>
+                        {" · "}
+                        <span className={styles.stopRisk} style={{ color: riskColor(v.factories?.risk_band ?? null) }}>{label(v.factories?.risk_band)}</span>
+                      </span>
+                    </span>
+                  )) : (
+                    <span className="t-caption">{tr("field.home.map.noStops", "No visits planned for today", "لا توجد زيارات مخططة اليوم")}</span>
+                  )}
+                  <span className="grow" />
+                  <Link href="/field/map" prefetch={false} className={styles.mapLink}>
+                    {tr("field.home.map.viewFull", "View full map", "عرض الخريطة الكاملة")}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: 15, height: 15 }} data-directional aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                  </Link>
+                </div>
+              </section>
 
-        {/* 2 — TODAY'S ROUTE MAP + FACTORY PREVIEW */}
-        <div>
-          <div className="t-label" style={{ marginBlockEnd: 8 }}>{tr("field.home.mapSection", "Today's operations map", "خريطة العمليات اليوم")}</div>
-          <div className={styles.twoCol}>
-            <section className={styles.card} style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-              <div className={styles.cardHead}>
-                <span style={{ fontWeight: 600, fontSize: 14 }}>{tr("field.home.map.route", "Assigned establishments", "المنشآت المسندة")}</span>
-                <span className="grow" />
-                <Link href="/field/map" prefetch={false} className={styles.mapLink}>
-                  {tr("field.home.map.viewFull", "View full map", "عرض الخريطة الكاملة")}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: 15, height: 15 }} data-directional aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
-                </Link>
-              </div>
-              <div className={styles.mapCanvas}>
-                <FieldHome markers={markers} center={mapCenter}
-                  ariaLabel={tr("field.home.map.title", "Assigned tasks map", "خريطة المهام المسندة")} />
-              </div>
-              <div className={styles.legend}>
-                <span className={styles.legendItem}><span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--status-critical)" }} />{tr("field.home.legend.high", "High risk", "خطورة عالية")}</span>
-                <span className={styles.legendItem}><span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--status-warning)" }} />{tr("field.home.legend.med", "Medium risk", "خطورة متوسطة")}</span>
-                <span className={styles.legendItem}><span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--status-compliant-text)" }} />{tr("field.home.legend.low", "Low risk", "خطورة منخفضة")}</span>
-              </div>
-            </section>
-
-            {selected?.factories ? (
-              <section className={styles.card} style={{ display: "flex", flexDirection: "column" }}>
-                <div className={styles.cardHead}><span style={{ fontWeight: 600, fontSize: 14 }}>{tr("field.home.preview", "Factory preview", "معاينة المنشأة")}</span></div>
-                <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 15 }}><bdi>{selected.factories.name}</bdi></div>
-                    {selZone && <div className="t-caption" style={{ marginBlockEnd: 8 }}>{selZone}</div>}
-                    {/* Risk is the governed factory signal; Health Score is omitted (no governed source). */}
-                    {selected.factories.risk_score != null && (
-                      <div className={styles.scoreBox}>
-                        <div className="id-code" style={{ fontWeight: 700, fontSize: 16, color: riskColor(selected.factories.risk_band) }}>{selected.factories.risk_score}</div>
-                        <div className="t-caption">{tr("field.home.riskScore", "Risk score", "مؤشر الخطورة")}{selected.factories.risk_band ? ` · ${label(selected.factories.risk_band)}` : ""}</div>
+              {selected?.factories ? (
+                <section className={styles.card}>
+                  <div className={styles.cardHead}><span style={{ fontWeight: 600, fontSize: 14 }}>{tr("field.home.preview", "Factory preview", "معاينة المنشأة")}</span></div>
+                  <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 15 }}><bdi>{selected.factories.name}</bdi></div>
+                      {selZone && <div className="t-caption" style={{ marginBlockEnd: 8 }}>{selZone}</div>}
+                      {/* Risk is the governed factory signal; the design's
+                          Health Score tile has no governed source and is omitted
+                          rather than invented (Health ≠ Risk law). */}
+                      {selected.factories.risk_score != null && (
+                        <div className={styles.previewScores}>
+                          <div className={styles.scoreBox}>
+                            <div className="id-code" style={{ fontWeight: 700, fontSize: 16, color: riskColor(selected.factories.risk_band) }}>{selected.factories.risk_score}</div>
+                            <div className="t-caption">{tr("field.home.riskScore", "Risk score", "مؤشر الخطورة")}{selected.factories.risk_band ? ` · ${label(selected.factories.risk_band)}` : ""}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {/* Key/value rows in the design's order. */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5, fontSize: 12 }}>
+                      <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.lastInspection", "Last inspection", "آخر تفتيش")}</span><span className="id-code" style={{ fontWeight: 600 }}>{lastInspectionAt ? dt(lastInspectionAt) : "—"}</span></div>
+                      {/* Open Violations — no governed open/closed lifecycle exists (DEC-DASH-003); governed "—". */}
+                      <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.openViolations", "Open violations", "المخالفات المفتوحة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{openViolations ?? "—"}</span></div>
+                      <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.visitType", "Visit type", "نوع الزيارة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{label(selected.visit_type)}</span></div>
+                      <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.scheduled", "Scheduled", "موعد الزيارة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{dt(selected.window_start)} · {tm(selected.window_start)}</span></div>
+                    </div>
+                    {/* AI focus note — first line of the REAL daily briefing only;
+                        omitted entirely when the briefing produced no text. */}
+                    {focusNote && (
+                      <div className={styles.focusNote}>
+                        {sparkle}
+                        <span><bdi>{focusNote}</bdi></span>
                       </div>
                     )}
-                  </div>
-                  {/* AI focus note — first line of the REAL daily briefing only;
-                      omitted entirely when the briefing produced no text. */}
-                  {focusNote && (
-                    <div className={styles.focusNote}>
-                      {sparkle}
-                      <span>
-                        <span className="t-label" style={{ display: "block", marginBlockEnd: 2 }}>{tr("field.home.focusNote", "AI focus note", "ملاحظة تركيز الذكاء")}</span>
-                        <span><bdi>{focusNote}</bdi></span>
-                      </span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      <Link href={journeyHref} prefetch={false} className="btn btn-primary btn-block btn-sm">{tr("field.home.reco.start", "Start journey", "بدء الرحلة")}</Link>
+                      <Link href={prepHref} prefetch={false} className={`btn btn-block btn-sm ${styles.btnOutline}`}>{tr("field.home.openPrep", "Open pre-inspection pack", "فتح حزمة ما قبل التفتيش")}</Link>
+                      <Link href={factory360Href} prefetch={false} className={`btn btn-block btn-sm ${styles.btnOutline}`}>{tr("field.home.openF360", "Open Factory 360", "فتح ملف المنشأة 360")}</Link>
                     </div>
-                  )}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 5, fontSize: 12 }}>
-                    <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.visitType", "Visit type", "نوع الزيارة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{label(selected.visit_type)}</span></div>
-                    <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.scheduled", "Scheduled", "موعد الزيارة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{dt(selected.window_start)} · {tm(selected.window_start)}</span></div>
-                    {/* Last Inspection — most recent SUBMITTED inspection at this factory (RLS-scoped); "—" when none visible. */}
-                    <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.lastInspection", "Last inspection", "آخر تفتيش")}</span><span className="id-code" style={{ fontWeight: 600 }}>{lastInspectionAt ? dt(lastInspectionAt) : "—"}</span></div>
-                    {/* Open Violations — no governed open/closed lifecycle exists (DEC-DASH-003); governed "—". */}
-                    <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.openViolations", "Open violations", "المخالفات المفتوحة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{openViolations ?? "—"}</span></div>
-                    {selected.factories.factory_code && <div className={styles.kvRow}><span style={{ color: "var(--text-secondary)" }}>{tr("field.home.factoryCode", "Establishment code", "رمز المنشأة")}</span><span className="id-code" style={{ fontWeight: 600 }}>{selected.factories.factory_code}</span></div>}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBlockStart: "auto" }}>
-                    <Link href={startHref} prefetch={false} className="btn btn-primary btn-block btn-sm">{tr("field.home.reco.start", "Start journey", "بدء الرحلة")}</Link>
-                    <Link href={factory360Href} prefetch={false} className={`btn btn-block btn-sm ${styles.btnOutline}`}>{tr("field.home.openF360", "Open Factory 360", "فتح ملف المنشأة 360")}</Link>
-                    <Link href={`/field/my-tasks?task=${selected.id}`} prefetch={false} className={`btn btn-block btn-sm ${styles.btnOutline}`}>{tr("field.home.openVisit", "Open visit details", "فتح تفاصيل الزيارة")}</Link>
-                  </div>
-                </div>
-              </section>
+                </section>
+              ) : (
+                <section className={styles.card} style={{ display: "grid", placeItems: "center", padding: 20 }}>
+                  <p className="t-caption" role="status" style={{ textAlign: "center", maxWidth: 220 }}>{tr("field.home.preview.empty", "No actionable establishment in your queue right now.", "لا توجد منشأة قابلة للتنفيذ في قائمتك الآن.")}</p>
+                </section>
+              )}
+            </div>
+          </div>
+
+          {/* 4 — TODAY'S SCHEDULE */}
+          <section className={styles.card}>
+            <div className={styles.cardHead}>
+              <span style={{ fontWeight: 600, fontSize: 14.5 }}>{tr("field.home.schedule.title", "Today's schedule", "جدول اليوم")}</span>
+              <span className="grow" />
+              <span className="t-caption">{tr("field.home.schedule.count", "{n} visits", "{n} زيارة").replace("{n}", String(tasks.length))}</span>
+            </div>
+            {registerTasks.length === 0 ? (
+              <div style={{ padding: "18px 16px" }}>
+                <div style={{ fontWeight: 600, marginBlockEnd: 4 }}>{tr("field.home.register.empty", "No assigned tasks", "لا توجد مهام مسندة")}</div>
+                <p className="t-caption">{tr("field.home.register.emptyBody", "Only your own assignments appear here (RBAC-009). New assignments arrive with a notification.", "تظهر هنا مهامك المسندة فقط (RBAC-009). تصل المهام الجديدة مع إشعار.")}</p>
+              </div>
             ) : (
-              <section className={styles.card} style={{ display: "grid", placeItems: "center", padding: 20 }}>
-                <p className="t-caption" role="status" style={{ textAlign: "center", maxWidth: 220 }}>{tr("field.home.preview.empty", "No actionable establishment in your queue right now.", "لا توجد منشأة قابلة للتنفيذ في قائمتك الآن.")}</p>
-              </section>
+              <div>
+                {registerTasks.map((v) => (
+                  <Link key={v.id} href={`/field/my-tasks?task=${v.id}`} prefetch={false} className={styles.schedRow}>
+                    <span className="id-code" style={{ fontSize: 12, color: "var(--text-secondary)" }}>{tm(v.window_start)}</span>
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: "block", fontWeight: 600, fontSize: 13.5 }}><bdi>{v.factories?.name ?? "—"}</bdi></span>
+                      <span className="t-caption">{label(v.visit_type)}</span>
+                    </span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 600, whiteSpace: "nowrap" }}>
+                      <span style={{ width: 7, height: 7, borderRadius: "50%", background: riskColor(v.factories?.risk_band ?? null) }} />
+                      {label(v.factories?.risk_band)}
+                    </span>
+                    <span className={`badge ${statusTone(v)}`} style={{ height: 18, whiteSpace: "nowrap" }}>{statusLabel(v)}</span>
+                  </Link>
+                ))}
+                <div style={{ display: "flex", justifyContent: "flex-end", padding: "11px 16px" }}>
+                  <Link href="/field/my-tasks" prefetch={false} style={{ color: "var(--action-primary)", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>{tr("field.home.register.viewAll", "View all", "عرض الكل")}</Link>
+                </div>
+              </div>
             )}
-          </div>
-        </div>
+          </section>
 
-        {/* 3 — TODAY'S SCHEDULE */}
-        <section className={styles.card}>
-          <div className={styles.cardHead}>
-            <span style={{ fontWeight: 600, fontSize: 14.5 }}>{tr("field.home.schedule.title", "Today's schedule", "جدول اليوم")}</span>
-            <span className="grow" />
-            <span className="t-caption">{tr("field.home.schedule.count", "{n} assigned", "{n} مسندة").replace("{n}", String(tasks.length))}</span>
-          </div>
-          {registerTasks.length === 0 ? (
-            <div style={{ padding: "18px 16px" }}>
-              <div style={{ fontWeight: 600, marginBlockEnd: 4 }}>{tr("field.home.register.empty", "No assigned tasks", "لا توجد مهام مسندة")}</div>
-              <p className="t-caption">{tr("field.home.register.emptyBody", "Only your own assignments appear here (RBAC-009). New assignments arrive with a notification.", "تظهر هنا مهامك المسندة فقط (RBAC-009). تصل المهام الجديدة مع إشعار.")}</p>
+          {/* 5 — PENDING ATTENTION (real counts only) */}
+          <div>
+            <div className="t-label" style={{ marginBlockEnd: 8 }}>{tr("field.home.pending", "Pending attention", "بانتظار الاهتمام")}</div>
+            <div className={styles.attn}>
+              <div className={styles.card} style={{ padding: "15px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <span className={styles.attnIc} style={{ background: "var(--status-warning-soft)", color: "var(--status-warning-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M1 4v6h6" /><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10" /></svg></span>
+                  <span className="badge badge-critical" style={{ height: 17 }}>{tr("field.home.priority.high", "High priority", "أولوية عالية")}</span>
+                </div>
+                <div><div className={`id-code ${styles.attnNum}`}>{returnedCount}</div><div className="t-caption">{tr("field.home.returned", "Returned inspections", "تقارير مُعادة")}</div></div>
+                <Link href="/field/my-tasks" prefetch={false} className={`btn btn-sm ${styles.btnOutline}`} style={{ textAlign: "center" }}>{tr("field.home.reviewNow", "Review now", "مراجعة الآن")}</Link>
+              </div>
+              <div className={styles.card} style={{ padding: "15px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <span className={styles.attnIc} style={{ background: "var(--accent-soft)", color: "var(--accent-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></span>
+                  <span className="badge badge-warning" style={{ height: 17 }}>{tr("field.home.priority.medium", "Medium", "متوسطة")}</span>
+                </div>
+                <div><div className={`id-code ${styles.attnNum}`}>{draftCount}</div><div className="t-caption">{tr("field.home.drafts", "Draft inspections", "تقارير مسودة")}</div></div>
+                <Link href="/field/drafts" prefetch={false} className={`btn btn-sm ${styles.btnOutline}`} style={{ textAlign: "center" }}>{tr("field.home.resume", "Resume", "استئناف")}</Link>
+              </div>
+              {/* The design's third card is "Pending Synchronization" with a
+                  Sync-Now button. The outbox is a CLIENT-side store (lib/offline)
+                  and is not readable from this server render, so the count is the
+                  governed empty state and the live control stays in the header
+                  cluster (FieldHeaderSync), which reads the real queue. */}
+              <div className={styles.card} style={{ padding: "15px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <span className={styles.attnIc} style={{ background: "var(--status-critical-soft)", color: "var(--status-critical-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M21 2v6h-6" /><path d="M3 12a9 9 0 0 1 15-6.7L21 8" /><path d="M3 22v-6h6" /><path d="M21 12a9 9 0 0 1-15 6.7L3 16" /></svg></span>
+                  <span className="badge badge-info" style={{ height: 17 }}>{tr("field.home.notConfigured", "Not configured", "غير مُهيأ")}</span>
+                </div>
+                <div><div className={`id-code ${styles.attnNum}`}>—</div><div className="t-caption">{tr("field.home.pendingSync", "Pending synchronization", "بانتظار المزامنة")}</div></div>
+                <span className="t-caption">{tr("field.home.pendingSyncManaged", "Managed by secure offline sync", "تديرها المزامنة الآمنة دون اتصال")}</span>
+              </div>
             </div>
-          ) : (
-            <div>
-              {registerTasks.map((v) => (
-                <Link key={v.id} href={`/field/my-tasks?task=${v.id}`} prefetch={false} className={styles.schedRow}>
-                  <span className="id-code" style={{ fontSize: 12, color: "var(--text-secondary)" }}>{tm(v.window_start)}</span>
-                  <span style={{ minWidth: 0 }}>
-                    <span style={{ display: "block", fontWeight: 600, fontSize: 13.5 }}><bdi>{v.factories?.name ?? "—"}</bdi></span>
-                    <span className="t-caption">{label(v.visit_type)}</span>
-                  </span>
-                  <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 600, whiteSpace: "nowrap" }}>
-                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: riskColor(v.factories?.risk_band ?? null) }} />
-                    {label(v.factories?.risk_band)}
-                  </span>
-                  <span className={`badge ${statusTone(v)}`} style={{ height: 18, whiteSpace: "nowrap" }}>{statusLabel(v)}</span>
+          </div>
+
+          {/* 6 — OPERATIONAL INSIGHT STRIP (all derivable, real) */}
+          <div className={`${styles.card} ${styles.insight}`}>
+            <div className={styles.insightItem}>
+              <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg></span>
+              <div><div className={`id-code ${styles.insightNum}`}>{dailyStat.inspections}</div><div className="t-caption">{tr("field.home.insight.today", "Today's visits", "زيارات اليوم")}</div></div>
+            </div>
+            <div className={styles.insightItem}>
+              <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg></span>
+              <div><div className={`id-code ${styles.insightNum}`}>{dailyStat.remaining}</div><div className="t-caption">{tr("field.home.insight.remaining", "Remaining visits", "الزيارات المتبقية")}</div></div>
+            </div>
+            <div className={styles.insightItem}>
+              <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg></span>
+              <div><div className={`id-code ${styles.insightNum}`}>{returnedCount + draftCount}</div><div className="t-caption">{tr("field.home.pending", "Pending attention", "بانتظار الاهتمام")}</div></div>
+            </div>
+            <div className={styles.insightItem}>
+              <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><path d="M22 11.08V12a10 10 0 1 1-5.9-9.1" /><path d="m22 4-10 10-3-3" /></svg></span>
+              <div style={{ minWidth: 100 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className={`id-code ${styles.insightNum}`} style={{ fontSize: 15 }}>{progressPct}%</span>
+                  <span className={styles.progressTrack}><span className={styles.progressFill} style={{ width: `${progressPct}%` }} /></span>
+                </div>
+                <div className="t-caption">{tr("field.home.insight.progress", "Daily progress", "إنجاز اليوم")}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 7 — QUICK ACTIONS (the design's rail; every pill a real navigation) */}
+          <div>
+            <div className="t-label" style={{ marginBlockEnd: 8 }}>{tr("field.home.quickActions", "Quick actions", "إجراءات سريعة")}</div>
+            <div className={styles.qaRail}>
+              <Link href="/planning/immediate" prefetch={false} className={`${styles.qbtnPill} ${styles.qbtnPrimary}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}><path d="M12 5v14M5 12h14" /></svg>
+                {tr("field.home.qa.immediate", "Create immediate visit", "إنشاء زيارة فورية")}
+              </Link>
+              <Link href="/field/search" prefetch={false} className={styles.qbtnPill}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+                {tr("field.home.qa.search", "Search factory", "بحث منشأة")}
+              </Link>
+              {/* Rendered only when a real in-flight inspection exists. */}
+              {activeVisit?.inspections && (
+                <Link href={`/field/inspection/${activeVisit.inspections.id}`} prefetch={false} className={styles.qbtnPill}>
+                  <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--status-compliant-text)", flex: "none" }} />
+                  {tr("field.home.qa.continue", "Continue active inspection", "متابعة التفتيش النشط")} — <bdi>{activeVisit.factories?.name ?? "—"}</bdi>
                 </Link>
-              ))}
-              <div style={{ display: "flex", justifyContent: "flex-end", padding: "11px 16px" }}>
-                <Link href="/field/my-tasks" prefetch={false} style={{ color: "var(--action-primary)", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>{tr("field.home.register.viewAll", "View all", "عرض الكل")}</Link>
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* 4 — PENDING ATTENTION (real counts only) */}
-        <div>
-          <div className="t-label" style={{ marginBlockEnd: 8 }}>{tr("field.home.pending", "Pending attention", "بانتظار الاهتمام")}</div>
-          <div className={styles.attn}>
-            <div className={styles.card} style={{ padding: "15px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <span className={styles.attnIc} style={{ background: "var(--status-warning-soft)", color: "var(--status-warning-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M1 4v6h6" /><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10" /></svg></span>
-                <span className="badge badge-critical" style={{ height: 17 }}>{tr("field.home.priority.high", "High priority", "أولوية عالية")}</span>
-              </div>
-              <div><div className={`id-code ${styles.attnNum}`}>{returnedCount}</div><div className="t-caption">{tr("field.home.returned", "Returned inspections", "تقارير مُعادة")}</div></div>
-              <Link href="/field/my-tasks" prefetch={false} className={`btn btn-sm ${styles.btnOutline}`} style={{ textAlign: "center" }}>{tr("field.home.reviewNow", "Review now", "مراجعة الآن")}</Link>
-            </div>
-            <div className={styles.card} style={{ padding: "15px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <span className={styles.attnIc} style={{ background: "var(--accent-soft)", color: "var(--accent-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></span>
-                <span className="badge badge-warning" style={{ height: 17 }}>{tr("field.home.priority.medium", "Medium", "متوسطة")}</span>
-              </div>
-              <div><div className={`id-code ${styles.attnNum}`}>{draftCount}</div><div className="t-caption">{tr("field.home.drafts", "Draft inspections", "تقارير مسودة")}</div></div>
-              <Link href="/field/drafts" prefetch={false} className={`btn btn-sm ${styles.btnOutline}`} style={{ textAlign: "center" }}>{tr("field.home.resume", "Resume", "استئناف")}</Link>
-            </div>
-            <div className={styles.card} style={{ padding: "15px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <span className={styles.attnIc} style={{ background: "var(--status-critical-soft)", color: "var(--status-critical-text)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 15, height: 15 }}><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" /></svg></span>
-                <span className="badge badge-warning" style={{ height: 17 }}>{tr("field.home.priority.expired", "Lapsed", "منتهية")}</span>
-              </div>
-              <div><div className={`id-code ${styles.attnNum}`}>{expiredCount}</div><div className="t-caption">{tr("field.home.expired", "Expired windows", "نوافذ منتهية")}</div></div>
-              <Link href="/field/my-tasks" prefetch={false} className={`btn btn-sm ${styles.btnOutline}`} style={{ textAlign: "center" }}>{tr("field.home.view", "View", "عرض")}</Link>
+              )}
             </div>
           </div>
         </div>
-
-        {/* 5 — OPERATIONAL INSIGHT STRIP (all derivable, real) */}
-        <div className={`${styles.card} ${styles.insight}`}>
-          <div className={styles.insightItem}>
-            <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg></span>
-            <div><div className={`id-code ${styles.insightNum}`}>{stat.today}</div><div className="t-caption">{tr("field.home.insight.today", "Today's visits", "زيارات اليوم")}</div></div>
-          </div>
-          <div className={styles.insightItem}>
-            <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg></span>
-            <div><div className={`id-code ${styles.insightNum}`}>{stat.remaining}</div><div className="t-caption">{tr("field.home.insight.remaining", "Remaining visits", "الزيارات المتبقية")}</div></div>
-          </div>
-          <div className={styles.insightItem}>
-            <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg></span>
-            <div><div className={`id-code ${styles.insightNum}`}>{returnedCount + draftCount}</div><div className="t-caption">{tr("field.home.pending", "Pending attention", "بانتظار الاهتمام")}</div></div>
-          </div>
-          <div className={styles.insightItem}>
-            <span className={styles.statIc} style={{ background: "var(--surface-sunken)", color: "var(--text-secondary)" }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 14, height: 14 }}><path d="M22 11.08V12a10 10 0 1 1-5.9-9.1" /><path d="m22 4-10 10-3-3" /></svg></span>
-            <div style={{ minWidth: 100 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span className={`id-code ${styles.insightNum}`} style={{ fontSize: 15 }}>{progressPct}%</span>
-                <span className={styles.progressTrack}><span className={styles.progressFill} style={{ width: `${progressPct}%` }} /></span>
-              </div>
-              <div className="t-caption">{tr("field.home.insight.progress", "Daily progress", "إنجاز اليوم")}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 6 — QUICK ACTIONS (real navigations) */}
-        <div>
-          <div className="t-label" style={{ marginBlockEnd: 8 }}>{tr("field.home.quickActions", "Quick actions", "إجراءات سريعة")}</div>
-          <div className={styles.qaRail}>
-            <Link href={startHref} prefetch={false} className={`${styles.qbtnPill} ${styles.qbtnPrimary}`}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}><path d="M12 5v14M5 12h14" /></svg>
-              {tr("field.home.qa.start", "Start visit", "بدء زيارة")}
-            </Link>
-            <Link href="/field/search" prefetch={false} className={styles.qbtnPill}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-              {tr("field.home.qa.search", "Search factory", "بحث منشأة")}
-            </Link>
-            <Link href="/field/my-tasks" prefetch={false} className={styles.qbtnPill}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M9 9h6M9 13h6M9 17h3" /></svg>
-              {tr("field.home.qa.allTasks", "All tasks", "كل المهام")}
-            </Link>
-            <Link href="/field/drafts" prefetch={false} className={styles.qbtnPill}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{ width: 16, height: 16 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
-              {tr("field.home.qa.drafts", "Resume draft", "متابعة مسودة")}
-              {draftCount > 0 && <span className="badge badge-critical" style={{ height: 16, fontSize: 10 }}>{draftCount}</span>}
-            </Link>
-          </div>
-        </div>
-      </div>
+      </FieldScopeProvider>
 
       {/* No local nav spacer: FieldNav is position:fixed and renders its own
           .field-nav-spacer (56px / 60px ≥834px, + safe-area). The design's

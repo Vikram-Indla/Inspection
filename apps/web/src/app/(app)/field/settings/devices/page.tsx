@@ -8,24 +8,27 @@ import TrustedDevicesClient from "./TrustedDevicesClient";
 import { listFieldDevices } from "./actions";
 import type { TrustedDevicesStrings } from "./strings";
 
-// SAQEEL PWA-Field Trusted Devices.dc.html — dedicated field Trusted Devices
-// screen. Chrome ported pixel-to-pixel from the design (back-arrow header, no
-// bottom nav, device card, enroll action, security note).
+// This route composes TWO design pages, in this order:
+//   • SAQEEL PWA-Field Trusted Devices.dc.html — the whole page. Its header is
+//     ported here (back arrow, title, language pill, no bottom nav); its intro,
+//     register list, enrol action and closing note are slots 2-5 in
+//     TrustedDevicesClient.
+//   • SAQEEL PWA-Field Biometric.dc.html — its "Device Enrollment" column only,
+//     as slots 6-11. That column's own segmented chrome and its full-screen
+//     "Biometric Lock" view are not here: the lock screen lives in
+//     login/field/**, and the segment bar's language/theme controls are already
+//     this route's header (the field channel is fixed dark). See the
+//     composition block at the top of TrustedDevicesClient.
 //
-// The design's device LIST is now real: `listFieldDevices()` reads every
+// The design's device LIST is real: `listFieldDevices()` reads every
 // `mvp3_devices` row the RLS policy releases for this inspector, server-side,
 // so the first paint carries the register instead of a spinner.
 //
-// Two deliberate, governed departures from the design mock remain:
-//   1. The mock puts a per-device Revoke on every card. `mvp3_devices` has no
-//      UPDATE and no DELETE policy; the only trust transition in the schema is
-//      `mvp3_issue_device_command`, restricted to ops/security_admin. A Revoke
-//      button here would be a control with nothing behind it, so the register
-//      note names Operations as the owner of revocation instead.
-//   2. The mock's "Enroll new device" links to the Biometric screen as though
-//      biometric enrolment were a sign-in factor. It is not — see the scope
-//      note rendered inside the biometric panel and the comment block in
-//      TrustedDevicesClient.
+// The governed departures from the mocks are documented, one by one, in
+// TrustedDevicesClient's "WHAT IS AND IS NOT REAL" block — chiefly: no
+// per-device Revoke (no UPDATE/DELETE policy exists and the requirements
+// baseline names revocation zero times), and one platform-authenticator control
+// rather than separate Face ID / Touch ID switches.
 export default async function FieldTrustedDevicesPage() {
   const [sb, { t, locale }] = await Promise.all([supabaseServer(), useT()]);
   const { data: { user }, error } = await getVerifiedUser(sb);
@@ -152,6 +155,29 @@ export default async function FieldTrustedDevicesPage() {
       "Enrollment from this screen is disabled in this environment. Ask Operations to enroll this device.",
       "التسجيل من هذه الشاشة معطّل في هذه البيئة. اطلب من قسم العمليات تسجيل هذا الجهاز.",
     ),
+    enrollRegistered: tr(
+      "field.devices.enrollRegistered",
+      "This device is already in the register above, so there is nothing to enroll from here.",
+      "هذا الجهاز موجود بالفعل في السجل أعلاه، لذا لا يوجد ما يمكن تسجيله من هنا.",
+    ),
+
+    // Biometric.dc.html "Device Enrollment" column — heading block.
+    bioSectionTitle: tr("field.devices.bio.sectionTitle", "Enroll Biometric Lock", "تسجيل القفل الحيوي"),
+    // The design says biometric enrolment links the trusted device to Apple
+    // biometrics "to unlock the field app". That is exactly what this does —
+    // it gates re-entry to an existing session. It is NOT worded as sign-in.
+    bioSectionDesc: tr(
+      "field.devices.bio.sectionDesc",
+      "Link this trusted device's built-in authenticator so you can reopen the field app quickly and securely.",
+      "اربط المُصادِق المدمج في هذا الجهاز الموثوق لإعادة فتح التطبيق الميداني بسرعة وأمان.",
+    ),
+
+    // Biometric.dc.html "Trusted Device" summary panel.
+    bioSummaryLabel: tr("field.devices.bio.summaryLabel", "Trusted Device", "الجهاز الموثوق"),
+    bioSummaryDevice: tr("field.devices.bio.summaryDevice", "Device", "الجهاز"),
+    bioSummaryDeviceId: tr("field.devices.bio.summaryDeviceId", "Device ID", "معرّف الجهاز"),
+    bioSummaryStatus: tr("field.devices.bio.summaryStatus", "Status", "الحالة"),
+    bioSummaryLastAuth: tr("field.devices.bio.summaryLastAuth", "Last authentication", "آخر مصادقة"),
 
     bioTitle: tr("field.devices.bio.title", "Face ID unlock", "فتح بالتعرف على الوجه"),
     // The platform reports only that a built-in authenticator exists — never
