@@ -615,14 +615,42 @@
           "text": "Must run inside the normal web shell (rail + top nav), not a stripped frame — verify in code."
         },
         {
+          "lane": "design",
+          "text": "Map is an ADM1 region choropleth in the design; code renders a Mapbox point map with the compliance/risk tone layers explicitly disabled (classification policy not configured). Choropleth parity is policy-blocked, not a code gap."
+        },
+        {
+          "lane": "design",
+          "text": "Sector benchmark panel (المقارنة المرجعية · القطاعات مقابل المستهدف) unbuilt — no governed KPI target exists to compare against. Needs a decision before it can render anything but \"Not configured\"."
+        },
+        {
+          "lane": "design",
+          "text": "Proactive-signals panel unbuilt — every item in the design is a forecast/predictive claim with no governed source."
+        },
+        {
+          "lane": "design",
+          "text": "Regional rail sort order differs: design ranks best→worst by compliance, code ranks worst-first as an intervention queue. Not reconciled."
+        },
+        {
+          "lane": "design",
+          "text": "Export is AR/RTL only; EN/LTR parity of the executive surface is unasserted and no pixel diff has been run at any declared width."
+        },
+        {
           "lane": "wiring",
-          "text": "AI Composer (Gemini predictive/intent prompts) not confirmed wired."
+          "text": "AI Composer still NOT wired. The Gemini adapter exists (lib/providers/ai-gemini.ts, fail-closed on GEMINI_API_KEY) but the governed advisory surfaces are a closed enum of six in lib/ai/contextual-actions.ts and none is executive/dashboard. Each governed surface also requires a fixed server-re-read context plus evidence refs, whereas the design draws a free-text intent box with forecasting prompts — which contradicts the shipped strategic contract (\"deterministic · not AI — no generated narrative or forecast\"). Requires a new governed surface AND a decision authorising executive forecasting. Nothing fabricated."
         }
       ],
       "phase": 8,
       "complexity": "L",
       "dependsOn": [
         "dashboard"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T05:55:00+03:00",
+          "by": "claude-code",
+          "restored": "6 pending items recovered from 0e7d4bac (SB-r9)",
+          "evidence": "The board carried two lineages. Scanning all 45 board commits across every branch: 17 hold a 6-item exec card (SB-r9 lineage, lanes d74/c72/w60), 28 hold a 3-item one (main lineage, d70/c60/w60). The reconcile merge 851368fe auto-merged status/saqeel-status.json line-wise and took main's side, silently dropping six investigated findings. Restored verbatim. Lanes left at 70/60/60 — the higher 74/72 came with evidence this session has not seen."
+        }
       ]
     },
     {
