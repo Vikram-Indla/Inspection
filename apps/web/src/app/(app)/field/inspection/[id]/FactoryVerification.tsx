@@ -385,12 +385,17 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           the design's plain dropdowns: source value (Senaei) vs observed value,
           verify/observed-input/note/evidence and the derived status are intact. */}
       <section className={styles.card}>
-      <div className={styles.headerRow}>
-        <h4>{strings.title}</h4>
+      {/* Design authority — every `.ef-card` section heading in the Establishment
+          File design is a ruled `.ef-h` (15px/600, divider below) with trailing
+          controls pushed out by `.grow`. This card was the only section still on
+          the unruled two-column headerRow. */}
+      <h4 className={styles.cardH}>
+        <span style={{ minInlineSize: 0 }}>{strings.title}</span>
+        <span className="grow" />
         <span className={`badge ${changeCount ? "badge-warning" : "badge-compliant"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
         </span>
-      </div>
+      </h4>
       <p className="t-caption">{strings.hint}</p>
       {readOnly && <div className="alert alert-immutable"><div>{strings.readOnly}</div></div>}
       {checksLoadError && <div className="alert alert-warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
