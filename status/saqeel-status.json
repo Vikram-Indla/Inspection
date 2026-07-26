@@ -1,6 +1,6 @@
 {
-  "revision": "SB-r49",
-  "updated": "2026-07-26T11:08:37+03:00",
+  "revision": "SB-r50",
+  "updated": "2026-07-26T11:09:32+03:00",
   "updatedBy": "claude-code",
   "branch": "feat/saqeel-shell-rail-profile-switch",
   "committed": false,
@@ -626,10 +626,6 @@
       },
       "pending": [
         {
-          "lane": "code",
-          "text": "No rail route (O-31)."
-        },
-        {
           "lane": "wiring",
           "text": "Twilio Video is selected but NOT configured: an AccessToken needs an API Key SID + secret, present in neither the environment nor the secrets sheet, and room type (group vs P2P) plus media region are ungoverned. videoTransportStatus() fails closed and the room states the representative cannot join. Local camera/mic/screen share are real and unaffected."
         },
@@ -683,6 +679,15 @@
             "code": 100
           },
           "evidence": "Merge reconciliation with origin/saqeel/operations (PR #90): virtual's only remaining code-lane pending item, O-31 no-rail-route, is cleared by this branch's SHELL_NAVIGATION change. No other code pending remains on this card."
+        },
+        {
+          "at": "2026-07-26T11:09:32+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "code",
+            "text": "No rail route (O-31)."
+          },
+          "evidence": "O-31/O-28: SHELL_NAVIGATION adds Visits/Tasks/Virtual/Cases/Committee/Portal rail routes; Playwright e2e (planner persona) navigated all 6 routes EN+AR/RTL, 2/2 pass. Already logged in evidenceLog at 09:54:03 and 11:08:37 — clearing the pending row here to match."
         }
       ]
     },
