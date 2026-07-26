@@ -88,6 +88,11 @@ export default async function FieldLayout({ children }: { children: ReactNode })
       <div
         dir={locale === "ar" ? "rtl" : "ltr"}
         lang={locale}
+        // Field is a touch-first iPad channel: opt into the pre-authored "field"
+        // density profile (tokens.css) so small and icon controls resolve to the
+        // 40/44px touch floor instead of the 28/32px desktop metrics. The profile
+        // was authored for exactly this root but had never been wired onto it.
+        data-density="field"
         style={{
           minHeight: "100dvh",
           display: "flex",
