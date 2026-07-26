@@ -247,6 +247,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-24"
     change_ref: "product-contract/governance/CC-SAQEEL-DSYNC-001.yaml"
+  - gate: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+    decision: "APPROVED — sponsor accepted the four-session migration discovery baseline and authorized the unified responsive application direction, three canonical roles, shared navigation with visible-but-unauthorized Administration, EN/AR and responsive browser matrix, controlled PWA preservation/decoupling, Claude Design reconciliation, integration branch, and exact pre-migration PWA archive branch/tag. Approval does not by itself issue a product-code lease, authorize remote DDL or shared-data mutation, push, merge, deployment, or weakening any of CR-001..CR-478. Each implementation vertical still requires a non-overlapping governed packet and evidence contract."
+    approver: "Vikram Indla"
+    date: "2026-07-26"
+    change_ref: "product-contract/governance/CC-SAQEEL-RESPONSIVE-REVAMP-001.yaml"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

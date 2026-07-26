@@ -1,0 +1,124 @@
+schema_version: "1.0"
+change_control_id: "CC-SAQEEL-RESPONSIVE-REVAMP-001"
+task_id: "TASK-SAQEEL-RESPONSIVE-REVAMP-001"
+title: "Unified responsive SAQEEL migration baseline"
+state: "BASELINE_SPONSOR_APPROVED_IMPLEMENTATION_PACKETS_PENDING"
+raised_at: "2026-07-26T21:00:00+03:00"
+approved_at: "2026-07-26"
+approved_by: "Vikram Indla / Product Owner"
+approval_evidence: "Codex task reply: approved"
+
+repository_baseline:
+  repository: "Vikram-Indla/Inspection"
+  canonical_branch: "main"
+  commit: "54a139a9daf893babf16fa901755e61525f26f1c"
+  integration_branch: "integration/saqeel-responsive-revamp"
+  pwa_archive_branch: "archive/pwa-pre-responsive-revamp"
+  pwa_archive_tag: "pwa-pre-responsive-revamp"
+  refs_created_locally: true
+  pushed: false
+  merged: false
+  branch_protection_at_discovery: false
+  required_merge_checks_at_discovery: []
+
+source_baseline:
+  requirements:
+    drive_folder_id: "1wmMUVDn-7g4B051YP_qCMOXJs_N92Q43"
+    master_file: "Inspection Project.xlsx"
+    determination: "Demonstrably the master corpus by its nine-domain schema and exact 478 requirement rows."
+    hidden_sheets: 0
+    caveat: "The workbook does not contain a literal Requirement No. 1 marker."
+    missing_expected_direct_child:
+      - "SAQEEL Design System.zip"
+  design:
+    project_id: "939e349f-dd7e-481e-8cc7-f7bc85e6e31b"
+    artifact: "Saqeel Revamp.dc.html"
+    immutable_revision: "NOT_VISIBLE"
+    observed_modified_state: "Relative editor label only; no immutable revision number exposed."
+    disposition: >
+      Approved as the migration design source subject to reconciliation. Prototype
+      values, unresolved Review/Analytics content, and its conflicting access
+      annotations are not behavioral authority.
+  functional_security_truth: >
+    The 478 requirements, current workflow/state contracts, immutable-version
+    rules, audit contracts, server authorization, and RLS remain binding until
+    an explicit mapped migration row replaces them.
+
+approved_product_direction:
+  application:
+    - "One unified responsive web application."
+    - "iPhone and iPad are responsive browser test families, not separate application architectures."
+    - "No separate field-only or administration application shell remains after certified convergence."
+    - "Existing /field business capability is preserved and migrated before PWA delivery infrastructure is disabled."
+  roles:
+    canonical: ["planner", "inspector", "administrator"]
+    rule: >
+      Existing thirteen-role storage and policy behavior may be replaced only
+      through an explicit legacy-to-canonical mapping that preserves historical
+      audit attribution, least privilege, and every accepted permission outcome.
+  navigation:
+    - "All three canonical roles receive the same top and side navigation structure."
+    - "Administration remains visible to all three roles."
+    - "Planner and Inspector receive the designed unauthorized Administration state."
+    - "Visibility never grants authorization; route, server, service, RLS, audit, direct URL, refresh, deep-link and API enforcement must agree."
+  localization:
+    - "English and Modern Standard Arabic UI are mandatory."
+    - "LTR/RTL and light/dark are mandatory."
+    - "Legal, regulation, enforcement, penalty, risk, SLA and compliance meanings require authoritative translation and may not be invented."
+  responsive_test_widths: [320, 375, 390, 768, 1024, 1280, 1440, 1920]
+  browser_families: ["current stable Chrome", "current stable Safari"]
+  pwa:
+    - "Archive the verified pre-migration PWA baseline in the same repository."
+    - "Do not maintain, showcase or deploy the archive as an active product."
+    - "Preserve offline outbox, conflict, package-integrity, evidence, submission-lock and reusable field execution logic."
+    - "Service-worker removal must include an explicit Web Push disposition because current push delivery depends on it."
+
+discovery_findings:
+  independent_sessions_completed: 4
+  application_routes: 108
+  field_routes: 31
+  admin_routes: 32
+  database_roles: 13
+  committed_migrations: 146
+  supabase_project_ref: "iiozvqntawxfwbgffzqu"
+  supabase_live_catalog: "BLOCKED_PERMISSION_DENIED"
+  open_pull_requests: 0
+  active_remote_branches:
+    - "main"
+    - "setup/Inspection"
+  current_ci_gap: >
+    The only active pull-request workflow targets setup/Inspection. It does not
+    automatically protect main or integration/saqeel-responsive-revamp.
+
+mandatory_preimplementation_outputs:
+  - "478-row requirement preservation and change map"
+  - "legacy thirteen-role to three-role capability/RLS/audit migration matrix"
+  - "route, screen, widget, navigation and unauthorized-state map"
+  - "PWA/offline/Web Push preservation and decoupling map"
+  - "deployed Supabase schema, migration, RLS, Auth, Storage, Realtime and Edge Function inventory"
+  - "design conflict and prototype-value exclusion register"
+  - "Arabic terminology and authoritative-translation hold register"
+  - "vertical PR dependency, allowed-path, evidence and rollback map"
+  - "CI update plan for integration-branch and final-main merge gates"
+
+implementation_authority:
+  baseline_and_change_direction_approved: true
+  product_code_write_lease_issued: false
+  remote_ddl_authorized: false
+  shared_data_mutation_authorized: false
+  push_authorized: false
+  merge_authorized: false
+  deployment_authorized: false
+  next_gate: >
+    ChatGPT/contract owner authors non-overlapping implementation packets with
+    requirement, screen, engine, acceptance, path, evidence, dependency and
+    rollback IDs. Codex then applies safety, lease, browser and merge gates.
+
+standing_stops:
+  - "Do not weaken or silently retire any of the 478 requirements."
+  - "Do not rewrite applied migration history; use additive migrations."
+  - "Do not run production DDL or destructive role migration without explicit approval."
+  - "Do not remove service-worker delivery before Web Push and offline-business parity are dispositioned and evidenced."
+  - "Do not treat prototype design values as policy or live data."
+  - "Do not claim deployed Supabase parity until read access is restored."
+  - "DEC-032 remains a P0 submission blocker until separately repaired and verified."
