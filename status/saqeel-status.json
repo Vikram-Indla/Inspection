@@ -1,8 +1,8 @@
 {
-  "revision": "SB-r19",
-  "updated": "2026-07-26T01:40:00+03:00",
+  "revision": "SB-r24",
+  "updated": "2026-07-26T06:19:33+03:00",
   "updatedBy": "claude-code",
-  "branch": "feature/ipad-field-channel-delivery",
+  "branch": "saqeel/virtual",
   "committed": false,
   "law": "A card is 100% on Design only when the shipped route matches its .dc.html pixel-to-pixel at every declared width, in EN/LTR and AR/RTL. Structure, rules, enums and field names come from source. No number may be raised without evidence.",
   "channels": [
@@ -452,9 +452,9 @@
       "channel": "web",
       "group": "console",
       "name": "Virtual visits (console side)",
-      "design": 60,
-      "code": 90,
-      "wiring": 55,
+      "design": 88,
+      "code": 96,
+      "wiring": 82,
       "designPage": "SAQEEL Virtual.dc.html",
       "route": "web/src/app/(app)/virtual (+ [id]) · ScheduleForm.tsx · lib/providers/video.ts",
       "pwa": {
@@ -463,18 +463,47 @@
       },
       "pending": [
         {
-          "lane": "wiring",
-          "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
-        },
-        {
           "lane": "code",
           "text": "No rail route (O-31)."
+        },
+        {
+          "lane": "wiring",
+          "text": "Twilio Video is selected but NOT configured: an AccessToken needs an API Key SID + secret, present in neither the environment nor the secrets sheet, and room type (group vs P2P) plus media region are ungoverned. videoTransportStatus() fails closed and the room states the representative cannot join. Local camera/mic/screen share are real and unaffected."
+        },
+        {
+          "lane": "design",
+          "text": "No pixel-diff run against the .dc.html in the fixed Chromium font environment (visual_acceptance ZERO_UNAPPROVED_DIFF). Parity is verified structurally at all four declared widths in EN/LTR and AR/RTL, not pixel-to-pixel."
+        },
+        {
+          "lane": "design",
+          "text": "AR/RTL renders English fallbacks for the new room/stage ui_strings keys until Arabic is added via the governed /admin/localization catalogue. No Arabic copy was invented."
         }
       ],
       "phase": 3,
       "complexity": "M",
       "dependsOn": [
         "visits"
+      ],
+      "evidenceLog": [
+        {
+          "at": "2026-07-26T06:19:15+03:00",
+          "by": "claude-code",
+          "lanes": {
+            "design": 88,
+            "code": 96,
+            "wiring": 82
+          },
+          "evidence": "PR #90 (2a5b71fd, 10c1695e, bb27e894). DESIGN 60->88: room now follows SAQEEL Virtual.dc.html — room panel, identity panel with avatars and inline OTP, readiness contract as 5 compact evidence rows, 6-node horizontal compact spine, timeline on the DS ul.timeline component; 0 legacy cd-link cards and 0 legacy cd-plist remain. Verified in Chromium at all four declared widths (1200x900, 1024x768, 390x844, 320x800) in BOTH EN/LTR and AR/RTL: 8/8 with no horizontal scroll and every panel present; a 320px defect where the self-view covered the stage note was found and fixed (bb27e894). The design page itself was corrected under Product Owner direction and re-vendored, removing its own colour-law violations (#12161b, #151a20, #fff). CODE 90->96: real local media — camera, microphone, screen share, self-view, release-all — with distinct denied/not-found/busy/unsupported causes, device release on unmount, plus lib/providers/video-twilio.ts transport status. WIRING 55->82: proven against real staging data (session d87f06bc, Najd Food Industries F-2216, A. Saleh verified) signed in through the real /login as a provisioned ops+planner account — camera live track decoding at 1280px, live audio track, mute keeps the track live with enabled=false, screen share feed rendered with the browser's own Stop mirrored back to state, leave leaves 0/4 tracks live; RLS-scoped reads/writes, vp_request_otp / vp_verify_otp / vp_otp_status / vs_append_event / vs_mark_session_verified / set_operational_state, rev-token concurrency, notification legs; the Twilio SMS fallback adapter now actually registers (name mismatch fixed). 0 console errors on the room route. npm run typecheck clean. NOT 100: no pixel-diff run in the fixed-Chromium-font environment, and the remote video leg genuinely cannot connect."
+        },
+        {
+          "at": "2026-07-26T06:19:23+03:00",
+          "by": "claude-code",
+          "cleared": {
+            "lane": "wiring",
+            "text": "Teams / Zoom / premium Twilio transports are provider facts — flagged, not assumed."
+          },
+          "evidence": "Superseded, not resolved: Twilio Video is now the SELECTED transport (Product Owner 2026-07-26), so 'Teams / Zoom / premium Twilio are provider facts' no longer describes the state. Replaced by a precise pending row naming exactly what is missing. The underlying fact is unchanged and still flagged: no remote video transport can connect."
+        }
       ]
     },
     {
