@@ -6,7 +6,7 @@ import LiveOps, { type LiveOpsStrings } from "./LiveOps";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { buildShellNavigation } from "@/lib/shell-navigation";
+import { buildShellNavigation, BUSINESS_ROLE_KEYS, FIELD_CHANNEL_ROLE_KEYS } from "@/lib/shell-navigation";
 import { isTestFixtureEstablishment } from "@/lib/field/fixtures";
 import { resolveRegionId, type KsaRegionCollection } from "@/lib/ksa-regions";
 import ksaRegionsJson from "../../../../../public/geo/sau-regions.geo.json";
@@ -116,7 +116,15 @@ export default async function LiveOperations({ searchParams }: {
     : buildShellNavigation(routeRoleKeys)
       .flatMap(group => group.items)
       .find(item => item.href === "/operations");
-  const mayViewOperations = operationsDestination?.enabled === true;
+  // DSG-CMD-020 — direct-route authorization: business-visible shell items are
+  // unconditionally enabled for every web-portal persona, including admin-only
+  // ones, so nav visibility cannot be the authorization. The route verifies the
+  // caller independently holds an operational role.
+  const webBusinessRoles = BUSINESS_ROLE_KEYS.filter(
+    role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)
+  );
+  const hasOperationalRole = routeRoleKeys.some(role => webBusinessRoles.includes(role));
+  const mayViewOperations = operationsDestination?.enabled === true && hasOperationalRole;
   if (!mayViewOperations) {
     return (
       <Shell current="/operations/live" title={t("ops.live.title", "Live Operations — Saudi Arabia")}>
