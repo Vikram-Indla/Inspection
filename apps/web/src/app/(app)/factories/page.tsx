@@ -48,6 +48,10 @@ export default async function Factories() {
     thCity: t("f360.list.th.city", "City"),
     thRisk: t("f360.list.th.risk", "Risk"),
     dossier: t("f360.list.dossier", "View factory"),
+    portfolioLabel: t("f360.list.portfolio", "Factory portfolio"),
+    licensedCountLabel: t("f360.list.licensedCount", "Licensed factories"),
+    unlicensedCountLabel: t("f360.list.unlicensedCount", "Unlicensed establishments"),
+    regionsCountLabel: t("f360.list.regionsCount", "Regions represented"),
     bandLabels: {
       high: t("enum.high", "high"),
       medium: t("enum.medium", "medium"),

@@ -73,10 +73,51 @@ export default async function Factory360ByCr({ params, searchParams }: {
     [t("f360.compare.city", "City"), factory?.city, snapshotValue("city")],
     [t("f360.compare.source", "Source system"), selected?.source_system ?? factory?.source, snapshotValue("source_system")],
   ] as const : [];
+  // BR-011 / WA-M4-AC-005 — a business-event timeline only. Operational
+  // visits are intentionally absent; every row below is a persisted CR,
+  // license, report, government, penalty or Risk Engine event.
+  const timelineEvents = [
+    cr.issue_date ? { key: "cr-issued", at: cr.issue_date, title: t("f360.timeline.crIssued", "Commercial registration issued"), detail: cr.cr_number } : null,
+    cr.expiry_date ? { key: "cr-expiry", at: cr.expiry_date, title: t("f360.timeline.crExpiry", "Commercial registration expiry"), detail: cr.cr_number } : null,
+    selected?.issue_date ? { key: "license-issued", at: selected.issue_date, title: t("f360.timeline.licenseIssued", "Selected industrial license issued"), detail: selected.license_number } : null,
+    selected?.expiry_date ? { key: "license-expiry", at: selected.expiry_date, title: t("f360.timeline.licenseExpiry", "Selected industrial license expiry"), detail: selected.license_number } : null,
+    ...reports.flatMap(report => {
+      const latest = latestSubmission(report);
+      const at = latest?.submitted_at ?? report.submitted_at;
+      return at ? [{
+        key: `report-${report.id}`,
+        at,
+        title: t("f360.timeline.reportSubmitted", "Inspection report submitted"),
+        detail: `${text(report.inspection_no ?? report.id.slice(0, 8))} · ${label(report.status)}${latest ? ` · v${latest.version_number}` : ""}`,
+        href: `/reports/inspection/${report.id}`,
+      }] : [];
+    }),
+    ...government.flatMap(row => row.recorded_at ? [{
+      key: `government-${row.id}`,
+      at: row.recorded_at,
+      title: t("f360.timeline.governmentRecorded", "Government record received"),
+      detail: `${text(row.title ?? row.record_type)} · ${label(row.status)}`,
+    }] : []),
+    ...penalties.flatMap(row => row.issued_at ? [{
+      key: `penalty-${row.id}`,
+      at: row.issued_at,
+      title: t("f360.timeline.penaltyIssued", "Penalty notice issued"),
+      detail: `${row.notice_number} · ${label(row.status)}`,
+      href: row.inspection_id ? `/reports/inspection/${row.inspection_id}` : undefined,
+    }] : []),
+    ...(permissions["view_risk_details"] ? riskHistory.flatMap(row => row.calculated_at ? [{
+      key: `risk-${row.id}`,
+      at: row.calculated_at,
+      title: t("f360.timeline.riskCalculated", "Risk Engine calculation completed"),
+      detail: `${row.score} · ${label(row.band)} · ${row.model_version}`,
+    }] : []) : []),
+  ].filter((event): event is { key: string; at: string; title: string; detail: string; href?: string } => event !== null)
+    .sort((a, b) => b.at.localeCompare(a.at));
 
   return (
     <Shell current="/factories" title={locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}
       context={<><span className="sq-lozenge sq-lozenge--info">SCR-WEB-400 · Factory 360</span><span className="sq-freshness">{t("f360.meta.source", "source")} {text(selected?.source_system ?? cr.source_system)} · {t("f360.meta.synced", "recorded")} {dt(selected?.source_synced_at ?? cr.source_synced_at)}</span></>}>
+      <h1 className="sr-only">{t("f360.title", "Factory 360")} — {locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}</h1>
       {licenseError ? <div className="sq-banner sq-banner--warning" role="status"><div>{t("f360.licenses.degraded", "Industrial-license data is temporarily degraded; CR identity remains available.")}</div></div> : null}
       <div className={styles.workspace} data-factory360-layout="cr-license-dossier">
         <aside className={styles.left} aria-label={t("f360.licenses.heading", "Industrial licenses and plants")}>
@@ -85,14 +126,21 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <p className="sq-caption"><bdi>{cr.cr_number}</bdi> · {licenses.length} {t("f360.licenses.count", "licenses")}</p>
             {licenses.length ? <ul className={styles.licenseList}>{licenses.map(row => <li key={row.id}>
               <a className={styles.licenseLink} href={`/factories/cr/${cr.id}?license=${row.id}`} aria-current={row.id === selected?.id ? "page" : undefined}>
-                <strong><bdi>{row.license_number}</bdi></strong><br />
-                <span className="sq-caption">{t("f360.plant", "Plant")} <bdi>{text(row.plant_number)}</bdi> · {label(row.status)}</span>
+                <strong className={styles.licenseName}>{text(row.factories?.name)}</strong>
+                <dl className={styles.licenseFacts}>
+                  <div><dt>{t("f360.id.license", "License")}</dt><dd><bdi>{row.license_number}</bdi></dd></div>
+                  <div><dt>{t("f360.plant", "Plant")}</dt><dd><bdi>{text(row.plant_number)}</bdi></dd></div>
+                  <div><dt>{t("f360.license.type", "Type")}</dt><dd>{label(row.license_type)}</dd></div>
+                  <div><dt>{t("f360.license.stage", "Stage")}</dt><dd>{label(row.stage)}</dd></div>
+                  <div><dt>{t("common.status", "Status")}</dt><dd>{label(row.status)}</dd></div>
+                  <div><dt>{t("f360.risk.level", "Risk level")}</dt><dd>{label(row.factories?.risk_band)}</dd></div>
+                </dl>
               </a>
             </li>)}</ul> : <p className="sq-caption">{t("f360.licenses.empty", "No industrial license is mapped to this CR.")}</p>}
           </section>
         </aside>
 
-        <main className={styles.main}>
+        <div className={styles.main}>
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-cr-heading">
             <div className={styles.sectionHead}><h2 id="f360-cr-heading">{t("f360.cr.heading", "Commercial registration & legal identity")}</h2>{sourceBadge(crError, cr)}</div>
             <dl className={styles.facts}>
@@ -118,27 +166,6 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-license-heading">
             <div className={styles.sectionHead}><h2 id="f360-license-heading">{t("f360.license.heading", "Selected license, plant & address")}</h2>{sourceBadge(addressResult.error, address, !!selected)}</div>
-            {selected && (() => {
-              const expiry = selected.expiry_date ? new Date(selected.expiry_date) : null;
-              const daysToExpiry = expiry ? Math.ceil((expiry.getTime() - Date.now()) / 86400000) : null;
-              const tone = daysToExpiry == null ? "info" : daysToExpiry < 0 ? "critical" : daysToExpiry <= 30 ? "warning" : "info";
-              return (
-                <div className={`ax-banner ax-banner--${tone}`} role="status" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
-                  <div>
-                    <strong>{t("f360.licenseCurrency.title", "Verify license currency before you proceed")}</strong>
-                    <div className="ax-caption">
-                      {daysToExpiry == null
-                        ? t("f360.licenseCurrency.noExpiry", "No expiry date on record for this license — confirm the license number and status with the establishment and report any discrepancy.")
-                        : daysToExpiry < 0
-                          ? t("f360.licenseCurrency.expired", "This license shows as expired ({date}). Confirm with the establishment and report the discrepancy if it has since been renewed.").replace("{date}", dt(selected.expiry_date))
-                          : daysToExpiry <= 30
-                            ? t("f360.licenseCurrency.expiringSoon", "This license expires in {days} day(s) ({date}). Verify the license number on site.").replace("{days}", String(daysToExpiry)).replace("{date}", dt(selected.expiry_date))
-                            : t("f360.licenseCurrency.valid", "License {number} recorded valid through {date}. Verify the number on site and report any discrepancy.").replace("{number}", selected.license_number).replace("{date}", dt(selected.expiry_date))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
             {selected && factory ? <dl className={styles.facts}>
               <div><dt>{t("f360.id.license", "Industrial license")}</dt><dd className="sq-numeric"><bdi>{selected.license_number}</bdi></dd></div>
               <div><dt>{t("f360.plant", "Plant number")}</dt><dd className="sq-numeric"><bdi>{text(selected.plant_number)}</bdi></dd></div>
@@ -222,6 +249,24 @@ export default async function Factory360ByCr({ params, searchParams }: {
             </>}
           </section>
 
+          <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-timeline-heading">
+            <div className={styles.sectionHead}>
+              <h2 id="f360-timeline-heading">{t("f360.timeline.heading", "Business-event timeline")}</h2>
+              <span className="sq-lozenge sq-lozenge--info">{t("f360.timeline.boundary", "CR + selected license")}</span>
+            </div>
+            <p className="sq-caption">{t("f360.timeline.rule", "Source-backed business events only. Operational visits are intentionally excluded.")}</p>
+            {timelineEvents.length ? <ol className={styles.timeline}>{timelineEvents.map(event => (
+              <li key={event.key}>
+                <time className="sq-numeric" dateTime={event.at}>{dt(event.at)}</time>
+                <span className={styles.timelineDot} aria-hidden="true" />
+                <div>
+                  <strong>{event.title}</strong>
+                  <p className="sq-caption">{event.href ? <a className="sq-link" href={event.href}>{event.detail}</a> : event.detail}</p>
+                </div>
+              </li>
+            ))}</ol> : <p className="sq-caption">{t("f360.timeline.empty", "No business events are available for the selected license.")}</p>}
+          </section>
+
           <section className={`sq-surface ${styles.panel}`} aria-labelledby="f360-xpc-heading">
             <div className={styles.sectionHead}><h2 id="f360-xpc-heading">{t("f360.xpc.heading", "Source & cross-provider reconciliation")}</h2><span className={`sq-lozenge ${discrepancyCounts["conflicting"] ? "sq-lozenge--critical" : discrepancyCounts["contract_unverified"] ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{discrepancyCounts["conflicting"] ? t("f360.xpc.conflicts", "conflicts") : discrepancyCounts["contract_unverified"] ? t("f360.xpc.unverified", "unverified master") : t("f360.xpc.reconciled", "reconciled")}</span></div>
             <p className="sq-caption">{t("f360.xpc.rule", "Facts are resolved once, server-side. Industry Shared master data is contract-unverified (fail-closed); Inspection API values are contextual; approved report facts are authoritative. Conflicts are surfaced, never overwritten.")}</p>
@@ -235,7 +280,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
             </dl>
             <p className="sq-caption">{t("f360.xpc.discrepancies", "Reconciliation")}: {Object.entries(discrepancyCounts).map(([state, n]) => `${label(state)} ${n}`).join(" · ") || t("f360.xpc.none", "no reconcilable facts")}</p>
           </section>
-        </main>
+        </div>
 
         <aside className={styles.right} aria-label={t("f360.context.heading", "Selected context and actions")}>
           <section className={`sq-surface ${styles.panel}`}>
@@ -274,7 +319,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
           </section>
           <section className={`sq-surface ${styles.panel}`}>
             <h2>{t("f360.enforcement.heading", "Penalty history")}</h2>
-            {penaltiesResult.error ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : penalties.length ? <ul>{penalties.map(row => <li key={row.id}><bdi>{row.notice_number}</bdi> · {label(row.status)} · {dt(row.issued_at)}</li>)}</ul> : <p className="sq-caption">{t("f360.enforcement.empty", "No penalty notices are visible in your scope.")}</p>}
+            {penaltiesResult.error ? <p className="sq-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : penalties.length ? <ul>{penalties.map(row => <li key={row.id}><bdi>{row.notice_number}</bdi> · {label(row.status)} · {dt(row.issued_at)}{row.inspection_id ? <> · <a className="sq-link" href={`/reports/inspection/${row.inspection_id}`}>{t("f360.enforcement.origin", "origin report")}</a></> : null}</li>)}</ul> : <p className="sq-caption">{t("f360.enforcement.empty", "No penalty notices are visible in your scope.")}</p>}
           </section>
           <section className={`sq-surface ${styles.panel}`}>
             <h2>{t("common.actions", "Actions")}</h2>
