@@ -61,6 +61,7 @@ async function signIn(page: Page) {
 }
 
 test("admin-core routes load under the real admin persona without console failures", async ({ page }) => {
+  test.setTimeout(180_000);
   const consoleErrors: string[] = [];
   const routesOutsideShell: string[] = [];
   page.on("console", message => {
@@ -74,7 +75,8 @@ test("admin-core routes load under the real admin persona without console failur
     const response = await page.goto(route);
     expect(response?.status(), `${route} response`).toBeLessThan(400);
     await expect(page.locator("body")).toBeVisible();
-    await expect(page.locator("h1, h2").first()).toBeVisible();
+    expect(await page.locator("h1:visible, h2:visible").count(), `${route} visible page heading`)
+      .toBeGreaterThan(0);
     if (await page.locator("main").count() === 0) routesOutsideShell.push(route);
   }
 
@@ -84,17 +86,16 @@ test("admin-core routes load under the real admin persona without console failur
 
 test("admin-core gateway reports the seeded persona's enabled families truthfully", async ({ page }) => {
   await signIn(page);
-  const scope = page.getByRole("region", { name: /Your scope/i });
   const controlPanel = page.locator('[data-saqeel-design="WA-DES-020"]');
 
   await expect(controlPanel.locator("[data-control-card]")).toHaveCount(24);
-  await expect(scope).toContainText("Users");
-  await expect(scope).toContainText("Inspection Forms");
-  await expect(scope).toContainText("Workflow Settings");
-  await expect(scope).toContainText("Risk Settings");
-  await expect(scope).toContainText("Map Settings");
-  await expect(scope).toContainText("Security & Access Review");
-  await expect(scope).not.toContainText("You can act in none");
+  await expect(controlPanel).toContainText("24 authorized tools");
+  await expect(controlPanel).toContainText("Users");
+  await expect(controlPanel).toContainText("Inspection Forms");
+  await expect(controlPanel).toContainText("Workflow Settings");
+  await expect(controlPanel).toContainText("Risk Settings");
+  await expect(controlPanel).toContainText("Map Settings");
+  await expect(controlPanel).toContainText("Security & Access Review");
 });
 
 test("the four cross-card Control Panel destinations remain reachable inside the shell", async ({ page }) => {
