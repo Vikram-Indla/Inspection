@@ -210,11 +210,22 @@ export function isAdminPersona(roleKeys: readonly string[]) {
   return roleKeys.some(role => adminRoles.includes(role));
 }
 
-export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNavGroup[] {
+// `narrowToFieldChannel` (default true) is the TASK-WEB-CHANNEL-ACCESS-GATE-001
+// gate: in the WEB chrome a field-only Inspector is shown the field channel
+// only. The FIELD channel's own side panel opts out — the Product Owner ruled on
+// 2026-07-26 that the panel is available to every persona, with per-destination
+// restrictions deferred — so it passes false and receives the full catalogue,
+// still role-filtered by `enabled` and still admin-omitted below. The web gate
+// is unchanged: nothing here grants access, every destination keeps its own
+// route guard, RLS, action permission and audit enforcement.
+export function buildShellNavigation(
+  roleKeys: readonly string[],
+  options?: { narrowToFieldChannel?: boolean },
+): BuiltShellNavGroup[] {
   const roles = new Set(roleKeys);
   // Field-only personas get the field channel only: no web-portal destinations,
   // no admin group (not even a locked one). Web/admin personas are unaffected.
-  const fieldOnly = isFieldOnlyPersona(roleKeys);
+  const fieldOnly = (options?.narrowToFieldChannel ?? true) && isFieldOnlyPersona(roleKeys);
   return SHELL_NAVIGATION.map(group => ({
     ...group,
     items: group.items.flatMap(item => {
