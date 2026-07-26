@@ -54,7 +54,7 @@ private func makeHead(id: String = "cccc0000-0000-0000-0000-000000000001") -> In
                     items: ["FS-001"]
                 )
             ],
-            itemRules: ["FS-001": "bbbb0000-0000-0000-0000-000000000001"]
+            itemRules: ["FS-001": .object(["requirement": .string("required")])]
         ),
         packages: nil
     )
@@ -426,4 +426,5 @@ final class WorkspaceStoreTests: XCTestCase {
 
         XCTAssertGreaterThan(engine.processCallCount, countAfterLoad)
     }
+
 }

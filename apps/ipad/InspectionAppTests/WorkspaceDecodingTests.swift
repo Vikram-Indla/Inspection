@@ -19,8 +19,8 @@ final class WorkspaceDecodingTests: XCTestCase {
           }
         ],
         "item_rules": {
-          "FS-001": "bbbb0000-0000-0000-0000-000000000001",
-          "FS-002": "bbbb0000-0000-0000-0000-000000000002"
+          "FS-001": {"requirement": "required"},
+          "FS-002": {"requirement": "optional"}
         }
       },
       "packages": null
@@ -74,7 +74,7 @@ final class WorkspaceDecodingTests: XCTestCase {
             }
           ],
           "item_rules": {
-            "FS-001": "bbbb0000-0000-0000-0000-000000000001"
+            "FS-001": {"requirement": "required"}
           }
         },
         "packages": null

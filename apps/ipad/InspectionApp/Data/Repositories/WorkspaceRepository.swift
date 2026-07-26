@@ -217,35 +217,36 @@ final class SupabaseSyncGateway: RemoteSyncGateway {
             )
 
         // Upsert an evidence row in the DB (ignore duplicate on storage_path)
+        // inspection_id is NOT NULL in the schema; throw if neither field is set.
+        guard let inspectionId = op.inspectionId ?? op.visitId else {
+            throw SupabaseSyncGatewayError.missingInspectionId(op.name)
+        }
         struct EvidenceRow: Encodable {
+            let inspectionId: String
             let linkedType: String
             let linkedId: String
             let evidenceType: String
-            let name: String
-            let mime: String
             let storagePath: String
             let capturedAt: String
-            let sha256: String
+            let contentSha256: String
             enum CodingKeys: String, CodingKey {
+                case inspectionId = "inspection_id"
                 case linkedType = "linked_type"
                 case linkedId = "linked_id"
                 case evidenceType = "evidence_type"
-                case name
-                case mime
                 case storagePath = "storage_path"
                 case capturedAt = "captured_at"
-                case sha256
+                case contentSha256 = "content_sha256"
             }
         }
         let row = EvidenceRow(
+            inspectionId: inspectionId,
             linkedType: op.linkedType,
             linkedId: op.linkedId,
             evidenceType: op.evidenceType,
-            name: op.name,
-            mime: op.mime,
             storagePath: storagePath,
             capturedAt: op.capturedAt,
-            sha256: op.sha256
+            contentSha256: op.sha256
         )
         try await client
             .from("evidence")
@@ -306,6 +307,7 @@ final class SupabaseSyncGateway: RemoteSyncGateway {
 enum SupabaseSyncGatewayError: LocalizedError {
     case invalidBase64(String)
     case missingEvidenceFolder(String)
+    case missingInspectionId(String)
 
     var errorDescription: String? {
         switch self {
@@ -313,6 +315,8 @@ enum SupabaseSyncGatewayError: LocalizedError {
             return "Cannot decode base-64 data for evidence file: \(name)"
         case .missingEvidenceFolder(let name):
             return "Cannot upload evidence '\(name)': both visitId and inspectionId are nil. At least one must be set to form a valid storage path."
+        case .missingInspectionId(let name):
+            return "Cannot upsert evidence row for '\(name)': inspection_id is NOT NULL but both inspectionId and visitId are nil."
         }
     }
 }

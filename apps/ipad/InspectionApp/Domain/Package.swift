@@ -3,11 +3,12 @@ import Foundation
 // MARK: - PackageDefinition
 
 /// The `definition` jsonb column of `package_versions`.
-/// Shape: { sections:[Section], item_rules:{code:uuid} }
+/// Shape: { sections:[Section], item_rules:{code: {requirement, scoring_enabled, conditional, ...}} }
 struct PackageDefinition: Codable {
     let sections: [Section]
-    /// Maps item code → inspection_items.id.  Kept generic so new rules don't break decoding.
-    let itemRules: [String: String]?
+    /// Maps item code → ItemRule object (e.g. {requirement, scoring_enabled, conditional, ...}).
+    /// Stored as JSONValue so arbitrary rule shapes round-trip without breaking decoding.
+    let itemRules: [String: JSONValue]?
 
     enum CodingKeys: String, CodingKey {
         case sections
