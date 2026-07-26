@@ -32,7 +32,7 @@
         <div role="group" aria-labelledby="r5-p-inspection">
           <div class="r5-sub" id="r5-p-inspection"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Inspection</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="margin-inline-start:auto;"><path d="m9 6 6 6-6 6"/></svg></div>
           <a class="nav-item r5-child" href="admin/SAQEEL%20Item%20Execution.dc.html" data-route="/field"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg></span><span class="nav-label">Execution</span></a>
-          <a class="nav-item r5-child" href="SAQEEL%20Review%20&%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
+          <a class="nav-item r5-child" href="SAQEEL%20Review%20and%20Approval.dc.html" data-route="/reviews"><span class="nav-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10v16H5V9z"/><path d="M9 5v4H5M9 14l2 2 4-4"/></svg></span><span class="nav-label">Review &amp; Approval</span></a>
         </div>
       </details>
       <details class="r5-group" open="open">
@@ -94,7 +94,9 @@
     </div>
     <header style="position:sticky; top:0; z-index:20; background:var(--surface-primary); border-block-end:1px solid var(--border-subtle); padding:14px 24px; display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap;">
       <div><h1 style="font-family:var(--font-body); font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;">{{ headerTitle }}</h1><div class="t-caption" style="margin-block-start:3px;">{{ headerSub }}</div></div>
-      <span class="badge badge-info">{{ headerBadge }}</span>
+      <sc-if value="{{ hasHeaderBadge }}" hint-placeholder-val="{{ false }}">
+        <span class="badge badge-info">{{ headerBadge }}</span>
+      </sc-if>
       <span class="grow"></span>
       <div class="seg"><button class="seg-opt" aria-pressed="{{ isList }}" onClick="{{ pickList }}">Sessions</button><button class="seg-opt" aria-pressed="{{ isRoom }}" onClick="{{ pickRoom }}">Room</button></div>
     </header>
@@ -109,7 +111,7 @@
         </tbody></table></div>
 
         <div class="panel" style="padding:18px;">
-          <h2 style="font-size:15px; font-weight:600; margin:0 0 6px;">Schedule a session <span class="t-caption" style="font-weight:400;">()</span></h2>
+          <h2 style="font-size:15px; font-weight:600; margin:0 0 6px;">Schedule a session</h2>
           <p class="t-caption" style="margin:0 0 14px; max-width:70ch;">Published virtual visits without a session. Scheduling creates the room, binds participants and notifies the inspector; the factory representative row records its SMS delivery state honestly (provider adapter pending).</p>
           <div class="stack" style="gap:14px;">
             <div style="display:grid; grid-template-columns:1fr 200px 200px auto; gap:12px; align-items:end; padding:12px; background:var(--surface-sunken); border-radius:8px;">
@@ -126,12 +128,38 @@
     <!-- ═══ ROOM ═══ -->
     <sc-if value="{{ isRoom }}" hint-placeholder-val="{{ false }}">
       <div style="padding:20px 24px 80px; display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; max-width:1100px; width:100%;">
-        <!-- LEFT: video + identity + transition -->
+        <!-- LEFT: inspection room + identity + transition -->
         <div class="stack" style="gap:16px;">
           <div class="panel" style="padding:0; overflow:hidden;">
-            <div style="aspect-ratio:16/9; background:repeating-linear-gradient(45deg, #12161b, #12161b 12px, #151a20 12px, #151a20 24px); display:grid; place-items:center; text-align:center; color:var(--text-muted); padding:24px;">
-              <div><div class="badge badge-warning" style="margin-block-end:10px;"><span class="dot"></span>SIMULATED VIDEO SESSION · provider pending</div><div class="t-caption" style="max-width:44ch;">Secure session room — video provider adapter (release integration); capture controls overlay here. Identity verification, state machine, timeline and audit run live around it.</div></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; border-block-end:1px solid var(--border-subtle);">
+              <span style="font-weight:600; font-size:13.5px;">{{ room.title }}</span>
+              <span class="t-caption">{{ room.statusLine }}</span>
+              <span class="grow"></span>
+              <span class="badge {{ room.stateBadge }}">{{ room.stateText }}</span>
             </div>
+            <div style="aspect-ratio:16/9; position:relative; background:repeating-linear-gradient(135deg, var(--surface-sunken), var(--surface-sunken) 10px, var(--surface-canvas) 10px, var(--surface-canvas) 20px); display:grid; place-items:center; padding:24px;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;">
+                <span class="avatar avatar-lg">{{ room.remoteInitials }}</span>
+                <div style="font-weight:600; font-size:13.5px;">{{ room.remoteName }}</div>
+                <div class="t-caption" style="max-width:48ch;">{{ room.stageNote }}</div>
+              </div>
+              <div style="position:absolute; inset-block-start:12px; inset-inline-start:12px;"><span class="badge {{ room.qualityBadge }}">{{ room.qualityText }}</span></div>
+              <div style="position:absolute; inset-block-end:12px; inset-inline-end:12px; inline-size:136px; aspect-ratio:4/3; border:1px solid var(--border-subtle); border-radius:8px; background:var(--surface-sunken); display:grid; place-items:center; text-align:center; padding:8px;"><span class="t-caption">{{ room.localLabel }}</span></div>
+            </div>
+            <!-- Camera, microphone and screen share are LIVE controls: they are
+                 browser capabilities (getUserMedia / getDisplayMedia) and need
+                 no vendor, token or network, so the inspector can check devices
+                 before anyone joins. Only the remote leg waits on Twilio. The
+                 release control reads "Turn off my devices" while no room can
+                 exist, because "Leave room" would assert a session never joined. -->
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-block-start:1px solid var(--border-subtle); flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" aria-pressed="{{ room.micOn }}" style="display:inline-flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/><path d="M4 3l16 18"/></svg>{{ room.micLabel }}</button>
+              <button class="btn btn-secondary btn-sm" aria-pressed="{{ room.camOn }}" style="display:inline-flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="M15 10l6-4v12l-6-4z"/><path d="M4 3l16 18"/></svg>{{ room.camLabel }}</button>
+              <button class="btn btn-secondary btn-sm" aria-pressed="{{ room.sharing }}" style="display:inline-flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4M12 12V8M10 10l2-2 2 2"/></svg>{{ room.shareLabel }}</button>
+              <span class="grow"></span>
+              <button class="btn btn-danger btn-sm" disabled="{{ room.releaseDisabled }}" style="display:inline-flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 8l-4 4 4 4M6 12h9"/></svg>{{ room.releaseLabel }}</button>
+            </div>
+            <p class="t-caption" style="margin:0; padding:0 14px 12px;">{{ room.note }}</p>
           </div>
 
           <div class="panel" style="padding:18px;">
@@ -139,7 +167,7 @@
             <p class="t-caption" style="margin:0 0 14px;">Verification gates execution. DEV provider shows the code; release uses Unifonic. Server-enforced attempts &amp; cooldown (DEC-007).</p>
             <sc-for list="{{ participants }}" as="p" hint-placeholder-count="2">
               <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-block-start:1px solid var(--border-subtle);">
-                <span class="avatar" style="background:{{ p.avatarBg }}; color:{{ p.avatarFg }};">{{ p.initials }}</span>
+                <span class="avatar">{{ p.initials }}</span>
                 <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:13.5px;">{{ p.name }} <span class="t-caption">{{ p.role }}</span></div><div class="t-caption">{{ p.status }}</div></div>
                 <span class="badge {{ p.badge }}">{{ p.badgeText }}</span>
                 <sc-if value="{{ p.showVerify }}" hint-placeholder-val="{{ false }}">
@@ -165,9 +193,9 @@
           <div class="panel" style="padding:18px;">
             <h2 style="font-size:14px; font-weight:600; margin:0 0 4px;">Readiness contract</h2>
             <p class="t-caption" style="margin:0 0 12px;">Every gate is from stored session facts; no client-only bypass is accepted.</p>
-            <div class="stack" style="gap:9px;">
+            <div class="stack" style="gap:12px;">
               <sc-for list="{{ gates }}" as="g" hint-placeholder-count="5">
-                <div style="display:flex; align-items:center; gap:10px;"><span class="exc {{ g.exc }}"><span class="exc-mark"></span></span><span style="flex:1; font-size:13px;">{{ g.label }}</span><span class="badge {{ g.badge }}" style="height:18px;">{{ g.state }}</span></div>
+                <div style="display:flex; align-items:flex-start; gap:10px;"><span class="exc {{ g.exc }}" style="margin-block-start:2px;"><span class="exc-mark"></span></span><div style="flex:1; min-width:0;"><div style="font-size:13px;">{{ g.label }}</div><div class="t-caption">{{ g.detail }}</div></div><span class="badge {{ g.badge }}" style="height:18px;">{{ g.state }}</span></div>
               </sc-for>
             </div>
           </div>
@@ -207,15 +235,46 @@ class Component extends DCLogic {
       ["c0a94471", "Tabuk Textiles", "F-4102", "2026-07-24 09:00", "in_progress", "badge-compliant"],
     ];
     const PARTICIPANTS = [
-      { initials: "KA", name: "Khalid Al-Otaibi", role: "inspector", status: "verified ✓ — bound to session ()", badge: "badge-compliant", badgeText: "verified", showVerify: false, avatarBg: "var(--action-primary)", avatarFg: "#fff" },
-      { initials: "MR", name: "Mansour (factory rep)", role: "factory representative", status: "joined — awaiting verification", badge: "badge-warning", badgeText: "awaiting", showVerify: true, avatarBg: "var(--surface-sunken)", avatarFg: "var(--text-secondary)" },
+      { initials: "KA", name: "Khalid Al-Otaibi", role: "inspector", status: "verified ✓ — bound to session", badge: "badge-compliant", badgeText: "verified", showVerify: false },
+      { initials: "MR", name: "Mansour (factory rep)", role: "factory representative", status: "joined — awaiting verification", badge: "badge-warning", badgeText: "awaiting", showVerify: true },
     ];
+    // The room speaks to the inspector and the ops operator, so every string
+    // here is what they need in order to decide: can this session run, and if
+    // not, why. The transport (Twilio Video, chosen 2026-07-26) is an
+    // implementation fact, not a headline — no room SIDs or media regions.
+    //
+    // Split of truth, and it matters: LOCAL media (camera, microphone, screen
+    // share, self-view) is plain browser capability and works today, so those
+    // controls are live. The REMOTE leg needs a Twilio room plus a signed
+    // AccessToken, which cannot be minted without a Video API key and secret —
+    // so the stage states that instead of showing an empty "waiting" frame, and
+    // no simulated stream is ever presented as live. Shown here in the default
+    // all-off state; the shipped route drives every value from real state.
+    const ROOM = {
+      title: "Inspection room",
+      statusLine: "no one can join yet",
+      stateText: "Room not available",
+      stateBadge: "badge-pending",
+      qualityText: "not connected",
+      qualityBadge: "badge-pending",
+      remoteInitials: "MR",
+      remoteName: "Mansour (factory rep)",
+      stageNote: "The video service is not switched on for this environment, so the representative cannot join yet. Your camera, microphone and screen sharing still work below, and the rest of the session — identity checks, the appointment, the decision to begin and the audit trail — runs now.",
+      localLabel: "your camera is off",
+      micOn: false, camOn: false, sharing: false,
+      micLabel: "Microphone off",
+      camLabel: "Camera off",
+      shareLabel: "Share screen",
+      releaseLabel: "Turn off my devices",
+      releaseDisabled: true,
+      note: "Your devices are released when you leave the room or close this page. Nothing here is a simulated call.",
+    };
     const GATES = [
-      ["Appointment & scope", "scope confirmed", "exc-compliant", "badge-compliant", "ready"],
-      ["Appointment time", "in active window", "exc-compliant", "badge-compliant", "ready"],
-      ["Participants verified", "1 of 2 verified", "exc-warning", "badge-warning", "blocked"],
-      ["Session state", "waiting → joined", "exc-compliant", "badge-compliant", "ready"],
-      ["Fallback (provider)", "provider pending", "exc-pending", "badge-neutral", "pending"],
+      ["Appointment & scope", "ready", "exc-compliant", "badge-compliant", "Al Rasheed Steel Works · standard inspection package v3"],
+      ["Appointment time", "ready", "exc-compliant", "badge-compliant", "22 July 2026 at 10:00, as scheduled"],
+      ["Participants", "pending", "exc-warning", "badge-warning", "Khalid Al-Otaibi verified · Mansour still to confirm his code"],
+      ["Session state", "ready", "exc-compliant", "badge-compliant", "every step is recorded and cannot be edited later"],
+      ["Fallback (provider)", "pending", "exc-pending", "badge-pending", "video service not switched on — reschedule or escalate"],
     ];
     const STATES = [
       ["scheduled", "is-done"], ["waiting", "is-done"], ["joined", "is-current"],
@@ -227,6 +286,7 @@ class Component extends DCLogic {
       ["participant joined", "2026-07-22 09:58", " · Khalid Al-Otaibi", ""],
       ["identity verified", "2026-07-22 10:01", " · inspector", ""],
     ];
+    const headerBadge = "";
     return {
       theme: this.state.theme, isLight: this.state.theme === "light", isDark: this.state.theme === "dark",
       toggleTheme: () => this.setState(s => ({ theme: s.theme === "dark" ? "light" : "dark" })),
@@ -235,10 +295,12 @@ class Component extends DCLogic {
       pickRoom: () => this.setState({ view: "room" }),
       headerTitle: list ? "Virtual inspections" : "Virtual room — Al Rasheed Steel Works",
       headerSub: list ? "Confirmed sessions only · OTP-verified remote inspection" : "appointment 2026-07-22 10:00 · state machine + audit run live",
-      headerBadge: list ? "" : "",
+      headerBadge,
+      hasHeaderBadge: headerBadge.length > 0,
       sessions: SESSIONS.map(([id, factory, code, appt, state, badge]) => ({ id, factory, code, appt, state, badge })),
       participants: PARTICIPANTS,
-      gates: GATES.map(([label, state, exc, badge]) => ({ label, state, exc, badge })),
+      room: ROOM,
+      gates: GATES.map(([label, state, exc, badge, detail]) => ({ label, state, exc, badge, detail })),
       states: STATES.map(([name, cls]) => ({ name, cls })),
       timeline: TL.map(([event, at, detail, dot]) => ({ event, at, detail, dot })),
     };
