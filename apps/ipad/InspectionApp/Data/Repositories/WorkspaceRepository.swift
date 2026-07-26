@@ -37,7 +37,7 @@ final class SupabaseWorkspaceRepository: WorkspaceRepository {
         // 1. Fetch the inspection head, embedding package_versions + packages
         let headResponse = try await client
             .from("inspections")
-            .select("id,status,visit_id,package_versions(id,version_label,definition,packages(id,name))")
+            .select("id,status,visit_id,package_versions(id,version_label,definition,packages(code,title))")
             .eq("id", value: inspectionId)
             .limit(1)
             .execute()
@@ -48,10 +48,10 @@ final class SupabaseWorkspaceRepository: WorkspaceRepository {
 
         let definition = head.packageVersions.definition
 
-        // 2. Cache the raw package definition bytes to OfflineStore
-        if let pkgData = try? JSONEncoder().encode(definition) {
-            try? store.cachePackage(inspectionId: inspectionId, pkgData)
-        }
+        // 2. Cache the raw package definition bytes to OfflineStore.
+        // Errors are propagated: the offline-first mandate requires a successful cache.
+        let pkgData = try JSONEncoder().encode(definition)
+        try store.cachePackage(inspectionId: inspectionId, pkgData)
 
         // 3. Collect all item codes referenced in the package sections
         let allCodes = definition.sections.flatMap { $0.items }
@@ -200,7 +200,11 @@ final class SupabaseSyncGateway: RemoteSyncGateway {
         }
 
         // Storage path: <visitId ?? inspectionId>/<name>
-        let folder = op.visitId ?? op.inspectionId ?? "unknown"
+        // At least one of visitId or inspectionId must be set; silently mis-filing
+        // under "unknown" would corrupt the evidence chain.
+        guard let folder = op.visitId ?? op.inspectionId else {
+            throw SupabaseSyncGatewayError.missingEvidenceFolder(op.name)
+        }
         let storagePath = "\(folder)/\(op.name)"
 
         // Upload to evidence bucket (upsert: overwrite if exists)
@@ -301,11 +305,14 @@ final class SupabaseSyncGateway: RemoteSyncGateway {
 
 enum SupabaseSyncGatewayError: LocalizedError {
     case invalidBase64(String)
+    case missingEvidenceFolder(String)
 
     var errorDescription: String? {
         switch self {
         case .invalidBase64(let name):
             return "Cannot decode base-64 data for evidence file: \(name)"
+        case .missingEvidenceFolder(let name):
+            return "Cannot upload evidence '\(name)': both visitId and inspectionId are nil. At least one must be set to form a valid storage path."
         }
     }
 }

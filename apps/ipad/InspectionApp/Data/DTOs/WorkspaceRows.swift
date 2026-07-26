@@ -52,9 +52,10 @@ struct PackageVersionRow: Decodable {
 // MARK: - PkgRow
 
 /// Embedded `packages` row (minimal — extend as needed by later tasks).
+/// DB columns: `code` (unique text) and `title` (text). There is no `name` column.
 struct PkgRow: Decodable {
-    let id: UUID
-    let name: String?
+    let code: String
+    let title: String
 }
 
 // MARK: - ItemRow
