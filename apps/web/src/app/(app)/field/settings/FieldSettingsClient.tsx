@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { localForUser, promptLegacyOfflineRestore, type SyncState } from "@/lib/offline";
+import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./settings.module.css";
 
 type Locale = "en" | "ar";
@@ -38,13 +39,6 @@ function GovernedRow({ label, note }: { label: string; note: string }) {
     </div>
   );
 }
-
-// The design's Light/Dark segmented control is not offered: ThemeScript pins
-// every /field route to dark, so the control would have nothing to switch, and
-// writing "saqeel-theme" from a field screen would only have changed the WEB
-// console's theme — a confusing side effect on a surface that never changes
-// appearance. The row itself is kept, stating that reason, so the section still
-// reads in the design's order.
 
 export default function FieldSettingsClient({
   locale,
@@ -99,15 +93,20 @@ export default function FieldSettingsClient({
 
   return (
     <div className={styles.wrap}>
-      {/* General — design row order is Appearance, Language, Text size. Language
-          is a REAL persisted control; the other two are governed elsewhere and
-          say so rather than offering a control that would do nothing. */}
+      {/* General — design row order is Appearance, Language, Text size.
+          Appearance and language are real application-wide controls. */}
       <SectionLabel>{copy(locale, "General", "عام")}</SectionLabel>
       <div className={styles.card}>
-        <GovernedRow
-          label={copy(locale, "Appearance", "المظهر")}
-          note={copy(locale, "Dark", "داكن")}
-        />
+        <div className={styles.row}>
+          <span className={styles.rowLabel}>{copy(locale, "Appearance", "المظهر")}</span>
+          <ThemeToggle
+            className="btn btn-secondary btn-touch"
+            labels={{
+              toLight: copy(locale, "Switch to light mode", "التبديل إلى الوضع الفاتح"),
+              toDark: copy(locale, "Switch to dark mode", "التبديل إلى الوضع الداكن"),
+            }}
+          />
+        </div>
         <div className={styles.row}>
           <span className={styles.rowLabel}>{copy(locale, "Language", "اللغة")}</span>
           <div className="seg">

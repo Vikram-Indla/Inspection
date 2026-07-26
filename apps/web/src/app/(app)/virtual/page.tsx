@@ -50,6 +50,7 @@ export default async function VirtualList() {
   return (
     <Shell current="/virtual" title={t("virtual.list.title", "Virtual inspections")}
       context={<span className="sq-lozenge sq-lozenge--info">{t("virtual.list.context", "SCR-VIR-700 · confirmed sessions only")}</span>}>
+      <h1 className="ax-sr-only">{t("virtual.list.title", locale === "ar" ? "عمليات التفتيش الافتراضية" : "Virtual inspections")}</h1>
       <div className="sq-banner sq-banner--warning" role="status">
         <div><strong>{t("virtual.list.transportUnavailable", "Video transport not configured.")}</strong>{" "}
           {t("virtual.list.transportUnavailableBody", "Sessions can be scheduled and governed, but they are not joinable until a real provider adapter is selected and configured. Teams, Zoom and Twilio Video are not present.")}</div>
@@ -59,7 +60,7 @@ export default async function VirtualList() {
         <EmptyState icon={<IconVideo size={28} />} title={t("virtual.list.empty", "No virtual sessions in scope")} />
       )}
       <div className="sq-tablewrap"><table className="sq-table">
-        <thead><tr><th scope="col">{t("virtual.list.colSession", "Session")}</th><th scope="col">{t("virtual.list.colFactory", "Factory")}</th><th scope="col" className="sq-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th scope="col">{t("virtual.list.colState", "State")}</th><th scope="col"></th></tr></thead>
+        <thead><tr><th scope="col">{t("virtual.list.colSession", "Session")}</th><th scope="col">{t("virtual.list.colFactory", "Factory")}</th><th scope="col" className="sq-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th scope="col">{t("virtual.list.colState", "State")}</th><th scope="col"><span className="ax-sr-only">{t("virtual.list.colActions", locale === "ar" ? "الإجراءات" : "Actions")}</span></th></tr></thead>
         <tbody>
           {rows.map(({ s, v }) => (
               <tr key={s.id}>
@@ -74,7 +75,7 @@ export default async function VirtualList() {
       </table></div>
       {unscheduled.length > 0 && (
         <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <h4>{t("virtual.list.scheduleHeading", "Schedule a session (M05-002)")}</h4>
+          <h2>{t("virtual.list.scheduleHeading", locale === "ar" ? "جدولة جلسة (M05-002)" : "Schedule a session (M05-002)")}</h2>
           <p className="sq-caption">{t("virtual.list.scheduleHint", "Published virtual visits without a session. Scheduling creates the room, binds participants and notifies the inspector; the factory representative row records its SMS delivery state honestly (provider adapter pending).")}</p>
           {unscheduled.map(v => (
             <div key={v.id} className="sq-stack" style={{ gap: "var(--space-2)" }}>

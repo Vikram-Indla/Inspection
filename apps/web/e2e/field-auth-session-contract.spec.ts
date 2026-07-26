@@ -20,7 +20,9 @@ test.describe("TASK-IPAD-AUTH-SESSION-RECOVERY-001", () => {
     expect(auth).toContain('.eq("user_id", userId).eq("role_key", "inspector")');
     expect(login).toContain("authorizeInspectorLogin");
     expect(login).toContain("await supabaseBrowser().auth.signOut()");
-    expect(login).toContain("window.location.assign(returnTo)");
+    expect(login).toContain("safeFieldReturnPath(returnTo)");
+    expect(login).toContain("window.location.assign(safeReturnTo)");
+    expect(login).toContain('window.location.assign("/launch")');
   });
 
   test("bootstrap refreshes expiry and allows offline only for a known valid Inspector", () => {
@@ -34,9 +36,10 @@ test.describe("TASK-IPAD-AUTH-SESSION-RECOVERY-001", () => {
   test("field layout denies anonymous and non-Inspector access before child reads", () => {
     const layout = read("src/app/(app)/field/layout.tsx");
     expect(layout).toContain("getVerifiedUser(sb)");
-    expect(layout).toContain('row.role_key === "inspector"');
-    expect(layout).toContain("/login/field?reason=expired");
-    expect(layout).toContain("/login/field?reason=unauthorized");
+    expect(layout).toContain('roleKeys.includes("inspector")');
+    expect(layout).toContain("/login?reason=expired");
+    expect(layout).toContain("/login?reason=unauthorized");
+    expect(layout).toContain("next=${encodeURIComponent(pathname)}");
   });
 
   test("open screens recover on sign-out or token refresh with intended path", () => {
@@ -52,6 +55,7 @@ test.describe("TASK-IPAD-AUTH-SESSION-RECOVERY-001", () => {
     expect(logout).toContain("clearFieldSessionIdentity(userId)");
     expect(logout).toContain("clearBiometricUnlock(userId)");
     expect(logout).toContain("await sb.auth.signOut()");
-    expect(read("src/app/(app)/field/account/page.tsx")).toContain('href="/login/field/logout"');
+    expect(logout).toContain('window.location.replace("/login?reason=signedout")');
+    expect(read("src/app/(app)/field/account/page.tsx")).toContain('href="/signout"');
   });
 });

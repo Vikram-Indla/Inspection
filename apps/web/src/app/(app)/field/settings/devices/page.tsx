@@ -16,9 +16,9 @@ import type { TrustedDevicesStrings } from "./strings";
 //   • SAQEEL PWA-Field Biometric.dc.html — its "Device Enrollment" column only,
 //     as slots 6-11. That column's own segmented chrome and its full-screen
 //     "Biometric Lock" view are not here: the lock screen lives in
-//     login/field/**, and the segment bar's language/theme controls are already
-//     this route's header (the field channel is fixed dark). See the
-//     composition block at the top of TrustedDevicesClient.
+//     login/field/**, while language and theme are already owned by the route
+//     header and canonical AppShell. See the composition block at the top of
+//     TrustedDevicesClient.
 //
 // The design's device LIST is real: `listFieldDevices()` reads every
 // `mvp3_devices` row the RLS policy releases for this inspector, server-side,

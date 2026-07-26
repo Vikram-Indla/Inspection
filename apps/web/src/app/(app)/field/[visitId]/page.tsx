@@ -25,7 +25,7 @@ import packStyles from "../field-dashboard.module.css";
 // settings, …) with no more-specific match; Next.js still routes an unmatched
 // literal like "notifications" or "xyz123notarealid" here and it was treated
 // as a visitId, producing a misleading "Visit not found (M02-001)" after a
-// wasted RLS-scoped DB round trip. This guard is a cheap, honest short-circuit
+// wasted authorization-scoped DB round trip. This guard is a cheap, honest short-circuit
 // on shape alone — it does not enumerate route names and never widens what a
 // valid visit lookup can match.
 const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -586,7 +586,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   // CODEX 03 — Pre-Inspection Pack. Mounted in the preparation surface behind
   // its own "Open pack" trigger. Data is sourced strictly from what this route
   // already loads: visit identity, factory master (CR / licence / official
-  // location) and the resolved package. The Factory 360 dossier (risk band,
+  // location) and the resolved package. The Factory 360 profile (risk band,
   // compliance rate, previous-approval and repeat-finding lineage) is NOT
   // loaded on the preparation route, so those sections carry the component's
   // honest "unavailable"/"—" states rather than a fabricated value — exactly
@@ -640,7 +640,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     provenance: tr("field.pack.provenance", "Provenance", "المصدر"),
     provenanceValue: tr("field.pack.provenanceValue", "Governed master data", "بيانات مرجعية محكومة"),
     distinctConcepts: tr("field.pack.distinctConcepts", "Health and Risk are distinct governed concepts.", "الصحة والخطورة مفهومان محكومان منفصلان."),
-    documentsNote: tr("field.pack.documentsNote", "Licence documents open from the establishment dossier.", "تُفتح وثائق الترخيص من ملف المنشأة."),
+    documentsNote: tr("field.pack.documentsNote", "Licence documents open from the establishment profile.", "تُفتح وثائق الترخيص من ملف المنشأة."),
     healthScore: tr("field.pack.healthScore", "Health score", "درجة الصحة"),
     riskScore: tr("field.pack.riskScore", "Risk score", "درجة الخطورة"),
     compliance: tr("field.pack.compliance", "{rate}% compliant · {c}/{e} eligible", "{rate}% ملتزم · {c}/{e} مؤهل"),

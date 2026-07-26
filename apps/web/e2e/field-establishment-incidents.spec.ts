@@ -69,10 +69,13 @@ test.describe("PLAN v7 item 7 field establishments + incident logging", () => {
 
   test("field-only routing reaches the new surface while the web route remains separate", () => {
     const layout = readWeb("src/app/(app)/layout.tsx");
+    const fieldLayout = readWeb("src/app/(app)/field/layout.tsx");
     const home = readWeb("src/app/(app)/field/page.tsx");
-    expect(layout).toContain('pathname.startsWith("/field/")');
+    const inspection = readWeb("src/app/(app)/field/inspection/[id]/page.tsx");
+    expect(layout).toContain("<AppShell>{children}</AppShell>");
+    expect(fieldLayout).toContain('roleKeys.includes("inspector")');
     expect(home).toContain('href="/field/establishments"');
-    expect(home).toContain('href="/field/incident-reports"');
+    expect(inspection).toContain("`/field/incident-reports?visit=");
     expect(fs.existsSync(path.join(webRoot, "src/app/(app)/incident-reports/page.tsx"))).toBe(true);
     expect(fs.existsSync(path.join(webRoot, INCIDENT_PAGE))).toBe(true);
   });

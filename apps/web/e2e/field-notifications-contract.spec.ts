@@ -45,7 +45,6 @@ test.describe("PLAN v7 item 2 Field Notifications contract", () => {
     const route = SRC("src/app/(app)/field/notifications/[id]/page.tsx");
     const actions = SRC("src/app/(app)/field/actions.ts");
     const dashboard = SRC("src/app/(app)/field/page.tsx");
-    const home = SRC("src/components/field/FieldHome.tsx");
 
     expect(route).toContain('.from("notifications")');
     expect(route).toContain('.select("id, event_key, payload, delivery_state, read_at, created_at")');
@@ -62,8 +61,8 @@ test.describe("PLAN v7 item 2 Field Notifications contract", () => {
     expect(actions).toContain(".update(patch)");
     expect(actions).toContain('.is("read_at", null)');
 
-    expect(dashboard).toContain("delivery_state, read_at, created_at");
-    expect(home).toContain("/field/notifications/${encodeURIComponent(n.id)}");
+    expect(dashboard).toContain('select("id, read_at, delivery_state")');
+    expect(dashboard).toContain("isNotificationUnread");
   });
 
   test("bell visit links are field-safe only for field-only sessions", () => {
@@ -79,8 +78,9 @@ test.describe("PLAN v7 item 2 Field Notifications contract", () => {
     )).toBe("/visits/visit-1?focus=return");
 
     const bell = SRC("src/components/NotificationBell.tsx");
+    const notificationRead = SRC("src/lib/notification-read.ts");
     const shell = SRC("src/components/ShellClient.tsx");
-    expect(bell).toContain("shellNotificationVisitHref(visitId, webHref, fieldOnly)");
+    expect(notificationRead).toContain("shellNotificationVisitHref(visitId, webHref, fieldOnly)");
     expect(bell).toContain("notificationHref(r.event_key, r.payload, fieldOnly)");
     expect(shell).toContain("<NotificationBell strings={bellStrings} locale={locale} fieldOnly={fieldOnly} />");
   });
