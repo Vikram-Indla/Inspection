@@ -6,7 +6,7 @@ Sources: `ADMIN_DESIGN_GAP_REGISTER_20260726.md`, the current `apps/web/src/app/
 
 ## Inventory note
 
-`designs/admin/admin/README.md` declares 21 pages, including “Admin Lookups (+ copy)”, but the directory currently contains 20 `.dc.html` page artifacts. The twenty page artifacts and the shared `support.js` runtime are mapped below (21 tracked design files). A second Lookups page artifact is not present and must not be invented or counted as delivered.
+`designs/admin/admin/README.md` declares 21 pages, including “Admin Lookups (+ copy)”, and the imported authority now contains 21 `.dc.html` page artifacts. `SAQEEL Admin Lookups copy.dc.html` is byte-identical to `SAQEEL Admin Lookups.dc.html` at reconciliation time; it is counted in the inventory but must not become a second production destination or persistence model until Product Authority assigns it a distinct purpose. The table below maps the 20 distinct page concepts plus the shared `support.js` runtime; the duplicate Lookups artifact is recorded separately in `ADMIN_DESIGN_HANDOFF_RECONCILIATION_20260726.md`.
 
 ## Shared contracts for every page
 
