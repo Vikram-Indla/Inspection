@@ -147,7 +147,10 @@ export async function AppShell({ children }: { children: ReactNode }) {
   const languageHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     const adminItems = groups
-      .filter(group => group.id === "administration")
+      // buildShellNavigation projects the former monolithic Administration
+      // group into authorization-filtered admin hubs. Consume those hubs
+      // directly; filtering for the removed group silently empties the rail.
+      .filter(group => group.id.startsWith("admin-"))
       .flatMap(group => group.items);
     return (
       <AdminShellClient
