@@ -32,7 +32,7 @@ export default async function VisitResultsPage({ params }: { params: Promise<{ i
 
   const { data: inspection } = await sb
     .from("inspections")
-    .select("id, status, visit_id, inspection_no, visits(id, visit_reference, factories(name))")
+    .select("id, status, visit_id, inspection_no, visits(id, visit_reference, factory_id, factories(id, name))")
     .eq("id", inspectionId)
     .maybeSingle();
 
@@ -40,7 +40,8 @@ export default async function VisitResultsPage({ params }: { params: Promise<{ i
   if (!inspection) redirect("/field/my-tasks");
 
   const visit = inspection.visits as unknown as {
-    id: string; visit_reference: string | null; factories: { name: string } | null;
+    id: string; visit_reference: string | null; factory_id: string | null;
+    factories: { id: string; name: string } | null;
   } | null;
 
   const [{ data: report }, { data: lookups }] = await Promise.all([
@@ -134,7 +135,13 @@ export default async function VisitResultsPage({ params }: { params: Promise<{ i
   };
 
   const reference = visit?.visit_reference ?? inspection.inspection_no ?? inspectionId.slice(0, 8);
-  const backHref = `/field/inspection/${inspectionId}`;
+
+  // The design points both the back arrow and "Previous" at the Establishment
+  // File; /field/factory-360/[id] is that surface in the app. When the factory
+  // is unknown the link would have no target, so it falls back to the workspace
+  // rather than rendering a dead control.
+  const factoryId = visit?.factories?.id ?? visit?.factory_id ?? null;
+  const backHref = factoryId ? `/field/factory-360/${factoryId}` : `/field/inspection/${inspectionId}`;
 
   const back = (
     <Link href={backHref} prefetch={false} className="btn btn-icon btn-ghost" aria-label={tr("common.back", "Back", "رجوع")}>
@@ -153,6 +160,10 @@ export default async function VisitResultsPage({ params }: { params: Promise<{ i
         right={<span className="badge badge-info">{tr("field.results.step", "Step 3 of 4", "الخطوة 3 من 4")}</span>}
         langHref={locale === "ar" ? "/locale?set=en" : "/locale?set=ar"}
         langLabel={locale === "ar" ? "EN" : "AR"}
+        // Visit Results draws its own header geometry: padding:12px 18px,
+        // gap:12px, 15px/600 title. Passed per-screen so the shared defaults —
+        // and therefore every other field screen — stay untouched.
+        geometry={{ paddingBlock: 12, gap: 12, titleSize: 15, titleWeight: 600 }}
       />
       <ResultsClient
         inspectionId={inspectionId}

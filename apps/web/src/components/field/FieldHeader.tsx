@@ -9,8 +9,25 @@ import { FieldShellBurger } from "@/components/field/FieldShellDrawer";
 //
 // No theme control: the field channel is fixed dark (see ThemeScript), so
 // there is nothing for one to switch.
+// Per-screen geometry overrides.
+//
+// The shared values below are an approximation: header geometry is NOT uniform
+// across the PWA designs. "SAQEEL PWA-Field Visit Results.dc.html" draws
+// padding:12px 18px, gap:12px and a 15px/600 title, while other pages differ.
+// Editing the shared defaults to satisfy one design would silently shift every
+// other field screen, so a screen that needs its own design's numbers passes
+// them here instead. Omitting a prop keeps the existing shared value, which is
+// why no current caller changes.
+type HeaderGeometry = {
+  /** Block padding; inline padding stays 18px across the designs checked. */
+  paddingBlock?: number;
+  gap?: number;
+  titleSize?: number;
+  titleWeight?: number;
+};
+
 export default function FieldHeader({
-  title, subtitle, leading, right, langHref, langLabel,
+  title, subtitle, leading, right, langHref, langLabel, geometry,
 }: {
   title: ReactNode;
   subtitle?: ReactNode;
@@ -18,12 +35,18 @@ export default function FieldHeader({
   right?: ReactNode;
   langHref: string;
   langLabel: string;
+  geometry?: HeaderGeometry;
 }) {
+  const paddingBlock = geometry?.paddingBlock ?? 14;
+  const gap = geometry?.gap ?? 10;
+  const titleSize = geometry?.titleSize ?? 16;
+  const titleWeight = geometry?.titleWeight ?? 700;
   return (
     <header
       style={{
-        display: "flex", alignItems: "center", gap: 10,
-        padding: "14px 18px", paddingBlockStart: "max(14px, env(safe-area-inset-top))",
+        display: "flex", alignItems: "center", gap,
+        padding: `${paddingBlock}px 18px`,
+        paddingBlockStart: `max(${paddingBlock}px, env(safe-area-inset-top))`,
         background: "var(--surface-primary)", borderBlockEnd: "1px solid var(--border-subtle)",
       }}
     >
@@ -33,7 +56,7 @@ export default function FieldHeader({
       <FieldShellBurger />
       {leading}
       <div style={{ flex: 1, minWidth: 0, lineHeight: 1.3 }}>
-        <div style={{ fontWeight: 700, fontSize: 16 }}>{title}</div>
+        <div style={{ fontWeight: titleWeight, fontSize: titleSize }}>{title}</div>
         {subtitle ? <div className="t-caption">{subtitle}</div> : null}
       </div>
       {right}
