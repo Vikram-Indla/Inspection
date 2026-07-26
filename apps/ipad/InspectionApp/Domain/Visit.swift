@@ -1,6 +1,6 @@
 import Foundation
 
-struct Visit: Identifiable, Equatable {
+struct Visit: Identifiable, Equatable, Hashable {
     let id: UUID
     let factoryId: UUID
     let visitType: String
@@ -13,7 +13,7 @@ struct Visit: Identifiable, Equatable {
     let priority: String?
 }
 
-struct VisitListItem: Identifiable, Equatable {
+struct VisitListItem: Identifiable, Equatable, Hashable {
     var id: UUID { visit.id }
     let visit: Visit
     let factory: Factory?

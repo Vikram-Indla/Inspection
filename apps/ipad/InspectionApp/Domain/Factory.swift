@@ -1,6 +1,6 @@
 import Foundation
 
-struct Factory: Identifiable, Equatable {
+struct Factory: Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let factoryCode: String?

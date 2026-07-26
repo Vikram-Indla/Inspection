@@ -6,6 +6,12 @@ struct VisitsView: View {
     @StateObject private var store = VisitsStore()
     @EnvironmentObject private var theme: SaqeelTheme
 
+    // MARK: - Navigation state
+
+    /// The visit whose workspace is being opened.
+    /// Non-nil drives `.navigationDestination(item:)` below.
+    @State private var selectedItem: VisitListItem?
+
     private var segments: [SaqeelSegmented<VisitFilter>.Segment] {
         VisitFilter.allCases.map { f in
             .init(value: f, title: f.title,
@@ -31,7 +37,11 @@ struct VisitsView: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: SaqeelSpacing.sm) {
-                            ForEach(store.visible) { item in VisitCard(item: item, onOpen: {}) }
+                            ForEach(store.visible) { item in
+                                VisitCard(item: item, onOpen: {
+                                    selectedItem = item
+                                })
+                            }
                         }
                         .padding(.horizontal, SaqeelSpacing.lg)
                         .padding(.bottom, SaqeelSpacing.xl)
@@ -41,6 +51,22 @@ struct VisitsView: View {
         }
         .background(theme.colors.canvas)
         .task { await store.load() }
+        // MARK: – Navigation destination (pushed inside RootShellView's NavigationStack)
+        .navigationDestination(item: $selectedItem) { item in
+            workspaceDestination(for: item)
+        }
+    }
+
+    // MARK: - Route → destination mapping
+
+    @ViewBuilder
+    private func workspaceDestination(for item: VisitListItem) -> some View {
+        switch WorkspaceRouter.route(for: item) {
+        case .open:
+            ResolvingWorkspaceScreen(visitId: item.visit.id.uuidString)
+        case .notStarted:
+            NotStartedScreen()
+        }
     }
 
     private func emptyState(icon: String, title: String, message: String, tone: Color) -> some View {
