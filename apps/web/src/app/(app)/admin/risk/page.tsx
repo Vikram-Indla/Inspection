@@ -4,13 +4,15 @@ import { useT } from "@/lib/i18n";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
 import RiskForm, { type RiskLabels } from "./RiskForm";
+import { RiskSectionNav, type RiskNavLabels } from "./RiskSectionNav";
 
 export const dynamic = "force-dynamic";
 
 export default async function RiskStudio() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data } = await sb.from("engine_settings").select("settings, version_label, updated_at").eq("engine", "risk").single();
+  const { data, error } = await sb.from("engine_settings").select("settings, version_label, updated_at").eq("engine", "risk").maybeSingle();
+  if (error) console.error("[risk studio] load", error);
   const s = data?.settings as { factors: { key: string; weight: number }[]; bands: Record<string, number[]> } | undefined;
 
   const factors = (s?.factors ?? []).map(f => ({
@@ -34,19 +36,36 @@ export default async function RiskStudio() {
     bandLow: t("admin.risk.band.low", "Low"),
     bandMedium: t("admin.risk.band.medium", "Medium"),
     bandHigh: t("admin.risk.band.high", "High"),
+    invalidBands: t("admin.risk.bands.invalid", "Bands must use whole numbers and cover 0–100 without gaps."),
+    confirmLive: t("admin.risk.confirmLive", "I understand this configuration becomes effective immediately for new score calculations."),
+  };
+  const navLabels: RiskNavLabels = {
+    label: t("admin.risk.nav.label", "Risk configuration"),
+    studio: t("admin.risk.nav.studio", "Risk Studio"),
+    studioHint: t("admin.risk.nav.studioHint", "Immediate-live settings"),
+    models: t("admin.risk.nav.models", "Governed models"),
+    modelsHint: t("admin.risk.nav.modelsHint", "Draft and maker-checker lifecycle"),
   };
 
   return (
     <Shell current="/admin/risk" title={t("admin.risk.title", "Risk Engine configuration")}
       context={<><span className="badge badge-info">SCR-ADM-060 · ENG-04</span><span className="sq-version">{data?.version_label}</span></>}>
+      <RiskSectionNav current="/admin/risk" labels={navLabels} />
       <div className="sq-banner"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
 
-      {!data && (
-        <EmptyState glyph="⚖" title={t("admin.risk.empty.title", "No risk model stored")}
-          body={t("admin.risk.empty.desc", "The engine_settings row for the risk engine is empty or not readable under your role.")} />
+      {error && (
+        <div className="sq-banner sq-banner--critical" role="alert"><div>
+          <strong>{t("admin.risk.error.title", "Couldn’t load risk configuration.")}</strong>{" "}
+          {t("admin.risk.error.body", "The existing configuration was not verified. Nothing changed; retry or check your risk-owner access.")}
+        </div></div>
       )}
 
-      {data && s && (
+      {!error && !data && (
+        <EmptyState glyph="⚖" title={t("admin.risk.empty.title", "No risk model stored")}
+          body={t("admin.risk.empty.desc", "No risk configuration exists in your authorized scope. Create it through the governed provisioning process before using this studio.")} />
+      )}
+
+      {!error && data && s && (
         <RiskForm
           factors={factors}
           lowMax={s.bands?.low?.[1] ?? 39}

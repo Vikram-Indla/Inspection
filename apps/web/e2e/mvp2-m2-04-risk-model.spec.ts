@@ -30,6 +30,9 @@ test("bands must be contiguous integers covering 0..100", () => {
 test("full payload validation combines weights + bands", () => {
   expect(validateRiskModelPayload({ factors: [{ key: "a", weight: 1 }], bands: BANDS }).ok).toBe(true);
   expect(validateRiskModelPayload({ factors: [{ key: "a", weight: 0.9 }], bands: BANDS }).ok).toBe(false);
+  expect(validateRiskModelPayload(null).ok).toBe(false);
+  expect(validateRiskModelPayload({}).ok).toBe(false);
+  expect(validateRiskModelPayload({ factors: [] }).ok).toBe(false);
 });
 
 test("score is a deterministic weighted sum clamped to [0,100] and banded", () => {
